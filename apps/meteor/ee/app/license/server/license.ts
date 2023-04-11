@@ -8,9 +8,10 @@ import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense, LicenseAppSources } from '../definition/ILicense';
+import type { ILicense } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -219,12 +220,18 @@ class LicenseClass {
 		return maxActiveUsers > (await Users.getActiveLocalUserCount());
 	}
 
-	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
+	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
 		if (!(await Apps.isInitialized())) {
 			return false;
 		}
 
-		return isUnderAppLimits(this.appsConfig, source);
+		// Migrated apps were installed before the validation was implemented
+		// so they're always allowed to be enabled
+		if (app.migrated) {
+			return true;
+		}
+
+		return isUnderAppLimits(this.appsConfig, getInstallationSourceFromAppStorageItem(app));
 	}
 
 	showLicenses(): void {
@@ -335,13 +342,7 @@ export async function canAddNewUser(): Promise<boolean> {
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
-	// Migrated apps were installed before the validation was implemented
-	// so they're always allowed to be enabled
-	if (app.migrated) {
-		return true;
-	}
-
-	return License.canEnableApp(app.installationSource);
+	return License.canEnableApp(app);
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
