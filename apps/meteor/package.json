@@ -246,6 +246,7 @@
 		"@rocket.chat/poplib": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/rate-limit": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "next",

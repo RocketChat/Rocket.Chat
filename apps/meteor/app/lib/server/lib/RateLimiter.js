@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { RateLimiter } from 'meteor/rate-limit';
+import { RateLimiter } from '@rocket.chat/rate-limit';
 
 export const RateLimiterClass = new (class {
 	limitFunction(fn, numRequests, timeInterval, matchers) {
@@ -8,9 +8,6 @@ export const RateLimiterClass = new (class {
 			return fn;
 		}
 		const rateLimiter = new RateLimiter();
-		Object.entries(matchers).forEach(function ([key, matcher]) {
-			matchers[key] = (...args) => Promise.await(matcher(...args));
-		});
 
 		rateLimiter.addRule(matchers, numRequests, timeInterval);
 		return function (...args) {

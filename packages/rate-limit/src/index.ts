@@ -28,7 +28,7 @@ type RuleOptions = {
 	callback?: (...args: any[]) => any;
 };
 
-type RuleMatcher = Record<string, (input: any) => boolean | Promise<boolean>>;
+type RuleMatcher = Record<string, ((input: any) => boolean | Promise<boolean>) | string>;
 
 type CheckReply = {
 	allowed: boolean;
@@ -294,4 +294,4 @@ class RateLimiter {
 	}
 }
 
-export { RateLimiter };
+export { RateLimiter, CheckInput };

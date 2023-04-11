@@ -6,8 +6,8 @@ import { Accounts } from 'meteor/accounts-base';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-import { RateLimiter } from 'meteor/rate-limit';
+import type { CheckInput } from '@rocket.chat/rate-limit';
+import { RateLimiter } from '@rocket.chat/rate-limit';
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
@@ -313,18 +313,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		);
 	}
 
-	protected async enforceRateLimit(
-		objectForRateLimitMatch: RateLimiterOptionsToCheck,
-		_: any,
-		response: Response,
-		userId: string,
-	): Promise<void> {
+	protected async enforceRateLimit(objectForRateLimitMatch: CheckInput, _: any, response: Response, userId: string): Promise<void> {
 		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
 			return;
 		}
 
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
 		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
