@@ -1,5 +1,5 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette } from '@rocket.chat/fuselage';
+import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette, Tooltip } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -102,12 +102,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																	]}
 																	innerRadius={0.6}
 																	colors={[colors.warning, colors.success, colors.info]}
-																	// @ts-ignore
-																	enableRadialLabels={false}
-																	enableSlicesLabels={false}
 																	animate={true}
-																	motionStiffness={90}
-																	motionDamping={15}
+																	motionConfig='stiff'
 																	theme={{
 																		// TODO: Get it from theme
 																		axis: {
@@ -124,19 +120,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																				},
 																			},
 																		},
-																		tooltip: {
-																			container: {
-																				backgroundColor: '#1F2329',
-																				boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-																				borderRadius: 2,
-																			},
-																		},
 																	}}
-																	tooltip={({ datum }): ReactElement => (
-																		<Box fontScale='p1m' color='white'>
-																			{t('Value_messages', { value: datum.value })}
-																		</Box>
-																	)}
+																	tooltip={({ datum }) => <Tooltip>{t('Value_messages', { value: datum.value })}</Tooltip>}
 																/>
 															</Box>
 														</Box>
