@@ -2,7 +2,9 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsInviteProps = { roomId: string } | { roomName: string };
+export type ChannelsInviteProps =
+	| { roomId: string; userId?: string; username?: string; user?: string }
+	| { roomName: string; userId?: string; username?: string; user?: string };
 
 const channelsInvitePropsSchema = {
 	oneOf: [
@@ -11,6 +13,18 @@ const channelsInvitePropsSchema = {
 			properties: {
 				roomId: {
 					type: 'string',
+				},
+				userId: {
+					type: 'string',
+					nullable: true,
+				},
+				username: {
+					type: 'string',
+					nullable: true,
+				},
+				user: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['roomId'],
@@ -21,6 +35,18 @@ const channelsInvitePropsSchema = {
 			properties: {
 				roomName: {
 					type: 'string',
+				},
+				userId: {
+					type: 'string',
+					nullable: true,
+				},
+				username: {
+					type: 'string',
+					nullable: true,
+				},
+				user: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['roomName'],

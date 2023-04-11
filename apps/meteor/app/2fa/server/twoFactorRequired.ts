@@ -6,8 +6,8 @@ import { checkCodeForUser } from './code/index';
 export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType, ...args: any[]) => any>(
 	fn: TFunction,
 	options?: ITwoFactorOptions,
-): (this: Meteor.MethodThisType, ...args: Parameters<TFunction>) => ReturnType<TFunction> {
-	return function (this: Meteor.MethodThisType, ...args: Parameters<TFunction>): ReturnType<TFunction> {
+): (this: Meteor.MethodThisType, ...args: Parameters<TFunction>) => Promise<ReturnType<TFunction>> {
+	return async function (this: Meteor.MethodThisType, ...args: Parameters<TFunction>): Promise<ReturnType<TFunction>> {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
 		}
@@ -16,7 +16,7 @@ export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType
 		const twoFactor = args.pop();
 		if (twoFactor) {
 			if (twoFactor.twoFactorCode && twoFactor.twoFactorMethod) {
-				checkCodeForUser({
+				await checkCodeForUser({
 					user: this.userId,
 					connection: this.connection || undefined,
 					code: twoFactor.twoFactorCode,
@@ -31,7 +31,7 @@ export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType
 		}
 
 		if (!this.twoFactorChecked) {
-			checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
+			await checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
 		}
 
 		return fn.apply(this, args);

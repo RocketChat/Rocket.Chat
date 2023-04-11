@@ -128,7 +128,7 @@ const ForwardChatModal = ({
 						<UserAutoComplete
 							conditions={conditions}
 							placeholder={t('Username')}
-							onChange={(value: any): void => {
+							onChange={(value) => {
 								setValue('username', value);
 							}}
 							value={getValues().username}

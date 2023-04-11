@@ -1,7 +1,5 @@
-import type { IUser, ISubscription } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
-
-import { Subscriptions, Users } from '../../../models/server';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
@@ -24,7 +22,9 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid));
 	});
 
-	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user: IUser) => users.set(user._id, user));
+	(await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).toArray()).forEach((user: IUser) =>
+		users.set(user._id, user),
+	);
 
 	return users;
 }
@@ -34,7 +34,7 @@ function sortUsersAlphabetically(u1: IUser, u2: IUser): number {
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 
-export const updateGroupDMsName = async (userThatChangedName: IUser) => {
+export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<void> => {
 	if (!userThatChangedName.username) {
 		return;
 	}
@@ -60,10 +60,10 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
-		const subs = Subscriptions.findByRoomId(room._id, { fields: { '_id': 1, 'u._id': 1 } });
-		subs.forEach((sub: ISubscription) => {
+		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 } });
+		for await (const sub of subs) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
-		});
+			await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+		}
 	}
 };

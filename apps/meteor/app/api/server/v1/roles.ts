@@ -2,16 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { Users } from '../../../models/server';
 import { API } from '../api';
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -77,7 +75,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
 
-			if (hasRole(user._id, role._id, roomId)) {
+			if (await hasRoleAsync(user._id, role._id, roomId)) {
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
@@ -203,7 +201,7 @@ API.v1.addRoute(
 				apiDeprecationLogger.warn(`Unassigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
 			}
 
-			const user = Users.findOneByUsername(username);
+			const user = await Users.findOneByUsername(username);
 
 			if (!user) {
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');

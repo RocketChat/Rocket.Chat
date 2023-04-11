@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
@@ -53,7 +53,7 @@ FlowRouter.route('/', {
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
 				Meteor.defer(async () => {
-					const user = (await Meteor.userAsync()) as IUser | null;
+					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);

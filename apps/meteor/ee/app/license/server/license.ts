@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 
 import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
@@ -211,12 +211,12 @@ class LicenseClass {
 		this.showLicenses();
 	}
 
-	canAddNewUser(): boolean {
+	async canAddNewUser(): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > Users.getActiveLocalUserCount();
+		return maxActiveUsers > (await Users.getActiveLocalUserCount());
 	}
 
 	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
@@ -330,7 +330,7 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export function canAddNewUser(): boolean {
+export async function canAddNewUser(): Promise<boolean> {
 	return License.canAddNewUser();
 }
 
@@ -344,7 +344,7 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app.installationSource);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -435,8 +435,8 @@ interface IOverrideClassProperties {
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
-	onLicense(license, () => {
+export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
 			original.prototype[key] = function (...args: any[]): any {

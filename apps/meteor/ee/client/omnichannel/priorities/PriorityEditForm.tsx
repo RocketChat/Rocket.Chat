@@ -11,7 +11,7 @@ import StringSettingInput from '../../../../client/views/admin/settings/inputs/S
 
 export type PriorityFormData = { name: string; reset: boolean };
 
-export type ILivechatClientPriority = Serialized<ILivechatPriority> & {
+type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 	i18n: TranslationKey;
 };
 

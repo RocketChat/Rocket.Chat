@@ -6,7 +6,7 @@ import { generateUsernameSuggestion } from '../functions';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUsernameSuggestion(): string | undefined;
+		getUsernameSuggestion(): Promise<string | undefined>;
 	}
 }
 

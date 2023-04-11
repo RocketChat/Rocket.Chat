@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Team } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { validateName } from './validateName';
@@ -26,11 +27,11 @@ export const checkUsernameAvailability = async function (username: string): Prom
 	}
 
 	// Make sure no users are using this username
-	const existingUser = Meteor.users.findOne(
+	const existingUser = await Users.findOne(
 		{
 			username: toRegExp(username),
 		},
-		{ fields: { _id: 1 } },
+		{ projection: { _id: 1 } },
 	);
 	if (existingUser) {
 		return false;
