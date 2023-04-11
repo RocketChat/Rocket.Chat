@@ -51,10 +51,8 @@ slashCommands.add({
 						lng,
 					}),
 				});
-
-				return;
 			}
-			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
+			if (roomObject && !(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
@@ -64,7 +62,7 @@ slashCommands.add({
 				});
 				return;
 			}
-			rid = roomObject._id;
+			rid = roomObject?._id || item.rid;
 		}
 		try {
 			await Meteor.callAsync('hideRoom', rid);
