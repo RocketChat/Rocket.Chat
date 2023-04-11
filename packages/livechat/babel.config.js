@@ -15,7 +15,6 @@ module.exports = {
 		'@babel/preset-typescript',
 	],
 	plugins: [
-		'@babel/plugin-proposal-object-rest-spread',
 		['@babel/plugin-transform-react-jsx', { pragma: 'h', pragmaFrag: 'Fragment' }],
 		[
 			'babel-plugin-jsx-pragmatic',
