@@ -1,3 +1,5 @@
+import { URLSearchParams } from 'url';
+
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
@@ -30,16 +32,17 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 
 	let authTokenResult;
 	try {
+		const body = new URLSearchParams();
+		body.append('client_id', client_id);
+		body.append('client_secret', client_secret);
+		body.append('scope', scope);
+		body.append('grant_type', 'client_credentials');
+		body.append('redirect_uri', redirectUri);
+
 		const result = await fetch(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
-			body: JSON.stringify({
-				client_id,
-				client_secret,
-				scope,
-				grant_type: 'client_credentials',
-				redirect_uri: redirectUri,
-			}),
+			body,
 		});
 		authTokenResult = await result.json();
 	} catch (err) {
@@ -60,10 +63,10 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 	}
 
 	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
+	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.expires_in);
 
 	tokenResponse.expiresAt = expiresAt;
-	tokenResponse.token = authTokenResult.data.access_token;
+	tokenResponse.token = authTokenResult.access_token;
 
 	return tokenResponse;
 }
