@@ -1,12 +1,12 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('Email', function () {
-	this.section('Style', function () {
-		this.add('email_plain_text_only', false, {
+void settingsRegistry.addGroup('Email', async function () {
+	await this.section('Style', async function () {
+		await this.add('email_plain_text_only', false, {
 			type: 'boolean',
 		});
 
-		this.add(
+		await this.add(
 			'email_style',
 			`html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
@@ -121,22 +121,22 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Subject', function () {
-		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
+	await this.section('Subject', async function () {
+		await this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
 			type: 'code',
 			code: 'text',
 			multiline: true,
 			i18nLabel: 'Offline_DM_Email',
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
-		this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
+		await this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
 			type: 'code',
 			code: 'text',
 			multiline: true,
 			i18nLabel: 'Offline_Mention_Email',
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
-		this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
+		await this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
 			type: 'code',
 			code: 'text',
 			multiline: true,
@@ -144,8 +144,8 @@ void settingsRegistry.addGroup('Email', function () {
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
 	});
-	this.section('Header_and_Footer', function () {
-		this.add(
+	await this.section('Header_and_Footer', async function () {
+		await this.add(
 			'Email_Header',
 			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>',
 			{
@@ -155,7 +155,7 @@ void settingsRegistry.addGroup('Email', function () {
 				i18nLabel: 'Header',
 			},
 		);
-		this.add(
+		await this.add(
 			'Email_Footer',
 			'</td></tr></table></div></td></tr></table><!-- /BODY --></td></tr><tr style="margin: 0; padding: 0;"><td style="margin: 0; padding: 0;"><!-- FOOTER --><table class="wrap"><tr><td class="container"><!-- content --><div class="content"><table width="100%"><tr><td align="center" class="social"><a href="https://rocket.chat/blog">Blog</a> | <a href="https://github.com/RocketChat">Github</a> | <a href="https://www.facebook.com/RocketChatApp">Facebook</a> | <a href="https://www.instagram.com/rocket.chat">Instagram</a></td></tr><tr><td align="center"><h6>© Rocket.Chat Technologies Corp.</h6><h6>Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸 </h6></td></tr></table></div><!-- /content --></td></tr></table><!-- /FOOTER --></td></tr></table></body></html>',
 			{
@@ -165,26 +165,26 @@ void settingsRegistry.addGroup('Email', function () {
 				i18nLabel: 'Footer',
 			},
 		);
-		this.add('Email_Footer_Direct_Reply', '<p class="advice">{Direct_Reply_Advice}</p>', {
+		await this.add('Email_Footer_Direct_Reply', '<p class="advice">{Direct_Reply_Advice}</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			i18nLabel: 'Footer_Direct_Reply',
 		});
 	});
-	this.section('Direct_Reply', function () {
-		this.add('Direct_Reply_Enable', false, {
+	await this.section('Direct_Reply', async function () {
+		await this.add('Direct_Reply_Enable', false, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'Direct_Reply_Enable',
 		});
-		this.add('Direct_Reply_Debug', false, {
+		await this.add('Direct_Reply_Debug', false, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'Direct_Reply_Debug',
 			i18nDescription: 'Direct_Reply_Debug_Description',
 		});
-		this.add('Direct_Reply_Protocol', 'IMAP', {
+		await this.add('Direct_Reply_Protocol', 'IMAP', {
 			type: 'select',
 			values: [
 				{
@@ -199,22 +199,22 @@ void settingsRegistry.addGroup('Email', function () {
 			env: true,
 			i18nLabel: 'Protocol',
 		});
-		this.add('Direct_Reply_Host', '', {
+		await this.add('Direct_Reply_Host', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Host',
 		});
-		this.add('Direct_Reply_Port', '', {
+		await this.add('Direct_Reply_Port', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port',
 		});
-		this.add('Direct_Reply_IgnoreTLS', false, {
+		await this.add('Direct_Reply_IgnoreTLS', false, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'IgnoreTLS',
 		});
-		this.add('Direct_Reply_Frequency', 5, {
+		await this.add('Direct_Reply_Frequency', 5, {
 			type: 'int',
 			env: true,
 			i18nLabel: 'Direct_Reply_Frequency',
@@ -223,7 +223,7 @@ void settingsRegistry.addGroup('Email', function () {
 				value: 'POP',
 			},
 		});
-		this.add('Direct_Reply_Delete', true, {
+		await this.add('Direct_Reply_Delete', true, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'Direct_Reply_Delete',
@@ -232,7 +232,7 @@ void settingsRegistry.addGroup('Email', function () {
 				value: 'IMAP',
 			},
 		});
-		this.add('Direct_Reply_Separator', '+', {
+		await this.add('Direct_Reply_Separator', '+', {
 			type: 'select',
 			values: [
 				{
@@ -315,14 +315,14 @@ void settingsRegistry.addGroup('Email', function () {
 			env: true,
 			i18nLabel: 'Direct_Reply_Separator',
 		});
-		this.add('Direct_Reply_Username', '', {
+		await this.add('Direct_Reply_Username', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Username',
 			placeholder: 'email@domain',
 			secret: true,
 		});
-		this.add('Direct_Reply_ReplyTo', '', {
+		await this.add('Direct_Reply_ReplyTo', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'ReplyTo',
@@ -335,8 +335,9 @@ void settingsRegistry.addGroup('Email', function () {
 			secret: true,
 		});
 	});
-	this.section('SMTP', function () {
-		this.add('SMTP_Protocol', 'smtp', {
+
+	await this.section('SMTP', async function () {
+		await this.add('SMTP_Protocol', 'smtp', {
 			type: 'select',
 			values: [
 				{
@@ -351,17 +352,17 @@ void settingsRegistry.addGroup('Email', function () {
 			env: true,
 			i18nLabel: 'Protocol',
 		});
-		this.add('SMTP_Host', '', {
+		await this.add('SMTP_Host', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Host',
 		});
-		this.add('SMTP_Port', '', {
+		await this.add('SMTP_Port', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port',
 		});
-		this.add('SMTP_IgnoreTLS', true, {
+		await this.add('SMTP_IgnoreTLS', true, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'IgnoreTLS',
@@ -370,26 +371,26 @@ void settingsRegistry.addGroup('Email', function () {
 				value: 'smtp',
 			},
 		});
-		this.add('SMTP_Pool', true, {
+		await this.add('SMTP_Pool', true, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'Pool',
 		});
-		this.add('SMTP_Username', '', {
+		await this.add('SMTP_Username', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Username',
 			autocomplete: false,
 			secret: true,
 		});
-		this.add('SMTP_Password', '', {
+		await this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
 			autocomplete: false,
 			secret: true,
 		});
-		this.add('From_Email', '', {
+		await this.add('From_Email', '', {
 			type: 'string',
 			placeholder: 'email@domain',
 		});
@@ -406,12 +407,12 @@ void settingsRegistry.addGroup('Email', function () {
 		});
 	});
 
-	this.section('Registration', function () {
-		this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Site_name}', {
+	await this.section('Registration', async function () {
+		await this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Site_name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add(
+		await this.add(
 			'Accounts_Enrollment_Email',
 			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 			{
@@ -423,12 +424,12 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Registration_via_Admin', function () {
-		this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
+	await this.section('Registration_via_Admin', async function () {
+		await this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add(
+		await this.add(
 			'Accounts_UserAddedEmail_Email',
 			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 			{
@@ -441,13 +442,13 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Verification', function () {
-		this.add('Verification_Email_Subject', '{Verification_Email_Subject}', {
+	await this.section('Verification', async function () {
+		await this.add('Verification_Email_Subject', '{Verification_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add(
+		await this.add(
 			'Verification_Email',
 			'<h2>{Hi_username}</h2><p>{Verification_email_body}</p><a class="btn" target="_blank" href="[Verification_Url]">{Verify_your_email}</a>',
 			{
@@ -460,18 +461,18 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Offline_Message', function () {
-		this.add('Offline_Message_Use_DeepLink', true, {
+	await this.section('Offline_Message', async function () {
+		await this.add('Offline_Message_Use_DeepLink', true, {
 			type: 'boolean',
 		});
 	});
 
-	this.section('Invitation', function () {
-		this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
+	await this.section('Invitation', async function () {
+		await this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add(
+		await this.add(
 			'Invitation_Email',
 			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>',
 			{
@@ -484,18 +485,18 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.add('Invitation_Email_Count', 0, {
+	await this.add('Invitation_Email_Count', 0, {
 		type: 'int',
 		hidden: true,
 	});
 
-	this.section('Forgot_password_section', function () {
-		this.add('Forgot_Password_Email_Subject', '{Forgot_Password_Email_Subject}', {
+	await this.section('Forgot_password_section', async function () {
+		await this.add('Forgot_Password_Email_Subject', '{Forgot_Password_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add(
+		await this.add(
 			'Forgot_Password_Email',
 			'<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>',
 			{
@@ -508,13 +509,13 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Email_changed_section', function () {
-		this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
+	await this.section('Email_changed_section', async function () {
+		await this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add(
+		await this.add(
 			'Email_Changed_Email',
 			'<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 			{
@@ -527,13 +528,13 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Password_changed_section', function () {
-		this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
+	await this.section('Password_changed_section', async function () {
+		await this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add(
+		await this.add(
 			'Password_Changed_Email',
 			'<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 			{
@@ -546,12 +547,12 @@ void settingsRegistry.addGroup('Email', function () {
 		);
 	});
 
-	this.section('Privacy', function () {
-		this.add('Email_notification_show_message', true, {
+	await this.section('Privacy', async function () {
+		await this.add('Email_notification_show_message', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Add_Sender_To_ReplyTo', false, {
+		await this.add('Add_Sender_To_ReplyTo', false, {
 			type: 'boolean',
 		});
 	});

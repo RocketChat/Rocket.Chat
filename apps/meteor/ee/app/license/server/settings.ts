@@ -5,13 +5,13 @@ import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { addLicense } from './license';
 
 Meteor.startup(function () {
-	void settingsRegistry.addGroup('Enterprise', function () {
-		this.section('License', function () {
-			this.add('Enterprise_License', '', {
+	void settingsRegistry.addGroup('Enterprise', async function () {
+		await this.section('License', async function () {
+			await this.add('Enterprise_License', '', {
 				type: 'string',
 				i18nLabel: 'Enterprise_License',
 			});
-			this.add('Enterprise_License_Status', '', {
+			await this.add('Enterprise_License_Status', '', {
 				readonly: true,
 				type: 'string',
 				i18nLabel: 'Status',
