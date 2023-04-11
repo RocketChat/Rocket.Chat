@@ -4,9 +4,11 @@ import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
 import { fetch } from '../lib/http/fetch';
+import type { Logger } from '../lib/logger/Logger';
+import { defaultCronJobs } from '../../app/utils/server/lib/cron/Cronjobs';
 
-async function generateStatistics(logger) {
-	const cronStatistics = await statistics.save();
+async function generateStatistics(logger: Logger): Promise<void> {
+	const cronStatistics: Record<string, any> = await statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 
@@ -15,7 +17,7 @@ async function generateStatistics(logger) {
 	}
 
 	try {
-		const headers = {};
+		const headers: Record<string, any> = {};
 		const token = await getWorkspaceAccessToken();
 
 		if (token) {
@@ -33,35 +35,29 @@ async function generateStatistics(logger) {
 	}
 }
 
-export function statsCron(SyncedCron, logger) {
+export async function statsCron(logger: Logger): Promise<void> {
 	if (settings.get('Troubleshoot_Disable_Statistics_Generator')) {
 		return;
 	}
 
 	const name = 'Generate and save statistics';
 
-	let previousValue;
-	settings.watch('Troubleshoot_Disable_Statistics_Generator', (value) => {
+	let previousValue: boolean;
+	settings.watch<boolean>('Troubleshoot_Disable_Statistics_Generator', async (value) => {
 		if (value === previousValue) {
 			return;
 		}
 		previousValue = value;
 
 		if (value) {
-			SyncedCron.remove(name);
+			await defaultCronJobs.remove(name);
 			return;
 		}
 
-		generateStatistics(logger);
+		await generateStatistics(logger);
 
 		const now = new Date();
 
-		SyncedCron.add({
-			name,
-			schedule(parser) {
-				return parser.cron(`12 ${now.getHours()} * * *`);
-			},
-			job: () => generateStatistics(logger),
-		});
+		await defaultCronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
 	});
 }

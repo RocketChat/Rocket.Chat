@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { fetch } from '../../../server/lib/http/fetch';
+import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
 const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
 	try {
@@ -64,11 +64,4 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 	}
 });
 
-// Scheduling as every 12 hours to avoid multiple instances hiting the marketplace at the same time
-SyncedCron.add({
-	name: 'Apps-Request-End-Users:notify',
-	schedule: (parser) => parser.text('every 12 hours'),
-	async job() {
-		await appsNotifyAppRequests();
-	},
-});
+await defaultCronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());

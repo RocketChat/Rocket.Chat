@@ -1,26 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';
+import { defaultCronJobs } from '../../utils/server/lib/cron/Cronjobs';
 
 const jobName = 'version_check';
 
-if (SyncedCron.nextScheduledAtDate(jobName)) {
-	SyncedCron.remove(jobName);
+if (await defaultCronJobs.has(jobName)) {
+	await defaultCronJobs.remove(jobName);
 }
 
-const addVersionCheckJob = Meteor.bindEnvironment(() => {
-	SyncedCron.add({
-		name: jobName,
-		schedule: (parser) => parser.text('at 2:00 am'),
-		async job() {
-			await checkVersionUpdate();
-		},
-	});
-});
+const addVersionCheckJob = async () => {
+	await defaultCronJobs.add(jobName, '0 2 * * *', async () => checkVersionUpdate());
+};
 
 Meteor.startup(() => {
 	Meteor.defer(() => {
@@ -30,17 +24,17 @@ Meteor.startup(() => {
 	});
 });
 
-settings.watch('Update_EnableChecker', () => {
+settings.watch('Update_EnableChecker', async () => {
 	const checkForUpdates = settings.get('Update_EnableChecker');
 
-	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
+	if (checkForUpdates && (await defaultCronJobs.has(jobName))) {
 		return;
 	}
 
 	if (checkForUpdates) {
-		addVersionCheckJob();
+		await addVersionCheckJob();
 		return;
 	}
 
-	SyncedCron.remove(jobName);
+	await defaultCronJobs.remove(jobName);
 });

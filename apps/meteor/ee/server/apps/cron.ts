@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
+import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 import { fetch } from '../../../server/lib/http/fetch';
+import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
-const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps) {
+const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -28,10 +29,12 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
-			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
+			msg: `*${TAPi18n.__(title, { lng: adminUser.language || 'en' })}*\n${TAPi18n.__(rocketCatMessage, {
+				lng: adminUser.language || 'en',
+			})}`,
 		}),
 		banners: async ({ adminUser }) => {
-			await Users.removeBannerById(adminUser._id, { id });
+			await Users.removeBannerById(adminUser._id, id);
 
 			return [
 				{
@@ -49,7 +52,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 	return apps;
 });
 
-const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _notifyAdminsAboutRenewedApps(apps) {
+const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _notifyAdminsAboutRenewedApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -65,7 +68,7 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _noti
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
 	await sendMessagesToAdmins({
-		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, { lng: adminUser.language || 'en' })}` }),
 	});
 });
 
@@ -99,10 +102,4 @@ const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpd
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
 });
 
-SyncedCron.add({
-	name: 'Apps-Engine:check',
-	schedule: (parser) => parser.text('at 4:00 am'),
-	async job() {
-		await appsUpdateMarketplaceInfo();
-	},
-});
+await defaultCronJobs.add('Apps-Engine:check', '0 4 * * *', async () => appsUpdateMarketplaceInfo());

@@ -6,6 +6,7 @@ import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/re
 import { settings, settingsRegistry } from '../../app/settings/server';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { defaultCronJobs } from '../../app/utils/server/lib/cron/Cronjobs';
 
 function updateSetting(id: string, value: SettingValue | null): void {
 	if (value !== null) {
@@ -76,17 +77,14 @@ async function runFederation(): Promise<void> {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function federationCron(SyncedCron: any): void {
-	settings.watch('FEDERATION_Enabled', (value) => {
-		if (!value) {
-			return SyncedCron.remove('Federation');
+export async function federationCron(): Promise<void> {
+	const name = 'Federation';
+
+	settings.watch('FEDERATION_Enabled', async (value) => {
+		if (!value && (await defaultCronJobs.has(name))) {
+			return defaultCronJobs.remove(name);
 		}
-		SyncedCron.add({
-			name: 'Federation',
-			schedule(parser: any) {
-				return parser.cron('* * * * *');
-			},
-			job: runFederation,
-		});
+
+		await defaultCronJobs.add(name, '* * * * *', async () => runFederation());
 	});
 }

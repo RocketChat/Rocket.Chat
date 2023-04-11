@@ -1,8 +1,9 @@
-import type { SyncedCron } from 'meteor/littledata:synced-cron';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import { VideoConf } from '@rocket.chat/core-services';
+
+import { defaultCronJobs } from '../../app/utils/server/lib/cron/Cronjobs';
 
 // 24 hours
 const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;
@@ -17,14 +18,8 @@ async function runVideoConferences(): Promise<void> {
 	await Promise.all(calls.map((callId) => VideoConf.setStatus(callId, VideoConferenceStatus.EXPIRED)));
 }
 
-export function videoConferencesCron(syncedCron: typeof SyncedCron): void {
+export async function videoConferencesCron(): Promise<void> {
 	void runVideoConferences();
 
-	syncedCron.add({
-		name: 'VideoConferences',
-		schedule(parser: any) {
-			return parser.cron('0 */3 * * *');
-		},
-		job: runVideoConferences,
-	});
+	await defaultCronJobs.add('VideoConferences', '0 */3 * * *', async () => runVideoConferences());
 }

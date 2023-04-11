@@ -399,6 +399,11 @@ export class Agenda extends EventEmitter {
 		}
 	}
 
+	public async has(query: Record<string, any>): Promise<boolean> {
+		debug('checking whether Agenda has any jobs matching query', query);
+		return (await this._collection.countDocuments(query)) > 0;
+	}
+
 	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
 		debug('processDbResult() called with success, checking whether to process job immediately or not');
 

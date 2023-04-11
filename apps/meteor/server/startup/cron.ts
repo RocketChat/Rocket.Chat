@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Logger } from '../../app/logger/server';
 import { oembedCron } from '../cron/oembed';
@@ -11,20 +10,11 @@ import { userDataDownloadsCron } from '../cron/userDataDownloads';
 
 const logger = new Logger('SyncedCron');
 
-SyncedCron.config({
-	logger(opts) {
-		return logger[opts.level].call(logger, opts.message);
-	},
-	collectionName: 'rocketchat_cron_history',
-});
-
-Meteor.defer(function () {
-	oembedCron(SyncedCron);
-	statsCron(SyncedCron, logger);
-	npsCron(SyncedCron);
-	federationCron(SyncedCron);
-	videoConferencesCron(SyncedCron);
-	userDataDownloadsCron(SyncedCron);
-
-	SyncedCron.start();
+Meteor.defer(async function () {
+	await oembedCron();
+	await statsCron(logger);
+	await npsCron();
+	await federationCron();
+	await videoConferencesCron();
+	await userDataDownloadsCron();
 });
