@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 
 		try {
 			const crowd = new CROWD();
-			crowd.checkConnection();
+			await crowd.checkConnection();
 
 			return {
 				message: 'Connection_success' as const,
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		try {
 			const crowd = new CROWD();
 			const startTime = Date.now();
-			crowd.sync();
+			await crowd.sync();
 			const stopTime = Date.now();
 			const actual = Math.ceil((stopTime - startTime) / 1000);
 

@@ -10,10 +10,10 @@ import {
 	LivechatUnitMonitors,
 	LivechatUnit,
 } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
@@ -29,7 +29,7 @@ export const LivechatEnterprise = {
 	async addMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -47,7 +47,7 @@ export const LivechatEnterprise = {
 	async removeMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -188,7 +188,7 @@ export const LivechatEnterprise = {
 		}
 		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
+		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
 
 		await callbacks.run('livechat:afterOnHold', room);
 

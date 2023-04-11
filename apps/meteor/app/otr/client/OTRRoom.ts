@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -85,12 +85,7 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync(
-					'sendSystemMessages',
-					this._roomId,
-					await Meteor.userAsync(),
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-				);
+				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -266,12 +261,10 @@ export class OTRRoom implements IOTRRoom {
 							this.acknowledge();
 
 							if (data.refresh) {
-								await Meteor.callAsync(
-									'sendSystemMessages',
-									this._roomId,
-									await Meteor.userAsync(),
-									otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-								);
+								await APIClient.post('/v1/chat.otr', {
+									roomId: this._roomId,
+									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+								});
 							}
 						});
 					} catch (e) {
@@ -335,7 +328,10 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						await Meteor.callAsync('sendSystemMessages', this._roomId, await Meteor.userAsync(), otrSystemMessages.USER_JOINED_OTR);
+						await APIClient.post('/v1/chat.otr', {
+							roomId: this._roomId,
+							type: otrSystemMessages.USER_JOINED_OTR,
+						});
 					}
 					this.isFirstOTR = false;
 				} catch (e) {

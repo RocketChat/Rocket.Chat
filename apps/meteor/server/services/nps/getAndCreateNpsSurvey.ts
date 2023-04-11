@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
 
@@ -17,7 +16,7 @@ type NpsSurveyData = {
 	expireAt: Date;
 };
 
-export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNpsSurvey(npsId: string) {
+export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) {
 	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;
@@ -65,4 +64,4 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 		SystemLogger.error(e);
 		return false;
 	}
-});
+};

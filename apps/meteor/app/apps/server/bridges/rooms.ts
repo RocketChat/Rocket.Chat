@@ -5,10 +5,9 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
@@ -96,7 +95,9 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return (await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
+		return Promise.all(
+			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),
+		);
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -120,7 +121,7 @@ export class AppRoomBridge extends RoomBridge {
 		await Rooms.updateOne({ _id: rm._id }, { $set: rm });
 
 		for await (const username of members) {
-			const member = Users.findOneByUsername(username, {});
+			const member = await Users.findOneByUsername(username, {});
 
 			if (!member) {
 				continue;
@@ -148,7 +149,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		let rcMessage;
 		if (parentMessage) {
-			rcMessage = this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
+			rcMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
 		}
 
 		if (!rcRoom.prid || !(await Rooms.findOneById(rcRoom.prid))) {
@@ -188,9 +189,13 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
-		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
+		const subs = (await Subscriptions.findByRoomIdAndRoles(roomId, [role], {
+			projection: { uid: '$u._id', _id: 0 },
+		}).toArray()) as unknown as {
+			uid: string;
+		}[];
 		// Was this a bug?
-		const users = await Users.findByIds(subs.map((user) => user.u._id));
+		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters()!.get('users');
 		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
 	}

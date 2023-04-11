@@ -5,13 +5,12 @@ import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { Messages as MessagesSync } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
-	const deletedMsg = MessagesSync.findOneById(message._id);
-	const isThread = deletedMsg.tcount > 0;
+	const deletedMsg = await Messages.findOneById(message._id);
+	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 	const bridges = Apps?.isLoaded() && Apps.getBridges();
@@ -23,7 +22,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
-	if (deletedMsg.tmid) {
+	if (deletedMsg?.tmid) {
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
@@ -45,9 +44,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			await Messages.removeById(message._id);
 		}
 
-		files.forEach((file) => {
-			file?._id && FileUpload.getStore('Uploads').deleteById(file._id);
-		});
+		for await (const file of files) {
+			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
+		}
 	}
 
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
