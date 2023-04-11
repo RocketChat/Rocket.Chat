@@ -85,7 +85,7 @@ export type INewOutgoingIntegration = Omit<
 };
 
 export type IUpdateIncomingIntegration = Omit<
-	IOutgoingIntegration,
+	IIncomingIntegration,
 	'type' | 'channel' | 'scriptCompiled' | 'scriptError' | '_createdBy' | '_createdAt' | 'userId' | 'token' | 'username'
 > & {
 	channel?: string;
