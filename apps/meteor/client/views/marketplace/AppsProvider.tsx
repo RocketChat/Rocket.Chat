@@ -334,6 +334,8 @@ const AppsProvider: FC = ({ children }) => {
 				handleAPIError(error);
 			}
 
+			const [, installedApps, privateApps] = getCurrentData();
+
 			if (marketplaceApp !== undefined) {
 				const { status, version, licenseValidation } = installedApp;
 				const record = {
@@ -346,8 +348,6 @@ const AppsProvider: FC = ({ children }) => {
 					marketplaceVersion: marketplaceApp.app.version,
 				};
 
-				const [, installedApps] = getCurrentData();
-
 				dispatchMarketplaceApps({
 					type: 'update',
 					app: record,
@@ -355,6 +355,14 @@ const AppsProvider: FC = ({ children }) => {
 				});
 
 				if (installedApps.value) {
+					if (installedApps.value.apps.some((app) => app.id === appId)) {
+						dispatchInstalledApps({
+							type: 'update',
+							app: record,
+							reload: fetch,
+						});
+						return;
+					}
 					dispatchInstalledApps({
 						type: 'success',
 						apps: [...installedApps.value.apps, record],
@@ -372,70 +380,101 @@ const AppsProvider: FC = ({ children }) => {
 				return;
 			}
 
-			if (privateApp) {
-				dispatchPrivateApps({ type: 'update', app: privateApp, reload: fetch });
+			if (privateApp !== undefined) {
+				const { status, version } = privateApp;
+
+				const record = {
+					...privateApp,
+					success: true,
+					installed: true,
+					status,
+					version,
+				};
+
+				if (privateApps.value) {
+					if (privateApps.value.apps.some((app) => app.id === appId)) {
+						dispatchPrivateApps({
+							type: 'update',
+							app: record,
+							reload: fetch,
+						});
+						return;
+					}
+					dispatchPrivateApps({
+						type: 'success',
+						apps: [...privateApps.value.apps, record],
+						reload: fetch,
+					});
+					return;
+				}
+
+				dispatchPrivateApps({ type: 'success', apps: [record], reload: fetch });
+				return;
 			}
 
+			// TODO: Reevaluate the necessity of this dispatch
 			dispatchInstalledApps({ type: 'update', app: installedApp, reload: fetch });
 		};
 		const listeners = {
 			APP_ADDED: handleAppAddedOrUpdated,
 			APP_UPDATED: handleAppAddedOrUpdated,
 			APP_REMOVED: (appId: string): void => {
-				const [updatedData] = getCurrentData();
-				const app = updatedData.value?.apps.find(({ id }: { id: string }) => id === appId);
+				const updatedData = getCurrentData();
 
-				dispatchInstalledApps({
-					type: 'delete',
-					appId,
-					reload: fetch,
-				});
+				// TODO: This forEach is not ideal, it will be improved in the future during the refactor of this provider;
+				updatedData.forEach((appsList) => {
+					const app = appsList.value?.apps.find(({ id }: { id: string }) => id === appId);
 
-				if (!app) {
-					return;
-				}
-
-				if (app.private) {
-					dispatchPrivateApps({
+					dispatchInstalledApps({
 						type: 'delete',
 						appId,
 						reload: fetch,
 					});
-				}
 
-				dispatchMarketplaceApps({
-					type: 'update',
-					reload: fetch,
-					app: {
-						...app,
-						version: app?.marketplaceVersion,
-						installed: false,
-						marketplaceVersion: app?.marketplaceVersion,
-					},
+					if (!app) {
+						return;
+					}
+
+					if (app.private) {
+						dispatchPrivateApps({
+							type: 'delete',
+							appId,
+							reload: fetch,
+						});
+					}
+
+					dispatchMarketplaceApps({
+						type: 'update',
+						reload: fetch,
+						app: {
+							...app,
+							version: app?.marketplaceVersion,
+							installed: false,
+							marketplaceVersion: app?.marketplaceVersion,
+						},
+					});
 				});
 
 				invalidateAppsCountQuery();
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
-				const [updatedData] = getCurrentData();
-				const app = updatedData.value?.apps.find(({ id }: { id: string }) => id === appId);
-				if (!app) {
+				const updatedData = getCurrentData();
+
+				if (!Array.isArray(updatedData)) {
 					return;
 				}
 
-				app.status = status;
+				// TODO: This forEach is not ideal, it will be improved in the future during the refactor of this provider;
+				updatedData.forEach((appsList) => {
+					const app = appsList.value?.apps.find(({ id }: { id: string }) => id === appId);
 
-				dispatchInstalledApps({
-					type: 'update',
-					app: {
-						...app,
-						status,
-					},
-					reload: fetch,
-				});
+					if (!app) {
+						return;
+					}
 
-				if (app.private) {
-					dispatchPrivateApps({
+					app.status = status;
+
+					dispatchInstalledApps({
 						type: 'update',
 						app: {
 							...app,
@@ -443,15 +482,26 @@ const AppsProvider: FC = ({ children }) => {
 						},
 						reload: fetch,
 					});
-				}
 
-				dispatchMarketplaceApps({
-					type: 'update',
-					app: {
-						...app,
-						status,
-					},
-					reload: fetch,
+					if (app.private) {
+						dispatchPrivateApps({
+							type: 'update',
+							app: {
+								...app,
+								status,
+							},
+							reload: fetch,
+						});
+					}
+
+					dispatchMarketplaceApps({
+						type: 'update',
+						app: {
+							...app,
+							status,
+						},
+						reload: fetch,
+					});
 				});
 
 				invalidateAppsCountQuery();

@@ -1,29 +1,27 @@
 import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = function (message: IMessage, user: IUser, originalMessage?: IMessage): void {
-	if (!originalMessage) {
-		originalMessage = Messages.findOneById(message._id);
-	}
+export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
 		const appMessage = Object.assign({}, originalMessage, message);
 
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage));
+		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage));
-		result = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage);
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedModify', result);
 
 		if (typeof result === 'object') {
 			message = Object.assign(appMessage, result);
@@ -32,7 +30,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		Messages.cloneAndSaveAsHistoryById(message._id, user);
+		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
 	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
@@ -54,17 +52,32 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	Messages.update({ _id }, { $set: editedMessage, ...(!editedMessage.md && { $unset: { md: 1 } }) });
+	await Messages.updateOne(
+		{ _id },
+		{
+			$set: {
+				...editedMessage,
+			},
+			...(!editedMessage.md && { $unset: { md: 1 } }),
+		},
+	);
 
-	const room = Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid);
+
+	if (!room) {
+		return;
+	}
 
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
+		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
+	Meteor.defer(async function () {
+		const msg = await Messages.findOneById(_id);
+		if (msg) {
+			callbacks.run('afterSaveMessage', msg, room, user._id);
+		}
 	});
 };

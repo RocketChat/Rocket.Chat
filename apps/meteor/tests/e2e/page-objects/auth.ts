@@ -32,7 +32,7 @@ export class Registration {
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
-		return this.page.locator('button[data-loading-text=" Please_wait ..."]');
+		return this.page.locator('role=button[name="Use this username"]');
 	}
 
 	get btnForgotPassword(): Locator {

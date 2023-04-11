@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('Analytics', function addSettings() {
+void settingsRegistry.addGroup('Analytics', function addSettings() {
 	this.section('Piwik', function () {
 		const enableQuery = { _id: 'PiwikAnalytics_enabled', value: true };
 		this.add('PiwikAnalytics_enabled', false, {

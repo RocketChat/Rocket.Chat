@@ -17,7 +17,7 @@ import {
 	defaultMetadataCertificateTemplate,
 } from './constants';
 
-export const getSamlConfigs = function (service: string): Record<string, any> {
+const getSamlConfigs = function (service: string): Record<string, any> {
 	const configs = {
 		buttonLabelText: settings.get(`${service}_button_label_text`),
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
@@ -63,7 +63,7 @@ export const getSamlConfigs = function (service: string): Record<string, any> {
 	return configs;
 };
 
-export const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
+const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
 	let privateKey = null;
 
@@ -101,7 +101,7 @@ export const configureSamlService = function (samlConfigs: Record<string, any>):
 	};
 };
 
-export const loadSamlServiceProviders = function (): void {
+export const loadSamlServiceProviders = async function (): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
@@ -109,27 +109,29 @@ export const loadSamlServiceProviders = function (): void {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
-	const providers = services
-		.map(([key, value]) => {
-			if (value === true) {
-				const samlConfigs = getSamlConfigs(key);
-				SAMLUtils.log(key);
-				ServiceConfiguration.configurations.upsert(
-					{
-						service: serviceName.toLowerCase(),
-					},
-					{
-						$set: samlConfigs,
-					},
-				);
-				return configureSamlService(samlConfigs);
-			}
-			ServiceConfiguration.configurations.remove({
-				service: serviceName.toLowerCase(),
-			});
-			return false;
-		})
-		.filter((e) => e) as IServiceProviderOptions[];
+	const providers = (
+		await Promise.all(
+			services.map(async ([key, value]) => {
+				if (value === true) {
+					const samlConfigs = getSamlConfigs(key);
+					SAMLUtils.log(key);
+					await ServiceConfiguration.configurations.upsertAsync(
+						{
+							service: serviceName.toLowerCase(),
+						},
+						{
+							$set: samlConfigs,
+						},
+					);
+					return configureSamlService(samlConfigs);
+				}
+				await ServiceConfiguration.configurations.removeAsync({
+					service: serviceName.toLowerCase(),
+				});
+				return false;
+			}),
+		)
+	).filter((e) => e) as IServiceProviderOptions[];
 
 	SAMLUtils.setServiceProvidersList(providers);
 };
@@ -139,7 +141,7 @@ export const addSamlService = function (name: string): void {
 };
 
 export const addSettings = function (name: string): void {
-	settingsRegistry.addGroup('SAML', function () {
+	void settingsRegistry.addGroup('SAML', function () {
 		this.with(
 			{
 				tab: 'SAML_Connection',

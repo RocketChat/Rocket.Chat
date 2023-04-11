@@ -1,10 +1,7 @@
-import { canAccessRoom, canAccessRoomId, roomAccessAttributes, roomAccessValidators } from './functions/canAccessRoom';
-import { canSendMessage, validateRoomMessagePermissions } from './functions/canSendMessage';
+import { roomAccessAttributes, canAccessRoomAsync } from './functions/canAccessRoom';
 import { getRoles } from './functions/getRoles';
 import { getUsersInRole } from './functions/getUsersInRole';
-import { hasAllPermission, hasAtLeastOnePermission, hasPermission } from './functions/hasPermission';
-import { hasRole, hasAnyRole, subscriptionHasRole } from './functions/hasRole';
-import { AuthorizationUtils } from '../lib/AuthorizationUtils';
+import { subscriptionHasRole } from './functions/hasRole';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';
@@ -12,20 +9,4 @@ import './methods/removeRoleFromPermission';
 import './methods/removeUserFromRole';
 import './streamer/permissions';
 
-export {
-	getRoles,
-	getUsersInRole,
-	hasRole,
-	hasAnyRole,
-	subscriptionHasRole,
-	canSendMessage,
-	validateRoomMessagePermissions,
-	roomAccessValidators,
-	canAccessRoom,
-	canAccessRoomId,
-	roomAccessAttributes,
-	hasAllPermission,
-	hasAtLeastOnePermission,
-	hasPermission,
-	AuthorizationUtils,
-};
+export { getRoles, getUsersInRole, subscriptionHasRole, canAccessRoomAsync, roomAccessAttributes };

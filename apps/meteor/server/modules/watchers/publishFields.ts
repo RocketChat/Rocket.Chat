@@ -120,4 +120,4 @@ export const roomFields = {
 	callDuration: 1,
 	callTotalHoldTime: 1,
 	callWaitingTime: 1,
-};
+} as const;

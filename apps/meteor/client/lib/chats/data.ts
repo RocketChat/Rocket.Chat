@@ -1,11 +1,11 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
-import { getRandomId } from '../../../lib/random';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
@@ -22,7 +22,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		const effectiveTMID = originalMessage ? originalMessage.tmid : tmid;
 
 		return (await onClientBeforeSendMessage({
-			_id: originalMessage?._id ?? getRandomId(),
+			_id: originalMessage?._id ?? Random.id(),
 			rid: effectiveRID,
 			...(effectiveTMID && {
 				tmid: effectiveTMID,
@@ -32,7 +32,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		})) as IMessage;
 	};
 
-	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
+	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
 		Messages.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
@@ -175,8 +175,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
-	const updateMessage = async (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void> =>
-		call('updateMessage', message);
+	const updateMessage = async (message: IEditedMessage): Promise<void> => call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();
@@ -246,7 +245,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const isSubscribedToRoom = async (): Promise<boolean> => !!ChatSubscription.findOne({ rid }, { reactive: false });
 
-	const joinRoom = async (): Promise<void> => call('joinRoom', rid);
+	const joinRoom = async (): Promise<void> => {
+		await call('joinRoom', rid);
+	};
 
 	const markRoomAsRead = async (): Promise<void> => {
 		readMessage.readNow(rid);

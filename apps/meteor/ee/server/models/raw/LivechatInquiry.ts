@@ -6,7 +6,7 @@ import type { ModifyResult, UpdateResult, Document } from 'mongodb';
 import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquiry';
 
 declare module '@rocket.chat/model-typings' {
-	export interface ILivechatInquiryModel {
+	interface ILivechatInquiryModel {
 		setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;

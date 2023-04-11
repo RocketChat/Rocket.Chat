@@ -42,7 +42,7 @@ const validateMaxChats = async ({
 		return agent;
 	}
 
-	if (allowAgentSkipQueue(agent)) {
+	if (await allowAgentSkipQueue(agent)) {
 		cbLogger.debug(`Callback success. Agent ${agent.agentId} can skip queue`);
 		return agent;
 	}
@@ -76,9 +76,4 @@ const validateMaxChats = async ({
 	return agent;
 };
 
-callbacks.add(
-	'livechat.checkAgentBeforeTakeInquiry',
-	({ agent, inquiry, options }) => Promise.await(validateMaxChats({ agent, inquiry, options })),
-	callbacks.priority.MEDIUM,
-	'livechat-before-take-inquiry',
-);
+callbacks.add('livechat.checkAgentBeforeTakeInquiry', validateMaxChats, callbacks.priority.MEDIUM, 'livechat-before-take-inquiry');

@@ -258,12 +258,12 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
+		if (!subscriptions?.size) {
 			return false;
 		}
 
 		if (transform) {
-			this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
+			void this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
 
 			return true;
 		}
@@ -277,7 +277,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			return false;
 		}
 
-		this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
+		void this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
 
 		return true;
 	}

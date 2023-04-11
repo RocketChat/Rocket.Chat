@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 if (!Accounts.saml) {
@@ -23,8 +23,8 @@ const logoutBehaviour = {
 	ONLY_RC: 'Local',
 };
 
-Meteor.logout = function (...args) {
-	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
+Meteor.logout = async function (...args) {
+	const samlService = await ServiceConfiguration.configurations.findOneAsync({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {

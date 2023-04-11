@@ -77,7 +77,7 @@ const FileUploadModal = ({
 					<Modal.Title>{t('FileUpload')}</Modal.Title>
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
-				<Modal.Content overflow='hidden'>
+				<Modal.Content>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe='x16'>
 						<FilePreview file={file} />
 					</Box>
