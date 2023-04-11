@@ -7,7 +7,7 @@ type DDPRateLimiterType = {
 	printRules: () => RateLimiter['rules'];
 	removeRule: (id: string) => ReturnType<RateLimiter['removeRule']>;
 	_increment: (input: Parameters<RateLimiter['increment']>[0]) => ReturnType<RateLimiter['increment']>;
-	_check: (input: Parameters<RateLimiter['check']>[0]) => ReturnType<RateLimiter['check']>;
+	_check: (...params: Parameters<RateLimiter['check']>) => ReturnType<RateLimiter['check']>;
 };
 
 // Rate Limiter built into DDP with a default error message. See README or
@@ -100,10 +100,10 @@ DDPRateLimiter.removeRule = (id) => rateLimiter.removeRule(id);
 
 // This is accessed inside livedata_server.js, but shouldn't be called by any
 // user.
-DDPRateLimiter._increment = (input) => {
+DDPRateLimiter._increment = async (input) => {
 	rateLimiter.increment(input);
 };
 
-DDPRateLimiter._check = (input) => rateLimiter.check(input);
+DDPRateLimiter._check = (input, session) => rateLimiter.check(input, session);
 
 export { DDPRateLimiter };

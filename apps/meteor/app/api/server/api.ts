@@ -319,8 +319,9 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			return;
 		}
 
-		rateLimiterDictionary[route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = await rateLimiterDictionary[route].rateLimiter.check(objectForRateLimitMatch);
+		const session = Meteor.server.sessions.get(objectForRateLimitMatch.connectionId);
+		await rateLimiterDictionary[route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = await rateLimiterDictionary[route].rateLimiter.check(objectForRateLimitMatch, session);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
 		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);

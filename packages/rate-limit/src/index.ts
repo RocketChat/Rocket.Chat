@@ -45,6 +45,7 @@ type CheckInput = {
 	type?: string;
 	name?: string;
 	connectionId?: string;
+	broadcastAuth?: boolean;
 };
 
 class Rule {
@@ -56,7 +57,7 @@ class Rule {
 
 	_lastResetTime: number;
 
-	counters: Record<string, any>;
+	counters: Record<string, number>;
 
 	constructor(options: RuleOptions, matchers: RuleMatcher) {
 		this.id = Random.id();
@@ -75,6 +76,24 @@ class Rule {
 	// rule.matchers. If the match fails, search short circuits instead of
 	// iterating through all matchers.
 	async match(input: Record<string, any>): Promise<boolean> {
+		/* 
+		Object.entries(this._matchers).every(([key, matcher]) => {
+			if (matcher !== null) {
+				if (!hasOwn.call(input, key)) {
+					return false;
+				}
+				if (typeof matcher === 'function') {
+					if (!(await matcher(input[key]))) {
+						return false;
+					}
+				} else if (matcher !== input[key]) {
+					return false;
+				}
+			}
+			return true;
+		});
+
+		// The above to for await of */
 		for await (const [key, matcher] of Object.entries(this._matchers)) {
 			if (matcher !== null) {
 				if (!hasOwn.call(input, key)) {
@@ -88,7 +107,6 @@ class Rule {
 					return false;
 				}
 			}
-			continue;
 		}
 
 		return true;
@@ -172,14 +190,16 @@ class RateLimiter {
 	 * If multiple rules match, the least number of invocations left is returned.
 	 * If the rate limit has been reached, the longest timeToReset is returned.
 	 */
-	async check(input: CheckInput): Promise<CheckReply> {
+	async check(input: CheckInput, sessionInfo: { connectionHandle?: { broadcastAuth?: boolean } }): Promise<CheckReply> {
 		const reply: CheckReply = {
 			allowed: true,
 			timeToReset: 0,
 			numInvocationsLeft: Infinity,
 		};
 
-		const matchedRules = this._findAllMatchingRules(input);
+		input.broadcastAuth = sessionInfo.connectionHandle?.broadcastAuth === true;
+
+		const matchedRules = await this._findAllMatchingRules(input);
 		for await (const rule of matchedRules) {
 			const callbackReply: CheckReply = {
 				allowed: true,
@@ -271,9 +291,9 @@ class RateLimiter {
 	 * @param  {object} input Dictionary object containing attributes that may
 	 * match to rules
 	 */
-	increment(input: CheckInput) {
+	async increment(input: CheckInput) {
 		// Only increment rule counters that match this input
-		const matchedRules = this._findAllMatchingRules(input);
+		const matchedRules = await this._findAllMatchingRules(input);
 		matchedRules.forEach((rule) => {
 			const ruleResult = rule.apply(input);
 
@@ -293,8 +313,18 @@ class RateLimiter {
 	}
 
 	// Returns an array of all rules that apply to provided input
-	_findAllMatchingRules(input: CheckInput) {
-		return Object.values(this.rules).filter((rule) => rule.match(input));
+	async _findAllMatchingRules(input: CheckInput) {
+		// return Object.values(this.rules).filter((rule) => rule.match(input));
+		// filter above to for await of
+
+		const matchingRules = [];
+		for await (const rule of Object.values(this.rules)) {
+			if (await rule.match(input)) {
+				matchingRules.push(rule);
+			}
+		}
+
+		return matchingRules;
 	}
 
 	/**

@@ -10,15 +10,16 @@ export const RateLimiterClass = new (class {
 		const rateLimiter = new RateLimiter();
 
 		rateLimiter.addRule(matchers, numRequests, timeInterval);
-		return function (...args) {
+		return async function (...args) {
 			const match = {};
 
 			Object.keys(matchers).forEach(function (key) {
 				match[key] = args[key];
 			});
 
-			rateLimiter.increment(match);
-			const rateLimitResult = rateLimiter.check(match);
+			await rateLimiter.increment(match);
+			const session = Meteor.server.sessions.get(match.connectionId);
+			const rateLimitResult = await rateLimiter.check(match, session);
 			if (rateLimitResult.allowed) {
 				return fn.apply(null, args);
 			}

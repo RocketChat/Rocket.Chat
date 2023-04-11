@@ -47,9 +47,9 @@ DDPRateLimiter._increment = function (input) {
 
 // Need to override the meteor's code duo to a problem with the callback reply
 // being shared among all matchs
-RateLimiter.prototype.check = async function (input) {
+RateLimiter.prototype.check = async function (input, sess) {
 	// ==== BEGIN OVERRIDE ====
-	const session = Meteor.server.sessions.get(input.connectionId);
+	const session = sess || Meteor.server.sessions.get(input.connectionId);
 	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
@@ -60,7 +60,7 @@ RateLimiter.prototype.check = async function (input) {
 		numInvocationsLeft: Infinity,
 	};
 
-	const matchedRules = self._findAllMatchingRules(input);
+	const matchedRules = await self._findAllMatchingRules(input);
 	for await (const rule of matchedRules) {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {
