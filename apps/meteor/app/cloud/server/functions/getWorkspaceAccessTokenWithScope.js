@@ -1,5 +1,3 @@
-import { URLSearchParams } from 'url';
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
