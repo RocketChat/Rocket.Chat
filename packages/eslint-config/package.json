@@ -13,7 +13,7 @@
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-jest": "^26.9.0",
 		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "2.7.1"
+		"prettier": "~2.8.7"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",
