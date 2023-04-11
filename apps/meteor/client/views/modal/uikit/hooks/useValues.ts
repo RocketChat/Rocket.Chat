@@ -10,7 +10,7 @@ const hasElementInBlock = (block: LayoutBlock): block is LayoutBlockWithElement 
 const hasElementsInBlock = (block: LayoutBlock): block is LayoutBlockWithElements => 'elements' in block;
 const hasInitialValueAndActionId = (
 	element: ElementFromLayoutBlock,
-): element is ElementFromLayoutBlock & { initialValue: unknown; actionId: string } =>
+): element is Extract<ElementFromLayoutBlock, { actionId: string }> & { initialValue: unknown } =>
 	'initialValue' in element && 'actionId' in element && typeof element.actionId === 'string' && !!element?.initialValue;
 
 const extractValue = (element: ElementFromLayoutBlock, obj: Record<string, { value: unknown; blockId?: string }>, blockId?: string) => {

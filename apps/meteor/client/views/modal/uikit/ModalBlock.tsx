@@ -45,6 +45,9 @@ type ModalBlockParams = {
 	onCancel: FormEventHandler<HTMLElement>;
 };
 
+const isFocusable = (element: Element | null): element is HTMLElement =>
+	element !== null && 'focus' in element && typeof element.focus === 'function';
+
 const KeyboardCode = new Map<string, number>([
 	['ENTER', 13],
 	['ESC', 27],
@@ -69,9 +72,16 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 		}
 	}, [errors]);
 
-	const previousFocus = useMemo<HTMLElement>(() => document.activeElement as HTMLElement, []);
+	const previousFocus = useMemo(() => document.activeElement, []);
 
-	useEffect(() => () => previousFocus?.focus(), [previousFocus]);
+	useEffect(
+		() => () => {
+			if (previousFocus && isFocusable(previousFocus)) {
+				return previousFocus.focus();
+			}
+		},
+		[previousFocus],
+	);
 
 	const handleKeyDown = useCallback(
 		(event) => {
