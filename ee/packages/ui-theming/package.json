@@ -18,7 +18,7 @@
 		"react": "~17.0.2",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.0.2"
+		"typescript": "~5.0.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

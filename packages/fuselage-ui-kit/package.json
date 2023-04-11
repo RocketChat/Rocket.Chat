@@ -81,12 +81,12 @@
     "react-docgen-typescript-plugin": "~1.0.5",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
-    "tslib": "^2.3.1",
-    "typescript": "~5.0.2"
+    "tslib": "^2.5.0",
+    "typescript": "~5.0.4"
   },
   "dependencies": {
     "@rocket.chat/ui-kit": "next",
-    "tslib": "^2.3.1"
+    "tslib": "^2.5.0"
   },
   "volta": {
     "extends": "../../package.json"

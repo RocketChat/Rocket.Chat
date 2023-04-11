@@ -22,7 +22,7 @@
 		"jest": "~29.5.0",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.0.2"
+		"typescript": "~5.0.4"
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "*",
