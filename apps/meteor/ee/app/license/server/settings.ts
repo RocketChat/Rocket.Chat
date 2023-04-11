@@ -5,7 +5,7 @@ import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { addLicense } from './license';
 
 Meteor.startup(function () {
-	settingsRegistry.addGroup('Enterprise', function () {
+	void settingsRegistry.addGroup('Enterprise', function () {
 		this.section('License', function () {
 			this.add('Enterprise_License', '', {
 				type: 'string',
@@ -20,7 +20,7 @@ Meteor.startup(function () {
 	});
 });
 
-settings.watch('Enterprise_License', (license) => {
+settings.watch<string>('Enterprise_License', async (license) => {
 	if (!license || String(license).trim() === '') {
 		return;
 	}
@@ -30,23 +30,23 @@ settings.watch('Enterprise_License', (license) => {
 	}
 
 	if (!addLicense(license)) {
-		Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 		return;
 	}
 
-	Settings.updateValueById('Enterprise_License_Status', 'Valid');
+	await Settings.updateValueById('Enterprise_License_Status', 'Valid');
 });
 
 if (process.env.ROCKETCHAT_LICENSE) {
 	addLicense(process.env.ROCKETCHAT_LICENSE);
 
-	Meteor.startup(() => {
+	Meteor.startup(async () => {
 		if (settings.get('Enterprise_License')) {
 			console.warn(
 				'Rocket.Chat Enterprise: The license from your environment variable was ignored, please use only the admin setting from now on.',
 			);
 			return;
 		}
-		Settings.updateValueById('Enterprise_License', process.env.ROCKETCHAT_LICENSE);
+		await Settings.updateValueById('Enterprise_License', process.env.ROCKETCHAT_LICENSE);
 	});
 }

@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -7,7 +5,7 @@ import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers'
 import { fetch } from '../../../server/lib/http/fetch';
 import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
-const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
 		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
@@ -62,6 +60,6 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 	} catch (err) {
 		Apps.debugLog(err);
 	}
-});
+};
 
 await defaultCronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());

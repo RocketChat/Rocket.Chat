@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
@@ -10,7 +9,7 @@ import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 import { fetch } from '../../../server/lib/http/fetch';
 import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
-const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
+const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -50,9 +49,9 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 	});
 
 	return apps;
-});
+};
 
-const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _notifyAdminsAboutRenewedApps(apps?: ProxiedApp[]) {
+const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -70,9 +69,9 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _noti
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, { lng: adminUser.language || 'en' })}` }),
 	});
-});
+};
 
-const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpdateMarketplaceInfo() {
+const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
@@ -100,6 +99,6 @@ const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpd
 	}
 
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
-});
+};
 
 await defaultCronJobs.add('Apps-Engine:check', '0 4 * * *', async () => appsUpdateMarketplaceInfo());

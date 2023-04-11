@@ -1,8 +1,8 @@
 import { callbacks } from '../../../lib/callbacks';
 import { triggerHandler } from './lib/triggerHandler';
 
-const callbackHandler = function _callbackHandler(eventType) {
-	return function _wrapperFunction(...args) {
+const callbackHandler = function _callbackHandler(eventType: string) {
+	return function _wrapperFunction(...args: any[]) {
 		return triggerHandler.executeTriggers(eventType, ...args);
 	};
 };
