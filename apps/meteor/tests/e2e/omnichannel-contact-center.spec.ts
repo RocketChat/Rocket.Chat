@@ -10,7 +10,7 @@ const createContact = (generateToken = false) => ({
 	id: null,
 	name: `${faker.name.firstName()} ${faker.name.lastName()}`,
 	email: faker.internet.email().toLowerCase(),
-	phone: faker.phone.phoneNumber('+############'),
+	phone: faker.phone.number('+############'),
 	token: generateToken ? createToken() : null,
 	customFields: {},
 });
