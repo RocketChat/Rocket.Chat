@@ -4,7 +4,7 @@ import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
-export const sendEmail = (userData: Pick<IUser, 'name' | 'emails'>, subject: string, body: string): void => {
+export const sendEmail = async (userData: Pick<IUser, 'name' | 'emails'>, subject: string, body: string): Promise<void> => {
 	const emailAddress = getUserEmailAddress(userData);
 
 	if (!emailAddress) {
@@ -18,7 +18,7 @@ export const sendEmail = (userData: Pick<IUser, 'name' | 'emails'>, subject: str
 		return;
 	}
 
-	Mailer.send({
+	await Mailer.send({
 		to,
 		from,
 		subject,

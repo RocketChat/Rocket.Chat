@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
@@ -139,7 +139,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const validateMessage = (message, room, user) => {
+export const validateMessage = async (message, room, user) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -159,7 +159,7 @@ export const validateMessage = (message, room, user) => {
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
 
-		if (!isLiveChatGuest && !Promise.await(hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
+		if (!isLiveChatGuest && !(await hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
 		}
 	}
@@ -208,7 +208,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		return false;
 	}
 
-	validateMessage(message, room, user);
+	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
 
 	if (settings.get('Message_Read_Receipt_Enabled')) {
@@ -230,7 +230,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message, room, user);
+			await validateMessage(message, room, user);
 		}
 	}
 
@@ -246,20 +246,22 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		} else if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
-			Messages.upsert(
+			await Messages.updateOne(
 				{
 					_id,
 					'u._id': message.u._id,
 				},
-				message,
+				{ $set: message },
+				{ upsert: true },
 			);
 			message._id = _id;
 		} else {
-			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
 			if (messageAlreadyExists) {
 				return;
 			}
-			message._id = Messages.insert(message);
+			const result = await Messages.insertOne(message);
+			message._id = result.insertedId;
 		}
 
 		if (Apps && Apps.isLoaded()) {

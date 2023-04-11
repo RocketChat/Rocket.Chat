@@ -8,7 +8,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage, msgStream } from '../../lib/server';
+import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
@@ -46,6 +46,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			rid: room._id,
 		});
 	}
+
+	// if (!('reactions' in message)) {
+	// 	return;
+	// }
 
 	const userAlreadyReacted =
 		message.reactions &&
@@ -102,12 +106,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	}
 
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
-
-	msgStream.emit(message.rid, message);
 }
 
 export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
-	const user = Meteor.user() as IUser | null;
+	const user = (await Meteor.userAsync()) as IUser | null;
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });

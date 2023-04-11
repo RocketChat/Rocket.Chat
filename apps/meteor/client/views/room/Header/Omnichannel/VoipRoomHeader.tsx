@@ -12,7 +12,7 @@ import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 
-export type VoipRoomHeaderProps = {
+type VoipRoomHeaderProps = {
 	room: IVoipRoom;
 } & Omit<RoomHeaderProps, 'room'>;
 

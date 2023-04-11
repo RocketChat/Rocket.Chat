@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Invites, Subscriptions } from '@rocket.chat/models';
+import { Invites, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -31,8 +30,8 @@ export const useInviteToken = async (userId, token) => {
 		});
 	}
 
-	const user = Users.findOneById(userId);
-	Users.updateInviteToken(user._id, token);
+	const user = await Users.findOneById(userId);
+	await Users.updateInviteToken(user._id, token);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1 },

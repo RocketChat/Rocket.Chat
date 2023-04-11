@@ -21,7 +21,7 @@ type EmojiParserResult = {
 	'image'?: string;
 };
 
-export const createGetEmojiClassNameAndDataTitle =
+const createGetEmojiClassNameAndDataTitle =
 	(parser: (emojiName: string) => string | undefined) =>
 	(emojiName: string): EmojiParserResult => {
 		const html = parser(emojiName);

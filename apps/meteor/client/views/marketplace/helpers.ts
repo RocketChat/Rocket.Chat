@@ -380,9 +380,9 @@ export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context
 	return statuses;
 };
 
-export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
+const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
+const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [

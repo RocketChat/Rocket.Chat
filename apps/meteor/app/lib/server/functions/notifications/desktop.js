@@ -14,8 +14,8 @@ import { settings } from '../../../../settings/server';
  * @param {number} duration Duration of notification
  * @param {string} notificationMessage The message text to send on notification body
  */
-export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
-	const { title, text } = roomCoordinator.getRoomDirectives(room.t).getNotificationDetails(room, user, notificationMessage, userId);
+export async function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
+	const { title, text } = await roomCoordinator.getRoomDirectives(room.t).getNotificationDetails(room, user, notificationMessage, userId);
 
 	const payload = {
 		title,

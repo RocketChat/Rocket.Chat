@@ -3,7 +3,7 @@ import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { loadMessageHistory } from '../../../lib/server';
+import { loadMessageHistory } from '../../../lib/server/functions/loadMessageHistory';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
