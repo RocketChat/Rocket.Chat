@@ -498,7 +498,7 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
+const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
 	if (!req.url) {
 		return;
 	}
@@ -555,6 +555,6 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	if (file.size) res.setHeader('Content-Length', file.size);
 	res.writeHead(200);
 	res.end(file.content);
-});
+};
 
 WebApp.connectHandlers.use('/assets/', listener);
