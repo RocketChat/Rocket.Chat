@@ -61,7 +61,7 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 		}
 
 		if (errors && Object.keys(errors).length) {
-			const element = ref.current.querySelector(focusableElementsStringInvalid) as HTMLElement;
+			const element = ref.current.querySelector<HTMLElement>(focusableElementsStringInvalid);
 			element?.focus();
 		} else {
 			const element = ref.current.querySelector(focusableElementsString) as HTMLElement;
