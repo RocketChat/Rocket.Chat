@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms } from '@rocket.chat/models';

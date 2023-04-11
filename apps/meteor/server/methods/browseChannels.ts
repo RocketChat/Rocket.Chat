@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';

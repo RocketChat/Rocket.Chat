@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Mailer } from '../lib/Mailer';

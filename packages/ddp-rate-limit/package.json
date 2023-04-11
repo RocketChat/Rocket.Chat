@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/rate-limit",
+	"name": "@rocket.chat/ddp-rate-limit",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
@@ -23,5 +23,8 @@
 	],
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"dependencies": {
+		"@rocket.chat/rate-limit": "workspace:^"
 	}
 }

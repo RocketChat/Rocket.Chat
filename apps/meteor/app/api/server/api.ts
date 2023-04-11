@@ -314,14 +314,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	protected async enforceRateLimit(objectForRateLimitMatch: CheckInput, _: any, response: Response, userId: string): Promise<void> {
-		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
+		const route = objectForRateLimitMatch.route as string;
+		if (!(await this.shouldVerifyRateLimit(route, userId))) {
 			return;
 		}
 
-		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		rateLimiterDictionary[route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = await rateLimiterDictionary[route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 

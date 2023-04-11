@@ -37,8 +37,13 @@ type CheckReply = {
 };
 
 type CheckInput = {
-	IPAddr: string;
-	route: string;
+	IPAddr?: string;
+	route?: string;
+	userId?: string;
+	clientAddress?: string;
+	type?: string;
+	name?: string;
+	connectionId?: string;
 };
 
 class Rule {

@@ -220,6 +220,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
+		"@rocket.chat/ddp-rate-limit": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.1",

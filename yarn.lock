@@ -6621,6 +6621,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/ddp-rate-limit@workspace:^, @rocket.chat/ddp-rate-limit@workspace:packages/ddp-rate-limit":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ddp-rate-limit@workspace:packages/ddp-rate-limit"
+  dependencies:
+    "@rocket.chat/rate-limit": "workspace:^"
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ~29.5.0
+    ts-jest: ~29.0.5
+    typescript: ~5.0.2
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
@@ -7146,6 +7159,7 @@ __metadata:
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": next
+    "@rocket.chat/ddp-rate-limit": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"

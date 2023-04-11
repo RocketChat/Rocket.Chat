@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import { RateLimiter } from '@rocket.chat/rate-limit';
 
 import { settings } from '../../../settings/server';

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import { RateLimiter } from '@rocket.chat/rate-limit';
 
 export const RateLimiterClass = new (class {
@@ -43,9 +43,7 @@ export const RateLimiterClass = new (class {
 			type: 'method',
 			name: methodName,
 		};
-		Object.entries(matchers).forEach(function ([key, matcher]) {
-			match[key] = (...args) => Promise.await(matcher(...args));
-		});
-		return DDPRateLimiter.addRule(match, numRequests, timeInterval);
+
+		return DDPRateLimiter.addRule(match, numRequests, timeInterval, matchers);
 	}
 })();
