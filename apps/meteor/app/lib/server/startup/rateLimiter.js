@@ -30,12 +30,12 @@ const names = new Set(
 
 // Override the addRule to save new names added after this point
 const { addRule } = DDPRateLimiter;
-DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
+DDPRateLimiter.addRule = Meteor.bindEnvironment((matcher, calls, time, callback) => {
 	if (matcher && typeof matcher.name === 'string') {
 		names.add(matcher.name);
 	}
 	return addRule.call(DDPRateLimiter, matcher, calls, time, callback);
-};
+});
 
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function (input) {
