@@ -103,7 +103,7 @@ API.v1.addRoute(
 			}
 
 			if (message.file) {
-				message = await normalizeMessageFileUpload(message);
+				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
 			if (!message) {
@@ -146,7 +146,7 @@ API.v1.addRoute(
 			}
 
 			if (message?.file) {
-				message = await normalizeMessageFileUpload(message);
+				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
 			if (!message) {

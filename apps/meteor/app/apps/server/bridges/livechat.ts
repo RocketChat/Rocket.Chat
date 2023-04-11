@@ -25,6 +25,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
+		// Depends on apps engine separation to microservices
 		return Promise.await(Livechat.online(departmentId));
 	}
 

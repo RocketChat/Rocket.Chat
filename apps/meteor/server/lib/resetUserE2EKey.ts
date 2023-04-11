@@ -32,27 +32,25 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	const from = settings.get('From_Email');
 	const subject = t('E2E_key_reset_email');
 
-	for (const address of addresses) {
-		Meteor.defer(() => {
-			try {
-				Mailer.send({
-					to: address,
-					from,
-					subject,
-					text,
-					html,
-				} as any);
-			} catch (error) {
-				throw new Meteor.Error(
-					'error-email-send-failed',
-					`Error trying to send email: ${error instanceof Error ? error.message : String(error)}`,
-					{
-						function: 'resetUserE2EEncriptionKey',
-						message: error instanceof Error ? error.message : String(error),
-					},
-				);
-			}
-		});
+	for await (const address of addresses) {
+		try {
+			await Mailer.send({
+				to: address,
+				from,
+				subject,
+				text,
+				html,
+			} as any);
+		} catch (error) {
+			throw new Meteor.Error(
+				'error-email-send-failed',
+				`Error trying to send email: ${error instanceof Error ? error.message : String(error)}`,
+				{
+					function: 'resetUserE2EEncriptionKey',
+					message: error instanceof Error ? error.message : String(error),
+				},
+			);
+		}
 	}
 };
 
