@@ -3,7 +3,6 @@ import { Avatar } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { ComponentMeta } from '@storybook/react';
-import React from 'react';
 
 import Header from '.';
 
@@ -35,6 +34,7 @@ export default {
 							_id,
 							type: 'action',
 							value: '',
+							actionText: '',
 							public: true,
 							blocked: false,
 							createdAt: new Date(),
@@ -43,6 +43,7 @@ export default {
 							packageValue: false,
 							sorter: 1,
 							ts: new Date(),
+							_updatedAt: new Date(),
 						}),
 					],
 					querySettings: () => [() => () => undefined, () => []],
@@ -73,87 +74,81 @@ const room: IRoom = {
 } as const;
 
 const avatar = <Avatar size='x40' url={avatarUrl} />;
-const icon = { name: 'hash' };
+const icon = { name: 'hash' } as const;
 
-export const Default = () => {
-	return (
-		<Header>
-			<Header.Avatar>{avatar}</Header.Avatar>
-			<Header.Content>
-				<Header.Content.Row>
-					{icon && <Header.Icon icon={icon} />}
-					<Header.Title>{room.name}</Header.Title>
-					<Header.State onClick={action('onClick')} icon='star' />
-					<Header.State icon='key' />
-					<Header.State icon='language' />
-				</Header.Content.Row>
-				<Header.Content.Row>
-					<Header.Subtitle>{room.name}</Header.Subtitle>
-				</Header.Content.Row>
-			</Header.Content>
-			<Header.ToolBox>
-				<Header.ToolBox.Action icon='magnifier' />
-				<Header.ToolBox.Action icon='key' />
-				<Header.ToolBox.Action icon='kebab' />
-			</Header.ToolBox>
-		</Header>
-	);
-};
+export const Default = () => (
+	<Header>
+		<Header.Avatar>{avatar}</Header.Avatar>
+		<Header.Content>
+			<Header.Content.Row>
+				{icon && <Header.Icon icon={icon} />}
+				<Header.Title>{room.name}</Header.Title>
+				<Header.State onClick={action('onClick')} icon='star' />
+				<Header.State icon='key' />
+				<Header.State icon='language' />
+			</Header.Content.Row>
+			<Header.Content.Row>
+				<Header.Subtitle>{room.name}</Header.Subtitle>
+			</Header.Content.Row>
+		</Header.Content>
+		<Header.ToolBox>
+			<Header.ToolBox.Action icon='magnifier' />
+			<Header.ToolBox.Action icon='key' />
+			<Header.ToolBox.Action icon='kebab' />
+		</Header.ToolBox>
+	</Header>
+);
 
-export const WithBurger = () => {
-	return (
-		<Header>
-			<Header.ToolBox>
-				<Header.ToolBox.Action icon='burger' />
-			</Header.ToolBox>
-			<Header.Avatar>{avatar}</Header.Avatar>
-			<Header.Content>
-				<Header.Content.Row>
-					{icon && <Header.Icon icon={icon} />}
-					<Header.Title>{room.name}</Header.Title>
-					<Header.State onClick={action('onClick')} icon='star' />
-					<Header.State icon='key' />
-					<Header.State icon='language' />
-				</Header.Content.Row>
-				<Header.Content.Row>
-					<Header.Subtitle>{room.name}</Header.Subtitle>
-				</Header.Content.Row>
-			</Header.Content>
-			<Header.ToolBox>
-				<Header.ToolBox.Action icon='magnifier' />
-				<Header.ToolBox.Action icon='key' />
-				<Header.ToolBox.Action icon='kebab' />
-			</Header.ToolBox>
-		</Header>
-	);
-};
+export const WithBurger = () => (
+	<Header>
+		<Header.ToolBox>
+			<Header.ToolBox.Action icon='burger' />
+		</Header.ToolBox>
+		<Header.Avatar>{avatar}</Header.Avatar>
+		<Header.Content>
+			<Header.Content.Row>
+				{icon && <Header.Icon icon={icon} />}
+				<Header.Title>{room.name}</Header.Title>
+				<Header.State onClick={action('onClick')} icon='star' />
+				<Header.State icon='key' />
+				<Header.State icon='language' />
+			</Header.Content.Row>
+			<Header.Content.Row>
+				<Header.Subtitle>{room.name}</Header.Subtitle>
+			</Header.Content.Row>
+		</Header.Content>
+		<Header.ToolBox>
+			<Header.ToolBox.Action icon='magnifier' />
+			<Header.ToolBox.Action icon='key' />
+			<Header.ToolBox.Action icon='kebab' />
+		</Header.ToolBox>
+	</Header>
+);
 
-export const WithActionBadge = () => {
-	return (
-		<Header>
-			<Header.Avatar>{avatar}</Header.Avatar>
-			<Header.Content>
-				<Header.Content.Row>
-					{icon && <Header.Icon icon={icon} />}
-					<Header.Title>{room.name}</Header.Title>
-					<Header.State onClick={action('onClick')} icon='star' />
-				</Header.Content.Row>
-				<Header.Content.Row>
-					<Header.Subtitle>{room.name}</Header.Subtitle>
-				</Header.Content.Row>
-			</Header.Content>
-			<Header.ToolBox>
-				<Header.ToolBox.Action icon='phone'>
-					<Header.ToolBox.ActionBadge variant='primary'>1</Header.ToolBox.ActionBadge>
-				</Header.ToolBox.Action>
-				<Header.ToolBox.Action icon='phone'>
-					<Header.ToolBox.ActionBadge variant='danger'>2</Header.ToolBox.ActionBadge>
-				</Header.ToolBox.Action>
-				<Header.ToolBox.Action icon='phone'>
-					<Header.ToolBox.ActionBadge variant='warning'>99</Header.ToolBox.ActionBadge>
-				</Header.ToolBox.Action>
-				<Header.ToolBox.Action icon='kebab' />
-			</Header.ToolBox>
-		</Header>
-	);
-};
+export const WithActionBadge = () => (
+	<Header>
+		<Header.Avatar>{avatar}</Header.Avatar>
+		<Header.Content>
+			<Header.Content.Row>
+				{icon && <Header.Icon icon={icon} />}
+				<Header.Title>{room.name}</Header.Title>
+				<Header.State onClick={action('onClick')} icon='star' />
+			</Header.Content.Row>
+			<Header.Content.Row>
+				<Header.Subtitle>{room.name}</Header.Subtitle>
+			</Header.Content.Row>
+		</Header.Content>
+		<Header.ToolBox>
+			<Header.ToolBox.Action icon='phone'>
+				<Header.ToolBox.ActionBadge variant='primary'>1</Header.ToolBox.ActionBadge>
+			</Header.ToolBox.Action>
+			<Header.ToolBox.Action icon='phone'>
+				<Header.ToolBox.ActionBadge variant='danger'>2</Header.ToolBox.ActionBadge>
+			</Header.ToolBox.Action>
+			<Header.ToolBox.Action icon='phone'>
+				<Header.ToolBox.ActionBadge variant='warning'>99</Header.ToolBox.ActionBadge>
+			</Header.ToolBox.Action>
+			<Header.ToolBox.Action icon='kebab' />
+		</Header.ToolBox>
+	</Header>
+);

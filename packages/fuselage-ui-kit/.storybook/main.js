@@ -4,4 +4,7 @@ module.exports = {
   features: {
     postcss: false,
   },
+  typescript: {
+    reactDocgen: 'react-docgen-typescript-plugin',
+  },
 };
