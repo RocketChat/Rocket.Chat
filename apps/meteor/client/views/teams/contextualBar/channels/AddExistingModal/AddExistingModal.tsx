@@ -26,21 +26,25 @@ const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) =>
 	const { rooms } = values as { rooms: string[] };
 	const { handleRooms } = handlers;
 
-	const handleAddChannels = useCallback(async () => {
-		try {
-			await addRoomEndpoint({
-				rooms,
-				teamId,
-			});
+	const handleAddChannels = useCallback(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await addRoomEndpoint({
+					rooms,
+					teamId,
+				});
 
-			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
-			reload();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
-		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
+				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
+				reload();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				onClose();
+			}
+		},
+		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload],
+	);
 
 	return (
 		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleAddChannels} {...props} />}>

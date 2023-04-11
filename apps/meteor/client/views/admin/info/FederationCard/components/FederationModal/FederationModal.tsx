@@ -63,19 +63,23 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 	});
 
 	// Wizard
-	const nextStep = useCallback(() => {
-		if (currentStep === 1 && hasUnsavedChanges) {
-			setFederationDomain(domain);
-			setFederationDiscoveryMethod(discoveryMethod);
-			commit();
-		}
+	const nextStep = useCallback(
+		(e) => {
+			e.preventDefault();
+			if (currentStep === 1 && hasUnsavedChanges) {
+				setFederationDomain(domain);
+				setFederationDiscoveryMethod(discoveryMethod);
+				commit();
+			}
 
-		if (currentStep === 3) {
-			onClose();
-		} else {
-			setCurrentStep(currentStep + 1);
-		}
-	}, [currentStep, hasUnsavedChanges, domain, discoveryMethod, commit, onClose, setFederationDomain, setFederationDiscoveryMethod]);
+			if (currentStep === 3) {
+				onClose();
+			} else {
+				setCurrentStep(currentStep + 1);
+			}
+		},
+		[currentStep, hasUnsavedChanges, domain, discoveryMethod, commit, onClose, setFederationDomain, setFederationDiscoveryMethod],
+	);
 
 	const previousStep = useCallback(() => {
 		if (currentStep === 1) {
