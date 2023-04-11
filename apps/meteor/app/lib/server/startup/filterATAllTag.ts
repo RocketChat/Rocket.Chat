@@ -4,6 +4,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
@@ -13,20 +14,20 @@ callbacks.add(
 	async function (message) {
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
-		if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
+		if (isEditedMessage(message) || (message.ts && Math.abs(moment(message.ts).diff(moment())) > 60000)) {
 			return message;
 		}
 
-		// Test if the message mentions include @here.
-		if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'here')) {
-			// Check if the user has permissions to use @here in both global and room scopes.
+		// Test if the message mentions include @all.
+		if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'all')) {
+			// Check if the user has permissions to use @all in both global and room scopes.
 			if (
-				!(await hasPermissionAsync(message.u._id, 'mention-here')) &&
-				!(await hasPermissionAsync(message.u._id, 'mention-here', message.rid))
+				!(await hasPermissionAsync(message.u._id, 'mention-all')) &&
+				!(await hasPermissionAsync(message.u._id, 'mention-all', message.rid))
 			) {
 				// Get the language of the user for the error notification.
 				const { language } = (await Users.findOneById(message.u._id)) || {};
-				const action = TAPi18n.__('Notify_active_in_this_room', {}, language);
+				const action = TAPi18n.__('Notify_all_in_this_room', {}, language);
 
 				// Add a notification to the chat, informing the user that this
 				// action is not allowed.
@@ -35,15 +36,15 @@ callbacks.add(
 				});
 
 				// Also throw to stop propagation of 'sendMessage'.
-				throw new Meteor.Error('error-action-not-allowed', 'Notify here in this room not allowed', {
-					method: 'filterATHereTag',
-					action: 'Notify_active_in_this_room',
+				throw new Meteor.Error('error-action-not-allowed', 'Notify all in this room not allowed', {
+					method: 'filterATAllTag',
+					action: 'Notify_all_in_this_room',
 				});
 			}
 		}
 
 		return message;
 	},
-	1,
-	'filterATHereTag',
+	callbacks.priority.HIGH,
+	'filterATAllTag',
 );
