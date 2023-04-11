@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 

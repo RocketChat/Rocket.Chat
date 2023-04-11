@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { ChannelsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';

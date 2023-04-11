@@ -1,5 +1,5 @@
 /* eslint no-await-in-loop: 0 */
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import * as constants from '../../config/constants';

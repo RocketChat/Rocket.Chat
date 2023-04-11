@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatPriority } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {

@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { createToken } from '../../client/lib/utils/createToken';
 import { Users } from './fixtures/userStates';

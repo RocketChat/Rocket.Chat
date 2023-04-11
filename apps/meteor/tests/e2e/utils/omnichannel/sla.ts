@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { type IOmnichannelServiceLevelAgreements, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from '../test';

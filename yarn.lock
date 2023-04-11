@@ -3220,7 +3220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bugsnag/js@npm:^7.20.0":
+"@bugsnag/js@npm:~7.20.0":
   version: 7.20.0
   resolution: "@bugsnag/js@npm:7.20.0"
   dependencies:
@@ -3244,7 +3244,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bugsnag/plugin-react@npm:^7.19.0":
+"@bugsnag/plugin-react@npm:~7.19.0":
   version: 7.19.0
   resolution: "@bugsnag/plugin-react@npm:7.19.0"
   peerDependencies:
@@ -3544,10 +3544,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@faker-js/faker@npm:^6.3.1":
-  version: 6.3.1
-  resolution: "@faker-js/faker@npm:6.3.1"
-  checksum: 05071e952248f4565218a95b089ef8f616130c6ff914bb416ba7c891f81d123b637c2abe8aa2eb7b207b5d4b8bd9c75c8c2133019d2d11db4176948737a95813
+"@faker-js/faker@npm:~7.6.0":
+  version: 7.6.0
+  resolution: "@faker-js/faker@npm:7.6.0"
+  checksum: 942af6221774e8c98a0eb6bc75265e05fb81a941170377666c3439aab9495dd321d6beedc5406f07e6ad44262b3e43c20961f666d116ad150b78e7437dd1bb2b
   languageName: node
   linkType: hard
 
@@ -7723,9 +7723,9 @@ __metadata:
     "@babel/preset-react": ~7.18.6
     "@babel/register": ~7.21.0
     "@babel/runtime": ~7.21.0
-    "@bugsnag/js": ^7.20.0
-    "@bugsnag/plugin-react": ^7.19.0
-    "@faker-js/faker": ^6.3.1
+    "@bugsnag/js": ~7.20.0
+    "@bugsnag/plugin-react": ~7.19.0
+    "@faker-js/faker": ~7.6.0
     "@google-cloud/storage": ^5.20.5
     "@nivo/bar": 0.79.1
     "@nivo/core": 0.79.0

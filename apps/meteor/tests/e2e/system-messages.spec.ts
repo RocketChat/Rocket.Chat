@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 

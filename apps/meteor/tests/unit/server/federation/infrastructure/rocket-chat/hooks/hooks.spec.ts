@@ -2,7 +2,7 @@
 import proxyquire from 'proxyquire';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 const remove = sinon.stub();
 const get = sinon.stub();

@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';

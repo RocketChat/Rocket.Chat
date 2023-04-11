@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import type { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
 import { methodCall, credentials, request } from "../api-data";
 import type { DummyResponse } from "./utils";

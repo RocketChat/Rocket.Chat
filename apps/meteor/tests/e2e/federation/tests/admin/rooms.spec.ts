@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationAdmin } from '../../page-objects/admin';

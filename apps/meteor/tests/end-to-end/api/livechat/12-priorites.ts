@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';

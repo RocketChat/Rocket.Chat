@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
 import type { DummyResponse } from './utils';

@@ -3,7 +3,7 @@ import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import type * as RoomServiceSenderModule from '../../../../../../../server/services/federation/application/room/sender/RoomServiceSender';
 import type * as FederatedUserModule from '../../../../../../../server/services/federation/domain/FederatedUser';

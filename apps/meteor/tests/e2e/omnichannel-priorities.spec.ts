@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
