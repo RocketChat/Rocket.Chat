@@ -30,7 +30,7 @@ void (async () => {
 	}
 })();
 
-onLicense('federation', async () => {
+await onLicense('federation', async () => {
 	const federationServiceEE = new FederationServiceEE();
 	if (federationService) {
 		api.destroyService(federationService);

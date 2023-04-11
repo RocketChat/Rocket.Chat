@@ -124,22 +124,20 @@ Meteor.startup(() => {
 	injectIntoHead('css-theme', '');
 });
 
-const renderDynamicCssList = withDebouncing({ wait: 500 })(
-	Meteor.bindEnvironment(async () => {
-		// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-		const colors = await Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray();
-		const css = colors
-			.filter((color) => color && color.value)
-			.map(({ _id, value, editor }) => {
-				if (editor === 'expression') {
-					return `--${_id.replace('theme-color-', '')}: var(--${value});`;
-				}
-				return `--${_id.replace('theme-color-', '')}: ${value};`;
-			})
-			.join('\n');
-		injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
-	}),
-);
+const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
+	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+	const colors = await Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray();
+	const css = colors
+		.filter((color) => color && color.value)
+		.map(({ _id, value, editor }) => {
+			if (editor === 'expression') {
+				return `--${_id.replace('theme-color-', '')}: var(--${value});`;
+			}
+			return `--${_id.replace('theme-color-', '')}: ${value};`;
+		})
+		.join('\n');
+	injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
+});
 
 renderDynamicCssList();
 

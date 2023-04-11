@@ -1110,6 +1110,7 @@ void settingsRegistry.addGroup('General', function () {
 	this.section('Translations', function () {
 		return this.add('Custom_Translations', '', {
 			type: 'code',
+			code: 'application/json',
 			public: true,
 		});
 	});
