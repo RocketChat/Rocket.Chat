@@ -34,6 +34,7 @@ type CheckReply = {
 	allowed: boolean;
 	timeToReset: number;
 	numInvocationsLeft: number;
+	numInvocationsExceeded?: number;
 };
 
 type CheckInput = {
@@ -180,6 +181,11 @@ class RateLimiter {
 
 		const matchedRules = this._findAllMatchingRules(input);
 		for await (const rule of matchedRules) {
+			const callbackReply: CheckReply = {
+				allowed: true,
+				timeToReset: 0,
+				numInvocationsLeft: Infinity,
+			};
 			const ruleResult = rule.apply(input);
 			let numInvocations = rule.counters[ruleResult.key];
 
@@ -201,7 +207,12 @@ class RateLimiter {
 				}
 				reply.allowed = false;
 				reply.numInvocationsLeft = 0;
-				await rule._executeCallback(reply, input);
+
+				callbackReply.timeToReset = ruleResult.timeToNextReset;
+				callbackReply.allowed = false;
+				callbackReply.numInvocationsLeft = 0;
+				callbackReply.numInvocationsExceeded = numInvocations - rule.options.numRequestsAllowed;
+				await rule._executeCallback(callbackReply, input);
 			} else {
 				// If this is an allowed attempt and we haven't failed on any of the
 				// other rules that match, update the reply field.
@@ -209,7 +220,9 @@ class RateLimiter {
 					reply.timeToReset = ruleResult.timeToNextReset;
 					reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
 				}
-				await rule._executeCallback(reply, input);
+				callbackReply.timeToReset = ruleResult.timeToNextReset;
+				callbackReply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
+				await rule._executeCallback(callbackReply, input);
 			}
 		}
 		return reply;

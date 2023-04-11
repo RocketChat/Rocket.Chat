@@ -119,7 +119,7 @@ describe('LIVECHAT - Integrations', function () {
 		});
 	});
 
-	describe.only('Livechat - Webhooks', () => {
+	describe('Livechat - Webhooks', () => {
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);
