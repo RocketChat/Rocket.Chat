@@ -59,6 +59,7 @@ API.v1.addRoute(
 				headers: {
 					'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
 					'Content-Type': 'application/json',
+					'Accept': 'application/json',
 				},
 				body: JSON.stringify(sampleData),
 			};
@@ -72,7 +73,7 @@ API.v1.addRoute(
 			try {
 				Livechat.logger.debug(`Testing webhook ${webhookUrl}`);
 				const request = await fetch(webhookUrl, options);
-				const response = await request.json();
+				const response = await request.text();
 
 				Livechat.logger.debug({ response });
 				if (request.status === 200) {

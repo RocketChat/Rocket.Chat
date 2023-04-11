@@ -84,7 +84,7 @@ Meteor.methods<ServerMethods>({
 
 		const response = await postCatchError(settings.get('Livechat_webhookUrl'), options);
 
-		SystemLogger.debug({ response });
+		SystemLogger.debug({ response: await response?.text() });
 
 		if (response?.ok) {
 			return true;
