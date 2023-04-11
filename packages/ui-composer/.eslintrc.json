@@ -71,11 +71,11 @@
 				"@typescript-eslint/prefer-optional-chain": "warn"
 			}
 		},
-    {
-      "files": ["*.stories.tsx"],
-      "rules": {
+		{
+			"files": ["*.stories.tsx"],
+			"rules": {
 				"react/no-multi-comp": "off"
-      }
-    }
-  ]
+			}
+		}
+	]
 }

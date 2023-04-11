@@ -1,11 +1,11 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import '@rocket.chat/icons/dist/rocketchat.css';
 import { MessageFooterCallout, MessageFooterCalloutAction } from '.';
 import MessageComposer from '../MessageComposer/MessageComposer';
 import MessageComposerIcon from '../MessageComposer/MessageComposerIcon';
 import MessageFooterCalloutContent from './MessageFooterCalloutContent';
 import MessageFooterCalloutDivider from './MessageFooterCalloutDivider';
+import '@rocket.chat/icons/dist/rocketchat.css';
 
 export default {
 	title: 'Components/MessageComposer/Locked',
