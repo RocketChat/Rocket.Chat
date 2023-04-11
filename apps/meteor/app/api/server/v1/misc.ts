@@ -635,8 +635,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const isSMTPConfigured = Boolean(settings.get('SMTP_Host') || process.env.MAIL_URL);
-
+			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
+			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
 			return API.v1.success({ isSMTPConfigured });
 		},
 	},
