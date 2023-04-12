@@ -629,3 +629,15 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'smtp.check',
+	{ authRequired: true },
+	{
+		async get() {
+			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
+			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
+			return API.v1.success({ isSMTPConfigured });
+		},
+	},
+);
