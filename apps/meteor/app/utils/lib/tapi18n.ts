@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { isObject } from '../../../lib/utils/isObject';
 
-export const t = function (key, ...replaces) {
+export const t = function (key: string, ...replaces: any): string {
 	if (isObject(replaces[0])) {
 		return TAPi18n.__(key, ...replaces);
 	}
