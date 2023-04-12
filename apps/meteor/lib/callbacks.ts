@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,

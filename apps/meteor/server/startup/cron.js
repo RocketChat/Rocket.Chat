@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Logger } from '../../app/logger/server';

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
