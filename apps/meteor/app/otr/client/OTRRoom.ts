@@ -250,7 +250,7 @@ export class OTRRoom implements IOTRRoom {
 
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					try {
 						if (!data.publicKey) throw new Error('Public key is not generated');
 						await this.generateKeyPair();
@@ -274,7 +274,7 @@ export class OTRRoom implements IOTRRoom {
 				};
 
 				const closeOrCancelModal = (): void => {
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					this.deny();
 					imperativeModal.close();
 				};
@@ -310,7 +310,7 @@ export class OTRRoom implements IOTRRoom {
 								},
 							},
 						});
-						timeout = Meteor.setTimeout(() => {
+						timeout = setTimeout(() => {
 							this.setState(OtrRoomState.TIMEOUT);
 							imperativeModal.close();
 						}, 10000);

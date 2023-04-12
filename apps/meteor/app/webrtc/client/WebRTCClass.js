@@ -282,8 +282,8 @@ class WebRTCClass {
 	onRemoteStatus(data) {
 		// this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
-		Meteor.clearTimeout(this.callInProgressTimeout);
-		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress, 2000);
+		clearTimeout(this.callInProgressTimeout);
+		this.callInProgressTimeout = setTimeout(this.resetCallInProgress, 2000);
 		if (this.active !== true) {
 			return;
 		}
@@ -364,7 +364,7 @@ class WebRTCClass {
 				peerConnection === this.peerConnections[id]
 			) {
 				this.stopPeerConnection(id);
-				Meteor.setTimeout(() => {
+				setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
 						this.stop();
 					}

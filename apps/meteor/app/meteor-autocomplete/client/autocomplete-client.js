@@ -267,7 +267,7 @@ export default class AutoComplete {
 	onBlur() {
 		// We need to delay this so click events work
 		// TODO this is a bit of a hack, see if we can't be smarter
-		Meteor.setTimeout(() => {
+		setTimeout(() => {
 			this.hideList();
 		}, 500);
 	}

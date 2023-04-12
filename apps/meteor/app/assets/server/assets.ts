@@ -235,7 +235,7 @@ class RocketChatAssetsClass {
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
 		ws.on('end', function () {
-			return Meteor.setTimeout(async function () {
+			return setTimeout(async function () {
 				const key = `Assets_${asset}`;
 				const value = {
 					url: `assets/${asset}.${extension}`,
@@ -374,7 +374,7 @@ void (async () => {
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
 Meteor.startup(() => {
-	Meteor.setTimeout(() => {
+	setTimeout(() => {
 		process.emit('message', {
 			refresh: 'client',
 		});
