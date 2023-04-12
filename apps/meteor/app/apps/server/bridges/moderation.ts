@@ -21,7 +21,5 @@ export class AppModerationBridge extends ModerationBridge {
 		}
 
 		await reportMessage(messageId, description, userId || 'rocket.cat');
-
-		// Meteor.call('reportMessage', { messageId, description });
 	}
 }
