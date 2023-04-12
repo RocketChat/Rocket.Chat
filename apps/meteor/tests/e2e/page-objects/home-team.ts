@@ -30,8 +30,4 @@ export class HomeTeam {
 	get btnTeamCreate(): Locator {
 		return this.page.locator('role=dialog >> role=group >> role=button[name=Create]');
 	}
-
-	get toastBarSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
 }

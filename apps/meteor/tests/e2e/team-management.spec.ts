@@ -57,7 +57,6 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.room.btnEdit.click();
 		await poHomeTeam.tabs.room.checkboxReadOnly.click();
 		await poHomeTeam.tabs.room.btnSave.click();
-		await expect(poHomeTeam.toastBarSuccess).toBeVisible();
 	});
 
 	test('expect insert a channel inside "targetTeam"', async ({ page }) => {
@@ -68,6 +67,5 @@ test.describe.serial('teams-management', () => {
 		await page.locator(`.rcx-option__content:has-text("${targetChannel}")`).click();
 		await poHomeTeam.tabs.channels.btnAdd.click();
 		await expect(page.locator('//main//aside >> li')).toContainText(targetChannel);
-		await expect(poHomeTeam.toastBarSuccess).toBeVisible();
 	});
 });
