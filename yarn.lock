@@ -6659,7 +6659,7 @@ __metadata:
     "@rocket.chat/string-helpers": next
     "@types/ejson": ^2.2.0
     "@types/eslint": ^8.4.10
-    "@types/meteor": 2.7.1
+    "@types/meteor": ^2.9.2
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
     "@types/sharp": ^0.30.4
@@ -7273,7 +7273,7 @@ __metadata:
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.8
-    "@types/meteor": 2.8.1
+    "@types/meteor": ^2.9.2
     "@types/meteor-collection-hooks": ^0.8.6
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
@@ -11961,29 +11961,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/meteor@npm:2.7.1":
-  version: 2.7.1
-  resolution: "@types/meteor@npm:2.7.1"
+"@types/meteor@npm:^2.9.2":
+  version: 2.9.2
+  resolution: "@types/meteor@npm:2.9.2"
   dependencies:
     "@types/connect": "*"
     "@types/jquery": "*"
+    "@types/nodemailer": "*"
     "@types/react": "*"
     "@types/underscore": "*"
     mongodb: ^4.3.1
-  checksum: a363cbcdec41e233997f3e05fd616e9ba1840bf7648b265144102769c0afdbeb614bf6d17e969343ed70883396a341ea876149d3f23fd2ea60a07c99f067f91e
-  languageName: node
-  linkType: hard
-
-"@types/meteor@npm:2.8.1":
-  version: 2.8.1
-  resolution: "@types/meteor@npm:2.8.1"
-  dependencies:
-    "@types/connect": "*"
-    "@types/jquery": "*"
-    "@types/react": "*"
-    "@types/underscore": "*"
-    mongodb: ^4.3.1
-  checksum: 00d29816a05db7dac92f27e22ced92f4db36b56a5778479f3c3aa4b00165944536ce1c37600f9b61c497dc85a77a91e1244f1ed346daea383af1c54f86013d72
+  checksum: 6395578e5d5f139aad8dfd0f70cb489dd70984b78ed2ab791bfabc59c70f94196cdb3cfc40659da0498ae1962f135782067579e5c320341c9a1a331553329f56
   languageName: node
   linkType: hard
 
@@ -12087,6 +12075,15 @@ __metadata:
   version: 14.18.21
   resolution: "@types/node@npm:14.18.21"
   checksum: 4ed35b76609647a4e36a194702e31cdda9ed42174ddaf7937bc5498984e98a99e8a42ea895ea17dd9c5ec18080112c29ab670c34f90eb9f7a4703b85b31e34fa
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:*":
+  version: 6.4.7
+  resolution: "@types/nodemailer@npm:6.4.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: dc2a33a89135e04a5bea4921e8645e8453b90e3c3b05f0646f05071c5951ab697ea49ea1e503a690f04cb0a6abfc54967325c5a4036356793cfbb64ba64fb141
   languageName: node
   linkType: hard
 
