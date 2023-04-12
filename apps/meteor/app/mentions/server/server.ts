@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 
 export class MentionQueries {
-	async getUsers(usernames) {
+	async getUsers(usernames: string[]): Promise<(Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' })[]> {
 		const users = await Users.find(
 			{ username: { $in: [...new Set(usernames)] } },
 			{ projection: { _id: true, username: true, name: 1 } },
@@ -20,15 +21,15 @@ export class MentionQueries {
 		}));
 	}
 
-	async getUser(userId) {
+	async getUser(userId: string): Promise<IUser | null> {
 		return Users.findOneById(userId);
 	}
 
-	getTotalChannelMembers(rid) {
+	getTotalChannelMembers(rid: string): Promise<number> {
 		return Subscriptions.countByRoomId(rid);
 	}
 
-	getChannels(channels) {
+	getChannels(channels: string[]): Promise<Pick<IRoom, '_id' | 'name' | 'fname' | 'federated'>[]> {
 		return Rooms.find(
 			{
 				$and: [
@@ -49,13 +50,13 @@ export class MentionQueries {
 const queries = new MentionQueries();
 
 const mention = new MentionsServer({
-	pattern: () => settings.get('UTF8_User_Names_Validation'),
-	messageMaxAll: () => settings.get('Message_MaxAll'),
-	getUsers: async (usernames) => queries.getUsers(usernames),
-	getUser: async (userId) => queries.getUser(userId),
-	getTotalChannelMembers: (rid) => queries.getTotalChannelMembers(rid),
-	getChannels: (channels) => queries.getChannels(channels),
-	async onMaxRoomMembersExceeded({ sender, rid }) {
+	pattern: () => settings.get<string>('UTF8_User_Names_Validation'),
+	messageMaxAll: () => settings.get<number>('Message_MaxAll'),
+	getUsers: async (usernames: string[]) => queries.getUsers(usernames),
+	getUser: async (userId: string) => queries.getUser(userId),
+	getTotalChannelMembers: (rid: string) => queries.getTotalChannelMembers(rid),
+	getChannels: (channels: string[]) => queries.getChannels(channels),
+	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IUser; rid: string }) {
 		// Get the language of the user for the error notification.
 		const { language } = await this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);

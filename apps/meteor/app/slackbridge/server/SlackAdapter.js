@@ -108,47 +108,38 @@ export default class SlackAdapter {
 		 * 	inviter: [message_subtype = 'group_join|channel_join' -> user_id]
 		 * }
 		 **/
-		this.rtm.on(
-			'message',
-			Meteor.bindEnvironment(async (slackMessage) => {
-				slackLogger.debug('OnSlackEvent-MESSAGE: ', slackMessage);
-				if (slackMessage) {
-					try {
-						await this.onMessage(slackMessage);
-					} catch (err) {
-						slackLogger.error({ msg: 'Unhandled error onMessage', err });
-					}
+		this.rtm.on('message', async (slackMessage) => {
+			slackLogger.debug('OnSlackEvent-MESSAGE: ', slackMessage);
+			if (slackMessage) {
+				try {
+					await this.onMessage(slackMessage);
+				} catch (err) {
+					slackLogger.error({ msg: 'Unhandled error onMessage', err });
 				}
-			}),
-		);
+			}
+		});
 
-		this.rtm.on(
-			'reaction_added',
-			Meteor.bindEnvironment(async (reactionMsg) => {
-				slackLogger.debug('OnSlackEvent-REACTION_ADDED: ', reactionMsg);
-				if (reactionMsg) {
-					try {
-						await this.onReactionAdded(reactionMsg);
-					} catch (err) {
-						slackLogger.error({ msg: 'Unhandled error onReactionAdded', err });
-					}
+		this.rtm.on('reaction_added', async (reactionMsg) => {
+			slackLogger.debug('OnSlackEvent-REACTION_ADDED: ', reactionMsg);
+			if (reactionMsg) {
+				try {
+					await this.onReactionAdded(reactionMsg);
+				} catch (err) {
+					slackLogger.error({ msg: 'Unhandled error onReactionAdded', err });
 				}
-			}),
-		);
+			}
+		});
 
-		this.rtm.on(
-			'reaction_removed',
-			Meteor.bindEnvironment(async (reactionMsg) => {
-				slackLogger.debug('OnSlackEvent-REACTION_REMOVED: ', reactionMsg);
-				if (reactionMsg) {
-					try {
-						await this.onReactionRemoved(reactionMsg);
-					} catch (err) {
-						slackLogger.error({ msg: 'Unhandled error onReactionRemoved', err });
-					}
+		this.rtm.on('reaction_removed', async (reactionMsg) => {
+			slackLogger.debug('OnSlackEvent-REACTION_REMOVED: ', reactionMsg);
+			if (reactionMsg) {
+				try {
+					await this.onReactionRemoved(reactionMsg);
+				} catch (err) {
+					slackLogger.error({ msg: 'Unhandled error onReactionRemoved', err });
 				}
-			}),
-		);
+			}
+		});
 
 		/**
 		 * Event fired when someone creates a public channel
@@ -166,10 +157,7 @@ export default class SlackAdapter {
 		 *	event_ts: [ts.milli]
 		 * }
 		 **/
-		this.rtm.on(
-			'channel_created',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('channel_created', () => {});
 
 		/**
 		 * Event fired when the bot joins a public channel
@@ -202,10 +190,7 @@ export default class SlackAdapter {
 		 * 	}
 		 * }
 		 **/
-		this.rtm.on(
-			'channel_joined',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('channel_joined', () => {});
 
 		/**
 		 * Event fired when the bot leaves (or is removed from) a public channel
@@ -214,19 +199,16 @@ export default class SlackAdapter {
 		 * 	channel: [channel_id]
 		 * }
 		 **/
-		this.rtm.on(
-			'channel_left',
-			Meteor.bindEnvironment((channelLeftMsg) => {
-				slackLogger.debug('OnSlackEvent-CHANNEL_LEFT: ', channelLeftMsg);
-				if (channelLeftMsg) {
-					try {
-						this.onChannelLeft(channelLeftMsg);
-					} catch (err) {
-						slackLogger.error({ msg: 'Unhandled error onChannelLeft', err });
-					}
+		this.rtm.on('channel_left', (channelLeftMsg) => {
+			slackLogger.debug('OnSlackEvent-CHANNEL_LEFT: ', channelLeftMsg);
+			if (channelLeftMsg) {
+				try {
+					this.onChannelLeft(channelLeftMsg);
+				} catch (err) {
+					slackLogger.error({ msg: 'Unhandled error onChannelLeft', err });
 				}
-			}),
-		);
+			}
+		});
 
 		/**
 		 * Event fired when an archived channel is deleted by an admin
@@ -236,10 +218,7 @@ export default class SlackAdapter {
 		 *	event_ts: [ts.milli]
 		 * }
 		 **/
-		this.rtm.on(
-			'channel_deleted',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('channel_deleted', () => {});
 
 		/**
 		 * Event fired when the channel has its name changed
@@ -254,10 +233,7 @@ export default class SlackAdapter {
 		 *	event_ts: [ts.milli]
 		 * }
 		 **/
-		this.rtm.on(
-			'channel_rename',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('channel_rename', () => {});
 
 		/**
 		 * Event fired when the bot joins a private channel
@@ -290,10 +266,7 @@ export default class SlackAdapter {
 		 * 	}
 		 * }
 		 **/
-		this.rtm.on(
-			'group_joined',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('group_joined', () => {});
 
 		/**
 		 * Event fired when the bot leaves (or is removed from) a private channel
@@ -302,10 +275,7 @@ export default class SlackAdapter {
 		 * 	channel: [channel_id]
 		 * }
 		 **/
-		this.rtm.on(
-			'group_left',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('group_left', () => {});
 
 		/**
 		 * Event fired when the private channel has its name changed
@@ -320,10 +290,7 @@ export default class SlackAdapter {
 		 *	event_ts: [ts.milli]
 		 * }
 		 **/
-		this.rtm.on(
-			'group_rename',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('group_rename', () => {});
 
 		/**
 		 * Event fired when a new user joins the team
@@ -366,10 +333,7 @@ export default class SlackAdapter {
 		 * 	cache_ts: [ts]
 		 * }
 		 **/
-		this.rtm.on(
-			'team_join',
-			Meteor.bindEnvironment(() => {}),
-		);
+		this.rtm.on('team_join', () => {});
 	}
 
 	/*
@@ -409,8 +373,8 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`unset${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Removing reaction from Slack');
-				Meteor.runAsUser(rocketUser._id, () => {
-					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				await Meteor.runAsUser(rocketUser._id, () => {
+					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
 				});
 			}
 		}
@@ -455,8 +419,8 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`set${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Adding reaction from Slack');
-				Meteor.runAsUser(rocketUser._id, () => {
-					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				await Meteor.runAsUser(rocketUser._id, () => {
+					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
 				});
 			}
 		}

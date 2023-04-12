@@ -17,6 +17,7 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
+		// Depends on apps engine separation to microservices
 		const records = Promise.await(
 			Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
 				projection: {

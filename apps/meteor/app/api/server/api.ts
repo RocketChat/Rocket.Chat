@@ -38,11 +38,13 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 const logger = new Logger('API');
 
 interface IAPIProperties {
-	apiPath: string;
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
-	defaultOptionsEndpoint: () => Promise<void>;
 	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
+	defaultOptionsEndpoint?: () => Promise<void>;
+	version?: string;
+	enableCors?: boolean;
+	apiPath?: string;
 }
 
 interface IAPIDefaultFieldsToExclude {
@@ -108,7 +110,7 @@ const getRequestIP = (req: Request): string | null => {
 let prometheusAPIUserAgent = false;
 
 export class APIClass<TBasePath extends string = ''> extends Restivus {
-	protected apiPath: string;
+	protected apiPath?: string;
 
 	public authMethods: ((...args: any[]) => any)[];
 
@@ -985,8 +987,8 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 export const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth?: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
-	ApiClass?: typeof APIClass;
+	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
+	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
 			validate: (params: {

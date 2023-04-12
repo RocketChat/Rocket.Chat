@@ -35,7 +35,7 @@ Accounts.registerLoginHandler(async function (options) {
 	}
 
 	// Make sure we're configured
-	if (!ServiceConfiguration.configurations.findOne({ service: options.serviceName })) {
+	if (!(await ServiceConfiguration.configurations.findOneAsync({ service: options.serviceName }))) {
 		throw new ServiceConfiguration.ConfigError();
 	}
 
