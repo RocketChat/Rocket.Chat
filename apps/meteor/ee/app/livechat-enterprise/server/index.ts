@@ -9,9 +9,6 @@ import './methods/removeUnit';
 import './methods/saveUnit';
 import './methods/removeBusinessHour';
 import './methods/resumeOnHold';
-import '../../models/server/models/LivechatUnit';
-import '../../models/server/models/LivechatTag';
-import '../../models/server/models/LivechatUnitMonitors';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
@@ -33,7 +30,7 @@ import { onLicense } from '../../license/server';
 import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
-onLicense('livechat-enterprise', async () => {
+await onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
 	await import('./startup');

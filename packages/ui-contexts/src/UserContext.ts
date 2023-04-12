@@ -2,6 +2,8 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
+import type { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
+
 export type SubscriptionQuery =
 	| {
 			rid: string | ObjectId;
@@ -14,11 +16,11 @@ export type SubscriptionQuery =
 	  }
 	| object;
 
-export type Fields<TSchema = Document> = Exclude<MongoFindOptions<TSchema>['projection'], undefined>;
+export type Fields<TSchema extends Document = Document> = Exclude<MongoFindOptions<TSchema>['projection'], undefined>;
 
-export type Sort<TSchema = Document> = Exclude<MongoFindOptions<TSchema>['sort'], undefined>;
+export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions<TSchema>['sort'], undefined>;
 
-export type FindOptions<TSchema = Document> = {
+export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
 };
@@ -53,7 +55,7 @@ export type UserContextValue = {
 	querySubscriptions: (
 		query: SubscriptionQuery,
 		options?: FindOptions,
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => Array<ISubscription> | []];
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]];
 
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	loginWithToken: (user: string) => Promise<void>;

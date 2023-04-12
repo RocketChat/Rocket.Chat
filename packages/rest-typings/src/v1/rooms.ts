@@ -462,7 +462,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
-			room: IRoom;
+			room: IRoom | undefined;
 		};
 	};
 
@@ -525,7 +525,7 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-		}) => { message: IMessage };
+		}) => { message: IMessage | null };
 	};
 
 	'/v1/rooms.saveNotification': {

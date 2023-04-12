@@ -80,7 +80,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
+	async getSupportedLanguages(target: string): Promise<ISupportedLanguage[]> {
 		if (!this.apiKey) {
 			return [];
 		}
@@ -103,14 +103,14 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @throws Communication Errors
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translate(
+	async _translate(
 		data: {
 			Text: string;
 		}[],
 		targetLanguages: string[],
-	): ITranslationResult {
+	): Promise<ITranslationResult> {
 		let translations: { [k: string]: string } = {};
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
@@ -151,7 +151,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		// There are multi-sentence-messages where multiple sentences come from different languages
 		// This is a problem for translation services since the language detection fails.
 		// Thus, we'll split the message in sentences, get them translated, and join them again after translation
@@ -171,7 +171,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		try {
 			return this._translate(
 				[

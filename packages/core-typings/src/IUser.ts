@@ -86,6 +86,11 @@ export interface IUserServices {
 		id: string;
 		idAttribute?: string;
 	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
+	};
 }
 
 export interface IUserEmail {
@@ -170,6 +175,7 @@ export interface IUser extends IRocketChatRecord {
 			read?: boolean;
 		};
 	};
+	importIds?: string[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -178,7 +184,7 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
-export const isUserFederated = (user: Partial<IUser>): user is IUser => 'federated' in user && user.federated === true;
+export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;

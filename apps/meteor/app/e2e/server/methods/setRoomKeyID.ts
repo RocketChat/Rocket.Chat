@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId } from '../../../authorization/server';
-import { Rooms } from '../../../models/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'e2e.setRoomKeyID'(rid, keyID) {
+	async 'e2e.setRoomKeyID'(rid, keyID) {
 		check(rid, String);
 		check(keyID, String);
 
@@ -27,11 +27,15 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
-		if (!canAccessRoomId(rid, userId)) {
+		if (!(await canAccessRoomIdAsync(rid, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
-		const room = Rooms.findOneById(rid, { fields: { e2eKeyId: 1 } });
+		const room = await Rooms.findOneById(rid, { fields: { e2eKeyId: 1 } });
+
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
+		}
 
 		if (room.e2eKeyId) {
 			throw new Meteor.Error('error-room-e2e-key-already-exists', 'E2E Key ID already exists', {
@@ -39,6 +43,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Rooms.setE2eKeyId(room._id, keyID);
+		await Rooms.setE2eKeyId(room._id, keyID);
 	},
 });
