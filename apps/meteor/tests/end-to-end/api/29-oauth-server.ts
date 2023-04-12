@@ -56,7 +56,6 @@ describe('[OAuth Server]', function () {
 
 		it('should authorize oauth to retrieve code', async function () {
 			const params = new URLSearchParams({
-				client_id: clientId,
 				scope: 'user',
 				response_type: 'token,code',
 				response_mode: 'form_post',

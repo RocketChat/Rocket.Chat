@@ -159,22 +159,17 @@ export class OAuth2Server {
 			}
 		});
 
-		this.app.all('/oauth/*', function (err: Error, _req: Request, res: Response, next: NextFunction) {
-			// TODO: check why is not passing here
-			console.log('error');
+		this.app.use('/oauth/*', function (err: Error, _req: Request, res: Response, next: NextFunction) {
 			if (!(err instanceof OAuthError)) return next(err);
 
 			delete err.stack;
 
 			res.status(err.code);
 
-			console.log('error 2');
 			if (err instanceof UnauthorizedRequestError) {
-				console.log('error 3');
 				return res.send();
 			}
 
-			console.log('error 4');
 			res.send({ error: err.name, error_description: err.message });
 		});
 	}
