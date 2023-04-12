@@ -35,10 +35,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
+		if (!isOmnichannelRoom(room)) {
+			return;
+		}
+		
 		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
-			if (!isOmnichannelRoom(room)) {
-				return;
-			}
 			queryClient.setQueryData(['rooms', rid], () => room);
 		});
 	}, [subscribeToRoom, rid, queryClient]);
