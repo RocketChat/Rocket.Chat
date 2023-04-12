@@ -36,6 +36,7 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
+	// TODO: this boolean might be an accident
 	sysMes?: MessageTypesValues[] | boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
