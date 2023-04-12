@@ -246,7 +246,7 @@ export class OTRRoom implements IOTRRoom {
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
 		switch (type) {
 			case 'handshake':
-				let timeout = 0;
+				let timeout: NodeJS.Timeout;
 
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
