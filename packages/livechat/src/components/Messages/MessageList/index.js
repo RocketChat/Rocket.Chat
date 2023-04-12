@@ -48,6 +48,13 @@ export class MessageList extends MemoizedComponent {
 			const { onScrollTo } = this.props;
 			onScrollTo && onScrollTo(scrollPosition);
 		}
+
+		const { dispatch } = this.props;
+		const { messageListPosition } = store.state;
+
+		if (messageListPosition !== this.scrollPosition) {
+			dispatch({ messageListPosition: this.scrollPosition });
+		}
 	};
 
 	handleResize = () => {
@@ -75,7 +82,18 @@ export class MessageList extends MemoizedComponent {
 		}
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps) {
+		const { messages, uid } = this.props;
+		const { messages: prevMessages } = prevProps;
+
+		if (messages?.length !== prevMessages?.length) {
+			const lastMessage = messages[messages.length - 1];
+
+			if (lastMessage?.u?._id && lastMessage.u._id === uid) {
+				this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
+			}
+		}
+
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
 			this.base.scrollTop = this.base.scrollHeight;
 			return;
