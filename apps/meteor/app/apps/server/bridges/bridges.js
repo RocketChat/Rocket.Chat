@@ -134,6 +134,7 @@ export class RealAppBridges extends AppBridges {
 	getInternalFederationBridge() {
 		return this._internalFedBridge;
 	}
+
 	getModerationBridge() {
 		return this._moderationBridge;
 	}
