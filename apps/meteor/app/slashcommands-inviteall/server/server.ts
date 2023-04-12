@@ -7,9 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 
@@ -34,7 +33,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			return;
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		const lng = user?.language || settings.get('Language') || 'en';
 
 		const baseChannel = type === 'to' ? await Rooms.findOneById(item.rid) : await Rooms.findOneByName(channel);

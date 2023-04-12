@@ -23,8 +23,8 @@ let userLanguage = 'en';
 let username = '';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
-		const user: Pick<IUser, 'language' | 'username'> | null = await Meteor.userAsync();
+	Tracker.autorun(() => {
+		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
 		if (!user) {
 			return;
 		}
@@ -129,38 +129,6 @@ export const AutoTranslate = {
 
 		this.initialized = true;
 	},
-};
-
-export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMessage) => ITranslatedMessage) => {
-	AutoTranslate.init();
-
-	return (message: ITranslatedMessage): ITranslatedMessage => {
-		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
-		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
-		if (message.u && message.u._id !== Meteor.userId()) {
-			if (!message.translations) {
-				message.translations = {};
-			}
-			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				message.translations.original = message.html;
-				if (
-					message.translations[autoTranslateLanguage] &&
-					!hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage)
-				) {
-					message.html = message.translations[autoTranslateLanguage];
-				}
-
-				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(
-						message.attachments,
-						autoTranslateLanguage,
-						!!message.autoTranslateShowInverse,
-					);
-				}
-			}
-		}
-		return message;
-	};
 };
 
 export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslatedMessage) => void) => {

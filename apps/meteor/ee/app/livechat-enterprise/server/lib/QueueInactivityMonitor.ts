@@ -4,11 +4,10 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw } from '@rocket.chat/models';
+import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { Logger } from '../../../../../app/logger/server';
-import { Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
@@ -41,10 +40,13 @@ class OmnichannelQueueInactivityMonitorClass {
 			defaultConcurrency: 1,
 		});
 		this.createIndex();
-		this.user = Users.findOneById('rocket.cat');
 		const language = settings.get<string>('Language') || 'en';
 		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
-		this.bindedCloseRoom = Meteor.bindEnvironment(this.closeRoom.bind(this));
+		this.bindedCloseRoom = this.closeRoom.bind(this);
+	}
+
+	private async getRocketCatUser(): Promise<IUser | null> {
+		return Users.findOneById('rocket.cat');
 	}
 
 	getName(inquiryId: string): string {
@@ -93,12 +95,12 @@ class OmnichannelQueueInactivityMonitorClass {
 		await this.scheduler.cancel({ name });
 	}
 
-	closeRoomAction(room: IOmnichannelRoom): Promise<void> {
+	async closeRoomAction(room: IOmnichannelRoom): Promise<void> {
 		const comment = this.message;
 		return Livechat.closeRoom({
 			comment,
 			room,
-			user: this.user,
+			user: await this.getRocketCatUser(),
 		});
 	}
 

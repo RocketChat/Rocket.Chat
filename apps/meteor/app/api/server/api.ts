@@ -10,6 +10,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { Users } from '@rocket.chat/models';
 
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -37,11 +38,13 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 const logger = new Logger('API');
 
 interface IAPIProperties {
-	apiPath: string;
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
-	defaultOptionsEndpoint: () => Promise<void>;
 	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
+	defaultOptionsEndpoint?: () => Promise<void>;
+	version?: string;
+	enableCors?: boolean;
+	apiPath?: string;
 }
 
 interface IAPIDefaultFieldsToExclude {
@@ -107,7 +110,7 @@ const getRequestIP = (req: Request): string | null => {
 let prometheusAPIUserAgent = false;
 
 export class APIClass<TBasePath extends string = ''> extends Restivus {
-	protected apiPath: string;
+	protected apiPath?: string;
 
 	public authMethods: ((...args: any[]) => any)[];
 
@@ -537,13 +540,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						if (!options.authRequired && options.authOrAnonRequired) {
 							const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
 							if (userId && userToken) {
-								this.user = Meteor.users.findOne(
+								this.user = await Users.findOne(
 									{
 										'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
 										'_id': userId,
 									},
 									{
-										fields: getDefaultUserFields(),
+										projection: getDefaultUserFields(),
 									},
 								);
 
@@ -787,16 +790,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						} as unknown as SuccessResult<Record<string, any>>;
 					}
 
-					this.user = Meteor.users.findOne(
+					this.user = await Users.findOne(
 						{
 							_id: auth.id,
 						},
 						{
-							fields: getDefaultUserFields(),
+							projection: getDefaultUserFields(),
 						},
-					) as any;
+					);
 
-					this.userId = (this.user as unknown as IUser)?._id as any;
+					this.userId = (this.user as unknown as IUser)?._id;
 
 					const response = {
 						status: 'success',
@@ -820,7 +823,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			},
 		);
 
-		const logout = function (this: Restivus): { status: string; data: { message: string } } {
+		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -833,9 +836,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
 
-			Meteor.users.update(this.user._id, {
-				$pull: tokenRemovalQuery,
-			});
+			await Users.updateOne(
+				{ _id: this.user._id },
+				{
+					$pull: tokenRemovalQuery,
+				},
+			);
 
 			const response = {
 				status: 'success',
@@ -890,11 +896,9 @@ const getUserAuth = function _getUserAuth(...args: any[]): {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
 
-			for (let i = 0; i < (API.v1?.authMethods || []).length; i++) {
-				const method = API.v1?.authMethods?.[i];
-
+			for await (const method of API.v1?.authMethods || []) {
 				if (typeof method === 'function') {
-					const result = method.apply(this, args);
+					const result = await method.apply(this, args);
 					if (!invalidResults.includes(result)) {
 						return result;
 					}
@@ -983,8 +987,8 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 export const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth?: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
-	ApiClass?: typeof APIClass;
+	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
+	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
 			validate: (params: {

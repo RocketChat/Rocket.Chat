@@ -90,6 +90,9 @@ interface EventLikeCallbackSignatures {
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterValidateLogin': (login: { user: IUser }) => void;
+	'afterJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
 }
 
 /**
@@ -135,10 +138,14 @@ type ChainedCallbackSignatures = {
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
-	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
-		servedBy: unknown;
-		oldServedBy: unknown;
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
+	}) => {
+		rid: IRoom['_id'];
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
 	};
 	'livechat.afterForwardChatToDepartment': (params: {
 		rid: IRoom['_id'];
@@ -155,7 +162,19 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
+	'livechat.beforeDelegateAgent': (
+		agent: {
+			agentId: string;
+			username: string;
+		},
+		params?: { department?: string },
+	) =>
+		| {
+				agentId: string;
+				username: string;
+		  }
+		| null
+		| undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
@@ -186,12 +205,15 @@ type ChainedCallbackSignatures = {
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
+	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'beforeSendMessageNotifications': (message: string) => string;
 };
 
-type Hook =
+export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
@@ -199,17 +221,13 @@ type Hook =
 	| 'afterRoomArchived'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
-	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
 	| 'archiveRoom'
 	| 'beforeActivateUser'
-	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSaveMessage'
-	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
@@ -219,7 +237,6 @@ type Hook =
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
-	| 'livechat.leadCapture'
 	| 'livechat.offlineMessage'
 	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'

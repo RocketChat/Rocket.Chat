@@ -107,7 +107,7 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 	}
 
 	const filePath = joinPath(exportOperation.exportPath, 'avatar');
-	if (FileUpload.copy(file, filePath)) {
+	if (await FileUpload.copy?.(file, filePath)) {
 		exportOperation.generatedAvatar = true;
 	}
 };
@@ -271,6 +271,6 @@ export async function processDataDownloads(): Promise<void> {
 			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 		});
 
-		sendEmail(operation.userData, subject, body);
+		await sendEmail(operation.userData, subject, body);
 	}
 }

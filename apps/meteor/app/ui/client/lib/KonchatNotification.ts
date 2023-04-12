@@ -156,7 +156,7 @@ class KonchatNotification {
 			return;
 		}
 
-		if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
+		if ((Meteor.user() as IUser | null)?.status === 'busy') {
 			return;
 		}
 
@@ -174,7 +174,7 @@ class KonchatNotification {
 	}
 
 	public async newMessage(rid: IRoom['_id'] | undefined) {
-		if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
+		if ((Meteor.user() as IUser | null)?.status === 'busy') {
 			return;
 		}
 

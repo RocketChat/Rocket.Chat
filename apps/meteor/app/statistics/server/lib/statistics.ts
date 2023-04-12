@@ -1,14 +1,11 @@
 import os from 'os';
 import { log } from 'console';
 
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
-	Users as UsersRaw,
-	Rooms as RoomsRaw,
+	Rooms,
 	Statistics,
 	Sessions,
 	Integrations,
@@ -25,10 +22,11 @@ import {
 	LivechatTrigger,
 	LivechatCustomField,
 	Subscriptions,
+	Users,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -45,7 +43,7 @@ import { getMatrixFederationStatistics } from '../../../../server/services/feder
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
-	const result = await UsersRaw.getUserLanguages();
+	const result = await Users.getUserLanguages();
 
 	const languages: { [key: string]: number } = {
 		none: totalUsers,
@@ -97,14 +95,14 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = Users.find().count();
-		statistics.activeUsers = Users.getActiveLocalUserCount();
-		statistics.activeGuests = Users.getActiveLocalGuestCount();
-		statistics.nonActiveUsers = Users.find({ active: false }).count();
-		statistics.appUsers = Users.find({ type: 'app' }).count();
-		statistics.onlineUsers = Meteor.users.find({ status: 'online' }).count();
-		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
-		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
+		statistics.totalUsers = await Users.col.countDocuments({});
+		statistics.activeUsers = await Users.getActiveLocalUserCount();
+		statistics.activeGuests = await Users.getActiveLocalGuestCount();
+		statistics.nonActiveUsers = await Users.col.countDocuments({ active: false });
+		statistics.appUsers = await Users.col.countDocuments({ type: 'app' });
+		statistics.onlineUsers = await Users.col.countDocuments({ status: UserStatus.ONLINE });
+		statistics.awayUsers = await Users.col.countDocuments({ status: UserStatus.AWAY });
+		statistics.busyUsers = await Users.col.countDocuments({ status: UserStatus.BUSY });
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
 		statsPms.push(
@@ -114,27 +112,27 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = await RoomsRaw.col.countDocuments({});
-		statistics.totalChannels = await RoomsRaw.findByType('c').count();
-		statistics.totalPrivateGroups = await RoomsRaw.findByType('p').count();
-		statistics.totalDirect = await RoomsRaw.findByType('d').count();
-		statistics.totalLivechat = await RoomsRaw.findByType('l').count();
-		statistics.totalDiscussions = await RoomsRaw.countDiscussions();
+		statistics.totalRooms = await Rooms.col.countDocuments({});
+		statistics.totalChannels = await Rooms.findByType('c').count();
+		statistics.totalPrivateGroups = await Rooms.findByType('p').count();
+		statistics.totalDirect = await Rooms.findByType('d').count();
+		statistics.totalLivechat = await Rooms.findByType('l').count();
+		statistics.totalDiscussions = await Rooms.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
 
 		// livechat agents
-		statistics.totalLivechatAgents = Users.findAgents().count();
-		statistics.totalLivechatManagers = await UsersRaw.col.countDocuments({ roles: 'livechat-manager' });
+		statistics.totalLivechatAgents = await Users.countAgents();
+		statistics.totalLivechatManagers = await Users.col.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
 		statsPms.push(
-			RoomsRaw.allRoomSourcesCount()
+			Rooms.allRoomSourcesCount()
 				.toArray()
 				.then((roomSources) => {
 					statistics.omnichannelSources = roomSources.map(({ _id: { id, alias, type }, count }) => ({
@@ -228,14 +226,14 @@ export const statistics = {
 
 		// Amount of VoIP Calls
 		statsPms.push(
-			RoomsRaw.countByType('v').then((count) => {
+			Rooms.countByType('v').then((count) => {
 				statistics.voipCalls = count;
 			}),
 		);
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			UsersRaw.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+			Users.col.countDocuments({ extension: { $exists: true } }).then((count) => {
 				statistics.voipExtensions = count;
 			}),
 		);
@@ -261,29 +259,25 @@ export const statistics = {
 		);
 
 		// Message statistics
-		statistics.totalChannelMessages = _.reduce(
-			await RoomsRaw.findByType('c', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalChannelMessages = (await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalPrivateGroupMessages = _.reduce(
-			await RoomsRaw.findByType('p', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalPrivateGroupMessages = (await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalDirectMessages = _.reduce(
-			await RoomsRaw.findByType('d', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalLivechatMessages = _.reduce(
-			await RoomsRaw.findByType('l', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalLivechatMessages = (await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
@@ -303,7 +297,7 @@ export const statistics = {
 			}),
 		);
 
-		statistics.lastLogin = Users.getLastLogin();
+		statistics.lastLogin = (await Users.getLastLogin())?.toString() || '';
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
 		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
@@ -367,7 +361,7 @@ export const statistics = {
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
-		statistics.mongoStorageEngine = mongoStorageEngine;
+		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
 		statsPms.push(
 			Sessions.getUniqueUsersOfYesterday().then((result) => {
@@ -416,7 +410,7 @@ export const statistics = {
 		);
 
 		statistics.apps = getAppsStatistics();
-		statistics.services = getServicesStatistics();
+		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
 		statistics.videoConf = await VideoConf.getStatistics();
 
@@ -487,21 +481,21 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await RoomsRaw.findByCreatedOTR().count();
+		statistics.totalOTRRooms = await Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
-		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statistics.totalBroadcastRooms = await Rooms.findByBroadcast().count();
+		statistics.totalRoomsWithActiveLivestream = await Rooms.findByActiveLivestream().count();
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
-		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
-		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
+		statistics.totalUserTOTP = await Users.countActiveUsersTOTPEnable({ readPreference });
+		statistics.totalUserEmail2fa = await Users.countActiveUsersEmail2faEnable({ readPreference });
 		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
 		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
 		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
+		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
@@ -535,7 +529,7 @@ export const statistics = {
 		// Omnichannel call stats
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
 		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

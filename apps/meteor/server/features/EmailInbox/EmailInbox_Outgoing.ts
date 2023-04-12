@@ -3,12 +3,11 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Messages, Uploads, LivechatRooms, Rooms } from '@rocket.chat/models';
+import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -17,7 +16,7 @@ import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
-const user: IUser = Users.findOneById('rocket.cat');
+const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
@@ -36,6 +35,11 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 		ts: new Date(),
 	};
 
+	const user = await getRocketCatUser();
+	if (!user) {
+		return;
+	}
+
 	return sendMessage(user, message, { _id: options.rid });
 };
 
@@ -50,6 +54,11 @@ const sendSuccessReplyMessage = async (options: any) => {
 		rid: options.rid,
 		ts: new Date(),
 	};
+
+	const user = await getRocketCatUser();
+	if (!user) {
+		return;
+	}
 
 	return sendMessage(user, message, { _id: options.rid });
 };
@@ -115,7 +124,7 @@ slashCommands.add({
 			return;
 		}
 
-		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
+		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer | false) => {
 			!_err &&
 				buffer &&
 				void sendEmail(
@@ -181,6 +190,11 @@ callbacks.add(
 	'afterSaveMessage',
 	async function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
+			return message;
+		}
+
+		const user = await getRocketCatUser();
+		if (!user) {
 			return message;
 		}
 
