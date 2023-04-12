@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import type { Request, Response } from 'express';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
@@ -13,10 +13,8 @@ const oauth2server = new OAuth2Server({
 });
 
 // https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
-function getAccessToken(accessToken: string): any {
-	return oauth2server.model.AccessTokens.findOne({
-		accessToken,
-	});
+async function getAccessToken(accessToken: string) {
+	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }
 
 export async function oAuth2ServerAuth(partialRequest: {
@@ -26,10 +24,10 @@ export async function oAuth2ServerAuth(partialRequest: {
 	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
 	const queryToken = partialRequest.query.access_token;
 
-	const accessToken = getAccessToken(headerToken || queryToken);
+	const accessToken = await getAccessToken(headerToken || queryToken);
 
 	// If there is no token available or the token has expired, return undefined
-	if (!accessToken || (accessToken.expires != null && accessToken.expires !== 0 && accessToken.expires < new Date())) {
+	if (!accessToken || (accessToken.accessTokenExpiresAt != null && accessToken.accessTokenExpiresAt < new Date())) {
 		return;
 	}
 
@@ -51,7 +49,7 @@ oauth2server.app.get('/oauth/userinfo', async function (req: Request, res: Respo
 		return res.status(401).send('No token');
 	}
 	const accessToken = req.headers.authorization.replace('Bearer ', '');
-	const token = getAccessToken(accessToken);
+	const token = await getAccessToken(accessToken);
 	if (token == null) {
 		return res.status(401).send('Invalid Token');
 	}

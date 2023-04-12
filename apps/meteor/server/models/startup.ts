@@ -36,6 +36,8 @@ import './NotificationQueue';
 import './Nps';
 import './NpsVote';
 import './OAuthApps';
+import './OAuthAuthCodes';
+import './OAuthAccessTokens';
 import './OEmbedCache';
 import './PbxEvents';
 import './PushToken';

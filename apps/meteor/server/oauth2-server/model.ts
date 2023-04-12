@@ -1,5 +1,4 @@
-import { OAuthApps } from '@rocket.chat/models';
-import { Mongo } from 'meteor/mongo';
+import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens } from '@rocket.chat/models';
 import type {
 	AuthorizationCode,
 	AuthorizationCodeModel,
@@ -11,39 +10,6 @@ import type {
 	User,
 } from 'oauth2-server';
 
-type AuthCode = {
-	_id?: string;
-	authCode: string;
-	clientId: string;
-	userId: string;
-	expires: Date;
-	redirectUri: string;
-};
-
-type ClientModel = {
-	_id: string;
-	name: string;
-	redirectUri: string;
-	active: boolean;
-	clientId: string;
-	clientSecret: string;
-	_createdAt: Date;
-	_updatedAt: Date;
-	_createdBy: {
-		_id: string;
-		username: string;
-	};
-};
-
-type AccessTokenModel = {
-	accessToken: string;
-	refreshToken?: string;
-	accessTokenExpiresAt?: Date;
-	refreshTokenExpiresAt?: Date;
-	clientId: string;
-	userId: string;
-};
-
 export type ModelConfig = {
 	debug?: boolean;
 };
@@ -51,20 +17,10 @@ export type ModelConfig = {
 export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 	private debug: boolean;
 
-	public AccessTokens: Mongo.Collection<AccessTokenModel>;
-
-	public Clients: Mongo.Collection<ClientModel>;
-
-	public AuthCodes: Mongo.Collection<AuthCode>;
-
 	private grants = ['authorization_code', 'refresh_token'];
 
 	constructor(config: ModelConfig = {}) {
 		this.debug = !!config.debug;
-
-		this.AccessTokens = new Mongo.Collection('rocketchat_oauth_access_tokens');
-		this.Clients = new Mongo.Collection(OAuthApps.col.collectionName);
-		this.AuthCodes = new Mongo.Collection('rocketchat_oauth_auth_codes');
 	}
 
 	async verifyScope(token: Token, scope: string | string[]): Promise<boolean> {
@@ -85,7 +41,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			console.log('[OAuth2Server]', 'in getAccessToken (bearerToken:', accessToken, ')');
 		}
 
-		const token = this.AccessTokens.findOne({ accessToken });
+		const token = await OAuthAccessTokens.findOneByAccessToken(accessToken);
 
 		if (!token) {
 			return;
@@ -115,9 +71,9 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 		let client;
 		if (clientSecret == null) {
-			client = this.Clients.findOne({ active: true, clientId });
+			client = await OAuthApps.findOneActiveByClientId(clientId);
 		} else {
-			client = this.Clients.findOne({ active: true, clientId, clientSecret });
+			client = await OAuthApps.findOneActiveByClientIdAndClientSecret(clientId, clientSecret);
 		}
 
 		if (!client) {
@@ -138,7 +94,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			console.log('[OAuth2Server]', `in getAuthorizationCode (authCode: ${authorizationCode})`);
 		}
 
-		const code = this.AuthCodes.findOne({ authCode: authorizationCode });
+		const code = await OAuthAuthCodes.findOneByAuthCode(authorizationCode);
 		if (!code) {
 			throw new Error('Invalid authCode');
 		}
@@ -185,15 +141,18 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			);
 		}
 
-		this.AuthCodes.upsert(
+		await OAuthAuthCodes.updateOne(
 			{ authCode: code.authorizationCode },
 			{
-				authCode: code.authorizationCode,
-				clientId: client.id,
-				userId: user.id,
-				expires: code.expiresAt,
-				redirectUri: code.redirectUri,
+				$set: {
+					authCode: code.authorizationCode,
+					clientId: client.id,
+					userId: user.id,
+					expires: code.expiresAt,
+					redirectUri: code.redirectUri,
+				},
 			},
+			{ upsert: true },
 		);
 
 		const newCode = {
@@ -225,14 +184,16 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			);
 		}
 
-		const tokenId = this.AccessTokens.insert({
-			accessToken: token.accessToken,
-			refreshToken: token.refreshToken,
-			accessTokenExpiresAt: token.accessTokenExpiresAt,
-			refreshTokenExpiresAt: token.refreshTokenExpiresAt,
-			clientId: client.id,
-			userId: user.id,
-		});
+		const tokenId = (
+			await OAuthAccessTokens.insertOne({
+				accessToken: token.accessToken,
+				refreshToken: token.refreshToken,
+				accessTokenExpiresAt: token.accessTokenExpiresAt,
+				refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+				clientId: client.id,
+				userId: user.id,
+			})
+		).insertedId;
 
 		const result: Token = {
 			id: tokenId,
@@ -260,7 +221,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			console.log('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);
 		}
 
-		const token = this.AccessTokens.findOne({ refreshToken });
+		const token = await OAuthAccessTokens.findOneByRefreshToken(refreshToken);
 
 		if (!token) {
 			throw new Error('Invalid token');
@@ -293,9 +254,9 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		}
 
 		if (token.refreshToken) {
-			this.AccessTokens.remove({ refreshToken: token.refreshToken });
+			await OAuthAccessTokens.deleteOne({ refreshToken: token.refreshToken });
 		} else {
-			this.AccessTokens.remove({ accessToken: token.accessToken });
+			await OAuthAccessTokens.deleteOne({ accessToken: token.accessToken });
 		}
 		return true;
 	}
@@ -304,7 +265,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		if (this.debug === true) {
 			console.log('[OAuth2Server]', `in revokeAuthorizationCode (code: ${code.authorizationCode})`);
 		}
-		this.AuthCodes.remove({ authCode: code.authorizationCode });
+		await OAuthAuthCodes.deleteOne({ authCode: code.authorizationCode });
 		return true;
 	}
 }

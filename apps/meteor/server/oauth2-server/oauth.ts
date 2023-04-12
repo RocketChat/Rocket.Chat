@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import OAuthServer, { OAuthError, UnauthorizedRequestError } from 'oauth2-server';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
+import { OAuthApps, Users } from '@rocket.chat/models';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';
@@ -10,9 +10,7 @@ import { Model } from './model';
 export class OAuth2Server {
 	public app: Express;
 
-	public model: Model;
-
-	public oauth: OAuthServer;
+	private oauth: OAuthServer;
 
 	private config: ModelConfig;
 
@@ -24,37 +22,17 @@ export class OAuth2Server {
 		this.config = config;
 		this.app = express();
 
-		this.model = new Model(this.config);
-
 		this.oauth = new OAuthServer({
-			model: this.model,
+			model: new Model(this.config),
 		});
 
-		this.publishAuthorizedClients();
 		this.initRoutes();
 
 		return this;
 	}
 
-	publishAuthorizedClients() {
-		return Meteor.publish('authorizedOAuth', function () {
-			if (this.userId == null) {
-				return this.ready();
-			}
-
-			return Meteor.users.find(
-				{ _id: this.userId },
-				{
-					fields: {
-						'oauth.authorizedClients': 1,
-					},
-				},
-			);
-		});
-	}
-
 	initRoutes() {
-		const { config, model, oauth } = this;
+		const { config, oauth } = this;
 
 		const debugMiddleware = function (req: Request, _res: Response, next: NextFunction) {
 			if (config.debug === true) {
@@ -103,12 +81,12 @@ export class OAuth2Server {
 			}
 		});
 
-		this.app.get('/oauth/authorize', debugMiddleware, function (req, res, next) {
+		this.app.get('/oauth/authorize', debugMiddleware, async function (req, res, next) {
 			if (typeof req.query.client_id !== 'string') {
 				return res.redirect('/oauth/error/404');
 			}
 
-			const client = model.Clients.findOne({ active: true, clientId: req.query.client_id });
+			const client = await OAuthApps.findOneActiveByClientId(req.query.client_id);
 			if (client == null) {
 				return res.redirect('/oauth/error/404');
 			}
@@ -122,14 +100,13 @@ export class OAuth2Server {
 			return next();
 		});
 
-		this.app.post('/oauth/authorize', debugMiddleware, function (req, res, next) {
+		this.app.post('/oauth/authorize', debugMiddleware, async function (req, res, next) {
 			if (req.body.allow !== 'yes') {
 				res.status(401);
 				return res.send({ error: 'access_denied', error_description: 'The user denied access to your application' });
 			}
 
 			// The new version of the library is expecting a new name. Doing this for compatibility
-			// TODO: change ui to use the new name
 			if (req.body.token && !req.body.access_token) {
 				req.body.access_token = req.body.token;
 			}
@@ -138,11 +115,11 @@ export class OAuth2Server {
 				return res.status(401).send('No token');
 			}
 
-			const user = Meteor.users.findOne(
+			const user = await Users.findOne(
 				{
 					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(req.body.access_token),
 				},
-				{ fields: { _id: 1 } },
+				{ projection: { _id: 1 } },
 			);
 
 			if (user == null) {
@@ -169,7 +146,7 @@ export class OAuth2Server {
 							}
 
 							if (req.body.allow === 'yes') {
-								Meteor.users.update(res.locals.user.id, { $addToSet: { 'oauth.authorizedClients': clientId } });
+								await Users.updateOne({ _id: res.locals.user.id }, { $addToSet: { 'oauth.authorizedClients': clientId } });
 							}
 							return { id: res.locals.user.id };
 						},
