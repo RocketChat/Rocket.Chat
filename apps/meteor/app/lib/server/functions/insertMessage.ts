@@ -5,7 +5,7 @@ import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const insertMessage = async function (
-	user: IUser,
+	user: Pick<IUser, '_id' | 'username'>,
 	message: IMessage,
 	rid: IRoom['_id'],
 	upsert = false,

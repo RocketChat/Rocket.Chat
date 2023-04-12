@@ -622,7 +622,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator as unknown as IUser, msgObj as unknown as IDBMessage, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
