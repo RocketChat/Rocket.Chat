@@ -9,7 +9,16 @@ export const parseUrlsInMessage = (message) => {
 	message.html = message.msg;
 	message = Markdown.code(message);
 
-	const urls = message.html.match(getMessageUrlRegex()) || [];
+	let urls = message.html.match(getMessageUrlRegex()) || [];
+
+	urls = urls.map((url) => {
+		if (!/^https?:\/\//i.test(url)) {
+			return `https://${url}`;
+		}
+
+		return url;
+	});
+
 	if (urls) {
 		message.urls = [...new Set(urls)].map((url) => ({ url }));
 	}
