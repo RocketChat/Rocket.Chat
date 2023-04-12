@@ -205,14 +205,6 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			user,
 		};
 
-		// TODO migrate
-		// const tokenId = this.RefreshTokens.insert({
-		// 	refreshToken: token,
-		// 	clientId,
-		// 	userId: user.id,
-		// 	expires,
-		// });
-
 		return result;
 	}
 

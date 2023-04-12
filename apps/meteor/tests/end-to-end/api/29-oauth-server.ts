@@ -19,8 +19,9 @@ describe('[OAuth Server]', function () {
 
 	after(async () => {
 		await request
-			.delete(api(`oauth-apps.delete/${oAuthAppId}`))
+			.post(api('oauth-apps.delete'))
 			.set(credentials)
+			.send({ appId: oAuthAppId })
 			.expect('Content-Type', 'application/json')
 			.expect(200);
 	});
