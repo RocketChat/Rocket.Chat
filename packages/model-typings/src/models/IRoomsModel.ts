@@ -110,7 +110,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		endOfLastWeek: number;
 		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate>;
+	}): AggregationCursor<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate>;
 
 	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
