@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Logger } from '../../app/logger/server';
@@ -17,7 +18,7 @@ SyncedCron.config({
 	collectionName: 'rocketchat_cron_history',
 });
 
-setImmediate(function () {
+Meteor.defer(function () {
 	oembedCron(SyncedCron);
 	statsCron(SyncedCron, logger);
 	npsCron(SyncedCron);
