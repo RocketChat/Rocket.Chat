@@ -4,14 +4,18 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { formatDate } from '../../../lib/utils/formatDate';
-import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
-import { formatTime } from '../../../lib/utils/formatTime';
+import { useFormatDate } from '../../../hooks/useFormatDate';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../hooks/useFormatTime';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reportsByMessage`);
+
+	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useFormatTime();
+	const formatDate = useFormatDate();
 
 	const {
 		data: reportsByMessage,

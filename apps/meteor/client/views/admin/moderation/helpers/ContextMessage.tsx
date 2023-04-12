@@ -8,9 +8,9 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
-import { formatDate } from '../../../../lib/utils/formatDate';
-import { formatDateAndTime } from '../../../../lib/utils/formatDateAndTime';
-import { formatTime } from '../../../../lib/utils/formatTime';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../../hooks/useFormatTime';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 
 const ContextMessage = ({
@@ -33,6 +33,10 @@ const ContextMessage = ({
 	const isEncryptedMessage = isE2EEMessage(message);
 
 	const deleteMessage = useDeleteMessage(message._id, message.rid, onChange, onReload);
+
+	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useFormatTime();
+	const formatDate = useFormatDate();
 
 	return (
 		<>
@@ -62,7 +66,7 @@ const ContextMessage = ({
 							message.msg
 						)}
 						{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
-						{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+						{message.attachments && <Attachments attachments={message.attachments} />}
 					</Message.Body>
 				</Message.Container>
 				<MessageToolboxWrapper>

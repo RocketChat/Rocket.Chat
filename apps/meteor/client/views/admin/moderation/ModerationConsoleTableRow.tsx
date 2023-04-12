@@ -3,7 +3,7 @@ import { TableRow, TableCell, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
 
 export type MonderationConsoleRowProps = {
@@ -23,6 +23,8 @@ const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQ
 		}
 		return room.fname || room.name;
 	});
+
+	const formatDateAndTime = useFormatDateAndTime();
 
 	const concatenatedRoomNames = roomNames.join(', ');
 
