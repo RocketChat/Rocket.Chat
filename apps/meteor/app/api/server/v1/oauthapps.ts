@@ -63,3 +63,16 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'oauth-apps.delete/:id',
+	{ authRequired: true },
+	{
+		async delete() {
+			const { id } = this.urlParams;
+			await Meteor.callAsync('deleteOAuthApp', id);
+
+			return API.v1.success();
+		},
+	},
+);
