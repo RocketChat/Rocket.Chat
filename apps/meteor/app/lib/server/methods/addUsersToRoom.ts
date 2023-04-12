@@ -5,9 +5,8 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,7 +36,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// Get user and room details
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'addUsersToRoom',
+			});
+		}
+
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, uid, {
 			projection: { _id: 1 },
 		});
@@ -83,7 +88,7 @@ Meteor.methods<ServerMethods>({
 
 		await Promise.all(
 			data.users.map(async (username) => {
-				const newUser = Users.findOneByUsernameIgnoringCase(username);
+				const newUser = await Users.findOneByUsernameIgnoringCase(username);
 				if (!newUser && !Federation.isAFederatedUsername(username)) {
 					throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 						method: 'addUsersToRoom',
@@ -93,6 +98,9 @@ Meteor.methods<ServerMethods>({
 				if (!subscription) {
 					await addUserToRoom(data.rid, newUser || username, user);
 				} else {
+					if (!newUser.username) {
+						return;
+					}
 					void api.broadcast('notify.ephemeralMessage', uid, data.rid, {
 						msg: TAPi18n.__(
 							'Username_is_already_in_here',

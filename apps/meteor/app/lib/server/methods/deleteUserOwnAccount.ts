@@ -3,9 +3,9 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -34,16 +34,21 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const uid = Meteor.userId();
-		const user = Users.findOneById(uid);
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'deleteUserOwnAccount',
+			});
+		}
 
-		if (!user || !uid) {
+		const user = await Users.findOneById(uid);
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deleteUserOwnAccount',
 			});
 		}
 
 		if (user.services?.password && trim(user.services.password.bcrypt)) {
-			const result = Accounts._checkPassword(user, {
+			const result = Accounts._checkPassword(user as Meteor.User, {
 				digest: password.toLowerCase(),
 				algorithm: 'sha-256',
 			});
@@ -52,7 +57,7 @@ Meteor.methods<ServerMethods>({
 					method: 'deleteUserOwnAccount',
 				});
 			}
-		} else if (SHA256(user.username) !== password.trim()) {
+		} else if (!user.username || SHA256(user.username) !== password.trim()) {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 				method: 'deleteUserOwnAccount',
 			});

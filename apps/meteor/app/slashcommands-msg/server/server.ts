@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
-import { Users } from '../../models/server';
 
 /*
  * Msg is a named function that will replace /msg commands
@@ -26,9 +26,9 @@ slashCommands.add({
 		const message = trimmedParams.slice(separator + 1);
 		const targetUsernameOrig = trimmedParams.slice(0, separator);
 		const targetUsername = targetUsernameOrig.replace('@', '');
-		const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
+		const targetUser = await Users.findOneByUsernameIgnoringCase(targetUsername);
 		if (targetUser == null) {
-			const user = Users.findOneById(userId, { fields: { language: 1 } });
+			const user = await Users.findOneById(userId, { projection: { language: 1 } });
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_doesnt_exist', {
 					postProcess: 'sprintf',

@@ -56,6 +56,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountByIds(ids: any, inc: number): any;
 
 	findOneByNameOrFname(name: any, options?: any): any;
+	findOneByNonValidatedName(name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<Document>; // TODO change back when convert model do TS AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
@@ -156,7 +157,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
 	findByDefaultAndTypes(defaultValue: boolean, types: IRoom['t'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndName(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameOrId(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;

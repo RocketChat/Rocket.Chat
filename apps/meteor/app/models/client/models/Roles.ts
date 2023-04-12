@@ -4,8 +4,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChatSubscription } from './ChatSubscription';
 import { Users } from './Users';
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
-class RolesCollection extends Mongo.Collection<IRole> {
+class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollection<IRole> {
 	ready = new ReactiveVar(false);
 
 	constructor() {
@@ -46,6 +47,12 @@ class RolesCollection extends Mongo.Collection<IRole> {
 			}
 		});
 	}
+
+	public declare _collection: MinimongoCollection<IRole>['_collection'];
+
+	public declare direct: MinimongoCollection<IRole>['direct'];
+
+	public declare queries: MinimongoCollection<IRole>['queries'];
 }
 
 /** @deprecated */
