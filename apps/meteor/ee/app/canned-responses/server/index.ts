@@ -9,5 +9,5 @@ await onLicense('canned-responses', async () => {
 	await import('./methods/saveCannedResponse');
 	await import('./methods/removeCannedResponse');
 
-	createSettings();
+	await createSettings();
 });
