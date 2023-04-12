@@ -20,7 +20,6 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
-	onConfirm: () => Promise<void> | void;
 } & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
@@ -70,12 +69,13 @@ const GenericModal: FC<GenericModalProps> = ({
 	dontAskAgain,
 	confirmDisabled,
 	tagline,
+	wrapperFunction,
 	...props
 }) => {
 	const t = useTranslation();
 
 	return (
-		<Modal {...props}>
+		<Modal wrapperFunction={wrapperFunction} {...props}>
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.HeaderText>
@@ -93,9 +93,16 @@ const GenericModal: FC<GenericModalProps> = ({
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
-					<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
-						{confirmText ?? t('Ok')}
-					</Button>
+					{wrapperFunction && (
+						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled}>
+							{confirmText ?? t('Ok')}
+						</Button>
+					)}
+					{!wrapperFunction && (
+						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+							{confirmText ?? t('Ok')}
+						</Button>
+					)}
 				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>

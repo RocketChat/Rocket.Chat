@@ -21,7 +21,9 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });
 	const dispatchToast = useToastMessageDispatch();
 
-	const onSubmit = useMutableCallback(async () => {
+	const onSubmit = useMutableCallback(async (e) => {
+		e.preventDefault();
+
 		try {
 			await removeDepartment();
 			dispatchToast({ type: 'success', message: t('Department_removed') });
@@ -34,7 +36,7 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 
 	return (
 		<GenericModal
-			onConfirm={onSubmit}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title={t('Delete_Department?')}
