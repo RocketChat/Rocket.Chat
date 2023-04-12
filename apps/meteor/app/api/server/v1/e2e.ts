@@ -230,37 +230,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-API.v1.addRoute(
-	'e2e.acceptSuggestedGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async post() {
-			const { rid } = this.bodyParams;
-
-			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.rejectSuggestedGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async post() {
-			const { rid } = this.bodyParams;
-
-			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
-
-			return API.v1.success();
-		},
-	},
-);
