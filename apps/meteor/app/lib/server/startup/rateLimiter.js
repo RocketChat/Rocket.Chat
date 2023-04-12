@@ -122,7 +122,11 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-const callback = (msg, name) => (reply, input) => {
+export const sleep = (ms) => {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+const callback = (msg, name) => async (reply, input) => {
 	if (reply.allowed === false) {
 		rateLimiterLog({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
@@ -135,7 +139,7 @@ const callback = (msg, name) => (reply, input) => {
 		});
 		// sleep before sending the error to slow down next requests
 		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
-			Meteor._sleepForMs(slowDownRate * reply.numInvocationsExceeded);
+			await sleep(slowDownRate * reply.numInvocationsExceeded);
 		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);
