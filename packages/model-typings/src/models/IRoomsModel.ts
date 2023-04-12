@@ -3,7 +3,7 @@ import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
-export interface ChannelsWithNumberOfMessagesBetweenDate {
+export interface IChannelsWithNumberOfMessagesBetweenDate {
 	room: {
 		_id: IRoom['_id'];
 		name: IRoom['name'] | IRoom['fname'];

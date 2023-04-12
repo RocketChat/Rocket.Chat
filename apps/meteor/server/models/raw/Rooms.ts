@@ -8,7 +8,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomsModel, ChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -477,7 +477,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		endOfLastWeek: number;
 		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate> {
+	}): AggregationCursor<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate> {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -581,7 +581,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $count: 'total' });
 		}
 
-		return this.col.aggregate<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate>(params, {
+		return this.col.aggregate<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate>(params, {
 			allowDiskUse: true,
 			readPreference: readSecondaryPreferred(),
 		});
