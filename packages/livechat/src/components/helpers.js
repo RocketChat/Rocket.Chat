@@ -4,6 +4,18 @@ import { Component } from 'preact';
 
 import { Livechat, useSsl } from '../api';
 import store from '../store';
+import {
+	MESSAGE_TYPE_COMMAND,
+	MESSAGE_TYPE_LIVECHAT_CLOSED,
+	MESSAGE_TYPE_LIVECHAT_NAVIGATION_HISTORY,
+	MESSAGE_TYPE_PRIORITY_CHANGE,
+	MESSAGE_TYPE_SLA_CHANGE,
+	MESSAGE_TYPE_USER_ADDED,
+	MESSAGE_TYPE_USER_JOINED,
+	MESSAGE_TYPE_USER_LEFT,
+	MESSAGE_VIDEO_CALL,
+	MESSAGE_WEBRTC_CALL,
+} from './Messages/constants';
 
 export function flatMap(arr, mapFunc) {
 	const result = [];
@@ -125,7 +137,18 @@ export const setCookies = (rid, token) => {
 
 export const getAvatarUrl = (username) => (username ? `${Livechat.client.host}/avatar/${username}` : null);
 
-export const msgTypesNotRendered = ['livechat_video_call', 'livechat_navigation_history', 'au', 'command', 'uj', 'ul', 'livechat-close'];
+export const msgTypesNotRendered = [
+	MESSAGE_VIDEO_CALL,
+	MESSAGE_WEBRTC_CALL,
+	MESSAGE_TYPE_LIVECHAT_NAVIGATION_HISTORY,
+	MESSAGE_TYPE_USER_ADDED,
+	MESSAGE_TYPE_COMMAND,
+	MESSAGE_TYPE_USER_JOINED,
+	MESSAGE_TYPE_USER_LEFT,
+	MESSAGE_TYPE_LIVECHAT_CLOSED,
+	MESSAGE_TYPE_PRIORITY_CHANGE,
+	MESSAGE_TYPE_SLA_CHANGE,
+];
 
 export const canRenderMessage = ({ t }) => !msgTypesNotRendered.includes(t);
 
