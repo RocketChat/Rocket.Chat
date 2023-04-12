@@ -5385,9 +5385,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.36.0":
-  version: 1.36.0
-  resolution: "@rocket.chat/apps-engine@npm:1.36.0"
+"@rocket.chat/apps-engine@npm:1.36.1":
+  version: 1.36.1
+  resolution: "@rocket.chat/apps-engine@npm:1.36.1"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -5395,8 +5395,8 @@ __metadata:
     semver: ^5.7.1
     stack-trace: 0.0.10
     uuid: ^3.4.0
-    vm2: ^3.9.11
-  checksum: 2711a20cd128aa96eed368088ff432e70d4c964210379df5bd9a124781f6180052e750e0ba2ee20568cbff45a4e1c074c7fd0b19bfb637ab427b5823bb0e10cc
+    vm2: ^3.9.16
+  checksum: 7cfdbb4616bd91d1df916fe356a56f97eb7ed31a26155de65aabc19d5349fa1bbf30b308de89c3847692a534f58acc0ded0d5223aa7cb3116d2849502917b03a
   languageName: node
   linkType: hard
 
@@ -5996,7 +5996,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.36.0
+    "@rocket.chat/apps-engine": 1.36.1
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": 0.31.22
@@ -23427,7 +23427,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
+  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
   languageName: node
   linkType: hard
 
@@ -23549,7 +23549,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: c9646e8377f8ce59648891ecdb7ebf1aea23349d145cc2f7d192785b8ede1677eb2582aa991175dcf18a63a092f81a1d3f8554a2826493f94d6db82b6007f409
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 
