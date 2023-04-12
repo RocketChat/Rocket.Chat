@@ -28,7 +28,7 @@ type RoomFilters = {
 	text: string;
 };
 
-const DEFAULT_TYPES = ['d', 'p', 'c', 'discussions', 'teams'];
+const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
