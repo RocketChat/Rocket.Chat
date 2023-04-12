@@ -24,17 +24,22 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 		[setInputText],
 	);
 
-	const handleSave = useCallback(() => {
-		if (inputText === '') {
-			setInputError(t('Invalid_field'));
-			return;
-		}
-		onConfirm(inputText);
-		onCancel();
-	}, [inputText, onConfirm, onCancel, t]);
+	const handleSave = useCallback(
+		(e) => {
+			e.preventDefault();
+			if (inputText === '') {
+				setInputError(t('Invalid_field'));
+				return;
+			}
+			onConfirm(inputText);
+			onCancel();
+		},
+		[inputText, onConfirm, onCancel, t],
+	);
 
 	return (
 		<GenericModal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
 			onClose={onCancel}
 			onConfirm={handleSave}
 			onCancel={onCancel}
