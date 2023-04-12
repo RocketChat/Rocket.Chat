@@ -77,6 +77,15 @@ module.exports = {
 					},
 				],
 				'@typescript-eslint/prefer-optional-chain': 'warn',
+				'@typescript-eslint/no-misused-promises': [
+					'error',
+					{
+						checksVoidReturn: {
+							arguments: false,
+						},
+					},
+				],
+				'@typescript-eslint/no-floating-promises': 'error',
 				'anti-trojan-source/no-bidi': 'error',
 				'func-call-spacing': 'off',
 				'indent': 'off',
