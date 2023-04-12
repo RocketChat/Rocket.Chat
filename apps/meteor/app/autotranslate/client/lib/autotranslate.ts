@@ -23,8 +23,8 @@ let userLanguage = 'en';
 let username = '';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
-		const user: Pick<IUser, 'language' | 'username'> | null = await Meteor.userAsync();
+	Tracker.autorun(() => {
+		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
 		if (!user) {
 			return;
 		}
