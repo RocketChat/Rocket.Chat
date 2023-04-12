@@ -53,7 +53,7 @@ class PushClass {
 	sendWorker(task, interval) {
 		logger.debug(`Send worker started, using interval: ${interval}`);
 
-		return Meteor.setInterval(() => {
+		return setInterval(() => {
 			try {
 				task();
 			} catch (error) {

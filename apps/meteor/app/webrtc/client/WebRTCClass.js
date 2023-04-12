@@ -180,9 +180,7 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 
-		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
-
-		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
+		setInterval(this.checkPeerConnections.bind(this), 1000);
 	}
 
 	onUserStream(...args) {
