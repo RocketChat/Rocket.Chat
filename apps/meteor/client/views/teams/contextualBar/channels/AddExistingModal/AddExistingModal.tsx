@@ -1,6 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Button, Field, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { memo, useCallback } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
@@ -25,24 +26,28 @@ const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) =>
 	const { rooms } = values as { rooms: string[] };
 	const { handleRooms } = handlers;
 
-	const handleAddChannels = useCallback(async () => {
-		try {
-			await addRoomEndpoint({
-				rooms,
-				teamId,
-			});
+	const handleAddChannels = useCallback(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await addRoomEndpoint({
+					rooms,
+					teamId,
+				});
 
-			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
-			reload();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
-		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
+				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
+				reload();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				onClose();
+			}
+		},
+		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload],
+	);
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleAddChannels} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -56,7 +61,7 @@ const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) =>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!hasUnsavedChanges} onClick={handleAddChannels} primary>
+					<Button disabled={!hasUnsavedChanges} type='submit' primary>
 						{t('Add')}
 					</Button>
 				</Modal.FooterControllers>

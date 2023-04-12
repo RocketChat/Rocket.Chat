@@ -12,7 +12,7 @@ Meteor.startup(() => {
 				async (login) => {
 					const { user } = login;
 					const { services } = user;
-					if (!services || !services.nextcloud) {
+					if (!services?.nextcloud) {
 						return;
 					}
 					const token = {
