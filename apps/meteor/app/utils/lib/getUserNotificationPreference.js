@@ -1,9 +1,10 @@
-import { settings } from '../../settings';
-import { Users } from '../../models';
+import { Users } from '@rocket.chat/models';
 
-export const getUserNotificationPreference = (user, pref) => {
+import { settings } from '../../settings';
+
+export const getUserNotificationPreference = async (user, pref) => {
 	if (typeof user === 'string') {
-		user = Users.findOneById(user);
+		user = await Users.findOneById(user);
 	}
 
 	let preferenceKey;

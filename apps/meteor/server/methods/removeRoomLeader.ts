@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { api, Message, Team } from '@rocket.chat/core-services';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -35,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -59,15 +58,14 @@ Meteor.methods<ServerMethods>({
 
 		await Subscriptions.removeRoleById(subscription._id, 'leader');
 
-		const fromUser = Users.findOneById(uid);
+		const fromUser = await Users.findOneById(uid);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'removeRoomLeader',
+			});
+		}
 
-		Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-			role: 'leader',
-		});
+		await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'leader' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {

@@ -125,6 +125,9 @@ const AccountProfilePage = (): ReactElement => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword?: string): Promise<void> => {
 			try {
+				if (!(values.password === values.confirmationPassword)) {
+					throw new Error(t('Invalid_confirm_pass'));
+				}
 				await saveFn(
 					{
 						...(allowRealNameChange ? { realname } : {}),

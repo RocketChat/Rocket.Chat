@@ -5,6 +5,7 @@ import { onLicense } from '../../app/license/server/license';
 // No functionality will be imported tho, just the service registration
 import('./LivechatPriority');
 import('./OmnichannelServiceLevelAgreements');
+import('./AuditLog');
 
 onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
@@ -15,6 +16,6 @@ onLicense('livechat-enterprise', () => {
 	import('./LivechatInquiry');
 	import('./ReadReceipts');
 	import('./LivechatDepartment');
-	import('./Messages');
 	import('./Users');
+	import('./LivechatDepartmentAgents');
 });

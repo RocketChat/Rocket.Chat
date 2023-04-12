@@ -256,8 +256,6 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 
 let openedRoom: string | undefined = undefined;
 
-let currentTracker: Tracker.Computation | undefined = undefined;
-
 export const LegacyRoomManager = {
 	get openedRoom() {
 		return openedRoom;
@@ -282,12 +280,4 @@ export const LegacyRoomManager = {
 	},
 
 	open,
-
-	get currentTracker() {
-		return currentTracker;
-	},
-
-	set currentTracker(tracker) {
-		currentTracker = tracker;
-	},
 };
