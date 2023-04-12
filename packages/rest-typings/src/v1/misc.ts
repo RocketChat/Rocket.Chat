@@ -228,4 +228,10 @@ export type MiscEndpoints = {
 			message: unknown;
 		};
 	};
+
+	'/v1/smtp.check': {
+		GET: () => {
+			isSMTPConfigured: boolean;
+		};
+	};
 };
