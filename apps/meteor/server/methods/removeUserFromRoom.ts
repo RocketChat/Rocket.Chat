@@ -94,7 +94,7 @@ Meteor.methods<ServerMethods>({
 			await Team.removeMember(room.teamId, removedUser._id);
 		}
 
-		Meteor.defer(function () {
+		setImmediate(function () {
 			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
 

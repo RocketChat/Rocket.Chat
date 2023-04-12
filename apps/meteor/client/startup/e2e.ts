@@ -54,7 +54,7 @@ Meteor.startup(() => {
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setImmediate(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						e2e.removeInstanceByRoomId(sub.rid);
 						return;
@@ -95,7 +95,7 @@ Meteor.startup(() => {
 				});
 			},
 			added: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setImmediate(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						return;
 					}

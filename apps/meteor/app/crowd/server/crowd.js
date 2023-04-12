@@ -204,7 +204,7 @@ export class CROWD {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
-						Meteor.defer(async function () {
+						setImmediate(async function () {
 							await deleteUser(user._id);
 							logger.info('User removed:', crowd_username);
 						});

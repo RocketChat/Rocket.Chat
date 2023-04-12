@@ -677,7 +677,7 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,

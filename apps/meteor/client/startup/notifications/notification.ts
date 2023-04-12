@@ -24,7 +24,7 @@ Meteor.startup(() => {
 		const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100);
 
 		if ((Session.get('newRoomSound') || []).length > 0) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				if (newRoomNotification !== 'none') {
 					CustomSounds.play(newRoomNotification, {
 						volume: Number((audioVolume / 100).toPrecision(2)),

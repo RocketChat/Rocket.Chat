@@ -172,7 +172,7 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
 
-	Meteor.defer(() => Email.send(eventResult || email));
+	setImmediate(() => Email.send(eventResult || email));
 };
 
 export const send = async ({

@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 
 		const user = await Users.findOne({ _id: userId }, { projection: { _id: 1, username: 1 } });
 
-		Meteor.defer(async () => {
+		setImmediate(async () => {
 			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user,
 				oldRoom: room,

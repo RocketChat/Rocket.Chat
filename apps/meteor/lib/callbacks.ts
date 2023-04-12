@@ -353,7 +353,7 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				Meteor.defer(() => {
+				setImmediate(() => {
 					this.runOne(callback, item, constant);
 				});
 			}

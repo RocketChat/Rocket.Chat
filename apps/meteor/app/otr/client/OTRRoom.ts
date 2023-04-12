@@ -256,7 +256,7 @@ export class OTRRoom implements IOTRRoom {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(async () => {
+						setImmediate(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
