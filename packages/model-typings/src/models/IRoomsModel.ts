@@ -3,6 +3,20 @@ import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
+export interface ChannelsWithNumberOfMessagesBetweenDate {
+	room: {
+		_id: IRoom['_id'];
+		name: IRoom['name'] | IRoom['fname'];
+		ts: IRoom['ts'];
+		t: IRoom['t'];
+		_updatedAt: IRoom['_updatedAt'];
+		usernames?: IDirectMessageRoom['usernames'];
+	};
+	messages: number;
+	lastWeekMessages: number;
+	diffFromLastWeek: number;
+}
+
 export interface IRoomsModel extends IBaseModel<IRoom> {
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
@@ -96,23 +110,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		endOfLastWeek: number;
 		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<
-		T extends true
-			? { total: number }
-			: {
-					room: {
-						_id: IRoom['_id'];
-						name: IRoom['name'] | IRoom['fname'];
-						ts: IRoom['ts'];
-						t: IRoom['t'];
-						_updatedAt: IRoom['_updatedAt'];
-						usernames?: IDirectMessageRoom['usernames'];
-					};
-					messages: number;
-					lastWeekMessages: number;
-					diffFromLastWeek: number;
-			  }
-	>;
+	}): AggregationCursor<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate>;
 
 	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 

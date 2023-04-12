@@ -8,7 +8,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel, ChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -25,7 +25,6 @@ import type {
 	UpdateOptions,
 	UpdateResult,
 } from 'mongodb';
-import { ReadPreference } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
@@ -130,7 +129,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string): Promise<Document> {
+	async getMostRecentAverageChatDurationTime(
+		numberMostRecentChats: number,
+		department: string,
+	): Promise<{ props: { _id: IRoom['_id']; avgChatDuration: number } }> {
 		const aggregate = [
 			{
 				$match: {
@@ -151,7 +153,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
+		const [statistic] = await this.col
+			.aggregate<{ props: { _id: IRoom['_id']; avgChatDuration: number } }>(aggregate, { readPreference: readSecondaryPreferred() })
+			.toArray();
 		return statistic;
 	}
 
@@ -473,24 +477,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		endOfLastWeek: number;
 		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<
-		T extends true
-			? { total: number }
-			: {
-					room: {
-						_id: IRoom['_id'];
-						name: IRoom['name'] | IRoom['fname'];
-						ts: IRoom['ts'];
-						t: IRoom['t'];
-						_updatedAt: IRoom['_updatedAt'];
-						usernames?: IDirectMessageRoom['usernames'];
-					};
-					messages: number;
-					lastWeekMessages: number;
-					diffFromLastWeek: number;
-			  }
-	> {
-		const readPreference = ReadPreference.SECONDARY_PREFERRED;
+	}): AggregationCursor<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate> {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -594,23 +581,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $count: 'total' });
 		}
 
-		return this.col.aggregate<
-			T extends true
-				? { total: number }
-				: {
-						room: {
-							_id: IRoom['_id'];
-							name: IRoom['name'] | IRoom['fname'];
-							ts: IRoom['ts'];
-							t: IRoom['t'];
-							_updatedAt: IRoom['_updatedAt'];
-							usernames?: IDirectMessageRoom['usernames'];
-						};
-						messages: number;
-						lastWeekMessages: number;
-						diffFromLastWeek: number;
-				  }
-		>(params, { allowDiskUse: true, readPreference });
+		return this.col.aggregate<T extends true ? { total: number } : ChannelsWithNumberOfMessagesBetweenDate>(params, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
 	}
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
