@@ -2,8 +2,8 @@ import moment from 'moment-timezone';
 
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('Smarsh', function addSettings() {
-	this.add('Smarsh_Enabled', false, {
+void settingsRegistry.addGroup('Smarsh', async function addSettings() {
+	await this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Smarsh_Enabled',
 		enableQuery: {
@@ -14,13 +14,13 @@ void settingsRegistry.addGroup('Smarsh', function addSettings() {
 			},
 		},
 	});
-	this.add('Smarsh_Email', '', {
+	await this.add('Smarsh_Email', '', {
 		type: 'string',
 		i18nLabel: 'Smarsh_Email',
 		placeholder: 'email@domain.com',
 		secret: true,
 	});
-	this.add('Smarsh_MissingEmail_Email', 'no-email@example.com', {
+	await this.add('Smarsh_MissingEmail_Email', 'no-email@example.com', {
 		type: 'string',
 		i18nLabel: 'Smarsh_MissingEmail_Email',
 		placeholder: 'no-email@example.com',
@@ -32,12 +32,12 @@ void settingsRegistry.addGroup('Smarsh', function addSettings() {
 			i18nLabel: name,
 		};
 	});
-	this.add('Smarsh_Timezone', 'America/Los_Angeles', {
+	await this.add('Smarsh_Timezone', 'America/Los_Angeles', {
 		type: 'select',
 		values: zoneValues,
 	});
 
-	this.add('Smarsh_Interval', 'every_30_minutes', {
+	await this.add('Smarsh_Interval', 'every_30_minutes', {
 		type: 'select',
 		values: [
 			{

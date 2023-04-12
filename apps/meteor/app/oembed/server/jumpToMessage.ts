@@ -11,10 +11,10 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
 
-const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
+const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
-		if (deep < settings.get<number>('Message_QuoteChainLimit')) {
-			attachments.attachments?.map((msg) => recursiveRemove(msg, deep + 1));
+		if (deep < quoteChainLimit - 1) {
+			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
 		} else {
 			delete attachments.attachments;
 		}
@@ -28,7 +28,12 @@ const validateAttachmentDeepness = (message: IMessage): IMessage => {
 		return message;
 	}
 
-	message.attachments = message.attachments?.map((attachment) => recursiveRemove(attachment));
+	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
+	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
+		delete message.attachments;
+	}
+
+	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
 
 	return message;
 };

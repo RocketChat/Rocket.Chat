@@ -1,5 +1,5 @@
 import { HTTP as MeteorHTTP } from 'meteor/http';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
