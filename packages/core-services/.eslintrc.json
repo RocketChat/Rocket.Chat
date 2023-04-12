@@ -5,7 +5,18 @@
 			"files": ["**/*.spec.js", "**/*.spec.jsx"],
 			"env": {
 				"jest": true
+			},
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
 			}
+		},
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": ["**/*.spec.ts", "**/*.config.ts"]
 		}
 	],
 	"ignorePatterns": ["**/dist"]

@@ -4,5 +4,21 @@
 	"env": {
 		"jest/globals": true
 	},
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/dist"],
+	"overrides": [
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": ["**/*.spec.ts", "**/*.config.ts"]
+		},
+		{
+			"files": ["**/*.spec.ts", "**/*.config.ts"],
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
+			}
+		}
+	]
 }

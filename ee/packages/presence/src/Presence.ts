@@ -35,7 +35,7 @@ export class Presence extends ServiceClass implements IPresence {
 			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
-				this.validateAvailability();
+				void this.validateAvailability();
 			}
 		});
 
@@ -225,7 +225,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api?.broadcast('presence.status', {
+		void this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
 		});

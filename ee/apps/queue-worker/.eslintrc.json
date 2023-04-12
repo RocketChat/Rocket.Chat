@@ -1,4 +1,26 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/dist"],
+	"overrides": [
+		{
+			"files": ["**/*.spec.js", "**/*.spec.jsx"],
+			"env": {
+				"jest": true
+			}
+		},
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": ["**/*.spec.ts", "**/*.config.ts"]
+		},
+		{
+			"files": ["**/*.spec.ts", "**/*.config.ts"],
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
+			}
+		}
+	]
 }

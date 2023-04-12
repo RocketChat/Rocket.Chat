@@ -64,6 +64,8 @@
       "extends": ["@rocket.chat/eslint-config"],
       "plugins": ["react", "react-hooks"],
       "rules": {
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/naming-convention": [
           "error",
           {
@@ -168,7 +170,9 @@
       "files": ["**/*.stories.js", "**/*.stories.jsx", "**/*.stories.ts", "**/*.stories.tsx"],
       "rules": {
         "react/display-name": "off",
-        "react/no-multi-comp": "off"
+        "react/no-multi-comp": "off",
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off"
       }
     },
     {
@@ -178,7 +182,9 @@
         "testing-library/no-await-sync-events": "warn",
         "testing-library/no-manual-cleanup": "warn",
         "testing-library/prefer-explicit-assert": "warn",
-        "testing-library/prefer-user-event": "warn"
+        "testing-library/prefer-user-event": "warn",
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off"
       },
       "env": {
         "mocha": true
@@ -188,7 +194,9 @@
       "files": ["**/*.stories.ts", "**/*.stories.tsx"],
       "rules": {
         "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/explicit-module-boundary-types": "off"
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off"
       }
     }
   ]

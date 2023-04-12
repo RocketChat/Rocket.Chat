@@ -143,7 +143,7 @@ export class Client extends EventEmitter {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
-				this.callMethod(packet);
+				void this.callMethod(packet);
 				break;
 			case DDP_EVENTS.SUBSCRIBE:
 				if (!packet.name) {
@@ -152,7 +152,7 @@ export class Client extends EventEmitter {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
-				this.callSubscribe(packet);
+				void this.callSubscribe(packet);
 				break;
 			case DDP_EVENTS.UNSUBSCRIBE:
 				if (!packet.id) {

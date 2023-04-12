@@ -6,6 +6,13 @@
 			"env": {
 				"jest": true
 			}
+		},
+		{
+			"files": ["**/*.ts"],
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
+			}
 		}
 	],
 	"ignorePatterns": ["**/dist"]

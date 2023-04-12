@@ -9,7 +9,7 @@ import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const PORT = process.env.PORT || 3035;
 
-(async () => {
+void (async () => {
 	const db = await getConnection();
 
 	const trash = await getCollection<Document>(Collections.Trash);

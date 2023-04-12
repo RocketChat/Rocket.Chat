@@ -50,7 +50,7 @@ export class LocalBroker implements IBroker {
 
 			this.methods.delete(`${namespace}.${method}`);
 		}
-		instance.stopped();
+		void instance.stopped();
 	}
 
 	createService(instance: IServiceClass): void {
@@ -58,7 +58,7 @@ export class LocalBroker implements IBroker {
 
 		this.services.add(instance);
 
-		instance.created();
+		void instance.created();
 
 		instance.getEvents().forEach((eventName) => {
 			this.events.on(eventName, (...args) => {
@@ -85,7 +85,7 @@ export class LocalBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broadcastLocal(event, ...args);
+		void this.broadcastLocal(event, ...args);
 
 		this.events.emit('broadcast', event, args);
 	}

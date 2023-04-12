@@ -44,11 +44,25 @@
 			"parserOptions": {
 				"project": ["./tsconfig.json"]
 			},
-			"excludedFiles": [".scripts/*.ts"],
+			"excludedFiles": [".scripts/*.ts", ".storybook/**"],
 			"settings": {
 				"react": {
 					"version": "detect"
 				}
+			}
+		},
+		{
+			"files": [".storybook/**"],
+			"rules": {
+			  "@typescript-eslint/no-misused-promises": "off",
+			  "@typescript-eslint/no-floating-promises": "off"
+			}
+		},
+		{
+			"files": [".scripts/*.ts"],
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
 			}
 		},
 		{

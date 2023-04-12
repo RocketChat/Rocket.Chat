@@ -18,21 +18,24 @@ let createIndexes = async () => {
 			// the collection should not exists yet, return empty then
 			return [];
 		})
-		.then(function (result) {
-			return result.some(function (index) {
+		.then(async function (result) {
+			let created = false;
+			for await (const index of result) {
 				if (index.key && index.key._updatedAt === 1) {
 					if (index.expireAfterSeconds !== indexExpire) {
-						InstanceStatusModel.col.dropIndex(index.name);
-						return false;
+						await InstanceStatusModel.col.dropIndex(index.name);
+						continue;
 					}
-					return true;
+					created = true;
+					break;
 				}
-				return false;
-			});
+			}
+
+			return created;
 		})
-		.then(function (created) {
+		.then(async function (created) {
 			if (!created) {
-				InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
+				await InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
 			}
 		});
 
@@ -53,7 +56,7 @@ const currentInstance = {
 };
 
 async function registerInstance(name: string, extraInformation: Record<string, unknown>): Promise<unknown> {
-	createIndexes();
+	await createIndexes();
 
 	currentInstance.name = name;
 	currentInstance.extraInformation = extraInformation;
@@ -114,7 +117,7 @@ function start(interval?: number) {
 	interval = interval || defaultPingInterval;
 
 	pingInterval = setInterval(function () {
-		ping();
+		void ping();
 	}, interval * 1000);
 }
 

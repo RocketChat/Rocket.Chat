@@ -5,7 +5,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-(async () => {
+void (async () => {
 	const db = await getConnection();
 
 	const trash = await getCollection<Document>(Collections.Trash);

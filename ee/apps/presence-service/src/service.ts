@@ -8,7 +8,7 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 
 const PORT = process.env.PORT || 3031;
 
-(async () => {
+void (async () => {
 	const db = await getConnection();
 
 	const trash = await getCollection<Document>(Collections.Trash);

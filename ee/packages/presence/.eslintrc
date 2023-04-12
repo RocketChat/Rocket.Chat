@@ -6,6 +6,13 @@
 			"env": {
 				"jest": true
 			}
+		},
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": ["**/*.test.ts", "**/*.config.ts"]
 		}
 	],
 	"ignorePatterns": ["**/dist"]

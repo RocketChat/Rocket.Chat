@@ -37,7 +37,9 @@
 		"./packages/**",
 		"./imports/client/**",
 		"**/dist/**",
-		"./public/**"
+		"./public/**",
+		"./.storybook/**",
+		"./.scripts/**"
 		// "./ee/server/services/**"
 	],
 	"ts-node": {
