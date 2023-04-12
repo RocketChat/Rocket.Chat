@@ -30,12 +30,12 @@ const names = new Set(
 
 // Override the addRule to save new names added after this point
 const { addRule } = DDPRateLimiter;
-DDPRateLimiter.addRule = Meteor.bindEnvironment((matcher, calls, time, callback) => {
+DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 	if (matcher && typeof matcher.name === 'string') {
 		names.add(matcher.name);
 	}
 	return addRule.call(DDPRateLimiter, matcher, calls, time, callback);
-});
+};
 
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function (input) {
@@ -151,7 +151,7 @@ const messages = {
 	Connection_By_Method: 'connectionId per method',
 };
 
-const reconfigureLimit = (name, rules, factor = 1) => {
+const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 	if (ruleIds[name + factor]) {
 		DDPRateLimiter.removeRule(ruleIds[name + factor]);
 	}
@@ -166,7 +166,7 @@ const reconfigureLimit = (name, rules, factor = 1) => {
 		settings.get(`DDP_Rate_Limit_${name}_Interval_Time`) * factor,
 		callback(`limit by ${messages[name]}`, name),
 	);
-};
+});
 
 const configIP = _.debounce(() => {
 	reconfigureLimit('IP', {
