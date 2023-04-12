@@ -1,7 +1,7 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -159,7 +159,11 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	);
 
 	return (
-		<Modal data-qa='create-channel-modal' aria-label={t('Create_channel')}>
+		<Modal
+			data-qa='create-channel-modal'
+			aria-label={t('Create_channel')}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
@@ -308,7 +312,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} onClick={handleSubmit(handleCreateChannel)} primary data-qa-type='create-channel-confirm-button'>
+					<Button disabled={!isDirty} type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
