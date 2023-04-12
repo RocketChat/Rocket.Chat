@@ -234,14 +234,6 @@ class LicenseClass {
 		return isUnderAppLimits(this.appsConfig, getInstallationSourceFromAppStorageItem(app));
 	}
 
-	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!(await Apps.isInitialized())) {
-			return false;
-		}
-
-		return isUnderAppLimits(this.appsConfig, source);
-	}
-
 	showLicenses(): void {
 		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
 			return;

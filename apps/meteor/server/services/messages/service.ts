@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
-
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-=======
 import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
@@ -12,7 +5,6 @@ import { Messages } from '@rocket.chat/models';
 
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { settings } from '../../../app/settings/server';
->>>>>>> develop
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
@@ -20,8 +12,6 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
 		return executeSendMessage(fromId, { rid, msg });
 	}
-<<<<<<< HEAD
-=======
 
 	async saveSystemMessage<T = IMessage>(
 		type: MessageTypesValues,
@@ -45,5 +35,4 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		return result.insertedId;
 	}
->>>>>>> develop
 }

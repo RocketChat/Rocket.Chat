@@ -14,13 +14,6 @@ export type QuickActionsActionOptions = Array<{
 	validate?: (room: IRoom) => { value: boolean; tooltip: TranslationKey };
 }>;
 
-export type QuickActionsActionOptions = Array<{
-	id: string;
-	label: TranslationKey;
-	enabled?: boolean;
-	validate?: (room: IRoom) => { value: boolean; tooltip: TranslationKey };
-}>;
-
 export type QuickActionsActionConfig = ToolboxActionConfig & {
 	action?: (id?: QuickActionsActionConfig['id']) => void;
 	groups: Array<'live'>;

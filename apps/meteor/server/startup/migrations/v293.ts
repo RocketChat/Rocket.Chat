@@ -4,7 +4,7 @@ import { upsertPermissions } from '../../../app/authorization/server/functions/u
 addMigration({
 	version: 293,
 	async up() {
-		upsertPermissions();
+		await upsertPermissions();
 
 		// TODO: Please comment this out, for next major release
 

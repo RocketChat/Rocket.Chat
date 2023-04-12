@@ -1,5 +1,6 @@
 import type { IMessage, IModerationAudit, IReport } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
@@ -11,21 +12,21 @@ describe('[Moderation]', function () {
 	before((done) => getCredentials(done));
 
 	describe('[/moderation.getReports]', () => {
-		it('should return an array of reports', (done) => {
-			request
+		it('should return an array of reports', async (done) => {
+			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
 
-		it('should return an array of reports even requested with count and offset params', (done) => {
-			request
+		it('should return an array of reports even requested with count and offset params', async (done) => {
+			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
@@ -34,15 +35,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
 
-		it('should return an array of reports even requested with oldest param', (done) => {
-			request
+		it('should return an array of reports even requested with oldest param', async (done) => {
+			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
@@ -50,15 +51,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
 
-		it('should return an array of reports even requested with latest param', (done) => {
-			request
+		it('should return an array of reports even requested with latest param', async (done) => {
+			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
@@ -66,7 +67,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
@@ -81,8 +82,8 @@ describe('[Moderation]', function () {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -93,7 +94,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					message = res.body.message;
 				})
@@ -101,8 +102,8 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
 				.send({
@@ -111,14 +112,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
@@ -127,7 +128,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
@@ -135,8 +136,8 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		after((done) => {
-			request
+		after(async (done) => {
+			await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -145,14 +146,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should hide reports of a user', (done) => {
-			request
+		it('should hide reports of a user', async (done) => {
+			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
@@ -160,14 +161,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should hide reports of a message', (done) => {
-			request
+		it('should hide reports of a message', async (done) => {
+			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
@@ -175,14 +176,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should return an error when the userId && msgId is not provided', (done) => {
-			request
+		it('should return an error when the userId && msgId is not provided', async (done) => {
+			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
@@ -191,7 +192,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
@@ -205,8 +206,8 @@ describe('[Moderation]', function () {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -215,7 +216,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
@@ -224,8 +225,8 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
 				.send({
@@ -234,14 +235,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		after((done) => {
-			request
+		after(async (done) => {
+			await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -250,14 +251,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should return the reports for a message', (done) => {
-			request
+		it('should return the reports for a message', async (done) => {
+			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
@@ -265,15 +266,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
 
-		it('should return an error when the msgId is not provided', (done) => {
-			request
+		it('should return an error when the msgId is not provided', async (done) => {
+			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
@@ -281,7 +282,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
@@ -296,8 +297,8 @@ describe('[Moderation]', function () {
 		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -306,7 +307,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
@@ -315,8 +316,8 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
 				.send({
@@ -325,15 +326,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
@@ -341,7 +342,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
@@ -349,8 +350,8 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		after((done) => {
-			request
+		after(async (done) => {
+			await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -359,14 +360,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should return the report information', (done) => {
-			request
+		it('should return the report information', async (done) => {
+			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
 				.query({
@@ -374,7 +375,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('report').and.to.be.an('object');
 					expect(res.body.report).to.have.property('_id', reportedMessage._id);
@@ -382,8 +383,8 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		it('should return an error when the reportId is not provided', (done) => {
-			request
+		it('should return an error when the reportId is not provided', async (done) => {
+			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
 				.query({
@@ -391,15 +392,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
 				.end(done);
 		});
 
-		it('should return an error when the reportId is invalid', (done) => {
-			request
+		it('should return an error when the reportId is invalid', async (done) => {
+			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
 				.query({
@@ -407,15 +408,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
 				.end(done);
 		});
 
-		it('should return an error when the reportId is not found', (done) => {
-			request
+		it('should return an error when the reportId is not found', async (done) => {
+			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
 				.query({
@@ -423,7 +424,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
@@ -438,8 +439,8 @@ describe('[Moderation]', function () {
 		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -448,7 +449,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
@@ -457,8 +458,8 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
 				.send({
@@ -467,15 +468,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
@@ -483,7 +484,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
@@ -491,8 +492,8 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		after((done) => {
-			request
+		after(async (done) => {
+			await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -501,14 +502,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should return the message history', (done) => {
-			request
+		it('should return the message history', async (done) => {
+			await request
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
 				.query({
@@ -516,15 +517,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
 		});
 
-		it('should return an error when the userId is not provided', (done) => {
-			request
+		it('should return an error when the userId is not provided', async (done) => {
+			await request
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
 				.query({
@@ -532,7 +533,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})
@@ -547,8 +548,8 @@ describe('[Moderation]', function () {
 		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -557,7 +558,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
@@ -566,8 +567,8 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
 				.send({
@@ -576,15 +577,15 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before((done) => {
-			request
+		before(async (done) => {
+			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
@@ -592,7 +593,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
@@ -600,8 +601,8 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		it('should delete the message history', (done) => {
-			request
+		it('should delete the message history', async (done) => {
+			await request
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
 				.send({
@@ -609,14 +610,14 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
 
-		it('should return an error when the userId is not provided', (done) => {
-			request
+		it('should return an error when the userId is not provided', async (done) => {
+			await request
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
 				.send({
@@ -624,7 +625,7 @@ describe('[Moderation]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				})

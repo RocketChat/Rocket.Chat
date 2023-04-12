@@ -1,9 +1,8 @@
-import { Reports, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Reports, Rooms, Users } from '@rocket.chat/models';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import { Messages } from '../../../app/models/server';
 import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { AppEvents, Apps } from '../../../app/apps/server';
+import { AppEvents, Apps } from '../../../ee/server/apps';
 
 export const reportMessage = async (messageId: IMessage['_id'], description: string, uid: IUser['_id']) => {
 	if (!uid) {
@@ -14,7 +13,7 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 		throw new Error('error-invalid-description');
 	}
 
-	const message = Messages.findOneById(messageId);
+	const message = await Messages.findOneById(messageId);
 
 	if (!message) {
 		throw new Error('error-invalid-message_id');

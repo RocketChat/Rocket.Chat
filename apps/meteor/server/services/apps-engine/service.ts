@@ -25,8 +25,6 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
-<<<<<<< HEAD
-=======
 			// if the app already exists in this instance, don't load it again
 			const app = Apps.getManager()?.getOneById(appId);
 
@@ -34,7 +32,6 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
->>>>>>> develop
 			await (Apps.getManager() as any)?.loadOne(appId);
 		});
 
@@ -74,9 +71,6 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			}
 		});
 
-<<<<<<< HEAD
-		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting): Promise<void> => {
-=======
 		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
 			const app = Apps.getManager()?.getOneById(appId);
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
@@ -87,7 +81,6 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
->>>>>>> develop
 			const appManager = Apps.getManager();
 			if (!appManager) {
 				return;

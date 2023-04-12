@@ -9,11 +9,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	protected name = 'upload';
 
 	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
-<<<<<<< HEAD
-		return Meteor.runAsUser(userId, () => {
-=======
 		return Meteor.runAsUser(userId, async () => {
->>>>>>> develop
 			const fileStore = FileUpload.getStore('Uploads');
 			return fileStore.insert(details, buffer);
 		});
@@ -30,12 +26,6 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
 		return Meteor.runAsUser(userId, () => {
 			return new Promise((resolve, reject) => {
-<<<<<<< HEAD
-				FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
-					if (err) {
-						return reject(err);
-					}
-=======
 				FileUpload.getBuffer(file, (err?: Error, buffer?: false | Buffer) => {
 					if (err) {
 						return reject(err);
@@ -43,7 +33,6 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 					if (!(buffer instanceof Buffer)) {
 						return reject(new Error('Unknown error'));
 					}
->>>>>>> develop
 					return resolve(buffer);
 				});
 			});

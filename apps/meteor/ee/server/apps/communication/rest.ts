@@ -1,19 +1,6 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-import { Settings, Users as UsersRaw } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-
-import { API } from '../../../../app/api/server';
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { settings } from '../../../../app/settings/server';
-import { Info } from '../../../../app/utils/server';
-import { Users } from '../../../../app/models/server';
-import { Apps } from '../orchestrator';
-========
 import { Settings, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -23,7 +10,6 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
@@ -32,15 +18,12 @@ import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-========
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
 import { Info } from '../../../../app/utils/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -175,11 +158,7 @@ export class AppsRestApi {
 						result = HTTP.get(`${baseUrl}/v1/categories`, {
 							headers,
 						});
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					} catch (e) {
-========
 					} catch (e: any) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
 						return API.v1.internalError();
 					}
@@ -214,11 +193,7 @@ export class AppsRestApi {
 
 					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					const seats = Users.getActiveLocalUserCount();
-========
 					const seats = await Users.getActiveLocalUserCount();
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					return API.v1.success({
 						url: `${baseUrl}/apps/${this.queryParams.appId}/${
@@ -249,11 +224,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					// Gets the Apps from the marketplace
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					if (this.queryParams.marketplace) {
-========
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						apiDeprecationLogger.warn(
 							'This endpoint has been deprecated and will be removed in the future. Use /apps/marketplace to get the apps list.',
 						);
@@ -281,11 +252,7 @@ export class AppsRestApi {
 						return API.v1.success(result.data);
 					}
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					if (this.queryParams.categories) {
-========
 					if ('categories' in this.queryParams && this.queryParams.categories) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						apiDeprecationLogger.warn(
 							'This endpoint has been deprecated and will be removed in the future. Use /apps/categories to get the categories list.',
 						);
@@ -313,16 +280,12 @@ export class AppsRestApi {
 						return API.v1.success(result.data);
 					}
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
-========
 					if (
 						'buildExternalUrl' in this.queryParams &&
 						'appId' in this.queryParams &&
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						apiDeprecationLogger.warn(
 							'This endpoint has been deprecated and will be removed in the future. Use /apps/buildExternalUrl to get the modal URLs.',
 						);
@@ -440,11 +403,7 @@ export class AppsRestApi {
 						?.convertToApp(await Meteor.userAsync());
 
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					const info = aff.getAppInfo();
-========
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					if (aff.hasStorageError()) {
 						return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
@@ -460,11 +419,7 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
-========
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					if (await canEnableApp(aff.getApp().getStorageItem())) {
 						const success = await manager.enable(info.id);
@@ -490,25 +445,13 @@ export class AppsRestApi {
 					}
 
 					const baseUrl = orchestrator.getMarketplaceUrl();
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					const workspaceId = settings.get('Cloud_Workspace_Id');
-========
 					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					const requester = {
 						id: this.user._id,
 						username: this.user.username,
 						name: this.user.name,
 						nickname: this.user.nickname,
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-						emails: this.user.emails.map((e) => e.address),
-					};
-
-					let admins = [];
-					try {
-						const adminsRaw = await UsersRaw.findUsersInRoles('admin', undefined, {
-========
 						emails: this.user?.emails?.map((e) => e.address),
 					};
 
@@ -520,7 +463,6 @@ export class AppsRestApi {
 					}[] = [];
 					try {
 						const adminsRaw = await Users.findUsersInRoles(['admin'], undefined, {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 							projection: {
 								username: 1,
 								name: 1,
@@ -825,11 +767,7 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
-========
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					return API.v1.success({
 						app: info,
@@ -854,11 +792,7 @@ export class AppsRestApi {
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
 					info.status = prl.getStatus();
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'uninstall', info);
-========
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					return API.v1.success({ app: info });
 				},
@@ -903,26 +837,13 @@ export class AppsRestApi {
 			{
 				async post() {
 					const { appId, appName, appVersion, message } = this.bodyParams;
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					const workspaceUrl = settings.get('Site_Url');
-========
 					const workspaceUrl = settings.get<string>('Site_Url');
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					const regex = new RegExp('\\/$', 'gm');
 					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
 					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
 
 					try {
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-						const msgs = ({ adminUser }) => {
-							return {
-								msg: TAPi18n.__('App_Request_Admin_Message', {
-									admin_name: adminUser.name,
-									app_name: appName,
-									user_name: `@${this.user.username}`,
-									message,
-========
 						const msgs: (params: { adminUser: IUser }) => Promise<Partial<IMessage>> = async ({ adminUser }) => {
 							return {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
@@ -930,7 +851,6 @@ export class AppsRestApi {
 									app_name: appName || '',
 									user_name: `@${this.user.username}`,
 									message: message || '',
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 									learn_more: learnMore,
 								}),
 							};
@@ -1221,11 +1141,7 @@ export class AppsRestApi {
 						}
 					}
 
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
-========
 					const result = await manager.changeStatus(prl.getID(), this.bodyParams.status);
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 
 					return API.v1.success({ status: result.getStatus() });
 				},
@@ -1252,11 +1168,7 @@ export class AppsRestApi {
 						});
 
 						return API.v1.success(result.data);
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					} catch (e) {
-========
 					} catch (e: any) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
 
 						return API.v1.failure(e.message);
@@ -1282,11 +1194,7 @@ export class AppsRestApi {
 						const result = HTTP.get(`${baseUrl}/v1/app-request/stats`, { headers });
 
 						return API.v1.success(result.data);
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					} catch (e) {
-========
 					} catch (e: any) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
 
 						return API.v1.failure(e.message);
@@ -1314,11 +1222,7 @@ export class AppsRestApi {
 						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: { ids: unseenRequests } });
 
 						return API.v1.success(result.data);
-<<<<<<<< HEAD:apps/meteor/ee/server/apps/communication/rest.js
-					} catch (e) {
-========
 					} catch (e: any) {
->>>>>>>> develop:apps/meteor/ee/server/apps/communication/rest.ts
 						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
 
 						return API.v1.failure(e.message);

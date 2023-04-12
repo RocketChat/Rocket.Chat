@@ -6492,22 +6492,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/base64@workspace:^, @rocket.chat/base64@workspace:packages/base64":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/base64@workspace:packages/base64"
-  dependencies:
-    "@babel/core": ~7.20.5
-    "@babel/preset-env": ~7.20.2
-    "@rocket.chat/eslint-config": "workspace:^"
-    "@typescript-eslint/eslint-plugin": ^5.30.7
-    "@typescript-eslint/parser": ^5.30.7
-    eslint: ^8.29.0
-    jest: ^27.5.1
-    ts-jest: ^27.1.5
-    typescript: ~4.6.4
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/cas-validate@workspace:^, @rocket.chat/cas-validate@workspace:packages/cas-validate":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/cas-validate@workspace:packages/cas-validate"
@@ -19145,13 +19129,6 @@ __metadata:
   version: 0.13.1
   resolution: "emittery@npm:0.13.1"
   checksum: 2b089ab6306f38feaabf4f6f02792f9ec85fc054fda79f44f6790e61bbf6bc4e1616afb9b232e0c5ec5289a8a452f79bfa6d905a6fd64e94b49981f0934001c6
-  languageName: node
-  linkType: hard
-
-"emoji-assets@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "emoji-assets@npm:7.0.1"
-  checksum: b8a5239a3c429b7b5deb00411ed065c6d96bc2612b887ada513457ae639ea953ebc6e3af50d7666a29be2e53bbcde189092166cba1a502297467ea8473db3106
   languageName: node
   linkType: hard
 

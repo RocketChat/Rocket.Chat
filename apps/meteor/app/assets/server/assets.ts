@@ -496,7 +496,7 @@ Meteor.methods<ServerMethods>({
 
 		await RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
-} as Pick<ServerMethods, 'refreshClients' | 'unsetAsset' | 'setAsset'>);
+});
 
 const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
 	if (!req.url) {

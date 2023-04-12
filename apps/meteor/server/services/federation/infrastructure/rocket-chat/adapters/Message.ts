@@ -22,11 +22,7 @@ export class RocketChatMessageAdapter {
 		externalEventId: string,
 		homeServerDomain: string,
 	): Promise<void> {
-<<<<<<< HEAD
-		sendMessage(
-=======
 		await sendMessage(
->>>>>>> develop
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -51,11 +47,7 @@ export class RocketChatMessageAdapter {
 		homeServerDomain: string,
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
-<<<<<<< HEAD
-		sendMessage(
-=======
 		await sendMessage(
->>>>>>> develop
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -88,9 +80,6 @@ export class RocketChatMessageAdapter {
 				senderExternalId: user.getExternalId(),
 			}),
 		};
-<<<<<<< HEAD
-		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
-=======
 		await updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
 	}
 
@@ -152,67 +141,6 @@ export class RocketChatMessageAdapter {
 			),
 		};
 		await updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
->>>>>>> develop
-	}
-
-	private async getMessageToReplyToWhenQuoting(
-		federatedRoom: FederatedRoom,
-		messageToReplyTo: IMessage,
-		externalFormattedMessage: string,
-		rawMessage: string,
-		homeServerDomain: string,
-		senderUser: FederatedUser,
-	): Promise<string> {
-		const room = federatedRoom.getInternalReference();
-		const messageToReplyToUrl = getURL(
-			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
-			{ full: true },
-		);
-		return toInternalQuoteMessageFormat({
-			messageToReplyToUrl,
-			formattedMessage: externalFormattedMessage,
-			rawMessage,
-			homeServerDomain,
-			senderExternalId: senderUser.getExternalId(),
-		});
-	}
-
-	public async getMessageToEditWhenReplyAndQuote(
-		editedMessage: IMessage,
-		newExternalFormattedMessage: string,
-		newRawMessageText: string,
-		homeServerDomain: string,
-		senderUser: FederatedUser,
-	): Promise<string> {
-		const quotedMessageUrl = editedMessage.attachments?.filter(isQuoteAttachment)?.[0]?.message_link;
-
-		return toInternalQuoteMessageFormat({
-			messageToReplyToUrl: quotedMessageUrl || '',
-			formattedMessage: newExternalFormattedMessage,
-			rawMessage: newRawMessageText,
-			homeServerDomain,
-			senderExternalId: senderUser.getExternalId(),
-		});
-	}
-
-	public async editQuotedMessage(
-		user: FederatedUser,
-		newRawMessageText: string,
-		newExternalFormattedMessage: string,
-		editedMessage: IMessage,
-		homeServerDomain: string,
-	): Promise<void> {
-		const updatedMessage = {
-			...editedMessage,
-			msg: await this.getMessageToEditWhenReplyAndQuote(
-				editedMessage,
-				newExternalFormattedMessage,
-				newRawMessageText,
-				homeServerDomain,
-				user,
-			),
-		};
-		updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
 	}
 
 	public async sendFileMessage(

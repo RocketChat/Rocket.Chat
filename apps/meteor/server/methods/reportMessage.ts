@@ -22,7 +22,6 @@ Meteor.methods<ServerMethods>({
 		check(messageId, String);
 		check(description, String);
 
-
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -67,10 +66,11 @@ Meteor.methods<ServerMethods>({
 			name: user.name,
 			active: user.active,
 			avatarETag: user.avatarETag,
+			createdAt: user.createdAt,
 		};
 
 		const roomInfo = {
-			rid,
+			_id: rid,
 			name: room.name,
 			t: room.t,
 			federated: room.federated,
