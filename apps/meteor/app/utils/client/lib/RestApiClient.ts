@@ -39,7 +39,7 @@ APIClient.use(async function (request, next) {
 		const e = await error.json();
 
 		return new Promise(async (resolve, reject) => {
-			process2faReturn({
+			await process2faReturn({
 				error: e,
 				result: null,
 				emailOrUsername: undefined,

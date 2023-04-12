@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Livechat } from '../Livechat';
 import { settings } from '../../../../settings/server';
 import { Logger } from '../../../../logger/server';
@@ -63,7 +61,7 @@ export const onlineAgents = {
 		return this.users.has(userId);
 	},
 
-	runAgentLeaveAction: Meteor.bindEnvironment(async (userId: string) => {
+	runAgentLeaveAction: async (userId: string) => {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
@@ -81,5 +79,5 @@ export const onlineAgents = {
 				err: e,
 			});
 		}
-	}),
+	},
 };

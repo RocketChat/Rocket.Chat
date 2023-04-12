@@ -67,7 +67,7 @@ const commands = {
 	},
 
 	async 'logout'() {
-		const user = await Meteor.userAsync();
+		const user = Meteor.user();
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
 			Meteor.call('logoutCleanUp', user);
@@ -85,7 +85,7 @@ const commands = {
 
 type CommandMessage<TCommandName extends keyof typeof commands = keyof typeof commands> = {
 	externalCommand: TCommandName;
-} & Parameters<typeof commands[TCommandName]>[0];
+} & Parameters<(typeof commands)[TCommandName]>[0];
 
 window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: MessageEvent<TCommandMessage>) => {
 	if (!settings.get<boolean>('Iframe_Integration_receive_enable')) {
