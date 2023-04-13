@@ -59,7 +59,7 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = window.innerWidth > 1060 ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	const fixFiltersSize = useMediaQuery('(min-width: 1060px)') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
 		<Box pi='x24'>
