@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
@@ -85,7 +85,7 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -94,7 +94,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
-		APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+		void APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
@@ -256,12 +256,15 @@ export class OTRRoom implements IOTRRoom {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(() => {
+						Meteor.defer(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
 							if (data.refresh) {
-								Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								await APIClient.post('/v1/chat.otr', {
+									roomId: this._roomId,
+									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+								});
 							}
 						});
 					} catch (e) {
@@ -325,7 +328,10 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+						await APIClient.post('/v1/chat.otr', {
+							roomId: this._roomId,
+							type: otrSystemMessages.USER_JOINED_OTR,
+						});
 					}
 					this.isFirstOTR = false;
 				} catch (e) {

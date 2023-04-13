@@ -9,8 +9,8 @@ import { updatePermission } from '../../../data/permissions.helper';
 describe('Email inbox', () => {
 	before((done) => getCredentials(done));
 	let testInbox = '';
-	before((done) => {
-		request
+	before(async () => {
+		await request
 			.post(api('email-inbox'))
 			.set(credentials)
 			.send({
@@ -45,20 +45,16 @@ describe('Email inbox', () => {
 					expect(res.body).to.have.property('error');
 					expect(res.body.error.includes('E11000')).to.be.eq(true);
 				}
-			})
-			.end(done);
+			});
 	});
-	after((done) => {
+	after(async () => {
 		if (testInbox) {
-			request
+			await request
 				.delete(api(`email-inbox/${testInbox}`))
 				.set(credentials)
 				.send()
-				.expect(200)
-				.end(() => done());
-			return;
+				.expect(200);
 		}
-		done();
 	});
 	describe('GET email-inbox.list', () => {
 		it('should fail if user doesnt have manage-email-inbox permission', async () => {

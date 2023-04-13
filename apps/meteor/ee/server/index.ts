@@ -1,6 +1,5 @@
 import './startup';
 
-import '../app/models/server';
 import '../app/license/server/index';
 import '../app/api-enterprise/server/index';
 import '../app/authorization/server/index';
@@ -14,5 +13,4 @@ import './api';
 import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
-import './settings/index';
 import './methods/getReadReceipts';

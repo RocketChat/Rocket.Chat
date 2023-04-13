@@ -54,6 +54,8 @@ on:
         required: true
       CR_PAT:
         required: true
+      QASE_API_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -78,7 +80,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.9.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
@@ -197,7 +199,7 @@ jobs:
         env:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
-          for i in $(seq 1 5); do
+          for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
@@ -223,6 +225,8 @@ jobs:
         env:
           E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
@@ -234,7 +238,7 @@ jobs:
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
-        if: inputs.type == 'ui' && failure()
+        if: failure()
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage

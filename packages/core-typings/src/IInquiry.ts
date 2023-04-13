@@ -15,6 +15,7 @@ export enum LivechatInquiryStatus {
 	QUEUED = 'queued',
 	TAKEN = 'taken',
 	READY = 'ready',
+	OPEN = 'open',
 }
 
 export interface IVisitor {
@@ -23,6 +24,7 @@ export interface IVisitor {
 	token: string;
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
+	lastMessageTs?: Date;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {

@@ -2,6 +2,8 @@ import crypto from 'crypto';
 
 import type { BrowserContextOptions, Page } from '@playwright/test';
 
+import { BASE_URL } from '../config/constants';
+
 
 export type IUserState = {
 	data: {
@@ -56,7 +58,7 @@ function generateContext(username: string) : IUserState {
 			],
 			"origins": [
 			{
-				"origin": "http://localhost:3000",
+				"origin": BASE_URL,
 				"localStorage": [
 				{
 					"name": "userLanguage",

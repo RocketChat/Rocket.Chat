@@ -1,7 +1,8 @@
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
+import type { Document } from 'mongodb';
 
-export abstract class Base<T = any> {
+export abstract class Base<T extends Document = any> {
 	private model: Mongo.Collection<T>;
 
 	protected _baseName() {

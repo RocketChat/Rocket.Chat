@@ -13,7 +13,7 @@ const { FederationHooksEE } = proxyquire
 		'meteor/meteor': {
 			'@global': true,
 		},
-		'meteor/random': {
+		'@rocket.chat/random': {
 			'Random': {
 				id: () => 1,
 			},
@@ -32,10 +32,6 @@ const { FederationHooksEE } = proxyquire
 	});
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
-	beforeEach(() => {
-		Promise.await = (args) => args;
-	});
-
 	afterEach(() => {
 		remove.reset();
 		get.reset();

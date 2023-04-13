@@ -54,6 +54,8 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	lr: faker.date.recent(),
 	userMentions: faker.datatype.number({ min: 0 }),
 	groupMentions: faker.datatype.number({ min: 0 }),
+	lowerCaseName: faker.name.findName().toLowerCase(),
+	lowerCaseFName: faker.name.findName().toLowerCase(),
 	...overrides,
 });
 

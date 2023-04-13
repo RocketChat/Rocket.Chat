@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useAutoFocus, useUniqueId, useMergedRefs } from '@rocket.chat/fuselage-hooks';
@@ -53,7 +53,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 		};
 	}, [name, mention]);
 
-	const localRooms: { rid: string; t: RoomType; _id: string; name: string; uids?: string }[] = useUserSubscriptions(query, options);
+	const localRooms = useUserSubscriptions(query, options);
 
 	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
 

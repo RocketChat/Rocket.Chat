@@ -1,21 +1,96 @@
-import type { ILivechatDepartmentRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	Document,
+	IndexDescription,
+	DeleteResult,
+	UpdateFilter,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
-export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> implements ILivechatDepartmentModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentRecord>>) {
+export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);
+	}
+
+	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredFindOne(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredUpdate(
+		_query: Filter<ILivechatDepartment>,
+		_update: UpdateFilter<ILivechatDepartment>,
+		_options: FindOptions<ILivechatDepartment>,
+	): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredRemove(_query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	removeParentAndAncestorById(_id: string): Promise<Document | UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	protected modelIndexes(): Array<IndexDescription> {
+		return [
+			{
+				key: {
+					name: 1,
+				},
+			},
+			{
+				key: {
+					businessHourId: 1,
+				},
+				sparse: true,
+			},
+			{
+				key: {
+					type: 1,
+				},
+				sparse: true,
+			},
+			{
+				key: {
+					numAgents: 1,
+					enabled: 1,
+				},
+			},
+			{
+				key: {
+					parentId: 1,
+				},
+				sparse: true,
+			},
+			{
+				key: {
+					ancestors: 1,
+				},
+				sparse: true,
+			},
+		];
 	}
 
 	countTotal(): Promise<number> {
 		return this.col.countDocuments();
 	}
 
-	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
+	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
 	}
@@ -23,9 +98,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	findByNameRegexWithExceptionsAndConditions(
 		searchTerm: string,
 		exceptions: string[] = [],
-		conditions: Filter<ILivechatDepartmentRecord> = {},
-		options: FindOptions<ILivechatDepartmentRecord> = {},
-	): FindCursor<ILivechatDepartmentRecord> {
+		conditions: Filter<ILivechatDepartment> = {},
+		options: FindOptions<ILivechatDepartment> = {},
+	): FindCursor<ILivechatDepartment> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -43,15 +118,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.find(query, options);
 	}
 
-	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
+	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId };
 		return this.find(query, options);
 	}
 
-	findEnabledByBusinessHourId(
-		businessHourId: string,
-		options: FindOptions<ILivechatDepartmentRecord>,
-	): FindCursor<ILivechatDepartmentRecord> {
+	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId, enabled: true };
 		return this.find(query, options);
 	}
@@ -59,9 +131,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
 		businessHourIds: string[],
 		departmentIds: string[],
-		options: FindOptions<ILivechatDepartmentRecord>,
-	): FindCursor<ILivechatDepartmentRecord> {
-		const query: Filter<ILivechatDepartmentRecord> = {
+		options: FindOptions<ILivechatDepartment>,
+	): FindCursor<ILivechatDepartment> {
+		const query: Filter<ILivechatDepartment> = {
 			enabled: true,
 			businessHourId: {
 				$in: businessHourIds,
@@ -124,7 +196,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
-	async createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<ILivechatDepartmentRecord> {
+	async createOrUpdateDepartment(_id: string, data: ILivechatDepartment): Promise<ILivechatDepartment> {
 		const current = await this.findOneById(_id);
 
 		const record = {
@@ -151,4 +223,115 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void> {
 		throw new Error('Method not implemented in Community Edition.');
 	}
+
+	async saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[] = []): Promise<void> {
+		const { _id: agentId, username } = agent;
+		const savedDepartments = (await LivechatDepartmentAgents.findByAgentId(agentId).toArray()).map((d) => d.departmentId);
+
+		const incNumAgents = (_id: string, numAgents: number) => this.updateOne({ _id }, { $inc: { numAgents } });
+		// remove other departments
+		const deps = difference(savedDepartments, departments).map(async (departmentId) => {
+			// Migrate func
+			await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+			await incNumAgents(departmentId, -1);
+		});
+
+		await Promise.all(deps);
+
+		const promises = departments.map(async (departmentId) => {
+			const dep = await this.findOneById(departmentId, {
+				projection: { enabled: 1 },
+			});
+			if (!dep) {
+				return;
+			}
+
+			const { enabled: departmentEnabled } = dep;
+			// Migrate func
+			const saveResult = await LivechatDepartmentAgents.saveAgent({
+				agentId,
+				departmentId,
+				username,
+				departmentEnabled,
+				count: 0,
+				order: 0,
+			});
+
+			if (saveResult.upsertedId) {
+				await incNumAgents(departmentId, 1);
+			}
+		});
+
+		await Promise.all(promises);
+	}
+
+	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, update);
+	}
+
+	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { numAgents } });
+	}
+
+	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection'] = {}): FindCursor<ILivechatDepartment> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+		};
+		return this.find(query, projection && { projection });
+	}
+
+	async findEnabledWithAgentsAndBusinessUnit(
+		_: any,
+		projection: FindOptions<ILivechatDepartment>['projection'] = {},
+	): Promise<FindCursor<ILivechatDepartment>> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+		};
+		return this.find(query, projection && { projection });
+	}
+
+	findOneByIdOrName(_idOrName: string, options: FindOptions<ILivechatDepartment> = {}): Promise<ILivechatDepartment | null> {
+		const query = {
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+		const query = {
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+		const query = {
+			enabled: true,
+			numAgents: { $gt: 0 },
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
 }
+
+const difference = <T>(arr: T[], arr2: T[]): T[] => {
+	return arr.filter((a) => !arr2.includes(a));
+};
