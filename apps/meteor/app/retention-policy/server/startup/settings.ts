@@ -1,12 +1,12 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('RetentionPolicy', function () {
+void settingsRegistry.addGroup('RetentionPolicy', async function () {
 	const globalQuery = {
 		_id: 'RetentionPolicy_Enabled',
 		value: true,
 	};
 
-	this.add('RetentionPolicy_Enabled', false, {
+	await this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'RetentionPolicy_Enabled',
@@ -14,7 +14,7 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 			'Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on at rocket.chat/docs/administrator-guides/retention-policies/',
 	});
 
-	this.add('RetentionPolicy_Precision', '0', {
+	await this.add('RetentionPolicy_Precision', '0', {
 		type: 'select',
 		values: [
 			{
@@ -46,7 +46,7 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 		],
 	});
 
-	this.add('RetentionPolicy_Advanced_Precision', false, {
+	await this.add('RetentionPolicy_Advanced_Precision', false, {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'RetentionPolicy_Advanced_Precision',
@@ -54,7 +54,7 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 		enableQuery: globalQuery,
 	});
 
-	this.add('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *', {
+	await this.add('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'RetentionPolicy_Advanced_Precision_Cron',
@@ -62,14 +62,14 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 		enableQuery: [globalQuery, { _id: 'RetentionPolicy_Advanced_Precision', value: true }],
 	});
 
-	this.section('Global Policy', function () {
-		this.add('RetentionPolicy_AppliesToChannels', false, {
+	await this.section('Global Policy', async function () {
+		await this.add('RetentionPolicy_AppliesToChannels', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_AppliesToChannels',
 			enableQuery: globalQuery,
 		});
-		this.add('RetentionPolicy_MaxAge_Channels', 30, {
+		await this.add('RetentionPolicy_MaxAge_Channels', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_Channels',
@@ -83,13 +83,13 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 			],
 		});
 
-		this.add('RetentionPolicy_AppliesToGroups', false, {
+		await this.add('RetentionPolicy_AppliesToGroups', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_AppliesToGroups',
 			enableQuery: globalQuery,
 		});
-		this.add('RetentionPolicy_MaxAge_Groups', 30, {
+		await this.add('RetentionPolicy_MaxAge_Groups', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_Groups',
@@ -103,14 +103,14 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 			],
 		});
 
-		this.add('RetentionPolicy_AppliesToDMs', false, {
+		await this.add('RetentionPolicy_AppliesToDMs', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_AppliesToDMs',
 			enableQuery: globalQuery,
 		});
 
-		this.add('RetentionPolicy_MaxAge_DMs', 30, {
+		await this.add('RetentionPolicy_MaxAge_DMs', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_DMs',
@@ -124,14 +124,14 @@ void settingsRegistry.addGroup('RetentionPolicy', function () {
 			],
 		});
 
-		this.add('RetentionPolicy_DoNotPrunePinned', false, {
+		await this.add('RetentionPolicy_DoNotPrunePinned', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_DoNotPrunePinned',
 			enableQuery: globalQuery,
 		});
 
-		this.add('RetentionPolicy_FilesOnly', false, {
+		await this.add('RetentionPolicy_FilesOnly', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_FilesOnly',

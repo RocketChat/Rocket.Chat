@@ -7,7 +7,7 @@ import { isTotpRequiredError } from './utils';
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
-type TwoFactorMethod = typeof twoFactorMethods[number];
+type TwoFactorMethod = (typeof twoFactorMethods)[number];
 
 const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 

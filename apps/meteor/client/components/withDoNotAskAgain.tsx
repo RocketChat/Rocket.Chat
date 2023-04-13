@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import type { DontAskAgainList } from '../hooks/useDontAskAgain';
 
 type DoNotAskAgainProps = {
-	onConfirm: (...args: any) => any;
+	onConfirm: (...args: any) => Promise<void> | void;
 	dontAskAgain: {
 		action: string;
 		label: string;
@@ -14,7 +14,7 @@ type DoNotAskAgainProps = {
 };
 
 export type RequiredModalProps = {
-	onConfirm: (...args: any) => any;
+	onConfirm?: (...args: any) => Promise<void> | void;
 	dontAskAgain?: ReactElement;
 };
 

@@ -13,6 +13,7 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
@@ -621,7 +622,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
@@ -650,8 +651,8 @@ export class ImportDataConverter {
 
 		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
-			Meteor.runAsUser(startedByUserId, () => {
-				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
+			await Meteor.runAsUser(startedByUserId, async () => {
+				await Meteor.callAsync('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
 			});
 		}
 
@@ -838,11 +839,11 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, () => {
+			await Meteor.runAsUser(creatorId, async () => {
 				const roomInfo =
 					roomData.t === 'd'
-						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+						? await Meteor.callAsync('createDirectMessage', ...members)
+						: await Meteor.callAsync(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
 				roomData._id = roomInfo.rid;
 			});
