@@ -1,7 +1,7 @@
 import type { IMessage, IReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { Message, MessageToolboxItem, MessageToolboxWrapper } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Message, MessageName, MessageToolboxItem, MessageToolboxWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -38,6 +38,7 @@ const ContextMessage = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
+	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const name = message.u.name || '';
 	const username = message.u.username || '';
@@ -53,7 +54,8 @@ const ContextMessage = ({
 				</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>
-						<Message.Username>{displayName}</Message.Username>
+						<MessageName>{displayName}</MessageName>
+						<>{useRealName && <MessageUsername>&nbsp;{`@${message.u.username}`}</MessageUsername>}</>
 						<Message.Timestamp title={formatDateAndTime(message._updatedAt)}>
 							{formatTime(message._updatedAt !== message.ts ? message._updatedAt : message.ts)}
 							{message._updatedAt !== message.ts && ` (${t('edited')})`}

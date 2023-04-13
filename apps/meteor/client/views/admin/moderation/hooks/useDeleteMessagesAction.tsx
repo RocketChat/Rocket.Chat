@@ -20,8 +20,8 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 		},
 	});
 
-	const onDeleteAll = () => {
-		handleDeleteMessages.mutate({ userId });
+	const onDeleteAll = async () => {
+		await handleDeleteMessages.mutateAsync({ userId });
 		onChange();
 		onReload();
 		setModal();
