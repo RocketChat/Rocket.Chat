@@ -31,6 +31,7 @@ export class AppRoomsConverter {
 			u = {
 				_id: creator._id,
 				username: creator.username,
+				name: creator.name,
 			};
 		}
 

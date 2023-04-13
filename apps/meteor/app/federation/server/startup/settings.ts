@@ -9,9 +9,9 @@ import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
-void settingsRegistry.addGroup('Federation', function () {
-	this.section('Rocket.Chat Federation', async function () {
-		this.add('FEDERATION_Enabled', false, {
+void settingsRegistry.addGroup('Federation', async function () {
+	await this.section('Rocket.Chat Federation', async function () {
+		await this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 			i18nDescription: 'FEDERATION_Enabled',
@@ -19,13 +19,13 @@ void settingsRegistry.addGroup('Federation', function () {
 			public: true,
 		});
 
-		this.add('FEDERATION_Status', 'Disabled', {
+		await this.add('FEDERATION_Status', 'Disabled', {
 			readonly: true,
 			type: 'string',
 			i18nLabel: 'FEDERATION_Status',
 		});
 
-		this.add('FEDERATION_Domain', '', {
+		await this.add('FEDERATION_Domain', '', {
 			type: 'string',
 			i18nLabel: 'FEDERATION_Domain',
 			i18nDescription: 'FEDERATION_Domain_Description',
@@ -35,7 +35,7 @@ void settingsRegistry.addGroup('Federation', function () {
 
 		const federationPublicKey = await FederationKeys.getPublicKeyString();
 
-		this.add('FEDERATION_Public_Key', federationPublicKey || '', {
+		await this.add('FEDERATION_Public_Key', federationPublicKey || '', {
 			readonly: true,
 			type: 'string',
 			multiline: true,
@@ -43,7 +43,7 @@ void settingsRegistry.addGroup('Federation', function () {
 			i18nDescription: 'FEDERATION_Public_Key_Description',
 		});
 
-		this.add('FEDERATION_Discovery_Method', 'dns', {
+		await this.add('FEDERATION_Discovery_Method', 'dns', {
 			type: 'select',
 			values: [
 				{
@@ -60,7 +60,7 @@ void settingsRegistry.addGroup('Federation', function () {
 			public: true,
 		});
 
-		this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
+		await this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
 			type: 'action',
 			actionText: 'FEDERATION_Test_Setup',
 		});

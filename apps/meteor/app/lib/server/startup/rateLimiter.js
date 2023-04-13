@@ -82,7 +82,7 @@ const messages = {
 	Connection_By_Method: 'connectionId per method',
 };
 
-const reconfigureLimit = (name, rules, factor = 1) => {
+const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 	if (ruleIds[name + factor]) {
 		DDPRateLimiter.removeRule(ruleIds[name + factor]);
 	}
@@ -97,7 +97,7 @@ const reconfigureLimit = (name, rules, factor = 1) => {
 		settings.get(`DDP_Rate_Limit_${name}_Interval_Time`) * factor,
 		callback(`limit by ${messages[name]}`, name),
 	);
-};
+});
 
 const configIP = _.debounce(() => {
 	reconfigureLimit('IP', {

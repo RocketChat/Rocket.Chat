@@ -21,7 +21,9 @@ declare module 'meteor/accounts-base' {
 
 		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
 
-		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Record<string, any> | undefined;
+		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): LoginMethodResult | undefined;
+
+		function registerLoginHandler(name: string, handler: (options: any) => undefined | Object): void;
 
 		function _storedLoginToken(): unknown;
 
