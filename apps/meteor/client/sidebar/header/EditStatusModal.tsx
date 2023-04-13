@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, FieldGroup, Modal, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
@@ -49,7 +49,18 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	return (
-		<Modal>
+		<Modal
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box
+					is='form'
+					onSubmit={(e: FormEvent) => {
+						e.preventDefault();
+						handleSaveStatus();
+					}}
+					{...props}
+				/>
+			)}
+		>
 			<Modal.Header>
 				<Modal.Icon name='info' />
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
@@ -80,7 +91,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary onClick={handleSaveStatus} disabled={!!statusTextError}>
+					<Button primary type='submit' disabled={!!statusTextError}>
 						{t('Save')}
 					</Button>
 				</Modal.FooterControllers>
