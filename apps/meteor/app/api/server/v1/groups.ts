@@ -624,7 +624,7 @@ API.v1.addRoute(
 					offset,
 					count: 0,
 					total: 0,
-				})
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
