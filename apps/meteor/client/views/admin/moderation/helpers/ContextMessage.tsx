@@ -21,7 +21,7 @@ const ContextMessage = ({
 	onChange,
 	onReload,
 }: {
-	message: IReport['message'];
+	message: any;
 	room: IReport['room'];
 	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
