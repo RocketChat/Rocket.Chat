@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
-import { RateLimiter } from '@rocket.chat/rate-limit';
 
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
@@ -43,78 +42,6 @@ DDPRateLimiter._increment = function (input) {
 	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
-};
-
-// Need to override the meteor's code duo to a problem with the callback reply
-// being shared among all matchs
-RateLimiter.prototype.check = async function (input, sess) {
-	// ==== BEGIN OVERRIDE ====
-	const session = sess || Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
-	// ==== END OVERRIDE ====
-
-	const self = this;
-	const reply = {
-		allowed: true,
-		timeToReset: 0,
-		numInvocationsLeft: Infinity,
-	};
-
-	const matchedRules = await self._findAllMatchingRules(input);
-	for await (const rule of matchedRules) {
-		// ==== BEGIN OVERRIDE ====
-		const callbackReply = {
-			allowed: true,
-			timeToReset: 0,
-			numInvocationsLeft: Infinity,
-		};
-		// ==== END OVERRIDE ====
-
-		const ruleResult = rule.apply(input);
-		let numInvocations = rule.counters[ruleResult.key];
-
-		if (ruleResult.timeToNextReset < 0) {
-			// Reset all the counters since the rule has reset
-			rule.resetCounter();
-			ruleResult.timeSinceLastReset = new Date().getTime() - rule._lastResetTime;
-			ruleResult.timeToNextReset = rule.options.intervalTime;
-			numInvocations = 0;
-		}
-
-		if (numInvocations > rule.options.numRequestsAllowed) {
-			// Only update timeToReset if the new time would be longer than the
-			// previously set time. This is to ensure that if this input triggers
-			// multiple rules, we return the longest period of time until they can
-			// successfully make another call
-			if (reply.timeToReset < ruleResult.timeToNextReset) {
-				reply.timeToReset = ruleResult.timeToNextReset;
-			}
-			reply.allowed = false;
-			reply.numInvocationsLeft = 0;
-
-			// ==== BEGIN OVERRIDE ====
-			callbackReply.timeToReset = ruleResult.timeToNextReset;
-			callbackReply.allowed = false;
-			callbackReply.numInvocationsLeft = 0;
-			callbackReply.numInvocationsExceeded = numInvocations - rule.options.numRequestsAllowed;
-			await rule._executeCallback(callbackReply, input);
-			// ==== END OVERRIDE ====
-		} else {
-			// If this is an allowed attempt and we haven't failed on any of the
-			// other rules that match, update the reply field.
-			if (rule.options.numRequestsAllowed - numInvocations < reply.numInvocationsLeft && reply.allowed) {
-				reply.timeToReset = ruleResult.timeToNextReset;
-				reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
-			}
-
-			// ==== BEGIN OVERRIDE ====
-			callbackReply.timeToReset = ruleResult.timeToNextReset;
-			callbackReply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
-			await rule._executeCallback(callbackReply, input);
-			// ==== END OVERRIDE ====
-		}
-	}
-	return reply;
 };
 
 const checkNameNonStream = (name) => name && !names.has(name) && !name.startsWith('stream-');
