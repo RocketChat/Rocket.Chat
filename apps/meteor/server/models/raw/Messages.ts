@@ -1221,7 +1221,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IMessage['u'], '_id' | 'username' | 'name'>,
 		unread?: boolean,
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>> {
@@ -1233,6 +1233,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			u: {
 				_id: user._id,
 				username: user.username,
+				name: user.name,
 			},
 			groupable: false as const,
 			...(unread && { unread: true }),

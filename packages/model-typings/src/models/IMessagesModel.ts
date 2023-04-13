@@ -101,7 +101,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IMessage['u'], '_id' | 'username' | 'name'>,
 		unread?: boolean,
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>>;
