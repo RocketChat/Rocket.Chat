@@ -90,6 +90,9 @@ interface EventLikeCallbackSignatures {
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterValidateLogin': (login: { user: IUser }) => void;
+	'afterJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
 }
 
 /**
@@ -205,12 +208,12 @@ type ChainedCallbackSignatures = {
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'beforeSendMessageNotifications': (message: string) => string;
 };
 
-type Hook =
+export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
@@ -218,17 +221,13 @@ type Hook =
 	| 'afterRoomArchived'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
-	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
 	| 'archiveRoom'
 	| 'beforeActivateUser'
-	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSaveMessage'
-	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'

@@ -3,10 +3,10 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
 import { setUserAvatar } from '../../app/lib/server';
-import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -46,7 +46,7 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
+			user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
 		} else {
 			user = (await Meteor.userAsync()) as IUser | null;
 		}

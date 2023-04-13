@@ -3,11 +3,10 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -40,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			return false;
 		}
@@ -98,7 +97,7 @@ Meteor.methods<ServerMethods>({
 						inclusive,
 				  ).toArray();
 
-		const messages = normalizeMessagesForUser(records, fromUserId);
+		const messages = await normalizeMessagesForUser(records, fromUserId);
 
 		if (unreads) {
 			let unreadNotLoaded = 0;

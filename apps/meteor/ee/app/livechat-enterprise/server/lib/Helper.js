@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import {
 	Rooms as RoomRaw,
@@ -6,11 +5,11 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
 	LivechatInquiry,
+	Users,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
@@ -29,7 +28,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) =>
 	}
 
 	if (agentId) {
-		const user = Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId);
 		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
@@ -83,12 +82,12 @@ const normalizeQueueInfo = async ({ position, queueInfo, department }) => {
 export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
+	const propagateInquiryPosition = (inquiry) => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
-	});
+	};
 
 	return setTimeout(() => {
 		propagateInquiryPosition(inquiry);
@@ -128,9 +127,9 @@ export const processWaitingQueue = async (department, inquiry) => {
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
-	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
+	const propagateAgentDelegated = (rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
-	});
+	};
 
 	if (room && room.servedBy) {
 		const {

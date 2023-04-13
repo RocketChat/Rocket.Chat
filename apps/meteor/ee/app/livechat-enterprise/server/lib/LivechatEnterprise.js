@@ -25,7 +25,7 @@ export const LivechatEnterprise = {
 	async addMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -43,7 +43,7 @@ export const LivechatEnterprise = {
 	async removeMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

@@ -9,7 +9,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	protected name = 'upload';
 
 	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
-		return Meteor.runAsUser(userId, () => {
+		return Meteor.runAsUser(userId, async () => {
 			const fileStore = FileUpload.getStore('Uploads');
 			return fileStore.insert(details, buffer);
 		});
