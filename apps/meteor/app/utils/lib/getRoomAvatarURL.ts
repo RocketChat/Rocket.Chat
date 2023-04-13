@@ -9,10 +9,11 @@ import { settings } from '../../settings';
 
 export const getRoomAvatarURL = ({ roomId, cache = '' }: { roomId: IRoom['_id']; cache: IRoom['avatarETag'] }) => {
 	const externalSource = (settings.get('Accounts_RoomAvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
-	if (externalSource !== '') {
+	if (externalSource && typeof externalSource === 'string') {
 		return externalSource.replace('{roomId}', roomId);
 	}
-	if (roomId == null) {
+
+	if (!roomId) {
 		return;
 	}
 

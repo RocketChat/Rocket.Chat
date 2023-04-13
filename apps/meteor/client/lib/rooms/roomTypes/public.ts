@@ -87,7 +87,7 @@ roomCoordinator.add(
 		},
 
 		getAvatarPath(room) {
-			return getRoomAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
+			return getRoomAvatarURL({ roomId: room._id, cache: room.avatarETag });
 		},
 
 		getIcon(room) {
