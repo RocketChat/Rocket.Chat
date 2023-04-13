@@ -22,7 +22,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('[Groups]', function() {
+describe('[Groups]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -802,7 +802,7 @@ describe('[Groups]', function() {
 		});
 	});
 
-	describe('[/groups.files]', async function() {
+	describe('[/groups.files]', async function () {
 		await testFileUploads('groups.files', group);
 	});
 

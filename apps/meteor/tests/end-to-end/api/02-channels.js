@@ -22,7 +22,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('[Channels]', function() {
+describe('[Channels]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -317,7 +317,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	describe('[/channels.files]', async function() {
+	describe('[/channels.files]', async function () {
 		await testFileUploads('channels.files', channel);
 	});
 
