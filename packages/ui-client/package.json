@@ -13,7 +13,7 @@
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/react": "~6.5.16",
 		"@types/jest": "~29.5.0",
-		"@types/react": "~17.0.48",
+		"@types/react": "~17.0.57",
 		"@types/react-dom": "~17.0.17",
 		"eslint": "~8.38.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
