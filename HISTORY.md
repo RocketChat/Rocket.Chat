@@ -1,4 +1,46 @@
 
+# 6.0.3
+`2023-04-13  ·  2 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+
+### 🐛 Bug fixes
+
+
+- Add function to get installation source ([#28806](https://github.com/RocketChat/Rocket.Chat/pull/28806))
+
+  There have been reports of problems regarding the missing information of `installationSource` in apps. The only scenario where this information could be missing is if migrations failed to run properly when upgrading to 6.0. We haven't been able to identify the root cause yet, so we decided to provide a workaround in the meanwhile
+
+- SMTP warnings on user form ([#28832](https://github.com/RocketChat/Rocket.Chat/pull/28832))
+
+  Check for SMTP config on server side and then show warning on client side
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps-engine to v1.37.2 ([#28888](https://github.com/RocketChat/Rocket.Chat/pull/28888))
+
+- Upgrade `vm2` ([#28860](https://github.com/RocketChat/Rocket.Chat/pull/28860))
+
+  It patches `vm2`.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@casalsgh](https://github.com/casalsgh)
+- [@d-gubert](https://github.com/d-gubert)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+
 # 6.0.2
 `2023-04-04  ·  1 🐛  ·  3 👩‍💻👨‍💻`
 
