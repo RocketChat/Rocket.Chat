@@ -31,7 +31,7 @@ export const checkUsernameAvailability = async function (username: string): Prom
 		{
 			username: toRegExp(username),
 		},
-		{ fields: { _id: 1 } },
+		{ projection: { _id: 1 } },
 	);
 	if (existingUser) {
 		return false;

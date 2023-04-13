@@ -14,7 +14,7 @@ import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = await Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
 			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
@@ -119,7 +119,7 @@ Meteor.startup(async function () {
 
 			const id = await Users.create(adminUser);
 
-			Accounts.setPassword(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
 
 			await addUserRolesAsync(id, ['admin']);
 		} else {
@@ -198,7 +198,7 @@ Meteor.startup(async function () {
 
 		await Users.create(adminUser);
 
-		Accounts.setPassword(adminUser._id, adminUser._id);
+		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
