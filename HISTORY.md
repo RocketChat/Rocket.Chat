@@ -1,4 +1,30 @@
 
+# 5.4.6
+`2023-04-12  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps-engine to v1.36.1 ([#28887](https://github.com/RocketChat/Rocket.Chat/pull/28887))
+
+- Upgrade `vm2` ([#28860](https://github.com/RocketChat/Rocket.Chat/pull/28860))
+
+  It patches `vm2`.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+
+
 # 5.4.5
 `2023-03-16  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
