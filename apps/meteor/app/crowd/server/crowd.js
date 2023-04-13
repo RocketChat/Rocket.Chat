@@ -152,7 +152,7 @@ export class CROWD {
 		};
 
 		if (crowdUser.password) {
-			Accounts.setPassword(id, crowdUser.password, {
+			await Accounts.setPasswordAsync(id, crowdUser.password, {
 				logout: false,
 			});
 
@@ -262,7 +262,7 @@ export class CROWD {
 
 		// Attempt to create the new user
 		try {
-			crowdUser._id = Accounts.createUser(crowdUser);
+			crowdUser._id = await Accounts.createUserAsync(crowdUser);
 
 			// sync the user data
 			await this.syncDataToUser(crowdUser, crowdUser._id);
