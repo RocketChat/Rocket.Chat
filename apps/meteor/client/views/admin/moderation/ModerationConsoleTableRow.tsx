@@ -32,7 +32,11 @@ const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQ
 		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} />}
+					{username && (
+						<Box>
+							<UserAvatar size={mediaQuery ? 'x20' : 'x40'} username={username} />
+						</Box>
+					)}
 					<Box display='flex' mi='x8' withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
@@ -52,8 +56,7 @@ const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQ
 				<TableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
-					</Box>{' '}
-					<Box mi='x4' />
+					</Box>
 				</TableCell>
 			)}
 			<TableCell withTruncatedText>{message}</TableCell>
