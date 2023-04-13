@@ -1,31 +1,31 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-void settingsRegistry.addGroup('UserDataDownload', function () {
-	this.add('UserData_EnableDownload', true, {
+void settingsRegistry.addGroup('UserDataDownload', async function () {
+	await this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'UserData_EnableDownload',
 	});
 
-	this.add('UserData_FileSystemPath', '', {
+	await this.add('UserData_FileSystemPath', '', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'UserData_FileSystemPath',
 	});
 
-	this.add('UserData_FileSystemZipPath', '', {
+	await this.add('UserData_FileSystemZipPath', '', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'UserData_FileSystemZipPath',
 	});
 
-	this.add('UserData_ProcessingFrequency', 2, {
+	await this.add('UserData_ProcessingFrequency', 2, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_ProcessingFrequency',
 	});
 
-	this.add('UserData_MessageLimitPerRequest', 1000, {
+	await this.add('UserData_MessageLimitPerRequest', 1000, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_MessageLimitPerRequest',

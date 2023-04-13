@@ -48,7 +48,7 @@ Meteor.methods<ServerMethods>({
 
 		passwordPolicy.validate(password);
 
-		Accounts.setPassword(userId, password, {
+		await Accounts.setPasswordAsync(userId, password, {
 			logout: false,
 		});
 

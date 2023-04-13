@@ -21,7 +21,7 @@ const config = {
 const Nextcloud = new CustomOAuth('nextcloud', config);
 
 const fillServerURL = _.debounce(
-	Meteor.bindEnvironment(() => {
+	() => {
 		const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL');
 		if (!nextcloudURL) {
 			if (nextcloudURL === undefined) {
@@ -31,7 +31,7 @@ const fillServerURL = _.debounce(
 		}
 		config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
 		return Nextcloud.configure(config);
-	}),
+	},
 	Meteor.isServer ? 1000 : 100,
 );
 
