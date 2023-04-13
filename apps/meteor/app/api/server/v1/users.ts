@@ -200,7 +200,7 @@ API.v1.addRoute(
 				Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined | null
 			> => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
-					return Meteor.users.findOne(this.userId) as IUser | undefined;
+					return Users.findOneById(this.userId);
 				}
 				if (canEditOtherUserAvatar) {
 					return getUserFromParams(this.bodyParams);
@@ -269,18 +269,19 @@ API.v1.addRoute(
 			}
 
 			const newUserId = await saveUser(this.userId, this.bodyParams);
+			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
 
 			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
+				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
-				await Meteor.callAsync('setUserActiveStatus', newUserId, this.bodyParams.active);
+				await Meteor.callAsync('setUserActiveStatus', userId, this.bodyParams.active);
 			}
 
 			const { fields } = await this.parseJsonQuery();
 
-			const user = await Users.findOneById(newUserId as string, { projection: fields });
+			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
@@ -1118,16 +1119,18 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined> => {
+			const user = await (async (): Promise<
+				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
+			> => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
-					return Meteor.users.findOne(this.userId) as IUser;
+					return Users.findOneById(this.userId);
 				}
 				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
 					return getUserFromParams(this.bodyParams);
 				}
 			})();
 
-			if (user === undefined) {
+			if (!user) {
 				return API.v1.unauthorized();
 			}
 
@@ -1145,12 +1148,15 @@ API.v1.addRoute(
 						});
 					}
 
-					Meteor.users.update(user._id, {
-						$set: {
-							status,
-							statusDefault: status,
+					await Users.updateOne(
+						{ _id: user._id },
+						{
+							$set: {
+								status,
+								statusDefault: status,
+							},
 						},
-					});
+					);
 
 					const { _id, username, statusText, roles, name } = user;
 					void api.broadcast('presence.status', {

@@ -36,7 +36,7 @@ Meteor.startup(() => {
 	});
 });
 
-function _sendUserEmail(subject, html, userData) {
+async function _sendUserEmail(subject, html, userData) {
 	const email = {
 		to: userData.email,
 		from: settings.get('From_Email'),
@@ -53,7 +53,7 @@ function _sendUserEmail(subject, html, userData) {
 	}
 
 	try {
-		Mailer.send(email);
+		await Mailer.send(email);
 	} catch (error) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'RocketChat.saveUser',
@@ -142,7 +142,7 @@ async function validateUserData(userId, userData) {
 			});
 		}
 
-		if (userData.email && !checkEmailAvailability(userData.email)) {
+		if (userData.email && !(await checkEmailAvailability(userData.email))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.email)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.email,
@@ -303,14 +303,14 @@ const saveNewUser = async function (userData, sendPassword) {
 	handleBio(updateUser, userData.bio);
 	handleNickname(updateUser, userData.nickname);
 
-	Meteor.users.update({ _id }, updateUser);
+	await Users.updateOne({ _id }, updateUser);
 
 	if (userData.sendWelcomeEmail) {
-		_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
+		await _sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 	}
 
 	if (sendPassword) {
-		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
 	userData._id = _id;
@@ -377,7 +377,7 @@ export const saveUser = async function (userId, userData) {
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
-		setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
+		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 	}
 
 	if (
@@ -417,7 +417,7 @@ export const saveUser = async function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	Meteor.users.update({ _id: userData._id }, updateUser);
+	await Users.updateOne({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
 
@@ -427,11 +427,11 @@ export const saveUser = async function (userId, userData) {
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
-		performedBy: safeGetMeteorUser(),
+		performedBy: await safeGetMeteorUser(),
 	});
 
 	if (sendPassword) {
-		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
 	return true;

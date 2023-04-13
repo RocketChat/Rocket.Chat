@@ -1,14 +1,14 @@
-import { LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
 
-const normalizeDefaultAgent = (agent: { _id: string; username: string }) => {
+const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null) => {
 	if (!agent) {
 		return;
 	}
@@ -17,8 +17,9 @@ const normalizeDefaultAgent = (agent: { _id: string; username: string }) => {
 	return { agentId, username };
 };
 
-const getDefaultAgent = async (username: string) =>
-	username && normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
+const getDefaultAgent = async (username?: string) =>
+	username !== undefined &&
+	normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) {
 	lastChattedAgentPreferred = value;
@@ -117,7 +118,12 @@ callbacks.add(
 		const {
 			servedBy: { username: usernameByRoom },
 		} = room;
-		const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }));
+		if (!usernameByRoom) {
+			return defaultAgent;
+		}
+		const lastRoomAgent = normalizeDefaultAgent(
+			await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
+		);
 		return lastRoomAgent ?? defaultAgent;
 	},
 	callbacks.priority.MEDIUM,

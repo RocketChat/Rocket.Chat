@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -85,12 +85,7 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync(
-					'sendSystemMessages',
-					this._roomId,
-					await Meteor.userAsync(),
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-				);
+				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {

@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { LivechatDepartment, CannedResponse } from '@rocket.chat/models';
+import { LivechatDepartment, CannedResponse, Users } from '@rocket.chat/models';
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -95,12 +94,12 @@ Meteor.methods<ServerMethods>({
 
 			result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
 		} else {
-			const user = Users.findOneById(Meteor.userId());
+			const user = await Users.findOneById(userId);
 
 			const data = {
 				...responseData,
-				...(responseData.scope === 'user' && { userId: user._id }),
-				createdBy: { _id: user._id, username: user.username },
+				...(responseData.scope === 'user' && { userId: user?._id }),
+				createdBy: { _id: user?._id || '', username: user?.username || '' },
 				_createdAt: new Date(),
 			};
 
