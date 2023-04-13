@@ -1,16 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { Users } from '../../../app/models/server';
 import { fetch } from '../../../server/lib/http/fetch';
 
-const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps) {
+const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -28,11 +26,11 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 	const link = '/admin/apps';
 
 	await sendMessagesToAdmins({
-		msgs: ({ adminUser }) => ({
+		msgs: async ({ adminUser }) => ({
 			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
 		}),
-		banners: ({ adminUser }) => {
-			Users.removeBannerById(adminUser._id, { id });
+		banners: async ({ adminUser }) => {
+			await Users.removeBannerById(adminUser._id, { id });
 
 			return [
 				{
@@ -48,9 +46,9 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 	});
 
 	return apps;
-});
+};
 
-const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _notifyAdminsAboutRenewedApps(apps) {
+const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -66,16 +64,16 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _noti
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
 	await sendMessagesToAdmins({
-		msgs: ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
 	});
-});
+};
 
-const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpdateMarketplaceInfo() {
+const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
-	const currentSeats = Users.getActiveLocalUserCount();
+	const currentSeats = await Users.getActiveLocalUserCount();
 
 	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
 	const options = {
@@ -98,7 +96,7 @@ const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpd
 	}
 
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
-});
+};
 
 SyncedCron.add({
 	name: 'Apps-Engine:check',

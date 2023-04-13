@@ -1,9 +1,9 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('Discussion', function () {
+void settingsRegistry.addGroup('Discussion', async function () {
 	// the channel for which discussions are created if none is explicitly chosen
 
-	this.add('Discussion_enabled', true, {
+	await this.add('Discussion_enabled', true, {
 		group: 'Discussion',
 		i18nLabel: 'Enable',
 		type: 'boolean',

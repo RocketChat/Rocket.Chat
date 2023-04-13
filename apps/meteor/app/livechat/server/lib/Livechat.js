@@ -44,6 +44,7 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 const logger = new Logger('Livechat');
 
@@ -1076,8 +1077,8 @@ export const Livechat = {
 		return showConnecting;
 	},
 
-	sendEmail(from, to, replyTo, subject, html) {
-		Mailer.send({
+	async sendEmail(from, to, replyTo, subject, html) {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -1200,7 +1201,7 @@ export const Livechat = {
 		const from = `${name} - ${email} <${fromEmail}>`;
 		const replyTo = `${name} <${email}>`;
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		this.sendEmail(from, emailTo, replyTo, subject, html);
+		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);

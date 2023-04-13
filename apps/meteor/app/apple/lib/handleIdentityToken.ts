@@ -1,9 +1,11 @@
 import { KJUR } from 'jsrsasign';
-import { HTTP } from 'meteor/http';
 import NodeRSA from 'node-rsa';
 
-function isValidAppleJWT(identityToken: string, header: any): boolean {
-	const applePublicKeys = HTTP.get('https://appleid.apple.com/auth/keys').data.keys as any;
+import { fetch } from '../../../server/lib/http/fetch';
+
+async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
+	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
+	const applePublicKeys = (await request.json()).data.keys;
 	const { kid } = header;
 
 	const key = applePublicKeys.find((k: any) => k.kid === kid);
@@ -19,10 +21,10 @@ function isValidAppleJWT(identityToken: string, header: any): boolean {
 	}
 }
 
-export function handleIdentityToken(identityToken: string): { id: string; email: string; name: string } {
+export async function handleIdentityToken(identityToken: string): Promise<{ id: string; email: string; name: string }> {
 	const decodedToken = KJUR.jws.JWS.parse(identityToken);
 
-	if (!isValidAppleJWT(identityToken, decodedToken.headerObj)) {
+	if (!(await isValidAppleJWT(identityToken, decodedToken.headerObj))) {
 		throw new Error('identityToken is not a valid JWT');
 	}
 

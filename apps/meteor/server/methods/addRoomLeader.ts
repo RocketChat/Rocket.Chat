@@ -3,10 +3,9 @@ import { check } from 'meteor/check';
 import { api, Message, Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -35,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -59,7 +58,13 @@ Meteor.methods<ServerMethods>({
 
 		await Subscriptions.addRoleById(subscription._id, 'leader');
 
-		const fromUser = Users.findOneById(uid);
+		const fromUser = await Users.findOneById(uid);
+
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addRoomLeader',
+			});
+		}
 
 		await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role: 'leader' });
 

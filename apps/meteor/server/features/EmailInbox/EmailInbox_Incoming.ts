@@ -2,7 +2,13 @@ import stripHtml from 'string-strip-html';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	VideoAttachmentProps,
+	ImageAttachmentProps,
+	AudioAttachmentProps,
+} from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 
@@ -12,20 +18,7 @@ import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
 
-type FileAttachment = {
-	title: string;
-	title_link: string;
-	image_url?: string;
-	image_type?: string;
-	image_size?: string;
-	image_dimensions?: string;
-	audio_url?: string;
-	audio_type?: string;
-	audio_size?: string;
-	video_url?: string;
-	video_type?: string;
-	video_size?: string;
-};
+type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
@@ -78,51 +71,46 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 	throw new Error('Error getting guest');
 }
 
-async function uploadAttachment(attachment: Attachment, rid: string, visitorToken: string): Promise<FileAttachment> {
+async function uploadAttachment(attachmentParam: Attachment, rid: string, visitorToken: string): Promise<Partial<FileAttachment>> {
 	const details = {
-		name: attachment.filename,
-		size: attachment.size,
-		type: attachment.contentType,
+		name: attachmentParam.filename,
+		size: attachmentParam.size,
+		type: attachmentParam.contentType,
 		rid,
 		visitorToken,
 	};
 
 	const fileStore = FileUpload.getStore('Uploads');
-	return new Promise((resolve, reject) => {
-		fileStore.insert(details, attachment.content, function (err: any, file: any) {
-			if (err) {
-				reject(new Error(err));
-			}
 
-			const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+	const file = await fileStore.insert(details, attachmentParam.content);
 
-			const attachment: FileAttachment = {
-				title: file.name,
-				title_link: url,
-			};
+	const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 
-			if (/^image\/.+/.test(file.type)) {
-				attachment.image_url = url;
-				attachment.image_type = file.type;
-				attachment.image_size = file.size;
-				attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-			}
+	const attachment: Partial<FileAttachment> = {
+		title: file.name || '',
+		title_link: url,
+	};
 
-			if (/^audio\/.+/.test(file.type)) {
-				attachment.audio_url = url;
-				attachment.audio_type = file.type;
-				attachment.audio_size = file.size;
-			}
+	if (file.type && /^image\/.+/.test(file.type)) {
+		attachment.image_url = url;
+		attachment.image_type = file.type;
+		attachment.image_size = file.size;
+		attachment.image_dimensions = file.identify?.size != null ? file.identify.size : undefined;
+	}
 
-			if (/^video\/.+/.test(file.type)) {
-				attachment.video_url = url;
-				attachment.video_type = file.type;
-				attachment.video_size = file.size;
-			}
+	if (file.type && /^audio\/.+/.test(file.type)) {
+		attachment.audio_url = url;
+		attachment.audio_type = file.type;
+		attachment.audio_size = file.size;
+	}
 
-			resolve(attachment);
-		});
-	});
+	if (file.type && /^video\/.+/.test(file.type)) {
+		attachment.video_url = url;
+		attachment.video_type = file.type;
+		attachment.video_size = file.size;
+	}
+
+	return attachment;
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {

@@ -8,13 +8,12 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { Rooms, Subscriptions } from '../../../models/client';
+import { ChatRoom, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { MessageAction } from './MessageAction';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
-import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 const getMainMessageText = (message: IMessage): IMessage => {
@@ -51,7 +50,7 @@ Meteor.startup(async function () {
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
 			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
-				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
+				const dmRoom = ChatRoom.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
 				}
@@ -62,6 +61,7 @@ Meteor.startup(async function () {
 		order: 0,
 		group: 'menu',
 	});
+
 	MessageAction.addButton({
 		id: 'share-message',
 		icon: 'arrow-forward',
@@ -84,6 +84,7 @@ Meteor.startup(async function () {
 		order: 0,
 		group: ['message', 'menu'],
 	});
+
 	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',
@@ -264,53 +265,6 @@ Meteor.startup(async function () {
 			return !!reactions;
 		},
 		order: 18,
-		group: 'menu',
-	});
-
-	MessageAction.addButton({
-		id: 'start-discussion',
-		icon: 'discussion',
-		label: 'Discussion_start',
-		context: ['message', 'message-mobile'],
-		async action(this: unknown, _, { message = messageArgs(this).msg, room }) {
-			imperativeModal.open({
-				component: CreateDiscussion,
-				props: {
-					defaultParentRoom: room?.prid || room?._id,
-					onClose: imperativeModal.close,
-					parentMessageId: message._id,
-					nameSuggestion: message?.msg?.substr(0, 140),
-				},
-			});
-		},
-		condition({
-			message: {
-				u: { _id: uid },
-				drid,
-				dcount,
-			},
-			room,
-			subscription,
-			user,
-		}) {
-			if (drid || (!Number.isNaN(dcount) && dcount !== undefined)) {
-				return false;
-			}
-			if (!subscription) {
-				return false;
-			}
-			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom) {
-				return false;
-			}
-
-			if (!user) {
-				return false;
-			}
-
-			return uid !== user._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
-		},
-		order: 1,
 		group: 'menu',
 	});
 });

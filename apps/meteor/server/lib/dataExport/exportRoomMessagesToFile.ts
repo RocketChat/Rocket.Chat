@@ -223,17 +223,15 @@ const exportRoomMessages = async (
 		uploads: [] as FileProp[],
 	};
 
-	results.forEach(
-		Meteor.bindEnvironment((msg) => {
-			const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
+	results.forEach((msg) => {
+		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
-			if (msg.file) {
-				result.uploads.push(msg.file);
-			}
+		if (msg.file) {
+			result.uploads.push(msg.file);
+		}
 
-			result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
-		}),
-	);
+		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
+	});
 
 	return result;
 };
