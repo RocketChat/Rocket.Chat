@@ -260,7 +260,7 @@ export default class AutoComplete {
 	onFocus() {
 		// We need to run onKeyUp after the focus resolves,
 		// or the caret position (selectionStart) will not be correct
-		setImmediate(() => this.onKeyUp());
+		setTimeout(() => this.onKeyUp(), 0);
 	}
 
 	onBlur() {
@@ -296,7 +296,7 @@ export default class AutoComplete {
 		const params = getFindParams(rule, filter, this.limit);
 		const selector = params[0];
 		const options = params[1];
-		setImmediate(() => this.ensureSelection());
+		setTimeout(() => this.ensureSelection(), 0);
 
 		// if server collection, the server has already done the filtering work
 		if (isServerSearch(rule)) {
@@ -313,10 +313,10 @@ export default class AutoComplete {
 
 		// Do this after the render
 		if (showing) {
-			setImmediate(() => {
+			setTimeout(() => {
 				this.positionContainer();
 				this.ensureSelection();
-			});
+			}, 0);
 		}
 		return showing;
 	}

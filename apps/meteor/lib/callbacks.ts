@@ -352,9 +352,9 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				setImmediate(() => {
+				setTimeout(() => {
 					this.runOne(callback, item, constant);
-				});
+				}, 0);
 			}
 
 			return item;

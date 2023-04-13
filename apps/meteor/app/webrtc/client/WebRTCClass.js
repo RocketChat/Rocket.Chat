@@ -677,13 +677,13 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			setImmediate(() => {
+			setTimeout(() => {
 				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,
 					media: data.media,
 				});
-			});
+			}, 0);
 			return;
 		}
 

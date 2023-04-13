@@ -256,7 +256,7 @@ export class OTRRoom implements IOTRRoom {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						setImmediate(async () => {
+						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
@@ -266,7 +266,7 @@ export class OTRRoom implements IOTRRoom {
 									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 								});
 							}
-						});
+						}, 0);
 					} catch (e) {
 						dispatchToastMessage({ type: 'error', message: e });
 						throw new Meteor.Error('establish-connection-error', 'Establish connection error.');

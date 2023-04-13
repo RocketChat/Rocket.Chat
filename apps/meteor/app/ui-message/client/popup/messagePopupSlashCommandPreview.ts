@@ -64,9 +64,9 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 				this.commandArgs.set(params);
 				this.isLoading.set(false);
 
-				setImmediate(() => {
+				setTimeout(() => {
 					this.verifySelection();
-				});
+				}, 0);
 			},
 		);
 	});
