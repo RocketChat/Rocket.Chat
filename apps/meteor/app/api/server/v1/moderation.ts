@@ -3,6 +3,7 @@ import { Reports } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'moderation.getReports',
@@ -15,8 +16,8 @@ API.v1.addRoute(
 		async get() {
 			const { latest, oldest, selector } = this.queryParams;
 
-			const { count = 20, offset = 0 } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const cursor = Reports.findGroupedReports(
 				latest ? new Date(latest) : new Date(),
@@ -55,9 +56,9 @@ API.v1.addRoute(
 		async get() {
 			const { userId } = this.queryParams;
 
-			const { sort } = this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			const { count: pagCount = 50, offset = 0 } = this.getPaginationItems();
+			const { count: pagCount = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
 			if (!userId || userId.trim() === '') {
 				return API.v1.failure('The required "userId" body param is missing or empty.');
@@ -85,7 +86,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { userId, reasonForHiding } = this.requestParams();
+			const { userId, reasonForHiding } = this.bodyParams;
 
 			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
 			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
@@ -122,7 +123,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { userId, msgId, reasonForHiding, actionTaken } = this.requestParams();
+			const { userId, msgId, reasonForHiding, actionTaken } = this.bodyParams;
 
 			// check if at least one of the required params is present
 
@@ -159,8 +160,8 @@ API.v1.addRoute(
 		async get() {
 			const { msgId } = this.queryParams;
 
-			const { count = 50, offset = 0 } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { selector } = this.queryParams;
 
 			if (!msgId) {
