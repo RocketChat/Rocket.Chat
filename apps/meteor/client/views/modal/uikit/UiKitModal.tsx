@@ -1,11 +1,14 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
+import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement, ReactEventHandler } from 'react';
 import React from 'react';
 
 import * as ActionManager from '../../../../app/ui-message/client/ActionManager';
+import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import ModalBlock from './ModalBlock';
 import type { ActionManagerState } from './hooks/useActionManagerState';
 import { useActionManagerState } from './hooks/useActionManagerState';
@@ -123,9 +126,18 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 		});
 	});
 
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+
 	return (
 		<kitContext.Provider value={context}>
-			<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
+			<MarkupInteractionContext.Provider
+				value={{
+					detectEmoji,
+					convertAsciiToEmoji,
+				}}
+			>
+				<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
+			</MarkupInteractionContext.Provider>
 		</kitContext.Provider>
 	);
 };
