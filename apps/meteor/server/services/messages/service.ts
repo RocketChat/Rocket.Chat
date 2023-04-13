@@ -17,10 +17,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		owner: Pick<IUser, '_id' | 'username'>,
+		owner: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage['_id']> {
-		const { _id: userId, username } = owner;
+		const { _id: userId, username, name } = owner;
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
@@ -28,7 +28,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			type,
 			rid,
 			message,
-			{ _id: userId, username },
+			{ _id: userId, username, name },
 			settings.get('Message_Read_Receipt_Enabled'),
 			extraData,
 		);
