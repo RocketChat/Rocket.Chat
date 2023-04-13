@@ -119,7 +119,7 @@ Meteor.startup(async function () {
 
 			const id = await Users.create(adminUser);
 
-			Accounts.setPassword(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
 
 			await addUserRolesAsync(id, ['admin']);
 		} else {
@@ -198,7 +198,7 @@ Meteor.startup(async function () {
 
 		await Users.create(adminUser);
 
-		Accounts.setPassword(adminUser._id, adminUser._id);
+		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 

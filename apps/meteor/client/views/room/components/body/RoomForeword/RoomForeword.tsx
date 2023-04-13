@@ -1,13 +1,13 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
+import { Flex, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { VoipRoomForeword } from '../../../../../components/voip/room/VoipRoomForeword';
+import RoomForewordUsernameList from './RoomForewordUsernameList';
 
 type RoomForewordProps = { user: IUser | null; room: IRoom };
 
@@ -27,6 +27,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 	}
 
 	const usernames = room.usernames?.filter((username) => username !== user?.username);
+
 	if (!usernames || usernames.length < 1) {
 		return null;
 	}
@@ -46,13 +47,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
-				{usernames.map((username, index) => (
-					<Box mi='x4' is='a' href={roomCoordinator.getRouteLink('d', { name: username }) || undefined} key={index}>
-						<Tag icon={<Icon name='user' size='x20' />} className='mention-link' data-username={username} large>
-							{username}
-						</Tag>
-					</Box>
-				))}
+				<RoomForewordUsernameList usernames={usernames} />
 			</Box>
 		</Box>
 	);
