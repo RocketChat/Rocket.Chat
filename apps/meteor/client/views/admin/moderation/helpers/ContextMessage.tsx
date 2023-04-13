@@ -11,6 +11,7 @@ import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 
 const ContextMessage = ({
@@ -38,6 +39,11 @@ const ContextMessage = ({
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
 
+	const name = message.u.name || '';
+	const username = message.u.username || '';
+
+	const displayName = useUserDisplayName({ name, username });
+
 	return (
 		<>
 			<Message.Divider>{formatDate(message._updatedAt)}</Message.Divider>
@@ -47,7 +53,7 @@ const ContextMessage = ({
 				</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>
-						<Message.Username>{message.u.username}</Message.Username>
+						<Message.Username>{displayName}</Message.Username>
 						<Message.Timestamp title={formatDateAndTime(message._updatedAt)}>
 							{formatTime(message._updatedAt !== message.ts ? message._updatedAt : message.ts)}
 							{message._updatedAt !== message.ts && ` (${t('edited')})`}
