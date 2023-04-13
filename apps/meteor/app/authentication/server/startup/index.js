@@ -19,6 +19,7 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -270,9 +271,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
-			});
+			Promise.await(joinDefaultChannels(_id, options.joinDefaultChannelsSilenced));
 		}
 
 		if (user.type !== 'visitor') {
