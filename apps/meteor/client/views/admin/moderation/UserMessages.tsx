@@ -1,4 +1,4 @@
-import { Box, Callout, Message } from '@rocket.chat/fuselage';
+import { Box, Callout, Message, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -67,6 +67,7 @@ const UserMessages = ({
 				</Callout>{' '}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 				{isSuccessUserMessages &&
+					userMessages.messages.length > 0 &&
 					userMessages.messages.map((message) => (
 						<Box key={message._id}>
 							<ContextMessage
@@ -79,6 +80,12 @@ const UserMessages = ({
 							/>
 						</Box>
 					))}
+				{isSuccessUserMessages && userMessages.messages.length === 0 && (
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_results_found')}</StatesTitle>
+					</States>
+				)}
 			</Box>
 			<VerticalBar.Footer display='flex'>
 				<MessageContextFooter userId={userId} onChange={handleChange} onReload={reload} />

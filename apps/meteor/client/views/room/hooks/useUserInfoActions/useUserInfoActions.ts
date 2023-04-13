@@ -11,6 +11,7 @@ import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
+import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 
 export const useUserInfoActions = (
@@ -23,6 +24,7 @@ export const useUserInfoActions = (
 	const blockUserOption = useBlockUserAction(user, rid);
 	const changeLeaderOption = useChangeLeaderAction(user, rid);
 	const changeModeratorOption = useChangeModeratorAction(user, rid);
+	const openModerationConsoleOption = useRedirectModerationConsole(user._id);
 	const changeOwnerOption = useChangeOwnerAction(user, rid);
 	const openDirectMessageOption = useDirectMessageAction(user, rid);
 	const ignoreUserOption = useIgnoreUserAction(user, rid);
@@ -42,18 +44,20 @@ export const useUserInfoActions = (
 			...(muteUserOption && { muteUser: muteUserOption }),
 			...(blockUserOption && { toggleBlock: blockUserOption }),
 			...(removeUserOption && { removeUser: removeUserOption }),
+			...(openModerationConsoleOption && { openModerationConsole: openModerationConsoleOption }),
 		}),
 		[
+			openDirectMessageOption,
+			isLayoutEmbedded,
+			callOption,
+			changeOwnerOption,
 			changeLeaderOption,
 			changeModeratorOption,
-			changeOwnerOption,
 			ignoreUserOption,
 			muteUserOption,
-			openDirectMessageOption,
-			removeUserOption,
-			callOption,
 			blockUserOption,
-			isLayoutEmbedded,
+			removeUserOption,
+			openModerationConsoleOption,
 		],
 	);
 };
