@@ -65,7 +65,7 @@ const ComposerBoxPopup = <
 						{title}
 					</Box>
 				)}
-				<Box pb='x8' maxHeight='20rem'>
+				<Box pb='x8' maxHeight='x320'>
 					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
 					{itemsFlat.map((item, index) => {
 						return (
