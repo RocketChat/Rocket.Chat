@@ -76,24 +76,6 @@ class Rule {
 	// rule.matchers. If the match fails, search short circuits instead of
 	// iterating through all matchers.
 	async match(input: Record<string, any>): Promise<boolean> {
-		/* 
-		Object.entries(this._matchers).every(([key, matcher]) => {
-			if (matcher !== null) {
-				if (!hasOwn.call(input, key)) {
-					return false;
-				}
-				if (typeof matcher === 'function') {
-					if (!(await matcher(input[key]))) {
-						return false;
-					}
-				} else if (matcher !== input[key]) {
-					return false;
-				}
-			}
-			return true;
-		});
-
-		// The above to for await of */
 		for await (const [key, matcher] of Object.entries(this._matchers)) {
 			if (matcher !== null) {
 				if (!hasOwn.call(input, key)) {
@@ -191,21 +173,27 @@ class RateLimiter {
 	 * If the rate limit has been reached, the longest timeToReset is returned.
 	 */
 	async check(input: CheckInput, sessionInfo: { connectionHandle?: { broadcastAuth?: boolean } }): Promise<CheckReply> {
-		const reply: CheckReply = {
+		// ==== BEGIN OVERRIDE ====
+		const session = sessionInfo;
+		input.broadcastAuth = session?.connectionHandle?.broadcastAuth === true;
+		// ==== END OVERRIDE ====
+
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const self = this;
+		const reply = {
 			allowed: true,
 			timeToReset: 0,
 			numInvocationsLeft: Infinity,
 		};
 
-		input.broadcastAuth = sessionInfo.connectionHandle?.broadcastAuth === true;
-
-		const matchedRules = await this._findAllMatchingRules(input);
+		const matchedRules = await self._findAllMatchingRules(input);
 		for await (const rule of matchedRules) {
-			const callbackReply: CheckReply = {
+			const callbackReply: any = {
 				allowed: true,
 				timeToReset: 0,
 				numInvocationsLeft: Infinity,
 			};
+
 			const ruleResult = rule.apply(input);
 			let numInvocations = rule.counters[ruleResult.key];
 
@@ -240,6 +228,7 @@ class RateLimiter {
 					reply.timeToReset = ruleResult.timeToNextReset;
 					reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
 				}
+
 				callbackReply.timeToReset = ruleResult.timeToNextReset;
 				callbackReply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
 				await rule._executeCallback(callbackReply, input);
