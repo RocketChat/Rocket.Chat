@@ -1,4 +1,4 @@
-import { Pagination, Field } from '@rocket.chat/fuselage';
+import { Pagination, Field, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -43,7 +43,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				count: itemsPerPage,
 				offset: current,
 				...(end && { latest: `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` }),
-				...(start && { oldest: `${new Date(start).toISOString().slice(0, 10)}T23:59:59.999Z` }),
+				...(start && { oldest: `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` }),
 			}),
 			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
 		),
@@ -182,6 +182,12 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 						{...paginationProps}
 					/>
 				</>
+			)}
+			{isSuccess && data && data.reports.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			)}
 		</>
 	);
