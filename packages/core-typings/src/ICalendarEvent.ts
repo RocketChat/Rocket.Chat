@@ -8,4 +8,5 @@ export interface ICalendarEvent extends IRocketChatRecord {
 	description: string;
 
 	externalId?: string;
+	notificationSent?: boolean;
 }

@@ -1,3 +1,4 @@
+import type { ICalendarEvent } from './ICalendarEvent';
 import type { IMessage } from './IMessage';
 import type { IRoom } from './IRoom';
 
@@ -63,4 +64,12 @@ export interface INotificationDesktop {
 			t?: IMessage['t'];
 		};
 	};
+}
+
+export interface ICalendarNotification {
+	title: string;
+	text: string;
+	payload: {
+		_id: ICalendarEvent['_id'];
+	}
 }

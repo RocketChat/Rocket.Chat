@@ -5,7 +5,7 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 export interface ICalendarService {
 	create(data: InsertionModel<ICalendarEvent>): Promise<InsertOneResult<ICalendarEvent>>;
 	get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null>;
-	list(uid: IUser['_id'], date: Date): Promise<{ data: ICalendarEvent[] }>;
+	list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]>;
 	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult>;
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
 }

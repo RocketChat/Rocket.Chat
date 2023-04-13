@@ -3,7 +3,7 @@ import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { ICalendarService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
@@ -16,37 +16,41 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findOne({ _id: eventId });
 	}
 
-	public async list(uid: IUser['_id'], date: Date): Promise<{ data: ICalendarEvent[] }> {
-		const startTime = new Date(date.toISOString().substring(0, 10));
-		const finalTime = new Date(date.valueOf());
-		finalTime.setDate(finalTime.getDate() + 1);
-
-		const data = await CalendarEvent.find({
-			uid,
-			startTime: { $gte: startTime, $lt: finalTime },
-		}).toArray();
-
-		return {
-			data,
-		};
+	public async list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]> {
+		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
 	}
 
-	public async update(eventId: ICalendarEvent['_id'], { subject, description, startTime }: Partial<ICalendarEvent>): Promise<UpdateResult> {
-		return CalendarEvent.updateOne(
-			{ _id: eventId },
-			{
-				$set: {
-					...(subject !== undefined ? { subject } : {}),
-					...(description !== undefined ? { description } : {}),
-					...(startTime ? { startTime } : {}),
-				},
-			},
-		);
+	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
+		return CalendarEvent.updateEvent(eventId, data);
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
 		return CalendarEvent.deleteOne({
 			_id: eventId,
+		});
+	}
+
+	public async setupNextNotification(): Promise<void> {
+		//
+	}
+
+	public async sendCurrentNotifications(): Promise<void> {
+		const events = await CalendarEvent.findEventsToNotify(new Date(), 5).toArray();
+
+		for await (const event of events) {
+			await this.sendEventNotification(event);
+
+			await CalendarEvent.flagNotificationSent(event._id);
+		}
+	}
+
+	public async sendEventNotification(event: ICalendarEvent): Promise<void> {
+		return api.broadcast('notify.calendar', event.uid, {
+			title: 'New Event',
+			text: event.subject,
+			payload: {
+				_id: event._id,
+			},
 		});
 	}
 }

@@ -2,14 +2,14 @@
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { getOutlookEvents } from './getOutlookEvents';
 
-export const syncOutlookEvents = async (date: Date, server: string, token: string): Promise<void> => {
-	// Load all the event that are already on the calendar for today
+export const syncOutlookEvents = async (date: Date, server: string, user: string, password: string): Promise<void> => {
+	// Load all the events that are already on the calendar for today
 	const serverEvents = await APIClient.get('/v1/calendar-events.list', {
 		date: date.toISOString().substring(0, 10),
 	});
 	const externalEvents = serverEvents.data.filter(({ externalId }) => externalId);
 
-	const appointments = await getOutlookEvents(date, server, token);
+	const appointments = await getOutlookEvents(date, server, user, password);
 	const appointmentsFound = appointments.map((appointment) => appointment.Id.UniqueId);
 
 	for await (const appointment of appointments) {
@@ -19,7 +19,7 @@ export const syncOutlookEvents = async (date: Date, server: string, token: strin
 			const externalId = appointment.Id.UniqueId;
 			const subject = appointment.Subject;
 			const startTime = appointment.Start.ToISOString();
-			const description = appointment.Body?.Text;
+			const description = appointment.Body?.Text || '';
 
 			// If the appointment is not in the rocket.chat calendar, add it.
 			if (!existingEvent) {
