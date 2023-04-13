@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('EmojiCustomFilesystem', function () {
-	this.add('EmojiUpload_Storage_Type', 'GridFS', {
+void settingsRegistry.addGroup('EmojiCustomFilesystem', async function () {
+	await this.add('EmojiUpload_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [
 			{
@@ -16,7 +16,7 @@ void settingsRegistry.addGroup('EmojiCustomFilesystem', function () {
 		i18nLabel: 'FileUpload_Storage_Type',
 	});
 
-	this.add('EmojiUpload_FileSystemPath', '', {
+	await this.add('EmojiUpload_FileSystemPath', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'EmojiUpload_Storage_Type',

@@ -15,7 +15,7 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 		}
 	}
 
-	if (users.length > 15) {
+	if (users.length > 10) {
 		if (mine) {
 			return 'You_users_and_more_Reacted_with';
 		}
@@ -62,8 +62,8 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 					openTooltip(
 						<MarkdownText
 							content={t(key, {
-								counter: names.length,
-								users: names.join(', '),
+								counter: names.length > 10 ? names.length - 10 : names.length,
+								users: names.slice(0, 10).join(', '),
 								emoji: name,
 							})}
 							variant='inline'
