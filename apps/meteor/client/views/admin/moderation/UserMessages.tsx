@@ -62,7 +62,7 @@ const UserMessages = ({
 	return (
 		<>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				<Callout margin={15} title={t('Duplicate_messages')} type='warning' icon='lightning'>
+				<Callout margin={15} title={t('Duplicate_messages')} type='warning' icon='warning'>
 					{t('Duplicate_messages_warning')}
 				</Callout>{' '}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
