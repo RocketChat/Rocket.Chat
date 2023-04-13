@@ -39,12 +39,10 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 			onConfirm={handleSave}
 			onCancel={onCancel}
 			variant='danger'
-			title={t('Are_you_sure_you_want_to_delete_your_account')}
+			title={t('Delete_account?')}
 			confirmText={t('Delete')}
 		>
-			<Box mb='x8'>
-				{isPassword ? t('For_your_security_you_must_enter_your_current_password_to_continue') : t('If_you_are_sure_type_in_your_username')}
-			</Box>
+			<Box mb='x8'>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
 			<FieldGroup w='full'>
 				<Field>
 					<Field.Row>
