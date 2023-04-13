@@ -40,6 +40,7 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -156,7 +157,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
+			await saveUserPreferences(this.bodyParams.data, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
