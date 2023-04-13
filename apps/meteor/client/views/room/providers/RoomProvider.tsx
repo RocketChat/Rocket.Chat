@@ -35,14 +35,14 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
-		if (!isOmnichannelRoom(room)) {
+		if (!roomQuery.data || !isOmnichannelRoom(roomQuery.data)) {
 			return;
 		}
-		
+
 		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
-			queryClient.setQueryData(['rooms', rid], () => room);
+			queryClient.setQueryData(['rooms', rid], room);
 		});
-	}, [subscribeToRoom, rid, queryClient]);
+	}, [subscribeToRoom, rid, queryClient, roomQuery.data]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
