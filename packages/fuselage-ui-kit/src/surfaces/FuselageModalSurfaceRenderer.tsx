@@ -29,6 +29,6 @@ export class FuselageModalSurfaceRenderer extends FuselageSurfaceRenderer {
   }
 
   public mrkdwn({ text = '' }: Markdown): ReactElement | null {
-    return text ? <Markup tokens={parse(text, { emoticons: true })} /> : null;
+    return text ? <Markup tokens={parse(text, { emoticons: false })} /> : null;
   }
 }
