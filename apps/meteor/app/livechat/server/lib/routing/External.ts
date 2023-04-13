@@ -41,16 +41,15 @@ class ExternalQueue implements IRoutingMethod {
 
 	private async getAgentFromExternalQueue(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
 		try {
-			let queryString = department ? `?departmentId=${department}` : '';
-			if (ignoreAgentId) {
-				const ignoreAgentIdParam = `ignoreAgentId=${ignoreAgentId}`;
-				queryString = queryString.startsWith('?') ? `${queryString}&${ignoreAgentIdParam}` : `?${ignoreAgentIdParam}`;
-			}
-			const request = await fetch(`${settings.get('Livechat_External_Queue_URL')}${queryString}`, {
+			const request = await fetch(`${settings.get('Livechat_External_Queue_URL')}`, {
 				headers: {
 					'User-Agent': 'RocketChat Server',
 					'Accept': 'application/json',
 					'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
+				},
+				params: {
+					...(department && { departmentId: department }),
+					...(ignoreAgentId && { ignoreAgentId }),
 				},
 			});
 			const result = (await request.json()) as { username?: string };

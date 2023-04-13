@@ -115,15 +115,14 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const customQueryParams = new URLSearchParams();
-
-					if (this.queryParams.isAdminUser === 'false') {
-						customQueryParams.set('endUserID', this.user._id);
-					}
-
 					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, { headers });
+						const request = await fetch(`${baseUrl}/v1/apps`, {
+							headers,
+							params: {
+								...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }),
+							},
+						});
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
 							return API.v1.failure();

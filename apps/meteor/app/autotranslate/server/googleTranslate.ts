@@ -92,7 +92,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		};
 
 		try {
-			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
 			if (!request.ok && request.status === 400 && request.statusText === 'INVALID_ARGUMENT') {
 				throw new Error('Failed to fetch supported languages');
 			}

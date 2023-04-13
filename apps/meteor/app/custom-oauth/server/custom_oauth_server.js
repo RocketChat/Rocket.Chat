@@ -130,10 +130,10 @@ export class CustomOAuth {
 		}
 
 		try {
-			const queryparams = new URLSearchParams(allOptions.params);
-			const request = await fetch(`${this.tokenPath}?${queryparams.toString()}`, {
+			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
 				headers: allOptions.headers,
+				params: allOptions.params,
 			});
 			response = await request.json();
 		} catch (err) {

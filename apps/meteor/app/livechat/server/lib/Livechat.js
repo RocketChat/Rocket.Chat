@@ -784,7 +784,7 @@ export const Livechat = {
 		const secretToken = settings.get('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options = {
-			data: postData,
+			data: JSON.stringify(postData),
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
 		};
 		try {

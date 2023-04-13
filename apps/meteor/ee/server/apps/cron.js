@@ -75,10 +75,13 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
+		},
+		params: {
+			seats: currentSeats,
 		},
 	};
 

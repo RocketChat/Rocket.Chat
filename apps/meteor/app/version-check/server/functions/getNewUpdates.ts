@@ -33,9 +33,9 @@ export const getNewUpdates = async () => {
 			...(token && { Authorization: `Bearer ${token}` }),
 		};
 		const url = 'https://releases.rocket.chat/updates/check?';
-		const qs = new URLSearchParams(params);
-		const response = await fetch(url + qs, {
+		const response = await fetch(url, {
 			headers,
+			params,
 		});
 
 		const data: any = await response.json();

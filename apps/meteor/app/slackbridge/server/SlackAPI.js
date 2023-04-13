@@ -13,14 +13,15 @@ export class SlackAPI {
 
 	async getChannels(cursor = null) {
 		let channels = [];
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			types: 'public_channel',
-			exclude_archived: true,
-			limit: 1000,
-			cursor,
+		const request = await fetch(`https://slack.com/api/conversations.list`, {
+			params: {
+				token: this.apiToken,
+				types: 'public_channel',
+				exclude_archived: true,
+				limit: 1000,
+				cursor,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/conversations.list?${queryparams.toString()}`);
 		const response = await request.json();
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
@@ -36,14 +37,15 @@ export class SlackAPI {
 
 	async getGroups(cursor = null) {
 		let groups = [];
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			types: 'private_channel',
-			exclude_archived: true,
-			limit: 1000,
-			cursor,
+		const request = await fetch(`https://slack.com/api/conversations.list`, {
+			params: {
+				token: this.apiToken,
+				types: 'private_channel',
+				exclude_archived: true,
+				limit: 1000,
+				cursor,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/conversations.list?${queryparams.toString()}`);
 		const response = await request.json();
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
@@ -58,12 +60,13 @@ export class SlackAPI {
 	}
 
 	async getRoomInfo(roomId) {
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			channel: roomId,
-			include_num_members: true,
+		const request = await fetch(`https://slack.com/api/conversations.info`, {
+			params: {
+				token: this.apiToken,
+				channel: roomId,
+				include_num_members: true,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/conversations.info?${queryparams.toString()}`);
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.channel;
 	}
@@ -74,15 +77,15 @@ export class SlackAPI {
 		let members = [];
 		let currentCursor = '';
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
-			const queryparams = new URLSearchParams({
-				token: this.apiToken,
-				channel: channelId,
-				limit: MAX_MEMBERS_PER_CALL,
-				cursor: currentCursor,
-			});
-
 			// eslint-disable-next-line no-await-in-loop
-			const request = await fetch(`https://slack.com/api/conversations.members?${queryparams.toString()}`);
+			const request = await fetch(`https://slack.com/api/conversations.members`, {
+				params: {
+					token: this.apiToken,
+					channel: channelId,
+					limit: MAX_MEMBERS_PER_CALL,
+					cursor: currentCursor,
+				},
+			});
 			// eslint-disable-next-line no-await-in-loop
 			const response = await request.json();
 			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
@@ -146,31 +149,34 @@ export class SlackAPI {
 	}
 
 	async getHistory(family, options) {
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			...options,
+		const request = await fetch(`https://slack.com/api/${family}.history`, {
+			params: {
+				token: this.apiToken,
+				...options,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/${family}.history?${queryparams.toString()}`);
 		const response = await request.json();
 		return response;
 	}
 
 	async getPins(channelId) {
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			channel: channelId,
+		const request = await fetch(`https://slack.com/api/pins.list`, {
+			params: {
+				token: this.apiToken,
+				channel: channelId,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/pins.list?${queryparams.toString()}`);
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.items;
 	}
 
 	async getUser(userId) {
-		const queryparams = new URLSearchParams({
-			token: this.apiToken,
-			user: userId,
+		const request = await fetch(`https://slack.com/api/users.info`, {
+			params: {
+				token: this.apiToken,
+				user: userId,
+			},
 		});
-		const request = await fetch(`https://slack.com/api/users.info?${queryparams.toString()}`);
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.user;
 	}

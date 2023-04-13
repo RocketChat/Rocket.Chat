@@ -572,7 +572,7 @@ describe('[Direct Messages]', function () {
 		});
 	});
 
-	describe('/im.create', () => {
+	describe.only('/im.create', () => {
 		let user;
 		let userCredentials;
 

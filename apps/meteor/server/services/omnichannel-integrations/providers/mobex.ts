@@ -119,9 +119,15 @@ export class Mobex implements ISMSProvider {
 		};
 
 		try {
-			const response = await fetch(
-				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
-			);
+			const response = await fetch(`${currentAddress}/send`, {
+				params: {
+					username: currentUsername,
+					password: currentPassword,
+					to: strippedTo,
+					from: currentFrom,
+					content: message,
+				},
+			});
 
 			const json = await response.text();
 			if (response.ok) {

@@ -30,16 +30,15 @@ export async function userLogout(userId) {
 			const client_secret = settings.get('Cloud_Workspace_Client_Secret');
 
 			const { refreshToken } = user.services.cloud;
-
-			const queryparams = new URLSearchParams({
-				client_id,
-				client_secret,
-				token: refreshToken,
-				token_type_hint: 'refresh_token',
-			});
-			const request = await fetch(`${cloudUrl}/api/oauth/revoke?${queryparams.toString()}`, {
+			const request = await fetch(`${cloudUrl}/api/oauth/revoke`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				params: {
+					client_id,
+					client_secret,
+					token: refreshToken,
+					token_type_hint: 'refresh_token',
+				},
 			});
 			await request.json();
 		} catch (err) {

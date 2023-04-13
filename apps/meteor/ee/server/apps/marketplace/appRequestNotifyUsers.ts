@@ -53,10 +53,15 @@ export const appRequestNotififyForUsers = async (
 		const pagination: Pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
 		// First request to get the total and the first batch
-		const response = await fetch(
-			`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
-			{ headers },
-		);
+		const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {
+			headers,
+			params: {
+				appId,
+				q: 'notification-not-sent',
+				limit: pagination.limit,
+				offset: pagination.offset,
+			},
+		});
 
 		const data = (await response.json()) as { meta: { total: number }; data: any };
 
