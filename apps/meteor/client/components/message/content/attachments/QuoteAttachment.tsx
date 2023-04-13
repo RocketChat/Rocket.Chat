@@ -4,7 +4,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { useFormatTime } from '/client/hooks/useFormatTime';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
@@ -36,7 +36,7 @@ type QuoteAttachmentProps = {
 };
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
-	const format = useTimeAgo();
+	const formatTime = useFormatTime();
 
 	return (
 		<>
@@ -61,7 +61,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 								fontScale='c1'
 								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
 							>
-								{format(attachment.ts)}
+								{formatTime(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>
