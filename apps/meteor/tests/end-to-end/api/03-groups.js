@@ -22,6 +22,24 @@ function getRoomInfo(roomId) {
 	});
 }
 
+async function leaveAllGroups(ids) {
+	await Promise.all(
+		ids.map((id) =>
+			request
+				.post(api('groups.leave'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				}),
+		),
+	);
+}
+
 describe('[Groups]', function () {
 	this.retries(0);
 
@@ -637,6 +655,7 @@ describe('[Groups]', function () {
 			.end(done);
 	});
 
+	let groups = [];
 	it('/groups.list', (done) => {
 		request
 			.get(api('groups.list'))
@@ -648,8 +667,24 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('groups').and.to.be.an('array');
+				groups = res.body.groups;
 			})
 			.end(done);
+	});
+
+	it('/groups.list should return a list of zero length if not a member of any group', async () => {
+		await leaveAllGroups(groups.map((group) => group._id));
+		request
+			.get(api('groups.list'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count').and.to.equal(0);
+				expect(res.body).to.have.property('total').and.to.equal(0);
+				expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
+			});
 	});
 
 	describe('[/groups.online]', () => {
