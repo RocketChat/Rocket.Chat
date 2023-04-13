@@ -60,7 +60,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 		isLoading,
 		isSuccess,
 	} = useQuery(
-		['reports', query],
+		['moderation.reports', query],
 		async () => {
 			const reports = await getReports(query);
 			return reports;

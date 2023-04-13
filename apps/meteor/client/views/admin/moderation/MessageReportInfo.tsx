@@ -25,7 +25,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
 	} = useQuery(
-		['reportsByMessage', { msgId }],
+		['moderation.reportsByMessage', { msgId }],
 		async () => {
 			const reports = await getReportsByMessage({ msgId });
 			return reports;

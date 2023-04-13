@@ -33,7 +33,7 @@ const UserMessages = ({
 		isLoading: isLoadingUserMessages,
 		isSuccess: isSuccessUserMessages,
 	} = useQuery(
-		['userMessages', query],
+		['moderation.userMessages', query],
 		async () => {
 			const messages = await getUserMessages(query);
 			return messages;
