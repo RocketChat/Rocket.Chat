@@ -140,7 +140,7 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 			return false;
 		};
 
-		const ignoreIfnotContains = (e: Event) => {
+		const ignoreIfNotContains = (e: Event) => {
 			if (e.target !== element) {
 				return;
 			}
@@ -151,10 +151,10 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 			return handleKeyDown(e);
 		};
 
-		document.addEventListener('keydown', ignoreIfnotContains);
+		document.addEventListener('keydown', ignoreIfNotContains);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', ignoreIfnotContains);
+			document.removeEventListener('keydown', ignoreIfNotContains);
 			element.removeEventListener('click', close);
 		};
 	}, [handleKeyDown, onClose]);
