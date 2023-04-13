@@ -6417,6 +6417,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/apps-engine@npm:1.38.1":
+  version: 1.38.1
+  resolution: "@rocket.chat/apps-engine@npm:1.38.1"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.16
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: a5a0b8468501b9dace7010615c941105adb021c3218bf2595ba1b80f22ab768cd5a164ea1f8e44c00624702e771c43209450210a2880c4a40c828beb371b90cc
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.35.0
   resolution: "@rocket.chat/apps-engine@npm:1.35.0"
@@ -7176,7 +7194,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.38.0
+    "@rocket.chat/apps-engine": 1.38.1
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -7491,7 +7509,7 @@ __metadata:
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
-    vm2: ^3.9.11
+    vm2: ^3.9.16
     webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.4
@@ -38205,6 +38223,18 @@ __metadata:
   bin:
     vm2: bin/vm2
   checksum: aab39e6e4b59146d24abacd79f490e854a6e058a8b23d93d2be5aca7720778e2605d2cc028ccc4a5f50d3d91b0c38be9a6247a80d2da1a6de09425cc437770b4
+  languageName: node
+  linkType: hard
+
+"vm2@npm:^3.9.16":
+  version: 3.9.16
+  resolution: "vm2@npm:3.9.16"
+  dependencies:
+    acorn: ^8.7.0
+    acorn-walk: ^8.2.0
+  bin:
+    vm2: bin/vm2
+  checksum: 646b45dca721acb3c8e4ae0742129f13612972387911c2475f3c06ac2b4232000cab0bdaaa65d97d6ea8dc70880e039542618b1b3d04adea79cd94803cbc4ab3
   languageName: node
   linkType: hard
 

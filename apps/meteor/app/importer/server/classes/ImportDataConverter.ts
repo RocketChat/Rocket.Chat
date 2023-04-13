@@ -13,6 +13,7 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
@@ -621,7 +622,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);

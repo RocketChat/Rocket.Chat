@@ -269,18 +269,19 @@ API.v1.addRoute(
 			}
 
 			const newUserId = await saveUser(this.userId, this.bodyParams);
+			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
 
 			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
+				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
-				await Meteor.callAsync('setUserActiveStatus', newUserId, this.bodyParams.active);
+				await Meteor.callAsync('setUserActiveStatus', userId, this.bodyParams.active);
 			}
 
 			const { fields } = await this.parseJsonQuery();
 
-			const user = await Users.findOneById(newUserId as string, { projection: fields });
+			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
