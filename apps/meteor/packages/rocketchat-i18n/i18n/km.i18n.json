@@ -1,6 +1,6 @@
 {
   "500": "កំហុសខាងក្នុងម៉ាស៊ីនម៉េ",
-  "__count__empty_rooms_will_be_removed_automatically": null,
+  "__count__empty_rooms_will_be_removed_automatically": "ចំនួនបន្ទប់ដែលនៅសល់នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ។",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> __rooms__ ។",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__  មិនមាន __role__by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ត្រូវបានកំណត់តួនាទីជា __role__ ដោយ __user_by__",
@@ -1464,7 +1464,6 @@
   "Graphql_Enabled": "GraphQL បានបើក",
   "Graphql_Subscription_Port": "កំពង់ផែការទិញកម្មវិធី Graph Chart",
   "Snippet_Messages": "សារខ្លី",
-  "italic": "ទ្រេត",
   "Group_by_Type": "ដាក់ជាក្រុមតាមប្រភេទ",
   "snippet-message": "សារខ្លី",
   "snippet-message_description": "ការអនុញ្ញាតបង្កើតសារខ្លីៗ",
