@@ -124,7 +124,7 @@ const RoomMenu = ({
 			closeModal();
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal
@@ -148,7 +148,7 @@ const RoomMenu = ({
 			closeModal();
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();

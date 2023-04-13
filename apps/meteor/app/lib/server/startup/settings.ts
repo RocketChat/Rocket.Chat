@@ -17,12 +17,12 @@ void settingsRegistry.add('Initial_Channel_Created', false, {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-void settingsRegistry.addGroup('Accounts', function () {
-	this.add('Accounts_AllowAnonymousRead', false, {
+void settingsRegistry.addGroup('Accounts', async function () {
+	await this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowAnonymousWrite', false, {
+	await this.add('Accounts_AllowAnonymousWrite', false, {
 		type: 'boolean',
 		public: true,
 		enableQuery: {
@@ -30,7 +30,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			value: true,
 		},
 	});
-	this.add('Accounts_AllowDeleteOwnAccount', false, {
+	await this.add('Accounts_AllowDeleteOwnAccount', false, {
 		type: 'boolean',
 		public: true,
 		enableQuery: {
@@ -38,74 +38,74 @@ void settingsRegistry.addGroup('Accounts', function () {
 			value: true,
 		},
 	});
-	this.add('Accounts_AllowUserProfileChange', true, {
+	await this.add('Accounts_AllowUserProfileChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowUserAvatarChange', true, {
+	await this.add('Accounts_AllowUserAvatarChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowRealNameChange', true, {
+	await this.add('Accounts_AllowRealNameChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowUserStatusMessageChange', true, {
+	await this.add('Accounts_AllowUserStatusMessageChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowUsernameChange', true, {
+	await this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowEmailChange', true, {
+	await this.add('Accounts_AllowEmailChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowPasswordChange', true, {
+	await this.add('Accounts_AllowPasswordChange', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowPasswordChangeForOAuthUsers', true, {
+	await this.add('Accounts_AllowPasswordChangeForOAuthUsers', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_AllowEmailNotifications', true, {
+	await this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
+	await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('Accounts_LoginExpiration', 90, {
+	await this.add('Accounts_LoginExpiration', 90, {
 		type: 'int',
 		public: true,
 	});
-	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
+	await this.add('Accounts_EmailOrUsernamePlaceholder', '', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'Placeholder_for_email_or_username_login_field',
 	});
-	this.add('Accounts_PasswordPlaceholder', '', {
+	await this.add('Accounts_PasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'Placeholder_for_password_login_field',
 	});
 
-	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
+	await this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
 		i18nLabel: 'Placeholder_for_password_login_confirm_field',
 	});
-	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
+	await this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name, bio, nickname', {
+	await this.add('Accounts_SearchFields', 'username, name, bio, nickname', {
 		type: 'string',
 	});
-	this.add('Accounts_Directory_DefaultView', 'channels', {
+	await this.add('Accounts_Directory_DefaultView', 'channels', {
 		type: 'select',
 		values: [
 			{
@@ -119,32 +119,32 @@ void settingsRegistry.addGroup('Accounts', function () {
 		],
 		public: true,
 	});
-	this.add('Accounts_AllowInvisibleStatusOption', true, {
+	await this.add('Accounts_AllowInvisibleStatusOption', true, {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
 	});
 
-	this.section('Registration', function () {
-		this.add('Accounts_Send_Email_When_Activating', true, {
+	await this.section('Registration', async function () {
+		await this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
 		});
-		this.add('Accounts_Send_Email_When_Deactivating', true, {
+		await this.add('Accounts_Send_Email_When_Deactivating', true, {
 			type: 'boolean',
 		});
-		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
+		await this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		await this.add('Accounts_RequireNameForSignUp', true, {
 			// TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_RequirePasswordConfirmation', true, {
+		await this.add('Accounts_RequirePasswordConfirmation', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_EmailVerification', false, {
+		await this.add('Accounts_EmailVerification', false, {
 			type: 'boolean',
 			public: true,
 			enableQuery: {
@@ -155,54 +155,54 @@ void settingsRegistry.addGroup('Accounts', function () {
 				},
 			},
 		});
-		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+		await this.add('Accounts_Verify_Email_For_External_Accounts', true, {
 			type: 'boolean',
 		});
-		this.add('Accounts_ManuallyApproveNewUsers', false, {
+		await this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
 			type: 'boolean',
 		});
-		this.add('Accounts_AllowedDomainsList', '', {
+		await this.add('Accounts_AllowedDomainsList', '', {
 			type: 'string',
 			public: true,
 		});
-		this.add('Accounts_BlockedDomainsList', '', {
+		await this.add('Accounts_BlockedDomainsList', '', {
 			type: 'string',
 		});
-		this.add('Accounts_BlockedUsernameList', '', {
+		await this.add('Accounts_BlockedUsernameList', '', {
 			type: 'string',
 		});
-		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
+		await this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
 			type: 'string',
 			hidden: true,
 		});
-		this.add('Manual_Entry_User_Count', 0, {
+		await this.add('Manual_Entry_User_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
-		this.add('CSV_Importer_Count', 0, {
+		await this.add('CSV_Importer_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
-		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+		await this.add('Hipchat_Enterprise_Importer_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
-		this.add('Slack_Importer_Count', 0, {
+		await this.add('Slack_Importer_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
-		this.add('Slack_Users_Importer_Count', 0, {
+		await this.add('Slack_Users_Importer_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
-		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
+		await this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
-		this.add('Accounts_UseDNSDomainCheck', false, {
+		await this.add('Accounts_UseDNSDomainCheck', false, {
 			type: 'boolean',
 		});
-		this.add('Accounts_RegistrationForm', 'Public', {
+		await this.add('Accounts_RegistrationForm', 'Public', {
 			type: 'select',
 			public: true,
 			values: [
@@ -220,11 +220,11 @@ void settingsRegistry.addGroup('Accounts', function () {
 				},
 			],
 		});
-		this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
+		await this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
 			type: 'string',
 			secret: true,
 		});
-		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+		await this.add('Accounts_Registration_InviteUrlType', 'proxy', {
 			type: 'select',
 			values: [
 				{
@@ -238,53 +238,53 @@ void settingsRegistry.addGroup('Accounts', function () {
 			],
 		});
 
-		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
+		await this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,
 		});
-		this.add('Accounts_Registration_AuthenticationServices_Enabled', true, {
+		await this.add('Accounts_Registration_AuthenticationServices_Enabled', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_Registration_AuthenticationServices_Default_Roles', 'user', {
+		await this.add('Accounts_Registration_AuthenticationServices_Default_Roles', 'user', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Accounts_Registration_AuthenticationServices_Enabled',
 				value: true,
 			},
 		});
-		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+		await this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_PasswordReset', true, {
+		await this.add('Accounts_PasswordReset', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_CustomFields', '', {
+		await this.add('Accounts_CustomFields', '', {
 			type: 'code',
 			public: true,
 			i18nLabel: 'Custom_Fields',
 		});
 	});
 
-	this.section('Accounts_Default_User_Preferences', function () {
-		this.add('Accounts_Default_User_Preferences_enableAutoAway', true, {
+	await this.section('Accounts_Default_User_Preferences', async function () {
+		await this.add('Accounts_Default_User_Preferences_enableAutoAway', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Enable_Auto_Away',
 		});
-		this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
+		await this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Idle_Time_Limit',
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+		await this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Notification_RequireInteraction',
 			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
+		await this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -302,7 +302,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
+		await this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -320,62 +320,62 @@ void settingsRegistry.addGroup('Accounts', function () {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_unreadAlert', true, {
+		await this.add('Accounts_Default_User_Preferences_unreadAlert', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_Tray_Icon_Alert',
 		});
-		this.add('Accounts_Default_User_Preferences_useEmojis', true, {
+		await this.add('Accounts_Default_User_Preferences_useEmojis', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Use_Emojis',
 		});
-		this.add('Accounts_Default_User_Preferences_convertAsciiEmoji', true, {
+		await this.add('Accounts_Default_User_Preferences_convertAsciiEmoji', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Convert_Ascii_Emojis',
 		});
-		this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
+		await this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Auto_Load_Images',
 		});
-		this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
+		await this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Save_Mobile_Bandwidth',
 		});
-		this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
+		await this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Collapse_Embedded_Media_By_Default',
 		});
-		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
+		await this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Hide_usernames',
 		});
-		this.add('Accounts_Default_User_Preferences_hideRoles', false, {
+		await this.add('Accounts_Default_User_Preferences_hideRoles', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Hide_roles',
 		});
-		this.add('Accounts_Default_User_Preferences_hideFlexTab', false, {
+		await this.add('Accounts_Default_User_Preferences_hideFlexTab', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
+		await this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Display_avatars',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
+		await this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
-		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+		await this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
 			type: 'select',
 			values: [
 				{
@@ -394,7 +394,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Theme_Appearence',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
+		await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [
 				{
@@ -413,19 +413,19 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Sidebar_list_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
+		await this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Display_Avatars_Sidebar',
 		});
 
-		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
+		await this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
 
-		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+		await this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
 			type: 'select',
 			values: [
 				{
@@ -441,7 +441,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+		await this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
 			type: 'select',
 			values: [
 				{
@@ -461,13 +461,13 @@ void settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 		});
 
-		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
+		await this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Group_favorites',
 		});
 
-		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
+		await this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',
 			values: [
 				{
@@ -486,7 +486,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
-		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
+		await this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
 			values: [
 				{
@@ -501,7 +501,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Email_Notification_Mode',
 		});
-		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
+		await this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
 			type: 'select',
 			values: [
 				{
@@ -516,7 +516,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'New_Room_Notification',
 		});
-		this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
+		await this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
 			type: 'select',
 			values: [
 				{
@@ -532,30 +532,30 @@ void settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'New_Message_Notification',
 		});
 
-		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
+		await this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
 
-		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
+		await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
+		await this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 
-	this.section('Avatar', function () {
-		this.add('Accounts_AvatarResize', true, {
+	await this.section('Avatar', async function () {
+		await this.add('Accounts_AvatarResize', true, {
 			type: 'boolean',
 		});
-		this.add('Accounts_AvatarSize', 200, {
+		await this.add('Accounts_AvatarSize', 200, {
 			type: 'int',
 			enableQuery: {
 				_id: 'Accounts_AvatarResize',
@@ -563,22 +563,22 @@ void settingsRegistry.addGroup('Accounts', function () {
 			},
 		});
 
-		this.add('Accounts_AvatarExternalProviderUrl', '', {
+		await this.add('Accounts_AvatarExternalProviderUrl', '', {
 			type: 'string',
 			public: true,
 		});
 
-		this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
+		await this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
 			type: 'string',
 			public: true,
 		});
 
-		this.add('Accounts_AvatarCacheTime', 3600, {
+		await this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
 		});
 
-		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+		await this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -588,8 +588,8 @@ void settingsRegistry.addGroup('Accounts', function () {
 		});
 	});
 
-	this.section('Password_Policy', function () {
-		this.add('Accounts_Password_Policy_Enabled', false, {
+	await this.section('Password_Policy', async function () {
+		await this.add('Accounts_Password_Policy_Enabled', false, {
 			type: 'boolean',
 		});
 
@@ -598,49 +598,49 @@ void settingsRegistry.addGroup('Accounts', function () {
 			value: true,
 		};
 
-		this.add('Accounts_Password_Policy_MinLength', 7, {
+		await this.add('Accounts_Password_Policy_MinLength', 7, {
 			type: 'int',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_MaxLength', -1, {
+		await this.add('Accounts_Password_Policy_MaxLength', -1, {
 			type: 'int',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
+		await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
 			type: 'boolean',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
+		await this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
 			type: 'int',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
+		await this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
 			type: 'boolean',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
+		await this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
 			type: 'boolean',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
+		await this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
 			type: 'boolean',
 			enableQuery,
 		});
 
-		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
+		await this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 			type: 'boolean',
 			enableQuery,
 		});
 	});
 
-	this.section('Password_History', function () {
-		this.add('Accounts_Password_History_Enabled', false, {
+	await this.section('Password_History', async function () {
+		await this.add('Accounts_Password_History_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enable_Password_History',
 			i18nDescription: 'Enable_Password_History_Description',
@@ -651,7 +651,7 @@ void settingsRegistry.addGroup('Accounts', function () {
 			value: true,
 		};
 
-		this.add('Accounts_Password_History_Amount', 5, {
+		await this.add('Accounts_Password_History_Amount', 5, {
 			type: 'int',
 			enableQuery,
 			i18nLabel: 'Password_History_Amount',
@@ -660,21 +660,21 @@ void settingsRegistry.addGroup('Accounts', function () {
 	});
 });
 
-void settingsRegistry.addGroup('OAuth', function () {
-	this.section('Facebook', function () {
+void settingsRegistry.addGroup('OAuth', async function () {
+	await this.section('Facebook', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Facebook', false, {
+		await this.add('Accounts_OAuth_Facebook', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Facebook_id', '', {
+		await this.add('Accounts_OAuth_Facebook_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Facebook_secret', '', {
+		await this.add('Accounts_OAuth_Facebook_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -685,20 +685,20 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	this.section('Google', function () {
+	await this.section('Google', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Google',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Google', false, {
+		await this.add('Accounts_OAuth_Google', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Google_id', '', {
+		await this.add('Accounts_OAuth_Google_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Google_secret', '', {
+		await this.add('Accounts_OAuth_Google_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -709,20 +709,20 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	this.section('GitHub', function () {
+	await this.section('GitHub', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Github',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Github', false, {
+		await this.add('Accounts_OAuth_Github', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Github_id', '', {
+		await this.add('Accounts_OAuth_Github_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Github_secret', '', {
+		await this.add('Accounts_OAuth_Github_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -733,20 +733,20 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	this.section('Linkedin', function () {
+	await this.section('Linkedin', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Linkedin',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Linkedin', false, {
+		await this.add('Accounts_OAuth_Linkedin', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Linkedin_id', '', {
+		await this.add('Accounts_OAuth_Linkedin_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Linkedin_secret', '', {
+		await this.add('Accounts_OAuth_Linkedin_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -757,20 +757,20 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	this.section('Meteor', function () {
+	await this.section('Meteor', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Meteor',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Meteor', false, {
+		await this.add('Accounts_OAuth_Meteor', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Meteor_id', '', {
+		await this.add('Accounts_OAuth_Meteor_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Meteor_secret', '', {
+		await this.add('Accounts_OAuth_Meteor_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -781,20 +781,20 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	this.section('Twitter', function () {
+	await this.section('Twitter', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Twitter',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Twitter', false, {
+		await this.add('Accounts_OAuth_Twitter', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_OAuth_Twitter_id', '', {
+		await this.add('Accounts_OAuth_Twitter_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Twitter_secret', '', {
+		await this.add('Accounts_OAuth_Twitter_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
@@ -805,8 +805,8 @@ void settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
-	return this.section('Proxy', function () {
-		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
+	return this.section('Proxy', async function () {
+		await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
 			type: 'string',
 			public: true,
 		});
@@ -817,8 +817,8 @@ void settingsRegistry.addGroup('OAuth', function () {
 	});
 });
 
-void settingsRegistry.addGroup('General', function () {
-	this.add('Show_Setup_Wizard', 'pending', {
+void settingsRegistry.addGroup('General', async function () {
+	await this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
 		readonly: true,
@@ -838,7 +838,7 @@ void settingsRegistry.addGroup('General', function () {
 		],
 	});
 
-	this.add(
+	await this.add(
 		'Site_Url',
 		typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null
 			? (global as any).__meteor_runtime_config__.ROOT_URL
@@ -849,7 +849,7 @@ void settingsRegistry.addGroup('General', function () {
 			public: true,
 		},
 	);
-	this.add('Site_Name', 'Rocket.Chat', {
+	await this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
 		public: true,
 		wizard: {
@@ -857,11 +857,11 @@ void settingsRegistry.addGroup('General', function () {
 			order: 0,
 		},
 	});
-	this.add('Document_Domain', '', {
+	await this.add('Document_Domain', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('Language', '', {
+	await this.add('Language', '', {
 		type: 'language',
 		public: true,
 		wizard: {
@@ -869,25 +869,25 @@ void settingsRegistry.addGroup('General', function () {
 			order: 1,
 		},
 	});
-	this.add('Allow_Invalid_SelfSigned_Certs', false, {
+	await this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean',
 		secret: true,
 	});
 
-	this.add('Enable_CSP', true, {
+	await this.add('Enable_CSP', true, {
 		type: 'boolean',
 	});
 
-	this.add('Extra_CSP_Domains', '', {
+	await this.add('Extra_CSP_Domains', '', {
 		type: 'string',
 		multiline: true,
 	});
 
-	this.add('Iframe_Restrict_Access', true, {
+	await this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
 	});
-	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+	await this.add('Iframe_X_Frame_Options', 'sameorigin', {
 		type: 'string',
 		secret: true,
 		enableQuery: {
@@ -895,15 +895,15 @@ void settingsRegistry.addGroup('General', function () {
 			value: true,
 		},
 	});
-	this.add('Favorite_Rooms', true, {
+	await this.add('Favorite_Rooms', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('First_Channel_After_Login', '', {
+	await this.add('First_Channel_After_Login', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('Unread_Count', 'user_and_group_mentions_only', {
+	await this.add('Unread_Count', 'user_and_group_mentions_only', {
 		type: 'select',
 		values: [
 			{
@@ -925,7 +925,7 @@ void settingsRegistry.addGroup('General', function () {
 		],
 		public: true,
 	});
-	this.add('Unread_Count_DM', 'all_messages', {
+	await this.add('Unread_Count_DM', 'all_messages', {
 		type: 'select',
 		values: [
 			{
@@ -939,7 +939,7 @@ void settingsRegistry.addGroup('General', function () {
 		],
 		public: true,
 	});
-	this.add('Unread_Count_Omni', 'all_messages', {
+	await this.add('Unread_Count_Omni', 'all_messages', {
 		type: 'select',
 		values: [
 			{
@@ -954,20 +954,20 @@ void settingsRegistry.addGroup('General', function () {
 		public: true,
 	});
 
-	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+	await this.add('DeepLink_Url', 'https://go.rocket.chat', {
 		type: 'string',
 		public: true,
 	});
 
-	this.add('CDN_PREFIX', '', {
+	await this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('CDN_PREFIX_ALL', true, {
+	await this.add('CDN_PREFIX_ALL', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('CDN_JSCSS_PREFIX', '', {
+	await this.add('CDN_JSCSS_PREFIX', '', {
 		type: 'string',
 		public: true,
 		enableQuery: {
@@ -975,36 +975,36 @@ void settingsRegistry.addGroup('General', function () {
 			value: false,
 		},
 	});
-	this.add('Force_SSL', false, {
+	await this.add('Force_SSL', false, {
 		type: 'boolean',
 		public: true,
 	});
 
-	this.add('GoogleTagManager_id', '', {
+	await this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
 		secret: true,
 	});
-	this.add('Bugsnag_api_key', '', {
+	await this.add('Bugsnag_api_key', '', {
 		type: 'string',
 		public: false,
 		secret: true,
 	});
-	this.add('Restart', 'restart_server', {
+	await this.add('Restart', 'restart_server', {
 		type: 'action',
 		actionText: 'Restart_the_server',
 	});
-	this.add('Store_Last_Message', true, {
+	await this.add('Store_Last_Message', true, {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'Store_Last_Message_Sent_per_Room',
 	});
-	this.add('Robot_Instructions_File_Content', 'User-agent: *\nDisallow: /', {
+	await this.add('Robot_Instructions_File_Content', 'User-agent: *\nDisallow: /', {
 		type: 'string',
 		public: true,
 		multiline: true,
 	});
-	this.add('Default_Referrer_Policy', 'same-origin', {
+	await this.add('Default_Referrer_Policy', 'same-origin', {
 		type: 'select',
 		values: [
 			{
@@ -1042,17 +1042,17 @@ void settingsRegistry.addGroup('General', function () {
 		],
 		public: true,
 	});
-	this.add('ECDH_Enabled', false, {
+	await this.add('ECDH_Enabled', false, {
 		type: 'boolean',
 		alert: 'This_feature_is_currently_in_alpha',
 	});
-	this.section('UTF8', function () {
-		this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
+	await this.section('UTF8', async function () {
+		await this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
 			public: true,
 			i18nDescription: 'UTF8_User_Names_Validation_Description',
 		});
-		this.add('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+', {
+		await this.add('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
 			public: true,
 			i18nDescription: 'UTF8_Channel_Names_Validation_Description',
@@ -1062,31 +1062,31 @@ void settingsRegistry.addGroup('General', function () {
 			public: true,
 		});
 	});
-	this.section('Reporting', function () {
+	await this.section('Reporting', async function () {
 		return this.add('Statistics_reporting', true, {
 			type: 'boolean',
 		});
 	});
-	this.section('Notifications', function () {
-		this.add('Notifications_Max_Room_Members', 100, {
+	await this.section('Notifications', async function () {
+		await this.add('Notifications_Max_Room_Members', 100, {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
 	});
-	this.section('REST API', function () {
+	await this.section('REST API', async function () {
 		return this.add('API_User_Limit', 500, {
 			type: 'int',
 			public: true,
 			i18nDescription: 'API_User_Limit',
 		});
 	});
-	this.section('Iframe_Integration', function () {
-		this.add('Iframe_Integration_send_enable', false, {
+	await this.section('Iframe_Integration', async function () {
+		await this.add('Iframe_Integration_send_enable', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Iframe_Integration_send_target_origin', '*', {
+		await this.add('Iframe_Integration_send_target_origin', '*', {
 			type: 'string',
 			public: true,
 			enableQuery: {
@@ -1094,7 +1094,7 @@ void settingsRegistry.addGroup('General', function () {
 				value: true,
 			},
 		});
-		this.add('Iframe_Integration_receive_enable', false, {
+		await this.add('Iframe_Integration_receive_enable', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -1107,24 +1107,25 @@ void settingsRegistry.addGroup('General', function () {
 			},
 		});
 	});
-	this.section('Translations', function () {
+	await this.section('Translations', async function () {
 		return this.add('Custom_Translations', '', {
 			type: 'code',
+			code: 'application/json',
 			public: true,
 		});
 	});
-	this.section('Stream_Cast', function () {
+	await this.section('Stream_Cast', async function () {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string',
 		});
 	});
-	this.section('NPS', function () {
-		this.add('NPS_survey_enabled', true, {
+	await this.section('NPS', async function () {
+		await this.add('NPS_survey_enabled', true, {
 			type: 'boolean',
 		});
 	});
-	this.section('Timezone', function () {
-		this.add('Default_Timezone_For_Reporting', 'server', {
+	await this.section('Timezone', async function () {
+		await this.add('Default_Timezone_For_Reporting', 'server', {
 			type: 'select',
 			values: [
 				{
@@ -1141,7 +1142,7 @@ void settingsRegistry.addGroup('General', function () {
 				},
 			],
 		});
-		this.add('Default_Custom_Timezone', '', {
+		await this.add('Default_Custom_Timezone', '', {
 			type: 'timezone',
 			enableQuery: {
 				_id: 'Default_Timezone_For_Reporting',
@@ -1151,15 +1152,15 @@ void settingsRegistry.addGroup('General', function () {
 	});
 });
 
-void settingsRegistry.addGroup('Message', function () {
-	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_Thumbnails_Enabled', true, {
+void settingsRegistry.addGroup('Message', async function () {
+	await this.section('Message_Attachments', async function () {
+		await this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
 		});
 
-		this.add('Message_Attachments_Thumbnails_Width', 480, {
+		await this.add('Message_Attachments_Thumbnails_Width', 480, {
 			type: 'int',
 			public: true,
 			enableQuery: [
@@ -1170,7 +1171,7 @@ void settingsRegistry.addGroup('Message', function () {
 			],
 		});
 
-		this.add('Message_Attachments_Thumbnails_Height', 360, {
+		await this.add('Message_Attachments_Thumbnails_Height', 360, {
 			type: 'int',
 			public: true,
 			enableQuery: [
@@ -1181,32 +1182,32 @@ void settingsRegistry.addGroup('Message', function () {
 			],
 		});
 
-		this.add('Message_Attachments_Strip_Exif', false, {
+		await this.add('Message_Attachments_Strip_Exif', false, {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_Strip_ExifDescription',
 		});
 	});
-	this.section('Message_Audio', function () {
-		this.add('Message_AudioRecorderEnabled', true, {
+	await this.section('Message_Audio', async function () {
+		await this.add('Message_AudioRecorderEnabled', true, {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription',
 		});
-		this.add('Message_Audio_bitRate', 32, {
+		await this.add('Message_Audio_bitRate', 32, {
 			type: 'int',
 			public: true,
 		});
 	});
-	this.section('Read_Receipts', function () {
-		this.add('Message_Read_Receipt_Enabled', false, {
+	await this.section('Read_Receipts', async function () {
+		await this.add('Message_Read_Receipt_Enabled', false, {
 			type: 'boolean',
 			enterprise: true,
 			invalidValue: false,
 			modules: ['message-read-receipt'],
 			public: true,
 		});
-		this.add('Message_Read_Receipt_Store_Users', false, {
+		await this.add('Message_Read_Receipt_Store_Users', false, {
 			type: 'boolean',
 			enterprise: true,
 			invalidValue: false,
@@ -1215,77 +1216,81 @@ void settingsRegistry.addGroup('Message', function () {
 			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 		});
 	});
-	this.add('Message_AllowEditing', true, {
+	await this.add('Message_CustomDomain_AutoLink', '', {
+		type: 'string',
+		public: true,
+	});
+	await this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_AllowEditing_BlockEditInMinutes', 0, {
+	await this.add('Message_AllowEditing_BlockEditInMinutes', 0, {
 		type: 'int',
 		public: true,
 		i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription',
 	});
-	this.add('Message_AllowDeleting', true, {
+	await this.add('Message_AllowDeleting', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_AllowDeleting_BlockDeleteInMinutes', 0, {
+	await this.add('Message_AllowDeleting_BlockDeleteInMinutes', 0, {
 		type: 'int',
 		public: true,
 		i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes',
 	});
-	this.add('Message_AllowUnrecognizedSlashCommand', false, {
+	await this.add('Message_AllowUnrecognizedSlashCommand', false, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_AllowDirectMessagesToYourself', true, {
+	await this.add('Message_AllowDirectMessagesToYourself', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_AlwaysSearchRegExp', false, {
+	await this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
 	});
-	this.add('Message_ShowDeletedStatus', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_AllowBadWordsFilter', false, {
+	await this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_BadWordsFilterList', '', {
+	await this.add('Message_AllowBadWordsFilter', false, {
+		type: 'boolean',
+		public: true,
+	});
+	await this.add('Message_BadWordsFilterList', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('Message_BadWordsWhitelist', '', {
+	await this.add('Message_BadWordsWhitelist', '', {
 		type: 'string',
 		public: true,
 	});
-	this.add('Message_KeepHistory', false, {
+	await this.add('Message_KeepHistory', false, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_MaxAll', 0, {
+	await this.add('Message_MaxAll', 0, {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_MaxAllowedSize', 5000, {
+	await this.add('Message_MaxAllowedSize', 5000, {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_AllowConvertLongMessagesToAttachment', true, {
+	await this.add('Message_AllowConvertLongMessagesToAttachment', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_GroupingPeriod', 300, {
+	await this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
 		i18nDescription: 'Message_GroupingPeriodDescription',
 	});
-	this.add('API_Embed', true, {
+	await this.add('API_Embed', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.add(
+	await this.add(
 		'API_Embed_UserAgent',
 		'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
 		{
@@ -1293,56 +1298,56 @@ void settingsRegistry.addGroup('Message', function () {
 			public: true,
 		},
 	);
-	this.add('API_EmbedCacheExpirationDays', 30, {
+	await this.add('API_EmbedCacheExpirationDays', 30, {
 		type: 'int',
 		public: false,
 	});
-	this.add('API_Embed_clear_cache_now', 'OEmbedCacheCleanup', {
+	await this.add('API_Embed_clear_cache_now', 'OEmbedCacheCleanup', {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
 	});
 	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
+	await this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
 		type: 'string',
 		i18nDescription: 'API_EmbedIgnoredHosts_Description',
 	});
 	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedSafePorts', '80, 443', {
+	await this.add('API_EmbedSafePorts', '80, 443', {
 		type: 'string',
 	});
-	this.add('Message_TimeFormat', 'LT', {
+	await this.add('Message_TimeFormat', 'LT', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'Message_TimeFormat_Description',
 	});
-	this.add('Message_DateFormat', 'LL', {
+	await this.add('Message_DateFormat', 'LL', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'Message_DateFormat_Description',
 	});
-	this.add('Message_TimeAndDateFormat', 'LLL', {
+	await this.add('Message_TimeAndDateFormat', 'LLL', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'Message_TimeAndDateFormat_Description',
 	});
-	this.add('Message_QuoteChainLimit', 2, {
+	await this.add('Message_QuoteChainLimit', 2, {
 		type: 'int',
 		public: true,
 	});
 
-	this.add('Hide_System_Messages', [], {
+	await this.add('Hide_System_Messages', [], {
 		type: 'multiSelect',
 		public: true,
 		values: MessageTypesValues,
 	});
 
-	this.add('DirectMesssage_maxUsers', 8, {
+	await this.add('DirectMesssage_maxUsers', 8, {
 		type: 'int',
 		public: true,
 	});
 
-	this.add('Message_ErasureType', 'Delete', {
+	await this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
 		public: true,
 		values: [
@@ -1361,7 +1366,7 @@ void settingsRegistry.addGroup('Message', function () {
 		],
 	});
 
-	this.add(
+	await this.add(
 		'Message_Code_highlight',
 		'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim',
 		{
@@ -1369,32 +1374,32 @@ void settingsRegistry.addGroup('Message', function () {
 			public: true,
 		},
 	);
-	this.add('Message_Auditing_Panel_Load_Count', 0, {
+	await this.add('Message_Auditing_Panel_Load_Count', 0, {
 		type: 'int',
 		hidden: true,
 	});
-	this.add('Message_Auditing_Apply_Count', 0, {
+	await this.add('Message_Auditing_Apply_Count', 0, {
 		type: 'int',
 		hidden: true,
 	});
 });
 
-void settingsRegistry.addGroup('Meta', function () {
-	this.add('Meta_language', '', {
+void settingsRegistry.addGroup('Meta', async function () {
+	await this.add('Meta_language', '', {
 		type: 'string',
 	});
-	this.add('Meta_fb_app_id', '', {
-		type: 'string',
-		secret: true,
-	});
-	this.add('Meta_robots', 'INDEX,FOLLOW', {
-		type: 'string',
-	});
-	this.add('Meta_google-site-verification', '', {
+	await this.add('Meta_fb_app_id', '', {
 		type: 'string',
 		secret: true,
 	});
-	this.add('Meta_msvalidate01', '', {
+	await this.add('Meta_robots', 'INDEX,FOLLOW', {
+		type: 'string',
+	});
+	await this.add('Meta_google-site-verification', '', {
+		type: 'string',
+		secret: true,
+	});
+	await this.add('Meta_msvalidate01', '', {
 		type: 'string',
 		secret: true,
 	});
@@ -1405,18 +1410,18 @@ void settingsRegistry.addGroup('Meta', function () {
 	});
 });
 
-void settingsRegistry.addGroup('Mobile', function () {
-	this.add('Allow_Save_Media_to_Gallery', true, {
+void settingsRegistry.addGroup('Mobile', async function () {
+	await this.add('Allow_Save_Media_to_Gallery', true, {
 		type: 'boolean',
 		public: true,
 	});
-	this.section('Screen_Lock', function () {
-		this.add('Force_Screen_Lock', false, {
+	await this.section('Screen_Lock', async function () {
+		await this.add('Force_Screen_Lock', false, {
 			type: 'boolean',
 			i18nDescription: 'Force_Screen_Lock_description',
 			public: true,
 		});
-		this.add('Force_Screen_Lock_After', 1800, {
+		await this.add('Force_Screen_Lock_After', 1800, {
 			type: 'int',
 			i18nDescription: 'Force_Screen_Lock_After_description',
 			enableQuery: { _id: 'Force_Screen_Lock', value: true },
@@ -1436,14 +1441,14 @@ const pushEnabledWithoutGateway = [
 	},
 ];
 
-void settingsRegistry.addGroup('Push', function () {
-	this.add('Push_enable', true, {
+void settingsRegistry.addGroup('Push', async function () {
+	await this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 	});
 
-	this.add('Push_enable_gateway', true, {
+	await this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: [
@@ -1461,7 +1466,7 @@ void settingsRegistry.addGroup('Push', function () {
 			},
 		],
 	});
-	this.add('Push_gateway', 'https://gateway.rocket.chat', {
+	await this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
 		i18nDescription: 'Push_gateway_description',
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1477,13 +1482,13 @@ void settingsRegistry.addGroup('Push', function () {
 			},
 		],
 	});
-	this.add('Push_production', true, {
+	await this.add('Push_production', true, {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: pushEnabledWithoutGateway,
 	});
-	this.add('Push_test_push', 'push_test', {
+	await this.add('Push_test_push', 'push_test', {
 		type: 'action',
 		actionText: 'Send_a_test_push_to_my_user',
 		enableQuery: {
@@ -1491,42 +1496,42 @@ void settingsRegistry.addGroup('Push', function () {
 			value: true,
 		},
 	});
-	this.section('Certificates_and_Keys', function () {
-		this.add('Push_apn_passphrase', '', {
+	await this.section('Certificates_and_Keys', async function () {
+		await this.add('Push_apn_passphrase', '', {
 			type: 'string',
 			enableQuery: [],
 			secret: true,
 		});
-		this.add('Push_apn_key', '', {
-			type: 'string',
-			multiline: true,
-			enableQuery: [],
-			secret: true,
-		});
-		this.add('Push_apn_cert', '', {
+		await this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
 			enableQuery: [],
 			secret: true,
 		});
-		this.add('Push_apn_dev_passphrase', '', {
-			type: 'string',
-			enableQuery: [],
-			secret: true,
-		});
-		this.add('Push_apn_dev_key', '', {
+		await this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
 			enableQuery: [],
 			secret: true,
 		});
-		this.add('Push_apn_dev_cert', '', {
+		await this.add('Push_apn_dev_passphrase', '', {
+			type: 'string',
+			enableQuery: [],
+			secret: true,
+		});
+		await this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
 			enableQuery: [],
 			secret: true,
 		});
-		this.add('Push_gcm_api_key', '', {
+		await this.add('Push_apn_dev_cert', '', {
+			type: 'string',
+			multiline: true,
+			enableQuery: [],
+			secret: true,
+		});
+		await this.add('Push_gcm_api_key', '', {
 			type: 'string',
 			enableQuery: [],
 			secret: true,
@@ -1538,16 +1543,16 @@ void settingsRegistry.addGroup('Push', function () {
 			secret: true,
 		});
 	});
-	return this.section('Privacy', function () {
-		this.add('Push_show_username_room', true, {
+	return this.section('Privacy', async function () {
+		await this.add('Push_show_username_room', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Push_show_message', true, {
+		await this.add('Push_show_message', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Push_request_content_from_server', true, {
+		await this.add('Push_request_content_from_server', true, {
 			type: 'boolean',
 			enterprise: true,
 			invalidValue: false,
@@ -1556,27 +1561,27 @@ void settingsRegistry.addGroup('Push', function () {
 	});
 });
 
-void settingsRegistry.addGroup('Layout', function () {
-	this.section('Login', function () {
-		this.add('Layout_Login_Hide_Logo', false, {
+void settingsRegistry.addGroup('Layout', async function () {
+	await this.section('Login', async function () {
+		await this.add('Layout_Login_Hide_Logo', false, {
 			type: 'boolean',
 			public: true,
 			enterprise: true,
 			invalidValue: false,
 		});
-		this.add('Layout_Login_Hide_Title', false, {
+		await this.add('Layout_Login_Hide_Title', false, {
 			type: 'boolean',
 			public: true,
 			enterprise: true,
 			invalidValue: false,
 		});
-		this.add('Layout_Login_Hide_Powered_By', false, {
+		await this.add('Layout_Login_Hide_Powered_By', false, {
 			type: 'boolean',
 			public: true,
 			enterprise: true,
 			invalidValue: false,
 		});
-		this.add('Layout_Login_Template', 'horizontal-template', {
+		await this.add('Layout_Login_Template', 'horizontal-template', {
 			type: 'select',
 			values: [
 				{
@@ -1592,28 +1597,28 @@ void settingsRegistry.addGroup('Layout', function () {
 			enterprise: true,
 			invalidValue: 'horizontal-template',
 		});
-		this.add('Accounts_ShowFormLogin', true, {
+		await this.add('Accounts_ShowFormLogin', true, {
 			type: 'boolean',
 			public: true,
 		});
 	});
-	this.section('Layout_Home_Page_Content_Title', function () {
-		this.add('Layout_Home_Title', 'Home', {
+	await this.section('Layout_Home_Page_Content_Title', async function () {
+		await this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
 		});
-		this.add('Layout_Show_Home_Button', true, {
+		await this.add('Layout_Show_Home_Button', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Home_Body', '', {
+		await this.add('Layout_Home_Body', '', {
 			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Home_Custom_Block_Visible', false, {
+		await this.add('Layout_Home_Custom_Block_Visible', false, {
 			type: 'boolean',
 			invalidValue: false,
 			public: true,
@@ -1634,7 +1639,7 @@ void settingsRegistry.addGroup('Layout', function () {
 				},
 			],
 		});
-		this.add('Layout_Custom_Body_Only', false, {
+		await this.add('Layout_Custom_Body_Only', false, {
 			i18nDescription: 'Layout_Custom_Body_Only_Description',
 			type: 'boolean',
 			invalidValue: false,
@@ -1657,13 +1662,13 @@ void settingsRegistry.addGroup('Layout', function () {
 				},
 			],
 		});
-		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+		await this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add(
+		await this.add(
 			'Layout_Login_Terms',
 			'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
 			{
@@ -1672,19 +1677,19 @@ void settingsRegistry.addGroup('Layout', function () {
 				public: true,
 			},
 		);
-		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+		await this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
+		await this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
+		await this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',
 			public: true,
@@ -1697,13 +1702,13 @@ void settingsRegistry.addGroup('Layout', function () {
 			i18nDescription: 'Layout_Sidenav_Footer_description',
 		});
 	});
-	this.section('Custom_Scripts', function () {
-		this.add('Custom_Script_On_Logout', '//Add your script', {
+	await this.section('Custom_Scripts', async function () {
+		await this.add('Custom_Script_On_Logout', '//Add your script', {
 			type: 'code',
 			multiline: true,
 			public: true,
 		});
-		this.add('Custom_Script_Logged_Out', '//Add your script', {
+		await this.add('Custom_Script_Logged_Out', '//Add your script', {
 			type: 'code',
 			multiline: true,
 			public: true,
@@ -1714,34 +1719,34 @@ void settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 	});
-	return this.section('User_Interface', function () {
-		this.add('UI_DisplayRoles', true, {
+	return this.section('User_Interface', async function () {
+		await this.add('UI_DisplayRoles', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('UI_Group_Channels_By_Type', true, {
+		await this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
 			public: false,
 		});
-		this.add('UI_Use_Name_Avatar', false, {
+		await this.add('UI_Use_Name_Avatar', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('UI_Use_Real_Name', false, {
+		await this.add('UI_Use_Real_Name', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('UI_Click_Direct_Message', false, {
+		await this.add('UI_Click_Direct_Message', false, {
 			type: 'boolean',
 			public: true,
 		});
 
-		this.add('Number_of_users_autocomplete_suggestions', 5, {
+		await this.add('Number_of_users_autocomplete_suggestions', 5, {
 			type: 'int',
 			public: true,
 		});
 
-		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
+		await this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
 			type: 'select',
 			values: [
 				{
@@ -1755,7 +1760,7 @@ void settingsRegistry.addGroup('Layout', function () {
 			],
 			public: true,
 		});
-		this.add('UI_Allow_room_names_with_special_chars', false, {
+		await this.add('UI_Allow_room_names_with_special_chars', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -1766,8 +1771,8 @@ void settingsRegistry.addGroup('Layout', function () {
 	});
 });
 
-void settingsRegistry.addGroup('Logs', function () {
-	this.add('Log_Level', '0', {
+void settingsRegistry.addGroup('Logs', async function () {
+	await this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
 			{
@@ -1785,15 +1790,15 @@ void settingsRegistry.addGroup('Logs', function () {
 		],
 		public: true,
 	});
-	this.add('Log_View_Limit', 1000, {
+	await this.add('Log_View_Limit', 1000, {
 		type: 'int',
 	});
 
-	this.add('Log_Trace_Methods', false, {
+	await this.add('Log_Trace_Methods', false, {
 		type: 'boolean',
 	});
 
-	this.add('Log_Trace_Methods_Filter', '', {
+	await this.add('Log_Trace_Methods_Filter', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'Log_Trace_Methods',
@@ -1801,11 +1806,11 @@ void settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
-	this.add('Log_Trace_Subscriptions', false, {
+	await this.add('Log_Trace_Subscriptions', false, {
 		type: 'boolean',
 	});
 
-	this.add('Log_Trace_Subscriptions_Filter', '', {
+	await this.add('Log_Trace_Subscriptions_Filter', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'Log_Trace_Subscriptions',
@@ -1813,37 +1818,37 @@ void settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
-	this.add('Uncaught_Exceptions_Count', 0, {
+	await this.add('Uncaught_Exceptions_Count', 0, {
 		hidden: true,
 		type: 'int',
 	});
 
-	this.section('Prometheus', function () {
-		this.add('Prometheus_Enabled', false, {
+	await this.section('Prometheus', async function () {
+		await this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 		});
 		// See the default port allocation at https://github.com/prometheus/prometheus/wiki/Default-port-allocations
-		this.add('Prometheus_Port', 9458, {
+		await this.add('Prometheus_Port', 9458, {
 			type: 'int',
 			i18nLabel: 'Port',
 		});
-		this.add('Prometheus_Reset_Interval', 0, {
+		await this.add('Prometheus_Reset_Interval', 0, {
 			type: 'int',
 		});
-		this.add('Prometheus_Garbage_Collector', false, {
+		await this.add('Prometheus_Garbage_Collector', false, {
 			type: 'boolean',
 			alert: 'Prometheus_Garbage_Collector_Alert',
 		});
-		this.add('Prometheus_API_User_Agent', false, {
+		await this.add('Prometheus_API_User_Agent', false, {
 			type: 'boolean',
 		});
 	});
 });
 
-void settingsRegistry.addGroup('Setup_Wizard', function () {
-	this.section('Organization_Info', function () {
-		this.add('Organization_Type', '', {
+void settingsRegistry.addGroup('Setup_Wizard', async function () {
+	await this.section('Organization_Info', async function () {
+		await this.add('Organization_Type', '', {
 			type: 'select',
 			values: [
 				{
@@ -1868,14 +1873,14 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 				order: 0,
 			},
 		});
-		this.add('Organization_Name', '', {
+		await this.add('Organization_Name', '', {
 			type: 'string',
 			wizard: {
 				step: 2,
 				order: 1,
 			},
 		});
-		this.add('Industry', '', {
+		await this.add('Industry', '', {
 			type: 'select',
 			values: [
 				{
@@ -1984,7 +1989,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 				order: 2,
 			},
 		});
-		this.add('Size', '', {
+		await this.add('Size', '', {
 			type: 'select',
 			values: [
 				{
@@ -2025,7 +2030,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 				order: 3,
 			},
 		});
-		this.add('Country', '', {
+		await this.add('Country', '', {
 			type: 'select',
 			values: [
 				{
@@ -2994,14 +2999,14 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 				order: 4,
 			},
 		});
-		this.add('Website', '', {
+		await this.add('Website', '', {
 			type: 'string',
 			wizard: {
 				step: 2,
 				order: 5,
 			},
 		});
-		this.add('Server_Type', '', {
+		await this.add('Server_Type', '', {
 			type: 'select',
 			values: [
 				{
@@ -3018,23 +3023,23 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 				order: 2,
 			},
 		});
-		this.add('Allow_Marketing_Emails', true, {
+		await this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
-		this.add('Register_Server', false, {
+		await this.add('Register_Server', false, {
 			type: 'boolean',
 		});
-		this.add('Organization_Email', '', {
+		await this.add('Organization_Email', '', {
 			type: 'string',
 		});
-		this.add('Triggered_Emails_Count', 0, {
+		await this.add('Triggered_Emails_Count', 0, {
 			type: 'int',
 			hidden: true,
 		});
 	});
 
-	this.section('Cloud_Info', function () {
-		this.add('Nps_Url', 'https://nps.rocket.chat', {
+	await this.section('Cloud_Info', async function () {
+		await this.add('Nps_Url', 'https://nps.rocket.chat', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3045,7 +3050,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+		await this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3056,11 +3061,11 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+		await this.add('Cloud_Service_Agree_PrivacyTerms', false, {
 			type: 'boolean',
 		});
 
-		this.add('Cloud_Workspace_Id', '', {
+		await this.add('Cloud_Workspace_Id', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3071,7 +3076,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Name', '', {
+		await this.add('Cloud_Workspace_Name', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3082,7 +3087,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Client_Id', '', {
+		await this.add('Cloud_Workspace_Client_Id', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3093,7 +3098,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Client_Secret', '', {
+		await this.add('Cloud_Workspace_Client_Secret', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3104,7 +3109,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+		await this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
 			type: 'int',
 			hidden: true,
 			readonly: true,
@@ -3115,7 +3120,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+		await this.add('Cloud_Workspace_Registration_Client_Uri', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3126,7 +3131,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_PublicKey', '', {
+		await this.add('Cloud_Workspace_PublicKey', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3137,7 +3142,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_License', '', {
+		await this.add('Cloud_Workspace_License', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3148,14 +3153,14 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Had_Trial', false, {
+		await this.add('Cloud_Workspace_Had_Trial', false, {
 			type: 'boolean',
 			hidden: true,
 			readonly: true,
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token', '', {
+		await this.add('Cloud_Workspace_Access_Token', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3166,7 +3171,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
+		await this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,
@@ -3177,7 +3182,7 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Registration_State', '', {
+		await this.add('Cloud_Workspace_Registration_State', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
@@ -3190,133 +3195,133 @@ void settingsRegistry.addGroup('Setup_Wizard', function () {
 	});
 });
 
-void settingsRegistry.addGroup('Rate Limiter', function () {
-	this.section('DDP_Rate_Limiter', function () {
-		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
+void settingsRegistry.addGroup('Rate Limiter', async function () {
+	await this.section('DDP_Rate_Limiter', async function () {
+		await this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
+		await this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true },
 		});
-		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, {
+		await this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true },
 		});
 
-		this.add('DDP_Rate_Limit_User_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, {
+		await this.add('DDP_Rate_Limit_User_Enabled', true, { type: 'boolean' });
+		await this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true },
 		});
-		this.add('DDP_Rate_Limit_User_Interval_Time', 60000, {
+		await this.add('DDP_Rate_Limit_User_Interval_Time', 60000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true },
 		});
 
-		this.add('DDP_Rate_Limit_Connection_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, {
+		await this.add('DDP_Rate_Limit_Connection_Enabled', true, { type: 'boolean' });
+		await this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true },
 		});
-		this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, {
+		await this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true },
 		});
 
-		this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, {
+		await this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, { type: 'boolean' });
+		await this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true },
 		});
-		this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, {
+		await this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true },
 		});
 
-		this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, {
+		await this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, { type: 'boolean' });
+		await this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true },
 		});
-		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, {
+		await this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, {
 			type: 'int',
 			enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true },
 		});
 	});
 
-	this.section('API_Rate_Limiter', function () {
-		this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
-		this.add('API_Enable_Rate_Limiter_Dev', true, {
+	await this.section('API_Rate_Limiter', async function () {
+		await this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
+		await this.add('API_Enable_Rate_Limiter_Dev', true, {
 			type: 'boolean',
 			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
 		});
-		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, {
+		await this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, {
 			type: 'int',
 			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
 		});
-		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, {
+		await this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, {
 			type: 'int',
 			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
 		});
 	});
 
-	this.section('Feature_Limiting', function () {
-		this.add('Rate_Limiter_Limit_RegisterUser', 1, {
+	await this.section('Feature_Limiting', async function () {
+		await this.add('Rate_Limiter_Limit_RegisterUser', 1, {
 			type: 'int',
 			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
 		});
 	});
 });
 
-void settingsRegistry.addGroup('Troubleshoot', function () {
-	this.add('Troubleshoot_Disable_Notifications', false, {
+void settingsRegistry.addGroup('Troubleshoot', async function () {
+	await this.add('Troubleshoot_Disable_Notifications', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
 
 	// this settings will let clients know in case presence has been disabled
-	this.add('Presence_broadcast_disabled', false, {
+	await this.add('Presence_broadcast_disabled', false, {
 		type: 'boolean',
 		public: true,
 		readonly: true,
 	});
 
-	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+	await this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
 		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
 
-	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+	await this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
 	});
-	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+	await this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
 	});
-	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+	await this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
 	});
-	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+	await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
 	});
-	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+	await this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
 	});
-	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+	await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
 
-void settingsRegistry.addGroup('Call_Center', function () {
+void settingsRegistry.addGroup('Call_Center', async function () {
 	// TODO: Check with the backend team if an i18nPlaceholder is possible
-	this.with({ tab: 'Settings' }, function () {
-		this.section('General_Settings', function () {
-			this.add('VoIP_Enabled', false, {
+	await this.with({ tab: 'Settings' }, async function () {
+		await this.section('General_Settings', async function () {
+			await this.add('VoIP_Enabled', false, {
 				type: 'boolean',
 				public: true,
 				i18nDescription: 'VoIP_Enabled_Description',
@@ -3325,7 +3330,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_JWT_Secret', '', {
+			await this.add('VoIP_JWT_Secret', '', {
 				type: 'password',
 				i18nDescription: 'VoIP_JWT_Secret_description',
 				enableQuery: {
@@ -3334,8 +3339,8 @@ void settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 		});
-		this.section('Voip_Server_Configuration', function () {
-			this.add('VoIP_Server_Name', '', {
+		await this.section('Voip_Server_Configuration', async function () {
+			await this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
 				placeholder: 'WebSocket Server',
@@ -3344,7 +3349,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Websocket_Path', '', {
+			await this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
 				placeholder: 'wss://your.domain.name',
@@ -3353,7 +3358,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Retry_Count', -1, {
+			await this.add('VoIP_Retry_Count', -1, {
 				type: 'int',
 				public: true,
 				i18nDescription: 'VoIP_Retry_Count_Description',
@@ -3363,7 +3368,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+			await this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
 				type: 'boolean',
 				public: true,
 				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
@@ -3374,8 +3379,8 @@ void settingsRegistry.addGroup('Call_Center', function () {
 			});
 		});
 
-		this.section('Management_Server', function () {
-			this.add('VoIP_Management_Server_Host', '', {
+		await this.section('Management_Server', async function () {
+			await this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
 				placeholder: 'https://your.domain.name',
@@ -3385,7 +3390,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Port', 0, {
+			await this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
 				placeholder: '8080',
@@ -3395,7 +3400,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Name', '', {
+			await this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
 				placeholder: 'Server Name',
@@ -3405,7 +3410,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Username', '', {
+			await this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
 				placeholder: 'Username',
@@ -3415,7 +3420,7 @@ void settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Password', '', {
+			await this.add('VoIP_Management_Server_Password', '', {
 				type: 'password',
 				public: true,
 				enableQuery: {

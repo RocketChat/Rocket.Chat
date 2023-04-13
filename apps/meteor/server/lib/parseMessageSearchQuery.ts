@@ -299,7 +299,7 @@ class MessageSearchQueryParser {
  * @private
  * @example
  * const { query, options } = parseMessageSearchQuery('from:rocket.cat', {
- * 	user: Meteor.user(),
+ * 	user: await Meteor.userAsync(),
  * 	offset: 0,
  * 	limit: 20,
  * 	forceRegex: false,

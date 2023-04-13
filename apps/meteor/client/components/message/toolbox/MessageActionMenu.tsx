@@ -15,7 +15,7 @@ type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
 
-export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
+const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
 	const ref = useRef(null);
 
 	const t = useTranslation();

@@ -12,8 +12,8 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:pageVisited'(token, room, pageInfo) {
+	async 'livechat:pageVisited'(token, room, pageInfo) {
 		methodDeprecationLogger.warn('livechat:pageVisited will be deprecated in future versions of Rocket.Chat');
-		Livechat.savePageHistory(token, room, pageInfo);
+		await Livechat.savePageHistory(token, room, pageInfo);
 	},
 });

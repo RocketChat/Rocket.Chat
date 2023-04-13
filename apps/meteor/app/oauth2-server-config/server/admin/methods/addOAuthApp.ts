@@ -15,7 +15,9 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async addOAuthApp(application) {
-		methodDeprecationLogger.warn('addOAuthApp is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.warn(
+			'addOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.create instead.',
+		);
 
 		return addOAuthApp(application, this.userId ?? undefined);
 	},

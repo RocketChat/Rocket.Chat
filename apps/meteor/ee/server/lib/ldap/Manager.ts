@@ -1,11 +1,10 @@
 import type ldapjs from 'ldapjs';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
 import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Rooms } from '../../../../app/models/server';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -14,6 +13,7 @@ import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/l
 import { syncUserRoles } from '../syncUserRoles';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+import { getValidRoomName } from '../../../../app/utils/server';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -302,7 +302,8 @@ export class LDAPEEManager extends LDAPManager {
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
 				try {
-					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || (await this.createRoomForSync(channel));
+					const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
+					const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(channel));
 					if (!room) {
 						return;
 					}
@@ -530,7 +531,7 @@ export class LDAPEEManager extends LDAPManager {
 			let count = 0;
 
 			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: async (entry: ldapjs.SearchEntry): Promise<IImportUser | undefined> => {
+				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;
 
@@ -572,7 +573,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			LDAPManager.syncUserAvatar(user, ldapUser);
+			await LDAPManager.syncUserAvatar(user, ldapUser);
 		}
 	}
 
@@ -603,7 +604,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				UsersRaw.unsetLoginTokens(user._id);
+				await UsersRaw.unsetLoginTokens(user._id);
 			}
 		}
 	}
