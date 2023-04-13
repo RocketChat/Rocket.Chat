@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
-import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+import getCaretCoordinates from 'textarea-caret';
 
 import AutoCompleteRecords from './collection';
 import { APIClient } from '../../utils/client';

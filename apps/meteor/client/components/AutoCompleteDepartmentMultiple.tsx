@@ -1,7 +1,7 @@
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FormEventHandler } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
@@ -9,8 +9,8 @@ import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentMultipleProps = {
-	value?: string;
-	onChange: FormEventHandler<HTMLElement>;
+	value?: PaginatedMultiSelectOption[];
+	onChange: (value: PaginatedMultiSelectOption[]) => void;
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
 };
@@ -41,7 +41,7 @@ const AutoCompleteDepartmentMultiple = ({
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
-			setFilter={setDepartmentsFilter as (value?: string | number) => void}
+			setFilter={setDepartmentsFilter}
 			options={departmentsItems}
 			width='100%'
 			flexShrink={0}

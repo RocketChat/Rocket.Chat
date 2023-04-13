@@ -32,9 +32,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminUser });
+	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
@@ -46,7 +46,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request' && !!permissionsGranted) {
+			if (action !== 'request') {
 				setPurchased(true);
 				await marketplaceActions[action]({ ...app, permissionsGranted });
 			} else {
@@ -113,7 +113,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center'>
+		<Box {...props} display='flex' alignItems='center' mie='x8'>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -147,7 +147,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inline='x8' key={index}>
+				<Margins inlineEnd='x8' key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

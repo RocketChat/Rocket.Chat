@@ -36,5 +36,5 @@ declare module 'meteor/rocketchat:tap-i18n' {
 		};
 	}
 
-	export const TAPi18next: typeof i18next;
+	const TAPi18next: typeof i18next;
 }

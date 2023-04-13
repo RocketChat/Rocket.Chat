@@ -75,7 +75,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				text: string;
 				scope: string;
 				tags: any;
-				departmentId: { value: string; label: string };
+				departmentId: string;
 			};
 			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
@@ -84,7 +84,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				text,
 				scope,
 				...(tags.length > 0 && { tags: mappedTags }),
-				...(departmentId && { departmentId: departmentId.value }),
+				...(departmentId && { departmentId }),
 			});
 			dispatchToastMessage({
 				type: 'success',

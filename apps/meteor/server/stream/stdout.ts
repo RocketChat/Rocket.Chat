@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks';
 
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Log } from 'meteor/logging';
 
 import notifications from '../../app/notifications/server/lib/Notifications';

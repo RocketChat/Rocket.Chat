@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, ChatSubscription } from '../../app/models/client';
@@ -6,7 +7,7 @@ import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
 import { dispatchToastMessage } from '../lib/toast';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	unpinMessage(message: IMessage) {
 		if (!Meteor.userId()) {
 			dispatchToastMessage({ type: 'error', message: t('error-not-authorized') });
@@ -25,7 +26,7 @@ Meteor.methods({
 			return false;
 		}
 		dispatchToastMessage({ type: 'success', message: t('Message_has_been_unpinned') });
-		return ChatMessage.update(
+		ChatMessage.update(
 			{
 				_id: message._id,
 				rid: message.rid,
@@ -36,5 +37,7 @@ Meteor.methods({
 				},
 			},
 		);
+
+		return true;
 	},
 });

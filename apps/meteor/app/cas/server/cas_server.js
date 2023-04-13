@@ -6,13 +6,12 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import fiber from 'fibers';
-import { CredentialTokens } from '@rocket.chat/models';
+import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
-import { _setRealName } from '../../lib';
+import { _setRealName } from '../../lib/server';
 import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
@@ -45,7 +44,7 @@ const casTicket = function (req, token, callback) {
 			service: `${appUrl}/_cas/${token}`,
 		},
 		ticketId,
-		Meteor.bindEnvironment(async function (err, status, username, details) {
+		async function (err, status, username, details) {
 			if (err) {
 				logger.error(`error when trying to validate: ${err.message}`);
 			} else if (status) {
@@ -63,7 +62,7 @@ const casTicket = function (req, token, callback) {
 			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 
 			callback();
-		}),
+		},
 	);
 };
 
@@ -112,13 +111,13 @@ WebApp.connectHandlers.use(function (req, res, next) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler('cas', function (options) {
+Accounts.registerLoginHandler('cas', async function (options) {
 	if (!options.cas) {
 		return undefined;
 	}
 
 	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = Promise.await(CredentialTokens.findOneNotExpiredById(options.cas.credentialToken));
+	const credentials = await CredentialTokens.findOneNotExpiredById(options.cas.credentialToken);
 	if (credentials === undefined) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
@@ -181,17 +180,17 @@ Accounts.registerLoginHandler('cas', function (options) {
 	// Search existing user by its external service id
 	logger.debug(`Looking up user by id: ${result.username}`);
 	// First, look for a user that has logged in from CAS with this username before
-	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	let user = await Users.findOne({ 'services.cas.external_id': result.username });
 	if (!user) {
 		// If that user was not found, check if there's any Rocket.Chat user with that username
 		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
 		// It'll also allow non-CAS users to switch to CAS based login
 		if (trustUsername) {
 			const username = new RegExp(`^${result.username}$`, 'i');
-			user = Meteor.users.findOne({ username });
+			user = await Users.findOne({ username });
 			if (user) {
 				// Update the user's external_id to reflect this new username.
-				Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+				await Users.updateOne({ _id: user._id }, { $set: { 'services.cas.external_id': result.username } });
 			}
 		}
 	}
@@ -202,12 +201,12 @@ Accounts.registerLoginHandler('cas', function (options) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (int_attrs.name) {
-				_setRealName(user._id, int_attrs.name);
+				await _setRealName(user._id, int_attrs.name);
 			}
 
 			// Update email
 			if (int_attrs.email) {
-				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
+				await Users.updateOne({ _id: user._id }, { $set: { emails: [{ address: int_attrs.email, verified }] } });
 			}
 		}
 	} else if (userCreationEnabled) {
@@ -252,20 +251,21 @@ Accounts.registerLoginHandler('cas', function (options) {
 		const userId = Accounts.insertUserDoc({}, newUser);
 
 		// Fetch and use it
-		user = Meteor.users.findOne(userId);
+		user = await Users.findOneById(userId);
 		logger.debug(`Created new user for '${result.username}' with id: ${user._id}`);
 		// logger.debug(JSON.stringify(user, undefined, 4));
 
 		logger.debug(`Joining user to attribute channels: ${int_attrs.rooms}`);
 		if (int_attrs.rooms) {
-			_.each(int_attrs.rooms.split(','), function (room_name) {
-				if (room_name) {
-					let room = Rooms.findOneByNameAndType(room_name, 'c');
+			const roomNames = int_attrs.rooms.split(',');
+			for await (const roomName of roomNames) {
+				if (roomName) {
+					let room = await Rooms.findOneByNameAndType(roomName, 'c');
 					if (!room) {
-						room = createRoom('c', room_name, user.username);
+						room = await createRoom('c', roomName, user.username);
 					}
 				}
-			});
+			}
 		}
 	} else {
 		// Should fail as no user exist and can't be created

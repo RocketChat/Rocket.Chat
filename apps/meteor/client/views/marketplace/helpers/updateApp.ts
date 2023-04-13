@@ -4,7 +4,7 @@ import { Apps } from '../../../../ee/client/apps/orchestrator';
 import { handleAPIError, warnStatusChange } from '../helpers';
 
 type updateAppProps = App & {
-	permissionsGranted: AppPermission[];
+	permissionsGranted?: AppPermission[];
 };
 
 export const updateApp = async ({ id, name, marketplaceVersion, permissionsGranted }: updateAppProps): Promise<void> => {

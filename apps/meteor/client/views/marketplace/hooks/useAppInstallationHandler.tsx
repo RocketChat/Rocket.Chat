@@ -23,7 +23,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const upgradeRoute = useRoute('upgradeRoute');
+	const upgradeRoute = useRoute('upgrade');
 	const routeContext = String(useRouteParameter('context'));
 	const context = isMarketplaceRouteContext(routeContext) ? routeContext : 'explore';
 
@@ -85,7 +85,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={onDismiss} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data.url} wrapperHeight='x460' cancel={onDismiss} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -109,7 +109,8 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push();
+					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					setModal(null);
 				}}
 			/>,
 		);

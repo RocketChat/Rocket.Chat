@@ -42,11 +42,13 @@
 	white-space: initial;
 
 	opacity: 1;
+	border: 1px solid var(--rcx-color-shadow-elevation-border, var(--rcx-color-stroke-extra-light, var(--rcx-color-neutral-250, #ebecef)));
 
 	border-radius: var(--popover-radius);
 
 	background-color: var(--rcx-color-surface-light, white);
-	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+	box-shadow: 0 0 1px 0 var(--rcx-color-shadow-elevation-2x, rgba(47, 52, 61, 0.08)), 0 0 12px 0 var(--rcx-color-shadow-elevation-2y, rgba(47, 52, 61, 0.12));
 
 	&.show {
 		display: flex;

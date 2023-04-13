@@ -6,7 +6,7 @@ import { Presence } from '@rocket.chat/core-services';
 
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
-	InstanceStatus.updateConnections(Meteor.server.sessions.size);
+	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
 }, 30000);
 
 Meteor.startup(function () {
@@ -15,31 +15,31 @@ Meteor.startup(function () {
 	Meteor.onConnection(function (connection) {
 		const session = Meteor.server.sessions.get(connection.id);
 
-		connection.onClose(function () {
+		connection.onClose(async function () {
 			if (!session) {
 				return;
 			}
 
-			Presence.removeConnection(session.userId, connection.id, nodeId);
+			await Presence.removeConnection(session.userId, connection.id, nodeId);
 			updateConns();
 		});
 	});
 
-	process.on('exit', function () {
-		Presence.removeLostConnections(nodeId);
+	process.on('exit', async function () {
+		await Presence.removeLostConnections(nodeId);
 	});
 
 	Accounts.onLogin(function (login: any): void {
 		if (login.type !== 'resume') {
 			return;
 		}
-		Presence.newConnection(login.user._id, login.connection.id, nodeId);
-
-		updateConns();
+		void Presence.newConnection(login.user._id, login.connection.id, nodeId).then(() => {
+			updateConns();
+		});
 	});
 
 	Accounts.onLogout(function (login: any): void {
-		Presence.removeConnection(login.user._id, login.connection.id, nodeId);
+		void Presence.removeConnection(login.user._id, login.connection.id, nodeId);
 
 		updateConns();
 	});

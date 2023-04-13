@@ -6,7 +6,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 
-import { metrics } from '../../../app/metrics';
+import { metrics } from '../../../app/metrics/server';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
@@ -216,7 +216,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.emailInbox', async () => {
-			configureEmailInboxes();
+			await configureEmailInboxes();
 		});
 
 		if (!disableMsgRoundtripTracking) {
@@ -236,11 +236,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
 			added(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			changed(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			onStop() {
 				//
@@ -256,7 +256,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	}
 
 	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
@@ -265,12 +265,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 		if (!user) {
 			return {
-				result: Meteor.call(method, ...args),
+				result: Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
+			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 

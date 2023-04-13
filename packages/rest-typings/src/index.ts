@@ -44,6 +44,8 @@ import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
 import type { FederationEndpoints } from './v1/federation';
+import type { AuthEndpoints } from './v1/auth';
+import type { DefaultEndpoints } from './default';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -90,7 +92,9 @@ export interface Endpoints
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		FederationEndpoints,
-		ImportEndpoints {}
+		AuthEndpoints,
+		ImportEndpoints,
+		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
 	TEndpoints extends Endpoints,
@@ -221,6 +225,10 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
+export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
+export * from './v1/oauthapps/OAuthAppsGetParamsGET';
+export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
+export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -247,3 +255,7 @@ export * from './v1/import';
 export * from './v1/voip';
 export * from './v1/email-inbox';
 export * from './v1/federation';
+export * from './v1/rooms';
+export * from './v1/groups';
+export * from './v1/chat';
+export * from './v1/auth';

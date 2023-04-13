@@ -10,7 +10,7 @@ import VerticalBarContent from '../../../../../components/VerticalBar/VerticalBa
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
 import ComposerContainer from '../../../components/body/composer/ComposerContainer';
-import { useFileUploadDropTarget } from '../../../components/body/useFileUploadDropTarget';
+import { useFileUploadDropTarget } from '../../../components/body/hooks/useFileUploadDropTarget';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
@@ -70,7 +70,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid !== mainMessage._id) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
 				}
 

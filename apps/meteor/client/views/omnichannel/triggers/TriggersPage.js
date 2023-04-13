@@ -53,7 +53,7 @@ const MonitorsPage = () => {
 						<VerticalBar.Close onClick={handleCloseVerticalBar} />
 					</VerticalBar.Header>
 					<VerticalBar.ScrollableContent>
-						{context === 'edit' && <EditTriggerPageContainer id={id} onSave={reload.current} />}
+						{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={reload.current} />}
 						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
 					</VerticalBar.ScrollableContent>
 				</VerticalBar>

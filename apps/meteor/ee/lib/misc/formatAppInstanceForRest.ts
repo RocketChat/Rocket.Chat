@@ -4,7 +4,9 @@ import type { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-export interface IAppInfoRest extends IAppInfo {
+import { getInstallationSourceFromAppStorageItem } from '../../../lib/apps/getInstallationSourceFromAppStorageItem';
+
+interface IAppInfoRest extends IAppInfo {
 	status: AppStatus;
 	languages: IAppStorageItem['languageContent'];
 	licenseValidation?: AppLicenseValidationResult;
@@ -17,7 +19,7 @@ export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
 		...app.getInfo(),
 		status: app.getStatus(),
 		languages: app.getStorageItem().languageContent,
-		private: app.getStorageItem().installationSource === 'private',
+		private: getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'private',
 		migrated: !!app.getStorageItem().migrated,
 	};
 

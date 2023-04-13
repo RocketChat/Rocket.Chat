@@ -5,7 +5,7 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
@@ -29,7 +29,8 @@ import {
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
@@ -62,7 +63,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	private privateKey: CryptoKey | undefined;
+	public privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -71,12 +72,12 @@ class E2E extends Emitter {
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 
-		this.on('ready', () => {
+		this.on('ready', async () => {
 			this._ready.set(true);
 			this.log('startClient -> Done');
 			this.log('decryptSubscriptions');
 
-			this.decryptSubscriptions();
+			await this.decryptSubscriptions();
 			this.log('decryptSubscriptions -> Done');
 		});
 	}
@@ -98,7 +99,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -184,8 +185,8 @@ class E2E extends Emitter {
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
-					action: () => {
-						this.startClient();
+					action: async () => {
+						await this.startClient();
 						this.closeAlert();
 					},
 				});
@@ -200,7 +201,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
-			this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
@@ -309,11 +310,11 @@ class E2E extends Emitter {
 			return this.error('Error exporting private key: ', error);
 		}
 
-		this.requestSubscriptionKeys();
+		await this.requestSubscriptionKeys();
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		call('e2e.requestSubscriptionKeys');
+		await call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -443,14 +444,14 @@ class E2E extends Emitter {
 
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
+			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
 		});
 	}
 
 	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
 		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
 		this.log('decryptSubscription ->', subscriptionId);
-		e2eRoom?.decryptSubscription();
+		await e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {
@@ -499,7 +500,8 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url, useRealName);
 
 				message.attachments.push(quoteAttachment);
 			}),
