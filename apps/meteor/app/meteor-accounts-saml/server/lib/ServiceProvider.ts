@@ -20,7 +20,7 @@ import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, I
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
 
-	syncRequestToUrl: (request: string, operation: string) => void;
+	syncRequestToUrl: Function;
 
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
@@ -29,7 +29,9 @@ export class SAMLServiceProvider {
 
 		this.serviceProviderOptions = serviceProviderOptions;
 
-		this.syncRequestToUrl = Meteor.wrapAsync(this.requestToUrl, this);
+		this.syncRequestToUrl = Meteor.wrapAsync<
+			(request: string, operation: string, callback: (err: string | object | null, url?: string | undefined) => void) => void
+		>(this.requestToUrl, this);
 	}
 
 	private signRequest(xml: string): string {
