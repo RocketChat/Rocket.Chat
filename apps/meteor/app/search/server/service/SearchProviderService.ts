@@ -58,8 +58,8 @@ export class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		void settingsRegistry.addGroup('Search', function () {
-			this.add('Search.Provider', 'defaultProvider', {
+		void settingsRegistry.addGroup('Search', async function () {
+			await this.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: Object.values(providers).map((provider) => ({
 					key: provider.key,
@@ -69,33 +69,37 @@ export class SearchProviderService {
 				i18nLabel: 'Search_Provider',
 			});
 
-			Object.keys(providers)
-				.filter((key) => providers[key].settings && providers[key].settings.length > 0)
-				.forEach((key) => {
-					this.section(providers[key].i18nLabel, function () {
-						providers[key].settings.forEach((setting) => {
-							const _options: Record<string, unknown> = {
-								type: setting.type,
-								...setting.options,
-							};
+			await Promise.all(
+				Object.keys(providers)
+					.filter((key) => providers[key].settings && providers[key].settings.length > 0)
+					.map(async (key) => {
+						await this.section(providers[key].i18nLabel, async function () {
+							await Promise.all(
+								providers[key].settings.map(async (setting) => {
+									const _options: Record<string, unknown> = {
+										type: setting.type,
+										...setting.options,
+									};
 
-							_options.enableQuery = _options.enableQuery || [];
+									_options.enableQuery = _options.enableQuery || [];
 
-							if (!_options.enableQuery) {
-								_options.enableQuery = [];
-							}
+									if (!_options.enableQuery) {
+										_options.enableQuery = [];
+									}
 
-							if (Array.isArray(_options.enableQuery)) {
-								_options.enableQuery.push({
-									_id: 'Search.Provider',
-									value: key,
-								});
-							}
+									if (Array.isArray(_options.enableQuery)) {
+										_options.enableQuery.push({
+											_id: 'Search.Provider',
+											value: key,
+										});
+									}
 
-							this.add(setting.id, setting.defaultValue, _options);
+									await this.add(setting.id, setting.defaultValue, _options);
+								}),
+							);
 						});
-					});
-				});
+					}),
+			);
 		});
 
 		// add listener to react on setting changes

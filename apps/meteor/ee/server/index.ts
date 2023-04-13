@@ -13,5 +13,4 @@ import './api';
 import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
-import './settings/index';
 import './methods/getReadReceipts';
