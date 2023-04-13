@@ -22,25 +22,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-async function leaveAllGroups(ids) {
-	await Promise.all(
-		ids.map((id) =>
-			request
-				.post(api('groups.leave'))
-				.set(credentials)
-				.send({
-					roomId: group._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				}),
-		),
-	);
-}
-
-describe('[Groups]', function () {
+describe('[Groups]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -655,7 +637,6 @@ describe('[Groups]', function () {
 			.end(done);
 	});
 
-	let groups = [];
 	it('/groups.list', (done) => {
 		request
 			.get(api('groups.list'))
@@ -667,16 +648,16 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('groups').and.to.be.an('array');
-				groups = res.body.groups;
 			})
 			.end(done);
 	});
 
 	it('/groups.list should return a list of zero length if not a member of any group', async () => {
-		await leaveAllGroups(groups.map((group) => group._id));
+		const user = await createUser();
+		const newCreds = await login(user.username, password);
 		request
 			.get(api('groups.list'))
-			.set(credentials)
+			.set(newCreds)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -821,7 +802,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('[/groups.files]', async function () {
+	describe('[/groups.files]', async function() {
 		await testFileUploads('groups.files', group);
 	});
 

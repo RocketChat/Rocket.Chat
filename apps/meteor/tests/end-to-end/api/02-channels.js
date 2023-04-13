@@ -22,12 +22,6 @@ function getRoomInfo(roomId) {
 	});
 }
 
-async function leaveAllChannels(channelIds) {
-	return Promise.all(channelIds.map((channelId) => await request.post(api('channels.leave')).set(testUserCredentials).send({
-		roomId,
-	})));
-}
-
 describe('[Channels]', function() {
 	this.retries(0);
 
@@ -2081,7 +2075,6 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 
-		let joinedChannels = [];
 		it('/channels.list.joined', (done) => {
 			request
 				.get(api('channels.list.joined'))
@@ -2093,7 +2086,6 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
-					joinedChannels = res.body.channels;
 
 					const retChannel = res.body.channels.find(({ _id }) => _id === channel._id);
 
@@ -2102,11 +2094,12 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 
-		it('/channels.list.join should return empty list when member of no group', async ()  => {
-			await leaveAllChannels(joinedChannels.map((channel) => channel._id));
+		it('/channels.list.join should return empty list when member of no group', async () => {
+			const user = await createUser({ joinDefaultChannels: false });
+			const newCreds = await login(user.username, password);
 			await request
 				.get(api('channels.list.joined'))
-				.set(credentials)
+				.set(newCreds)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -2114,7 +2107,7 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.property('count').that.is.equal(0);
 					expect(res.body).to.have.property('total').that.is.equal(0);
 					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);
-				})
+				});
 		});
 	});
 });
