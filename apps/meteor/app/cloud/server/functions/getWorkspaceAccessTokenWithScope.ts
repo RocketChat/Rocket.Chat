@@ -15,7 +15,8 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		return tokenResponse;
 	}
 
-	const client_id = settings.get('Cloud_Workspace_Client_Id');
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const client_id = settings.get<string>('Cloud_Workspace_Client_Id');
 	if (!client_id) {
 		return tokenResponse;
 	}
@@ -24,8 +25,9 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		scope = workspaceScopes.join(' ');
 	}
 
-	const cloudUrl = settings.get('Cloud_Url');
-	const client_secret = settings.get('Cloud_Workspace_Client_Secret');
+	const cloudUrl = settings.get<string>('Cloud_Url');
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
 	let authTokenResult;
@@ -43,7 +45,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 			body,
 		});
 		authTokenResult = await result.json();
-	} catch (err) {
+	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
@@ -54,7 +56,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 
 		if (err.response?.data?.error === 'oauth_invalid_client_credentials') {
 			SystemLogger.error('Server has been unregistered from cloud');
-			removeWorkspaceRegistrationInfo();
+			void removeWorkspaceRegistrationInfo();
 		}
 
 		return tokenResponse;

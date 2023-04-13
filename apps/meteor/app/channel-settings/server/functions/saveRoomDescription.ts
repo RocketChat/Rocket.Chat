@@ -2,8 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { UpdateResult } from 'mongodb';
 
-export const saveRoomDescription = async function (rid, roomDescription, user) {
+export const saveRoomDescription = async function (rid: string, roomDescription: string, user: IUser): Promise<UpdateResult> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomDescription',

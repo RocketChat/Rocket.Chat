@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Settings } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -11,6 +12,17 @@ export function saveRegistrationData({
 	publicKey,
 	registration_client_uri,
 	licenseData,
+}: {
+	workspaceId: string;
+	client_name: string;
+	client_id: string;
+	client_secret: string;
+	client_secret_expires_at: number;
+	publicKey: string;
+	registration_client_uri: string;
+	licenseData: {
+		license: string;
+	};
 }) {
 	return Promise.all([
 		Settings.updateValueById('Register_Server', true),

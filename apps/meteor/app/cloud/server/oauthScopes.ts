@@ -7,7 +7,7 @@ export const workspaceScopes = [
 	'marketplace:read',
 	'marketplace:download',
 	'fedhub:register',
-];
+] as const;
 
 // These are the scopes we use for the user
-export const userScopes = ['openid', 'offline_access'];
+export const userScopes = ['openid', 'offline_access'] as const;
