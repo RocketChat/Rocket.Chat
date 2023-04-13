@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.1.1",
+	"version": "6.1.2",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -211,7 +211,7 @@
 		"@react-pdf/renderer": "^3.1.3",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
-		"@rocket.chat/apps-engine": "1.38.0",
+		"@rocket.chat/apps-engine": "1.38.1",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
@@ -395,7 +395,7 @@
 		"use-subscription": "~1.6.0",
 		"use-sync-external-store": "^1.2.0",
 		"uuid": "^8.3.2",
-		"vm2": "^3.9.11",
+		"vm2": "^3.9.16",
 		"webdav": "^4.11.0",
 		"xml-crypto": "^2.1.4",
 		"xml-encryption": "2.0.0",
