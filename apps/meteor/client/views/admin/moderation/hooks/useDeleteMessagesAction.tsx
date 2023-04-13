@@ -36,13 +36,13 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 				onConfirm={() => onDeleteAll()}
 				onCancel={() => setModal()}
 			>
-				{t('Are_you_sure_you_want_to_delete_all_reported_messages_from_this_user')}
+				{t('Moderation_Are_you_sure_you_want_to_delete_all_reported_messages_from_this_user')}
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: t('Delete_all_messages'), icon: 'trash' },
+		label: { label: t('Moderation_Delete_all_messages'), icon: 'trash' },
 		action: () => confirmDeletMessages(),
 	};
 };

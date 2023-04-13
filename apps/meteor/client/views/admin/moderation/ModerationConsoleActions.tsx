@@ -17,7 +17,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<
 			<Menu
 				options={{
 					seeReports: {
-						label: { label: t('See_messages'), icon: 'document-eye' },
+						label: { label: t('Moderation_See_messages'), icon: 'document-eye' },
 						action: () => onClick(uid),
 					},
 					divider: {

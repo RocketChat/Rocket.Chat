@@ -15,8 +15,8 @@ const MessageContextFooter: FC<{ userId: string; onChange: () => void; onReload:
 	return (
 		<Flex.Container inline direction='row' alignItems='center' justifyContent='center'>
 			<Flex.Item grow={1}>
-				<Button size={37} onClick={action} title={t('delete-message')} aria-label={t('Delete_all_messages')} danger>
-					<Icon name='trash' /> {t('Delete_all_messages')}
+				<Button size={37} onClick={action} title={t('delete-message')} aria-label={t('Moderation_Delete_all_messages')} danger>
+					<Icon name='trash' /> {t('Moderation_Delete_all_messages')}
 				</Button>
 			</Flex.Item>
 			<Flex.Item>

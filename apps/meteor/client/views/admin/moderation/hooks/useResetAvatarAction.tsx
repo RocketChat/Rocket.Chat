@@ -17,7 +17,7 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Avatar_reset_successfully') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Avatar_reset_successfully') });
 		},
 	});
 
@@ -31,13 +31,13 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 	const confirmResetAvatar = (): void => {
 		setModal(
 			<GenericModal confirmText={t('Reset')} variant='danger' onConfirm={() => onResetAvatar()} onCancel={() => setModal()}>
-				{t('Are_you_sure_you_want_to_reset_the_avatar')}
+				{t('Moderation_Are_you_sure_you_want_to_reset_the_avatar')}
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: t('Reset_user_avatar'), icon: 'reload' },
+		label: { label: t('Moderation_Reset_user_avatar'), icon: 'reload' },
 		action: () => confirmResetAvatar(),
 	};
 };

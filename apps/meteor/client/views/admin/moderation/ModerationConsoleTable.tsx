@@ -118,7 +118,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.description'
 			>
-				{t('Reported_message')}
+				{t('Moderation_Reported_message')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'room'} direction={sortDirection}>
 				{t('Room')}
@@ -130,10 +130,10 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.ts'
 			>
-				{t('Post_date')}
+				{t('Moderation_Post_date')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
-				{t('Report_plural')}
+				{t('Moderation_Report_plural')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
 		],

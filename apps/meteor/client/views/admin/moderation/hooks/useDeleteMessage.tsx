@@ -27,7 +27,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Reports_dismissed') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
 		},
 	});
 
@@ -48,7 +48,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 				onConfirm={() => onDeleteAll()}
 				onCancel={() => setModal()}
 			>
-				{t('Are_you_sure_you_want_to_delete_this_message')}
+				{t('Moderation_Are_you_sure_you_want_to_delete_this_message')}
 			</GenericModal>,
 		);
 	};

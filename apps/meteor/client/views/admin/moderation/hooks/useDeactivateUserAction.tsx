@@ -43,13 +43,13 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	const confirmDeactivateUser = (): void => {
 		setModal(
 			<GenericModal variant='danger' onConfirm={() => onDeactivateUser()} onCancel={() => setModal()}>
-				{t('Are_you_sure_you_want_to_deactivate_this_user')}
+				{t('Moderation_Are_you_sure_you_want_to_deactivate_this_user')}
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: t('Deactivate_User'), icon: 'ban' },
+		label: { label: t('Moderation_Deactivate_User'), icon: 'ban' },
 		action: () => confirmDeactivateUser(),
 	};
 };
