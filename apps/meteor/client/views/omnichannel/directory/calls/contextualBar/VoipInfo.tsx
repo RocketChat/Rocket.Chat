@@ -12,7 +12,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
-import AgentField from '../../chats/contextualBar/AgentField';
+import AgentField from '../../components/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
 
@@ -38,7 +38,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 
 	return (
 		<>
-			<VerticalBar.Header>
+			<VerticalBar.Header expanded>
 				<VerticalBar.Icon name='phone' />
 				<VerticalBar.Text>{t('Call_Information')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClickClose} />
@@ -47,7 +47,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Channel')}</InfoPanel.Label>
-						<Box>
+						<Box color='default'>
 							<Icon size='x24' name='phone' />
 							{t('Voice_Call')}
 						</Box>

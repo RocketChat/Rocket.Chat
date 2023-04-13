@@ -20,7 +20,7 @@ export const useHistoryMessageList = (
 	const [itemsList, setItemsList] = useState(() => new MessageList());
 	const reload = useCallback(() => setItemsList(new MessageList()), []);
 
-	const getMessages = useEndpoint('GET', `/v1/livechat/${options.roomId}/messages`);
+	const getMessages = useEndpoint('GET', '/v1/livechat/:rid/messages', { rid: options.roomId });
 
 	useComponentDidUpdate(() => {
 		options && reload();

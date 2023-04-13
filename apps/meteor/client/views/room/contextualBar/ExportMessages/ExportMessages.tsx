@@ -30,7 +30,8 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				{t('Export_Messages')}
+				<VerticalBar.Icon name='mail' />
+				<VerticalBar.Text>{t('Export_Messages')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={close} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>

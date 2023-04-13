@@ -1,7 +1,6 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Skeleton, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { Box, Icon, Skeleton, States, StatesIcon, StatesTitle, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
@@ -20,7 +19,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 
 	const hoverStyle = css`
 		&:hover {
-			background-color: ${colors.n400};
+			background-color: ${Palette.surface['surface-neutral']};
 			cursor: pointer;
 		}
 	`;

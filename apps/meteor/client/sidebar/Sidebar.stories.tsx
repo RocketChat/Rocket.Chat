@@ -1,13 +1,12 @@
-import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import type { LoginService } from '@rocket.chat/ui-contexts';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import type { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 import React from 'react';
 
-import RoomList from './RoomList/index';
-import Header from './header';
+import Sidebar from './Sidebar';
 
 export default {
 	title: 'Sidebar',
@@ -26,6 +25,7 @@ const settings: Record<string, ISetting> = {
 		type: 'boolean',
 		value: true,
 		public: true,
+		_updatedAt: new Date(),
 	},
 };
 
@@ -46,7 +46,7 @@ const userPreferences: Record<string, unknown> = {
 	sidebarSortby: 'activity',
 };
 
-const subscriptions: ISubscription[] = [
+const subscriptions: SubscriptionWithRoom[] = [
 	{
 		_id: '3Bysd8GrmkWBdS9RT',
 		open: true,
@@ -67,6 +67,14 @@ const subscriptions: ISubscription[] = [
 		ls: new Date(),
 		lr: new Date(),
 		tunread: [],
+		lowerCaseName: 'general',
+		lowerCaseFName: 'general',
+		estimatedWaitingTimeQueue: 0,
+		livechatData: undefined,
+		priorityWeight: 3,
+		responseBy: undefined,
+		usersCount: 0,
+		waitingResponse: undefined,
 	},
 ];
 
@@ -97,15 +105,8 @@ const userContextValue: ContextType<typeof UserContext> = {
 	logout: () => Promise.resolve(),
 };
 
-export const Sidebar: Story = () => (
-	<aside className='sidebar sidebar--main' role='navigation'>
-		<Header />
-		<div className='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
-			<RoomList />
-		</div>
-	</aside>
-);
-Sidebar.decorators = [
+export const SidebarStory: Story = () => <Sidebar />;
+SidebarStory.decorators = [
 	(fn) => (
 		<SettingsContext.Provider value={settingContextValue}>
 			<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>

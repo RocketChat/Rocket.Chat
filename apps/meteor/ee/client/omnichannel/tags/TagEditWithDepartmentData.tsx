@@ -23,10 +23,9 @@ function TagEditWithDepartmentData({ data, title, ...props }: TagEditWithDepartm
 		value: currentDepartments,
 		phase: currentDepartmentsState,
 		error: currentDepartmentsError,
-	} = useEndpointData(
-		'/v1/livechat/department.listByIds',
-		useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
-	);
+	} = useEndpointData('/v1/livechat/department.listByIds', {
+		params: useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
+	});
 
 	if ([currentDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

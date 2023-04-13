@@ -1,4 +1,4 @@
-import { isSettingColor } from '@rocket.chat/core-typings';
+import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -84,9 +84,9 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 			)}
 
 			<FieldGroup>
-				{editableSettings.map((setting) => (
-					<Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />
-				))}
+				{editableSettings.map(
+					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+				)}
 
 				{children}
 			</FieldGroup>

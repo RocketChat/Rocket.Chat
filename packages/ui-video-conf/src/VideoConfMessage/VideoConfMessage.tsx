@@ -10,6 +10,7 @@ const VideoConfMessage = ({ ...props }): ReactElement => (
 		borderWidth={1}
 		borderColor='extra-light'
 		borderRadius='x4'
+		className='rcx-videoconf-message-block'
 		{...props}
 	/>
 );

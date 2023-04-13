@@ -1,16 +1,13 @@
 import { createWriteStream } from 'fs';
-import { promisify } from 'util';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { Avatars, ExportOperations, UserDataFiles } from '@rocket.chat/models';
-import type { IExportOperation, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
+import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
+import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
-import { Subscriptions } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { getPath } from './getPath';
 import { joinPath } from '../fileUtils';
@@ -22,7 +19,7 @@ import { copyFileUpload } from './copyFileUpload';
 import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
 
-const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
+const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
 		| {
 				roomId: string;
@@ -36,13 +33,13 @@ const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'js
 		| Record<string, never>
 	)[] = [];
 
-	const cursor: FindCursor<ISubscription> = Subscriptions.findByUserId(userId);
-	cursor.forEach((subscription) => {
-		const roomData = getRoomData(subscription.rid, userId);
+	const cursor = Subscriptions.findByUserId(userId);
+	for await (const subscription of cursor) {
+		const roomData = await getRoomData(subscription.rid, userId);
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
 		roomList.push(roomData);
-	});
+	}
 
 	return roomList;
 };
@@ -72,26 +69,31 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
-	const stream = createWriteStream(fileName, { encoding: 'utf8' });
+	return new Promise((resolve, reject) => {
+		const stream = createWriteStream(fileName, { encoding: 'utf8' });
 
-	stream.write('<!DOCTYPE html>\n');
-	stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
-	for (const [key, value] of Object.entries(dataToSave)) {
-		stream.write(`<p><strong>${key}</strong>:`);
-		if (typeof value === 'string') {
-			stream.write(value);
-		} else if (Array.isArray(value)) {
-			stream.write('<br/>');
+		stream.on('finish', resolve);
+		stream.on('error', reject);
 
-			for (const item of value) {
-				stream.write(`${item}<br/>`);
+		stream.write('<!DOCTYPE html>\n');
+		stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
+		for (const [key, value] of Object.entries(dataToSave)) {
+			stream.write(`<p><strong>${key}</strong>:`);
+			if (typeof value === 'string') {
+				stream.write(value);
+			} else if (Array.isArray(value)) {
+				stream.write('<br/>');
+
+				for (const item of value) {
+					stream.write(`${item}<br/>`);
+				}
 			}
+
+			stream.write('</p>\n');
 		}
 
-		stream.write('</p>\n');
-	}
-
-	await promisify(stream.close)();
+		stream.end();
+	});
 };
 
 const generateUserAvatarFile = async (exportOperation: IExportOperation, userData?: IUser) => {
@@ -105,7 +107,7 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 	}
 
 	const filePath = joinPath(exportOperation.exportPath, 'avatar');
-	if (FileUpload.copy(file, filePath)) {
+	if (await FileUpload.copy?.(file, filePath)) {
 		exportOperation.generatedAvatar = true;
 	}
 };
@@ -144,7 +146,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
-		exportOperation.roomList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
+		exportOperation.roomList = await loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
 
 		if (exportOperation.fullExport) {
 			exportOperation.status = 'exporting-rooms';
@@ -269,6 +271,6 @@ export async function processDataDownloads(): Promise<void> {
 			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 		});
 
-		sendEmail(operation.userData, subject, body);
+		await sendEmail(operation.userData, subject, body);
 	}
 }

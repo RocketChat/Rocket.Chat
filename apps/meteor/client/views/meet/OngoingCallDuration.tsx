@@ -13,7 +13,7 @@ const OngoingCallDuration: FC<OngoingCallDurationProps> = ({ counter: defaultCou
 	}, [counter]);
 
 	return (
-		<Box color='#E4E7EA' textAlign='center'>
+		<Box color='white' textAlign='center'>
 			{new Date(counter * 1000).toISOString().substr(11, 8)}
 		</Box>
 	);

@@ -5,10 +5,12 @@ declare module 'meteor/kadira:flow-router' {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
 		pathname: string;
+		oldRoute?: Route;
+		route: Route;
 	};
 
-	export type RouteOptions = {
-		name: string;
+	type RouteOptions = {
+		name?: string;
 		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 		triggersEnter?: ((context: Context, redirect: (pathDef: string) => void, stop: () => void) => void)[];
@@ -72,7 +74,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		parent: Group | undefined;
 
-		route(pathDef: string, options?: RouteOptions, group?: Group): Route;
+		route(pathDef: string, options: RouteOptions, group?: Group): Route;
 
 		group(options?: GroupOptions): Group;
 
@@ -95,7 +97,7 @@ declare module 'meteor/kadira:flow-router' {
 	class Router {
 		constructor();
 
-		route(pathDef: string, options: RouteOptions, group?: Group): void;
+		route(pathDef: string, options: RouteOptions, group?: Group): Route;
 
 		group(options: GroupOptions): Group;
 
@@ -134,9 +136,17 @@ declare module 'meteor/kadira:flow-router' {
 		getQueryParam(key: string): string;
 
 		watchPathChange(): void;
+
+		_initialized: boolean;
+
+		_routes: Route[];
+
+		_routesMap: Record<string, Route>;
+
+		_updateCallbacks(): void;
 	}
 
-	export const FlowRouter: Router & {
+	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
 	};

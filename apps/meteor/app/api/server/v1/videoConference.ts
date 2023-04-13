@@ -6,13 +6,14 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
+import { VideoConf } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -147,7 +148,7 @@ API.v1.addRoute(
 			const { roomId } = this.queryParams;
 			const { userId } = this;
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');

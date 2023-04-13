@@ -1,7 +1,7 @@
-import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
 
 import GenericModal from '../GenericModal';
@@ -18,7 +18,8 @@ const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): Re
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const onConfirmTotpCode = (): void => {
+	const onConfirmTotpCode = (e: SyntheticEvent): void => {
+		e.preventDefault();
 		onConfirm(code, Method.TOTP);
 	};
 
@@ -28,13 +29,13 @@ const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): Re
 
 	return (
 		<GenericModal
-			onConfirm={onConfirmTotpCode}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Two Factor Authentication')}
 			onClose={onClose}
 			variant='warning'
-			icon={<Icon size='x20' name='info' color='default' />}
+			icon='info'
 			confirmDisabled={!code}
 		>
 			<Box mbe='x16'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>

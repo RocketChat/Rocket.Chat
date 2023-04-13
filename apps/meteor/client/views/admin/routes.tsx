@@ -1,9 +1,6 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
-import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
-import BlazeTemplate from '../root/BlazeTemplate';
-import MainLayout from '../root/MainLayout';
 
 export const registerAdminRoute = createRouteGroup(
 	'admin',
@@ -13,17 +10,7 @@ export const registerAdminRoute = createRouteGroup(
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
-	component: lazy(() => import('./customSounds/AdminSoundsRoute')),
-});
-
-registerAdminRoute('/apps/what-is-it', {
-	name: 'admin-apps-disabled',
-	component: lazy(() => import('./apps/AppsWhatIsIt')),
-});
-
-registerAdminRoute('/marketplace/:context?/:page?/:id?/:version?/:tab?', {
-	name: 'admin-marketplace',
-	component: lazy(() => import('./apps/AppsRoute')),
+	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
 registerAdminRoute('/info', {
@@ -70,8 +57,8 @@ registerAdminRoute('/integrations/:context?/:type?/:id?', {
 	component: lazy(() => import('./integrations/IntegrationsRoute')),
 });
 
-registerAdminRoute('/custom-user-status/:context?/:id?', {
-	name: 'custom-user-status',
+registerAdminRoute('/user-status/:context?/:id?', {
+	name: 'user-status',
 	component: lazy(() => import('./customUserStatus/CustomUserStatusRoute')),
 });
 
@@ -123,17 +110,6 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 registerAdminRoute('/settings/:group?', {
 	name: 'admin-settings',
 	component: lazy(() => import('./settings/SettingsRoute')),
-});
-
-registerAdminRoute('/chatpal', {
-	name: 'chatpal-admin',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='ChatpalAdmin' />
-			</MainLayout>,
-		);
-	},
 });
 
 registerAdminRoute('/upgrade/:type?', {

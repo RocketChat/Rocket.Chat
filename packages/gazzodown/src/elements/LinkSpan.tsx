@@ -29,7 +29,7 @@ const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
 
 type LinkSpanProps = {
 	href: string;
-	label: MessageParser.Markup;
+	label: MessageParser.Markup | MessageParser.Markup[];
 };
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {

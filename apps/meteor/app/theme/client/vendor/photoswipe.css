@@ -250,7 +250,7 @@
 
 			animation: donut-rotate 1000ms cubic-bezier(0.4, 0, 0.22, 1) infinite;
 
-			border: 2px solid #ffffff;
+			border: 1px solid #ffffff;
 			border-bottom-color: transparent;
 			border-left-color: transparent;
 			border-radius: 50%;

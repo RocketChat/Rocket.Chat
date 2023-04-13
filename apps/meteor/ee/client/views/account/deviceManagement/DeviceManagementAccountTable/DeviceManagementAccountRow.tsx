@@ -13,7 +13,6 @@ type DevicesRowProps = {
 	deviceName?: string;
 	deviceType?: string;
 	deviceOSName?: string;
-	deviceOSVersion?: string;
 	loginAt: string;
 	onReload: () => void;
 };
@@ -23,7 +22,6 @@ const DeviceManagementAccountRow = ({
 	deviceName,
 	deviceType = 'browser',
 	deviceOSName,
-	deviceOSVersion,
 	loginAt,
 	onReload,
 }: DevicesRowProps): ReactElement => {
@@ -41,7 +39,7 @@ const DeviceManagementAccountRow = ({
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</TableCell>
-			<TableCell>{`${deviceOSName || ''} ${deviceOSVersion || ''}`}</TableCell>
+			<TableCell>{deviceOSName || ''}</TableCell>
 			<TableCell>{formatDateAndTime(loginAt)}</TableCell>
 			{mediaQuery && <TableCell>{_id}</TableCell>}
 			<TableCell align='end'>

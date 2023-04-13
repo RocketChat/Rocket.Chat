@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
-import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
@@ -156,7 +156,7 @@ const CallPage: FC<CallPageProps> = ({
 
 	const showCallPage = (localAvatar: any, remoteAvatar: any): any => (
 		<Flex.Container direction='column' justifyContent='center'>
-			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 				<Box
 					position='absolute'
 					zIndex={1}
@@ -166,7 +166,7 @@ const CallPage: FC<CallPageProps> = ({
 					}}
 					className='Self_Video'
 					alignItems='center'
-					backgroundColor='#2F343D'
+					backgroundColor='dark'
 				>
 					<video
 						id='localVideo'
@@ -199,7 +199,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='mic'
 						square
-						data-title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
+						title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 						onClick={(): any => toggleButton('mic')}
 						className={isMicOn ? 'On' : 'Off'}
 						size={Number(buttonSize)}
@@ -209,7 +209,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='camera'
 						square
-						data-title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
+						title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 						onClick={(): void => toggleButton('camera')}
 						className={isCameraOn ? 'On' : 'Off'}
 						size={parseInt(buttonSize)}
@@ -219,8 +219,8 @@ const CallPage: FC<CallPageProps> = ({
 					{layout === 'embedded' && (
 						<Button
 							square
-							backgroundColor='#2F343D'
-							borderColor='#2F343D'
+							backgroundColor='dark'
+							borderColor='stroke-extra-dark'
 							data-title={t('Expand_view')}
 							onClick={(): void => (parent as any)?.expandCall()}
 							size={parseInt(buttonSize)}
@@ -228,7 +228,7 @@ const CallPage: FC<CallPageProps> = ({
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
 					)}
-					<Button square danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
+					<Button square danger title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
 				</ButtonGroup>
@@ -284,7 +284,7 @@ const CallPage: FC<CallPageProps> = ({
 		<>
 			{status === 'ringing' && (
 				<Flex.Container direction='column' justifyContent='center'>
-					<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+					<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 						<Box
 							position='absolute'
 							zIndex={1}
@@ -293,7 +293,7 @@ const CallPage: FC<CallPageProps> = ({
 								right: '2%',
 							}}
 							className='Self_Video'
-							backgroundColor='#2F343D'
+							backgroundColor='dark'
 							alignItems='center'
 						>
 							<UserAvatar

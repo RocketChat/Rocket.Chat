@@ -1,5 +1,6 @@
-import type { IServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
+import type { IServiceClass } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
+
 import { initWatchers } from '../../../../apps/meteor/server/modules/watchers/watchers.module';
 import type { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
@@ -17,6 +18,9 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 	}
 
 	async created(): Promise<void> {
+		if (!this.api) {
+			return;
+		}
 		initWatchers(this.watcher, this.api.broadcast.bind(this.api));
 
 		try {

@@ -4,7 +4,6 @@ import {
 	MessageLeftContainer,
 	MessageContainer,
 	MessageBody,
-	MessageBlock,
 	MessageDivider,
 	MessageName,
 	MessageUsername,
@@ -22,39 +21,40 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
+import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import MessageContentBody from '../../../../components/message/MessageContentBody';
+import StatusIndicators from '../../../../components/message/StatusIndicators';
+import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import MessageBlockUiKit from '../../../blocks/MessageBlock';
-import MessageContentBody from '../../../room/MessageList/components/MessageContentBody';
-import { MessageIndicators } from '../../../room/MessageList/components/MessageIndicators';
-import { useMessageActions } from '../../../room/contexts/MessageContext';
+import { useChat } from '../../../room/contexts/ChatContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
-}> = ({ message, sequential, isNewDay }) => {
+	showUserAvatar: boolean;
+}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const chat = useChat();
 
 	if (message.t === 'livechat-close') {
 		return (
 			<MessageSystem>
 				<MessageSystemLeftContainer>
-					<UserAvatar
-						url={message.avatar}
-						username={message.u.username}
-						size={'x18'}
-						onClick={openUserCard(message.u.username)}
-						style={{ cursor: 'pointer' }}
-					/>
+					{showUserAvatar && (
+						<UserAvatar
+							url={message.avatar}
+							username={message.u.username}
+							size={'x18'}
+							onClick={chat?.userCard.open(message.u.username)}
+							style={{ cursor: 'pointer' }}
+						/>
+					)}
 				</MessageSystemLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
@@ -74,16 +74,16 @@ const ContactHistoryMessage: FC<{
 			{isNewDay && <MessageDivider>{format(message.ts)}</MessageDivider>}
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
-					{!sequential && message.u.username && (
+					{!sequential && message.u.username && showUserAvatar && (
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
 							size={'x36'}
-							onClick={openUserCard(message.u.username)}
+							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
-					{sequential && <MessageIndicators message={message} />}
+					{sequential && <StatusIndicators message={message} />}
 				</MessageLeftContainer>
 
 				<MessageContainer>
@@ -96,7 +96,7 @@ const ContactHistoryMessage: FC<{
 								@{message.u.username}
 							</MessageUsername>
 							<MessageTimestamp title={formatTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
-							<MessageIndicators message={message} />
+							<StatusIndicators message={message} />
 						</MessageHeaderTemplate>
 					)}
 					{!message.blocks && message.md && (
@@ -104,11 +104,7 @@ const ContactHistoryMessage: FC<{
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
-					{message.blocks && (
-						<MessageBlock fixedWidth>
-							<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
-						</MessageBlock>
-					)}
+					{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

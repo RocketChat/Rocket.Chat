@@ -1,5 +1,6 @@
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IOmnichannelService } from '../../sdk/types/IOmnichannelService';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IOmnichannelService } from '@rocket.chat/core-services';
+
 import { Livechat } from '../../../app/livechat/server';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
@@ -13,7 +14,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
 			if (hasRole) {
 				// TODO change `Livechat.notifyAgentStatusChanged` to a service call
-				Livechat.notifyAgentStatusChanged(user._id, user.status);
+				await Livechat.notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
 	}

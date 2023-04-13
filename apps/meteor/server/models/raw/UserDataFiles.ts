@@ -2,15 +2,15 @@ import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-t
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseUploadModelRaw } from './BaseUploadModel';
 
-export class UserDataFilesRaw extends BaseRaw<IUserDataFile> implements IUserDataFilesModel {
+export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFilesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
 		super(db, 'user_data_files', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { userId: 1 } }];
+		return [...super.modelIndexes(), { key: { userId: 1 } }];
 	}
 
 	findLastFileByUser(userId: string, options: FindOptions<IUserDataFile> = {}): Promise<IUserDataFile | null> {

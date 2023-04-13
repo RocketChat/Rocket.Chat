@@ -1,7 +1,6 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -11,19 +10,19 @@ import UserAvatar from '../../components/avatar/UserAvatar';
 import UserDropdown from './UserDropdown';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
 
-const UserAvatarButton = function UserAvatarButton(): ReactElement {
-	const user = useUser() as Required<IUser> | undefined;
-	const {
-		status = !user ? 'online' : 'offline',
-		username,
-		avatarETag,
-		statusText,
-	} = user || {
-		_id: '',
-		username: 'Anonymous',
-		status: 'online',
-		statusText: '',
-	};
+const anon = {
+	_id: '',
+	username: 'Anonymous',
+	status: 'online',
+	statusText: '',
+	avatarETag: undefined,
+} as const;
+
+const UserAvatarButton = (): ReactElement => {
+	const user = useUser();
+
+	const { status = !user ? 'online' : 'offline', username, avatarETag, statusText } = user || anon;
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	// const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
@@ -42,7 +41,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 				`}
 				data-qa='sidebar-avatar-button'
 			>
-				<UserAvatar size='x24' username={username} etag={avatarETag} />
+				{username && <UserAvatar size='x24' username={username} etag={avatarETag} />}
 				<Box
 					className={css`
 						bottom: 0;
@@ -53,7 +52,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 					display='flex'
 					overflow='hidden'
 					size={12}
-					borderWidth='x2'
+					borderWidth='default'
 					position='absolute'
 					bg='surface-tint'
 					borderColor='extra-light'
@@ -61,7 +60,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 					mie='neg-x2'
 					mbe='neg-x2'
 				>
-					<UserStatus small status={status} statusText={statusText} />
+					<UserStatus small status={presenceDisabled ? 'disabled' : status} statusText={statusText} />
 				</Box>
 			</Box>
 			{user &&

@@ -1,7 +1,6 @@
 import type { ReadReceipt } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -11,12 +10,12 @@ import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 
 const hoverStyle = css`
 	&:hover {
-		background-color: ${colors.n400};
+		background-color: ${Palette.surface['surface-neutral']};
 	}
 `;
 
 const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
-	const displayName = useUserDisplayName(user);
+	const displayName = useUserDisplayName(user || {});
 	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 
 	return (
@@ -31,7 +30,7 @@ const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 			className={hoverStyle}
 		>
 			<Box>
-				<UserAvatar username={user.username || ''} size='x24' />
+				<UserAvatar username={user?.username || ''} size='x24' />
 				<Box is='span' mis='x8'>
 					{displayName}
 				</Box>

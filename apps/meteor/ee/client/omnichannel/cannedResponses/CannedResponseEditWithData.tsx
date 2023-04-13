@@ -15,7 +15,7 @@ const CannedResponseEditWithData: FC<{
 	reload: () => void;
 	totalDataReload: () => void;
 }> = ({ cannedResponseId, reload, totalDataReload }) => {
-	const { value: data, phase: state, error } = useEndpointData(`/v1/canned-responses/${cannedResponseId}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/canned-responses/:_id', { keys: { _id: cannedResponseId } });
 
 	const t = useTranslation();
 

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
 import { Registration } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.describe.serial('register', () => {
 	let poRegistration: Registration;

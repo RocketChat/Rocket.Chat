@@ -73,6 +73,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			return;
 		}
 
+		if (!textAreaRef?.current) {
+			throw new Error('Missing textAreaRef');
+		}
+
 		EmojiPicker.open(textAreaRef.current, (emoji: string): void => {
 			onClickEmoji(emoji);
 		});
@@ -87,10 +91,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 		<TextEditor>
 			<TextEditor.Toolbox>
 				<Box display='flex' flexDirection='row'>
-					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} title={t('bold')} />
-					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title={t('italic')} />
-					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title={t('strike')} />
-					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title={t('link')} />
+					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} title={t('Bold')} />
+					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title={t('Italic')} />
+					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title={t('Strike')} />
+					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} title={t('Emoji')} />
 				</Box>
 				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />

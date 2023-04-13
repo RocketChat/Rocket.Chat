@@ -21,50 +21,6 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 
-function createTestUser() {
-	return new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
-		request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password, joinDefaultChannels: false })
-			.end((err, res) => resolve(res.body.user));
-	});
-}
-
-function loginTestUser(user) {
-	return new Promise((resolve, reject) => {
-		request
-			.post(api('login'))
-			.send({
-				user: user.username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				const userCredentials = {};
-				userCredentials['X-Auth-Token'] = res.body.data.authToken;
-				userCredentials['X-User-Id'] = res.body.data.userId;
-				resolve(userCredentials);
-			})
-			.end((err) => (err ? reject(err) : resolve()));
-	});
-}
-
-function deleteTestUser(user) {
-	return new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
-
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
 		name,
@@ -634,6 +590,87 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.list]', () => {
+		let user;
+		let deactivatedUser;
+		let user2;
+		let user2Credentials;
+
+		before((done) => {
+			const createDeactivatedUser = async () => {
+				const username = `deactivated_${Date.now()}${apiUsername}`;
+				const email = `deactivated_+${Date.now()}${apiEmail}`;
+
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: false,
+				};
+
+				deactivatedUser = await createUser(userData);
+
+				expect(deactivatedUser).to.not.be.null;
+				expect(deactivatedUser).to.have.nested.property('username', username);
+				expect(deactivatedUser).to.have.nested.property('emails[0].address', email);
+				expect(deactivatedUser).to.have.nested.property('active', false);
+				expect(deactivatedUser).to.have.nested.property('name', username);
+				expect(deactivatedUser).to.not.have.nested.property('e2e');
+			};
+			createDeactivatedUser().then(done);
+		});
+
+		before((done) =>
+			setCustomFields({ customFieldText }, async (error) => {
+				if (error) {
+					return done(error);
+				}
+
+				const username = `customField_${Date.now()}${apiUsername}`;
+				const email = `customField_+${Date.now()}${apiEmail}`;
+				const customFields = { customFieldText: 'success' };
+
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true,
+					customFields,
+				};
+
+				user = await createUser(userData);
+
+				expect(user).to.not.be.null;
+				expect(user).to.have.nested.property('username', username);
+				expect(user).to.have.nested.property('emails[0].address', email);
+				expect(user).to.have.nested.property('active', true);
+				expect(user).to.have.nested.property('name', username);
+				expect(user).to.have.nested.property('customFields.customFieldText', 'success');
+				expect(user).to.not.have.nested.property('e2e');
+
+				return done();
+			}),
+		);
+
+		after((done) => clearCustomFields(done));
+
+		before(async () => {
+			user2 = await createUser({ joinDefaultChannels: false });
+			user2Credentials = await login(user2.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user2);
+			user2 = undefined;
+
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+		});
+
 		it('should query all users in the system', (done) => {
 			request
 				.get(api('users.list'))
@@ -646,6 +683,66 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 					const myself = res.body.users.find((user) => user.username === adminUsername);
 					expect(myself).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
+		it('should query all users in the system by custom fields', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					customFields: 1,
+				}),
+				query: JSON.stringify({
+					'customFields.customFieldText': 'success',
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const queriedUser = res.body.users.find((u) => u._id === user._id);
+					expect(queriedUser).to.have.property('customFields');
+					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
+				})
+				.end(done);
+		});
+
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					active: 1,
+					status: 1,
+				}),
+				sort: JSON.stringify({
+					status: -1,
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const lastUser = res.body.users[res.body.users.length - 1];
+					expect(lastUser).to.have.property('active', false);
 				})
 				.end(done);
 		});
@@ -669,6 +766,27 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 				})
 				.end(done);
+		});
+
+		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.list'))
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should not query users when logged as normal user, `view-outside-room` not granted and temp setting enabled', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', true);
+
+			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 	});
 
@@ -3036,26 +3154,8 @@ describe('[Users]', function () {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${Date.now()}`;
-		let testRoleId = null;
+		const testRoleId = 'guest';
 
-		before('Create a new role with Users scope', (done) => {
-			request
-				.post(api('roles.create'))
-				.set(credentials)
-				.send({
-					name: testRoleName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('role');
-					expect(res.body.role).to.have.property('name', testRoleName);
-					testRoleId = res.body.role._id;
-				})
-				.end(done);
-		});
 		before('Create test user', (done) => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
@@ -3147,7 +3247,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 1);
+						expect(res.body).to.have.property('count', 2);
 					})
 					.end(done);
 			});
@@ -3225,12 +3325,12 @@ describe('[Users]', function () {
 		this.timeout(20000);
 
 		before(async () => {
-			user = await createTestUser();
-			userCredentials = await loginTestUser(user);
-			newCredentials = await loginTestUser(user);
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 		});
 
@@ -3284,11 +3384,11 @@ describe('[Users]', function () {
 			this.timeout(20000);
 
 			before(async () => {
-				user = await createTestUser();
-				user2 = await createTestUser();
+				user = await createUser({ joinDefaultChannels: false });
+				user2 = await createUser({ joinDefaultChannels: false });
 
-				userCredentials = await loginTestUser(user);
-				user2Credentials = await loginTestUser(user2);
+				userCredentials = await login(user.username, password);
+				user2Credentials = await login(user2.username, password);
 
 				await updatePermission('view-outside-room', []);
 
@@ -3661,7 +3761,7 @@ describe('[Users]', function () {
 		});
 
 		before('create new user', (done) => {
-			createTestUser()
+			createUser({ joinDefaultChannels: false })
 				.then((user) => {
 					testUser = user;
 				})

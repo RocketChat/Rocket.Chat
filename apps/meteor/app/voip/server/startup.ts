@@ -1,5 +1,6 @@
+import { Voip } from '@rocket.chat/core-services';
+
 import { settings } from '../../settings/server';
-import { Voip } from '../../../server/sdk';
 
 settings.watch('VoIP_Enabled', async function (value: boolean) {
 	try {

@@ -1,6 +1,5 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -13,6 +12,11 @@ import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
+const colors = {
+	warning: Palette.statusColor['status-font-on-warning'].toString(),
+	success: Palette.statusColor['status-font-on-success'].toString(),
+	info: Palette.statusColor['status-font-on-info'].toString(),
+};
 const MessagesPerChannelSection = (): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
@@ -81,23 +85,23 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			id: 'd',
 																			label: t('Direct_Messages'),
 																			value: pie.d,
-																			color: colors.w500,
+																			color: colors.warning,
 																		},
 																		{
 																			id: 'p',
 																			label: t('Private_Channels'),
 																			value: pie.p,
-																			color: colors.s500,
+																			color: colors.success,
 																		},
 																		{
 																			id: 'c',
 																			label: t('Public_Channels'),
 																			value: pie.c,
-																			color: colors.p500,
+																			color: colors.info,
 																		},
 																	]}
 																	innerRadius={0.6}
-																	colors={[colors.w500, colors.s500, colors.p500]}
+																	colors={[colors.warning, colors.success, colors.info]}
 																	// @ts-ignore
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
@@ -129,7 +133,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 																		},
 																	}}
 																	tooltip={({ datum }): ReactElement => (
-																		<Box fontScale='p1m' color='alternative'>
+																		<Box fontScale='p1m' color='white'>
 																			{t('Value_messages', { value: datum.value })}
 																		</Box>
 																	)}
@@ -143,15 +147,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Box>
 															<Margins block='x4'>
 																<Box color='hint' fontScale='p1'>
-																	<LegendSymbol color={colors.w500} />
+																	<LegendSymbol color={colors.warning} />
 																	{t('Private_Chats')}
 																</Box>
 																<Box color='hint' fontScale='p1'>
-																	<LegendSymbol color={colors.s500} />
+																	<LegendSymbol color={colors.success} />
 																	{t('Private_Channels')}
 																</Box>
 																<Box color='hint' fontScale='p1'>
-																	<LegendSymbol color={colors.p500} />
+																	<LegendSymbol color={colors.info} />
 																	{t('Public_Channels')}
 																</Box>
 															</Margins>

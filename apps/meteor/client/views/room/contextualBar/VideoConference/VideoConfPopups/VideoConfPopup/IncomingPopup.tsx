@@ -37,7 +37,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const setPreferences = useVideoConfSetPreferences();
 
 	const params = useMemo(() => ({ callId: id }), [id]);
-	const { phase, value } = useEndpointData('/v1/video-conference.info', params);
+	const { phase, value } = useEndpointData('/v1/video-conference.info', { params });
 	const showMic = Boolean(value?.capabilities?.mic);
 	const showCam = Boolean(value?.capabilities?.cam);
 

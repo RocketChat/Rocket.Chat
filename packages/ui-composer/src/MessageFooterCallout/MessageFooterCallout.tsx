@@ -22,6 +22,7 @@ const MessageFooterCallout = forwardRef<
 			borderColor='light'
 			borderRadius='x4'
 			p='x8'
+			mbe='x24'
 			backgroundColor='surface-tint'
 			alignItems='center'
 			minHeight='x48'

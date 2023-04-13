@@ -20,7 +20,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 				<Box fontScale='micro' color='hint' pbe='x4'>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color='neutral-100' pbe='x4'>
+				<Box fontScale='micro' color='pure-white' pbe='x4'>
 					{t('Free_Edition')}
 				</Box>
 			</Box>

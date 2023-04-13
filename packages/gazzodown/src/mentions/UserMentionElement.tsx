@@ -15,7 +15,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	const { isMobile } = useLayout();
 	const uid = useUserId();
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
 
 	if (mention === 'all') {
 		return <span className='mention-link mention-link--all mention-link--group'>all</span>;
@@ -32,7 +32,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	return (
 		<span
 			className={resolved._id === uid ? 'mention-link mention-link--me mention-link--user' : 'mention-link mention-link--user'}
-			title={resolved.username}
+			title={resolved.username || resolved.name}
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>

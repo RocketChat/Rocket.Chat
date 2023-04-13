@@ -14,7 +14,7 @@ export enum VideoConferenceStatus {
 
 export type DirectCallInstructions = {
 	type: 'direct';
-	callee: IUser['_id'];
+	calleeId: IUser['_id'];
 	callId: string;
 };
 

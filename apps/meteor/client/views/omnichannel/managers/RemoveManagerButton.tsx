@@ -9,7 +9,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
 	const t = useTranslation();
-	const deleteAction = useEndpointAction('DELETE', `/v1/livechat/users/manager/${_id}`);
+	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/manager/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 

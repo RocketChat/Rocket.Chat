@@ -1,4 +1,4 @@
-import { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
 
 export const saveBusinessHour = async (businessHour: ILivechatBusinessHour) => {

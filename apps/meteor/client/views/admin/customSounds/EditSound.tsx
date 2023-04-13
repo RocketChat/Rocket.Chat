@@ -49,11 +49,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
-				let soundId;
+				let soundId: string;
 				try {
 					soundId = await insertOrUpdateSound(soundData);
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				soundData._id = soundId;
@@ -66,7 +67,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					reader.readAsBinaryString(sound);
 					reader.onloadend = (): void => {
 						try {
-							uploadCustomSound(reader.result, sound.type, soundData);
+							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
@@ -91,29 +92,20 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	}, [saveAction, sound, onChange]);
 
 	const handleDeleteButtonClick = useCallback(() => {
-		const handleClose = (): void => {
-			setModal(null);
-			close?.();
-			onChange();
-		};
-
 		const handleDelete = async (): Promise<void> => {
 			try {
 				await deleteCustomSound(_id);
-				setModal(() => (
-					<GenericModal variant='success' onCancel={handleClose} onClose={handleClose} onConfirm={handleClose}>
-						{t('Custom_Sound_Has_Been_Deleted')}
-					</GenericModal>
-				));
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+				close?.();
 				onChange();
 			}
 		};
 
-		const handleCancel = (): void => {
-			setModal(null);
-		};
+		const handleCancel = (): void => setModal(null);
 
 		setModal(() => (
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>

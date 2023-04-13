@@ -16,10 +16,7 @@ type DeleteTeamModalWithRoomsProps = {
 };
 
 const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps): ReactElement => {
-	const { value, phase } = useEndpointData(
-		'/v1/teams.listRooms',
-		useMemo(() => ({ teamId }), [teamId]),
-	);
+	const { value, phase } = useEndpointData('/v1/teams.listRooms', { params: useMemo(() => ({ teamId }), [teamId]) });
 
 	const t = useTranslation();
 

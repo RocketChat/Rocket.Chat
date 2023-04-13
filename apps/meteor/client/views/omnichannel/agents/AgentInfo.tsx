@@ -16,9 +16,9 @@ type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
+const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
-	const result = useEndpointData(`/v1/livechat/users/agent/${uid}`);
+	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
 
 	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
 

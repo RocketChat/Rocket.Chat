@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
+import { Select, Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -11,7 +11,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList');
-	const userLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
+	const themePreference = useUserPreference<'light' | 'dark' | 'auto'>('themeAppearence');
 
 	const options = useMemo(
 		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]) as SelectOption[],
@@ -23,19 +23,25 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 	const { values, handlers, commit } = useForm(
 		{
 			dontAskAgainList: selectedOptions,
-			useLegacyMessageTemplate: userLegacyMessageTemplate,
+			themeAppearence: themePreference,
 		},
 		onChange,
 	);
 
-	const { dontAskAgainList, useLegacyMessageTemplate } = values as {
+	const { dontAskAgainList, themeAppearence } = values as {
 		dontAskAgainList: string[];
-		useLegacyMessageTemplate: boolean;
+		themeAppearence: string;
 	};
 
-	const { handleDontAskAgainList, handleUseLegacyMessageTemplate } = handlers;
+	const { handleDontAskAgainList, handleThemeAppearence } = handlers;
 
 	commitRef.current.global = commit;
+
+	const themeOptions: SelectOption[] = [
+		['auto', t('Theme_match_system')],
+		['light', t('Theme_light')],
+		['dark', t('Theme_dark')],
+	];
 
 	return (
 		<Accordion.Item title={t('Global')} {...props}>
@@ -51,13 +57,12 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 						/>
 					</Field.Row>
 				</Field>
-				<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<Field.Label>{t('Use_Legacy_Message_Template')}</Field.Label>
+				<Field>
+					<Field.Label>{t('Theme_Appearence')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch checked={useLegacyMessageTemplate} onChange={handleUseLegacyMessageTemplate} />
+						<Select value={themeAppearence} onChange={handleThemeAppearence} options={themeOptions} />
 					</Field.Row>
 				</Field>
-				<Callout type='warning'>{t('This_is_a_deprecated_feature_alert')}</Callout>
 			</FieldGroup>
 		</Accordion.Item>
 	);
