@@ -33625,7 +33625,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
-    "@rocket.chat/fuselage": next
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
