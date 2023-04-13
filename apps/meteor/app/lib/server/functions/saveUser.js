@@ -282,7 +282,7 @@ const saveNewUser = async function (userData, sendPassword) {
 		createUser.email = userData.email;
 	}
 
-	const _id = Accounts.createUser(createUser);
+	const _id = await Accounts.createUserAsync(createUser);
 
 	const updateUser = {
 		$set: {
@@ -386,7 +386,7 @@ export const saveUser = async function (userId, userData) {
 		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 		passwordPolicy.validate(userData.password)
 	) {
-		Accounts.setPassword(userData._id, userData.password.trim());
+		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
 	} else {
 		sendPassword = false;
 	}
