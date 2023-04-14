@@ -108,10 +108,10 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
-			body: JSON.stringify({
+			body: {
 				token,
 				options: notification,
-			}),
+			},
 			headers: {
 				'Content-Type': 'application/json',
 			},

@@ -167,7 +167,7 @@ export class Mobex implements ISMSProvider {
 					'Authorization': `Basic ${authToken}`,
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({
+				body: {
 					messages: [
 						{
 							to: toNumbersArr,
@@ -175,7 +175,7 @@ export class Mobex implements ISMSProvider {
 							content: message,
 						},
 					],
-				}),
+				},
 			});
 
 			result.isSuccess = response.ok;

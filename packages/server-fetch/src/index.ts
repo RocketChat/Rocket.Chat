@@ -1,6 +1,7 @@
 import http from 'http';
 import https from 'https';
 
+import type { BodyInit } from 'node-fetch';
 import fetch from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 import type { HttpProxyAgent } from 'http-proxy-agent';
@@ -34,52 +35,86 @@ function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent 
 	return null;
 }
 
-function isPostOrPutWithBody(options?: Parameters<typeof fetch>[1]): boolean {
-	if (!options) {
+function isPostOrPutOrDeleteWithBody(options?: ExtendedFetchOptions): boolean {
+	// No method === 'get'
+	if (!options || !options.method) {
 		return false;
 	}
 	const { method, body } = options;
-	return (method?.toLowerCase() === 'POST' || method?.toLowerCase() === 'PUT') && body != null;
+	const lowerMethod = method?.toLowerCase();
+	return ['post', 'put', 'delete'].includes(lowerMethod) && body != null;
 }
 
-export function serverFetch(
-	input: string,
-	options?: Parameters<typeof fetch>[1] & {
-		compress?: boolean;
-		follow?: number;
-		size?: number;
-		// Timeout in ms
-		timeout?: number;
-		// Query params
-		params?: Record<string, any>;
-	},
-	allowSelfSignedCerts?: boolean,
-): ReturnType<typeof fetch> {
-	const agent = getFetchAgent(input, allowSelfSignedCerts);
+function requestIsUrlEncoded(options: ExtendedFetchOptions): boolean {
+	const contentTypeHeader = (options.headers as { [k: string]: string })['Content-Type'];
+	// URL encoded request are passing URLSearchParams as body, this makes it compatible with the jsonify
+	return !!contentTypeHeader && ['application/x-www-form-urlencoded'].includes(contentTypeHeader);
+}
 
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
+function parseRequestOptions(options?: ExtendedFetchOptions): FetchOptions {
+	if (!options) {
+		return {};
+	}
 
-	const params = new URLSearchParams(options?.params).toString();
-	const url = `${input}${params ? `?${params}` : ''}`;
+	if (requestIsUrlEncoded(options)) {
+		return options as FetchOptions;
+	}
 
-	if (isPostOrPutWithBody(options)) {
+	if (isPostOrPutOrDeleteWithBody(options)) {
 		try {
-			// Try to parse body as JSON
-			JSON.parse(options?.body as string);
-			// Auto set content-type to application/json but allow consumer to override it
-			options && (options.headers = { 'Content-Type': 'application/json', ...options.headers });
+			if (options && typeof options.body === 'object') {
+				options.body = JSON.stringify(options.body);
+				options.headers = {
+					'Content-Type': 'application/json',
+					...options.headers,
+				};
+			}
 		} catch (e) {
 			// Body is not JSON, do nothing
 		}
 	}
 
-	return fetch(url, {
-		...options,
+	return options as FetchOptions;
+}
+
+function getTimeout(timeout?: number) {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), timeout ?? 20000);
+
+	return { controller, timeoutId };
+}
+
+function stripTrailingSlash(str: string) {
+	return str.endsWith('/') ? str.slice(0, -1) : str;
+}
+
+type FetchOptions = NonNullable<Parameters<typeof fetch>[1]>;
+type FetchOptionsWithoutBody = Omit<FetchOptions, 'body'>;
+type ExtendedFetchOptions = FetchOptionsWithoutBody & {
+	compress?: boolean;
+	follow?: number;
+	size?: number;
+	timeout?: number;
+	params?: Record<string, any>;
+	body?: BodyInit | Record<string, any>;
+};
+
+export function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): ReturnType<typeof fetch> {
+	const agent = getFetchAgent(input, allowSelfSignedCerts);
+	const { controller, timeoutId } = getTimeout(options?.timeout);
+
+	const params = new URLSearchParams(options?.params);
+	const url = new URL(stripTrailingSlash(input));
+	if (params.toString()) {
+		url.search = params.toString();
+	}
+
+	return fetch(url.toString(), {
+		signal: controller.signal,
+		...parseRequestOptions(options),
 		...(agent ? { agent } : {}),
-		...(options?.timeout ? { signal: controller.signal } : {}),
 	}).finally(() => {
-		if (options?.timeout && timeoutId) {
+		if (timeoutId) {
 			clearTimeout(timeoutId);
 		}
 	});

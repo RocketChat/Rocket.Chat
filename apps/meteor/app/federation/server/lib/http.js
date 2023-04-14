@@ -23,7 +23,7 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 		const request = await fetch(url, {
 			method,
 			headers: { ...headers, 'x-federation-domain': getFederationDomain() },
-			body: JSON.stringify(data),
+			body: data,
 			timeout: 2000,
 		});
 		return request.json();

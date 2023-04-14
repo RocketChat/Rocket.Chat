@@ -24,8 +24,7 @@ export class AppHttpBridge extends HttpBridge {
 		let { content } = request;
 
 		if (!content && typeof request.data === 'object') {
-			content = JSON.stringify(request.data);
-			headers['Content-Type'] = 'application/json';
+			content = request.data;
 		}
 
 		if (request.auth) {

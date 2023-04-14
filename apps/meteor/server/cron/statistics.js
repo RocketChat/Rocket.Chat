@@ -24,7 +24,7 @@ async function generateStatistics(logger) {
 
 		await fetch('https://collector.rocket.chat/', {
 			method: 'POST',
-			body: JSON.stringify(cronStatistics),
+			body: cronStatistics,
 			headers,
 		});
 	} catch (error) {

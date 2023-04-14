@@ -104,7 +104,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
 					result = (await request.json()) as typeof result;
 				}
 			}

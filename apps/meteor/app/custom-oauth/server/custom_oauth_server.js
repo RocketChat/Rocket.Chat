@@ -132,8 +132,7 @@ export class CustomOAuth {
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
-				headers: allOptions.headers,
-				params: allOptions.params,
+				...allOptions,
 			});
 			response = await request.json();
 		} catch (err) {
@@ -163,8 +162,7 @@ export class CustomOAuth {
 		}
 
 		try {
-			const queryparams = new URLSearchParams(params);
-			const request = await fetch(`${this.identityPath}?${queryparams.toString()}`, { method: 'GET', headers });
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
 			const response = await request.json();
 
 			logger.debug({ msg: 'Identity response', response });

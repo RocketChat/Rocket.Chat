@@ -76,10 +76,9 @@ Meteor.methods<ServerMethods>({
 			method: 'POST',
 			headers: {
 				'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
-				'Content-Type': 'application/json',
 				'Accept': 'application/json',
 			},
-			body: JSON.stringify(sampleData),
+			body: sampleData,
 		};
 
 		const response = await postCatchError(settings.get('Livechat_webhookUrl'), options);

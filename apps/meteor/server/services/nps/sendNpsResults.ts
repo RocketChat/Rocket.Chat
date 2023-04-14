@@ -26,7 +26,7 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 					'Authorization': `Bearer ${token}`,
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(data),
+				body: data,
 			})
 		).json();
 	} catch (e) {

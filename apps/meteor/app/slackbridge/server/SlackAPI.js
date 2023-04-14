@@ -102,7 +102,7 @@ export class SlackAPI {
 	async react(data) {
 		const request = await fetch('https://slack.com/api/reactions.add', {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: data,
 			...defaultFetchOptions,
 		});
 		const response = await request.json();
@@ -112,7 +112,7 @@ export class SlackAPI {
 	async removeReaction(data) {
 		const request = await fetch('https://slack.com/api/reactions.remove', {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: data,
 			...defaultFetchOptions,
 		});
 		const response = await request.json();
@@ -122,7 +122,7 @@ export class SlackAPI {
 	async removeMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.delete', {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: data,
 			...defaultFetchOptions,
 		});
 		const response = await request.json();
@@ -132,7 +132,7 @@ export class SlackAPI {
 	async sendMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: data,
 			...defaultFetchOptions,
 		});
 		return request.json();
@@ -141,7 +141,7 @@ export class SlackAPI {
 	async updateMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.update', {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: data,
 			...defaultFetchOptions,
 		});
 		const response = await request.json();

@@ -136,12 +136,12 @@ export class Voxtelesys implements ISMSProvider {
 				'Authorization': `Bearer ${this.authToken}`,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
+			body: {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
 				...(media && { media }),
-			}),
+			},
 			method: 'POST',
 		};
 

@@ -40,7 +40,7 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 		await fetch(pendingSentUrl, {
 			method: 'POST',
 			headers,
-			body: JSON.stringify(data),
+			body: data,
 		});
 
 		// eslint-disable-next-line no-empty
