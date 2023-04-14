@@ -79,9 +79,9 @@ const ContextMessage = ({
 				</Message.Container>
 				<MessageToolboxWrapper>
 					<Message.Toolbox>
-						<MessageToolboxItem icon='document-eye' title='View Reports' onClick={() => handleClick(message._id)} />
-						<MessageToolboxItem icon='arrow-forward' title='Go to Message' onClick={() => onRedirect(message._id)} />
-						<MessageToolboxItem icon='trash' title='Delete Message' onClick={() => deleteMessage()} />
+						<MessageToolboxItem icon='document-eye' title={t('Moderation_View_reports')} onClick={() => handleClick(message._id)} />
+						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
+						<MessageToolboxItem icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</Message.Toolbox>
 				</MessageToolboxWrapper>
 			</Message>

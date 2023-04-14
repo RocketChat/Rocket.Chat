@@ -30,8 +30,8 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 	const confirmDeletMessages = (): void => {
 		setModal(
 			<GenericModal
-				confirmText={t('Yes_delete_it')}
-				title={t('delete-message')}
+				confirmText={t('Moderation_Dismiss_and_delete')}
+				title={t('Moderation_Delete_all_messages')}
 				variant='danger'
 				onConfirm={() => onDeleteAll()}
 				onCancel={() => setModal()}

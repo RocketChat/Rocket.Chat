@@ -30,7 +30,13 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 
 	const confirmResetAvatar = (): void => {
 		setModal(
-			<GenericModal confirmText={t('Reset')} variant='danger' onConfirm={() => onResetAvatar()} onCancel={() => setModal()}>
+			<GenericModal
+				title={t('Moderation_Reset_user_avatar')}
+				confirmText={t('Reset')}
+				variant='danger'
+				onConfirm={() => onResetAvatar()}
+				onCancel={() => setModal()}
+			>
 				{t('Moderation_Are_you_sure_you_want_to_reset_the_avatar')}
 			</GenericModal>,
 		);

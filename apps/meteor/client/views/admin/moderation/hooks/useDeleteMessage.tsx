@@ -42,8 +42,8 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 	const confirmDeletMessage = (): void => {
 		setModal(
 			<GenericModal
-				confirmText={t('Yes_delete_it')}
-				title={t('Delete_message')}
+				confirmText={t('Moderation_Dismiss_and_delete')}
+				title={t('Moderation_Delete_this_message')}
 				variant='danger'
 				onConfirm={() => onDeleteAll()}
 				onCancel={() => setModal()}

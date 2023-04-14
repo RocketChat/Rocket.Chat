@@ -30,7 +30,13 @@ const useDismissUserAction = (userId: string, onChange: () => void, onReload: ()
 
 	const confirmDismissUser = (): void => {
 		setModal(
-			<GenericModal title={'Dismiss and Delete'} variant='danger' onConfirm={() => onDismissUser()} onCancel={() => setModal()}>
+			<GenericModal
+				title={t('Moderation_Dismiss_and_delete')}
+				confirmText={t('Moderation_Dismiss_and_delete')}
+				variant='danger'
+				onConfirm={() => onDismissUser()}
+				onCancel={() => setModal()}
+			>
 				{t('Moderation_Are_you_sure_dismiss_and_delete_reports')}
 			</GenericModal>,
 		);
