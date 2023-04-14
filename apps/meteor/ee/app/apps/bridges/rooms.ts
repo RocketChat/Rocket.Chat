@@ -8,7 +8,6 @@ import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Room } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -104,14 +103,14 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !Rooms.findOneById(room.id)) {
+		if (!room.id || !(await Rooms.findOneById(room.id))) {
 			throw new Error('A room must exist to update.');
 		}
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		// @ts-ignore Circular reference on field 'value'
-		await Rooms.update(rm._id, rm);
+		await Rooms.updateOne(rm._id, rm);
 
 		const promisedAddedUsers = members.map(async (username: string) => {
 			const member = await Users.findOneByUsername(username, {});

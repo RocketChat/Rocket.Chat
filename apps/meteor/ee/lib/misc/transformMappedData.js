@@ -66,9 +66,8 @@ export const transformMappedData = async (data, map) => {
 	const originalData = cloneDeep(data);
 	const transformedData = {};
 
-	for (const [to, from] of Object.entries(map)) {
+	for await (const [to, from] of Object.entries(map)) {
 		if (typeof from === 'function') {
-			// eslint-disable-next-line no-await-in-loop
 			const result = await from(originalData);
 
 			if (typeof result !== 'undefined') {

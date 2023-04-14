@@ -8,8 +8,8 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { UiKitCoreApp, Apps, AppsConverter } from '@rocket.chat/core-services';
 
-import { settings } from '../../../settings/server';
-import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { settings } from '../../../../app/settings/server';
+import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -285,7 +285,7 @@ const appsRoutes =
 
 				const room = await AppsConverter.convertRoomById(rid);
 				const user = await AppsConverter.convertUserToApp(req.user);
-				const message = await AppsConverter.convertMessageById(mid);
+				const message = mid && (await AppsConverter.convertMessageById(mid));
 				const action = {
 					type,
 					appId,

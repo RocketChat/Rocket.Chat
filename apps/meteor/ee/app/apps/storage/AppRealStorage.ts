@@ -1,9 +1,9 @@
-import type { IAppStorageItem } from '@rocket.chat/core-typings';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
-import type { IAppsModel } from '@rocket.chat/model-typings';
+import type { Apps } from '@rocket.chat/models';
 
 export class AppRealStorage extends AppMetadataStorage {
-	constructor(private db: IAppsModel) {
+	constructor(private db: typeof Apps) {
 		super('mongodb');
 	}
 
@@ -17,13 +17,13 @@ export class AppRealStorage extends AppMetadataStorage {
 			throw new Error('App already exists.');
 		}
 
-		const { insertedId } = await this.db.insertOne(item);
-		item._id = insertedId;
+		const id = (await this.db.insertOne(item)).insertedId as unknown as string;
+		item._id = id;
 
 		return item;
 	}
 
-	public async retrieveOne(id: string): Promise<IAppStorageItem | null> {
+	public async retrieveOne(id: string): Promise<IAppStorageItem> {
 		return this.db.findOne({ $or: [{ _id: id }, { id }] });
 	}
 
@@ -40,17 +40,11 @@ export class AppRealStorage extends AppMetadataStorage {
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
 		await this.db.updateOne({ id: item.id }, { $set: item });
 
-		const updatedItem = await this.retrieveOne(item.id);
-
-		if (!updatedItem) {
-			throw new Error(`Could not find stored app ${item.id}`);
-		}
-
-		return updatedItem;
+		return this.retrieveOne(item.id);
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
-		await this.db.removeById(id);
+		await this.db.deleteOne({ id });
 
 		return { success: true };
 	}

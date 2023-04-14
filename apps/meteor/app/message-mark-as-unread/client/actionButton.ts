@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { RoomManager, MessageAction } from '../../ui-utils/client';
+import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -15,7 +15,7 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			return Meteor.call('unreadMessages', message, function (error: unknown) {
+			return Meteor.call('unreadMessages', message, async function (error: unknown) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 					return;
@@ -26,7 +26,7 @@ Meteor.startup(() => {
 				if (subscription == null) {
 					return;
 				}
-				RoomManager.close(subscription.t + subscription.name);
+				await LegacyRoomManager.close(subscription.t + subscription.name);
 				return FlowRouter.go('home');
 			});
 		},

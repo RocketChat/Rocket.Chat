@@ -1,7 +1,7 @@
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { v4 as uuid } from 'uuid';
 
-import { transformMappedData } from '../../../../app/apps/lib/misc/transformMappedData';
+import { transformMappedData } from '../../../lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
 	constructor(orch) {

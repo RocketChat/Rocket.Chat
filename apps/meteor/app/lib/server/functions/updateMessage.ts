@@ -2,16 +2,14 @@ import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings'
 import { Meteor } from 'meteor/meteor';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { Apps } from '@rocket.chat/core-services';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = function (message: IMessage, user: IUser, originalMessage?: IMessage): void {
-	if (!originalMessage) {
-		originalMessage = Messages.findOneById(message._id);
-	}
+export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
 	if (message) {
@@ -33,7 +31,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		Messages.cloneAndSaveAsHistoryById(message._id, user);
+		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
 	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
@@ -55,15 +53,30 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	Messages.update({ _id }, { $set: editedMessage, ...(!editedMessage.md && { $unset: { md: 1 } }) });
+	await Messages.updateOne(
+		{ _id },
+		{
+			$set: {
+				...editedMessage,
+			},
+			...(!editedMessage.md && { $unset: { md: 1 } }),
+		},
+	);
 
-	const room = Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid);
+
+	if (!room) {
+		return;
+	}
 
 	// This returns a promise, but it won't mutate anything about the message
 	// so, we don't really care if it is successful or fails
-	Apps.triggerEvent(AppInterface.IPostMessageUpdated, message);
+	void Apps.triggerEvent(AppInterface.IPostMessageUpdated, message);
 
-	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
+	Meteor.defer(async function () {
+		const msg = await Messages.findOneById(_id);
+		if (msg) {
+			callbacks.run('afterSaveMessage', msg, room, user._id);
+		}
 	});
 };

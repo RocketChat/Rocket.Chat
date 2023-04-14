@@ -7,6 +7,7 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -47,13 +48,13 @@ export const slashCommands = {
 			appId,
 		} as SlashCommand;
 	},
-	run(
+	async run(
 		command: string,
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string | undefined,
 		userId?: string,
-	): void {
+	): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
@@ -65,7 +66,12 @@ export const slashCommands = {
 
 		return cmd.callback(command, params, message, triggerId, userId);
 	},
-	getPreviews(command: string, params: string, message: IMessage, userId?: string): SlashCommandPreviews | undefined {
+	async getPreviews(
+		command: string,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+		userId?: string,
+	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
 			return;
@@ -75,7 +81,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = Promise.await(cmd.previewer(command, params, message, userId)) as SlashCommandPreviews;
+		const previewInfo = await cmd.previewer(command, params, message, userId);
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -88,14 +94,14 @@ export const slashCommands = {
 
 		return previewInfo;
 	},
-	executePreview(
+	async executePreview(
 		command: string,
 		params: string,
-		message: IMessage,
+		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
-		triggerId: string,
+		triggerId?: string,
 		userId?: string,
-	): void {
+	) {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
 			return;
@@ -114,8 +120,15 @@ export const slashCommands = {
 	},
 };
 
-Meteor.methods({
-	slashCommand(command) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		slashCommand(params: { cmd: string; params: string; msg: IMessage; triggerId: string }): unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async slashCommand(command) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

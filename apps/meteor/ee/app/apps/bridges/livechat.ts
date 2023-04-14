@@ -84,7 +84,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		let agentRoom;
 		if (agent?.id) {
 			const user = await Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
+			agentRoom = Object.assign({}, { agentId: user?._id, username: user?.username });
 		}
 
 		const result = await LivechatService.getRoom({

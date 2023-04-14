@@ -3,7 +3,6 @@ import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBr
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 import { api, MessageService, NotificationService } from '@rocket.chat/core-services';
 
@@ -61,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -69,23 +68,20 @@ export class AppMessageBridge extends MessageBridge {
 	protected async notifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a room's users.`);
 
-		if (!room || !room.id) {
+		if (!room?.id) {
 			return;
 		}
 
 		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map(
-			(s: ISubscription) => s.u._id,
+		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map((s) => s.u._id);
+
+		await Users.findByIds(users, { projection: { _id: 1 } }).forEach(
+			({ _id }: { _id: string }) =>
+				void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+					...msg,
+				}),
 		);
-
-		const usersToNotify = await Users.findByIds(users, { projection: { _id: 1 } }).toArray();
-
-		for (const user of usersToNotify) {
-			api.broadcast('notify.ephemeralMessage', user._id, room.id, {
-				...msg,
-			});
-		}
 	}
 
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {

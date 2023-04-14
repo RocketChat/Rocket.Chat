@@ -11,9 +11,9 @@ import { callbacks } from '../../../lib/callbacks';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
-Meteor.startup(() =>
-	onLicense('ldap-enterprise', () => {
-		addSettings();
+Meteor.startup(async () => {
+	await onLicense('ldap-enterprise', async () => {
+		await addSettings();
 
 		// Configure background sync cronjob
 		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): () => void {
@@ -88,15 +88,15 @@ Meteor.startup(() =>
 
 		callbacks.add(
 			'onLDAPLogin',
-			({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
+			async ({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
 				if (!ldap) {
 					return;
 				}
 
-				Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
+				await LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn);
 			},
 			callbacks.priority.MEDIUM,
 			'advancedLDAPSync',
 		);
-	}),
-);
+	});
+});

@@ -8,12 +8,9 @@ type ParagraphBlockProps = {
 };
 
 const ParagraphBlock = ({ children }: ParagraphBlockProps): ReactElement => (
-	<>
-		<p style={{ display: 'inline-block' }}>
-			<InlineElements children={children} />
-		</p>
-		<br />
-	</>
+	<div>
+		<InlineElements children={children} />
+	</div>
 );
 
 export default ParagraphBlock;

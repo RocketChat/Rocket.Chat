@@ -5,7 +5,7 @@ import { Settings, Subscriptions } from '@rocket.chat/models';
 import Future from 'fibers/future';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { Subscriptions } from '../../../models/server';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function
@@ -30,7 +30,7 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		return records.map((s: ISubscription) => s.u.username).filter((username) => username) as Array<string>;
+		return records.map((s: ISubscription) => s.u.username).filter(isTruthy);
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {

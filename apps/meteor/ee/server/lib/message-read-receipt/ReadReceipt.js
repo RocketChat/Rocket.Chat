@@ -1,8 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
-import { LivechatVisitors, ReadReceipts } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -14,45 +12,44 @@ const debounceByRoomId = function (fn) {
 		clearTimeout(list[roomId]);
 		list[roomId] = setTimeout(() => {
 			fn.call(this, roomId, ...args);
+			delete list[roomId];
 		}, 2000);
 	};
 };
 
-const updateMessages = debounceByRoomId(
-	Meteor.bindEnvironment(({ _id, lm }) => {
-		// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
-		if (!firstSubscription || !firstSubscription.ls) {
-			return;
-		}
+const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
+	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
+	const firstSubscription = await Subscriptions.getMinimumLastSeenByRoomId(_id);
+	if (!firstSubscription || !firstSubscription.ls) {
+		return;
+	}
 
-		Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
+	await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 
-		if (lm <= firstSubscription.ls) {
-			Rooms.setLastMessageAsRead(_id);
-		}
-	}),
-);
+	if (lm <= firstSubscription.ls) {
+		await Rooms.setLastMessageAsRead(_id);
+	}
+});
 
 export const ReadReceipt = {
-	markMessagesAsRead(roomId, userId, userLastSeen) {
+	async markMessagesAsRead(roomId, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
+		const room = await Rooms.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
-		if (userLastSeen > room.lm) {
+		if (!room || userLastSeen > room.lm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
 
-		updateMessages(room);
+		await updateMessages(room);
 	},
 
-	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
+	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -62,28 +59,28 @@ export const ReadReceipt = {
 		}
 
 		// mark message as read if the sender is the only one in the room
-		const isUserAlone = Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count() === 0;
+		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
 		if (isUserAlone) {
-			Messages.setAsReadById(message._id);
+			await Messages.setAsReadById(message._id);
 		}
 
-		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
+		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 
-	storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
+	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const message = Messages.findOneById(tmid, { fields: { tlm: 1, rid: 1 } });
+		const message = await Messages.findOneById(tmid, { projection: { tlm: 1, rid: 1 } });
 
 		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
 		if (!message || userLastSeen > message.tlm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
+		this.storeReadReceipts(await Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray(), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {
@@ -118,7 +115,7 @@ export const ReadReceipt = {
 				...receipt,
 				user: receipt.token
 					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1 } }),
 			})),
 		);
 	},

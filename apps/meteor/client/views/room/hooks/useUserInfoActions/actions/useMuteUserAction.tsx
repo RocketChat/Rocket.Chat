@@ -68,6 +68,10 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		const action = (): Promise<void> | void => {
 			const onConfirm = async (): Promise<void> => {
 				try {
+					if (!user.username) {
+						throw new Error('User without username');
+					}
+
 					await muteUser({ rid, username: user.username });
 
 					return dispatchToastMessage({
@@ -98,7 +102,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		return roomCanMute && userCanMute
 			? {
 					label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-					icon: isMuted ? 'mic' : 'mic-off',
+					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					action,
 			  }
 			: undefined;

@@ -3,6 +3,7 @@ import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
 import type { IAppLogStorageFindOptions } from '@rocket.chat/apps-engine/server/storage';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppsLogsModel } from '@rocket.chat/model-typings';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 export class AppRealLogsStorage extends AppLogStorage {
 	constructor(private db: IAppsLogsModel) {
@@ -21,15 +22,11 @@ export class AppRealLogsStorage extends AppLogStorage {
 	public async storeEntries(appId: string, logger: AppConsole): Promise<ILoggerStorageEntry> {
 		const item = AppConsole.toStorageEntry(appId, logger);
 
-		const { insertedId } = await this.db.insertOne(item);
+		item.instanceId = InstanceStatus.id();
 
-		const entry = await this.db.findOne({ _id: insertedId });
+		const id = (await this.db.insertOne(item)).insertedId;
 
-		if (!entry) {
-			throw new Error(`Could not find log entry ${insertedId}`);
-		}
-
-		return entry;
+		return this.db.findOneById(id);
 	}
 
 	public async getEntriesFor(appId: string): Promise<Array<ILoggerStorageEntry>> {
@@ -37,6 +34,6 @@ export class AppRealLogsStorage extends AppLogStorage {
 	}
 
 	public async removeEntriesFor(appId: string): Promise<void> {
-		await this.db.deleteOne({ appId });
+		await this.db.remove({ appId });
 	}
 }

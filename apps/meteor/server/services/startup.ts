@@ -32,6 +32,7 @@ import { SlashCommandService } from './slashcommand/service';
 import { MessageService } from './messages/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
+import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
 import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -66,10 +67,11 @@ api.registerService(new UploadService());
 api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
+api.registerService(new OmnichannelIntegrationService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
-	(async (): Promise<void> => {
+	void (async (): Promise<void> => {
 		const { Presence } = await import('@rocket.chat/presence');
 
 		const { Authorization } = await import('./authorization/service');

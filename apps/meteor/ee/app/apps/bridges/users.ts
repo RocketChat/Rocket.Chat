@@ -5,7 +5,6 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import { User as UserService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-// TODO: extract to UserService to avoid Meteor imports
 import { getUserCreatedByApp, deleteUser } from '../../../../app/lib/server';
 
 export class AppUserBridge extends UserBridge {
@@ -129,7 +128,7 @@ export class AppUserBridge extends UserBridge {
 			fields.statusDefault = status;
 		}
 
-		await Users.update({ _id: user.id }, { $set: fields as any });
+		await Users.updateOne({ _id: user.id }, { $set: fields as any });
 
 		return true;
 	}

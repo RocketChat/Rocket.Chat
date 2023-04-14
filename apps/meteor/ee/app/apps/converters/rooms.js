@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatDepartment, LivechatVisitors, Rooms, Users } from '@rocket.chat/models';
 
-import { transformMappedData } from '../../../../app/apps/lib/misc/transformMappedData';
+import { transformMappedData } from '../../../lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -31,6 +31,7 @@ export class AppRoomsConverter {
 			u = {
 				_id: creator._id,
 				username: creator.username,
+				name: creator.name,
 			};
 		}
 

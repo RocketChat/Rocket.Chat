@@ -94,12 +94,18 @@ const app = connect();
 
 app.use('/metrics', (_req, res) => {
 	res.setHeader('Content-Type', 'text/plain');
-	client.register.metrics().then((data) => {
-		metrics.metricsRequests.inc();
-		metrics.metricsSize.set(data.length);
+	client.register
+		.metrics()
+		.then((data) => {
+			metrics.metricsRequests.inc();
+			metrics.metricsSize.set(data.length);
 
-		res.end(data);
-	});
+			res.end(data);
+		})
+		.catch((err) => {
+			SystemLogger.error({ msg: 'Error while collecting metrics', err });
+			res.end();
+		});
 });
 
 app.use('/', (_req, res) => {
@@ -169,12 +175,17 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().then((metrics) => {
-				metrics.forEach((metric) => {
-					// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
-					metric.hashMap = {};
+			client.register
+				.getMetricsAsArray()
+				.then((metrics) => {
+					metrics.forEach((metric) => {
+						// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
+						metric.hashMap = {};
+					});
+				})
+				.catch((err) => {
+					SystemLogger.error({ msg: 'Error while collecting metrics', err });
 				});
-			});
 		}, is.resetInterval);
 	}
 

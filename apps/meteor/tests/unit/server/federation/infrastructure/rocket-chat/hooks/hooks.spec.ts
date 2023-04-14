@@ -16,7 +16,7 @@ const { FederationHooks } = proxyquire
 		'meteor/meteor': {
 			'@global': true,
 		},
-		'meteor/random': {
+		'@rocket.chat/random': {
 			'@global': true,
 		},
 		'../../../../../../lib/callbacks': {
@@ -34,10 +34,6 @@ const { FederationHooks } = proxyquire
 	});
 
 describe('Federation - Infrastructure - RocketChat - Hooks', () => {
-	beforeEach(() => {
-		Promise.await = (args) => args;
-	});
-
 	afterEach(() => {
 		remove.reset();
 		get.reset();

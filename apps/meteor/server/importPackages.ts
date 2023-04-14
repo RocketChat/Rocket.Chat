@@ -1,5 +1,4 @@
 import '../app/cors/server';
-import '../app/sms/server';
 import '../app/2fa/server';
 import '../app/analytics/server';
 import '../app/api/server';
@@ -89,7 +88,6 @@ import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/user-status/server';
 import '../app/utils/server';
-import '../app/models/server';
 import '../app/metrics/server';
 import '../app/notifications/server';
 import '../app/ui-utils/server';

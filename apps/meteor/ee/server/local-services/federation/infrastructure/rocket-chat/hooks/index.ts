@@ -8,7 +8,7 @@ export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {
 		callbacks.add(
 			'federation.afterCreateFederatedRoom',
-			(room: IRoom, params: { owner: IUser; originalMemberList: string[] }): void => {
+			async (room: IRoom, params: { owner: IUser; originalMemberList: string[] }) => {
 				if (
 					!room ||
 					!isRoomFederated(room) ||
@@ -19,7 +19,7 @@ export class FederationHooksEE {
 				) {
 					return;
 				}
-				Promise.await(callback(room, params.owner, params.originalMemberList));
+				await callback(room, params.owner, params.originalMemberList);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-create-room',
@@ -29,7 +29,7 @@ export class FederationHooksEE {
 	public static onUsersAddedToARoom(callback: (room: IRoom, addedUsers: IUser[] | Username[], inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
 			'federation.onAddUsersToARoom',
-			(params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom): void => {
+			async (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => {
 				if (
 					!room ||
 					!isRoomFederated(room) ||
@@ -40,18 +40,18 @@ export class FederationHooksEE {
 				) {
 					return;
 				}
-				Promise.await(callback(room, params.invitees, params.inviter));
+				await callback(room, params.invitees, params.inviter);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-on-add-users-to-a-room',
 		);
 		callbacks.add(
 			'afterAddedToRoom',
-			(params: { user: IUser; inviter?: IUser }, room: IRoom): void => {
+			async (params: { user: IUser; inviter?: IUser }, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.user || !params.inviter || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
-				Promise.await(callback(room, [params.user], params?.inviter));
+				await callback(room, [params.user], params?.inviter);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-add-user-to-a-room',
@@ -61,11 +61,11 @@ export class FederationHooksEE {
 	public static onDirectMessageRoomCreated(callback: (room: IRoom, creatorId: string, memberList: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'afterCreateDirectRoom',
-			(room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): void => {
+			async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }) => {
 				if (!room || !params || !params.creatorId || !params.creatorId || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
-				Promise.await(callback(room, params.creatorId, params.members));
+				await callback(room, params.creatorId, params.members);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-create-direct-message-room',
@@ -75,11 +75,11 @@ export class FederationHooksEE {
 	public static beforeDirectMessageRoomCreate(callback: (memberList: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'beforeCreateDirectRoom',
-			(members: IUser[]): void => {
+			async (members: IUser[]) => {
 				if (!members || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
-				Promise.await(callback(members));
+				await callback(members);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-create-direct-message-room',
@@ -89,11 +89,11 @@ export class FederationHooksEE {
 	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom, inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
-			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
+			async (params: { user: IUser | string; inviter?: IUser }, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.user || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
-				Promise.await(callback(params.user, room, params.inviter));
+				await callback(params.user, room, params.inviter);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-add-user-to-the-room',

@@ -1,6 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { db } from '../database/utils';
-import { AppsPersistenceRaw } from './raw/AppsPersistence';
+import { AppsPersistenceModel } from './raw/AppsPersistence';
 
-registerModel('IAppsPersistenceModel', new AppsPersistenceRaw(db));
+registerModel('IAppsPersistenceModel', new AppsPersistenceModel(db));

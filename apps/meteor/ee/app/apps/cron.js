@@ -1,4 +1,3 @@
-import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -7,8 +6,9 @@ import { Settings, Users } from '@rocket.chat/models';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { fetch } from '../../../server/lib/http/fetch';
 
-async function notifyAdminsAboutInvalidApps(apps) {
+const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -26,11 +26,11 @@ async function notifyAdminsAboutInvalidApps(apps) {
 	const link = '/admin/apps';
 
 	await sendMessagesToAdmins({
-		msgs: ({ adminUser }) => ({
+		msgs: async ({ adminUser }) => ({
 			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
 		}),
-		banners: ({ adminUser }) => {
-			Users.removeBannerById(adminUser._id, { id });
+		banners: async ({ adminUser }) => {
+			await Users.removeBannerById(adminUser._id, { id });
 
 			return [
 				{
@@ -46,8 +46,9 @@ async function notifyAdminsAboutInvalidApps(apps) {
 	});
 
 	return apps;
-}
-async function notifyAdminsAboutRenewedApps(apps) {
+};
+
+const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -63,13 +64,13 @@ async function notifyAdminsAboutRenewedApps(apps) {
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
 	await sendMessagesToAdmins({
-		msgs: ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
 	});
-}
+};
 
-export const appsUpdateMarketplaceInfo = async () => {
+const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
-	const baseUrl = await Apps.getMarketplaceUrl();
+	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
@@ -84,7 +85,8 @@ export const appsUpdateMarketplaceInfo = async () => {
 	let data = [];
 
 	try {
-		const result = HTTP.get(fullUrl, options);
+		const response = await fetch(fullUrl, options);
+		const result = await response.json();
 
 		if (Array.isArray(result.data)) {
 			data = result.data;
@@ -99,6 +101,7 @@ export const appsUpdateMarketplaceInfo = async () => {
 SyncedCron.add({
 	name: 'Apps-Engine:check',
 	schedule: (parser) => parser.text('at 4:00 am'),
-	job() {
-		appsUpdateMarketplaceInfo();
+	async job() {
+		await appsUpdateMarketplaceInfo();
 	},
+});
