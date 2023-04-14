@@ -13,6 +13,7 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
@@ -281,15 +282,15 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? Accounts.createUser({
+			? await Accounts.createUserAsync({
 					email: userData.emails[0],
 					password,
 			  })
-			: Accounts.createUser({
+			: await Accounts.createUserAsync({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,
-			  });
+			  } as any);
 
 		const user = await Users.findOneById(userId, {});
 		if (!user) {
@@ -621,7 +622,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
