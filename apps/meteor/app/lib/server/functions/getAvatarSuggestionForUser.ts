@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { check } from 'meteor/check';
-import { Gravatar } from 'meteor/jparker:gravatar';
+import Gravatar from 'gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { IUser } from '@rocket.chat/core-typings';
 
@@ -108,10 +108,10 @@ const avatarProviders = {
 				if (email.verified === true) {
 					avatars.push({
 						service: 'gravatar',
-						url: Gravatar.imageUrl(email.address, {
+						url: Gravatar.url(email.address, {
 							default: '404',
-							size: 200,
-							secure: true,
+							size: '200',
+							protocol: 'https',
 						}),
 					});
 				}
@@ -119,10 +119,10 @@ const avatarProviders = {
 				if (email.verified !== true) {
 					avatars.push({
 						service: 'gravatar',
-						url: Gravatar.imageUrl(email.address, {
+						url: Gravatar.url(email.address, {
 							default: '404',
-							size: 200,
-							secure: true,
+							size: '200',
+							protocol: 'https',
 						}),
 					});
 				}
