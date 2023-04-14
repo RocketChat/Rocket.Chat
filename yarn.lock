@@ -6805,6 +6805,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/fuselage-polyfills": next
+    "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/prettier-config": next
     "@rocket.chat/styled": next
