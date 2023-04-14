@@ -7,15 +7,15 @@ import { AppleCustomOAuth } from './AppleCustomOAuth';
 
 new AppleCustomOAuth('apple', config);
 
-void settingsRegistry.addGroup('OAuth', function () {
-	this.section('Apple', function () {
-		this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
+void settingsRegistry.addGroup('OAuth', async function () {
+	await this.section('Apple', async function () {
+		await this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
 
-		this.add('Accounts_OAuth_Apple_id', '', { type: 'string', public: true });
-		this.add('Accounts_OAuth_Apple_secretKey', '', { type: 'string', multiline: true });
+		await this.add('Accounts_OAuth_Apple_id', '', { type: 'string', public: true });
+		await this.add('Accounts_OAuth_Apple_secretKey', '', { type: 'string', multiline: true });
 
-		this.add('Accounts_OAuth_Apple_iss', '', { type: 'string' });
-		this.add('Accounts_OAuth_Apple_kid', '', { type: 'string' });
+		await this.add('Accounts_OAuth_Apple_iss', '', { type: 'string' });
+		await this.add('Accounts_OAuth_Apple_kid', '', { type: 'string' });
 	});
 });
 
