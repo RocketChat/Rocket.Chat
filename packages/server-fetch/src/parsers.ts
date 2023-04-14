@@ -51,5 +51,5 @@ export function parseRequestOptions(options?: ExtendedFetchOptions): OriginalFet
 
 	const contentTypeHeader = headers['Content-Type'] || headers['content-type'];
 
-	return parsers[contentTypeHeader ?? 'default'](options);
+	return parsers[contentTypeHeader.toLowerCase() ?? 'default'](options);
 }
