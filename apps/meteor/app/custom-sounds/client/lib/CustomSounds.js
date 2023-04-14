@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import _ from 'underscore';
 
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 
 const getCustomSoundId = (sound) => `custom-sound-${sound}`;
@@ -95,7 +94,7 @@ class CustomSoundsClass {
 
 	getList() {
 		const list = Object.values(this.list.get());
-		return _.sortBy(list, 'name');
+		return list.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 	}
 
 	play = (sound, { volume = 1, loop = false } = {}) => {

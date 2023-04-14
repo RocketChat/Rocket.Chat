@@ -1,9 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Users } from '@rocket.chat/models';
 
-export const checkEmailAvailability = function (email: string): boolean {
-	return !Meteor.users.findOne({
-		'emails.address': { $regex: new RegExp(`^${s.trim(escapeRegExp(email))}$`, 'i') },
-	});
+export const checkEmailAvailability = async function (email: string): Promise<boolean> {
+	return !(await Users.findOne({
+		'emails.address': { $regex: new RegExp(`^${escapeRegExp(email).trim()}$`, 'i') },
+	}));
 };

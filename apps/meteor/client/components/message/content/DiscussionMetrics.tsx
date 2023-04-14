@@ -4,8 +4,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
-import { useBlockRendered } from '../hooks/useBlockRendered';
+import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 type DiscussionMetricsProps = {
 	drid: string;
@@ -17,17 +16,13 @@ type DiscussionMetricsProps = {
 const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): ReactElement => {
 	const t = useTranslation();
 	const format = useTimeAgo();
-	const { className, ref } = useBlockRendered<HTMLDivElement>();
 
-	const {
-		actions: { openRoom },
-	} = useMessageActions();
+	const goToRoom = useGoToRoom();
 
 	return (
 		<MessageBlock>
-			<div className={className} ref={ref} />
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-drid={drid} onClick={openRoom(drid)}>
+				<MessageMetricsReply data-rid={rid} data-drid={drid} onClick={() => goToRoom(drid)}>
 					{count ? t('message_counter', { counter: count, count }) : t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={lm?.toLocaleString()}>

@@ -2,25 +2,25 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { BlazeTemplates } from 'meteor/templating';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { useTabBarClose } from '../contexts/ToolboxContext';
-import MessageProvider from '../providers/MessageProvider';
 import BlazeTemplate from './BlazeTemplate';
 
 type VerticalBarOldActionsProps = {
-	name: string;
+	name: keyof BlazeTemplates;
 	rid: IRoom['_id'];
-	_id: IRoom['_id'];
+	_id: string;
 	icon?: ComponentProps<typeof Icon>['name'];
 	tabBar: ToolboxContextValue['tabBar'];
 	title: TranslationKey;
 };
 
-const VerticalBarOldActions = ({ name, rid, icon, tabBar, title, ...props }: VerticalBarOldActionsProps): ReactElement => {
+const VerticalBarOldActions = ({ name, icon, title, ...props }: VerticalBarOldActionsProps): ReactElement => {
 	const close = useTabBarClose();
 	const t = useTranslation();
 
@@ -32,9 +32,7 @@ const VerticalBarOldActions = ({ name, rid, icon, tabBar, title, ...props }: Ver
 				{close && <VerticalBar.Close onClick={close} />}
 			</VerticalBar.Header>
 			<VerticalBar.Content>
-				<MessageProvider>
-					<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} rid={rid} {...props} />
-				</MessageProvider>
+				<BlazeTemplate flexShrink={1} overflow='hidden' name={name} {...(props as any)} />
 			</VerticalBar.Content>
 		</>
 	);

@@ -1,3 +1,3 @@
-export default function handleOnLeaveRoom(user, room) {
+export default async function handleOnLeaveRoom(user, room) {
 	this.sendCommand('leftChannel', { room, user });
 }

@@ -38,7 +38,7 @@ function broadcastRoleChange(type: string, roleList: Array<IRole['_id']>, user: 
 	const { _id, username } = user;
 
 	for (const roleId of roleList) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type,
 			_id: roleId,
 			u: {
@@ -68,7 +68,7 @@ export async function syncUserRoles(
 	}
 
 	const wasGuest = existingRoles.length === 1 && existingRoles[0] === 'guest';
-	if (wasGuest && !canAddNewUser()) {
+	if (wasGuest && !(await canAddNewUser())) {
 		throw new Error('error-license-user-limit-reached');
 	}
 

@@ -6,6 +6,8 @@ export function oembedCron(SyncedCron) {
 		schedule(parser) {
 			return parser.cron('24 2 * * *');
 		},
-		job: () => Meteor.call('OEmbedCacheCleanup'),
+		job: async () => {
+			await Meteor.callAsync('OEmbedCacheCleanup');
+		},
 	});
 }

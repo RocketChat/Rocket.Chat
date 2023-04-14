@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -6,6 +5,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { emoji } from '../../lib/rocketchat';
+import { updateRecentEmoji } from '../emojiPicker';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 let updatePositions = true;
 
@@ -45,12 +46,12 @@ export const EmojiPicker = {
 		});
 
 		$(window).resize(
-			_.debounce(() => {
+			withDebouncing({ wait: 300 })(() => {
 				if (!this.opened) {
 					return;
 				}
 				this.setPosition();
-			}, 300),
+			}),
 		);
 	},
 	isOpened() {
@@ -156,9 +157,7 @@ export const EmojiPicker = {
 		this.recent.splice(pos, 1);
 		Meteor._localStorage.setItem('emoji.recent', this.recent);
 	},
-	async updateRecent(category) {
-		const emojiPickerImport = await import('../emojiPicker');
-		const { updateRecentEmoji } = emojiPickerImport;
+	updateRecent(category) {
 		updateRecentEmoji(category);
 	},
 	calculateCategoryPositions() {

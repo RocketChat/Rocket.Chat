@@ -8,26 +8,33 @@ import { FileUpload } from '../../../app/file-upload/server';
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
-		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
+		return Meteor.runAsUser(userId, async () => {
+			const fileStore = FileUpload.getStore('Uploads');
+			return fileStore.insert(details, buffer);
+		});
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<IMessage | undefined> {
-		return Meteor.runAsUser(userId, () => Meteor.call('sendFileMessage', roomId, null, file, message));
+		return Meteor.runAsUser(userId, () => Meteor.callAsync('sendFileMessage', roomId, null, file, message));
 	}
 
 	async sendFileLivechatMessage({ roomId, visitorToken, file, message }: ISendFileLivechatMessageParams): Promise<IMessage> {
-		return Meteor.call('sendFileLivechatMessage', roomId, visitorToken, file, message);
+		return Meteor.callAsync('sendFileLivechatMessage', roomId, visitorToken, file, message);
 	}
 
-	async getFileBuffer({ file }: { userId: string; file: IUpload }): Promise<Buffer> {
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
-				if (err) {
-					return reject(err);
-				}
-				return resolve(buffer);
+	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
+		return Meteor.runAsUser(userId, () => {
+			return new Promise((resolve, reject) => {
+				FileUpload.getBuffer(file, (err?: Error, buffer?: false | Buffer) => {
+					if (err) {
+						return reject(err);
+					}
+					if (!(buffer instanceof Buffer)) {
+						return reject(new Error('Unknown error'));
+					}
+					return resolve(buffer);
+				});
 			});
 		});
 	}

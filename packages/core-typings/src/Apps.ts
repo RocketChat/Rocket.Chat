@@ -62,10 +62,17 @@ export type AppPermission = {
 
 export type PurchaseType = 'buy' | 'subscription';
 
+export type AppRequestStats = {
+	appId: string;
+	totalSeen: number;
+	totalUnseen: number;
+};
+
 export type App = {
 	id: string;
 	iconFileData: string;
 	name: string;
+	appRequestStats: AppRequestStats;
 	author: {
 		name: string;
 		homepage: string;
@@ -114,4 +121,8 @@ export type App = {
 	permissions: AppPermission[];
 	languages: string[];
 	createdDate: string;
+	requestedEndUser?: boolean;
+	private: boolean;
+	documentationUrl: string;
+	migrated: boolean;
 };

@@ -2,9 +2,13 @@ import type { IRoom, IOmnichannelRoom, IVoipRoom, ISubscription } from '@rocket.
 import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
-export type RoomContextValue = {
+export interface IRoomWithFederationOriginalName extends IRoom {
+	federationOriginalName?: string;
+}
+
+type RoomContextValue = {
 	rid: IRoom['_id'];
-	room: IRoom;
+	room: IRoomWithFederationOriginalName;
 	subscription?: ISubscription;
 	hasMorePreviousMessages: boolean;
 	hasMoreNextMessages: boolean;
@@ -24,13 +28,13 @@ export const useUserIsSubscribed = (): boolean => {
 };
 
 export const useRoom = (): IRoom => {
-	const { room } = useContext(RoomContext) || {};
+	const context = useContext(RoomContext);
 
-	if (!room) {
+	if (!context) {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 
-	return room;
+	return context.room;
 };
 
 export const useRoomSubscription = (): ISubscription | undefined => {

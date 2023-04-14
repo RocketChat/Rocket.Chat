@@ -1,13 +1,12 @@
 import { mkdir, writeFile } from 'fs/promises';
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { joinPath } from '../fileUtils';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { Messages } from '../../../app/models/server';
 
 const hideUserName = (
 	username: string,
@@ -69,7 +68,7 @@ const getMessageData = (
 	userData: Pick<IUser, 'username'> | undefined,
 	usersMap: { userNameTable: Record<string, string> },
 ): MessageData => {
-	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name, userData, usersMap) : msg.u.username;
+	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name || '', userData, usersMap) : msg.u.username;
 
 	const messageObject = {
 		msg: msg.msg,
@@ -203,10 +202,9 @@ const exportRoomMessages = async (
 	usersMap: any = {},
 	hideUsers = true,
 ) => {
-	const readPreference = readSecondaryPreferred(Messages.model.rawDatabase());
+	const readPreference = readSecondaryPreferred();
 
-	// @ts-ignore Circular reference on field 'attachments'
-	const { cursor, totalCount } = MessagesRaw.findPaginated(
+	const { cursor, totalCount } = Messages.findPaginated(
 		{ ...filter, rid },
 		{
 			sort: { ts: 1 },
@@ -225,17 +223,15 @@ const exportRoomMessages = async (
 		uploads: [] as FileProp[],
 	};
 
-	results.forEach(
-		Meteor.bindEnvironment((msg) => {
-			const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
+	results.forEach((msg) => {
+		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
-			if (msg.file) {
-				result.uploads.push(msg.file);
-			}
+		if (msg.file) {
+			result.uploads.push(msg.file);
+		}
 
-			result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
-		}),
-	);
+		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
+	});
 
 	return result;
 };

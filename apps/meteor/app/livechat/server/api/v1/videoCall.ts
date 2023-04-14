@@ -1,12 +1,12 @@
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Settings } from '@rocket.chat/models';
+import { Messages, Settings, Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Messages, Rooms } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { canSendMessage } from '../../../../authorization/server';
+import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute(
@@ -14,7 +14,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETWebRTCCall },
 	{
 		async get() {
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				this.queryParams.rid,
 				{
 					uid: this.userId,
@@ -33,7 +33,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
+			if (!config.theme?.actionLinks?.webrtc) {
 				throw new Error('invalid-livechat-config');
 			}
 
@@ -43,7 +43,8 @@ API.v1.addRoute(
 				await Settings.incrementValueById('WebRTC_Calls_Count');
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
-				await Messages.createWithTypeRoomIdMessageAndUser(
+
+				await Message.saveSystemMessage(
 					'livechat_webrtc_video_call',
 					room._id,
 					TAPi18n.__('Join_my_room_to_start_the_video_call'),
@@ -71,7 +72,7 @@ API.v1.addRoute(
 			const { callId } = this.urlParams;
 			const { rid, status } = this.bodyParams;
 
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				rid,
 				{
 					uid: this.userId,
@@ -89,7 +90,7 @@ API.v1.addRoute(
 				throw new Error('invalid-callId');
 			}
 
-			Livechat.updateCallStatus(callId, rid, status, this.user);
+			await Livechat.updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		},

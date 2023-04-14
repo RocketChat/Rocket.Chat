@@ -1,10 +1,9 @@
-import s from 'underscore.string';
-
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveCustomFieldsWithoutValidation } from '.';
+import { trim } from '../../../../lib/utils/stringUtils';
 
-export const saveCustomFields = function (userId: string, formData: unknown): void {
-	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
+export const saveCustomFields = async function (userId: string, formData: Record<string, any>): Promise<void> {
+	if (trim(settings.get('Accounts_CustomFields')) !== '') {
 		validateCustomFields(formData);
 		return saveCustomFieldsWithoutValidation(userId, formData);
 	}

@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -8,6 +7,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
+import { withThrottling } from '../../../lib/utils/highOrderFunctions';
+import { baseURI } from '../../../client/lib/baseURI';
 import './emojiPicker.html';
 
 const ESCAPE = 27;
@@ -17,7 +18,26 @@ const emojiListByCategory = new ReactiveDict('emojiList');
 const getEmojiElement = (emoji, image) =>
 	image && `<li class="emoji-${emoji} emoji-picker-item" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
 
-const createEmojiList = (category, actualTone) => {
+// used as a function so `t` can use the user's language correctly when called
+const loadMoreLink = () => `<li class="emoji-picker-load-more"><a href="#load-more">${t('Load_more')}</a></li>`;
+
+let customItems = 90;
+
+const baseUrlFix = () => `${baseURI}${FlowRouter.current().path.substring(1)}`;
+
+const isMozillaFirefoxBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Firefox\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isGoogleChromeBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Chrome\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isBaseUrlFixNeeded = () => isMozillaFirefoxBelowVersion(55) || isGoogleChromeBelowVersion(55);
+
+const createEmojiList = (category, actualTone, limit = null) => {
 	const html =
 		Object.values(emoji.packages)
 			.map((emojiPackage) => {
@@ -25,12 +45,24 @@ const createEmojiList = (category, actualTone) => {
 					return;
 				}
 
-				return emojiPackage.emojisByCategory[category]
-					.map((current) => {
-						const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
-						return getEmojiElement(current, emojiPackage.renderPicker(`:${current}${tone}:`));
-					})
-					.join('');
+				const result = [];
+
+				const total = emojiPackage.emojisByCategory[category].length;
+
+				const listTotal = limit ? Math.min(limit, total) : total;
+
+				for (let i = 0; i < listTotal; i++) {
+					const current = emojiPackage.emojisByCategory[category][i];
+
+					const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
+					result.push(getEmojiElement(current, emojiPackage.renderPicker(`:${current}${tone}:`)));
+				}
+
+				if (limit > 0 && total > limit) {
+					result.push(loadMoreLink());
+				}
+
+				return result.join('');
 			})
 			.join('') || `<li>${t('No_emojis_found')}</li>`;
 
@@ -38,24 +70,27 @@ const createEmojiList = (category, actualTone) => {
 };
 
 export function updateRecentEmoji(category) {
-	emojiListByCategory.set(category, createEmojiList(category));
+	emojiListByCategory.set(category, createEmojiList(category, null, category === 'rocket' ? customItems : null));
 }
 
 const createPickerEmojis = (instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
 
-	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
+	categories.forEach((category) =>
+		emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone, category.key === 'rocket' ? customItems : null)),
+	);
 };
 
-function getEmojisBySearchTerm(searchTerm) {
+function getEmojisBySearchTerm(searchTerm, limit) {
 	let html = '<ul class="emoji-list">';
-	const t = Template.instance();
-	const actualTone = t.tone;
+	const actualTone = Template.instance().tone;
 
 	EmojiPicker.currentCategory.set('');
 
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
+
+	let totalFound = 0;
 
 	for (let current in emoji.list) {
 		if (!emoji.list.hasOwnProperty(current)) {
@@ -89,7 +124,13 @@ function getEmojisBySearchTerm(searchTerm) {
 			if (emojiFound) {
 				const image = emoji.packages[emojiPackage].renderPicker(`:${current}${tone}:`);
 				html += getEmojiElement(current, image);
+				totalFound++;
 			}
+		}
+
+		if (totalFound >= limit) {
+			html += loadMoreLink();
+			break;
 		}
 	}
 	html += '</ul>';
@@ -116,10 +157,14 @@ Template.emojiPicker.helpers({
 		return Template.instance().currentSearchTerm.get().length > 0;
 	},
 	searchResults() {
-		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get());
+		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get(), Template.instance().searchTermItems.get());
 	},
-	emojiList(category) {
-		return emojiListByCategory.get(category);
+	emojiList() {
+		emojiListByCategory.all();
+
+		return (category) => {
+			return emojiListByCategory.get(category);
+		};
 	},
 	currentTone() {
 		return `tone-${Template.instance().tone}`;
@@ -141,6 +186,7 @@ Template.emojiPicker.helpers({
 	currentCategory() {
 		return EmojiPicker.currentCategory.get();
 	},
+	baseUrl: isBaseUrlFixNeeded() ? baseUrlFix : undefined,
 });
 
 Template.emojiPicker.events({
@@ -162,7 +208,7 @@ Template.emojiPicker.events({
 
 		return false;
 	},
-	'scroll .emojis': _.throttle((event, instance) => {
+	'scroll .emojis': withThrottling({ wait: 300 })((event, instance) => {
 		if (EmojiPicker.scrollingToCategory) {
 			return;
 		}
@@ -183,12 +229,24 @@ Template.emojiPicker.events({
 		const category = el.id.replace('emoji-list-category-', '');
 
 		EmojiPicker.currentCategory.set(category);
-	}, 300),
+	}),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
 
 		instance.$('.tone-selector').toggleClass('show');
+	},
+	'click .emoji-picker-load-more > a'(event, instance) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (instance.currentSearchTerm.get().length > 0) {
+			instance.searchTermItems.set(instance.searchTermItems.get() + 90);
+			return;
+		}
+
+		customItems += 90;
+		emojiListByCategory.set('rocket', createEmojiList('rocket', null, customItems));
 	},
 	'click .tone-selector .tone'(event, instance) {
 		event.stopPropagation();
@@ -241,6 +299,7 @@ Template.emojiPicker.events({
 			input.val('');
 		}
 		instance.currentSearchTerm.set('');
+		instance.searchTermItems.set(90);
 
 		EmojiPicker.pickEmoji(_emoji + tone);
 	},
@@ -266,6 +325,7 @@ Template.emojiPicker.onCreated(function () {
 	const recent = EmojiPicker.getRecent();
 
 	this.currentSearchTerm = new ReactiveVar('');
+	this.searchTermItems = new ReactiveVar(90);
 
 	this.categoriesList = [];
 	for (const emojiPackage in emoji.packages) {

@@ -17,9 +17,9 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 		: never
 	: never;
 
-const namespacesDefault = ['onboarding', 'registration'] as TranslationNamespace[];
+const namespacesDefault = ['core', 'onboarding', 'registration', 'cloud'] as TranslationNamespace[];
 
-const parseToJSON = (customTranslations: string) => {
+const parseToJSON = (customTranslations: string): Record<string, Record<string, string>> | false => {
 	try {
 		return JSON.parse(customTranslations);
 	} catch (e) {
@@ -39,10 +39,15 @@ const useI18next = (lng: string): typeof i18next => {
 		const result: { [key: string]: any } = {};
 
 		for (const [key, value] of Object.entries(source)) {
-			const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
+			const [prefix] = key.split('.');
 
-			if (prefix) {
+			if (prefix && Array.isArray(namespaces) ? namespaces.includes(prefix) : prefix === namespaces) {
 				result[key.slice(prefix.length + 1)] = value;
+				continue;
+			}
+
+			if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+				result[key] = value;
 			}
 		}
 
@@ -93,9 +98,16 @@ const useI18next = (lng: string): typeof i18next => {
 			return;
 		}
 
-		const parsedCustomTranslations: Record<string, Record<string, string>> = JSON.parse(customTranslations);
+		const parsedCustomTranslations = parseToJSON(customTranslations);
+
+		if (!parsedCustomTranslations) {
+			return;
+		}
 
 		for (const [ln, translations] of Object.entries(parsedCustomTranslations)) {
+			if (!translations) {
+				continue;
+			}
 			const namespaces = Object.entries(translations).reduce((acc, [key, value]): Record<string, Record<string, string>> => {
 				const namespace = key.split('.')[0];
 

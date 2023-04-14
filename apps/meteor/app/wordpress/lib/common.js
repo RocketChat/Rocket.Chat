@@ -20,7 +20,7 @@ const config = {
 const WordPress = new CustomOAuth('wordpress', config);
 
 const fillSettings = _.debounce(
-	Meteor.bindEnvironment(() => {
+	async () => {
 		config.serverURL = settings.get('API_Wordpress_URL');
 		if (!config.serverURL) {
 			if (config.serverURL === undefined) {
@@ -74,7 +74,7 @@ const fillSettings = _.debounce(
 		if (Meteor.isServer) {
 			const enabled = settings.get('Accounts_OAuth_Wordpress');
 			if (enabled) {
-				ServiceConfiguration.configurations.upsert(
+				await ServiceConfiguration.configurations.upsertAsync(
 					{
 						service: 'wordpress',
 					},
@@ -83,14 +83,14 @@ const fillSettings = _.debounce(
 					},
 				);
 			} else {
-				ServiceConfiguration.configurations.remove({
+				await ServiceConfiguration.configurations.removeAsync({
 					service: 'wordpress',
 				});
 			}
 		}
 
 		return result;
-	}),
+	},
 	Meteor.isServer ? 1000 : 100,
 );
 
