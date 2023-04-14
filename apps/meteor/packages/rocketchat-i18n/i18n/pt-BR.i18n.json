@@ -2166,6 +2166,8 @@
   "How_responsive_was_the_chat_agent": "Quão responsivo foi o agente de conversa?",
   "How_satisfied_were_you_with_this_chat": "Ficou satisfeito com a conversa?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "O que fazer com sessões abertas quando o agente ficar offline",
+  "Http_timeout": "pausa HTTP (em milisegundos)",
+  "Http_timeout_value": "5000",
   "Icon": "Icone",
   "I_Saved_My_Password": "Eu salvei minha senha",
   "Idle_Time_Limit": "Limite de tempo de inatividade",
