@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async crowd_test_connection() {
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'crowd_test_connection',
@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 
 		try {
 			const crowd = new CROWD();
-			crowd.checkConnection();
+			await crowd.checkConnection();
 
 			return {
 				message: 'Connection_success' as const,
@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 		}
 	},
 	async crowd_sync_users() {
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');
 		}
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		try {
 			const crowd = new CROWD();
 			const startTime = Date.now();
-			crowd.sync();
+			await crowd.sync();
 			const stopTime = Date.now();
 			const actual = Math.ceil((stopTime - startTime) / 1000);
 

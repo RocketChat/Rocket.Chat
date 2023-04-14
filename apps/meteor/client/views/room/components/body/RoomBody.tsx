@@ -14,7 +14,7 @@ import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { ChatMessage, RoomRoles } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -40,13 +40,14 @@ import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword';
+import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
-import { useFileUploadDropTarget } from './useFileUploadDropTarget';
-import { useRetentionPolicy } from './useRetentionPolicy';
-import { useUnreadMessages } from './useUnreadMessages';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRetentionPolicy } from './hooks/useRetentionPolicy';
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
@@ -154,8 +155,8 @@ const RoomBody = (): ReactElement => {
 
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
-		const leaderRoomRole = roomRoles.findOne({
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
+		const leaderRoomRole = RoomRoles.findOne({
 			'rid': room._id,
 			'roles': 'leader',
 			'u._id': { $ne: user?._id },
@@ -537,6 +538,8 @@ const RoomBody = (): ReactElement => {
 		},
 		[toolbox],
 	);
+
+	useReadMessageWindowEvents();
 
 	return (
 		<>

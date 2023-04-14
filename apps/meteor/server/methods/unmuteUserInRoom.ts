@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
@@ -34,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -42,36 +43,42 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.MUTE, fromId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, fromId))) {
 			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
 				method: 'unmuteUserInRoom',
 				type: room.t,
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+			projection: { _id: 1 },
 		});
+
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'unmuteUserInRoom',
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
+		const unmutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+		if (!unmutedUser?.username) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to unmute', {
+				method: 'unmuteUserInRoom',
+			});
+		}
 
-		const fromUser = Users.findOneById(fromId);
+		const fromUser = await Users.findOneById(fromId);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'unmuteUserInRoom',
+			});
+		}
 
 		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
 
-		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
+		await Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
-		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('user-unmuted', data.rid, unmutedUser.username, fromUser);
 
 		Meteor.defer(function () {
 			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);

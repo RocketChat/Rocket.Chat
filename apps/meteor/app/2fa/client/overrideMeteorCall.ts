@@ -25,8 +25,8 @@ const callWithTotp =
 		});
 
 const callWithoutTotp = (methodName: string, args: unknown[], callback: Callback) => (): unknown =>
-	call(methodName, ...args, (error: unknown, result: unknown): void => {
-		process2faReturn({
+	call(methodName, ...args, async (error: unknown, result: unknown): Promise<void> => {
+		await process2faReturn({
 			error,
 			result,
 			onCode: callWithTotp(methodName, args, callback),

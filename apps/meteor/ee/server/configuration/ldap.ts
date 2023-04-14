@@ -11,9 +11,9 @@ import { callbacks } from '../../../lib/callbacks';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
-Meteor.startup(() =>
-	onLicense('ldap-enterprise', () => {
-		addSettings();
+Meteor.startup(async () => {
+	await onLicense('ldap-enterprise', async () => {
+		await addSettings();
 
 		// Configure background sync cronjob
 		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): () => void {
@@ -98,5 +98,5 @@ Meteor.startup(() =>
 			callbacks.priority.MEDIUM,
 			'advancedLDAPSync',
 		);
-	}),
-);
+	});
+});

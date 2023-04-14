@@ -4,9 +4,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
 import { useCallback } from 'react';
 
-import { ChatPermissions } from '../../../../../app/authorization/client/lib/ChatPermissions';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
-import { Roles } from '../../../../../app/models/client';
+import { ChatPermissions, Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 export const usePermissionsAndRoles = (

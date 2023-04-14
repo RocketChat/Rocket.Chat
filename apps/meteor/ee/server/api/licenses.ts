@@ -1,8 +1,7 @@
 import { check } from 'meteor/check';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
-import { Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import type { ILicense } from '../../app/license/definition/ILicense';
@@ -61,9 +60,9 @@ API.v1.addRoute(
 	'licenses.maxActiveUsers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const maxActiveUsers = getMaxActiveUsers() || null;
-			const activeUsers = Users.getActiveLocalUserCount();
+			const activeUsers = await Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
 		},

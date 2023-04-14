@@ -1,13 +1,13 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('General', function () {
-	this.section('Update', function () {
-		this.add('Update_LatestAvailableVersion', '0.0.0', {
+void settingsRegistry.addGroup('General', async function () {
+	await this.section('Update', async function () {
+		await this.add('Update_LatestAvailableVersion', '0.0.0', {
 			type: 'string',
 			readonly: true,
 		});
 
-		this.add('Update_EnableChecker', true, {
+		await this.add('Update_EnableChecker', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Register_Server',

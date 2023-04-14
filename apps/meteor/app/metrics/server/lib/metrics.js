@@ -207,3 +207,11 @@ metrics.meteorFacts = new client.Gauge({
 // Livechat metrics
 metrics.totalLivechatVisitors = new client.Gauge({ name: 'rocketchat_visitors_total', help: 'total of visitors' });
 metrics.totalLivechatAgents = new client.Gauge({ name: 'rocketchat_agents_total', help: 'total of agents' });
+metrics.totalLivechatWebhooksSuccess = new client.Counter({
+	name: 'rocketchat_livechat_webhooks_success',
+	help: 'successful livechat webhooks',
+});
+metrics.totalLivechatWebhooksFailures = new client.Counter({
+	name: 'rocketchat_livechat_webhooks_failures',
+	help: 'failed livechat webhooks',
+});

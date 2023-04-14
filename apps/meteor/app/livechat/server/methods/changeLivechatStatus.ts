@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { Livechat } from '../lib/Livechat';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import Users from '../../../models/server/models/Users';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -27,8 +27,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const agent = Users.findOneAgentById(agentId, {
-			fields: {
+		const agent = await Users.findOneAgentById(agentId, {
+			projection: {
 				status: 1,
 				statusLivechat: 1,
 			},
@@ -61,7 +61,7 @@ Meteor.methods<ServerMethods>({
 			return Livechat.setUserStatusLivechat(agentId, newStatus);
 		}
 
-		if (!Livechat.allowAgentChangeServiceStatus(newStatus, agentId)) {
+		if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
 			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', {
 				method: 'livechat:changeLivechatStatus',
 			});

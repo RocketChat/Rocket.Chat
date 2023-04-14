@@ -14,7 +14,7 @@ type AddUsersProps = {
 	onClickSave: () => Promise<void>;
 	users: Exclude<IUser['username'], undefined>[];
 	isRoomFederated: boolean;
-	onChange: (value: IUser['username'][], action?: string) => void;
+	onChange: (value: string | string[]) => void;
 };
 
 const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederated, onChange }: AddUsersProps): ReactElement => {

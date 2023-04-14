@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Subscriptions, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -41,8 +40,8 @@ export const findOrCreateInvite = async (userId, invite) => {
 		throw new Meteor.Error('not_authorized');
 	}
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, {
-		fields: { _id: 1 },
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, {
+		projection: { _id: 1 },
 	});
 	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', {
@@ -51,8 +50,15 @@ export const findOrCreateInvite = async (userId, invite) => {
 		});
 	}
 
-	const room = Rooms.findOneById(invite.rid);
-	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.INVITE, userId)) {
+	const room = await Rooms.findOneById(invite.rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', {
+			method: 'findOrCreateInvite',
+			field: 'rid',
+		});
+	}
+
+	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, userId))) {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', {
 			method: 'findOrCreateInvite',
 		});

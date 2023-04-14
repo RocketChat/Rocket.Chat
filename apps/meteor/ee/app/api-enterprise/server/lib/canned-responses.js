@@ -1,8 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, CannedResponse } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, CannedResponse, LivechatUnit } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import LivechatUnit from '../../../models/server/models/LivechatUnit';
 
 export async function findAllCannedResponses({ userId }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
@@ -43,7 +42,7 @@ export async function findAllCannedResponses({ userId }) {
 		},
 	).toArray();
 
-	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
 		...monitoredDepartments.map((department) => department._id),
@@ -83,7 +82,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 			},
 		).toArray();
 
-		const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+		const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
 		const combinedDepartments = [
 			...departments.map((department) => department.departmentId),
 			...monitoredDepartments.map((department) => department._id),
@@ -175,7 +174,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 		},
 	).toArray();
 
-	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
 		...monitoredDepartments.map((department) => department._id),

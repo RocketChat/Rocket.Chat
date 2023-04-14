@@ -1,5 +1,6 @@
-import type { IMessage, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatRooms, Messages } from '@rocket.chat/models';
+import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 export const removeSLAFromRooms = async (slaId: string) => {
 	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }).toArray();
@@ -44,5 +45,13 @@ export const addSlaChangeHistoryToRoom = async (
 	user: Pick<IUser, '_id' | 'name' | 'username'>,
 	sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
 ) => {
-	await Messages.createSLAHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], sla);
+	await Message.saveSystemMessage('omnichannel_sla_change_history', roomId, '', user, {
+		slaData: {
+			definedBy: {
+				_id: user._id,
+				username: user.username,
+			},
+			...(sla && { sla }),
+		},
+	});
 };
