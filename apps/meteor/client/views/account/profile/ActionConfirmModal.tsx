@@ -45,7 +45,7 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 			onCancel={onCancel}
 			variant='danger'
 			title={t('Delete_account?')}
-			confirmText={t('Delete')}
+			confirmText={t('Delete_account')}
 		>
 			<Box mb='x8'>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
 			<FieldGroup w='full'>
