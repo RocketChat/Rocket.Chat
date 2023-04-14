@@ -44,18 +44,15 @@ function getTimeout(timeout?: number) {
 	return { controller, timeoutId };
 }
 
-function stripTrailingSlash(str: string) {
-	return str.endsWith('/') ? str.slice(0, -1) : str;
-}
-
 export function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): ReturnType<typeof fetch> {
 	const agent = getFetchAgent(input, allowSelfSignedCerts);
 	const { controller, timeoutId } = getTimeout(options?.timeout);
 
+	// Keeping the URLSearchParams since it handles other cases and type conversions
 	const params = new URLSearchParams(options?.params);
-	const url = new URL(stripTrailingSlash(input));
+	const url = new URL(input);
 	if (params.toString()) {
-		Object.entries(url).forEach(([key, value]) => {
+		Object.entries(params).forEach(([key, value]) => {
 			if (value) {
 				url.searchParams.append(key, value);
 			}
