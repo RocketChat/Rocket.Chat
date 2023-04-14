@@ -3459,6 +3459,7 @@
   "Moderation_Delete_message": "Delete message",
   "Moderation_Dismiss_and_delete": "Dismiss and delete",
   "Moderation_Delete_this_message": "Delete this message",
+  "Moderation_Message_context_header": "Message(s) from __displayName__",
   "Monday": "Monday",
   "Mongo_storageEngine": "Mongo Storage Engine",
   "Mongo_version": "Mongo Version",

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
@@ -59,8 +60,31 @@ const UserMessages = ({
 		reload();
 	});
 
+	const username = useMemo(() => {
+		if (userMessages?.messages[0].message.u.username) {
+			return userMessages?.messages[0].message.u.username;
+		}
+		return '';
+	}, [userMessages?.messages]);
+
+	const name = useMemo(() => {
+		if (userMessages?.messages[0].message.u.name) {
+			return userMessages?.messages[0].message.u.name;
+		}
+		return '';
+	}, [userMessages?.messages]);
+
+	const displayName = useUserDisplayName({
+		name,
+		username,
+	});
+
 	return (
 		<>
+			<VerticalBar.Header>
+				<VerticalBar.Text>{t('Moderation_Message_context_header', { displayName })}</VerticalBar.Text>
+				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
+			</VerticalBar.Header>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
 					{t('Moderation_Duplicate_messages_warning')}

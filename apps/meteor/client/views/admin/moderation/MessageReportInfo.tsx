@@ -1,9 +1,10 @@
 import { Box, Message, MessageName, MessageUsername } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
+import VerticalBar from '../../../components/VerticalBar';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -13,6 +14,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reportsByMessage`);
+	const moderationRoute = useRoute('moderation-console');
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
@@ -57,6 +59,11 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 
 	return (
 		<>
+			<VerticalBar.Header>
+				<VerticalBar.Back onClick={() => window.history.go(-1)} />
+				<VerticalBar.Text>{t('Report')}</VerticalBar.Text>
+				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
+			</VerticalBar.Header>
 			{isSuccessReportsByMessage && reportsByMessage?.reports && (
 				<Box display='flex' flexDirection='column' width='full' height='full' overflowX='hidden' overflowY='auto'>
 					{reports.map((report) => (
