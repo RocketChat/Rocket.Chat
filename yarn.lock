@@ -7358,6 +7358,7 @@ __metadata:
     mongodb: ^4.12.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
+    node-abort-controller: ^3.1.1
     node-dogstatsd: ^0.0.7
     node-gcm: 1.0.5
     node-rsa: ^1.1.1
@@ -28467,6 +28468,13 @@ __metadata:
   dependencies:
     semver: ^7.3.5
   checksum: 3644dd51f4f189358ef56055407501aa698632d67448585b38c46c81a482a0c3bfb06da513ac4060a12ce5f607f208ba9d9c8280f1c38329670b709bd735fcae
+  languageName: node
+  linkType: hard
+
+"node-abort-controller@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "node-abort-controller@npm:3.1.1"
+  checksum: 2c340916af9710328b11c0828223fc65ba320e0d082214a211311bf64c2891028e42ef276b9799188c4ada9e6e1c54cf7a0b7c05dd9d59fcdc8cd633304c8047
   languageName: node
   linkType: hard
 
