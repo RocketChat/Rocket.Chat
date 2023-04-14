@@ -282,15 +282,15 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? Accounts.createUser({
+			? await Accounts.createUserAsync({
 					email: userData.emails[0],
 					password,
 			  })
-			: Accounts.createUser({
+			: await Accounts.createUserAsync({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,
-			  });
+			  } as any);
 
 		const user = await Users.findOneById(userId, {});
 		if (!user) {
