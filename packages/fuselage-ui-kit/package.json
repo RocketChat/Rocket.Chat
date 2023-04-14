@@ -85,6 +85,7 @@
     "typescript": "~5.0.4"
   },
   "dependencies": {
+    "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "next",
     "tslib": "^2.5.0"
   },

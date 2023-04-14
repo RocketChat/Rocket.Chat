@@ -99,7 +99,16 @@ module.exports = (env, argv) => [
 				{
 					enforce: 'pre',
 					test: /\.scss$/,
-					use: ['sass-loader'],
+					use: [
+						{
+							loader: 'sass-loader',
+							options: {
+								sassOptions: {
+									fiber: false,
+								},
+							},
+						},
+					],
 				},
 				{
 					test: /\.(woff2?|ttf|eot|jpe?g|png|webp|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
