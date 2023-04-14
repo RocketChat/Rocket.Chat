@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import type { IUser, DeepWritable } from '@rocket.chat/core-typings';
+import type { UpdateFilter } from 'mongodb';
 
 import { settings } from '../../../settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export const saveCustomFieldsWithoutValidation = async function (userId, formData) {
+export const saveCustomFieldsWithoutValidation = async function (userId: string, formData: Record<string, any>): Promise<void> {
 	if (trim(settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;
 		try {
@@ -13,7 +15,7 @@ export const saveCustomFieldsWithoutValidation = async function (userId, formDat
 			throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 		}
 
-		const customFields = {};
+		const customFields: Record<string, any> = {};
 		Object.keys(customFieldsMeta).forEach((key) => {
 			customFields[key] = formData[key];
 		});
@@ -28,7 +30,7 @@ export const saveCustomFieldsWithoutValidation = async function (userId, formDat
 			}
 
 			const { modifyRecordField } = customFieldsMeta[fieldName];
-			const update = {};
+			const update: DeepWritable<UpdateFilter<IUser>> = {};
 			if (modifyRecordField.array) {
 				update.$addToSet = {};
 				update.$addToSet[modifyRecordField.field] = customFields[fieldName];
@@ -37,7 +39,7 @@ export const saveCustomFieldsWithoutValidation = async function (userId, formDat
 				update.$set[modifyRecordField.field] = customFields[fieldName];
 			}
 
-			await Users.updateOne(userId, update);
+			await Users.updateOne({ _id: userId }, update);
 		}
 	}
 };

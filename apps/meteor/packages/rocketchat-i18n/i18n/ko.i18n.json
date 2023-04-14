@@ -1802,7 +1802,6 @@
   "Graphql_Enabled": "GraphQL 사용",
   "Graphql_Subscription_Port": "GraphQL 구독 포트",
   "Snippet_Messages": "미리 정의된 메시지",
-  "italic": "기울임체",
   "Group_by": "그룹",
   "Group_by_Type": "유형별 그룹화",
   "snippet-message": "미리 정의된 메시지",
