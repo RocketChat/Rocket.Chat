@@ -1,12 +1,14 @@
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import type { FormEventHandler, ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
-import { getURL } from '../../../app/utils/lib/getURL';
+import { getURL } from '../../../../app/utils/lib/getURL';
 import { getButtonStyle } from './getButtonStyle';
-import './textParsers';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -34,79 +36,101 @@ const focusableElementsStringInvalid = `
 	[tabindex]:not([tabindex="-1"]):invalid,
 	[contenteditable]:invalid`;
 
-function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
-	const id = `modal_id_${useUniqueId()}`;
-	const ref = useRef();
+type ModalBlockParams = {
+	view: IUIKitSurface & { showIcon?: boolean };
+	errors: any;
+	appId: string;
+	onSubmit: FormEventHandler<HTMLElement>;
+	onClose: () => void;
+	onCancel: FormEventHandler<HTMLElement>;
+};
 
-	// Auto focus
+const isFocusable = (element: Element | null): element is HTMLElement =>
+	element !== null && 'focus' in element && typeof element.focus === 'function';
+
+const KeyboardCode = new Map<string, number>([
+	['ENTER', 13],
+	['ESC', 27],
+	['TAB', 9],
+]);
+
+const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
+	const id = `modal_id_${useUniqueId()}`;
+	const ref = useRef<HTMLElement>(null);
+
 	useEffect(() => {
 		if (!ref.current) {
 			return;
 		}
 
 		if (errors && Object.keys(errors).length) {
-			const element = ref.current.querySelector(focusableElementsStringInvalid);
-			element && element.focus();
+			const element = ref.current.querySelector<HTMLElement>(focusableElementsStringInvalid);
+			element?.focus();
 		} else {
-			const element = ref.current.querySelector(focusableElementsString);
-			element && element.focus();
+			const element = ref.current.querySelector<HTMLElement>(focusableElementsString);
+			element?.focus();
 		}
 	}, [errors]);
-	// save focus to restore after close
+
 	const previousFocus = useMemo(() => document.activeElement, []);
-	// restore the focus after the component unmount
-	useEffect(() => () => previousFocus && previousFocus.focus(), [previousFocus]);
-	// Handle Tab, Shift + Tab, Enter and Escape
+
+	useEffect(
+		() => () => {
+			if (previousFocus && isFocusable(previousFocus)) {
+				return previousFocus.focus();
+			}
+		},
+		[previousFocus],
+	);
+
 	const handleKeyDown = useCallback(
 		(event) => {
-			if (event.keyCode === 13) {
-				// ENTER
-				if (event?.target?.nodeName !== 'TEXTAREA') {
-					return onSubmit(event);
-				}
-			}
+			switch (event.keyCode) {
+				case KeyboardCode.get('ENTER'):
+					if (event?.target?.nodeName !== 'TEXTAREA') {
+						return onSubmit(event);
+					}
+					return;
+				case KeyboardCode.get('ESC'):
+					event.stopPropagation();
+					event.preventDefault();
+					onClose();
+					return;
+				case KeyboardCode.get('TAB'):
+					if (!ref.current) {
+						return;
+					}
+					const elements = Array.from(ref.current.querySelectorAll(focusableElementsString)) as HTMLElement[];
+					const [first] = elements;
+					const last = elements.pop();
 
-			if (event.keyCode === 27) {
-				// ESC
-				event.stopPropagation();
-				event.preventDefault();
-				onClose();
-				return false;
-			}
+					if (!ref.current.contains(document.activeElement)) {
+						return first.focus();
+					}
 
-			if (event.keyCode === 9) {
-				// TAB
-				const elements = Array.from(ref.current.querySelectorAll(focusableElementsString));
-				const [first] = elements;
-				const last = elements.pop();
+					if (event.shiftKey) {
+						if (!first || first === document.activeElement) {
+							last?.focus();
+							event.stopPropagation();
+							event.preventDefault();
+						}
+						return;
+					}
 
-				if (!ref.current.contains(document.activeElement)) {
-					return first.focus();
-				}
-
-				if (event.shiftKey) {
-					if (!first || first === document.activeElement) {
-						last.focus();
+					if (!last || last === document.activeElement) {
+						first.focus();
 						event.stopPropagation();
 						event.preventDefault();
 					}
-					return;
-				}
-
-				if (!last || last === document.activeElement) {
-					first.focus();
-					event.stopPropagation();
-					event.preventDefault();
-				}
 			}
 		},
 		[onClose, onSubmit],
 	);
-	// Clean the events
+
 	useEffect(() => {
-		const element = document.querySelector('#modal-root');
-		const container = element.querySelector('.rcx-modal__content');
-		const close = (e) => {
+		const element = document.querySelector('#modal-root') as HTMLElement;
+		const container = element.querySelector('.rcx-modal__content') as HTMLElement;
+		const close = (e: Event) => {
 			if (e.target !== element) {
 				return;
 			}
@@ -116,17 +140,21 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 			return false;
 		};
 
-		const ignoreIfnotContains = (e) => {
-			if (!container.contains(e.target)) {
+		const ignoreIfNotContains = (e: Event) => {
+			if (e.target !== element) {
+				return;
+			}
+
+			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
 			return handleKeyDown(e);
 		};
 
-		document.addEventListener('keydown', ignoreIfnotContains);
+		document.addEventListener('keydown', ignoreIfNotContains);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', ignoreIfnotContains);
+			document.removeEventListener('keydown', ignoreIfNotContains);
 			element.removeEventListener('click', close);
 		};
 	}, [handleKeyDown, onClose]);
@@ -142,7 +170,7 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 					</Modal.Header>
 					<Modal.Content>
 						<Box is='form' method='post' action='#' onSubmit={onSubmit}>
-							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
+							<UiKitComponent render={UiKitModal} blocks={view.blocks as LayoutBlock[]} />
 						</Box>
 					</Modal.Content>
 					<Modal.Footer>
@@ -163,7 +191,6 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 			</FocusScope>
 		</AnimatedVisibility>
 	);
-}
+};
 
 export default ModalBlock;
-export { modalParser };
