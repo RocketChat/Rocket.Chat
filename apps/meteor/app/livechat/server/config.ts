@@ -360,6 +360,14 @@ onStartup(async () => {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_http_timeout', 5000, {
+			type: 'int',
+			group: 'Omnichannel',
+			section: 'CRM_Integration',
+			i18nLabel: 'Livechat_http_timeout',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_Visitor_navigation_as_a_message', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
