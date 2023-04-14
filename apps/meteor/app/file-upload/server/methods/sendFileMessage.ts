@@ -62,7 +62,7 @@ export const parseFileIntoMessageAttachments = async (
 			const thumbResult = await FileUpload.createImageThumbnail(file);
 			if (thumbResult) {
 				const { data: thumbBuffer, width, height } = thumbResult;
-				const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
+				const thumbnail = await FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
 				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;

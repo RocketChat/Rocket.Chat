@@ -15,7 +15,7 @@ const isCredentialWithError = (credential: any): credential is { error: Error } 
 };
 
 Accounts.registerLoginHandler('totp', function (options) {
-	if (!options.totp || !options.totp.code) {
+	if (!options.totp?.code) {
 		return;
 	}
 

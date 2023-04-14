@@ -67,7 +67,7 @@ async function findChannelByIdOrName({
 		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
 		room.lastMessage = lastMessage;
 	}
 
@@ -291,7 +291,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -955,7 +955,12 @@ API.v1.addRoute(
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('c', rids, {
@@ -1370,7 +1375,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId || ''),
+				messages: await normalizeMessagesForUser(messages, this.userId || ''),
 				count: messages.length,
 				offset,
 				total,

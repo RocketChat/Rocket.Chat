@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import { ChatMessage, Rooms } from '../../../models/client';
+import { ChatMessage, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
-		const user = (await Meteor.userAsync()) as IUser | null;
+		const user = Meteor.user() as IUser | null;
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}
@@ -28,7 +28,7 @@ Meteor.methods<ServerMethods>({
 		message.u = {
 			_id: uid,
 			username: user.username,
-			...(settings.get('UI_Use_Real_Name') && user.name && { name: user.name }),
+			name: user.name || '',
 		};
 		message.temp = true;
 		if (settings.get('Message_Read_Receipt_Enabled')) {
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const federated = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
+		const federated = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
 		if (federated) {
 			return;
 		}
