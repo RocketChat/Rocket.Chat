@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import type { IUser } from "@rocket.chat/core-typings";
 import { password } from "../user";
 import { createUser, login } from "../users.helper";
