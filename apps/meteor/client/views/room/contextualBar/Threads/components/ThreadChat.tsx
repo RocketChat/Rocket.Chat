@@ -114,7 +114,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 								id={sendToChannelID}
 								checked={sendToChannel}
 								onChange={() => setSendToChannel((checked) => !checked)}
-								role='checkbox'
 								name='alsoSendThreadToChannel'
 							/>
 							<Field.Label htmlFor={sendToChannelID} color='annotation' fontScale='p2'>

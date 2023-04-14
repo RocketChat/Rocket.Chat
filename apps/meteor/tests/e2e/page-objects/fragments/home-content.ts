@@ -236,7 +236,7 @@ export class HomeContent {
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.locator('role=checkbox >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
+		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get takeOmnichannelChatButton(): Locator {
