@@ -60,7 +60,7 @@ const ContextMessage = ({
 							{formatTime(message._updatedAt !== message.ts ? message._updatedAt : message.ts)}
 							{message._updatedAt !== message.ts && ` (${t('edited')})`}
 						</Message.Timestamp>
-						<Message.Role>{room.name || room.fname}</Message.Role>
+						<Message.Role>{room.name || room.fname || 'DM'}</Message.Role>
 					</Message.Header>
 					<Message.Body>
 						{!message.blocks?.length && !!message.md?.length ? (

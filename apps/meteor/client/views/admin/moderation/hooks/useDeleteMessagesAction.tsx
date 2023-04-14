@@ -1,4 +1,4 @@
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 
@@ -9,6 +9,7 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteMessageHistory');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+	const moderationRoute = useRoute('moderation-console');
 
 	const handleDeleteMessages = useMutation({
 		mutationFn: deleteMessages,
@@ -25,6 +26,7 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 		onChange();
 		onReload();
 		setModal();
+		moderationRoute.push({});
 	};
 
 	const confirmDeletMessages = (): void => {

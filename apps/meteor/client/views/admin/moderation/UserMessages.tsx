@@ -61,23 +61,24 @@ const UserMessages = ({
 	});
 
 	const username = useMemo(() => {
-		if (userMessages?.messages[0].message.u.username) {
+		if (userMessages?.messages[0]?.message?.u?.username) {
 			return userMessages?.messages[0].message.u.username;
 		}
 		return '';
 	}, [userMessages?.messages]);
 
 	const name = useMemo(() => {
-		if (userMessages?.messages[0].message.u.name) {
+		if (userMessages?.messages[0]?.message?.u?.name) {
 			return userMessages?.messages[0].message.u.name;
 		}
 		return '';
 	}, [userMessages?.messages]);
 
-	const displayName = useUserDisplayName({
-		name,
-		username,
-	});
+	const displayName =
+		useUserDisplayName({
+			name,
+			username,
+		}) || userId;
 
 	return (
 		<>
@@ -86,9 +87,11 @@ const UserMessages = ({
 				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 			</VerticalBar.Header>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
-					{t('Moderation_Duplicate_messages_warning')}
-				</Callout>{' '}
+				{isSuccessUserMessages && userMessages.messages.length > 0 && (
+					<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
+						{t('Moderation_Duplicate_messages_warning')}
+					</Callout>
+				)}{' '}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 				{isSuccessUserMessages &&
 					userMessages.messages.length > 0 &&
@@ -112,7 +115,9 @@ const UserMessages = ({
 				)}
 			</Box>
 			<VerticalBar.Footer display='flex'>
-				<MessageContextFooter userId={userId} onChange={handleChange} onReload={reload} />
+				{isSuccessUserMessages && userMessages.messages.length > 0 && (
+					<MessageContextFooter userId={userId} onChange={handleChange} onReload={reload} />
+				)}
 			</VerticalBar.Footer>
 		</>
 	);
