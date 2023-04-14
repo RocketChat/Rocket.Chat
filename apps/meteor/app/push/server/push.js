@@ -112,9 +112,6 @@ class PushClass {
 				token,
 				options: notification,
 			},
-			headers: {
-				'Content-Type': 'application/json',
-			},
 		};
 
 		if (token && this.options.getAuthorization) {

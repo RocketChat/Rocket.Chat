@@ -23,8 +23,7 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 			await fetch(`${npsUrl}/v1/surveys/${npsId}/results`, {
 				method: 'POST',
 				headers: {
-					'Authorization': `Bearer ${token}`,
-					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
 				},
 				body: data,
 			})

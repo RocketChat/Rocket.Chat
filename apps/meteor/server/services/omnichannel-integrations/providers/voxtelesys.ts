@@ -133,8 +133,7 @@ export class Voxtelesys implements ISMSProvider {
 
 		const options = {
 			headers: {
-				'Authorization': `Bearer ${this.authToken}`,
-				'Content-Type': 'application/json',
+				Authorization: `Bearer ${this.authToken}`,
 			},
 			body: {
 				to: [toNumber],

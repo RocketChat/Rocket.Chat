@@ -52,7 +52,7 @@ export function serverFetch(input: string, options?: ExtendedFetchOptions, allow
 	const params = new URLSearchParams(options?.params);
 	const url = new URL(input);
 	if (params.toString()) {
-		Object.entries(params).forEach(([key, value]) => {
+		params.forEach((value, key) => {
 			if (value) {
 				url.searchParams.append(key, value);
 			}

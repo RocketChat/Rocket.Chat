@@ -36,10 +36,15 @@ const urlencodedParser = (options: ExtendedFetchOptions) => {
 	return options as FetchOptions;
 };
 
-const parsers: Record<string, (...args: any[]) => FetchOptions> = {
-	'application/x-www-form-urlencoded': urlencodedParser,
-	'application/json': jsonParser,
-	'default': jsonParser,
+const getParser = (contentTypeHeader?: string): ((options: ExtendedFetchOptions) => FetchOptions) => {
+	switch (contentTypeHeader) {
+		case 'application/json':
+			return jsonParser;
+		case 'application/x-www-form-urlencoded':
+			return urlencodedParser;
+		default:
+			return (options: ExtendedFetchOptions) => options as FetchOptions;
+	}
 };
 
 export function parseRequestOptions(options?: ExtendedFetchOptions): OriginalFetchOptions {
@@ -51,5 +56,5 @@ export function parseRequestOptions(options?: ExtendedFetchOptions): OriginalFet
 
 	const contentTypeHeader = headers['Content-Type'] || headers['content-type'];
 
-	return parsers[contentTypeHeader?.toLowerCase() ?? 'default'](options);
+	return getParser(contentTypeHeader?.toLowerCase())(options);
 }

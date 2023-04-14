@@ -15,12 +15,8 @@ async function generateStatistics(logger) {
 	}
 
 	try {
-		const headers = { 'Content-Type': 'application/json' };
 		const token = await getWorkspaceAccessToken();
-
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		}
+		const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
 
 		await fetch('https://collector.rocket.chat/', {
 			method: 'POST',

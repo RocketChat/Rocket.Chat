@@ -60,5 +60,5 @@ export async function federationRequestToPeer(method, peerDomain, uri, body, opt
 		}
 	}
 
-	return { success: true, data: result.data };
+	return { success: true, data: result };
 }

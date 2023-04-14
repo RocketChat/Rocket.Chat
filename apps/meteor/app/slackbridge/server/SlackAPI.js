@@ -1,11 +1,5 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-const defaultFetchOptions = {
-	headers: {
-		'Content-Type': 'application/json',
-	},
-};
-
 export class SlackAPI {
 	constructor(apiToken) {
 		this.apiToken = apiToken;
@@ -103,7 +97,6 @@ export class SlackAPI {
 		const request = await fetch('https://slack.com/api/reactions.add', {
 			method: 'POST',
 			body: data,
-			...defaultFetchOptions,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -113,7 +106,6 @@ export class SlackAPI {
 		const request = await fetch('https://slack.com/api/reactions.remove', {
 			method: 'POST',
 			body: data,
-			...defaultFetchOptions,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -123,7 +115,6 @@ export class SlackAPI {
 		const request = await fetch('https://slack.com/api/chat.delete', {
 			method: 'POST',
 			body: data,
-			...defaultFetchOptions,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -133,7 +124,6 @@ export class SlackAPI {
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
 			method: 'POST',
 			body: data,
-			...defaultFetchOptions,
 		});
 		return request.json();
 	}
@@ -142,7 +132,6 @@ export class SlackAPI {
 		const request = await fetch('https://slack.com/api/chat.update', {
 			method: 'POST',
 			body: data,
-			...defaultFetchOptions,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
