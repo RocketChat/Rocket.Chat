@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DiscussionMessage from './DiscussionMessage';
+import DiscussionMessage from './DiscussionsListItem';
 
 const message = {
 	msg: 'hello world',
