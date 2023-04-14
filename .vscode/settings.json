@@ -20,7 +20,8 @@
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
-    "fname",
+		"fname",
+		"Gazzodown",
 		"katex",
 		"listbox",
 		"livechat",
@@ -29,6 +30,6 @@
 		"photoswipe",
 		"searchbox",
 		"tmid",
-    "tshow"
+		"tshow"
 	]
 }
