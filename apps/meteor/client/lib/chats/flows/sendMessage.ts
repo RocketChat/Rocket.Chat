@@ -10,7 +10,7 @@ import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
-const process = async (chat: ChatAPI, message: IMessage): Promise<void> => {
+const process = async (chat: ChatAPI, message: IMessage, userId: string | null): Promise<void> => {
 	KonchatNotification.removeRoomNotification(message.rid);
 
 	if (await processSetReaction(chat, message)) {
@@ -25,14 +25,17 @@ const process = async (chat: ChatAPI, message: IMessage): Promise<void> => {
 		return;
 	}
 
-	if (await processSlashCommand(chat, message)) {
+	if (await processSlashCommand(chat, message, userId)) {
 		return;
 	}
 
 	await call('sendMessage', message);
 };
 
-export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }): Promise<boolean> => {
+export const sendMessage = async (
+	chat: ChatAPI,
+	{ text, tshow, userId }: { text: string; tshow?: boolean; userId: string | null },
+): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
 			await chat.data.joinRoom();
@@ -59,7 +62,7 @@ export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string
 		});
 
 		try {
-			await process(chat, message);
+			await process(chat, message, userId);
 			chat.composer?.dismissAllQuotedMessages();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
