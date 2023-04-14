@@ -1,15 +1,19 @@
+import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { clickableItem } from '../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
-import DiscussionListMessage from './components/DiscussionMessage';
-import { mapProps } from './mapProps';
+import DiscussionListMessage from './components/DiscussionsListItem';
 
-const Discussion = memo(mapProps(clickableItem(DiscussionListMessage)));
+type DiscussionListRowProps = {
+	discussion: IDiscussionMessage;
+	showRealNames: boolean;
+	userId: IUser['_id'];
+	onClick: (e: unknown) => void;
+};
 
-const Row = memo(function Row({ discussion, showRealNames, userId, onClick }) {
+function DiscussionListRow({ discussion, showRealNames, userId, onClick }: DiscussionListRowProps) {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
@@ -18,13 +22,13 @@ const Row = memo(function Row({ discussion, showRealNames, userId, onClick }) {
 	const { name = discussion.u.username } = discussion.u;
 
 	return (
-		<Discussion
+		<DiscussionListMessage
 			replies={discussion.replies}
 			dcount={discussion.dcount}
 			dlm={discussion.dlm}
 			name={showRealNames ? name : discussion.u.username}
 			username={discussion.u.username}
-			following={discussion.replies && discussion.replies.includes(userId)}
+			following={discussion.replies?.includes(userId)}
 			data-drid={discussion.drid}
 			ts={discussion.ts}
 			msg={msg}
@@ -33,6 +37,6 @@ const Row = memo(function Row({ discussion, showRealNames, userId, onClick }) {
 			onClick={onClick}
 		/>
 	);
-});
+}
 
-export default Row;
+export default memo(DiscussionListRow);
