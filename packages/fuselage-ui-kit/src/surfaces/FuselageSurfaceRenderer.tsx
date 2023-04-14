@@ -18,7 +18,7 @@ import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 
-type FuselageSurfaceRendererProps = ConstructorParameters<
+export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
