@@ -7,14 +7,10 @@ import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPe
 import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 import { RealAppBridges } from './bridges';
-========
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -49,17 +45,11 @@ export class AppServerOrchestrator {
 		this.developmentMode = false;
 		this.frameworkEnabled = true;
 
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 		this._marketplaceUrl = marketplaceUrl;
 
 		this._model = AppsModel;
 		this._logModel = AppsLogsModel;
 		this._persistModel = AppsPersistenceModel;
-========
-		this._model = AppsModel;
-		this._logModel = new AppsLogsModel();
-		this._persistModel = new AppsPersistenceModel();
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath, this.db);
@@ -83,14 +73,6 @@ export class AppServerOrchestrator {
 			sourceStorage: this._appSourceStorage,
 		});
 
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
-========
-		this._communicators = new Map();
-		this._communicators.set('notifier', new AppServerNotifier(this));
-		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
-		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
-
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 		this._isInitialized = true;
 	}
 
@@ -141,23 +123,16 @@ export class AppServerOrchestrator {
 		return this._isInitialized;
 	}
 
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 	isEnabled() {
 		return this.frameworkEnabled;
 	}
 
-========
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
 	}
 
 	isDebugging() {
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
-		return this.developmentMode && !isTesting();
-========
 		return !isTesting();
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 	}
 
 	/**
@@ -265,8 +240,6 @@ export class AppServerOrchestrator {
 }
 
 export const AppEvents = AppInterface;
-<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
-========
 export const Apps = new AppServerOrchestrator();
 
 settingsRegistry.addGroup('General', function () {
@@ -364,4 +337,3 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	model.resetTTLIndex(expireAfterSeconds);
 });
->>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
