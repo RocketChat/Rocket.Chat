@@ -40,11 +40,11 @@ export const useUserInfoActions = (
 			...(changeOwnerOption && { changeOwner: changeOwnerOption }),
 			...(changeLeaderOption && { changeLeader: changeLeaderOption }),
 			...(changeModeratorOption && { changeModerator: changeModeratorOption }),
+			...(openModerationConsoleOption && { openModerationConsole: openModerationConsoleOption }),
 			...(ignoreUserOption && { ignoreUser: ignoreUserOption }),
 			...(muteUserOption && { muteUser: muteUserOption }),
 			...(blockUserOption && { toggleBlock: blockUserOption }),
 			...(removeUserOption && { removeUser: removeUserOption }),
-			...(openModerationConsoleOption && { openModerationConsole: openModerationConsoleOption }),
 		}),
 		[
 			openDirectMessageOption,

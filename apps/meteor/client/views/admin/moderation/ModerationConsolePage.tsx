@@ -23,7 +23,8 @@ const ModerationConsolePage = () => {
 	const handleRedirect = async (mid: string) => {
 		try {
 			const permalink = await MessageAction.getPermaLink(mid);
-			window.open(permalink, '_blank', 'noreferrer,noopener');
+			// open the permalink in same tab
+			window.open(permalink, '_self');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
