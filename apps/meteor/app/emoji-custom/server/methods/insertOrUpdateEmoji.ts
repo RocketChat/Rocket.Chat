@@ -38,7 +38,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		emojiData.name = limax(emojiData.name, { replacement: '_' });
-		emojiData.aliases = limax(emojiData.aliases, { replacement: '_' });
 
 		// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 		// more practical than allowing specific sets of characters; also allows foreign languages
@@ -66,7 +65,7 @@ Meteor.methods<ServerMethods>({
 					field: 'Alias_Set',
 				});
 			}
-			aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean), emojiData.name);
+			aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean).map(a => limax(a, { replacement: '_' })), emojiData.name);
 		}
 
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
