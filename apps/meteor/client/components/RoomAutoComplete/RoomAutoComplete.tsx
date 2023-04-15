@@ -14,13 +14,9 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> & {
-	value: T;
-	onChange: (value: TemplateStringsArray) => void;
-};
+type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
-/* @deprecated */
-const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
+const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
@@ -38,18 +34,19 @@ const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => 
 				  }))
 				: [],
 		[result.data?.items, result.isSuccess],
-	) as unknown as { value: string; label: string }[];
+	);
 
 	return (
 		<AutoComplete
-			value={props.value as any}
-			onChange={props.onChange as any}
+			{...props}
+			value={value}
+			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }): ReactElement => (
+			renderSelected={({ selected: { value, label } }): ReactElement => (
 				<>
 					<Box margin='none' mi='x2'>
-						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
+						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
 					</Box>
 					<Box margin='none' mi='x2'>
 						{label?.name}

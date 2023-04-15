@@ -53,13 +53,10 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			messageList.remove(mid);
 		});
 
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-			`${rid}/deleteMessageBulk`,
-			(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-				const matchDeleteCriteria = createDeleteCriteria(params);
-				messageList.prune(matchDeleteCriteria);
-			},
-		);
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
+			const matchDeleteCriteria = createDeleteCriteria(params);
+			messageList.prune(matchDeleteCriteria);
+		});
 
 		return (): void => {
 			unsubscribeFromRoomMessages();

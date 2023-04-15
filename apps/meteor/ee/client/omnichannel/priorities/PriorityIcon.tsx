@@ -13,7 +13,7 @@ type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 	showUnprioritized?: boolean;
 };
 
-export const PRIORITY_ICONS: Record<number, { iconName: Keys; color: string }> = {
+const PRIORITY_ICONS: Record<number, { iconName: Keys; color: string }> = {
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
 		color: Palette.badge['badge-background-level-4'].toString(),
@@ -61,5 +61,3 @@ export const PriorityIcon = ({ level, size = 20, showUnprioritized = false, ...p
 
 	return iconName ? <Icon {...props} name={iconName} color={color} size={size} title={name} /> : null;
 };
-
-export default PriorityIcon;

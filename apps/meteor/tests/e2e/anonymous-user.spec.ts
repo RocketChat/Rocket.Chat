@@ -39,7 +39,6 @@ test.describe('anonymous-user', () => {
 		await expect(poRegistration.username).toBeVisible();
 		await poRegistration.username.type(faker.internet.userName());
 
-		await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
 		await poRegistration.btnRegisterConfirmUsername.click();
 
 		await poHomeChannel.content.sendMessage('hello world');

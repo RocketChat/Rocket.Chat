@@ -12,54 +12,46 @@ describe('LIVECHAT - triggers', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('livechat/triggers', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/triggers')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
-			});
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+			await request.get(api('livechat/triggers')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an array of triggers', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createTrigger(`test${Date.now()}`))
-				.then(() => {
-					request
-						.get(api('livechat/triggers'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.triggers).to.be.an('array');
-							expect(res.body).to.have.property('count').to.be.greaterThan(0);
-							expect(res.body.triggers[0]).to.have.property('_id');
-							expect(res.body.triggers[0]).to.have.property('name');
-							expect(res.body.triggers[0]).to.have.property('description');
-							expect(res.body.triggers[0]).to.have.property('enabled', true);
-							expect(res.body.triggers[0]).to.have.property('runOnce').that.is.a('boolean');
-							expect(res.body.triggers[0]).to.have.property('conditions').that.is.an('array').with.lengthOf.greaterThan(0);
-							expect(res.body.triggers[0]).to.have.property('actions').that.is.an('array').with.lengthOf.greaterThan(0);
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
+
+		it('should return an array of triggers', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await createTrigger(`test${Date.now()}`);
+			await request
+				.get(api('livechat/triggers'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.triggers).to.be.an('array');
+					expect(res.body).to.have.property('count').to.be.greaterThan(0);
+					expect(res.body.triggers[0]).to.have.property('_id');
+					expect(res.body.triggers[0]).to.have.property('name');
+					expect(res.body.triggers[0]).to.have.property('description');
+					expect(res.body.triggers[0]).to.have.property('enabled', true);
+					expect(res.body.triggers[0]).to.have.property('runOnce').that.is.a('boolean');
+					expect(res.body.triggers[0]).to.have.property('conditions').that.is.an('array').with.lengthOf.greaterThan(0);
+					expect(res.body.triggers[0]).to.have.property('actions').that.is.an('array').with.lengthOf.greaterThan(0);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
 				});
 		});
 	});
 
 	describe('livechat/triggers/:id', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/triggers/invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(() => updatePermission('view-livechat-manager', ['admin']).then(done));
-			});
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+			await request.get(api('livechat/triggers/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			await updatePermission('view-livechat-manager', ['admin']);
 		});
 		it('should return null when trigger does not exist', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);

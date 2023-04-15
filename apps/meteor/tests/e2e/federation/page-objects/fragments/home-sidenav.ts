@@ -58,12 +58,12 @@ export class FederationSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
-		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().waitFor();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').focus();
+		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).first().waitFor();
 		await this.page.waitForTimeout(2000);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).first().click();
 	}
 
 	async countFilteredChannelsOnDirectory(name: string): Promise<number> {
@@ -77,28 +77,29 @@ export class FederationSidenav {
 	}
 
 	async openChatWhenHaveMultipleWithTheSameName(name: string, item: number): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
-		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').focus();
+		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.waitForTimeout(2000);
-		await this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).nth(item).click({ force: true });
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).nth(item).click({ force: true });
 	}
 
 	async countRoomsByNameOnSearch(name: string): Promise<number> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
-		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').focus();
+		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).waitFor();
 		await this.page.waitForTimeout(2000);
-
-		return this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).count();
+		
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).count();
 	}
 
 	async openDMMultipleChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
-		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
-		await this.page.waitForTimeout(2000);
-		await this.page.locator('[data-qa="sidebar-item-title"]').nth(1).click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').focus();
+		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).waitFor();
+		await this.page.locator(`.rcx-sidebar-item`).nth(1).click({ force: true });
 	}
 
 	async createPublicChannel(name: string) {

@@ -13,8 +13,6 @@ import { useGetMessageByID } from './useGetMessageByID';
 
 type RoomMessagesRidEvent = IMessage;
 
-type NotifyRoomRidDeleteMessageEvent = { _id: IMessage['_id'] };
-
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
@@ -50,20 +48,14 @@ const useSubscribeToMessage = () => {
 				if (message._id === event._id) onMutate?.(event);
 			});
 
-			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessage`,
-				(event: NotifyRoomRidDeleteMessageEvent) => {
-					if (message._id === event._id) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${message.rid}/deleteMessage`, (event) => {
+				if (message._id === event._id) onDelete?.();
+			});
 
-			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessageBulk`,
-				(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-					const matchDeleteCriteria = createDeleteCriteria(params);
-					if (matchDeleteCriteria(message)) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${message.rid}/deleteMessageBulk`, (params) => {
+				const matchDeleteCriteria = createDeleteCriteria(params);
+				if (matchDeleteCriteria(message)) onDelete?.();
+			});
 
 			return () => {
 				unsubscribeFromRoomMessages();
@@ -93,27 +85,31 @@ export const useThreadMainMessageQuery = (
 		};
 	}, []);
 
-	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const message = await getMessage(tmid);
+	return useQuery(
+		['rooms', room._id, 'threads', tmid, 'main-message'] as const,
+		async ({ queryKey }) => {
+			const message = await getMessage(tmid);
 
-		const mainMessage = (await onClientMessageReceived(message)) || message;
+			const mainMessage = (await onClientMessageReceived(message)) || message;
 
-		if (!mainMessage && !isThreadMainMessage(mainMessage)) {
-			throw new Error('Invalid main message');
-		}
+			if (!mainMessage && !isThreadMainMessage(mainMessage)) {
+				throw new Error('Invalid main message');
+			}
 
-		unsubscribeRef.current?.();
+			unsubscribeRef.current?.();
 
-		unsubscribeRef.current = subscribeToMessage(mainMessage, {
-			onMutate: () => {
-				queryClient.invalidateQueries(queryKey, { exact: true });
-			},
-			onDelete: () => {
-				onDelete?.();
-				queryClient.invalidateQueries(queryKey, { exact: true });
-			},
-		});
+			unsubscribeRef.current = subscribeToMessage(mainMessage, {
+				onMutate: () => {
+					queryClient.invalidateQueries(queryKey, { exact: true });
+				},
+				onDelete: () => {
+					onDelete?.();
+					queryClient.invalidateQueries(queryKey, { exact: true });
+				},
+			});
 
-		return mainMessage;
-	});
+			return mainMessage;
+		},
+		{ refetchOnWindowFocus: false },
+	);
 };

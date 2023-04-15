@@ -32,7 +32,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await mkdir(exportPath, { recursive: true });
 	await mkdir(assetsPath, { recursive: true });
 
-	const roomData = getRoomData(data.rid);
+	const roomData = await getRoomData(data.rid);
 
 	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${data.format}`;
 
@@ -79,5 +79,5 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 		download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 	});
 
-	sendEmail(user, subject, body);
+	await sendEmail(user, subject, body);
 };

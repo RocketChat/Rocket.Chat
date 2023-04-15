@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Users, LivechatRooms, Subscriptions as SubscriptionRaw } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
@@ -34,7 +35,14 @@ type LivechatCloseRoomOptions = Omit<CloseRoomOptions, 'generateTranscriptPdf'> 
 	};
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
 		methodDeprecationLogger.warn(
 			'livechat:closeRoom is deprecated and will be removed in next major version. Use /api/v1/livechat/room.closeByUser API instead.',

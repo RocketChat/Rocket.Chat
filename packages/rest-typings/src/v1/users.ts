@@ -2,6 +2,7 @@ import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToke
 import Ajv from 'ajv';
 
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
+import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
 import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
@@ -252,7 +253,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.createToken': {
-		POST: () => {
+		POST: (params: { userId?: string; username?: string; user?: string }) => {
 			data: {
 				userId: string;
 				authToken: string;
@@ -262,6 +263,12 @@ export type UsersEndpoints = {
 
 	'/v1/users.create': {
 		POST: (params: UserCreateParamsPOST) => {
+			user: IUser;
+		};
+	};
+
+	'/v1/users.update': {
+		POST: (params: UsersUpdateParamsPOST) => {
 			user: IUser;
 		};
 	};
@@ -291,21 +298,21 @@ export type UsersEndpoints = {
 						user: string;
 				  },
 		) => {
-			presence: 'online' | 'offline' | 'away' | 'busy';
+			presence: UserStatus;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 			lastLogin?: string;
 		};
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus }) => void;
+		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
 	};
 
 	'/v1/users.getStatus': {
 		GET: () => {
 			status: 'online' | 'offline' | 'away' | 'busy';
 			message?: string;
-			_id: string;
+			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 		};
 	};
@@ -336,6 +343,31 @@ export type UsersEndpoints = {
 
 	'/v1/users.delete': {
 		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
+	};
+
+	'/v1/users.getAvatar': {
+		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+	};
+
+	'/v1/users.updateOwnBasicInfo': {
+		POST: (params: {
+			data: {
+				email?: string;
+				name?: string;
+				username?: string;
+				nickname?: string;
+				statusText?: string;
+				newPassword?: string;
+				currentPassword?: string;
+			};
+			customFields?: Record<string, unknown>;
+		}) => {
+			user: IUser;
+		};
+	};
+
+	'/v1/users.deleteOwnAccount': {
+		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
 };
 

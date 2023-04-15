@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Livechat } from '../Livechat';
 import { settings } from '../../../../settings/server';
 import { Logger } from '../../../../logger/server';
@@ -63,13 +61,13 @@ export const onlineAgents = {
 		return this.users.has(userId);
 	},
 
-	runAgentLeaveAction: Meteor.bindEnvironment((userId: string) => {
+	runAgentLeaveAction: async (userId: string) => {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
 		try {
 			if (action === 'close') {
-				return Promise.await(Livechat.closeOpenChats(userId, comment));
+				return Livechat.closeOpenChats(userId, comment);
 			}
 
 			if (action === 'forward') {
@@ -81,5 +79,5 @@ export const onlineAgents = {
 				err: e,
 			});
 		}
-	}),
+	},
 };

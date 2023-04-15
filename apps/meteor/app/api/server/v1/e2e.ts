@@ -16,11 +16,11 @@ API.v1.addRoute(
 		authRequired: true,
 	},
 	{
-		get() {
+		async get() {
 			const result: {
 				public_key: string;
 				private_key: string;
-			} = Meteor.call('e2e.fetchMyKeys');
+			} = await Meteor.callAsync('e2e.fetchMyKeys');
 
 			return API.v1.success(result);
 		},
@@ -34,12 +34,12 @@ API.v1.addRoute(
 		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	},
 	{
-		get() {
+		async get() {
 			const { rid } = this.queryParams;
 
 			const result: {
 				users: IUser[];
-			} = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid);
+			} = await Meteor.callAsync('e2e.getUsersOfRoomWithoutKey', rid);
 
 			return API.v1.success(result);
 		},
@@ -85,10 +85,10 @@ API.v1.addRoute(
 		validateParams: ise2eSetRoomKeyIDParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { rid, keyID } = this.bodyParams;
 
-			Meteor.call('e2e.setRoomKeyID', rid, keyID);
+			await Meteor.callAsync('e2e.setRoomKeyID', rid, keyID);
 
 			return API.v1.success();
 		},
@@ -133,11 +133,11 @@ API.v1.addRoute(
 		validateParams: ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key } = this.bodyParams;
 
-			Meteor.call('e2e.setUserPublicAndPrivateKeys', {
+			await Meteor.callAsync('e2e.setUserPublicAndPrivateKeys', {
 				public_key,
 				private_key,
 			});
@@ -187,10 +187,10 @@ API.v1.addRoute(
 		validateParams: ise2eUpdateGroupKeyParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { uid, rid, key } = this.bodyParams;
 
-			Meteor.call('e2e.updateGroupKey', rid, uid, key);
+			await Meteor.callAsync('e2e.updateGroupKey', rid, uid, key);
 
 			return API.v1.success();
 		},

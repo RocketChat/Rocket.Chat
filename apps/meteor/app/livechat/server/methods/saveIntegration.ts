@@ -1,17 +1,27 @@
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveIntegration'(values: Record<string, any>): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:saveIntegration'(values) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveIntegration',
 			});
 		}
+		methodDeprecationLogger.warn('livechat:saveIntegration is deprecated and will be removed on the next major release of Rocket.Chat');
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));
@@ -19,6 +29,10 @@ Meteor.methods({
 
 		if (typeof values.Livechat_secret_token !== 'undefined') {
 			await Settings.updateValueById('Livechat_secret_token', trim(values.Livechat_secret_token));
+		}
+
+		if (typeof values.Livechat_http_timeout === 'number') {
+			await Settings.updateValueById('Livechat_http_timeout', values.Livechat_http_timeout);
 		}
 
 		if (typeof values.Livechat_webhook_on_start !== 'undefined') {

@@ -1,5 +1,5 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IEmojiCustomModel } from '@rocket.chat/model-typings';
+import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -14,7 +14,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// find
-	findByNameOrAlias(emojiName: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAlias(emojiName: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
@@ -28,7 +28,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.find(query, options);
 	}
 
-	findByNameOrAliasExceptID(name: string, except: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAliasExceptID(name: string, except: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],
@@ -69,7 +69,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// INSERT
-	create(data: IEmojiCustom): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
+	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
 	}
 }
