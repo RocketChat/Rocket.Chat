@@ -4,7 +4,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useFormatTime } from '/client/hooks/useFormatTime';
+import { useFormatTime } from '../../../../hooks/useFormatTime';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
