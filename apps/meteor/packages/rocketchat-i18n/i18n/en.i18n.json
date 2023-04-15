@@ -3290,6 +3290,8 @@
   "Message_Audio_Recording_Disabled": "Message audio recording disabled",
   "Message_auditing": "Message auditing",
   "Message_auditing_log": "Message auditing log",
+  "Audit_logs": "Audit_logs",
+  "Audit_messages": "Audit messages",
   "Message_BadWordsFilterList": "Add Bad Words to the Blacklist",
   "Message_BadWordsFilterListDescription": "Add List of Comma-separated list of bad words to filter",
   "Message_BadWordsWhitelist": "Remove words from the Blacklist",
