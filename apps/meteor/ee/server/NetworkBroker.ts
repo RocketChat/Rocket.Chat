@@ -1,5 +1,5 @@
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
-import { asyncLocalStorage } from '@rocket.chat/core-services';
+// import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
 import { EnterpriseCheck } from './lib/EnterpriseCheck';
@@ -10,11 +10,11 @@ const events: { [k: string]: string } = {
 	onNodeDisconnected: '$node.disconnected',
 };
 
-const lifecycle: { [k: string]: string } = {
-	created: 'created',
-	started: 'started',
-	stopped: 'stopped',
-};
+// const lifecycle: { [k: string]: string } = {
+// 	created: 'created',
+// 	started: 'started',
+// 	stopped: 'stopped',
+// };
 
 const {
 	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
@@ -38,11 +38,11 @@ export class NetworkBroker implements IBroker {
 	async call(method: string, data: any): Promise<any> {
 		await this.started;
 
-		const context = asyncLocalStorage.getStore();
+		// const context = asyncLocalStorage.getStore();
 
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, data);
-		}
+		// if (context?.ctx?.call) {
+		// 	return context.ctx.call(method, data);
+		// }
 
 		const services: { name: string }[] = await this.broker.call('$node.services', {
 			onlyAvailable: true,
@@ -62,10 +62,10 @@ export class NetworkBroker implements IBroker {
 			console.error(err);
 		}
 
-		const context = asyncLocalStorage.getStore();
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, data);
-		}
+		// const context = asyncLocalStorage.getStore();
+		// if (context?.ctx?.call) {
+		// 	return context.ctx.call(method, data);
+		// }
 
 		return this.broker.call(method, data);
 	}
@@ -128,33 +128,33 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			if (lifecycle[method]) {
-				service[method] = (): void => {
-					asyncLocalStorage.run(
-						{
-							id: '',
-							nodeID: this.broker.nodeID,
-							requestID: null,
-							broker: this,
-						},
-						serviceInstance[method].bind(serviceInstance),
-					);
-				};
-				continue;
-			}
+			// if (lifecycle[method]) {
+			// 	service[method] = (): void => {
+			// 		asyncLocalStorage.run(
+			// 			{
+			// 				id: '',
+			// 				nodeID: this.broker.nodeID,
+			// 				requestID: null,
+			// 				broker: this,
+			// 			},
+			// 			serviceInstance[method].bind(serviceInstance),
+			// 		);
+			// 	};
+			// 	continue;
+			// }
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
-				return asyncLocalStorage.run(
-					{
-						id: ctx.id,
-						nodeID: ctx.nodeID,
-						requestID: ctx.requestID,
-						broker: this,
-						ctx,
-					},
-					() => serviceInstance[method](...ctx.params),
-				);
-			};
+			// service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
+			// 	return asyncLocalStorage.run(
+			// 		{
+			// 			id: ctx.id,
+			// 			nodeID: ctx.nodeID,
+			// 			requestID: ctx.requestID,
+			// 			broker: this,
+			// 			ctx,
+			// 		},
+			// 		() => serviceInstance[method](...ctx.params),
+			// 	);
+			// };
 		}
 
 		this.broker.createService(service);

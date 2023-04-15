@@ -28,7 +28,7 @@ const collection = new Mongo.Collection('migrations');
 
 // sets the control record
 function setControl(control: IControl): IControl {
-	collection.update(
+	void collection.updateAsync(
 		{
 			_id: 'control',
 		},
@@ -47,10 +47,10 @@ function setControl(control: IControl): IControl {
 }
 
 // gets the current control record, optionally creating it if non-existant
-export function getControl(): IControl {
-	const control = collection.findOne({
+export async function getControl(): Promise<IControl> {
+	const control = (await collection.findOneAsync({
 		_id: 'control',
-	}) as IControl;
+	})) as IControl;
 
 	return (
 		control ||
@@ -163,7 +163,7 @@ const retryInterval = 10;
 let currentAttempt = 0;
 
 export async function migrateDatabase(targetVersion: 'latest' | number, subcommands?: string[]): Promise<boolean> {
-	const control = getControl();
+	const control = await getControl();
 	const currentVersion = control.version;
 
 	const orderedMigrations = getOrderedMigrations();
@@ -197,7 +197,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			currentAttempt++;
 			return migrateDatabase(targetVersion, subcommands);
 		}
-		const control = getControl(); // Side effect: upserts control document.
+		const control = await getControl(); // Side effect: upserts control document.
 		showErrorBox(
 			'ERROR! SERVER STOPPED',
 			[
@@ -300,7 +300,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 }
 
 export const onFreshInstall =
-	getControl().version !== 0
+	(await getControl()).version !== 0
 		? async (): Promise<void> => {
 				/* noop */
 		  }

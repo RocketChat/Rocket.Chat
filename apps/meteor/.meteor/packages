@@ -10,13 +10,13 @@ rocketchat:ddp
 rocketchat:mongo-config
 
 accounts-base@2.2.7
-accounts-facebook@1.3.3
-accounts-github@1.5.0
-accounts-google@1.4.0
-accounts-meteor-developer@1.5.0
+# accounts-facebook@1.3.3
+# accounts-github@1.5.0
+# accounts-google@1.4.0
+# accounts-meteor-developer@1.5.0
 accounts-oauth@1.4.2
 accounts-password@2.3.4
-accounts-twitter@1.5.0
+# accounts-twitter@1.5.0
 blaze-html-templates
 check@1.3.2
 ddp-rate-limiter@1.1.1
@@ -43,7 +43,7 @@ rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
-konecty:user-presence
+# konecty:user-presence
 
 dispatch:run-as-user
 
@@ -52,7 +52,7 @@ mrt:reactive-store
 mystor:device-detection
 rocketchat:restivus
 ostrio:cookies
-pauli:accounts-linkedin
+# pauli:accounts-linkedin
 
 rocketchat:tap-i18n@3.0.0
 littledata:synced-cron
@@ -68,6 +68,6 @@ templating
 webapp@1.13.4
 webapp-hashing@1.1.1
 rocketchat:oauth2-server
-rocketchat:i18n
+# rocketchat:i18n
 facts-base@1.0.1
 standard-minifier-css@1.9.0

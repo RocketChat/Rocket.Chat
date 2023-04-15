@@ -4,7 +4,7 @@ import { InstanceStatus } from '@rocket.chat/models';
 
 import type { IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
-import { asyncLocalStorage } from '.';
+// import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './Events';
 
 export class LocalBroker implements IBroker {
@@ -15,17 +15,18 @@ export class LocalBroker implements IBroker {
 	private services = new Set<IServiceClass>();
 
 	async call(method: string, data: any): Promise<any> {
-		const result = await asyncLocalStorage.run(
-			{
-				id: 'ctx.id',
-				nodeID: 'ctx.nodeID',
-				requestID: 'ctx.requestID',
-				broker: this,
-			},
-			(): any => this.methods.get(method)?.(...data),
-		);
+		// const result = await asyncLocalStorage.run(
+		// 	{
+		// 		id: 'ctx.id',
+		// 		nodeID: 'ctx.nodeID',
+		// 		requestID: 'ctx.requestID',
+		// 		broker: this,
+		// 	},
+		// 	(): any => this.methods.get(method)?.(...data),
+		// );
+		return this.methods.get(method)?.(...data);
 
-		return result;
+		// return result;
 	}
 
 	async waitAndCall(method: string, data: any): Promise<any> {

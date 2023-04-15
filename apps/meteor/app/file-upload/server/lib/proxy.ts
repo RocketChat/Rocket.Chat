@@ -13,7 +13,7 @@ import { isDocker } from '../../../utils/server';
 
 const logger = new Logger('UploadProxy');
 
-WebApp.connectHandlers.stack.unshift({
+WebApp.connectHandlers._router.stack.unshift({
 	route: '',
 	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	async handle(req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {

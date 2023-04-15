@@ -102,7 +102,7 @@ export const addStyle = (key: string, content: string): void => {
 };
 
 export const injectIntoBody = (key: string, value: string): void => {
-	Inject.rawBody(key, value);
+	// Inject.rawBody(key, value);
 };
 
 export const applyHeadInjections = (injections: Injection[]): ((html: string) => string) => {
