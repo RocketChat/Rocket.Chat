@@ -4,7 +4,7 @@ import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class AppsLogsRaw extends BaseRaw<ILoggerStorageEntry> implements IAppsLogsModel {
+export class AppsLogsRaw extends BaseRaw<ILoggerStorageEntry & { _id: string }> implements IAppsLogsModel {
 	constructor(db: Db) {
 		super(db, 'apps_logs');
 	}

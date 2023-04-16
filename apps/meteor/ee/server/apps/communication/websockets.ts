@@ -134,7 +134,7 @@ export class AppServerNotifier {
 		this.received = new Map();
 		this.listener = new AppServerListener(this.engineStreamer, this.clientStreamer, this.received);
 
-		Apps.runOnAppEvent(this);
+		// Apps.runOnAppEvent(this);
 	}
 
 	async appAdded(appId: string): Promise<void> {
