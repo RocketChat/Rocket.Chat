@@ -35,7 +35,7 @@ async function createDiscussionMessage(
 
 async function mentionMessage(
 	rid: IRoom['_id'],
-	{ _id, username }: Pick<IUser, '_id' | 'username'>,
+	{ _id, username, name }: Pick<IUser, '_id' | 'username' | 'name'>,
 	messageEmbedded?: MessageAttachmentDefault,
 ) {
 	if (!username) {
@@ -44,7 +44,7 @@ async function mentionMessage(
 	await Messages.insertOne({
 		rid,
 		msg: '',
-		u: { _id, username },
+		u: { _id, username, name },
 		ts: new Date(),
 		_updatedAt: new Date(),
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
