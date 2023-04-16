@@ -114,7 +114,7 @@ async function saveUserProfile(
 
 			passwordPolicy.validate(settings.newPassword);
 
-			Accounts.setPassword(this.userId, settings.newPassword, {
+			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
 				logout: false,
 			});
 

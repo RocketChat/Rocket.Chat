@@ -10,10 +10,9 @@ import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComp
 type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
-	reload: () => void;
 };
 
-const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) => {
+const AddExistingModal = ({ onClose, teamId }: AddExistingModalProps) => {
 	const t = useTranslation();
 
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
@@ -36,14 +35,13 @@ const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) =>
 				});
 
 				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
-				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				onClose();
 			}
 		},
-		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload],
+		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t],
 	);
 
 	return (

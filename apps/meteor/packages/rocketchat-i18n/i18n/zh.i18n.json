@@ -1834,7 +1834,6 @@
   "Graphql_Enabled": "启用 GraphQL",
   "Graphql_Subscription_Port": "GraphQL 订阅(Subscription)端口",
   "Snippet_Messages": "消息片段",
-  "italic": "斜体",
   "Group_by": "分组依据",
   "Group_by_Type": "按类型分组",
   "snippet-message": "片段消息",
