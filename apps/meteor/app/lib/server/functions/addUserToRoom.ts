@@ -1,12 +1,11 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Message, Team } from '@rocket.chat/core-services';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Rooms } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -17,7 +16,13 @@ export const addUserToRoom = async function (
 	silenced?: boolean,
 ): Promise<boolean | undefined> {
 	const now = new Date();
-	const room: IRoom = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
+
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUserToRoom',
+		});
+	}
 
 	const userToBeAdded = typeof user !== 'string' ? user : await Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);

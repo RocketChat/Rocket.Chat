@@ -15,10 +15,10 @@ interface IExtraDataForNotification {
 	message: IMessage;
 }
 
-onLicense('teams-mention', () => {
+await onLicense('teams-mention', async () => {
 	// Override spotlight with EE version
-	overwriteClassOnLicense('teams-mention', Spotlight, SpotlightEnterprise);
-	overwriteClassOnLicense('teams-mention', MentionQueries, MentionQueriesEnterprise);
+	await overwriteClassOnLicense('teams-mention', Spotlight, SpotlightEnterprise);
+	await overwriteClassOnLicense('teams-mention', MentionQueries, MentionQueriesEnterprise);
 
 	callbacks.add('beforeGetMentions', async (mentionIds: string[], extra?: IExtraDataForNotification) => {
 		const { otherMentions } = extra ?? {};

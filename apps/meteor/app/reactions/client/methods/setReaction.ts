@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { Messages, Rooms, Subscriptions } from '../../../models/client';
+import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -13,7 +13,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = await Meteor.userAsync();
+		const user = Meteor.user();
 
 		if (!user?.username) {
 			return false;
@@ -24,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room: IRoom | undefined = Rooms.findOne({ _id: message.rid });
+		const room: IRoom | undefined = ChatRoom.findOne({ _id: message.rid });
 		if (!room) {
 			return false;
 		}
