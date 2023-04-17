@@ -19,6 +19,9 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
+import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { metrics } from '../../../metrics/server';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -41,7 +44,7 @@ type GenericCloseRoomParams = {
 };
 
 export type CloseRoomParamsByUser = {
-	user: IUser;
+	user: IUser | null;
 } & GenericCloseRoomParams;
 
 export type CloseRoomParamsByVisitor = {
@@ -53,8 +56,11 @@ export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 class LivechatClass {
 	logger: Logger;
 
+	webhookLogger: MainLogger;
+
 	constructor() {
 		this.logger = new Logger('Livechat');
+		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
@@ -90,11 +96,11 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
-			this.logger.debug(`Closing by user ${user._id}`);
+			this.logger.debug(`Closing by user ${user?._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
+				_id: user?._id || '',
+				username: user?.username,
 			};
 			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
@@ -216,8 +222,8 @@ class LivechatClass {
 		};
 	}
 
-	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
-		Mailer.send({
+	private async sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): Promise<void> {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -315,7 +321,7 @@ class LivechatClass {
 
 		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
-		this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
+		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
@@ -345,6 +351,45 @@ class LivechatClass {
 		});
 
 		return true;
+	}
+
+	async sendRequest(
+		postData: {
+			type: string;
+			[key: string]: any;
+		},
+		attempts = 10,
+	) {
+		if (!attempts) {
+			return;
+		}
+		const timeout = settings.get<number>('Livechat_http_timeout');
+		const secretToken = settings.get<string>('Livechat_secret_token');
+		try {
+			const result = await fetch(settings.get('Livechat_webhookUrl'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
+				},
+				body: JSON.stringify(postData),
+				timeout,
+			});
+
+			if (result.status === 200) {
+				metrics.totalLivechatWebhooksSuccess.inc();
+			} else {
+				metrics.totalLivechatWebhooksFailures.inc();
+			}
+			return result;
+		} catch (err) {
+			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
+			// try 10 times after 20 seconds each
+			attempts - 1 && Livechat.webhookLogger.warn(`Will try again in ${(timeout / 1000) * 4} seconds ...`);
+			setTimeout(async () => {
+				await Livechat.sendRequest(postData, attempts - 1);
+			}, timeout * 4);
+		}
 	}
 }
 

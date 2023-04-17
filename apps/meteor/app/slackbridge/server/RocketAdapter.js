@@ -276,7 +276,7 @@ export default class RocketAdapter {
 					return;
 				}
 
-				const rocketRoom = Rooms.findOneByName(slackChannel.name);
+				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
@@ -322,7 +322,7 @@ export default class RocketAdapter {
 					slack.addSlackChannel(slackChannel.rocketId, slackChannelID);
 				}
 
-				addedRoom = Rooms.findOneById(slackChannel.rocketId);
+				addedRoom = await Rooms.findOneById(slackChannel.rocketId);
 			}
 		}
 
@@ -381,7 +381,7 @@ export default class RocketAdapter {
 						newUser.joinDefaultChannels = false;
 					}
 
-					rocketUserData.rocketId = Accounts.createUser(newUser);
+					rocketUserData.rocketId = await Accounts.createUserAsync(newUser);
 					const userUpdate = {
 						utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 						roles: isBot ? ['bot'] : ['user'],

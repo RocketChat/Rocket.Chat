@@ -1,12 +1,11 @@
-import { EJSON } from 'meteor/ejson';
-import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Messages, Subscriptions, Users } from '@rocket.chat/models';
+import EJSON from 'ejson';
+import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { Rooms } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -43,17 +42,17 @@ const eventHandlers = {
 					} = event;
 
 					// Check if room exists
-					const persistedRoom = Rooms.findOne({ _id: room._id });
+					const persistedRoom = await Rooms.findOne({ _id: room._id });
 
 					if (persistedRoom) {
 						// Update the federation
-						Rooms.update({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
+						await Rooms.updateOne({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
 					} else {
 						// Denormalize room
 						const denormalizedRoom = normalizers.denormalizeRoom(room);
 
 						// Create the room
-						Rooms.insert(denormalizedRoom);
+						await Rooms.insertOne(denormalizedRoom);
 					}
 				}
 				return eventResult;
@@ -69,11 +68,11 @@ const eventHandlers = {
 		} = event;
 
 		// Check if room exists
-		const persistedRoom = Rooms.findOne({ _id: roomId });
+		const persistedRoom = await Rooms.findOne({ _id: roomId });
 
 		if (persistedRoom) {
 			// Delete the room
-			deleteRoom(roomId);
+			await deleteRoom(roomId);
 		}
 
 		// Remove all room events
@@ -144,7 +143,7 @@ const eventHandlers = {
 				await FederationServers.refreshServers();
 
 				// Update the room's federation property
-				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+				await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
 			}
 		}
 
@@ -170,7 +169,7 @@ const eventHandlers = {
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -195,7 +194,7 @@ const eventHandlers = {
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -223,7 +222,7 @@ const eventHandlers = {
 				}
 			} else {
 				// Load the room
-				const room = Rooms.findOneById(message.rid);
+				const room = await Rooms.findOneById(message.rid);
 
 				// Denormalize message
 				const denormalizedMessage = normalizers.denormalizeMessage(message);
@@ -249,7 +248,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					fileStore.insertSync(upload, buffer);
+					await fileStore.insert(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
@@ -436,7 +435,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			await RoomsRaw.muteUsernameByRoomId(roomId, denormalizedUser.username);
+			await Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -458,7 +457,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			await RoomsRaw.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			await Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;

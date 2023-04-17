@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
@@ -85,6 +86,11 @@ export interface IUserServices {
 	ldap?: {
 		id: string;
 		idAttribute?: string;
+	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
 	};
 }
 
@@ -170,6 +176,7 @@ export interface IUser extends IRocketChatRecord {
 			read?: boolean;
 		};
 	};
+	importIds?: string[];
 }
 
 export interface IRegisterUser extends IUser {
