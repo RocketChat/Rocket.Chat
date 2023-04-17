@@ -22,7 +22,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, data });
+		const record = await this.orch.getPersistenceModel().insertOne({ appId, data });
+
+		return record.insertedId;
 	}
 
 	protected async createWithAssociations(
@@ -40,7 +42,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, associations, data });
+		const record = await this.orch.getPersistenceModel().insertOne({ appId, associations, data });
+
+		return record.insertedId;
 	}
 
 	protected async readById(id: string, appId: string): Promise<object> {
@@ -48,7 +52,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 
 		const record = await this.orch.getPersistenceModel().findOneById(id);
 
-		return record?.data;
+		return record?.data || {};
 	}
 
 	protected async readByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
@@ -130,6 +134,13 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			associations,
 		};
 
-		return this.orch.getPersistenceModel().update(query, { $set: { data } }, { upsert });
+		const record = await this.orch.getPersistenceModel().update(query, { $set: { data: data as Record<string, unknown> } }, { upsert });
+
+		if (record.upsertedId) {
+			return record.upsertedId;
+		}
+
+		// TODO what to do here? how have the apps engine been handling multiple updates? are multiple updates even expected?
+		return record.modifiedCount > 1 ? 'multiple' : 'single';
 	}
 }
