@@ -13,7 +13,7 @@ export interface IModerationInfo {
 export interface IModerationReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
-	ts: Date;
+	ts: Date | string;
 	room: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated' | 'prid'>;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;

@@ -91,12 +91,14 @@ API.v1.addRoute(
 
 			const { user: moderator } = this;
 
+			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+
 			const user = await Users.findOneById(userId as string, { projection: { _id: 1 } });
 			if (!user) {
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '');
+			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort: { ts: -1 }});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -172,7 +174,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { selector = '' } = this.queryParams;
 
-			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId as string, selector, { count, sort, selector });
+			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId as string, selector, { count, sort, offset });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
