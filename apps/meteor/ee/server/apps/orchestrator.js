@@ -8,9 +8,6 @@ import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { RealAppBridges } from '../../app/apps/bridges';
-import { settings, settingsRegistry } from '../../../app/settings/server';
-import { RealAppBridges } from '../../../app/apps/server/bridges';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -20,7 +17,7 @@ import {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
-} from '../../../app/apps/server/converters';
+} from '../../app/apps/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from '../../app/apps/storage';
 import { canEnableApp } from '../../app/license/server/license';
 
