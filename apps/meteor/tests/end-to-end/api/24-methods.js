@@ -4,6 +4,7 @@ import { getCredentials, request, methodCall, api, credentials } from '../../dat
 import { createUser, deleteUser } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -2241,50 +2242,36 @@ describe('Meteor.methods', function () {
 			if (!process.env.IS_EE) {
 				this.skip();
 			}
-			let maxRoomsPerGuest;
 			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
 
 			request
-				.get(api('licenses.maxRoomsPerGuest'))
+				.post(methodCall('addUsersToRoom'))
 				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: room._id, users: [guestUser.username] }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('maxRoomsPerGuest');
-					maxRoomsPerGuest = res.body.maxRoomsPerGuest;
-				})
-				.then(async () => {
-					for (let i = 0; i < maxRoomsPerGuest; i++) {
-						promises.push(
-							createRoom({
-								type: 'c',
-								name: `channel.test.${Date.now()}-${Math.random()}`,
-								members: [guestUser.username],
-							}),
-						);
-					}
-					await Promise.all(promises);
-				})
-				.then(() => {
-					request
-						.post(methodCall('addUsersToRoom'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'addUsersToRoom',
-								params: [{ rid: room._id, users: [guestUser.username] }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							const parsedBody = JSON.parse(res.body.message);
-							expect(parsedBody).to.have.property('error');
-							expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
-						});
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
 				});
 		});
 	});

@@ -7,6 +7,7 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -65,44 +66,31 @@ describe('[Channels]', function () {
 			if (!process.env.IS_EE) {
 				this.skip();
 			}
-			let maxRoomsPerGuest;
+
 			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
 
 			request
-				.get(api('licenses.maxRoomsPerGuest'))
+				.post(api('channels.create'))
 				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('maxRoomsPerGuest');
-					maxRoomsPerGuest = res.body.maxRoomsPerGuest;
-				})
-				.then(async () => {
-					for (let i = 0; i < maxRoomsPerGuest; i++) {
-						promises.push(
-							createRoom({
-								type: 'c',
-								name: `channel.test.${Date.now()}-${Math.random()}`,
-								members: [guestUser.username],
-							}),
-						);
-					}
-					await Promise.all(promises);
-				})
-				.then(() => {
-					request
-						.post(api('channels.create'))
-						.set(credentials)
-						.send({
-							name: `channel.test.${Date.now()}-${Math.random()}`,
-							members: [guestUser.username],
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							room = res.body.group;
-						});
+					room = res.body.group;
 				})
 				.then(() => {
 					request
