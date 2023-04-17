@@ -2,10 +2,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
-
-import type { AppServerNotifier } from '../../../app/apps/server/communication';
 
 export interface IAppsService {
 	triggerEvent: (event: string, ...payload: any) => Promise<any>;
@@ -14,18 +11,15 @@ export interface IAppsService {
 	load: () => Promise<void>;
 	unload: () => Promise<void>;
 	isLoaded: () => boolean;
-	isEnabled: () => SettingValue;
 	isInitialized: () => boolean;
 	getPersistenceModel: () => IAppsPersistenceModel;
 	getMarketplaceUrl: () => string;
 	getProvidedComponents: () => IExternalComponent[];
-	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;
-	rocketChatLoggerError<T>(obj: T, args: any[]): void;
+	rocketChatLoggerWarn<T>(obj: T, args?: any): void;
+	rocketChatLoggerError<T>(obj: T, args?: any): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
-	setFrameworkEnabled: (value: boolean) => void;
-	setDevelopmentMode: (value: boolean) => void;
 	setStorage(value: string): void;
 	setFileSystemStoragePath(value: string): void;
-	runOnAppEvent(listener: AppServerNotifier): void;
+	// runOnAppEvent(listener: AppServerNotifier): void;
 }

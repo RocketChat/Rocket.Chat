@@ -1,6 +1,5 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
-import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { Db } from 'mongodb';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
@@ -11,8 +10,6 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import { settings } from '../../../app/settings/server';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import { AppEvents } from '../../../app/apps/server/communication';
-import type { AppServerNotifier } from '../../../app/apps/server/communication';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
@@ -38,11 +35,11 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 	}
 
 	async started(): Promise<void> {
-		if (!this.apps.isEnabled()) {
+		if (!this.apps.isLoaded()) {
 			return;
 		}
 
-		this.apps.load();
+		void this.apps.load();
 	}
 
 	async triggerEvent(event: string, ...payload: any): Promise<any> {
@@ -69,10 +66,6 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.isLoaded();
 	}
 
-	isEnabled(): SettingValue {
-		return this.apps.isEnabled();
-	}
-
 	isInitialized(): boolean {
 		return this.apps.isInitialized();
 	}
@@ -85,7 +78,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getMarketplaceUrl() as string;
 	}
 
-	rocketChatLoggerWarn<T>(obj: T, args: any[]) {
+	rocketChatLoggerWarn<T>(obj: T, args?: any) {
 		return this.apps.getRocketChatLogger()?.warn(obj, args);
 	}
 
@@ -93,7 +86,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getProvidedComponents();
 	}
 
-	rocketChatLoggerError<T>(obj: T, args: any[]) {
+	rocketChatLoggerError<T>(obj: T, args?: any) {
 		return this.apps.getRocketChatLogger()?.error(obj, args);
 	}
 
@@ -105,14 +98,6 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getAppSourceStorage()?.fetch(storageItem);
 	}
 
-	setFrameworkEnabled(value: boolean): void {
-		return this.apps.setFrameworkEnabled(value);
-	}
-
-	setDevelopmentMode(value: boolean): void {
-		return this.apps.setDevelopmentMode(value);
-	}
-
 	setStorage(value: string): void {
 		return this.apps.getAppSourceStorage()?.setStorage(value);
 	}
@@ -121,19 +106,19 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getAppSourceStorage()?.setFileSystemStoragePath(value);
 	}
 
-	runOnAppEvent(listener: AppServerNotifier): void {
-		Object.entries(AppEvents).forEach(([key, value]) => {
-			this.apps.appEventsSink.on(value, (...args) => {
-				const method =
-					key.toLowerCase().split('_')[0] +
-					key
-						.toLowerCase()
-						.split('_')
-						.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-						.flat()
-						.join('');
-				listener[method](...args);
-			});
-		});
-	}
+	// runOnAppEvent(listener: AppServerNotifier): void {
+	// 	Object.entries(AppEvents).forEach(([key, value]) => {
+	// 		this.apps.appEventsSink.on(value, (...args) => {
+	// 			const method =
+	// 				key.toLowerCase().split('_')[0] +
+	// 				key
+	// 					.toLowerCase()
+	// 					.split('_')
+	// 					.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+	// 					.flat()
+	// 					.join('');
+	// 			listener[method](...args);
+	// 		});
+	// 	});
+	// }
 }

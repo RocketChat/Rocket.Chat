@@ -7,7 +7,7 @@ import type { AppFabricationFulfillment } from '@rocket.chat/apps-engine/server/
 import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppLogStorageFindOptions, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type {
 	SlashCommandContext,
 	ISlashCommandPreview,
@@ -15,6 +15,7 @@ import type {
 } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAppsManagerService } from '@rocket.chat/core-services';
+import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
 
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
@@ -66,7 +67,7 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 	}
 
 	async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer): Promise<void> {
-		this.apps.getManager()?.updateLocal(stored, appPackageOrInstance);
+		await this.apps.getManager()?.updateLocal(stored, appPackageOrInstance);
 	}
 
 	getOneById(appId: string): ProxiedApp | undefined {
@@ -77,8 +78,8 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 		return this.apps.getManager()?.getSettingsManager().updateAppSetting(appId, setting);
 	}
 
-	getAppSettings(appId: string): { [key: string]: ISetting } | undefined {
-		return this.apps.getManager()?.getSettingsManager().getAppSettings(appId);
+	getAppSetting(appId: string, settingId: string): ISetting | undefined {
+		return this.apps.getManager()?.getSettingsManager().getAppSetting(appId, settingId);
 	}
 
 	listApis(appId: string): IApiEndpointMetadata[] | undefined {
@@ -107,5 +108,9 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 
 	async commandExecuteCommand(command: string, context: SlashCommandContext): Promise<void> {
 		return this.apps.getManager()?.getCommandManager().executeCommand(command, context);
+	}
+
+	async findLogs(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry> | undefined> {
+		return this.apps.getManager()?.getLogStorage().find(query, options);
 	}
 }

@@ -8,9 +8,6 @@ import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { RealAppBridges } from './bridges';
-import { settings, settingsRegistry } from '../../../app/settings/server';
-import { RealAppBridges } from '../../../app/apps/server/bridges';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -20,9 +17,9 @@ import {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
-} from '../../../app/apps/server/converters';
+} from './converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { canEnableApp } from '../../app/license/server/license';
+import { canEnableApp } from '../license/server/license';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -42,9 +39,6 @@ export class AppServerOrchestrator {
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 
-		this.developmentMode = false;
-		this.frameworkEnabled = true;
-
 		this._marketplaceUrl = marketplaceUrl;
 
 		this._model = AppsModel;
@@ -52,6 +46,10 @@ export class AppServerOrchestrator {
 		this._persistModel = AppsPersistenceModel;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
+		// TODO: Remove it when fixed the race condition
+		// This enforce Fibers for a method not waited on apps-engine preventing a race condition
+		const { storeEntries } = this._logStorage;
+		this._logStorage.storeEntries = (...args) => Promise.await(storeEntries.call(this._logStorage, ...args));
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath, this.db);
 
 		this._converters = new Map();
@@ -121,10 +119,6 @@ export class AppServerOrchestrator {
 
 	isInitialized() {
 		return this._isInitialized;
-	}
-
-	isEnabled() {
-		return this.frameworkEnabled;
 	}
 
 	isLoaded() {
@@ -229,111 +223,6 @@ export class AppServerOrchestrator {
 				throw error;
 			});
 	}
-
-	setDevelopmentMode(isEnabled) {
-		this.developmentMode = isEnabled;
-	}
-
-	setFrameworkEnabled(isEnabled) {
-		this.frameworkEnabled = isEnabled;
-	}
 }
 
 export const AppEvents = AppInterface;
-export const Apps = new AppServerOrchestrator();
-
-settingsRegistry.addGroup('General', function () {
-	this.section('Apps', function () {
-		this.add('Apps_Logs_TTL', '30_days', {
-			type: 'select',
-			values: [
-				{
-					key: '7_days',
-					i18nLabel: 'Apps_Logs_TTL_7days',
-				},
-				{
-					key: '14_days',
-					i18nLabel: 'Apps_Logs_TTL_14days',
-				},
-				{
-					key: '30_days',
-					i18nLabel: 'Apps_Logs_TTL_30days',
-				},
-			],
-			public: true,
-			hidden: false,
-			alert: 'Apps_Logs_TTL_Alert',
-		});
-
-		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
-			type: 'select',
-			values: [
-				{
-					key: 'gridfs',
-					i18nLabel: 'GridFS',
-				},
-				{
-					key: 'filesystem',
-					i18nLabel: 'FileSystem',
-				},
-			],
-			public: true,
-			hidden: false,
-			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
-		});
-
-		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
-			type: 'string',
-			public: true,
-			enableQuery: {
-				_id: 'Apps_Framework_Source_Package_Storage_Type',
-				value: 'filesystem',
-			},
-			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
-		});
-	});
-});
-
-settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageType = value;
-	} else {
-		Apps.getAppSourceStorage().setStorage(value);
-	}
-});
-
-settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageFilesystemPath = value;
-	} else {
-		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
-	}
-});
-
-settings.watch('Apps_Logs_TTL', (value) => {
-	if (!Apps.isInitialized()) {
-		return;
-	}
-
-	let expireAfterSeconds = 0;
-
-	switch (value) {
-		case '7_days':
-			expireAfterSeconds = 604800;
-			break;
-		case '14_days':
-			expireAfterSeconds = 1209600;
-			break;
-		case '30_days':
-			expireAfterSeconds = 2592000;
-			break;
-	}
-
-	if (!expireAfterSeconds) {
-		return;
-	}
-
-	const model = Apps._logModel;
-
-	model.resetTTLIndex(expireAfterSeconds);
-});

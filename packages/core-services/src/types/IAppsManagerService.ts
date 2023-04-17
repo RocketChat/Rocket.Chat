@@ -11,8 +11,9 @@ import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
 import type { AppFabricationFulfillment } from '@rocket.chat/apps-engine/server/compiler';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppLogStorageFindOptions, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 export interface IAppsManagerService {
 	get(filter?: IGetAppsFilter): Array<ProxiedApp | undefined>;
@@ -27,7 +28,7 @@ export interface IAppsManagerService {
 	getOneById(appId: string): ProxiedApp | undefined;
 	getAllActionButtons(): IUIActionButton[];
 	updateAppSetting(appId: string, setting: ISetting): Promise<void>;
-	getAppSettings(appId: string): { [key: string]: ISetting } | undefined;
+	getAppSetting(appId: string, settingId: string): ISetting | undefined;
 	listApis(appId: string): Array<IApiEndpointMetadata> | undefined;
 	changeStatus(appId: string, status: AppStatus): Promise<ProxiedApp | undefined>;
 	getCommandPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview | undefined>;
@@ -37,4 +38,5 @@ export interface IAppsManagerService {
 		context: SlashCommandContext,
 	): Promise<ISlashCommandPreview | undefined>;
 	commandExecuteCommand(command: string, context: SlashCommandContext): Promise<void>;
+	findLogs(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry> | undefined>;
 }
