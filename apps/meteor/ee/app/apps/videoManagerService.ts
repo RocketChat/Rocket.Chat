@@ -5,7 +5,7 @@ import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAppsVideoManagerService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsVideoManagerService extends ServiceClass implements IAppsVideoManagerService {

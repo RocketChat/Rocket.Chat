@@ -3,7 +3,7 @@ import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Users } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 import { AppEvents } from '../../../../app/apps/server/communication';
 
 export class AppActivationBridge extends ActivationBridge {

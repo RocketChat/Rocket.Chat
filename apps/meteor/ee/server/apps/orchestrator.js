@@ -7,7 +7,7 @@ import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPe
 import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { RealAppBridges } from './bridges';
+import { RealAppBridges } from '../../app/apps/bridges';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
@@ -21,7 +21,7 @@ import {
 	AppUploadsConverter,
 	AppVisitorsConverter,
 } from '../../../app/apps/server/converters';
-import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from '../../app/apps/storage';
 import { canEnableApp } from '../../app/license/server/license';
 
 function isTesting() {

@@ -7,7 +7,7 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps, AppsManager, api } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { AppEvents } from './events';
 
 export class AppServerListener {
@@ -134,7 +134,7 @@ export class AppServerNotifier {
 		this.received = new Map();
 		this.listener = new AppServerListener(this.engineStreamer, this.clientStreamer, this.received);
 
-		Apps.runOnAppEvent(this);
+		// Apps.runOnAppEvent(this);
 	}
 
 	async appAdded(appId: string): Promise<void> {

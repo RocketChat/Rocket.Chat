@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
 
-import { Apps } from './orchestrator';
+import { Apps } from '../../server/apps/orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 import { fetch } from '../../../server/lib/http/fetch';

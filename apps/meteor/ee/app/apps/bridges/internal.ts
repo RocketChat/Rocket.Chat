@@ -4,7 +4,7 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 import Future from 'fibers/future';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 import { isTruthy } from '../../../../lib/isTruthy';
 
 export class AppInternalBridge extends InternalBridge {

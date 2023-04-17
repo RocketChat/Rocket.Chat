@@ -9,10 +9,8 @@ import type { IAppsService } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
 
 import { settings } from '../../../app/settings/server';
-import type { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import { AppEvents } from '../../../app/apps/server/communication';
-import type { AppServerNotifier } from '../../../app/apps/server/communication';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
@@ -121,19 +119,19 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getAppSourceStorage()?.setFileSystemStoragePath(value);
 	}
 
-	runOnAppEvent(listener: AppServerNotifier): void {
-		Object.entries(AppEvents).forEach(([key, value]) => {
-			this.apps.appEventsSink.on(value, (...args) => {
-				const method =
-					key.toLowerCase().split('_')[0] +
-					key
-						.toLowerCase()
-						.split('_')
-						.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-						.flat()
-						.join('');
-				listener[method](...args);
-			});
-		});
-	}
+	// runOnAppEvent(listener: AppServerNotifier): void {
+	// 	Object.entries(AppEvents).forEach(([key, value]) => {
+	// 		this.apps.appEventsSink.on(value, (...args) => {
+	// 			const method =
+	// 				key.toLowerCase().split('_')[0] +
+	// 				key
+	// 					.toLowerCase()
+	// 					.split('_')
+	// 					.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+	// 					.flat()
+	// 					.join('');
+	// 			listener[method](...args);
+	// 		});
+	// 	});
+	// }
 }

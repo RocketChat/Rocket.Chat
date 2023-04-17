@@ -4,7 +4,7 @@ import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-en
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { User as UserService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 import { getUserCreatedByApp, deleteUser } from '../../../../app/lib/server';
 
 export class AppUserBridge extends UserBridge {

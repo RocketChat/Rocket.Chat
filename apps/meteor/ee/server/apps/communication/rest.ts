@@ -23,7 +23,7 @@ import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmin
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import type { AppServerOrchestrator } from '../../../app/apps/orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 
 const rocketChatVersion = Info.version;
@@ -62,7 +62,7 @@ export class AppsRestApi {
 		const orchestrator = this._orch;
 		const manager = this._manager;
 
-		const handleError = (message: string, e: any) => {
+		const handleError = async (message: string, e: any) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {

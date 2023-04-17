@@ -3,7 +3,7 @@ import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBr
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { SlashCommandService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 import { AppEvents } from '../../../server/apps';
 import { Utilities } from '../../../lib/misc/Utilities';
 
