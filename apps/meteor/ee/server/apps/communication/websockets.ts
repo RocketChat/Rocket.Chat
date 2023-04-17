@@ -7,7 +7,7 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps, AppsManager, api } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { AppEvents } from './events';
 
 export class AppServerListener {
