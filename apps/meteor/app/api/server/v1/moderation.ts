@@ -1,5 +1,5 @@
 import { isReportHistoryProps, isArchiveReportProps } from '@rocket.chat/rest-typings';
-import { ModerationRepors } from '@rocket.chat/models';
+import { ModerationReports, Users, Messages } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
@@ -14,27 +14,22 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { latest, oldest, selector } = this.queryParams;
+			const { latest, oldest, selector = '' } = this.queryParams;
 
 			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const cursor = ModerationRepors.findGroupedReports(
+			const cursor = ModerationReports.findReportsGroupedByUser(
 				latest ? new Date(latest) : new Date(),
-				oldest ? new Date(oldest) : undefined,
-				offset,
-				count,
-				sort,
+				oldest ? new Date(oldest) : new Date(0),
 				selector,
+				{ offset, count, sort },
 			);
 
-			const [reports] = await Promise.all([cursor.toArray()]);
+			const reports = await cursor.toArray();
 
-			const total = await ModerationRepors.countGroupedReports(
-				latest ? new Date(latest) : new Date(),
-				oldest ? new Date(oldest) : undefined,
-				selector,
-			);
+			// TODO this is wrong
+			const total = reports.reduce((total: number, report) => total + report.count, 0);
 
 			return API.v1.success({
 				reports,
@@ -46,6 +41,7 @@ API.v1.addRoute(
 	},
 );
 
+// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.user.getMessageHistory',
 	{
@@ -58,13 +54,14 @@ API.v1.addRoute(
 
 			const { sort } = await this.parseJsonQuery();
 
-			const { count: pagCount = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			if (!userId || userId.trim() === '') {
-				return API.v1.failure('The required "userId" body param is missing or empty.');
+			const user = await Users.findOneById(userId as string, { projection: { _id: 1 } });
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationRepors.findUserMessages(userId, offset, pagCount, sort);
+			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort });
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -78,6 +75,7 @@ API.v1.addRoute(
 	},
 );
 
+// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.user.deleteMessageHistory',
 	{
@@ -86,28 +84,31 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			// TODO change complicated params
 			const { userId, reasonForHiding } = this.bodyParams;
 
-			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
-			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
+			const sanitizedReason = reasonForHiding?.trim() ? reasonForHiding : 'No reason provided';
 
-			const { user: modUser } = this;
+			const { user: moderator } = this;
 
-			if (!userId || userId.trim() === '') {
-				return API.v1.failure('The required "userId" body param is missing or empty.');
+			const user = await Users.findOneById(userId as string, { projection: { _id: 1 } });
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationRepors.findUserMessages(userId);
+			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '');
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+			// TODO check this
 			if (total < 0) {
 				return API.v1.failure('No messages found for this user.');
 			}
 
-			await deleteReportedMessages(messages, modUser);
+			// TODO optimize
+			await deleteReportedMessages(messages, moderator);
 
-			await ModerationRepors.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
+			await ModerationReports.hideReportsByUserId(userId as string, this.userId, sanitizedReason, 'DELETE Messages');
 
 			return API.v1.success();
 		},
@@ -123,33 +124,40 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			// TODO change complicated camelcases to simple verbs/nouns
 			const { userId, msgId, reasonForHiding, actionTaken } = this.bodyParams;
 
-			// check if at least one of the required params is present
-
-			if (!userId && !msgId) {
-				return API.v1.failure('Either "userId" or "msgId" body param is required.');
+			if (userId) {
+				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+				if (!user) {
+					return API.v1.failure('user-not-found');
+				}
 			}
 
-			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
-			const sanitizedReason: string = reasonProvided ? reasonForHiding : 'No reason provided';
+			if (msgId) {
+				const message = await Messages.findOneById(msgId, { projection: { _id: 1 } });
+				if (!message) {
+					return API.v1.failure('error-message-not-found');
+				}
+			}
+
+			const sanitizedReason: string = reasonForHiding?.trim() ? reasonForHiding : 'No reason provided';
 			const action: string = actionTaken ?? 'None';
 
-			const { userId: modId } = this;
+			const { userId: moderatorId } = this;
 
-			if (!modId) {
-				return API.v1.failure('The required "modId" body param is missing or empty.');
+			if (userId) {
+				await ModerationReports.hideReportsByUserId(userId, moderatorId, sanitizedReason, action);
+			} else {
+				await ModerationReports.hideReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
 			}
 
-			const update = userId
-				? await ModerationRepors.hideReportsByUserId(userId, modId, sanitizedReason, action)
-				: await ModerationRepors.hideReportsByMessageId(msgId as string, modId, sanitizedReason, action);
-
-			return API.v1.success({ update });
+			return API.v1.success();
 		},
 	},
 );
 
+// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.reportsByMessage',
 	{
@@ -162,13 +170,9 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { selector } = this.queryParams;
+			const { selector = '' } = this.queryParams;
 
-			if (!msgId) {
-				return API.v1.failure('The required "msgId" query param is missing.');
-			}
-
-			const { cursor, totalCount } = ModerationRepors.findReportsByMessageId(msgId, offset, count, sort, selector);
+			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId as string, selector, { count, sort, selector });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -182,8 +186,7 @@ API.v1.addRoute(
 	},
 );
 
-// api endoint to get details about a single report
-
+// TODO add validation
 API.v1.addRoute(
 	'moderation.getReportInfo',
 	{
@@ -195,13 +198,13 @@ API.v1.addRoute(
 			const { reportId } = this.queryParams;
 
 			if (!reportId) {
-				return API.v1.failure('The required "reportId" query param is missing.');
+				return API.v1.failure('"reportId" is a required parameter');
 			}
 
-			const report = await ModerationRepors.findOneById(reportId);
+			const report = await ModerationReports.findOneById(reportId);
 
 			if (!report) {
-				return API.v1.failure('Report not found');
+				return API.v1.failure('error-report-not-found');
 			}
 
 			return API.v1.success({ report });

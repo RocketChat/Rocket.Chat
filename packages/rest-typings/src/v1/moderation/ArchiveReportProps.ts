@@ -1,4 +1,4 @@
-import type { IReport, IUser } from '@rocket.chat/core-typings';
+import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ coerceTypes: true });
@@ -8,7 +8,7 @@ const ajv = new Ajv({ coerceTypes: true });
 export type ArchiveReportProps = {
 	userId: IUser['_id'];
 	actionTaken?: string;
-	msgId?: IReport['message']['_id'];
+	msgId?: IModerationReport['message']['_id'];
 	reasonForHiding?: string;
 };
 

@@ -1,6 +1,6 @@
-import type { IMessage, IModerationReport, RocketChatRecordDeleted, IModerationAudit } from '@rocket.chat/core-typings';
-import type { FindPaginated, IModerationReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor, IndexDescription } from 'mongodb';
+import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
+import type { AggregationCursor, Collection, Db, Document, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -35,48 +35,25 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.insertOne(record);
 	}
 
-	findGroupedReports(
-		latest?: Date,
-		oldest?: Date,
-		offset = 0,
-		count = 20,
-		sort?: any,
-		selector?: string,
+	findReportsGroupedByUser(
+		latest: Date,
+		oldest: Date,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
 	): AggregationCursor<IModerationAudit> {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			ts: {
-				$lt: latest || new Date(),
-				$gt: oldest || new Date(0),
+				$lt: latest,
+				$gt: oldest,
 			},
 		};
 
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'message.u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
+		const { sort, offset, count } = pagination;
+
+		const cquery = this.getSearchQueryForSelector(selector);
 
 		const params = [
 			{ $match: { ...query, ...cquery } },
@@ -119,10 +96,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	findUserMessages(
 		userId: string,
-		offset = 0,
-		count?: number,
-		sort?: any,
-		selector?: string,
+		selector: string,
+		pagination?: PaginationParams<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
@@ -130,6 +105,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			},
 			'message.u._id': userId,
 		};
+
+		const { sort, offset, count } = pagination ?? {};
 
 		const cquery = selector
 			? {
@@ -161,13 +138,20 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.findPaginated({ ...query, ...cquery }, params);
 	}
 
-	findReportsByRoom(roomId: string, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IModerationReport>> {
+	// NOTE: not used
+	findReportsByRoom(
+		roomId: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+	): FindPaginated<FindCursor<IModerationReport>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
 			},
 			'message.rid': roomId,
 		};
+
+		const { count, offset, sort } = pagination;
 
 		const cquery = selector
 			? {
@@ -206,13 +190,20 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		);
 	}
 
-	findReportsByUser(userId: string, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IModerationReport>> {
+	// NOTE: not used
+	findReportsByUser(
+		userId: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+	): FindPaginated<FindCursor<IModerationReport>> {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			userId,
 		};
+
+		const { count, offset, sort } = pagination;
 
 		const cquery = selector
 			? {
@@ -253,10 +244,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	findReportsByMessageId(
 		messageId: string,
-		offset = 0,
-		count?: number,
-		sort?: any,
-		selector?: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
@@ -265,30 +254,9 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			'message._id': messageId,
 		};
 
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
+		const { count, offset, sort } = pagination;
+
+		const cquery = this.getSearchQueryForSelector(selector);
 
 		// get the user data from collection users for each report
 
@@ -309,8 +277,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 		return this.findPaginated({ ...query, ...cquery }, lookup);
 	}
-
-	// update
 
 	async hideReportById(_id: string, userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document> {
 		const query = {
@@ -363,7 +329,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				moderationInfo: { hiddenAt: new Date(), moderatedBy: moderatorId, reasonForHiding, actionTaken },
 			},
 		};
-
 		return this.updateMany(query, update);
 	}
 
@@ -477,5 +442,33 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
 
 		return result[0]?.total_count || 0;
+	}
+
+	private getSearchQueryForSelector(selector?: string): any {
+		if (!selector) {
+			return {};
+		}
+		return {
+			$or: [
+				{
+					'message.msg': {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+				{
+					description: {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+				{
+					'u.username': {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+			],
+		};
 	}
 }

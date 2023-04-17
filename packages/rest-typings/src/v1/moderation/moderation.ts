@@ -1,4 +1,4 @@
-import type { IReport, IModerationAudit } from '@rocket.chat/core-typings';
+import type { IModerationReport, IModerationAudit } from '@rocket.chat/core-typings';
 import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -17,7 +17,7 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.getMessageHistory': {
 		GET: (params: { userId: string; sort?: string; selector?: string; count?: number }) => PaginatedResult<{
-			messages: Pick<IReport, 'message' | 'ts' | 'room' | '_id'>[];
+			messages: Pick<IModerationReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteMessageHistory': {
@@ -30,12 +30,12 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.reportsByMessage': {
 		GET: (params: { msgId: string; sort?: string; selector?: string; count?: number }) => PaginatedResult<{
-			reports: Pick<IReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];
+			reports: Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];
 		}>;
 	};
 	'/v1/moderation.getReportInfo': {
 		GET: (params: { reportId: string }) => {
-			report: IReport | null;
+			report: IModerationReport | null;
 		};
 	};
 };

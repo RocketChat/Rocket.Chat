@@ -43,7 +43,7 @@ import type {
 	IPermissionsModel,
 	IReadReceiptsModel,
 	IMessageReadsModel,
-	// IReportsModel,
+	IReportsModel,
 	IRolesModel,
 	IRoomsModel,
 	IServerEventsModel,
@@ -135,7 +135,7 @@ export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const RawImports = proxify<IRawImportsModel>('IRawImportsModel');
-// export const Reports = proxify<IReportsModel>('IReportsModel');
+export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
 export const ServerEvents = proxify<IServerEventsModel>('IServerEventsModel');

@@ -44,7 +44,7 @@ export * from './models/IPushTokenModel';
 export * from './models/IPermissionsModel';
 export * from './models/IReadReceiptsModel';
 export * from './models/IMessageReadsModel';
-// export * from './models/IReportsModel';
+export * from './models/IReportsModel';
 export * from './models/IRolesModel';
 export * from './models/IRoomsModel';
 export * from './models/IServerEventsModel';
