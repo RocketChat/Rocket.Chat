@@ -102,6 +102,19 @@ const BaseTeamsChannels = ({
 						{t('No_channels_in_team')}
 					</Box>
 				)}
+
+				{!loading && channels.length > 0 && (
+					<Box pi='x18' pb='x12'>
+						<Box is='span' color='hint' fontScale='p2'>
+							{t('Showing')}: {channels.length}
+						</Box>
+
+						<Box is='span' color='hint' fontScale='p2' mis='x8'>
+							{t('Total')}: {total}
+						</Box>
+					</Box>
+				)}
+
 				{!loading && (
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 						<Virtuoso
