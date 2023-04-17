@@ -8,7 +8,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -25,7 +25,6 @@ import type {
 	UpdateOptions,
 	UpdateResult,
 } from 'mongodb';
-import { ReadPreference } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
@@ -130,7 +129,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document> {
+	async getMostRecentAverageChatDurationTime(
+		numberMostRecentChats: number,
+		department: string,
+	): Promise<{ props: { _id: IRoom['_id']; avgChatDuration: number } }> {
 		const aggregate = [
 			{
 				$match: {
@@ -151,7 +153,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
+		const [statistic] = await this.col
+			.aggregate<{ props: { _id: IRoom['_id']; avgChatDuration: number } }>(aggregate, { readPreference: readSecondaryPreferred() })
+			.toArray();
 		return statistic;
 	}
 
@@ -167,7 +171,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		const onlyTeamsQuery: Filter<IRoom> = showOnlyTeams ? { teamMain: { $exists: true } } : {};
 
-		const teamCondition = teams
+		const teamCondition: Filter<IRoom> = teams
 			? {}
 			: {
 					teamMain: {
@@ -272,7 +276,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
-		teamDefault = false,
+		teamDefault: boolean,
 		ids: Array<IRoom['_id']> | undefined,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
@@ -451,7 +455,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
 	}
 
-	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options: UpdateOptions = {}): Promise<UpdateResult> {
+	setTeamDefaultById(
+		rid: IRoom['_id'],
+		teamDefault: NonNullable<IRoom['teamDefault']>,
+		options: UpdateOptions = {},
+	): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
@@ -467,26 +475,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount?: T;
+		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<
-		T extends true
-			? { total: number }
-			: {
-					room: {
-						_id: IRoom['_id'];
-						name: IRoom['name'] | IRoom['fname'];
-						ts: IRoom['ts'];
-						t: IRoom['t'];
-						_updatedAt: IRoom['_updatedAt'];
-						usernames?: IDirectMessageRoom['usernames'];
-					};
-					messages: number;
-					lastWeekMessages: number;
-					diffFromLastWeek: number;
-			  }
-	> {
-		const readPreference = ReadPreference.SECONDARY_PREFERRED;
+	}): AggregationCursor<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate> {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -590,26 +581,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $count: 'total' });
 		}
 
-		return this.col.aggregate<
-			T extends true
-				? { total: number }
-				: {
-						room: {
-							_id: IRoom['_id'];
-							name: IRoom['name'] | IRoom['fname'];
-							ts: IRoom['ts'];
-							t: IRoom['t'];
-							_updatedAt: IRoom['_updatedAt'];
-							usernames?: IDirectMessageRoom['usernames'];
-						};
-						messages: number;
-						lastWeekMessages: number;
-						diffFromLastWeek: number;
-				  }
-		>(params, { allowDiskUse: true, readPreference });
+		return this.col.aggregate<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate>(params, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
 	}
 
-	findOneByNameOrFname(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query = {
 			$or: [
 				{
@@ -624,7 +602,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	async findOneByNonValidatedName(name: IRoom['name'], options: FindOptions<IRoom> = {}) {
+	async findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
@@ -633,7 +611,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOneByName(name, options);
 	}
 
-	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+	findOneByName(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ name }, options);
 	}
 
@@ -1039,7 +1017,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id }, update);
 	}
 
-	setReadOnlyById(_id: IRoom['_id'], readOnly: IRoom['ro']): Promise<UpdateResult> {
+	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,
 		};
@@ -1055,8 +1033,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	setDmReadOnlyByUserId(
 		_id: IRoom['_id'],
 		ids: Array<IRoom['_id']>,
-		readOnly: IRoom['ro'],
-		reactWhenReadOnly: IRoom['reactWhenReadOnly'],
+		readOnly: NonNullable<IRoom['ro']>,
+		reactWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
 	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			uids: {
@@ -1082,7 +1060,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 2
-	setAllowReactingWhenReadOnlyById(_id: IRoom['_id'], allowReacting: IRoom['reactWhenReadOnly']): Promise<UpdateResult> {
+	setAllowReactingWhenReadOnlyById(_id: IRoom['_id'], allowReacting: NonNullable<IRoom['reactWhenReadOnly']>): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,
 		};
@@ -1123,7 +1101,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id,
 		};
 		const update: UpdateFilter<IRoom> =
-			systemMessages && systemMessages.length > 0
+			systemMessages && typeof systemMessages !== 'boolean' && systemMessages.length > 0
 				? {
 						$set: {
 							sysMes: systemMessages,
@@ -1158,7 +1136,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndNotId(name: IRoom['name'], rid: IRoom['_id']): Promise<IRoom | null> {
+	findOneByNameAndNotId(name: NonNullable<IRoom['name']>, rid: IRoom['_id']): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			_id: { $ne: rid },
 			name,
@@ -1174,7 +1152,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findOneByNameAndType(
-		name: IRoom['name'],
+		name: NonNullable<IRoom['name']>,
 		type: IRoom['t'],
 		options: FindOptions<IRoom> = {},
 		includeFederatedRooms = false,
@@ -1279,18 +1257,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByNameAndType(name: IRoom['name'], type: IRoom['t'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query: Filter<IRoom> = {
-			t: type,
-			name,
-		};
-
-		// do not use cache
-		return this.find(query, options);
-	}
-
 	findByNameAndTypeNotDefault(
-		name: IRoom['name'],
+		name: IRoom['name'] | RegExp,
 		type: IRoom['t'],
 		options: FindOptions<IRoom> = {},
 		includeFederatedRooms = false,
@@ -1327,7 +1295,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	// 3
 	findByNameAndTypesNotInIds(
-		name: IRoom['name'],
+		name: IRoom['name'] | RegExp,
 		types: Array<IRoom['t']>,
 		ids: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
@@ -1400,7 +1368,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndName(type: IRoom['t'], name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+	findByTypeAndName(type: IRoom['t'], name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			name,
 			t: type,
@@ -1452,7 +1420,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findGroupDMsByUids(uids: IRoom['uids'], options: FindOptions<IDirectMessageRoom> = {}): FindCursor<IDirectMessageRoom> {
+	findGroupDMsByUids(uids: NonNullable<IRoom['uids']>, options: FindOptions<IDirectMessageRoom> = {}): FindCursor<IDirectMessageRoom> {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
@@ -1462,7 +1430,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	find1On1ByUserId(userId: string, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+	find1On1ByUserId(userId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				uids: userId,
@@ -1531,7 +1499,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	incMsgCountAndSetLastMessageById(
 		_id: IRoom['_id'],
 		inc = 1,
-		lastMessageTimestamp: IRoom['lm'],
+		lastMessageTimestamp: NonNullable<IRoom['lm']>,
 		lastMessage: IRoom['lastMessage'],
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -1591,7 +1559,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | undefined): Promise<UpdateResult> {
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = lastMessage
@@ -1609,7 +1577,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	replaceUsername(previousUsername: string, username: string): Promise<Document | UpdateResult> {
+	replaceUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { usernames: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1621,7 +1589,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	replaceMutedUsername(previousUsername: string, username: string): Promise<Document | UpdateResult> {
+	replaceMutedUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { muted: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1633,7 +1601,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	replaceUsernameOfUserByUserId(userId: IRoom['u']['_id'], username: IRoom['u']['username']): Promise<Document | UpdateResult> {
+	replaceUsernameOfUserByUserId(userId: IUser['_id'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { 'u._id': userId };
 
 		const update: UpdateFilter<IRoom> = {

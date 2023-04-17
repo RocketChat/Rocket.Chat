@@ -58,7 +58,7 @@ const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: Se
 
 const matchFileRoute = match<{ fileID: string }>('/:fileID', { decode: decodeURIComponent });
 
-const userDataDownloadHandler = Meteor.bindEnvironment(async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+const userDataDownloadHandler = async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
 	const downloadEnabled = settings.get<boolean>('UserData_EnableDownload');
 	if (!downloadEnabled) {
 		res.writeHead(403).end();
@@ -83,6 +83,6 @@ const userDataDownloadHandler = Meteor.bindEnvironment(async (req: IncomingMessa
 	}
 
 	sendUserDataFile(file)(req, res, next);
-});
+};
 
 WebApp.connectHandlers.use('/data-export/', userDataDownloadHandler);
