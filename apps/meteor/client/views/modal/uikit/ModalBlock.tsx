@@ -3,7 +3,6 @@ import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEventHandler, ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
@@ -166,7 +165,7 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
 						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${appId}/icon`)} /> : null}
-						<Modal.Title>{modalParser.text(view.title, BlockContext.NONE, 0)}</Modal.Title>
+						<Modal.Title>{modalParser.text(view.title)}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
@@ -178,12 +177,12 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 						<Modal.FooterControllers>
 							{view.close && (
 								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-									{modalParser.text(view.close.text, BlockContext.NONE, 0)}
+									{modalParser.text(view.close.text)}
 								</Button>
 							)}
 							{view.submit && (
 								<Button {...getButtonStyle(view)} onClick={onSubmit}>
-									{modalParser.text(view.submit.text, BlockContext.NONE, 1)}
+									{modalParser.text(view.submit.text)}
 								</Button>
 							)}
 						</Modal.FooterControllers>

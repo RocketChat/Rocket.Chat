@@ -10,5 +10,6 @@ export type MinimongoCollection<T extends Document> = Mongo.Collection<T> & {
 		};
 		_recomputeResults: (query: unknown) => void;
 	};
+	direct: Mongo.Collection<T>;
 	queries: unknown[];
 };

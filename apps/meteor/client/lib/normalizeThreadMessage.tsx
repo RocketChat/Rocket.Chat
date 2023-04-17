@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -18,11 +17,7 @@ export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, '
 			return null;
 		}
 
-		return (
-			<GazzodownText>
-				<Markup tokens={tokens} />
-			</GazzodownText>
-		);
+		return <GazzodownText tokens={tokens} />;
 	}
 
 	if (message.attachments) {

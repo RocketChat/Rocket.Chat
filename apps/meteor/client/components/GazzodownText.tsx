@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
-import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import { PreviewMarkup, Markup, MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import type * as MessageParser from '@rocket.chat/message-parser';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RouterContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
@@ -13,7 +14,7 @@ import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 import { useMessageListHighlights } from './message/list/MessageListContext';
 
 type GazzodownTextProps = {
-	children: JSX.Element;
+	tokens: MessageParser.Root;
 	mentions?: {
 		type: 'user' | 'team';
 		_id: string;
@@ -22,9 +23,10 @@ type GazzodownTextProps = {
 	}[];
 	channels?: Pick<IRoom, '_id' | 'name'>[];
 	searchText?: string;
+	preview?: boolean;
 };
 
-const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
+const GazzodownText = ({ tokens, mentions, channels, searchText, preview }: GazzodownTextProps) => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -113,7 +115,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				onChannelMentionClick,
 			}}
 		>
-			{children}
+			{!preview ? <Markup tokens={tokens} /> : <PreviewMarkup tokens={tokens} />}
 		</MarkupInteractionContext.Provider>
 	);
 };

@@ -69,13 +69,11 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 				>
 					<MessageMetricsFollowing name={following ? 'bell' : 'bell-off'} />
 				</MessageMetricsItem>
-				{(mention || all || unread) && (
-					<MessageMetricsItem>
-						<MessageMetricsItem.Label>
-							{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
-						</MessageMetricsItem.Label>
-					</MessageMetricsItem>
-				)}
+				<MessageMetricsItem>
+					<MessageMetricsItem.Label>
+						{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
+					</MessageMetricsItem.Label>
+				</MessageMetricsItem>
 			</MessageMetrics>
 		</MessageBlock>
 	);

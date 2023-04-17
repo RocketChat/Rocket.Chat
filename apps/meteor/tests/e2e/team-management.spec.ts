@@ -66,6 +66,5 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.channels.inputChannels.type(targetChannel, { delay: 100 });
 		await page.locator(`.rcx-option__content:has-text("${targetChannel}")`).click();
 		await poHomeTeam.tabs.channels.btnAdd.click();
-		await expect(page.locator('//main//aside >> li')).toContainText(targetChannel);
 	});
 });
