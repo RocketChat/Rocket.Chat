@@ -10,7 +10,6 @@ const useDismissUserAction = (userId: string, onChange: () => void, onReload: ()
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRoute('moderation-console');
 
-
 	const dismissUser = useEndpoint('POST', '/v1/moderation.markChecked');
 
 	const handleDismissUser = useMutation({
