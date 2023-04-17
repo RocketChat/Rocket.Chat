@@ -3596,7 +3596,7 @@
   "Notification_Desktop_Default_For": "Visa skrivbordsmeddelanden för",
   "Notification_Push_Default_For": "Skicka push-notiser för",
   "Notification_RequireInteraction": "Åtgärd krävs för att skrivbordsaviseringen ska avvisas",
-  "Notification_RequireInteraction_Description": "Fungerar bara med version 50 och senare av webbläsaren Chrome. Med parametern <i>requireInteraction</i> visas skrivbordsaviseringen på obestämd tid tills användaren interagerar med den.",
+  "Notification_RequireInteraction_Description": "Fungerar bara med version 50 och senare av webbläsaren Chrome. Med parametern *requireInteraction* visas skrivbordsaviseringen på obestämd tid tills användaren interagerar med den.",
   "Notifications": "Notifikationer",
   "Notifications_Max_Room_Members": "Max Room-medlemmar innan alla meddelanden inaktiveras",
   "Notifications_Max_Room_Members_Description": "Max antal medlemmar i rummet när notiser för alla meddelanden blir inaktiverade. Användare kan ändå ändra per rumsinställning för att få alla notiser individuellt. (0 för att inaktivera)",

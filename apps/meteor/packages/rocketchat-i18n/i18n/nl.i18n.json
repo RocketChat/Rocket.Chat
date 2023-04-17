@@ -3149,7 +3149,7 @@
   "Notification_Desktop_Default_For": "Bureaubladmeldingen weergeven voor",
   "Notification_Push_Default_For": "Stuur pushmeldingen voor",
   "Notification_RequireInteraction": "Interactie vereisen om bureaubladmelding te sluiten",
-  "Notification_RequireInteraction_Description": "Werkt alleen met Chrome-browserversies > 50. Gebruikt de parameter <i>requireInteraction</i> om de bureaubladmelding voor onbepaalde tijd weer te geven totdat de gebruiker er interactie mee heeft.",
+  "Notification_RequireInteraction_Description": "Werkt alleen met Chrome-browserversies > 50. Gebruikt de parameter *requireInteraction* om de bureaubladmelding voor onbepaalde tijd weer te geven totdat de gebruiker er interactie mee heeft.",
   "Notifications": "Meldingen",
   "Notifications_Max_Room_Members": "Max aantaal kamerleden voordat alle berichtmeldingen worden uitgeschakeld",
   "Notifications_Max_Room_Members_Description": "Max aantal leden in de ruimte wanneer meldingen voor alle berichten worden uitgeschakeld. Gebruikers kunnen nog steeds de instelling per kamer wijzigen om alle meldingen op individuele basis te ontvangen. (0 om uit te schakelen)",

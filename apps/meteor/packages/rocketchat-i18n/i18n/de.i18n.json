@@ -3477,7 +3477,7 @@
   "Notification_Desktop_Default_For": "Desktop-Benachrichtigungen anzeigen für",
   "Notification_Push_Default_For": "Push-Benachrichtigungen anzeigen für",
   "Notification_RequireInteraction": "Benutzerinteraktion notwendig um Benachrichtigung auszublenden",
-  "Notification_RequireInteraction_Description": "Verwendung nur mit Chrome Browser Version > 50 möglich. Verwendet den Parameter <i>requireInteraction</i> um die Anzeigedauer der Desktop-Benachrichtigung bis zur Benutzerinteraktion zu verlängern.",
+  "Notification_RequireInteraction_Description": "Verwendung nur mit Chrome Browser Version > 50 möglich. Verwendet den Parameter *requireInteraction* um die Anzeigedauer der Desktop-Benachrichtigung bis zur Benutzerinteraktion zu verlängern.",
   "Notifications": "Benachrichtigungen",
   "Notifications_Max_Room_Members": "Maximale Anzahl der Room-Mitglieder, ab der alle Nachrichten-Benachrichtigungen deaktiviert werden",
   "Notifications_Max_Room_Members_Description": "Maximale Anzahl der Raum-Mitglieder, ab der alle Benachrichtigungen deaktiviert werden. Benutzer können weiterhin die Einstellung für den Room ändern, um auf individueller Basis alle Nachrichten zu erhalten (0 deaktiviert die Einstellung)",

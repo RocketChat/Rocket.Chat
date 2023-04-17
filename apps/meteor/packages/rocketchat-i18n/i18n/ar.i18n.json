@@ -3163,7 +3163,7 @@
   "Notification_Desktop_Default_For": "إظهار إشعارات سطح المكتب لـ",
   "Notification_Push_Default_For": "إرسال الإشعارات المنبثقة لـ",
   "Notification_RequireInteraction": "يتطلب التفاعل لرفض إشعار سطح المكتب",
-  "Notification_RequireInteraction_Description": "يعمل فقط مع إصدارات متصفح Chrome‏ > 50. يستخدم المعلمة <i>requireInteraction</i> لعرض إشعار سطح المكتب إلى أجل غير مسمى حتى يتفاعل المستخدم معه.",
+  "Notification_RequireInteraction_Description": "يعمل فقط مع إصدارات متصفح Chrome‏ > 50. يستخدم المعلمة *requireInteraction* لعرض إشعار سطح المكتب إلى أجل غير مسمى حتى يتفاعل المستخدم معه.",
   "Notifications": "الإشعارات",
   "Notifications_Max_Room_Members": "الحد الأقصى لعدد أعضاء Room قبل تعطيل كل إشعارات الرسائل",
   "Notifications_Max_Room_Members_Description": "الحد الأقصى لعدد الأعضاء في الغرفة عند تعطيل إشعارات كل الرسائل. لا يزال بإمكان المستخدمين تغيير إعداد كل غرفة لتلقي كل الإشعارات على أساس فردي. (0 للتعطيل)",

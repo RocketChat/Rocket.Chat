@@ -3185,7 +3185,7 @@
   "Notification_Desktop_Default_For": "Ativar Notificações de Desktop Para",
   "Notification_Push_Default_For": "Ativar notificações de push para",
   "Notification_RequireInteraction": "Interação necessária para dispensar a notificação da área de trabalho",
-  "Notification_RequireInteraction_Description": "Funciona apenas com versões do navegador Chrome >50. Utiliza o parâmetro <i>requireInteraction</i> para exibir notificação da área de trabalho indefinidamente até que o usuário interaja com ela.",
+  "Notification_RequireInteraction_Description": "Funciona apenas com versões do navegador Chrome >50. Utiliza o parâmetro *requireInteraction* para exibir notificação da área de trabalho indefinidamente até que o usuário interaja com ela.",
   "Notifications": "Notificações",
   "Notifications_Max_Room_Members": "Máximo de membros na sala antes de desativar todas as notificações de mensagens",
   "Notifications_Max_Room_Members_Description": "Número máximo de membros na sala quando as notificações para todas as mensagens são desabilitadas. Os usuários ainda podem alterar a configuração por sala para receber todas as notificações de forma individual. (0 para desativar)",

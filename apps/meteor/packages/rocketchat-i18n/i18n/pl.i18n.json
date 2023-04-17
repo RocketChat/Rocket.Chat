@@ -3406,7 +3406,7 @@
   "Notification_Desktop_Default_For": "Pokazuj powiadomienia na pulpicie przez",
   "Notification_Push_Default_For": "Prześlij powiadomienia mobilne dla",
   "Notification_RequireInteraction": "Wymagaj interakcji, aby zamknąć powiadomienie na pulpicie",
-  "Notification_RequireInteraction_Description": "Działa tylko z przeglądarkami Chrome w wersjach > 50. Wykorzystuje parametr <i>requireInteraction</i> do wyświetlania powiadomienia na pulpicie aż do interakcji z użytkownikiem.",
+  "Notification_RequireInteraction_Description": "Działa tylko z przeglądarkami Chrome w wersjach > 50. Wykorzystuje parametr *requireInteraction* do wyświetlania powiadomienia na pulpicie aż do interakcji z użytkownikiem.",
   "Notifications": "Powiadomienia",
   "Notifications_Max_Room_Members": "Maksymalna liczba członków pokoju przed wyłączeniem wszystkich powiadomień o wiadomościach",
   "Notifications_Max_Room_Members_Description": "Maksymalna liczba członków w pokoju, gdy powiadomienia o wszystkich wiadomościach zostaną wyłączone. Użytkownicy mogą nadal zmieniać ustawienia w zależności od pokoju, aby otrzymywać wszystkie powiadomienia indywidualnie. (0, aby wyłączyć)",

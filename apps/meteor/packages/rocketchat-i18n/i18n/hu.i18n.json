@@ -3467,7 +3467,7 @@
   "Notification_Desktop_Default_For": "Asztali értesítések megjelenítése ehhez",
   "Notification_Push_Default_For": "Leküldéses értesítések küldése ehhez",
   "Notification_RequireInteraction": "Interakció megkövetelése az asztali értesítés eltüntetéséhez",
-  "Notification_RequireInteraction_Description": "Csak a Chrome böngésző 50-es verziójánál újabbal működik. Használja a <i>requireInteraction</i> paramétert az asztali értesítés határozatlan ideig tartó megjelenítéséhez, amíg a felhasználó kapcsolatba nem lép vele.",
+  "Notification_RequireInteraction_Description": "Csak a Chrome böngésző 50-es verziójánál újabbal működik. Használja a *requireInteraction* paramétert az asztali értesítés határozatlan ideig tartó megjelenítéséhez, amíg a felhasználó kapcsolatba nem lép vele.",
   "Notifications": "Értesítések",
   "Notifications_Max_Room_Members": "Legtöbb szobatag az összes üzenet értesítésének letiltása előtt",
   "Notifications_Max_Room_Members_Description": "A szobában lévő tagok legnagyobb száma, amikor az összes üzenet értesítései letiltásra kerülnek. A felhasználók továbbra is megváltoztathatják a szobánkénti beállítást, hogy az összes értesítést egyénileg kapják meg (0 a letiltáshoz).",

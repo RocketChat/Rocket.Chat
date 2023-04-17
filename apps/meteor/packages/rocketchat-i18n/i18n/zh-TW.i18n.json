@@ -3046,7 +3046,7 @@
   "Notification_Desktop_Default_For": "顯示桌面通知",
   "Notification_Push_Default_For": "推送手機通知",
   "Notification_RequireInteraction": "需要回應才能關閉桌面通知",
-  "Notification_RequireInteraction_Description": "僅適用於 Chrome 瀏覽器版本>50。使用參數<i>requireInteraction </i> 將桌面通知無限期顯示直到使用者與其互動。",
+  "Notification_RequireInteraction_Description": "僅適用於 Chrome 瀏覽器版本>50。使用參數 *requireInteraction* 將桌面通知無限期顯示直到使用者與其互動。",
   "Notifications": "通知",
   "Notifications_Max_Room_Members": "最大 Room 成員禁止所有訊息通知之前",
   "Notifications_Max_Room_Members_Description": "當所有訊息通知被停用時，房間內的最大成員數量。使用者仍然可以更改每個房間的設定，以單獨接收所有通知。 （0是停用）",

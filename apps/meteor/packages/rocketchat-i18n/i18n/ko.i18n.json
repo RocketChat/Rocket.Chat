@@ -2686,7 +2686,7 @@
   "Notification_Desktop_Default_For": "데스크탑 알림 보이기",
   "Notification_Push_Default_For": "모바일 알림",
   "Notification_RequireInteraction": "데스크탑 알림을 닫으려면 상호작용이 필요합니다.",
-  "Notification_RequireInteraction_Description": "Chrome 브라우저 버전 50 이후에서만 작동합니다. <i> requireInteraction </i> 매개 변수를 사용하여 사용자가 상호 작용할 때까지 데스크톱 알림을 무기한으로 표시합니다.",
+  "Notification_RequireInteraction_Description": "Chrome 브라우저 버전 50 이후에서만 작동합니다. *requireInteraction* 매개 변수를 사용하여 사용자가 상호 작용할 때까지 데스크톱 알림을 무기한으로 표시합니다.",
   "Notifications": "알림",
   "Notifications_Max_Room_Members": "알림을 보낸 최대 대화방의 참여자수",
   "Notifications_Max_Room_Members_Description": "모든 메시지에 대한 알림이 중지된 경우 대화방의 최대 구성원 수입니다. 사용자는 개별적으로 모든 알림을 수신하도록 대화방 설정을 변경할 수 있습니다. (0은 비활성화)",

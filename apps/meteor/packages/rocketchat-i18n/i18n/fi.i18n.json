@@ -3597,7 +3597,7 @@
   "Notification_Desktop_Default_For": "Näytä työpöydän ilmoitukset",
   "Notification_Push_Default_For": "Push-ilmoitusten lähettäminen",
   "Notification_RequireInteraction": "Vaadi vuorovaikutusta työpöytäilmoituksen sivuuttamiseksi",
-  "Notification_RequireInteraction_Description": "Toimii vain Chrome-selaimen versioilla 50 tai uudempi. Hyödyntää parametria <i>requireInteraction</i> näyttääkseen työpöytäilmoituksen toistaiseksi, kunnes käyttäjä onvuorovaikutuksessa sen kanssa.",
+  "Notification_RequireInteraction_Description": "Toimii vain Chrome-selaimen versioilla 50 tai uudempi. Hyödyntää parametria *requireInteraction* näyttääkseen työpöytäilmoituksen toistaiseksi, kunnes käyttäjä onvuorovaikutuksessa sen kanssa.",
   "Notifications": "Ilmoitukset",
   "Notifications_Max_Room_Members": "Maksimi huoneen Room jäsenet ennen kaikkien viesti-ilmoitusten poistamista käytöstä",
   "Notifications_Max_Room_Members_Description": "Huoneen jäsenten enimmäismäärä, kun kaikkien viestien ilmoitukset poistetaan käytöstä. Muuttamalla huonekohtaista asetusta käyttäjät voivat edelleen saada kaikki ilmoitukset erikseen. (poista käytöstä: 0)",

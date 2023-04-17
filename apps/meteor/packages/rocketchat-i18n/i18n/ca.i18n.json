@@ -3129,7 +3129,7 @@
   "Notification_Desktop_Default_For": "Mostra notificacions d'escriptori per",
   "Notification_Push_Default_For": "Notificacions mòbils push per",
   "Notification_RequireInteraction": "Requerir interacció per descartar la notificació d'escriptori",
-  "Notification_RequireInteraction_Description": "Només funciona amb les versions del navegador Chrome> 50. Utilitza el paràmetre <i> requireInteraction </i> per mostrar la notificació d'escriptori de manera indefinida fins que l'usuari hi interactuï.",
+  "Notification_RequireInteraction_Description": "Només funciona amb les versions del navegador Chrome> 50. Utilitza el paràmetre *requireInteraction* per mostrar la notificació d'escriptori de manera indefinida fins que l'usuari hi interactuï.",
   "Notifications": "Notificacions",
   "Notifications_Max_Room_Members": "Nombre màxim de membres de la Room abans de desactivar totes les notificacions de missatges",
   "Notifications_Max_Room_Members_Description": "Nombre màxim de membres a la sala quan es desactiven les notificacions de tots els missatges. Els usuaris encara poden canviar la configuració de cada habitació per rebre totes les notificacions de forma individual. (0 per desactivar)",

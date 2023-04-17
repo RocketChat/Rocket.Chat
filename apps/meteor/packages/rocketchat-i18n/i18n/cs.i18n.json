@@ -2628,7 +2628,7 @@
   "Notification_Desktop_Default_For": "Zobrazit oznámení na ploše",
   "Notification_Push_Default_For": "Zasílat mobilní notifikace",
   "Notification_RequireInteraction": "Vyžadovat potvrzení u oznámení na ploše",
-  "Notification_RequireInteraction_Description": "Funguje pouze v prohlížeči Chrome verze >50. Využívá parametru <i>requireInteraction</i>, aby se oznámení na ploše zobrazovalo nepřetržitě dokud jej uživatel neoznačí jako přečtené.",
+  "Notification_RequireInteraction_Description": "Funguje pouze v prohlížeči Chrome verze >50. Využívá parametru *requireInteraction*, aby se oznámení na ploše zobrazovalo nepřetržitě dokud jej uživatel neoznačí jako přečtené.",
   "Notifications": "Oznámení",
   "Notifications_Max_Room_Members": "Maximální počet uživatelů v místnosti pro zakázání zmínky všech",
   "Notifications_Max_Room_Members_Description": "Pokud počet uživatelů v místnosti překročí zadané číslo, notifikace všech (@all) nebude povolena. Uživatelé si toto nastavení mohou individuálně změnit. (0 možnost zakáže)",

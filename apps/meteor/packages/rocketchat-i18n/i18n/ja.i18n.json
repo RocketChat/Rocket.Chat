@@ -3131,7 +3131,7 @@
   "Notification_Desktop_Default_For": "デスクトップ通知の表示先",
   "Notification_Push_Default_For": "プッシュ通知の送信",
   "Notification_RequireInteraction": "デスクトップ通知を消すために操作が必要",
-  "Notification_RequireInteraction_Description": "Chromeブラウザーバージョン50以上でのみ動作します。パラメーター<i>requireInteraction</i>を使用して、ユーザーが操作するまでデスクトップ通知を無期限に表示します。",
+  "Notification_RequireInteraction_Description": "Chromeブラウザーバージョン50以上でのみ動作します。パラメーター*requireInteraction*を使用して、ユーザーが操作するまでデスクトップ通知を無期限に表示します。",
   "Notifications": "通知",
   "Notifications_Max_Room_Members": "すべてのメッセージ通知を無効にする前の最大Roomメンバー",
   "Notifications_Max_Room_Members_Description": "すべてのメッセージの通知が無効にされた場合のルームのメンバーの最大数。ユーザーは個々の基準ですべての通知を受け取るために、ルームごとの設定を変更できます。（0は無効）",

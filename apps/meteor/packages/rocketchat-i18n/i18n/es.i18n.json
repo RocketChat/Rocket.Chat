@@ -3139,7 +3139,7 @@
   "Notification_Desktop_Default_For": "Mostrar notificaciones de escritorio para",
   "Notification_Push_Default_For": "Enviar notificaciones push para",
   "Notification_RequireInteraction": "Requerir interacción para descartar la notificación de escritorio",
-  "Notification_RequireInteraction_Description": "Esta opción funciona solo con las versiones del navegador Chrome superiores a la 50. Usa el parámetro <i>requireInteraction</i> para mostrar la notificación de escritorio de forma indefinida hasta que el usuario interactúe con ella.",
+  "Notification_RequireInteraction_Description": "Esta opción funciona solo con las versiones del navegador Chrome superiores a la 50. Usa el parámetro *requireInteraction* para mostrar la notificación de escritorio de forma indefinida hasta que el usuario interactúe con ella.",
   "Notifications": "Notificaciones",
   "Notifications_Max_Room_Members": "Número máximo de miembros de la Room antes de deshabilitar todas las notificaciones de mensajes",
   "Notifications_Max_Room_Members_Description": "Número máximo de miembros que debe haber en la sala para que se deshabiliten las notificaciones de todos los mensajes. Los usuarios pueden cambiar la configuración de cada sala para recibir todas las notificaciones de forma individual. Usa un valor 0 para deshabilitar esta opción.",

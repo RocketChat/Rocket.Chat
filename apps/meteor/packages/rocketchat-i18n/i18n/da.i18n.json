@@ -2641,7 +2641,7 @@
   "Notification_Desktop_Default_For": "Vis skrivebordsmeddelelser for",
   "Notification_Push_Default_For": "Skub mobile meddelelser til",
   "Notification_RequireInteraction": "Kræv interaktion for at afvise skrivebordsmeddelelse",
-  "Notification_RequireInteraction_Description": "Fungerer kun med Chrome-browserversioner > 50. Anvend bruger-parameteren <i>requiredInteraction</i> til at vise skrivebordsmeddelelsen til ubestemt tid indtil brugeren interagerer med den.",
+  "Notification_RequireInteraction_Description": "Fungerer kun med Chrome-browserversioner > 50. Anvend bruger-parameteren *requireInteraction* til at vise skrivebordsmeddelelsen til ubestemt tid indtil brugeren interagerer med den.",
   "Notifications": "Meddelelser",
   "Notifications_Max_Room_Members": "Medlemmer af Max Room før deaktivere alle meddelelsesmeddelelser",
   "Notifications_Max_Room_Members_Description": "Maks antal medlemmer i rummet, når meddelelser for alle meddelelser bliver deaktiveret. Brugere kan stadig ændre pr. Værelseindstilling for at modtage alle meddelelser individuelt. (0 for at deaktivere)",
