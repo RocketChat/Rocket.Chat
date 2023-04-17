@@ -1101,7 +1101,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id,
 		};
 		const update: UpdateFilter<IRoom> =
-			systemMessages && typeof systemMessages != 'boolean' && systemMessages.length > 0
+			systemMessages && typeof systemMessages !== 'boolean' && systemMessages.length > 0
 				? {
 						$set: {
 							sysMes: systemMessages,
