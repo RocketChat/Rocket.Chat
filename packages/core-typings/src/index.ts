@@ -74,7 +74,7 @@ export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
 export * from './ISmarshHistory';
-export * from './IReport';
+// export * from './IReport';
 
 // export * from './IMethodConnection';
 
@@ -125,3 +125,5 @@ export * from './search';
 export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
+
+export * from './IModerationReport';

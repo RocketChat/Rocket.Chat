@@ -43,7 +43,7 @@ import type {
 	IPermissionsModel,
 	IReadReceiptsModel,
 	IMessageReadsModel,
-	IReportsModel,
+	// IReportsModel,
 	IRolesModel,
 	IRoomsModel,
 	IServerEventsModel,
@@ -72,6 +72,7 @@ import type {
 	IFederationRoomEventsModel,
 	IAppsTokensModel,
 	IAuditLogModel,
+	IModerationReportsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -134,7 +135,7 @@ export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const RawImports = proxify<IRawImportsModel>('IRawImportsModel');
-export const Reports = proxify<IReportsModel>('IReportsModel');
+// export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
 export const ServerEvents = proxify<IServerEventsModel>('IServerEventsModel');
@@ -158,3 +159,4 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 	'IOmnichannelServiceLevelAgreementsModel',
 );
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
+export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');

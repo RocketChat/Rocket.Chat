@@ -364,6 +364,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { messageId, description } = this.bodyParams;
+			console.log("am I here");
 			if (!messageId) {
 				return API.v1.failure('The required "messageId" param is missing.');
 			}

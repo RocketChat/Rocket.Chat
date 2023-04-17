@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Reports, Rooms, Users, Messages } from '@rocket.chat/models';
+import { ModerationReports, Rooms, Users, Messages } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
@@ -77,7 +77,7 @@ Meteor.methods<ServerMethods>({
 			fname: room.fname,
 		};
 
-		await Reports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
+		await ModerationReports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
 		await Apps.triggerEvent(AppEvents.IPostMessageReported, message, await Meteor.userAsync(), description);
 
