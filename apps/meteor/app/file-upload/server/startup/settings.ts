@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('FileUpload', async function () {
+await settingsRegistry.addGroup('FileUpload', async function () {
 	await this.add('FileUpload_Enabled', true, {
 		type: 'boolean',
 		public: true,

@@ -5,11 +5,11 @@ import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
-void settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
+await settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
-void settingsRegistry.add('Initial_Channel_Created', false, {
+await settingsRegistry.add('Initial_Channel_Created', false, {
 	type: 'boolean',
 	hidden: true,
 });
@@ -17,7 +17,7 @@ void settingsRegistry.add('Initial_Channel_Created', false, {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-void settingsRegistry.addGroup('Accounts', async function () {
+await settingsRegistry.addGroup('Accounts', async function () {
 	await this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
@@ -660,7 +660,7 @@ void settingsRegistry.addGroup('Accounts', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('OAuth', async function () {
+await settingsRegistry.addGroup('OAuth', async function () {
 	await this.section('Facebook', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
@@ -817,7 +817,7 @@ void settingsRegistry.addGroup('OAuth', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('General', async function () {
+await settingsRegistry.addGroup('General', async function () {
 	await this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
@@ -1152,7 +1152,7 @@ void settingsRegistry.addGroup('General', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Message', async function () {
+await settingsRegistry.addGroup('Message', async function () {
 	await this.section('Message_Attachments', async function () {
 		await this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
@@ -1384,7 +1384,7 @@ void settingsRegistry.addGroup('Message', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Meta', async function () {
+await settingsRegistry.addGroup('Meta', async function () {
 	await this.add('Meta_language', '', {
 		type: 'string',
 	});
@@ -1410,7 +1410,7 @@ void settingsRegistry.addGroup('Meta', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Mobile', async function () {
+await settingsRegistry.addGroup('Mobile', async function () {
 	await this.add('Allow_Save_Media_to_Gallery', true, {
 		type: 'boolean',
 		public: true,
@@ -1441,7 +1441,7 @@ const pushEnabledWithoutGateway = [
 	},
 ];
 
-void settingsRegistry.addGroup('Push', async function () {
+await settingsRegistry.addGroup('Push', async function () {
 	await this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
@@ -1561,7 +1561,7 @@ void settingsRegistry.addGroup('Push', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Layout', async function () {
+await settingsRegistry.addGroup('Layout', async function () {
 	await this.section('Login', async function () {
 		await this.add('Layout_Login_Hide_Logo', false, {
 			type: 'boolean',
@@ -1771,7 +1771,7 @@ void settingsRegistry.addGroup('Layout', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Logs', async function () {
+await settingsRegistry.addGroup('Logs', async function () {
 	await this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
@@ -1846,7 +1846,7 @@ void settingsRegistry.addGroup('Logs', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Setup_Wizard', async function () {
+await settingsRegistry.addGroup('Setup_Wizard', async function () {
 	await this.section('Organization_Info', async function () {
 		await this.add('Organization_Type', '', {
 			type: 'select',
@@ -3195,7 +3195,7 @@ void settingsRegistry.addGroup('Setup_Wizard', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Rate Limiter', async function () {
+await settingsRegistry.addGroup('Rate Limiter', async function () {
 	await this.section('DDP_Rate_Limiter', async function () {
 		await this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
 		await this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
@@ -3272,7 +3272,7 @@ void settingsRegistry.addGroup('Rate Limiter', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Troubleshoot', async function () {
+await settingsRegistry.addGroup('Troubleshoot', async function () {
 	await this.add('Troubleshoot_Disable_Notifications', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
@@ -3317,7 +3317,7 @@ void settingsRegistry.addGroup('Troubleshoot', async function () {
 	});
 });
 
-void settingsRegistry.addGroup('Call_Center', async function () {
+await settingsRegistry.addGroup('Call_Center', async function () {
 	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	await this.with({ tab: 'Settings' }, async function () {
 		await this.section('General_Settings', async function () {
