@@ -125,32 +125,6 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 			}),
 	);
 
-	statsPms.push(
-		// Total livechat monitors
-		Users.col.countDocuments({ type: 'livechat-monitor' }).then((count) => {
-			statistics.livechatMonitors = count;
-			return true;
-		}),
-	);
-
-	// Number of PDF transcript requested
-	statsPms.push(
-		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
-			.count()
-			.then((count) => {
-				statistics.omnichannelPdfTranscriptRequested = count;
-			}),
-	);
-
-	// Number of PDF transcript that succeeded
-	statsPms.push(
-		LivechatRooms.find({ pdfTranscriptFileId: { $exists: true } })
-			.count()
-			.then((count) => {
-				statistics.omnichannelPdfTranscriptSucceeded = count;
-			}),
-	);
-
 	await Promise.all(statsPms).catch(log);
 
 	return statistics as EEOnlyStats;

@@ -10,11 +10,6 @@ interface IUnreadMessages {
 	since: Date;
 }
 
-interface IUnreadMessages {
-	count: number;
-	since: Date;
-}
-
 export const useUnreadMessages = (
 	room: IRoom,
 ): readonly [data: IUnreadMessages | undefined, setUnreadCount: Dispatch<SetStateAction<number>>] => {

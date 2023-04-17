@@ -221,10 +221,6 @@ export class CsvImporter extends Base {
 			await Settings.incrementValueById('CSV_Importer_Count', usersCount);
 		}
 
-		if (usersCount) {
-			await Settings.incrementValueById('CSV_Importer_Count', usersCount);
-		}
-
 		// Check if any of the message usernames was not in the imported list of users
 		for await (const username of usedUsernames) {
 			if (availableUsernames.has(username)) {

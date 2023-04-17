@@ -35,7 +35,7 @@ export const createRoom = async <T extends RoomType>(
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 	if (type === 'd') {
-		return Promise.await(createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername }));
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
 
 	if (!onlyUsernames(members)) {

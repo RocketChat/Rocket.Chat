@@ -321,6 +321,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 				await page.reload();
 				await pageForServer2.reload();
+
 				await poFederationChannelServer2.content.sendVideoRecordedMessage();
 
 				await expect(

@@ -234,10 +234,6 @@ export class SlackImporter extends Base {
 				await Settings.incrementValueById('Slack_Importer_Count', userCount);
 			}
 
-			if (userCount) {
-				await Settings.incrementValueById('Slack_Importer_Count', userCount);
-			}
-
 			const missedTypes = {};
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !(await Messages.findOne({ _id: /slack\-.*/ }));
