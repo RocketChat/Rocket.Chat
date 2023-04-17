@@ -1,4 +1,25 @@
 
+# 5.4.7
+`2023-04-17  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Livechat MessageList not auto scrolling on new message ([#28547](https://github.com/RocketChat/Rocket.Chat/pull/28547))
+
+- Livechat notifications not working correctly ([#28741](https://github.com/RocketChat/Rocket.Chat/pull/28741))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@tassoevan](https://github.com/tassoevan)
+
+
 # 5.4.6
 `2023-04-12  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
