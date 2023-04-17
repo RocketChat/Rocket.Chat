@@ -30,7 +30,7 @@ export async function userLogout(userId) {
 			const client_secret = settings.get('Cloud_Workspace_Client_Secret');
 
 			const { refreshToken } = user.services.cloud;
-			const request = await fetch(`${cloudUrl}/api/oauth/revoke`, {
+			await fetch(`${cloudUrl}/api/oauth/revoke`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				params: {
@@ -40,12 +40,10 @@ export async function userLogout(userId) {
 					token_type_hint: 'refresh_token',
 				},
 			});
-			await request.json();
 		} catch (err) {
 			SystemLogger.error({
 				msg: 'Failed to get Revoke refresh token to logout of Rocket.Chat Cloud',
 				url: '/api/oauth/revoke',
-				...(err.response?.data && { cloudError: err.response.data }),
 				err,
 			});
 		}

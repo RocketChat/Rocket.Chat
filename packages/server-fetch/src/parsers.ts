@@ -43,7 +43,7 @@ const getParser = (contentTypeHeader?: string): ((options: ExtendedFetchOptions)
 		case 'application/x-www-form-urlencoded':
 			return urlencodedParser;
 		default:
-			return (options: ExtendedFetchOptions) => options as FetchOptions;
+			return jsonParser;
 	}
 };
 

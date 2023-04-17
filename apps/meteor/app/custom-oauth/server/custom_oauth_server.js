@@ -123,7 +123,8 @@ export class CustomOAuth {
 
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions.headers.Authorization = Buffer.from(`${config.clientId}:${OAuth.openSecret(config.secret)}`).toString('base64');
+			const b64 = Buffer.from(`${config.clientId}:${OAuth.openSecret(config.secret)}`).toString('base64');
+			allOptions.headers.Authorization = `Basic ${b64}`;
 		} else {
 			allOptions.params.client_secret = OAuth.openSecret(config.secret);
 			allOptions.params.client_id = config.clientId;
@@ -134,7 +135,12 @@ export class CustomOAuth {
 				method: 'POST',
 				...allOptions,
 			});
-			response = await request.json();
+
+			try {
+				response = await request.json();
+			} catch (e) {
+				response = await request.text();
+			}
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -163,7 +169,13 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
-			const response = await request.json();
+			let response;
+
+			try {
+				response = await request.json();
+			} catch (e) {
+				response = await request.text();
+			}
 
 			logger.debug({ msg: 'Identity response', response });
 

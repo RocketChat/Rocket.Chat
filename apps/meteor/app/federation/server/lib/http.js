@@ -19,17 +19,13 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	try {
-		const request = await fetch(url, {
-			method,
-			headers: { ...headers, 'x-federation-domain': getFederationDomain() },
-			body: data,
-			timeout: 2000,
-		});
-		return request.json();
-	} catch (e) {
-		throw e;
-	}
+	const request = await fetch(url, {
+		method,
+		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
+		body: data,
+		timeout: 2000,
+	});
+	return request.json();
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {

@@ -1228,7 +1228,7 @@ export class AppsRestApi {
 						const request = await fetch(`${baseUrl}/v1/app-request/markAsSeen`, {
 							method: 'POST',
 							headers,
-							body: JSON.stringify({ ids: unseenRequests }),
+							body: { ids: unseenRequests },
 						});
 						const result = await request.json();
 

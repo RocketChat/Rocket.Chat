@@ -7,7 +7,7 @@ export class SlackAPI {
 
 	async getChannels(cursor = null) {
 		let channels = [];
-		const request = await fetch(`https://slack.com/api/conversations.list`, {
+		const request = await fetch('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'public_channel',
@@ -31,7 +31,7 @@ export class SlackAPI {
 
 	async getGroups(cursor = null) {
 		let groups = [];
-		const request = await fetch(`https://slack.com/api/conversations.list`, {
+		const request = await fetch('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'private_channel',
@@ -72,7 +72,7 @@ export class SlackAPI {
 		let currentCursor = '';
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
 			// eslint-disable-next-line no-await-in-loop
-			const request = await fetch(`https://slack.com/api/conversations.members`, {
+			const request = await fetch('https://slack.com/api/conversations.members', {
 				params: {
 					token: this.apiToken,
 					channel: channelId,
@@ -149,7 +149,7 @@ export class SlackAPI {
 	}
 
 	async getPins(channelId) {
-		const request = await fetch(`https://slack.com/api/pins.list`, {
+		const request = await fetch('https://slack.com/api/pins.list', {
 			params: {
 				token: this.apiToken,
 				channel: channelId,
@@ -160,7 +160,7 @@ export class SlackAPI {
 	}
 
 	async getUser(userId) {
-		const request = await fetch(`https://slack.com/api/users.info`, {
+		const request = await fetch('https://slack.com/api/users.info', {
 			params: {
 				token: this.apiToken,
 				user: userId,

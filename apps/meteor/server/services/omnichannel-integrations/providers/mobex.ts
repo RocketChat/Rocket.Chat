@@ -129,9 +129,8 @@ export class Mobex implements ISMSProvider {
 				},
 			});
 
-			const json = await response.text();
 			if (response.ok) {
-				result.resultMsg = json;
+				result.resultMsg = await response.text();
 				result.isSuccess = true;
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${response.status}`;
