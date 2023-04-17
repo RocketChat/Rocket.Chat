@@ -1,4 +1,4 @@
-import type { IMessage, IModerationAudit, IReport } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IModerationReport } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -294,7 +294,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.getReportInfo]', () => {
 		let message: IMessage;
-		let reportedMessage: IReport;
+		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before(async (done) => {
@@ -436,7 +436,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.user.getMessageHistory]', () => {
 		let message: IMessage;
-		let reportedMessage: IReport;
+		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before(async (done) => {
@@ -545,7 +545,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.user.deleteMessageHistory]', () => {
 		let message: IMessage;
-		let reportedMessage: IReport;
+		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before(async (done) => {
