@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 import { api, MessageService, NotificationService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function

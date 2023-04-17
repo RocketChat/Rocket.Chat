@@ -16,7 +16,7 @@ import type {
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAppsManagerService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {

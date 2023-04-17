@@ -5,7 +5,7 @@ import type { Request, Response, IRouter, RequestHandler, NextFunction } from 'e
 import type { IAppsApiService, IRequestWithPrivateHash } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsApiService extends ServiceClass implements IAppsApiService {
