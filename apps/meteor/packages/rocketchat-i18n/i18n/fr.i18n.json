@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Activer l'authentification à deux facteurs par e-mail",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Les utilisateurs avec une adresse e-mail vérifiée et cette option activée dans leur page de profil recevront un e-mail avec un code temporaire pour autoriser certaines actions comme la connexion, l'enregistrement du profil, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Activer l'authentification à deux facteurs",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Si ce paramètre est désactivé, l'authentification à deux facteurs est désactivée.<br>Pour forcer un utilisateur à utiliser l'authentification à deux facteurs, l'administrateur doit configurer ce comportement dans le rôle de l'utilisateur.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Si ce paramètre est désactivé, l'authentification à deux facteurs est désactivée.  \nPour forcer un utilisateur à utiliser l'authentification à deux facteurs, l'administrateur doit configurer ce comportement dans le rôle de l'utilisateur.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Appliquer le recours au mot de passe",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "L'utilisateur devra entrer son mot de passe pour les actions importantes, si aucune autre méthode d'authentification à deux facteurs n'est activée pour cet utilisateur et qu'un mot de passe est défini pour lui.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maximum",

@@ -249,7 +249,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Włącz uwierzytelnienie dwuskładnikowe za pomocą poczty e-mail",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Użytkownicy z potwierdzonym adresem e-mail i włączoną opcją na stronie swojego profilu otrzymają wiadomość e-mail z tymczasowym kodem do autoryzacji takich czynności jak logowanie, zapisywanie profilu itp.",
   "Accounts_TwoFactorAuthentication_Enabled": "Włącz uwierzytelnianie dwuskładnikowe",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Jeśli to ustawienie zostanie wyłączone, spowoduje wyłączenie całego uwierzytelniania dwuskładnikowego.<br>Aby zmusić użytkowników do korzystania z uwierzytelniania dwuskładnikowego, administrator musi skonfigurować rolę „użytkownik”.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Jeśli to ustawienie zostanie wyłączone, spowoduje wyłączenie całego uwierzytelniania dwuskładnikowego.  \nAby zmusić użytkowników do korzystania z uwierzytelniania dwuskładnikowego, administrator musi skonfigurować rolę „użytkownik”.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Wymuś zapasowe hasło",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Użytkownik będzie musiał wprowadzić hasło przy ważnych czynnościach, jeśli nie jest dla niego włączona żadna inna metoda uwierzytelniania dwuskładnikowego, a ustawiono dla niego hasło.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksymalna delta",

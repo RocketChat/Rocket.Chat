@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "メールによる2要素認証を有効にする",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "メールが確認され、プロフィールページでオプションが有効になっているユーザーには、ログイン、プロフィールの保存などの特定のアクションを承認するための一時的コードが含まれるメールが送信されます。",
   "Accounts_TwoFactorAuthentication_Enabled": "2要素認証を有効にする",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "この設定を無効にすると、すべての2要素認証が無効になります。<br>ユーザーに2要素認証の使用を強制するには、管理者が「ユーザー」ロールを構成して、それを強制する必要があります。",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "この設定を無効にすると、すべての2要素認証が無効になります。  \nユーザーに2要素認証の使用を強制するには、管理者が「ユーザー」ロールを構成して、それを強制する必要があります。",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "パスワードのフォールバックの強制",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "そのユーザーのその他の2要素認証方法が有効でなく、パスワードが設定されている場合、重要な操作でパスワードの入力を求められます。",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大デルタ",

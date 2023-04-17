@@ -254,7 +254,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Zwei-Faktor-Authentifizierung per E-Mail aktivieren",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Benutzer mit verifizierter E-Mail, die die Option auf ihrer Profilseite aktiviert haben, erhalten eine E-Mail mit einem temporären Code, um bestimmte Aktionen wie Login, Speichern des Profils usw. zu autorisieren.",
   "Accounts_TwoFactorAuthentication_Enabled": "Zwei-Faktor-Authentifizierung aktivieren",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Wenn diese Einstellung deaktiviert ist, wird die gesamte Zwei-Faktor-Authentifizierung ausgeschaltet.<br>Um Benutzer zur Verwendung der Zwei-Faktor-Authentifizierung zu zwingen, muss der Administrator die Rolle \"Benutzer\" so konfigurieren, dass sie diese erzwingt.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Wenn diese Einstellung deaktiviert ist, wird die gesamte Zwei-Faktor-Authentifizierung ausgeschaltet.  \nUm Benutzer zur Verwendung der Zwei-Faktor-Authentifizierung zu zwingen, muss der Administrator die Rolle \"Benutzer\" so konfigurieren, dass sie diese erzwingt.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Passwort-Fallback erzwingen",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Benutzer werden bei wichtigen Aktionen zur Eingabe ihres Passworts gezwungen, wenn für diesen Benutzer keine andere Zwei-Faktor-Authentifizierungsmethode aktiviert ist und für ihn ein Passwort festgelegt wurde.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",

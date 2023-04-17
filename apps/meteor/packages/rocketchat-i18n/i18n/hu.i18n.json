@@ -254,7 +254,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "E-mailen keresztüli kétfaktoros hitelesítés engedélyezése",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Az ellenőrzött e-mail-címmel és a profiloldalukon engedélyezett beállítással rendelkező felhasználók e-mailt fognak kapni egy ideiglenes kóddal, hogy engedélyezzenek bizonyos műveleteket, például a bejelentkezést, a profil mentését stb.",
   "Accounts_TwoFactorAuthentication_Enabled": "Kétfaktoros hitelesítés engedélyezése",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Ha inaktiválva van, akkor ez a beállítás inaktiválja az összes kétfaktoros hitelesítést.<br>Ahhoz, hogy a felhasználókat rákényszerítse a kétfaktoros hitelesítés használatára, az adminisztrátornak be kell állítania a „user” szerepet, hogy kikényszerítse azt.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Ha inaktiválva van, akkor ez a beállítás inaktiválja az összes kétfaktoros hitelesítést.  \nAhhoz, hogy a felhasználókat rákényszerítse a kétfaktoros hitelesítés használatára, az adminisztrátornak be kell állítania a „user” szerepet, hogy kikényszerítse azt.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Jelszóra való visszalépés kikényszerítése",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "A felhasználók kényszerítve lesznek a jelszavuk megadására a fontos műveleteknél, ha nincs más kétfaktoros hitelesítési módszer engedélyezve az adott felhasználónál, és jelszó van beállítva neki.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Legnagyobb delta",

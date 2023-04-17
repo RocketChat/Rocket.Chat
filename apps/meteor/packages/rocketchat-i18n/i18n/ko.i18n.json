@@ -229,7 +229,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "이메일을 통한 2단계 인증(2FA) 사용",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "이메일이 확인되고 프로파일 페이지에서 옵션이 활성화 된 사용자는 로그인, 프로파일 저장 등과 같은 특정 작업을 승인하는 임시 코드가 포함 된 이메일을받습니다.",
   "Accounts_TwoFactorAuthentication_Enabled": "2단계 인증(2FA)  사용",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "비활성화되면 설정은 모든 2단계 인증을 비활성화합니다.<br>2단계 인증을 사용자에게 강제하려면 관리자가 'user' 역할을 통해 강제해야 합니다.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "비활성화되면 설정은 모든 2단계 인증을 비활성화합니다.  \n2단계 인증을 사용자에게 강제하려면 관리자가 'user' 역할을 통해 강제해야 합니다.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "비밀번호 대체 시행",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "해당 사용자의 다른 2단계 인증(2FA) 방법이 활성화되어 있지 않고, 해당 사용자의 암호가 설정된 경우, 사용자는 중요한 작업진행 시 암호를 입력해야합니다.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "최대 변화 값",

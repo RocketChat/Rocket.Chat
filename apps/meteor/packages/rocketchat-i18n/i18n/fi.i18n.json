@@ -256,7 +256,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Ota käyttöön kaksivaiheinen tunnistautuminen sähköpostitse",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Käyttäjät, joiden sähköpostiosoite on vahvistettu ja joiden profiilisivulla on tämä asetus käytössä, saavat sähköpostitse tilapäisen koodin, jolla he voivat valtuuttaa tietyt toiminnot, kuten kirjautumisen ja profiilin tallentamisen.",
   "Accounts_TwoFactorAuthentication_Enabled": "Ota käyttöön kaksivaiheinen tunnistautuminen",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Jos asetus poistetaan käytöstä, kaikki kaksivaiheinen tunnistautuminen poistetaan käytöstä.<br>Jos järjestelmänvalvoja haluaa pakottaa käyttäjät käyttämään kaksivaiheista tunnistautumista, hänen on määritettävä se 'user'-roolissa.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Jos asetus poistetaan käytöstä, kaikki kaksivaiheinen tunnistautuminen poistetaan käytöstä.  \nJos järjestelmänvalvoja haluaa pakottaa käyttäjät käyttämään kaksivaiheista tunnistautumista, hänen on määritettävä se 'user'-roolissa.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Pakota salasana varatoiminnoksi",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Käyttäjien on annettava salasanansa käyttäessään tärkeitä toimintoja, jos hänelle ei ole määritetty muuta kaksivaiheista tunnistautumista ja hänelle on asetettu salasana.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Suurin väli",

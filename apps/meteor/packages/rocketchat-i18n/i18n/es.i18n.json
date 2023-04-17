@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Habilitar autenticación de dos factores vía correo electrónico",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Los usuarios con correo electrónico verificado y la opción habilitada en su página de perfil recibirán un correo electrónico con un código temporal para autorizar ciertas acciones, como iniciar sesión, guardar el perfil, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Habilitar la autenticación de dos factores",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Si se desactiva, se deshabilitará completamente la autenticación de dos factores.<br>Para exigir a los usuarios a usar la autenticación de dos factores, el administrador tiene que configurarla en el rol \"usuario\".",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Si se desactiva, se deshabilitará completamente la autenticación de dos factores.  \nPara exigir a los usuarios a usar la autenticación de dos factores, el administrador tiene que configurarla en el rol \"usuario\".",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Aplicar respaldo de contraseña",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Para acciones importantes, se exigirá al usuario que introduzcan su contraseña, si esta se ha establecido, si no tiene habilitado un segundo factor de autenticación.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",

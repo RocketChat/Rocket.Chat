@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Habilitar segon factor d'autenticació via correu electrònic",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Els usuaris amb correu electrònic verificat i l'opció habilitada a la pàgina de perfil rebran un correu electrònic amb un codi temporal per autoritzar certes accions com iniciar sessió, desar el perfil, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Habilitar l'autenticació de dos factors a través d'TOTP",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Els usuaris poden configurar el seu segon factor d'autenticació. <br> fent servir qualsevol aplicació TOTP, com Google Authenticator o Authy",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Els usuaris poden configurar el seu segon factor d'autenticació.   \n fent servir qualsevol aplicació TOTP, com Google Authenticator o Authy",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Aplicar suport de contrasenya",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Els usuaris es veuran obligats a ingressar la contrasenya per a accions importants si no s'habilita cap altre mètode d'autenticació de dos factors per a aquest usuari i s'estableix una contrasenya per a ell.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta màxima",

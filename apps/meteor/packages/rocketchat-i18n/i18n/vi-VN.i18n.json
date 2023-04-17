@@ -218,7 +218,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Kích hoạt xác thực hai yếu tố qua Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Người dùng đã xác minh email và bật tùy chọn trong trang hồ sơ của họ sẽ nhận được một email có mã tạm thời để cho phép một số hành động nhất định như đăng nhập, lưu hồ sơ, v.v.",
   "Accounts_TwoFactorAuthentication_Enabled": "Bật xác thực hai yếu tố",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Nếu vô hiệu hóa, cài đặt này sẽ hủy kích hoạt tất cả Xác thực hai yếu tố. <br> Để buộc người dùng sử dụng Xác thực hai yếu tố, quản trị viên phải cấu hình vai trò 'người dùng' để thực thi nó.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Nếu vô hiệu hóa, cài đặt này sẽ hủy kích hoạt tất cả Xác thực hai yếu tố.   \n Để buộc người dùng sử dụng Xác thực hai yếu tố, quản trị viên phải cấu hình vai trò 'người dùng' để thực thi nó.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Thực thi dự phòng mật khẩu",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Cho các hành động quan trọng, người dùng sẽ bị buộc phải nhập mật khẩu của họ, nếu không có phương pháp xác thực hai yếu tố nào khác được kích hoạt cho người dùng đó và mật khẩu được đặt cho anh ta.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta tối đa",

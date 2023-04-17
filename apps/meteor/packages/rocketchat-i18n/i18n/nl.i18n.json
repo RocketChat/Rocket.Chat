@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Schakel tweefactorauthenticatie via e-mail in",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Gebruikers met een geverifieerd e-mailadres en de optie ingeschakeld op hun profielpagina, zullen een e-mail ontvangen met een tijdelijke code om bepaalde acties te autoriseren, zoals inloggen, het profiel opslaan, enz.",
   "Accounts_TwoFactorAuthentication_Enabled": "Schakel tweefactorauthenticatie in",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Indien gedeactiveerd, zal deze instelling alle tweefactorauthenticatie deactiveren.<br>Om gebruikers te dwingen om gebruik te maken van tweefactorauthenticatie, moet de beheerder de 'gebruiker'-rol configureren om deze af te dwingen.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Indien gedeactiveerd, zal deze instelling alle tweefactorauthenticatie deactiveren.  \nOm gebruikers te dwingen om gebruik te maken van tweefactorauthenticatie, moet de beheerder de 'gebruiker'-rol configureren om deze af te dwingen.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Wachtwoord fallback afdwingen",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Gebruikers worden gedwongen om hun wachtwoord in te voegen voor belangrijke acties, als er geen andere tweefactorauthenticatiemethode is ingeschakeld voor die gebruiker en er een wachtwoord voor hem is ingesteld.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximale delta",

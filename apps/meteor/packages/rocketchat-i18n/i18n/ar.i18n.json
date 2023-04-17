@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "تمكين المصادقة الثنائية عبر البريد الإلكتروني",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "سيتلقى المستخدمون الذين تم التحقق من بريدهم الإلكتروني وتم تمكين الخيار لديهم في صفحة ملفهم الشخصي بريدًا إلكترونيًا يحتوي على رمز مؤقت لتفويض إجراءات معينة مثل تسجيل الدخول، وحفظ الملف الشخصي، وما إلى ذلك.",
   "Accounts_TwoFactorAuthentication_Enabled": "تمكين المصادقة الثنائية",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "في حال إلغاء التنشيط، سيترتب على هذا الإعداد إلغاء تنشيط جميع المصادقات الثنائية.<br>لإجبار المستخدمين على استخدام المصادقة الثنائية، سيتعين على المسؤول تكوين دور \"المستخدم\" لفرضه.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "في حال إلغاء التنشيط، سيترتب على هذا الإعداد إلغاء تنشيط جميع المصادقات الثنائية.  \nلإجبار المستخدمين على استخدام المصادقة الثنائية، سيتعين على المسؤول تكوين دور \"المستخدم\" لفرضه.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "فرض كلمة المرور كإجراء احتياطي",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "سيضطر المستخدمون إلى إدخال كلمة المرور الخاصة بهم، لتنفيذ الإجراءات المهمة، إذا لم يتم تمكين أي طريقة أخرى للمصادقة الثنائية لهذا المستخدم وتم تعيين كلمة مرور له.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "الحد الأقصى لدلتا",

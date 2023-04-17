@@ -256,7 +256,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Aktivera tvåfaktorsautentisering via e-post",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Användare som har en verifierad e-postadress och har aktiverat alternativet på sin profilsida får ett e-postmeddelande med en tillfällig kod för att godkänna vissa åtgärder, till exempel för att logga in eller spara sin profil.",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivera tvåfaktorsautentisering",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Om inställningen är inaktiverad inaktiveras all tvåfaktorsautentisering.<br>Om användaren ska vara tvungen att använda tvåfaktorsautentisering måste administratören konfigurera rollen \"användare\" så att det krävs.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Om inställningen är inaktiverad inaktiveras all tvåfaktorsautentisering.  \nOm användaren ska vara tvungen att använda tvåfaktorsautentisering måste administratören konfigurera rollen \"användare\" så att det krävs.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Kräv lösenord om ingen annan metod angetts",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Användaren måste ange sitt lösenord för viktiga åtgärder om ingen annan metod för tvåfaktorsautentisering har aktiverats för användaren och ett lösenord har angetts för denna.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",

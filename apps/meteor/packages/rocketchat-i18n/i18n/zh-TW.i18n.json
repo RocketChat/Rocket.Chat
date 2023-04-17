@@ -238,7 +238,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "透過電子郵件啟用2步驟驗證",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "驗證了電子郵件且在其個人資料頁面中啟用了該選項的使用者將收到一封帶有臨時代碼的電子郵件，以授權某些操作，例如登入，保存個人資料等。",
   "Accounts_TwoFactorAuthentication_Enabled": "啟用兩階段驗證",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "如果停用，這個設定將停用所有兩階段驗證。<br>要強制使用者使用兩階段驗證，管理者必須設置“使用者”角色以強制執行它。",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "如果停用，這個設定將停用所有兩階段驗證。  \n要強制使用者使用兩階段驗證，管理者必須設置“使用者”角色以強制執行它。",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "退回強制密碼",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "如果沒有為該使用者啟用任何其他雙重身份驗證方法，並且為該使用者設定了密碼，則使用者將被迫輸入密碼進行重要操作。",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大Delta",
