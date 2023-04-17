@@ -2,7 +2,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { API } from '../../../../../app/api/server';
@@ -25,24 +24,8 @@ API.v1.addRoute(
 					projection: { _id: 1, t: 1, open: 1, onHold: 1, lastMessage: 1, servedBy: 1 },
 				},
 			);
-			if (!room || !isOmnichannelRoom(room)) {
+			if (!room) {
 				throw new Error('error-invalid-room');
-			}
-
-			if (room.lastMessage?.token) {
-				throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
-			}
-
-			if (room.onHold) {
-				throw new Error('error-room-is-already-onHold');
-			}
-
-			if (!room.open) {
-				throw new Error('This_conversation_is_already_closed');
-			}
-
-			if (!room.servedBy) {
-				throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
@@ -78,16 +61,8 @@ API.v1.addRoute(
 					projection: { _id: 1, t: 1, open: 1, onHold: 1, servedBy: 1 },
 				},
 			);
-			if (!room || !isOmnichannelRoom(room)) {
+			if (!room) {
 				throw new Error('error-invalid-room');
-			}
-
-			if (!room.onHold) {
-				throw new Error('error-room-not-on-hold');
-			}
-
-			if (!room.open) {
-				throw new Error('This_conversation_is_already_closed');
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });

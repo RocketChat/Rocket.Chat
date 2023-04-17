@@ -88,6 +88,7 @@ class AutoTransferChatSchedulerClass {
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
 		if (!agent) {
 			logger.error(`No agent found to transfer room ${room._id} which hasn't been answered in ${timeoutDuration} seconds`);
+			return;
 		}
 
 		await forwardRoomToAgent(room, {

@@ -38,7 +38,13 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-room-already-closed');
 		}
 		if (room.onHold) {
-			throw new Error('error-room-is-already-onHold');
+			throw new Error('error-room-is-already-on-hold');
+		}
+		if (room.lastMessage?.token) {
+			throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
+		}
+		if (!room.servedBy) {
+			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 		}
 
 		await Promise.all([
@@ -62,6 +68,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Error('error-invalid-room');
+		}
+
+		if (!room.open) {
+			throw new Error('This_conversation_is_already_closed');
 		}
 
 		if (!room.onHold) {

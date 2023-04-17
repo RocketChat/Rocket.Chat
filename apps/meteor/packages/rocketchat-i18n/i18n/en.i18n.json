@@ -2007,7 +2007,7 @@
   "error-room-already-closed": "Room is already closed",
   "error-room-is-not-closed": "Room is not closed",
   "error-room-onHold": "Error! Room is On Hold",
-  "error-room-is-already-onHold": "Error! Room is already On Hold",
+  "error-room-is-already-on-hold": "Error! Room is already On Hold",
   "error-room-not-on-hold": "Error! Room is not On Hold",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",
   "error-starring-message": "Message could not be stared",
