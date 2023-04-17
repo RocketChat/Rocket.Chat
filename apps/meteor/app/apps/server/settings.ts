@@ -5,9 +5,9 @@ import { Apps } from '@rocket.chat/core-services';
 import { settings, settingsRegistry } from '../../settings/server';
 
 export function addAppsSettings() {
-	settingsRegistry.addGroup('General', function () {
-		this.section('Apps', function () {
-			this.add('Apps_Logs_TTL', '30_days', {
+	void settingsRegistry.addGroup('General', async function () {
+		await this.section('Apps', async function () {
+			await this.add('Apps_Logs_TTL', '30_days', {
 				type: 'select',
 				values: [
 					{
@@ -28,22 +28,7 @@ export function addAppsSettings() {
 				alert: 'Apps_Logs_TTL_Alert',
 			});
 
-			this.add('Apps_Framework_enabled', true, {
-				type: 'boolean',
-				hidden: false,
-			});
-
-			this.add('Apps_Framework_Development_Mode', false, {
-				type: 'boolean',
-				enableQuery: {
-					_id: 'Apps_Framework_enabled',
-					value: true,
-				},
-				public: true,
-				hidden: false,
-			});
-
-			this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+			await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 				type: 'select',
 				values: [
 					{
@@ -60,7 +45,7 @@ export function addAppsSettings() {
 				alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
 			});
 
-			this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+			await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -80,19 +65,6 @@ export function watchAppsSettingsChanges() {
 
 	settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', async (value: SettingValue) => {
 		await Apps.setFileSystemStoragePath(value as string);
-	});
-
-	settings.watch('Apps_Framework_enabled', async (isEnabled: SettingValue) => {
-		await Apps.setFrameworkEnabled(isEnabled as boolean);
-		if (isEnabled) {
-			await Apps.load();
-		} else {
-			await Apps.unload();
-		}
-	});
-
-	settings.watch('Apps_Framework_Development_Mode', async (isEnabled: SettingValue) => {
-		await Apps.setDevelopmentMode(isEnabled as boolean);
 	});
 
 	settings.watch('Apps_Logs_TTL', async (value: SettingValue) => {
