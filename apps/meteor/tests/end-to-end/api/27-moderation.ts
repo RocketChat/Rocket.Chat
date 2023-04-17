@@ -12,7 +12,7 @@ describe('[Moderation]', function () {
 	before((done) => getCredentials(done));
 
 	describe('[/moderation.getReports]', () => {
-		it('should return an array of reports', async (done) => {
+		it('should return an array of reports', async () => {
 			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
@@ -21,11 +21,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an array of reports even requested with count and offset params', async (done) => {
+		it('should return an array of reports even requested with count and offset params', async () => {
 			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
@@ -38,11 +37,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an array of reports even requested with oldest param', async (done) => {
+		it('should return an array of reports even requested with oldest param', async () => {
 			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
@@ -54,11 +52,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an array of reports even requested with latest param', async (done) => {
+		it('should return an array of reports even requested with latest param', async () => {
 			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
@@ -70,8 +67,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -82,7 +78,7 @@ describe('[Moderation]', function () {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -97,12 +93,11 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					message = res.body.message;
-				})
-				.end(done);
+				});
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -114,11 +109,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		before(async (done) => {
+		before(async () => {
 			await request
 				.get(api('moderation.getReports'))
 				.set(credentials)
@@ -132,11 +126,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
-				})
-				.end(done);
+				});
 		});
 
-		after(async (done) => {
+		after(async () => {
 			await request
 				.post(api('chat.delete'))
 				.set(credentials)
@@ -148,11 +141,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should hide reports of a user', async (done) => {
+		it('should hide reports of a user', async () => {
 			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
@@ -163,11 +155,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should hide reports of a message', async (done) => {
+		it('should hide reports of a message', async () => {
 			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
@@ -178,11 +169,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the userId && msgId is not provided', async (done) => {
+		it('should return an error when the userId && msgId is not provided', async () => {
 			await request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
@@ -195,8 +185,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -206,7 +195,7 @@ describe('[Moderation]', function () {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
@@ -220,12 +209,11 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
-				})
-				.end(done);
+				});
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -237,11 +225,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		after(async (done) => {
+		after(async () => {
 			await request
 				.post(api('chat.delete'))
 				.set(credentials)
@@ -253,11 +240,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return the reports for a message', async (done) => {
+		it('should return the reports for a message', async () => {
 			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -269,11 +255,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the msgId is not provided', async (done) => {
+		it('should return an error when the msgId is not provided', async () => {
 			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -285,8 +270,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -297,7 +281,7 @@ describe('[Moderation]', function () {
 		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
@@ -311,12 +295,11 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
-				})
-				.end(done);
+				});
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -328,12 +311,11 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -346,11 +328,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
-				})
-				.end(done);
+				});
 		});
 
-		after(async (done) => {
+		after(async () => {
 			await request
 				.post(api('chat.delete'))
 				.set(credentials)
@@ -362,11 +343,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return the report information', async (done) => {
+		it('should return the report information', async () => {
 			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
@@ -379,11 +359,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('report').and.to.be.an('object');
 					expect(res.body.report).to.have.property('_id', reportedMessage._id);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the reportId is not provided', async (done) => {
+		it('should return an error when the reportId is not provided', async () => {
 			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
@@ -395,11 +374,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the reportId is invalid', async (done) => {
+		it('should return an error when the reportId is invalid', async () => {
 			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
@@ -411,11 +389,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the reportId is not found', async (done) => {
+		it('should return an error when the reportId is not found', async () => {
 			await request
 				.get(api('moderation.getReportInfo'))
 				.set(credentials)
@@ -427,8 +404,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -439,7 +415,7 @@ describe('[Moderation]', function () {
 		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
@@ -453,12 +429,11 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
-				})
-				.end(done);
+				});
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -470,12 +445,11 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -488,11 +462,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
-				})
-				.end(done);
+				});
 		});
 
-		after(async (done) => {
+		after(async () => {
 			await request
 				.post(api('chat.delete'))
 				.set(credentials)
@@ -504,11 +477,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return the message history', async (done) => {
+		it('should return the message history', async () => {
 			await request
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
@@ -520,11 +492,10 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the userId is not provided', async (done) => {
+		it('should return an error when the userId is not provided', async () => {
 			await request
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
@@ -536,8 +507,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -548,7 +518,7 @@ describe('[Moderation]', function () {
 		let reportedMessage: IModerationReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
@@ -562,12 +532,11 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
-				})
-				.end(done);
+				});
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -579,12 +548,11 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
 		// get the report information by sending a request to moderation.reportsByMessage
-		before(async (done) => {
+		before(async () => {
 			await request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -597,11 +565,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
-				})
-				.end(done);
+				});
 		});
 
-		it('should delete the message history', async (done) => {
+		it('should delete the message history', async () => {
 			await request
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
@@ -612,11 +579,10 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an error when the userId is not provided', async (done) => {
+		it('should return an error when the userId is not provided', async () => {
 			await request
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
@@ -628,8 +594,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
-				})
-				.end(done);
+				});
 		});
 	});
 });

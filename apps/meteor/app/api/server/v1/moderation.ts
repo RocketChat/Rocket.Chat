@@ -1,4 +1,11 @@
-import { isReportHistoryProps, isArchiveReportProps } from '@rocket.chat/rest-typings';
+import {
+	isReportHistoryProps,
+	isArchiveReportProps,
+	isReportInfoParams,
+	isReportMessageHistoryParams,
+	isModerationDeleteMsgHistoryParams,
+	isReportsByMsgIdParams,
+} from '@rocket.chat/rest-typings';
 import { ModerationReports, Users, Messages } from '@rocket.chat/models';
 
 import { API } from '../api';
@@ -46,6 +53,7 @@ API.v1.addRoute(
 	'moderation.user.getMessageHistory',
 	{
 		authRequired: true,
+		validateParams: isReportMessageHistoryParams,
 		permissionsRequired: ['view-moderation-console'],
 	},
 	{
@@ -80,6 +88,7 @@ API.v1.addRoute(
 	'moderation.user.deleteMessageHistory',
 	{
 		authRequired: true,
+		validateParams: isModerationDeleteMsgHistoryParams,
 		permissionsRequired: ['manage-moderation-actions'],
 	},
 	{
@@ -164,6 +173,7 @@ API.v1.addRoute(
 	'moderation.reportsByMessage',
 	{
 		authRequired: true,
+		validateParams: isReportsByMsgIdParams,
 		permissionsRequired: ['view-moderation-console'],
 	},
 	{
@@ -173,6 +183,10 @@ API.v1.addRoute(
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const { selector = '' } = this.queryParams;
+
+			if (!msgId) {
+				return API.v1.failure('The required "msgId" query param is missing.');
+			}
 
 			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId as string, selector, { count, sort, offset });
 
@@ -194,6 +208,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
+		validateParams: isReportInfoParams,
 	},
 	{
 		async get() {
