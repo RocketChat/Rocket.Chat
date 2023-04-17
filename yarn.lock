@@ -6573,12 +6573,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/css-in-js@npm:~0.31.23-dev.80, @rocket.chat/css-in-js@npm:~0.31.23-dev.86":
+  version: 0.31.23-dev.86
+  resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.86"
+  dependencies:
+    "@emotion/hash": ^0.9.0
+    "@rocket.chat/css-supports": ~0.31.23-dev.86
+    "@rocket.chat/memo": ~0.31.23-dev.86
+    "@rocket.chat/stylis-logical-props-middleware": ~0.31.23-dev.86
+    stylis: ~4.1.3
+  checksum: 77dddc1aa83d2c08a1ee8fbc4086a6ec1e068e80dc8483db2fccbecadb393a822b5f723ad063bcb20c163aeda3b2f950a61660eb697b6c9fea46041f9fe2d110
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/css-supports@npm:~0.31.23-dev.85":
   version: 0.31.23-dev.85
   resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.85"
   dependencies:
     "@rocket.chat/memo": ~0.31.23-dev.85
   checksum: e2300c39a57f2244c247d358f4e2cfff87a6b045d94503a073f7c11d537a16b2cbbe86c77e373f2e2571b7a07d029723b7d3462ae145f6d9a002f88cc1c286b2
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/css-supports@npm:~0.31.23-dev.86":
+  version: 0.31.23-dev.86
+  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.86"
+  dependencies:
+    "@rocket.chat/memo": ~0.31.23-dev.86
+  checksum: 3f6213868a726699af34a3143a2da0f63329dd0e4e3cbd30375becbab6b684db2d389b5e5462bcf2357157bfdf4938c0060ba89d6a72c3b79ce0d36c6a875355
   languageName: node
   linkType: hard
 
@@ -6760,10 +6782,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.261":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.261
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.261"
   checksum: 102ebb069878f4f4d29f4ceea99d2fb6a4c89aa856566c552d78f6d0bc28f3a1fad7b069921c7bc2646fecbbeecaae0db44f3686ef141bc4dab874c06b0bec47
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.262":
+  version: 0.32.0-dev.262
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.262"
+  checksum: 5ca3220dbc862d280fcf088f1218d5a639a92d15b3e33f984a78661946f81acb10d56403ee5262f0c79257726ef2f97c8b1042bf3ea72f65d65c3fb11f26dcfa
   languageName: node
   linkType: hard
 
@@ -6776,6 +6805,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/fuselage-polyfills": next
+    "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/prettier-config": next
     "@rocket.chat/styled": next
@@ -6823,14 +6853,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.311
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.311"
+  version: 0.32.0-dev.312
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.312"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.85
-    "@rocket.chat/css-supports": ~0.31.23-dev.85
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.261
-    "@rocket.chat/memo": ~0.31.23-dev.85
-    "@rocket.chat/styled": ~0.31.23-dev.85
+    "@rocket.chat/css-in-js": ~0.31.23-dev.86
+    "@rocket.chat/css-supports": ~0.31.23-dev.86
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.262
+    "@rocket.chat/memo": ~0.31.23-dev.86
+    "@rocket.chat/styled": ~0.31.23-dev.86
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -6842,7 +6872,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 1e30eb4516a4a5096fc355d0f502bfcf17644a1660938fc413666de99a265128cfcd0ee7cb9d20661d2df9a9239f0009f3de15ca522b999a7cfffd47414c4b8a
+  checksum: ce1b09105258a567b695bc024e026dc6c8e1ad3c9f55e96bd47de161bf1a0defd6fb29940fecb35273fc648d9c59ed6c39f7f11f66ac6f4bce4a056d789933fa
   languageName: node
   linkType: hard
 
@@ -7023,6 +7053,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/log-format@workspace:^, @rocket.chat/log-format@workspace:packages/log-format":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/log-format@workspace:packages/log-format"
+  dependencies:
+    "@types/chalk": ^2.2.0
+    "@types/ejson": ^2
+    "@types/jest": ^27.4.1
+    chalk: ^4.0.0
+    ejson: ^2.2.3
+    eslint: ^8.12.0
+    jest: ~29.5.0
+    ts-jest: ~29.0.5
+    typescript: ~5.0.2
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/logo@npm:next":
   version: 0.32.0-dev.261
   resolution: "@rocket.chat/logo@npm:0.32.0-dev.261"
@@ -7040,6 +7086,13 @@ __metadata:
   version: 0.31.23-dev.85
   resolution: "@rocket.chat/memo@npm:0.31.23-dev.85"
   checksum: 082262041623a4de0164dae309979654ac51a756929ea22af537e05c39933098d7fc42be2fd4692baf7bab141ae96558c8dbcfdb29dced90fb5a8d406aec5f9f
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/memo@npm:~0.31.23-dev.86":
+  version: 0.31.23-dev.86
+  resolution: "@rocket.chat/memo@npm:0.31.23-dev.86"
+  checksum: d398253a79cdfe57f939648bcf79e31128a116509535b65b85ab94e3212aee4b0ddc27996a915f1cfa4c6aa21f1a81ef913fe19952b6ee8ed04c4ddbd59fb86a
   languageName: node
   linkType: hard
 
@@ -7101,6 +7154,7 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/layout": next
     "@rocket.chat/livechat": "workspace:^"
+    "@rocket.chat/log-format": "workspace:^"
     "@rocket.chat/logo": next
     "@rocket.chat/memo": next
     "@rocket.chat/message-parser": next
@@ -7162,6 +7216,7 @@ __metadata:
     "@types/express-rate-limit": ^5.1.3
     "@types/fibers": ^3.1.1
     "@types/google-libphonenumber": ^7.4.23
+    "@types/gravatar": ^1
     "@types/he": ^1.1.2
     "@types/imap": ^0.8.35
     "@types/jsdom": ^16.2.14
@@ -7234,6 +7289,7 @@ __metadata:
     chai-datetime: ^1.8.0
     chai-dom: ^1.11.0
     chai-spies: ~1.0.0
+    chalk: ^4.0.0
     change-case: ^4.1.2
     chart.js: ^3.8.0
     clipboard: ^2.0.11
@@ -7281,6 +7337,7 @@ __metadata:
     filesize: 9.0.11
     google-libphonenumber: ^3.2.28
     googleapis: ^104.0.0
+    gravatar: ^1.8.2
     he: ^1.2.0
     highlight.js: ^11.6.0
     hljs9: "npm:highlight.js@^9.18.5"
@@ -7322,6 +7379,7 @@ __metadata:
     mongodb: ^4.12.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
+    node-abort-controller: ^3.1.1
     node-dogstatsd: ^0.0.7
     node-gcm: 1.0.5
     node-rsa: ^1.1.1
@@ -7786,14 +7844,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/styled@npm:~0.31.23-dev.86":
+  version: 0.31.23-dev.86
+  resolution: "@rocket.chat/styled@npm:0.31.23-dev.86"
+  dependencies:
+    "@rocket.chat/css-in-js": ~0.31.23-dev.86
+  checksum: 6abc0962d05f9a16ccc70ec38eaa97d795d31836e254edc1f6db81e3e33b1bb6640e2742ed89175d064ecb78db2b8d998db43f7411a1e3180cb1e82f7706e937
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.85":
   version: 0.31.23-dev.85
   resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.85"
   dependencies:
-    "@rocket.chat/css-supports": ~0.31.23-dev.85
+    "@rocket.chat/css-in-js": ~0.31.23-dev.80
+    tslib: ^2.3.1
+  checksum: 7fd8d199c403961cf95345db148206b1482ca6a6ecb51674d815f23fd4f19b14ffc5a3d3e185310edfde71c443777bf6d810b693d3c2f2864c4251270a23f0f8
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.86":
+  version: 0.31.23-dev.86
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.86"
+  dependencies:
+    "@rocket.chat/css-supports": ~0.31.23-dev.86
   peerDependencies:
     stylis: 4.0.10
-  checksum: 7fd8d199c403961cf95345db148206b1482ca6a6ecb51674d815f23fd4f19b14ffc5a3d3e185310edfde71c443777bf6d810b693d3c2f2864c4251270a23f0f8
+  checksum: 27a030928de2a8e9da6d2f905bf99d1f844d0a016a771992bac4ba4c855d32467183ea37653d5428d4bbeaebb1da94d9aba052b25af617d5c1b2744359e44962
   languageName: node
   linkType: hard
 
@@ -11312,6 +11389,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chalk@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@types/chalk@npm:2.2.0"
+  dependencies:
+    chalk: "*"
+  checksum: 846437590d0bf0026d8c2f454e5d91a486becfabde61c0441025e791a0fed75304e143717bc4d025569394dcce5a32f2c53d97253d0c735ac1abae63f1b25c3e
+  languageName: node
+  linkType: hard
+
 "@types/chart.js@npm:^2.9.37":
   version: 2.9.37
   resolution: "@types/chart.js@npm:2.9.37"
@@ -11403,7 +11489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ejson@npm:^2.2.0":
+"@types/ejson@npm:^2, @types/ejson@npm:^2.2.0":
   version: 2.2.0
   resolution: "@types/ejson@npm:2.2.0"
   checksum: 0cbc610c58a60847822353782d133f7a3cf362223d58f6a2b6ce0ae6e1f22885dc8f2a6ca7676df2556ed631e74c5a4880575704b964fdef89d216dc69ac0ad6
@@ -11526,6 +11612,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/gravatar@npm:^1":
+  version: 1.8.3
+  resolution: "@types/gravatar@npm:1.8.3"
+  checksum: 7d05ab0b0fae62c6932bbb952b863e67a96385dd428a4cef161518e5e5176788194db34ca0815ce28a41779e472ea3d6ca21fedd0f00d77e62b016b59117bf81
+  languageName: node
+  linkType: hard
+
 "@types/hast@npm:^2.0.0":
   version: 2.3.4
   resolution: "@types/hast@npm:2.3.4"
@@ -11613,6 +11706,16 @@ __metadata:
     jest-matcher-utils: ^28.0.0
     pretty-format: ^28.0.0
   checksum: 28141f2d5b3bafd063362de9790cb8f219488d9b0ad47524a84bef1142a4f0d9d35be0c56988d9f922205225cc83c986acd4be424bd8653b38dc27ab672455e2
+  languageName: node
+  linkType: hard
+
+"@types/jest@npm:^27.4.1":
+  version: 27.5.2
+  resolution: "@types/jest@npm:27.5.2"
+  dependencies:
+    jest-matcher-utils: ^27.0.0
+    pretty-format: ^27.0.0
+  checksum: 7e11c6826aa429ad990dc262e4e4b54aa36573287fddf15773e4137f07d11d3105f0dd9f1baff73252160a057df23f5529bb83b1bf83cd3f45f9460a5ca5c22e
   languageName: node
   linkType: hard
 
@@ -15026,6 +15129,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"blueimp-md5@npm:^2.16.0":
+  version: 2.19.0
+  resolution: "blueimp-md5@npm:2.19.0"
+  checksum: 28095dcbd2c67152a2938006e8d7c74c3406ba6556071298f872505432feb2c13241b0476644160ee0a5220383ba94cb8ccdac0053b51f68d168728f9c382530
+  languageName: node
+  linkType: hard
+
 "bn.js@npm:^4.0.0, bn.js@npm:^4.1.0, bn.js@npm:^4.11.9":
   version: 4.12.0
   resolution: "bn.js@npm:4.12.0"
@@ -15958,6 +16068,13 @@ __metadata:
     pathval: ^1.1.1
     type-detect: ^4.0.5
   checksum: acff93fd537f96d4a4d62dd83810285dffcfccb5089e1bf2a1205b28ec82d93dff551368722893cf85004282df10ee68802737c33c90c5493957ed449ed7ce71
+  languageName: node
+  linkType: hard
+
+"chalk@npm:*":
+  version: 5.2.0
+  resolution: "chalk@npm:5.2.0"
+  checksum: 03d8060277de6cf2fd567dc25fcf770593eb5bb85f460ce443e49255a30ff1242edd0c90a06a03803b0466ff0687a939b41db1757bec987113e83de89a003caa
   languageName: node
   linkType: hard
 
@@ -18455,6 +18572,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"diff-sequences@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "diff-sequences@npm:27.5.1"
+  checksum: a00db5554c9da7da225db2d2638d85f8e41124eccbd56cbaefb3b276dcbb1c1c2ad851c32defe2055a54a4806f030656cbf6638105fd6ce97bb87b90b32a33ca
+  languageName: node
+  linkType: hard
+
 "diff-sequences@npm:^28.1.1":
   version: 28.1.1
   resolution: "diff-sequences@npm:28.1.1"
@@ -18909,6 +19033,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ejson@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "ejson@npm:2.2.3"
+  checksum: d6f6fc3bee140cfb3fcf034bbbd4eff8c7aafcfce637e068f6a7d3a1aad8a4812ba214651605243a62932b7e22caff15e5dfe831933f29ed36173b9241517384
+  languageName: node
+  linkType: hard
+
 "electron-to-chromium@npm:^1.4.202":
   version: 1.4.249
   resolution: "electron-to-chromium@npm:1.4.249"
@@ -18935,6 +19066,13 @@ __metadata:
     minimalistic-assert: ^1.0.1
     minimalistic-crypto-utils: ^1.0.1
   checksum: d56d21fd04e97869f7ffcc92e18903b9f67f2d4637a23c860492fbbff5a3155fd9ca0184ce0c865dd6eb2487d234ce9551335c021c376cd2d3b7cb749c7d10f4
+  languageName: node
+  linkType: hard
+
+"email-validator@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "email-validator@npm:2.0.4"
+  checksum: e702fee24e1b9efb7e6a84abb309bebdb4ddde137fdb99a61e24bd82ac0b605be34e191b1c4d04fbc855be7b94cad967f932a456c0def2240303881f4e388f2d
   languageName: node
   linkType: hard
 
@@ -22145,6 +22283,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gravatar@npm:^1.8.2":
+  version: 1.8.2
+  resolution: "gravatar@npm:1.8.2"
+  dependencies:
+    blueimp-md5: ^2.16.0
+    email-validator: ^2.0.4
+    querystring: 0.2.0
+    yargs: ^15.4.1
+  bin:
+    gravatar: cli.js
+  checksum: 44e4673108d2cc341d3b37d04de862bdae9a3b521a2cdf68bfb9ad7e4c97a06a37ce1162bc11fd220f6ff29f979fc800606958cc405504150eb4b103ec228751
+  languageName: node
+  linkType: hard
+
 "growl@npm:1.10.5":
   version: 1.10.5
   resolution: "growl@npm:1.10.5"
@@ -24830,6 +24982,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-diff@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "jest-diff@npm:27.5.1"
+  dependencies:
+    chalk: ^4.0.0
+    diff-sequences: ^27.5.1
+    jest-get-type: ^27.5.1
+    pretty-format: ^27.5.1
+  checksum: 8be27c1e1ee57b2bb2bef9c0b233c19621b4c43d53a3c26e2c00a4e805eb4ea11fe1694a06a9fb0e80ffdcfdc0d2b1cb0b85920b3f5c892327ecd1e7bd96b865
+  languageName: node
+  linkType: hard
+
 "jest-diff@npm:^28.1.1":
   version: 28.1.1
   resolution: "jest-diff@npm:28.1.1"
@@ -24908,6 +25072,13 @@ __metadata:
     jest-mock: ^29.5.0
     jest-util: ^29.5.0
   checksum: 57981911cc20a4219b0da9e22b2e3c9f31b505e43f78e61c899e3227ded455ce1a3a9483842c69cfa4532f02cfb536ae0995bf245f9211608edacfc1e478d411
+  languageName: node
+  linkType: hard
+
+"jest-get-type@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "jest-get-type@npm:27.5.1"
+  checksum: 63064ab70195c21007d897c1157bf88ff94a790824a10f8c890392e7d17eda9c3900513cb291ca1c8d5722cad79169764e9a1279f7c8a9c4cd6e9109ff04bbc0
   languageName: node
   linkType: hard
 
@@ -25003,6 +25174,18 @@ __metadata:
     jest-get-type: ^29.4.3
     pretty-format: ^29.5.0
   checksum: 0fb845da7ac9cdfc9b3b2e35f6f623a41c547d7dc0103ceb0349013459d00de5870b5689a625e7e37f9644934b40e8f1dcdd5422d14d57470600350364676313
+  languageName: node
+  linkType: hard
+
+"jest-matcher-utils@npm:^27.0.0":
+  version: 27.5.1
+  resolution: "jest-matcher-utils@npm:27.5.1"
+  dependencies:
+    chalk: ^4.0.0
+    jest-diff: ^27.5.1
+    jest-get-type: ^27.5.1
+    pretty-format: ^27.5.1
+  checksum: bb2135fc48889ff3fe73888f6cc7168ddab9de28b51b3148f820c89fdfd2effdcad005f18be67d0b9be80eda208ad47290f62f03d0a33f848db2dd0273c8217a
   languageName: node
   linkType: hard
 
@@ -28415,6 +28598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-abort-controller@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "node-abort-controller@npm:3.1.1"
+  checksum: 2c340916af9710328b11c0828223fc65ba320e0d082214a211311bf64c2891028e42ef276b9799188c4ada9e6e1c54cf7a0b7c05dd9d59fcdc8cd633304c8047
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^3.1.0":
   version: 3.2.1
   resolution: "node-addon-api@npm:3.2.1"
@@ -31518,7 +31708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^27.0.2":
+"pretty-format@npm:^27.0.0, pretty-format@npm:^27.0.2, pretty-format@npm:^27.5.1":
   version: 27.5.1
   resolution: "pretty-format@npm:27.5.1"
   dependencies:
@@ -39248,7 +39438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^15.0.2":
+"yargs@npm:^15.0.2, yargs@npm:^15.4.1":
   version: 15.4.1
   resolution: "yargs@npm:15.4.1"
   dependencies:
