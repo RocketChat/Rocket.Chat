@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Forma əsaslanan Giriş göstər",
   "Accounts_TwoFactorAuthentication_Enabled": "İki Faktör Kimlik Doğrulamasını Etkinleştir",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, hər hansı bir zamanda neçə tokenin etibarlı olduğunu müəyyən edir. Token hər 30 saniyədə yaradılıb və (30 * Maksimum Delta) saniyə üçün etibarlıdır. <br/>Örnek: Maksimum Delta 10'a ayarlandığında, her simge, zaman damgasının öncesi və ya sonra 300 saniyə qədər istifadə edilə bilər. Müştərinin saatı server ilə düzgün bir şəkildə sinxronlaşdırılmadıqda bu faydalıdır.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, hər hansı bir zamanda neçə tokenin etibarlı olduğunu müəyyən edir. Token hər 30 saniyədə yaradılıb və (30 * Maksimum Delta) saniyə üçün etibarlıdır.   \nÖrnek: Maksimum Delta 10'a ayarlandığında, her simge, zaman damgasının öncesi və ya sonra 300 saniyə qədər istifadə edilə bilər. Müştərinin saatı server ilə düzgün bir şəkildə sinxronlaşdırılmadıqda bu faydalıdır.",
   "Accounts_UseDefaultBlockedDomainsList": "Default Engellenen Etki Alan siyahısı istifadə edin",
   "Accounts_UseDNSDomainCheck": "DNS Domain Check istifadə edin",
   "API_EmbedDisabledFor": "İstifadəçilər üçün Embed'yi söndürün",

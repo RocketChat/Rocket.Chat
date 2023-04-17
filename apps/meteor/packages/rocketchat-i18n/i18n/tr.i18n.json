@@ -202,7 +202,7 @@
   "Accounts_ShowFormLogin": "Varsayılan giriş formunu göster",
   "Accounts_TwoFactorAuthentication_Enabled": "İki Aşamalı Kimlik Doğrulamayı Etkinleştir",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, herhangi bir zamanda kaç jetonun geçerli olduğunu belirler. Jetonlar her 30 saniyede bir üretilir ve (30 * Maksimum Delta) saniye için geçerlidir. <br/>Örnek: Maksimum Delta değeri 10'a ayarlandığında, her simge zaman damgasından 300 saniye önce veya sonra kullanılabilir. Bu, istemcinin saati sunucuyla düzgün bir şekilde senkronize edilmediğinde kullanışlıdır.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, herhangi bir zamanda kaç jetonun geçerli olduğunu belirler. Jetonlar her 30 saniyede bir üretilir ve (30 * Maksimum Delta) saniye için geçerlidir.   \nÖrnek: Maksimum Delta değeri 10'a ayarlandığında, her simge zaman damgasından 300 saniye önce veya sonra kullanılabilir. Bu, istemcinin saati sunucuyla düzgün bir şekilde senkronize edilmediğinde kullanışlıdır.",
   "Accounts_UseDefaultBlockedDomainsList": "Standart Engelli Domain Listesini Kullan",
   "Accounts_UseDNSDomainCheck": "DNS Alan Adı Kontrolü'nü Kullan",
   "API_EmbedDisabledFor": "Kullanıcılar için Gömülü Özelliğini Devre Dışı Bırak",

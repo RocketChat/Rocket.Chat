@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Arată formularul pentru autentificare",
   "Accounts_TwoFactorAuthentication_Enabled": "Activați autentificarea cu doi factori",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maximă",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta maximă determină câte jetoane sunt valide la un moment dat. Jetoanele se generează la fiecare 30 de secunde și sunt valabile pentru secunde (30 * Delta maximă). <br/>Exemplu: Cu Delta maximă setată la 10, fiecare jeton poate fi folosit până la 300 de secunde înainte sau după marcarea timpului. Acest lucru este util când ceasul clientului nu este sincronizat corespunzător cu serverul.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta maximă determină câte jetoane sunt valide la un moment dat. Jetoanele se generează la fiecare 30 de secunde și sunt valabile pentru secunde (30 * Delta maximă).   \nExemplu: Cu Delta maximă setată la 10, fiecare jeton poate fi folosit până la 300 de secunde înainte sau după marcarea timpului. Acest lucru este util când ceasul clientului nu este sincronizat corespunzător cu serverul.",
   "Accounts_UseDefaultBlockedDomainsList": "Implicit utilizare blocate Listă Domenii",
   "Accounts_UseDNSDomainCheck": "DNS Verificați domeniu utilizați",
   "API_EmbedDisabledFor": "Dezactivați Embed pentru utilizatori",

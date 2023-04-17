@@ -184,7 +184,7 @@
   "Accounts_ShowFormLogin": "Rādīt noklusējuma pieteikšanās veidlapu",
   "Accounts_TwoFactorAuthentication_Enabled": "Iespējojiet divu faktoru autentifikāciju",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta nosaka, cik daudz žetonu ir derīgi jebkurā brīdī. Žetoni tiek ģenerēti ik pēc 30 sekundēm un ir derīgi (30 * MAximum Delta) sekundes. <br/>Piemērs: ja Maximum Delta iestatījums ir 10, katrs žetons var tikt izmantots līdz 300 sekundēm pirms vai pēc tā laika zīmoga. Tas ir noderīgi, ja klienta pulkstenis nav pareizi sinhronizēts ar serveri.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta nosaka, cik daudz žetonu ir derīgi jebkurā brīdī. Žetoni tiek ģenerēti ik pēc 30 sekundēm un ir derīgi (30 * MAximum Delta) sekundes.   \nPiemērs: ja Maximum Delta iestatījums ir 10, katrs žetons var tikt izmantots līdz 300 sekundēm pirms vai pēc tā laika zīmoga. Tas ir noderīgi, ja klienta pulkstenis nav pareizi sinhronizēts ar serveri.",
   "Accounts_UseDefaultBlockedDomainsList": "Izmantojiet noklusējuma Bloķēto domēnu sarakstu",
   "Accounts_UseDNSDomainCheck": "Izmantojiet DNS domēna pārbaudi",
   "API_EmbedDisabledFor": "Atspējot Iegult lietotājiem",

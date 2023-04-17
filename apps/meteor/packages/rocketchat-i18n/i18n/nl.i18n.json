@@ -242,7 +242,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Wachtwoord fallback afdwingen",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Gebruikers worden gedwongen om hun wachtwoord in te voegen voor belangrijke acties, als er geen andere tweefactorauthenticatiemethode is ingeschakeld voor die gebruiker en er een wachtwoord voor hem is ingesteld.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximale delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "De maximale delta bepaalt hoeveel tokens op een bepaald moment geldig zijn. Tokens worden elke 30 seconden gegenereerd en zijn geldig voor (30 * Maximum Delta) seconden. <br/>Voorbeeld: met een Maximum Delta ingesteld op 10, kan elk token maximaal 300 seconden vóór of na de tijdstempel worden gebruikt. Dit is handig als de klok van de client niet correct is gesynchroniseerd met de server.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "De maximale delta bepaalt hoeveel tokens op een bepaald moment geldig zijn. Tokens worden elke 30 seconden gegenereerd en zijn geldig voor (30 * Maximum Delta) seconden.   \nVoorbeeld: met een Maximum Delta ingesteld op 10, kan elk token maximaal 300 seconden vóór of na de tijdstempel worden gebruikt. Dit is handig als de klok van de client niet correct is gesynchroniseerd met de server.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Onthoud twee factoren voor (seconden)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Vraag geen tweefactorautorisatiecode aan als deze al eerder in de aangegeven tijd is verstrekt.",
   "Accounts_UseDefaultBlockedDomainsList": "Gebruik de standaardlijst met geblokkeerde domeinen",

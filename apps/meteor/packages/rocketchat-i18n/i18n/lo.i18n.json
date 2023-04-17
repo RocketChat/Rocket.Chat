@@ -190,7 +190,7 @@
   "Accounts_ShowFormLogin": "ສະແດງໃຫ້ເຫັນຮູບແບບທີ່ເຂົ້າສູ່ລະບົບ",
   "Accounts_TwoFactorAuthentication_Enabled": "ອະນຸຍາດໃຫ້ມີການກວດສອບສອງປັດໃຈ",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "ການ Delta ສູງສຸດກໍານົດວິທີການຈໍານວນຫຼາຍ token ແມ່ນຖືກຕ້ອງໃນເວລາໃດ. ສັນຍາລັກຖືກສ້າງຂຶ້ນທຸກໆ 30 ວິນາທີ, ແລະຖືກຕ້ອງສໍາລັບ (30 * ສູງສຸດ Delta) ວິນາທີ. <br/>ຕົວຢ່າງ: ດ້ວຍ Delta ສູງສຸດທີ່ກໍານົດໄວ້ເປັນ 10, ໂຕ້ຕອບແຕ່ລະສາມາດໃຊ້ໄດ້ເຖິງ 300 ວິນາທີກ່ອນຫຼືຫຼັງຈາກເວລາຂອງມັນ. ນີ້ແມ່ນເປັນປະໂຫຍດເມື່ອໂມງຂອງລູກຄ້າບໍ່ໄດ້ຖືກຊິງໃຫ້ຖືກຕ້ອງກັບເຄື່ອງແມ່ຂ່າຍ.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "ການ Delta ສູງສຸດກໍານົດວິທີການຈໍານວນຫຼາຍ token ແມ່ນຖືກຕ້ອງໃນເວລາໃດ. ສັນຍາລັກຖືກສ້າງຂຶ້ນທຸກໆ 30 ວິນາທີ, ແລະຖືກຕ້ອງສໍາລັບ (30 * ສູງສຸດ Delta) ວິນາທີ.   \nຕົວຢ່າງ: ດ້ວຍ Delta ສູງສຸດທີ່ກໍານົດໄວ້ເປັນ 10, ໂຕ້ຕອບແຕ່ລະສາມາດໃຊ້ໄດ້ເຖິງ 300 ວິນາທີກ່ອນຫຼືຫຼັງຈາກເວລາຂອງມັນ. ນີ້ແມ່ນເປັນປະໂຫຍດເມື່ອໂມງຂອງລູກຄ້າບໍ່ໄດ້ຖືກຊິງໃຫ້ຖືກຕ້ອງກັບເຄື່ອງແມ່ຂ່າຍ.",
   "Accounts_UseDefaultBlockedDomainsList": "ການນໍາໃຊ້ມາດຕະຖານສະກັດຊີ Domains",
   "Accounts_UseDNSDomainCheck": "ການນໍາໃຊ້ Check DNS ໂດເມນ",
   "API_EmbedDisabledFor": "Embed ປິດການໃຊ້ງານສໍາລັບຜູ້ໃຊ້",

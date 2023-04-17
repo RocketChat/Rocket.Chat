@@ -208,7 +208,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Įgalinti dviejų veiksnių autentiškumo patvirtinimą el. paštu",
   "Accounts_TwoFactorAuthentication_Enabled": "Įgalinti dviejų veiksnių autentifikavimą",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Didžiausia deltė",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimalus deltas nustato, kiek žetonų galioja bet kuriuo metu. Žetonai generuojami kas 30 sekundžių ir galioja (30 * Maksimalus deltos) sekundes. <br/>Pavyzdys: kai maksimali deltos vertė yra 10, kiekvienas raktas gali būti naudojamas iki 300 sekundžių iki arba po laiko žymos. Tai naudinga, kai kliento laikrodis netinkamai sinchronizuojamas su serveriu.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimalus deltas nustato, kiek žetonų galioja bet kuriuo metu. Žetonai generuojami kas 30 sekundžių ir galioja (30 * Maksimalus deltos) sekundes.   \nPavyzdys: kai maksimali deltos vertė yra 10, kiekvienas raktas gali būti naudojamas iki 300 sekundžių iki arba po laiko žymos. Tai naudinga, kai kliento laikrodis netinkamai sinchronizuojamas su serveriu.",
   "Accounts_UseDefaultBlockedDomainsList": "Naudokite numatytąjį užblokuotų domenų sąrašą",
   "Accounts_UseDNSDomainCheck": "Naudokite DNS domeno patikrinimą",
   "API_EmbedDisabledFor": "Išjungti įterpti naudotojams",

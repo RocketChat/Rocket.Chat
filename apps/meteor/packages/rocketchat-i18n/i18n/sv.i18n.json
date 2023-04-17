@@ -260,7 +260,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Kräv lösenord om ingen annan metod angetts",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Användaren måste ange sitt lösenord för viktiga åtgärder om ingen annan metod för tvåfaktorsautentisering har aktiverats för användaren och ett lösenord har angetts för denna.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta bestämmer hur många symboler som är giltiga vid varje givet tillfälle. Token genereras var 30: e sekund och gäller för (30 * Maximum Delta) sekunder. <br/>Exempel: Med Maximum Delta satt till 10 kan varje symbol användas upp till 300 sekunder före eller efter tidsstämpeln. Detta är användbart när klientens klocka inte är synkroniserad korrekt med servern.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta bestämmer hur många symboler som är giltiga vid varje givet tillfälle. Token genereras var 30: e sekund och gäller för (30 * Maximum Delta) sekunder.   \nExempel: Med Maximum Delta satt till 10 kan varje symbol användas upp till 300 sekunder före eller efter tidsstämpeln. Detta är användbart när klientens klocka inte är synkroniserad korrekt med servern.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Kom ihåg tvåfaktorsautentiseringen i (sekunder)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Begär inte en kod för tvåfaktorsautentisering om en sådan redan tillhandahållits inom den angivna tiden.",
   "Accounts_UseDefaultBlockedDomainsList": "Använd standardlista för blockerade domäner",

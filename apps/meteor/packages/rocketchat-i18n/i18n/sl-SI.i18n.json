@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Prikaži prijavo, ki temelji na obrazcu",
   "Accounts_TwoFactorAuthentication_Enabled": "Omogoči dve avtentifikaciji faktorja",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Največji delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Največji delta določa, koliko žetonov je veljavnih v določenem trenutku. Žetoni se ustvarijo vsakih 30 sekund in veljajo za (30 * največji delta) sekunde. <br/>Primer: z maksimalno vrednostjo delte, nastavljene na 10, lahko vsak žeton uporabite do 300 sekund pred ali po časovnem žigu. To je uporabno, če  je ura uporabnika nepravilno sinhronizirana\n s strežnikom.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Največji delta določa, koliko žetonov je veljavnih v določenem trenutku. Žetoni se ustvarijo vsakih 30 sekund in veljajo za (30 * največji delta) sekunde.   \nPrimer: z maksimalno vrednostjo delte, nastavljene na 10, lahko vsak žeton uporabite do 300 sekund pred ali po časovnem žigu. To je uporabno, če  je ura uporabnika nepravilno sinhronizirana\n s strežnikom.",
   "Accounts_UseDefaultBlockedDomainsList": "Uporabi privzeti seznam blokiranih domen",
   "Accounts_UseDNSDomainCheck": "Uporabi preverjanje za domeno DNS",
   "API_EmbedDisabledFor": "Onemogoči možnost Vgraditev za uporabnike",

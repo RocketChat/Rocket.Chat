@@ -258,7 +258,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Passwort-Fallback erzwingen",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Benutzer werden bei wichtigen Aktionen zur Eingabe ihres Passworts gezwungen, wenn für diesen Benutzer keine andere Zwei-Faktor-Authentifizierungsmethode aktiviert ist und für ihn ein Passwort festgelegt wurde.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden. <br/>Beispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden.   \nBeispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Zweiten Faktor merken für (in Sekunden)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Keinen Zwei-Faktor-Autorisierungscode anfordern, wenn dieser zuvor in der angegebenen Zeit bereitgestellt wurde.",
   "Accounts_UseDefaultBlockedDomainsList": "Standardliste für blockierte Domains verwenden",

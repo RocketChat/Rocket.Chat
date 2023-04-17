@@ -242,7 +242,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Aplicar suport de contrasenya",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Els usuaris es veuran obligats a ingressar la contrasenya per a accions importants si no s'habilita cap altre mètode d'autenticació de dos factors per a aquest usuari i s'estableix una contrasenya per a ell.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta màxima",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "El Maximum Delta determina quants tokens són vàlids en un moment donat. Els tokens es generen cada 30 segons i són vàlids per a (30 * Maximum Delta) segons. <br/>Exemple: amb un Delta màxim establert a 10, cada token es pot utilitzar fins a 300 segons abans o després de la marca de temps. Això és útil quan el rellotge del client no està correctament sincronitzat amb el servidor.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "El Maximum Delta determina quants tokens són vàlids en un moment donat. Els tokens es generen cada 30 segons i són vàlids per a (30 * Maximum Delta) segons.   \nExemple: amb un Delta màxim establert a 10, cada token es pot utilitzar fins a 300 segons abans o després de la marca de temps. Això és útil quan el rellotge del client no està correctament sincronitzat amb el servidor.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Recordar segon factor d'autenticació durant (segons)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "No sol·licitar codi de segon factor d'autenticació si ja s'ha proporcionat abans en el temps establert.",
   "Accounts_UseDefaultBlockedDomainsList": "Utilitza la llista predeterminada de dominis bloquejats",

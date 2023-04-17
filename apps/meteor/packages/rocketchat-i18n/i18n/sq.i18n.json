@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Tregojnë formë të bazuar Login",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivizo Authentication Dy Factor",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maksimale",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta maksimale përcakton se sa argumentet janë të vlefshme në çdo kohë të caktuar. Token gjenerohen çdo 30 sekonda dhe janë të vlefshme për (30 * Delta maksimale) sekonda. <br/>Shembull: Me një Delta maksimale të caktuar në 10, çdo shenjë mund të përdoret deri në 300 sekonda para ose pas kohës së tij. Kjo është e dobishme kur ora e klientit nuk është sinkronizuar siç duhet me serverin.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta maksimale përcakton se sa argumentet janë të vlefshme në çdo kohë të caktuar. Token gjenerohen çdo 30 sekonda dhe janë të vlefshme për (30 * Delta maksimale) sekonda.   \nShembull: Me një Delta maksimale të caktuar në 10, çdo shenjë mund të përdoret deri në 300 sekonda para ose pas kohës së tij. Kjo është e dobishme kur ora e klientit nuk është sinkronizuar siç duhet me serverin.",
   "Accounts_UseDefaultBlockedDomainsList": "Përdorimi Default Blocked Lista Domains",
   "Accounts_UseDNSDomainCheck": "Përdorni DNS Domain Kontrollo",
   "API_EmbedDisabledFor": "Mbjell Disable për Përdoruesit",

@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Dangos Ffurflen Mewngofnodi Diofyn",
   "Accounts_TwoFactorAuthentication_Enabled": "Galluogi Dau Ffactor Dilysu",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta Uchafswm",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Mae'r Uchafswm Delta yn pennu faint o docynnau sy'n ddilys ar unrhyw adeg benodol. Cynhyrchir tocynnau bob 30 eiliad, ac maent yn ddilys ar gyfer eiliadau (30 * Uchafswm Delta). <br / >Enghraifft: Gyda set Delta uchaf i 10, gellir defnyddio pob tocyn hyd at 300 eiliad cyn neu ar ôl ei amserlen. Mae hyn yn ddefnyddiol pan nad yw cloc y cleient wedi'i syncedio'n iawn â'r gweinydd.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Mae'r Uchafswm Delta yn pennu faint o docynnau sy'n ddilys ar unrhyw adeg benodol. Cynhyrchir tocynnau bob 30 eiliad, ac maent yn ddilys ar gyfer eiliadau (30 * Uchafswm Delta).   \nEnghraifft: Gyda set Delta uchaf i 10, gellir defnyddio pob tocyn hyd at 300 eiliad cyn neu ar ôl ei amserlen. Mae hyn yn ddefnyddiol pan nad yw cloc y cleient wedi'i syncedio'n iawn â'r gweinydd.",
   "Accounts_UseDefaultBlockedDomainsList": "Defnyddiwch y Rhestr Parthau Gwaharddedig",
   "Accounts_UseDNSDomainCheck": "Defnyddio Gwiriad Parth DNS",
   "API_EmbedDisabledFor": "Analluogi Ymgorffori ar gyfer Defnyddwyr",

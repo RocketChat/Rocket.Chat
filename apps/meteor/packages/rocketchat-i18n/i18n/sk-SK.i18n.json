@@ -182,7 +182,7 @@
   "Accounts_ShowFormLogin": "Zobraziť prednastavený formulár prihlásenia",
   "Accounts_TwoFactorAuthentication_Enabled": "Povoliť dvoj-faktorovú autentifikáciu",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximálna Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximálna Delta určuje, koľko Známok je platných v danom čase. Známky sa generujú každých 30 sekúnd a platia pre (30 * maximálna Delta) sekúnd. <br/>Príklad: Ak je maximálna Delta nastavená na 10, každá Známka môže byť použitá až 300 sekúnd pred alebo po jeho časovej pečiatke. Je to užitočné, keď nie sú správne synchronizované hodiny klienta so serverom.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximálna Delta určuje, koľko Známok je platných v danom čase. Známky sa generujú každých 30 sekúnd a platia pre (30 * maximálna Delta) sekúnd.   \nPríklad: Ak je maximálna Delta nastavená na 10, každá Známka môže byť použitá až 300 sekúnd pred alebo po jeho časovej pečiatke. Je to užitočné, keď nie sú správne synchronizované hodiny klienta so serverom.",
   "Accounts_UseDefaultBlockedDomainsList": "Použiť predvolený zoznam blokovaných domén",
   "Accounts_UseDNSDomainCheck": "Použiť kontrolu domény DNS",
   "API_EmbedDisabledFor": "Zakázať vkladanie pre používateľov",

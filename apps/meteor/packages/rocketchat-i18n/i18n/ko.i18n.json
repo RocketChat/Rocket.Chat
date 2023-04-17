@@ -233,7 +233,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "비밀번호 대체 시행",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "해당 사용자의 다른 2단계 인증(2FA) 방법이 활성화되어 있지 않고, 해당 사용자의 암호가 설정된 경우, 사용자는 중요한 작업진행 시 암호를 입력해야합니다.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "최대 변화 값",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "최대 변화 값은 주어진 시간에 얼마나 많은 토큰이 유효한지 결정합니다. 토큰은 30 초마다 생성되며 (30 * 최대 변화 값) 초 동안 유효합니다. <br/>예 : 최대 변화 값을 10으로 설정하면 각 토큰은 타임 스탬프 전후에 최대 300 초까지 사용할 수 있습니다. 이 기능은 클라이언트의 시계가 서버와 올바르게 동기화되지 않은 경우에 유용합니다.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "최대 변화 값은 주어진 시간에 얼마나 많은 토큰이 유효한지 결정합니다. 토큰은 30 초마다 생성되며 (30 * 최대 변화 값) 초 동안 유효합니다.   \n예 : 최대 변화 값을 10으로 설정하면 각 토큰은 타임 스탬프 전후에 최대 300 초까지 사용할 수 있습니다. 이 기능은 클라이언트의 시계가 서버와 올바르게 동기화되지 않은 경우에 유용합니다.",
   "Accounts_TwoFactorAuthentication_RememberFor": "2단계 인증(2FA)을 기억하십시오 (초)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "이미 제공된 2단계 인증(2FA)코드가 있습니다. 잠시 후 이용해주세요.",
   "Accounts_UseDefaultBlockedDomainsList": "기본 차단 도메인리스트 사용",

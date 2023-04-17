@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivieren Sie die Zwei-Faktor-Authentifizierung",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden. <br/>Beispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden.   \nBeispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
   "Accounts_UseDefaultBlockedDomainsList": "Standardliste für blockierte Domains verwenden",
   "Accounts_UseDNSDomainCheck": "DNS-Domain-Check verwenden",
   "API_EmbedDisabledFor": "Einbettungen für Benutzer deaktivieren",

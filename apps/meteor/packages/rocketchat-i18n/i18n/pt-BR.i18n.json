@@ -253,7 +253,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Forçar fallback de senha",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Usuários serão forçados a entrar com suas senhas, para ações importantes, se nenhum outro método de Autenticação de Dois Fatores estiver habilitado para o usuário e uma senha estiver definida para ele.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "O Delta máximo determina quantos tokens são válidos em qualquer momento. Os tokens são gerados a cada 30 segundos e são válidos por (30 * Delta máximo) segundos. <br/>Exemplo: com um Delta máximo configurado para 10, cada token pode ser usado até 300 segundos antes ou depois do carimbo de hora. Isso é útil quando o relógio do cliente não está corretamente sincronizado com o servidor.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "O Delta máximo determina quantos tokens são válidos em qualquer momento. Os tokens são gerados a cada 30 segundos e são válidos por (30 * Delta máximo) segundos.   \nExemplo: com um Delta máximo configurado para 10, cada token pode ser usado até 300 segundos antes ou depois do carimbo de hora. Isso é útil quando o relógio do cliente não está corretamente sincronizado com o servidor.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Lembrar dois fatores por (segundos)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Não solicitar código da autenticação de dois fatores se já foi fornecido antes do tempo determinado.",
   "Accounts_UseDefaultBlockedDomainsList": "Usar lista padrão de domínios bloqueados",

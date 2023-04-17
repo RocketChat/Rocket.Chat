@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "Wys vormgebaseerde inskrywing",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktiveer twee faktore verifikasie",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Die Maksimum Delta bepaal hoeveel tokens geldig is op enige gegewe tydstip. Tokens word elke 30 sekondes gegenereer en geld vir (30 * Maksimum Delta) sekondes. <br/>Voorbeeld: Met 'n Maksimum Delta ingestel op 10, kan elke teken tot 300 sekondes voor of na die tydstempel gebruik word. Dit is handig as die kliënt se klok nie behoorlik met die bediener gesinkroniseer word nie.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Die Maksimum Delta bepaal hoeveel tokens geldig is op enige gegewe tydstip. Tokens word elke 30 sekondes gegenereer en geld vir (30 * Maksimum Delta) sekondes.   \nVoorbeeld: Met 'n Maksimum Delta ingestel op 10, kan elke teken tot 300 sekondes voor of na die tydstempel gebruik word. Dit is handig as die kliënt se klok nie behoorlik met die bediener gesinkroniseer word nie.",
   "Accounts_UseDefaultBlockedDomainsList": "Gebruik verstek geblokkeerde domeinnelys",
   "Accounts_UseDNSDomainCheck": "Gebruik DNS Domain Check",
   "API_EmbedDisabledFor": "Deaktiveer inbedding vir gebruikers",

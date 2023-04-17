@@ -203,7 +203,7 @@
   "Accounts_ShowFormLogin": "Mostra la maschera di accesso predefinita",
   "Accounts_TwoFactorAuthentication_Enabled": "Abilita l'autenticazione a due fattori",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta massimo",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Il delta massimo determina quanti token sono validi in un dato momento. I token vengono generati ogni 30 secondi e sono validi per (30 * delta massimo) secondi. <br/>Esempio: con un delta massimo impostato su 10, ogni token può essere utilizzato fino a 300 secondi prima o dopo il momento in cui viene creato. Ciò è utile quando l'orologio del client non è sincronizzato correttamente con il server.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Il delta massimo determina quanti token sono validi in un dato momento. I token vengono generati ogni 30 secondi e sono validi per (30 * delta massimo) secondi.   \nEsempio: con un delta massimo impostato su 10, ogni token può essere utilizzato fino a 300 secondi prima o dopo il momento in cui viene creato. Ciò è utile quando l'orologio del client non è sincronizzato correttamente con il server.",
   "Accounts_UseDefaultBlockedDomainsList": "Utilizza l'elenco dei domini bloccati",
   "Accounts_UseDNSDomainCheck": "Utilizza la verifica del dominio DNS",
   "API_EmbedDisabledFor": "Disabilita gli incorporamenti (embed) per gli utenti",

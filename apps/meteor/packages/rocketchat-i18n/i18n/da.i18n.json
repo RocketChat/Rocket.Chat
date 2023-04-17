@@ -223,7 +223,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Gennemtving kodeord fallback",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Brugere bliver tvunget til at indtaste deres adgangskode i forbindelse med vigtige handlinger, hvis ingen anden tofaktorautentiseringsmetode er aktiveret for denne bruger og han har en adgangskode.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimalt delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Det maksimale delta afgør, hvor mange tokens der er gyldige på et givent tidspunkt. Tokens genereres hvert 30. sekund og er gyldige i (30 * maksimalt delta) sekunder. <br/>Eksempel: Med et maksimalt delta på 10 kan hvert tegn bruges op til 300 sekunder før eller efter sit tidsstempel. Dette er nyttigt når klientens tid ikke er korrekt synkroniseret med serveren.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Det maksimale delta afgør, hvor mange tokens der er gyldige på et givent tidspunkt. Tokens genereres hvert 30. sekund og er gyldige i (30 * maksimalt delta) sekunder.   \nEksempel: Med et maksimalt delta på 10 kan hvert tegn bruges op til 300 sekunder før eller efter sit tidsstempel. Dette er nyttigt når klientens tid ikke er korrekt synkroniseret med serveren.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Husk to-faktor i (sekunder)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Anmod ikke om to-faktor-godkendelses-kode, hvis den allerede blev leveret før det givne tidspunkt.",
   "Accounts_UseDefaultBlockedDomainsList": "Brug en standardliste over blokerede domæner",

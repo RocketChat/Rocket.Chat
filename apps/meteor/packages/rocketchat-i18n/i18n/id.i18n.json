@@ -180,7 +180,7 @@
   "Accounts_ShowFormLogin": "berbasis bentuk acara Login",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktifkan Dua Faktor Otentikasi",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maksimum",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang valid pada waktu tertentu. Token dihasilkan setiap 30 detik, dan berlaku untuk (30 * Maksimum Delta) detik. <br/>Contoh: Dengan Delta Maksimum yang disetel ke 10, masing-masing token dapat digunakan hingga 300 detik sebelum atau sesudah cap waktu itu. Ini berguna saat jam klien tidak disinkronkan dengan benar dengan server.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang valid pada waktu tertentu. Token dihasilkan setiap 30 detik, dan berlaku untuk (30 * Maksimum Delta) detik.   \nContoh: Dengan Delta Maksimum yang disetel ke 10, masing-masing token dapat digunakan hingga 300 detik sebelum atau sesudah cap waktu itu. Ini berguna saat jam klien tidak disinkronkan dengan benar dengan server.",
   "Accounts_UseDefaultBlockedDomainsList": "Gunakan Default Diblokir Daftar Domain",
   "Accounts_UseDNSDomainCheck": "Gunakan DNS Domain Periksa",
   "API_EmbedDisabledFor": "Nonaktifkan Embed untuk user",

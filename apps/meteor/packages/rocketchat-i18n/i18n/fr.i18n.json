@@ -242,7 +242,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Appliquer le recours au mot de passe",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "L'utilisateur devra entrer son mot de passe pour les actions importantes, si aucune autre méthode d'authentification à deux facteurs n'est activée pour cet utilisateur et qu'un mot de passe est défini pour lui.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maximum",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Le delta maximum détermine combien de jetons sont valides à un moment donné. Les jetons sont générés toutes les 30 secondes et sont valides pendant (30 * delta maximum) secondes. <br/>Exemple : Avec un delta maximum défini sur 10, chaque jeton peut être utilisé jusqu'à 300 secondes avant ou après l'horodatage. Ceci est utile lorsque l'horloge du client n'est pas correctement synchronisée avec le serveur.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Le delta maximum détermine combien de jetons sont valides à un moment donné. Les jetons sont générés toutes les 30 secondes et sont valides pendant (30 * delta maximum) secondes.   \nExemple : Avec un delta maximum défini sur 10, chaque jeton peut être utilisé jusqu'à 300 secondes avant ou après l'horodatage. Ceci est utile lorsque l'horloge du client n'est pas correctement synchronisée avec le serveur.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Se souvenir des deux facteurs pendant (secondes)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Ne pas demander le code d'autorisation à deux facteurs s'il a déjà été fourni dans le délai imparti.",
   "Accounts_UseDefaultBlockedDomainsList": "Utiliser la liste de domaines bloqués par défaut",

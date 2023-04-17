@@ -189,7 +189,7 @@
   "Accounts_ShowFormLogin": "Standard Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivieren die Zwei-Faktor-Authentifizierung",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden. <br/>Beispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden.   \nBeispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
   "Accounts_UseDefaultBlockedDomainsList": "Standardliste für blockierte Domains verwenden",
   "Accounts_UseDNSDomainCheck": "DNS-Domain-Check verwenden",
   "Accounts_UserAddedEmail_Default": "<h1>Willkommen zu <strong>[Site_Name]</strong></h1><p>Besuche <a href=\"[Site_URL]\">[Site_URL]</a> und probiere noch heute die beste Open-Source-Chat-Lösung aus.</p><p>Du kannst Dich mit den folgenden Daten anmelden: E-Mail-Adresse: [email] Passwort: [password]Es kann sein, dass Du Dein Passwort nach der ersten Anmeldung ändern musst.",

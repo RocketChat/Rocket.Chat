@@ -222,7 +222,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Thực thi dự phòng mật khẩu",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Cho các hành động quan trọng, người dùng sẽ bị buộc phải nhập mật khẩu của họ, nếu không có phương pháp xác thực hai yếu tố nào khác được kích hoạt cho người dùng đó và mật khẩu được đặt cho anh ta.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta tối đa",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Tối đa xác định có bao nhiêu mã thông báo có giá trị tại bất kỳ thời điểm nào. Tokens được tạo ra mỗi 30 giây, và có giá trị cho (30 * Tối đa Delta) giây. <br/>Ví dụ: Với Delta tối đa được đặt là 10, mỗi mã thông báo có thể được sử dụng tối đa 300 giây trước hoặc sau khi đó là dấu thời gian. Điều này rất hữu ích khi đồng hồ của khách hàng không được đồng bộ hóa đúng với máy chủ.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Tối đa xác định có bao nhiêu mã thông báo có giá trị tại bất kỳ thời điểm nào. Tokens được tạo ra mỗi 30 giây, và có giá trị cho (30 * Tối đa Delta) giây.   \nVí dụ: Với Delta tối đa được đặt là 10, mỗi mã thông báo có thể được sử dụng tối đa 300 giây trước hoặc sau khi đó là dấu thời gian. Điều này rất hữu ích khi đồng hồ của khách hàng không được đồng bộ hóa đúng với máy chủ.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Nhớ hai yếu tố cho (giây)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Không yêu cầu mã xác thực hai yếu tố nếu nó đã được cung cấp trước đó trong thời gian nhất định.",
   "Accounts_UseDefaultBlockedDomainsList": "Sử dụng danh sách tên miền bị chặn mặc định",

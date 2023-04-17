@@ -231,7 +231,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "强制密码回退",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "如果用户启用两步验证并设置了密码，用户进行重要的操作时必须输入密码。",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大 Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大差值确定在任何给定时间有多少令牌有效。令牌每30秒产生一次，并且对于（30 * 最大差值）秒有效。 <br/>示例：将最大差值设置为10时，每个令牌可以在时间戳之前或之后使用达300秒。在客户端的时钟与服务器没有正确同步时，这很有用。",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大差值确定在任何给定时间有多少令牌有效。令牌每30秒产生一次，并且对于（30 * 最大差值）秒有效。   \n示例：将最大差值设置为10时，每个令牌可以在时间戳之前或之后使用达300秒。在客户端的时钟与服务器没有正确同步时，这很有用。",
   "Accounts_TwoFactorAuthentication_RememberFor": "记住两步验证(秒)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "如果在时间内已经提供了两步验证码，将不再请求。",
   "Accounts_UseDefaultBlockedDomainsList": "使用默认的域名屏蔽列表",

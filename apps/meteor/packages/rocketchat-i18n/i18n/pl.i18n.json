@@ -253,7 +253,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Wymuś zapasowe hasło",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Użytkownik będzie musiał wprowadzić hasło przy ważnych czynnościach, jeśli nie jest dla niego włączona żadna inna metoda uwierzytelniania dwuskładnikowego, a ustawiono dla niego hasło.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksymalna delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksymalna delta określa, ile tokenów jest ważnych w danym momencie. Tokeny są generowane co 30 sekund i są ważne przez (30 × maksymalna delta) sek. <br/>Przykład: przy maksymalnej delcie ustawionej na 10 każdy token może być użyty do 300 sekund przed swoją sygnaturą czasową lub po niej. Jest to przydatne, gdy zegar klienta nie jest prawidłowo zsynchronizowany z serwerem.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksymalna delta określa, ile tokenów jest ważnych w danym momencie. Tokeny są generowane co 30 sekund i są ważne przez (30 × maksymalna delta) sek.   \nPrzykład: przy maksymalnej delcie ustawionej na 10 każdy token może być użyty do 300 sekund przed swoją sygnaturą czasową lub po niej. Jest to przydatne, gdy zegar klienta nie jest prawidłowo zsynchronizowany z serwerem.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Pamiętaj uwierzytelnianie dwuskładnikowe przez (sekundy)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Nie wymagaj kodu uwierzytelniania dwuskładnikowego, jeśli został on już wcześniej podany w danym czasie.",
   "Accounts_UseDefaultBlockedDomainsList": "Użyj domyślnej listy zablokowanych domen",

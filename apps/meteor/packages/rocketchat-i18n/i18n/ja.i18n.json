@@ -242,7 +242,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "パスワードのフォールバックの強制",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "そのユーザーのその他の2要素認証方法が有効でなく、パスワードが設定されている場合、重要な操作でパスワードの入力を求められます。",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大デルタ",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大デルタでは、任意の時点で有効なトークンの数を決定します。トークンは30秒ごとに生成され、(30 * 最大デルタ) 秒間有効です。<br/>例：最大デルタを10に設定すると、各トークンはタイムスタンプの前後に最大300秒間使用できます。これは、クライアントの時計がサーバーと正しく同期されていない場合に便利です。",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大デルタでは、任意の時点で有効なトークンの数を決定します。トークンは30秒ごとに生成され、(30 * 最大デルタ) 秒間有効です。  \n例：最大デルタを10に設定すると、各トークンはタイムスタンプの前後に最大300秒間使用できます。これは、クライアントの時計がサーバーと正しく同期されていない場合に便利です。",
   "Accounts_TwoFactorAuthentication_RememberFor": "2要素を記憶する秒数",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "2要素認証コードが所定の時間内にすでに提供されている場合は、要求しないでください。",
   "Accounts_UseDefaultBlockedDomainsList": "デフォルトのブロックドメイン一覧の使用",

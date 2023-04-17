@@ -224,7 +224,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Vynutit zadání hesla",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Uživatelé budou nuceni zadat heslo u citlivých operací, pokud pro uživatele není povolena metoda dvoufázového ověření a má heslo.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximální Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximální hodnota Delta určuje, kolik tokenů je v daném okamžiku platných. Tokeny jsou generovány každých 30 sekund a platí (30 * Maximální Delta) sekund. <br/>Příklad: Pokud je maximální Delta nastavena na 10, může být každý token použit až do 300 sekund před nebo po jeho časovém razítku. Tato funkce se může hodit, pokud nejsou hodiny klienta správně synchronizovány se serverem.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximální hodnota Delta určuje, kolik tokenů je v daném okamžiku platných. Tokeny jsou generovány každých 30 sekund a platí (30 * Maximální Delta) sekund.   \nPříklad: Pokud je maximální Delta nastavena na 10, může být každý token použit až do 300 sekund před nebo po jeho časovém razítku. Tato funkce se může hodit, pokud nejsou hodiny klienta správně synchronizovány se serverem.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Zapamatovat dvoufázové ověření po dobu (v sekundách)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Kód nebude znova vyžadován dříve než po uplynutí této doby",
   "Accounts_UseDefaultBlockedDomainsList": "Použít výchozí seznam blokovaných domén",

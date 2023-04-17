@@ -210,7 +210,7 @@
   "Accounts_TwoFactorAuthentication_Enabled": "Aktiver to faktorautentiseringer",
   "Accounts_TwoFactorAuthentication_Enabled_Description": "Brukere kan konfigurere tofaktorautentisering ved å bruke hvilken som helst TOTP-app, for eksempel Google Authenticator eller Authy",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimal Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta bestemmer hvor mange tokens er gyldige til enhver tid. Tokene genereres hvert 30. sekund, og gjelder for (30 * Maks. Delta) sekunder. <br/>Eksempel: Med et maksimalt Delta-sett på 10, kan hver token brukes opptil 300 sekunder før eller etter tidsstempel. Dette er nyttig når klientens klokke ikke er riktig synkronisert med serveren.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta bestemmer hvor mange tokens er gyldige til enhver tid. Tokene genereres hvert 30. sekund, og gjelder for (30 * Maks. Delta) sekunder.   \nEksempel: Med et maksimalt Delta-sett på 10, kan hver token brukes opptil 300 sekunder før eller etter tidsstempel. Dette er nyttig når klientens klokke ikke er riktig synkronisert med serveren.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Husk tofaktor i (sekunder)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Ikke be om ny tofaktorautorisasjonskode hvis en allerede har blitt gitt før på dette tidsintervallet.",
   "Accounts_UseDefaultBlockedDomainsList": "Bruk standard blokkert domener liste",
