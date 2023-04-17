@@ -8,7 +8,7 @@ import type { IAppsService } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
 
 import { settings } from '../../../app/settings/server';
-import type { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
 type AppsInitParams = {

@@ -1,6 +1,6 @@
 import type { Db } from 'mongodb';
 
-import { AppServerOrchestrator } from './orchestrator';
+import { AppServerOrchestrator } from '../../server/apps/orchestrator';
 import { settings } from '../../../app/settings/server';
 
 type AppsInitParams = {

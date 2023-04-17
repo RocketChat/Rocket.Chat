@@ -3,7 +3,7 @@ import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import { AppsApiService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 export class AppApisBridge extends ApiBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
