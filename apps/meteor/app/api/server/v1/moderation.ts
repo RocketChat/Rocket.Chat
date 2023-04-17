@@ -98,7 +98,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort: { ts: -1 }});
+			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort: { ts: -1 } });
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 

@@ -5,7 +5,6 @@ import { canAccessRoomAsync } from '../../../app/authorization/server/functions/
 import { AppEvents, Apps } from '../../../ee/server/apps';
 
 export const reportMessage = async (messageId: IMessage['_id'], description: string, uid: IUser['_id']) => {
-	console.log("stuff", typeof ModerationReports);
 	if (!uid) {
 		throw new Error('error-invalid-user');
 	}
