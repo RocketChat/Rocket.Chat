@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { isRegisterUser } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { archiveRoom } from '../functions';
+import { archiveRoom } from '../functions/archiveRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		archiveRoom(rid: string): void;
+		archiveRoom(rid: string): Promise<void>;
 	}
 }
 
@@ -20,13 +21,16 @@ Meteor.methods<ServerMethods>({
 		check(rid, String);
 
 		const userId = Meteor.userId();
-
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
+		if (!user || !isRegisterUser(user)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+		}
 
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
 		}
@@ -39,6 +43,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
-		return archiveRoom(rid);
+		return archiveRoom(rid, user);
 	},
 });

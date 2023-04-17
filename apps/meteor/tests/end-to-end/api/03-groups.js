@@ -652,6 +652,22 @@ describe('[Groups]', function () {
 			.end(done);
 	});
 
+	it('/groups.list should return a list of zero length if not a member of any group', async () => {
+		const user = await createUser();
+		const newCreds = await login(user.username, password);
+		request
+			.get(api('groups.list'))
+			.set(newCreds)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count').and.to.equal(0);
+				expect(res.body).to.have.property('total').and.to.equal(0);
+				expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
+			});
+	});
+
 	describe('[/groups.online]', () => {
 		const createUserAndChannel = async (setAsOnline = true) => {
 			const testUser = await createUser();

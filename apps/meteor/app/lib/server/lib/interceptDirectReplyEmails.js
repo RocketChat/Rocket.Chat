@@ -73,7 +73,7 @@ class POP3Intercepter {
 
 			// parse raw email data to  JSON object
 			simpleParser(data, (err, mail) => {
-				Promise.await(processDirectEmail(mail));
+				processDirectEmail(mail);
 			});
 
 			this.currentMsgCount += 1;

@@ -5,9 +5,12 @@ import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@r
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
-import { Users as UsersSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
-import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import {
+	hasPermissionAsync,
+	hasAllPermissionAsync,
+	hasAtLeastOnePermissionAsync,
+} from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
@@ -16,7 +19,7 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
-
+import { getPaginationItems } from '../helpers/getPaginationItems';
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findPrivateGroupByIdOrName({
 	params,
@@ -48,7 +51,7 @@ async function findPrivateGroupByIdOrName({
 	}
 
 	const roomOptions = {
-		fields: {
+		projection: {
 			...roomAccessAttributes,
 			t: 1,
 			ro: 1,
@@ -365,8 +368,8 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
@@ -395,7 +398,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (
-				!(await hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
@@ -421,8 +424,8 @@ API.v1.addRoute(
 				channelsToSearch.push('all_private_groups');
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields: projection, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, {
 				channel: { $in: channelsToSearch },
@@ -609,14 +612,19 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['p'], { projection: { rid: 1 } }).toArray();
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					groups: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
@@ -646,8 +654,8 @@ API.v1.addRoute(
 			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
 				return API.v1.unauthorized();
 			}
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
 
 			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
@@ -683,8 +691,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset: skip, count: limit } = this.getPaginationItems();
-			const { sort = {} } = this.parseJsonQuery();
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
 
 			check(
 				this.queryParams,
@@ -729,8 +737,8 @@ API.v1.addRoute(
 				params: this.queryParams,
 				userId: this.userId,
 			});
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
@@ -759,7 +767,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { query } = this.parseJsonQuery();
+			const { query } = await this.parseJsonQuery();
 			if (!query || Object.keys(query).length === 0) {
 				return API.v1.failure('Invalid query');
 			}
@@ -771,7 +779,7 @@ API.v1.addRoute(
 			if (!room) {
 				return API.v1.failure('Group does not exists');
 			}
-			const user = await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string);
+			const user = await getLoggedInUser(this.request);
 
 			if (!user) {
 				return API.v1.failure('User does not exists');
@@ -781,11 +789,11 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await UsersSync.findUsersNotOffline({
-				fields: {
+			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+				projection: {
 					username: 1,
 				},
-			}).fetch();
+			}).toArray();
 
 			const onlineInRoom = await Promise.all(
 				online.map(async (user) => {
@@ -1150,11 +1158,11 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			const moderators = await SubscriptionsSync.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
-				fields: { u: 1 },
-			})
-				.fetch()
-				.map((sub: any) => sub.u);
+			const moderators = (
+				await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
+					projection: { u: 1 },
+				}).toArray()
+			).map((sub: any) => sub.u);
 
 			return API.v1.success({
 				moderators,
@@ -1211,7 +1219,7 @@ API.v1.addRoute(
 				return API.v1.failure('Private group not found');
 			}
 
-			if (!(await hasAllPermission(this.userId, ['create-team', 'edit-room'], room.rid))) {
+			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
 				return API.v1.unauthorized();
 			}
 

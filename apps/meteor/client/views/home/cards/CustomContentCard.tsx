@@ -58,12 +58,7 @@ const CustomContentCard = (): ReactElement | null => {
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
-				<Box
-					mb='x8'
-					role='status'
-					color='info'
-					aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}
-				>
+				<Box mb='x8' role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
 				<Card.FooterWrapper>
@@ -97,7 +92,7 @@ const CustomContentCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb='x8' color='info'>
+				<Box mb='x8'>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

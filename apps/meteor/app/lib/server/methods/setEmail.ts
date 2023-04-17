@@ -14,10 +14,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setEmail(email) {
+	async setEmail(email) {
 		check(email, String);
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			return email;
 		}
 
-		if (!setEmail(user._id, email)) {
+		if (!(await setEmail(user._id, email))) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', {
 				method: 'setEmail',
 			});

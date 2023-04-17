@@ -1,7 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
-import { Rooms, Users, LivechatDepartment } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
@@ -9,35 +8,36 @@ export class AppRoomsConverter {
 		this.orch = orch;
 	}
 
-	convertById(roomId) {
-		const room = Rooms.findOneById(roomId);
+	async convertById(roomId) {
+		const room = await Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
-	convertByName(roomName) {
-		const room = Rooms.findOneByName(roomName);
+	async convertByName(roomName) {
+		const room = await Rooms.findOneByName(roomName);
 
 		return this.convertRoom(room);
 	}
 
-	convertAppRoom(room) {
+	async convertAppRoom(room) {
 		if (!room) {
 			return undefined;
 		}
 
 		let u;
 		if (room.creator) {
-			const creator = Users.findOneById(room.creator.id);
+			const creator = await Users.findOneById(room.creator.id);
 			u = {
 				_id: creator._id,
 				username: creator.username,
+				name: creator.name,
 			};
 		}
 
 		let v;
 		if (room.visitor) {
-			const visitor = Promise.await(LivechatVisitors.findOneById(room.visitor.id));
+			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
 			v = {
 				_id: visitor._id,
 				username: visitor.username,
@@ -48,13 +48,13 @@ export class AppRoomsConverter {
 
 		let departmentId;
 		if (room.department) {
-			const department = LivechatDepartment.findOneById(room.department.id);
+			const department = await LivechatDepartment.findOneById(room.department.id);
 			departmentId = department._id;
 		}
 
 		let servedBy;
 		if (room.servedBy) {
-			const user = Users.findOneById(room.servedBy.id);
+			const user = await Users.findOneById(room.servedBy.id);
 			servedBy = {
 				_id: user._id,
 				username: user.username,
@@ -63,7 +63,7 @@ export class AppRoomsConverter {
 
 		let closedBy;
 		if (room.closedBy) {
-			const user = Users.findOneById(room.closedBy.id);
+			const user = await Users.findOneById(room.closedBy.id);
 			closedBy = {
 				_id: user._id,
 				username: user.username,
@@ -106,7 +106,7 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	convertRoom(room) {
+	async convertRoom(room) {
 		if (!room) {
 			return undefined;
 		}
@@ -154,7 +154,7 @@ export class AppRoomsConverter {
 				delete room.t;
 				return result;
 			},
-			creator: (room) => {
+			creator: async (room) => {
 				const { u } = room;
 
 				if (!u) {
@@ -165,7 +165,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(u._id);
 			},
-			visitor: (room) => {
+			visitor: async (room) => {
 				const { v } = room;
 
 				if (!v) {
@@ -176,7 +176,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
-			department: (room) => {
+			department: async (room) => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
@@ -187,7 +187,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
-			servedBy: (room) => {
+			servedBy: async (room) => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
@@ -198,7 +198,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(servedBy._id);
 			},
-			responseBy: (room) => {
+			responseBy: async (room) => {
 				const { responseBy } = room;
 
 				if (!responseBy) {
@@ -209,7 +209,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
-			parentRoom: (room) => {
+			parentRoom: async (room) => {
 				const { prid } = room;
 
 				if (!prid) {

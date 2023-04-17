@@ -39,7 +39,7 @@ export type AppsEndpoints = {
 			app: App;
 			success: boolean;
 		};
-		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string }) => {
+		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string; url?: string }) => {
 			app: App;
 		};
 	};
@@ -73,6 +73,13 @@ export type AppsEndpoints = {
 			settings: ISetting[];
 		};
 		POST: (params: { settings: ISetting[] }) => { updated: ISetting[]; success: boolean };
+	};
+
+	'/apps/:id/settings/:settingId': {
+		GET: () => {
+			setting: ISetting;
+		};
+		POST: (params: { setting: ISetting }) => { success: boolean };
 	};
 
 	'/apps/:id/screenshots': {
@@ -114,6 +121,9 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/status': {
+		GET: () => {
+			status: string;
+		};
 		POST: (params: { status: AppStatus }) => {
 			status: string;
 		};
@@ -122,6 +132,17 @@ export type AppsEndpoints = {
 	'/apps/:id/versions': {
 		GET: () => {
 			apps: App[];
+		};
+	};
+
+	'/apps/:id/icon': {
+		GET: () => {
+			statusCode: 200;
+			headers: {
+				'Content-Length': number;
+				'Content-Type': string;
+			};
+			body: Buffer;
 		};
 	};
 
@@ -183,7 +204,13 @@ export type AppsEndpoints = {
 		POST: (params: { appId: string; appName: string; appVersion: string; message: string }) => void;
 	};
 
-	'/apps': {
+	'/apps/externalComponentEvent': {
+		POST: (params: { externalComponent: string; event: 'IPostExternalComponentOpened' | 'IPostExternalComponentClosed' }) => {
+			result: any;
+		};
+	};
+
+	'/apps/': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
@@ -213,7 +240,14 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted?: IPermission[] }) => {
+		POST: (params: {
+			appId: string;
+			marketplace: boolean;
+			version: string;
+			permissionsGranted?: IPermission[];
+			url?: string;
+			downloadOnly?: boolean;
+		}) => {
 			app: App;
 		};
 	};

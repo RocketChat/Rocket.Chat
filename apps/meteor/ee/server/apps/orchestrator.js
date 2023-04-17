@@ -240,9 +240,9 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-void settingsRegistry.addGroup('General', function () {
-	this.section('Apps', function () {
-		this.add('Apps_Logs_TTL', '30_days', {
+void settingsRegistry.addGroup('General', async function () {
+	await this.section('Apps', async function () {
+		await this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
 			values: [
 				{
@@ -263,7 +263,7 @@ void settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Logs_TTL_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+		await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [
 				{
@@ -280,7 +280,7 @@ void settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+		await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
 			type: 'string',
 			public: true,
 			enableQuery: {
@@ -308,7 +308,7 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Logs_TTL', (value) => {
+settings.watch('Apps_Logs_TTL', async (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}
@@ -333,6 +333,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	const model = Apps._logModel;
 
-	// TODO: remove this when we have async support on here
-	Promise.await(model.resetTTLIndex(expireAfterSeconds));
+	await model.resetTTLIndex(expireAfterSeconds);
 });

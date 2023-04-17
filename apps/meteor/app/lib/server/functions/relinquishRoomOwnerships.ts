@@ -1,12 +1,11 @@
-import { Messages, Roles } from '@rocket.chat/models';
+import { Messages, Roles, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions, Rooms } from '../../../models/server';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
-	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
+	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
 	return Promise.all([Subscriptions.removeByRoomIds(rids), Messages.removeByRoomIds(rids), Rooms.removeByIds(rids)]);
 };
@@ -26,7 +25,9 @@ export const relinquishRoomOwnerships = async function (
 	const roomIdsToRemove: string[] = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);
 
 	if (removeDirectMessages) {
-		Rooms.find1On1ByUserId(userId, { fields: { _id: 1 } }).forEach(({ _id }: { _id: string }) => roomIdsToRemove.push(_id));
+		(await Rooms.find1On1ByUserId(userId, { projection: { _id: 1 } }).toArray()).map(({ _id }: { _id: string }) =>
+			roomIdsToRemove.push(_id),
+		);
 	}
 
 	await bulkRoomCleanUp(roomIdsToRemove);

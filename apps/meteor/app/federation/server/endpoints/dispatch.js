@@ -1,12 +1,11 @@
-import { EJSON } from 'meteor/ejson';
-import { FederationServers, FederationRoomEvents } from '@rocket.chat/models';
+import EJSON from 'ejson';
+import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -43,17 +42,17 @@ const eventHandlers = {
 					} = event;
 
 					// Check if room exists
-					const persistedRoom = Rooms.findOne({ _id: room._id });
+					const persistedRoom = await Rooms.findOne({ _id: room._id });
 
 					if (persistedRoom) {
 						// Update the federation
-						Rooms.update({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
+						await Rooms.updateOne({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
 					} else {
 						// Denormalize room
 						const denormalizedRoom = normalizers.denormalizeRoom(room);
 
 						// Create the room
-						Rooms.insert(denormalizedRoom);
+						await Rooms.insertOne(denormalizedRoom);
 					}
 				}
 				return eventResult;
@@ -69,11 +68,11 @@ const eventHandlers = {
 		} = event;
 
 		// Check if room exists
-		const persistedRoom = Rooms.findOne({ _id: roomId });
+		const persistedRoom = await Rooms.findOne({ _id: roomId });
 
 		if (persistedRoom) {
 			// Delete the room
-			deleteRoom(roomId);
+			await deleteRoom(roomId);
 		}
 
 		// Remove all room events
@@ -100,12 +99,12 @@ const eventHandlers = {
 			} = event;
 
 			// Check if user exists
-			const persistedUser = Users.findOne({ _id: user._id });
+			const persistedUser = await Users.findOne({ _id: user._id });
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
 				if (!persistedUser.federation) {
-					Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
 					federationAltered = true;
 				}
 			} else {
@@ -113,18 +112,18 @@ const eventHandlers = {
 				const denormalizedUser = normalizers.denormalizeUser(user);
 
 				// Create the user
-				Users.insert(denormalizedUser);
+				await Users.insertOne(denormalizedUser);
 				federationAltered = true;
 			}
 
 			// Check if subscription exists
-			const persistedSubscription = Subscriptions.findOne({ _id: subscription._id });
+			const persistedSubscription = await Subscriptions.findOne({ _id: subscription._id });
 
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
@@ -132,7 +131,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					Subscriptions.insert(denormalizedSubscription);
+					await Subscriptions.insertOne(denormalizedSubscription);
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -144,7 +143,7 @@ const eventHandlers = {
 				await FederationServers.refreshServers();
 
 				// Update the room's federation property
-				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+				await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
 			}
 		}
 
@@ -164,13 +163,13 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -189,13 +188,13 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -214,16 +213,16 @@ const eventHandlers = {
 			} = event;
 
 			// Check if message exists
-			const persistedMessage = Messages.findOne({ _id: message._id });
+			const persistedMessage = await Messages.findOne({ _id: message._id });
 
 			if (persistedMessage) {
 				// Update the federation
 				if (!persistedMessage.federation) {
-					Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
+					await Messages.updateOne({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
 				}
 			} else {
 				// Load the room
-				const room = Rooms.findOneById(message.rid);
+				const room = await Rooms.findOneById(message.rid);
 
 				// Denormalize message
 				const denormalizedMessage = normalizers.denormalizeMessage(message);
@@ -249,7 +248,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					fileStore.insertSync(upload, buffer);
+					await fileStore.insert(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
@@ -269,7 +268,7 @@ const eventHandlers = {
 
 				// Create the message
 				try {
-					Messages.insert(denormalizedMessage);
+					await Messages.insertOne(denormalizedMessage);
 
 					await processThreads(denormalizedMessage, room);
 
@@ -298,14 +297,14 @@ const eventHandlers = {
 			} = event;
 
 			// Check if message exists
-			const persistedMessage = Messages.findOne({ _id: message._id });
+			const persistedMessage = await Messages.findOne({ _id: message._id });
 
 			if (!persistedMessage) {
 				eventResult.success = false;
 				eventResult.reason = 'missingMessageToEdit';
 			} else {
 				// Update the message
-				Messages.update({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
+				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
 			}
 		}
 
@@ -325,7 +324,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the message
-			Messages.removeById(messageId);
+			await Messages.removeById(messageId);
 
 			// Notify the room
 			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
@@ -347,7 +346,7 @@ const eventHandlers = {
 			} = event;
 
 			// Get persisted message
-			const persistedMessage = Messages.findOne({ _id: messageId });
+			const persistedMessage = await Messages.findOne({ _id: messageId });
 
 			// Make sure reactions exist
 			persistedMessage.reactions = persistedMessage.reactions || {};
@@ -366,7 +365,7 @@ const eventHandlers = {
 			}
 
 			// Update the property
-			Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
+			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 		}
 
 		return eventResult;
@@ -385,7 +384,7 @@ const eventHandlers = {
 			} = event;
 
 			// Get persisted message
-			const persistedMessage = Messages.findOne({ _id: messageId });
+			const persistedMessage = await Messages.findOne({ _id: messageId });
 
 			// Make sure reactions exist
 			persistedMessage.reactions = persistedMessage.reactions || {};
@@ -410,10 +409,10 @@ const eventHandlers = {
 
 			// If there are no more users for that reaction, remove the property
 			if (reactionObj.usernames.length === 0) {
-				Messages.update({ _id: messageId }, { $unset: { [`reactions.${reaction}`]: 1 } });
+				await Messages.updateOne({ _id: messageId }, { $unset: { [`reactions.${reaction}`]: 1 } });
 			} else {
 				// Otherwise, update the property
-				Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
+				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
 		}
 
@@ -436,7 +435,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+			await Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -458,7 +457,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			await Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;

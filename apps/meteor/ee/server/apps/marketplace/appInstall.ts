@@ -3,6 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/server';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 type installAction = 'install' | 'update' | 'uninstall';
 
@@ -36,9 +37,10 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 	const pendingSentUrl = `${marketplaceBaseUrl}/v1/apps/${appInfo.id}/install`;
 
 	try {
-		HTTP.post(pendingSentUrl, {
+		await fetch(pendingSentUrl, {
+			method: 'POST',
 			headers,
-			data,
+			body: JSON.stringify(data),
 		});
 
 		// eslint-disable-next-line no-empty

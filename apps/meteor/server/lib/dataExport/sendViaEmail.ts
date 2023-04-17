@@ -1,9 +1,8 @@
 import moment from 'moment';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 
 import * as Mailer from '../../../app/mailer/server/api';
-import { Users } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { Message } from '../../../app/ui-utils/server';
 import { getMomentLocale } from '../getMomentLocale';
@@ -25,9 +24,11 @@ export async function sendViaEmail(
 
 	const missing = [...data.toUsers].filter(Boolean);
 
-	Users.findUsersByUsernames(data.toUsers, {
-		fields: { 'username': 1, 'emails.address': 1 },
-	}).forEach((user: IUser) => {
+	(
+		await Users.findUsersByUsernames(data.toUsers, {
+			projection: { 'username': 1, 'emails.address': 1 },
+		}).toArray()
+	).forEach((user: IUser) => {
 		const emailAddress = user.emails?.[0].address;
 
 		if (!emailAddress) {
@@ -72,7 +73,7 @@ export async function sendViaEmail(
 		})
 		.join('');
 
-	Mailer.send({
+	await Mailer.send({
 		to: emails,
 		from: settings.get('From_Email'),
 		replyTo: email,
