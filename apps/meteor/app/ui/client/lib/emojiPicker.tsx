@@ -32,8 +32,6 @@ const subscribeToProps = (callback: () => void) => {
 const EmojiPickerWithProps = () => {
 	const props = useSyncExternalStore(subscribeToProps, getProps);
 
-	console.log(props);
-
 	return (
 		<Suspense fallback={null}>
 			<EmojiPicker {...props} />
@@ -63,8 +61,6 @@ export const closeEmojiPicker = () => {
 
 export const openEmojiPicker = (params: EmojiPickerProps) => {
 	updateProps({ ...params, onClose: closeEmojiPicker });
-
-	console.log('openEmojiPicker', params);
 
 	if (!container) {
 		container = createContainer();

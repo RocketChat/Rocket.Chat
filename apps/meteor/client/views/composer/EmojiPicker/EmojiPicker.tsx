@@ -37,7 +37,7 @@ type EmojiByCategory = {
 type EmojiPickerProps = {
 	composer?: any;
 	onClose: () => void;
-	reference: any;
+	reference?: Element;
 	onPickEmoji: (emoji: string) => void;
 };
 
@@ -45,6 +45,29 @@ const EmojiPicker = ({ composer, onClose, reference, onPickEmoji }: EmojiPickerP
 	const t = useTranslation();
 
 	const ref = useRef(reference);
+
+	useLayoutEffect(() => {
+		if (!reference) {
+			return;
+		}
+
+		const resizeObserver = new ResizeObserver(() => {
+			const anchorRect = reference.getBoundingClientRect();
+			if (anchorRect.width === 0 && anchorRect.height === 0) {
+				// The element is hidden, skip it
+				ref.current = undefined;
+				return;
+			}
+
+			ref.current = reference;
+		});
+
+		resizeObserver.observe(reference);
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, [reference]);
 
 	const textInputRef = useRef<HTMLInputElement>(null);
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
