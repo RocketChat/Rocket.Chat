@@ -25,7 +25,7 @@ class Notifications {
 				return console.log('RocketChat.Notifications: onAll', args);
 			});
 			this.onUser(function () {
-				return console.log('RocketChat.Notifications: onAll', args);
+				return console.log('RocketChat.Notifications: onUser', args);
 			});
 		}
 	}

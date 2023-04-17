@@ -1,4 +1,9 @@
-import { isCalendarEventListProps, isCalendarEventCreateProps, isCalendarEventUpdateProps, isCalendarEventDeleteProps } from '@rocket.chat/rest-typings';
+import {
+	isCalendarEventListProps,
+	isCalendarEventCreateProps,
+	isCalendarEventUpdateProps,
+	isCalendarEventDeleteProps,
+} from '@rocket.chat/rest-typings';
 import { Calendar } from '@rocket.chat/core-services';
 
 import { API } from '../api';
@@ -13,7 +18,7 @@ API.v1.addRoute(
 
 			const data = await Calendar.list(userId, new Date(date));
 
-			return API.v1.success(data);
+			return API.v1.success({ data });
 		},
 	},
 );
