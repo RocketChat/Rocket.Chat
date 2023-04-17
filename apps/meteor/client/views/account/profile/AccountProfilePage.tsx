@@ -71,7 +71,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const localPassword = Boolean(user?.services?.password?.bcrypt);
+	const localPassword = Boolean(user?.services?.password?.exists);
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -157,29 +157,31 @@ const AccountProfilePage = (): ReactElement => {
 
 		save();
 	}, [
+		values?.password,
+		values?.confirmationPassword,
 		saveFn,
-		allowEmailChange,
-		allowPasswordChange,
 		allowRealNameChange,
-		allowUserStatusMessageChange,
-		bio,
-		canChangeUsername,
-		email,
-		password,
 		realname,
-		statusText,
-		username,
+		allowEmailChange,
 		user,
-		updateAvatar,
-		handleAvatar,
-		dispatchToastMessage,
-		t,
-		customFields,
+		email,
+		allowPasswordChange,
+		password,
+		canChangeUsername,
+		username,
+		allowUserStatusMessageChange,
+		statusText,
 		statusType,
-		commit,
 		nickname,
+		bio,
+		customFields,
 		handlePassword,
 		handleConfirmationPassword,
+		updateAvatar,
+		commit,
+		dispatchToastMessage,
+		t,
+		handleAvatar,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {
