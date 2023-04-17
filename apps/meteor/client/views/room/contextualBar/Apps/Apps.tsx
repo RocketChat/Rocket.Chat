@@ -1,13 +1,13 @@
 import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
-import { UiKitComponent, UiKitModal } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';
 import VerticalBar from '../../../../components/VerticalBar';
-import { modalParser } from '../../../blocks/ModalBlock';
-import { getButtonStyle } from '../../../blocks/getButtonStyle';
+import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 
 type AppsProps = {
 	view: IUIKitSurface;
@@ -21,7 +21,7 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 	<>
 		<VerticalBar.Header>
 			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
-			<VerticalBar.Text>{modalParser.text(view.title)}</VerticalBar.Text>
+			<VerticalBar.Text>{modalParser.text(view.title, BlockContext.NONE, 0)}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
@@ -33,12 +33,12 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 			<ButtonGroup align='end'>
 				{view.close && (
 					<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-						{modalParser.text(view.close.text)}
+						{modalParser.text(view.close.text, BlockContext.NONE, 0)}
 					</Button>
 				)}
 				{view.submit && (
 					<Button {...getButtonStyle(view)} onClick={onSubmit}>
-						{modalParser.text(view.submit.text)}
+						{modalParser.text(view.submit.text, BlockContext.NONE, 1)}
 					</Button>
 				)}
 			</ButtonGroup>
