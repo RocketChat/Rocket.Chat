@@ -1,4 +1,4 @@
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 
@@ -8,6 +8,8 @@ const useDismissUserAction = (userId: string, onChange: () => void, onReload: ()
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const moderationRoute = useRoute('moderation-console');
+
 
 	const dismissUser = useEndpoint('POST', '/v1/moderation.markChecked');
 
@@ -26,6 +28,7 @@ const useDismissUserAction = (userId: string, onChange: () => void, onReload: ()
 		onChange();
 		onReload();
 		setModal();
+		moderationRoute.push({});
 	};
 
 	const confirmDismissUser = (): void => {

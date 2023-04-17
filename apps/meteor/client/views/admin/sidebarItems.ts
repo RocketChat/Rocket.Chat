@@ -17,7 +17,7 @@ export const {
 		icon: 'shield-alt',
 		href: 'moderation-console',
 		i18nLabel: 'Moderation console',
-		tag: 'Alpha',
+		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
