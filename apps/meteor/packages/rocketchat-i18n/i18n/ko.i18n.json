@@ -662,7 +662,7 @@
   "CAS_Sync_User_Data_FieldMap": "속성 맵",
   "CAS_Sync_User_Data_FieldMap_Description": "이 JSON 입력을 사용하여 외부 속성(값)에서 내부 속성(키)을 작성하세요. '%'로 묶인 외부 속성 이름은 값 문자열로 대체됩니다. <br/>예) `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"} \"email\": \"%email%\", \"name\": \"%firstname%, %lastname%\"}` <br/><br/>속성 맵은 항상 대체됩니다. CAS 1.0에서는`username` 속성만 사용할 수 있습니다. 사용 가능한 내부 속성은 사용자명, 이름, 이메일, 대화방입니다. 사용자 생성시 참여시킬 대화방은 쉼표로 구분해야합니다. 예) `{\"rooms\": \"%team%,%department%\"}`처럼 입력하면 CAS 사용자를 생성할 때 팀 및 부서 채널을 생성해 가입시킵니다.",
   "CAS_trust_username": "CAS 사용자 이름 신뢰",
-  "CAS_trust_username_description": "활성화하면 Rocket.Chat은 CAS의 모든 사용자명이 Rocket.Chat의 동일한 사용자로 신뢰합니다. <br/> CAS에서 사용자명이 변경된 경우, 필요할 수 있지만 사람들이 자신의 CAS 사용자 이름을 바꾸어 Rocket.Chat 계정을 제어 할 수도 있습니다.",
+  "CAS_trust_username_description": "활성화하면 Rocket.Chat은 CAS의 모든 사용자명이 Rocket.Chat의 동일한 사용자로 신뢰합니다.   \n CAS에서 사용자명이 변경된 경우, 필요할 수 있지만 사람들이 자신의 CAS 사용자 이름을 바꾸어 Rocket.Chat 계정을 제어 할 수도 있습니다.",
   "CAS_version": "CAS 버전",
   "CAS_version_Description": "CAS SSO 서비스에서  지원되는 CAS 버전 만 사용하십시오.",
   "Categories": "카테고리",

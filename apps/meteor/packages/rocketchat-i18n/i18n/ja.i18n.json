@@ -746,7 +746,7 @@
   "CAS_Sync_User_Data_FieldMap": "属性マップ",
   "CAS_Sync_User_Data_FieldMap_Description": "このJSONの入力を使用して外部属性 (値) から内部属性 (キー) を作成します。「%」内の外部属性名は値文字列に挿入できます。<br/>例：「{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}」<br/><br/> 属性マップは常に挿入されます。CAS 1.0では「username」属性のみが使用可能です。使用可能な内部属性は、username、name、email、roomsです。 roomsは、ユーザー作成時に参加するルームのコンマ区切りのリストです。例：「{\"rooms\": \"%team%,%department%\"}」では、CASユーザーの作成時にCASユーザーがチームと部署のチャネルに参加します。",
   "CAS_trust_username": "CASユーザー名を信頼",
-  "CAS_trust_username_description": "有効にすると、Rocket.ChatはCASのユーザー名がRocket.Chatの同じユーザーに属することを信頼します。<br/>CASでユーザー名が変更された場合に有効にすることが必要な場合があります。ただし、ユーザーが自身のCASユーザーの名前を変更することで、Rocket.Chatアカウントを管理できるようになる場合もあります。",
+  "CAS_trust_username_description": "有効にすると、Rocket.ChatはCASのユーザー名がRocket.Chatの同じユーザーに属することを信頼します。  \nCASでユーザー名が変更された場合に有効にすることが必要な場合があります。ただし、ユーザーが自身のCASユーザーの名前を変更することで、Rocket.Chatアカウントを管理できるようになる場合もあります。",
   "CAS_version": "CASバージョン",
   "CAS_version_Description": "CAS SSOサービスでサポートされているCASバージョンのみを使用してください。",
   "Categories": "カテゴリ",

@@ -876,7 +876,7 @@
   "CAS_Sync_User_Data_FieldMap": "Attributkarta",
   "CAS_Sync_User_Data_FieldMap_Description": "Använd denna JSON-ingång för att skapa interna attribut (nyckel) från externa attribut (värde). Externa attributnamn som bifogas '%' kommer att interpoleras i värdesträngar.<br/>Exempel, `{\" email \":\"% email% \",\" name \":\"% firstname%,% efternamn% \"}`<br/><br/>Attributskartan är alltid interpolerad. I CAS 1.0 är endast attributet `användarnamn' tillgängligt. Tillgängliga interna attribut är: användarnamn, namn, email, rum; rum är en kommaseparerad lista över rum för att delta i användarskapande, till exempel: {\"rum\": \"% team%,% avdelning%\"} skulle ansluta till CAS-användare vid skapandet till deras team- och avdelningskanal.",
   "CAS_trust_username": "Lita på användarnamn för CAS",
-  "CAS_trust_username_description": "När det här är aktiverat litar Rocket.Chat på att användarnamn från CAS tillhör samma användare i Rocket.Chat.<br/>Det kan behövas om namnet på en användare ändras i CAS, men kan också ge människor kontroll över Rocket.Chat-konton genom att ändra namn på sina egna CAS-användare.",
+  "CAS_trust_username_description": "När det här är aktiverat litar Rocket.Chat på att användarnamn från CAS tillhör samma användare i Rocket.Chat.  \nDet kan behövas om namnet på en användare ändras i CAS, men kan också ge människor kontroll över Rocket.Chat-konton genom att ändra namn på sina egna CAS-användare.",
   "CAS_version": "CAS-version",
   "CAS_version_Description": "Använd endast en CAS-version som stöds av din CAS SSO-tjänst.",
   "Categories": "Kategorier",

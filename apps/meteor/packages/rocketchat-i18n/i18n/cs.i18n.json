@@ -621,7 +621,7 @@
   "CAS_Sync_User_Data_FieldMap": "Mapa atributů",
   "CAS_Sync_User_Data_FieldMap_Description": "Použijte toto pole pro vložení JSON mapování interních atributů (klíč) na externí atributy (hodnota). Externí atributy obaleny '%' vloží hodnotu proměnné.<br/>Například, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>V CAS 1.0 lze použít pouze atribut `username`. Dostupné interní atributy jsou: username, name, email, rooms; V proměnné `rooms` je čárkami oddělený seznam místností do kterých má být uživatel po vytvoření účtu připojen např: `{\"rooms\": \"%team%,%oddeleni%\"}` připojí CAS uživatele po vytvoření do místnosti jejich teamu a oddělení.",
   "CAS_trust_username": "Důvěřovat uživatelskému jménu CAS",
-  "CAS_trust_username_description": "Pokud bude povoleno, Rocket.Chat bude důvěřovat, že uživatelské jméno z CAS patří ke stejnému uživateli Rocket.Chat.<br/>To může být potřeba v případě, že je uživatel přejmenován v CAS, ale také to umožní lidem převzít vlastnictví účtů Rocket.Chat přejmenováním jejich vlastních CAS uživatelů.",
+  "CAS_trust_username_description": "Pokud bude povoleno, Rocket.Chat bude důvěřovat, že uživatelské jméno z CAS patří ke stejnému uživateli Rocket.Chat.  \nTo může být potřeba v případě, že je uživatel přejmenován v CAS, ale také to umožní lidem převzít vlastnictví účtů Rocket.Chat přejmenováním jejich vlastních CAS uživatelů.",
   "CAS_version": "CAS verze",
   "CAS_version_Description": "Zvolte verzi CAS podporovanou vaší CAS SSO službou",
   "Categories": "Kategorie",

@@ -753,7 +753,7 @@
   "CAS_Sync_User_Data_FieldMap": "Kenmerkkaart",
   "CAS_Sync_User_Data_FieldMap_Description": "Gebruik deze JSON-invoer om interne attributen (sleutel) te bouwen op basis van externe attributen (waarde). Externe attribuutnamen ingesloten met '%' worden geïnterpoleerd in waardestrings.<br/>Voorbeeld, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>De kenmerkkaart wordt altijd geïnterpoleerd. In CAS 1.0 is alleen het `username` attribuut beschikbaar. Beschikbare interne attributen zijn: username, name, email, rooms; rooms is een door komma's gescheiden lijst van kamers om lid van te worden bij het aanmaken van een gebruiker, bijvoorbeeld: {\"rooms\": \"%team%,%department%\"} zou CAS-gebruikers bij het aanmaken toevoegen aan hun team- en afdelingskanaal.",
   "CAS_trust_username": "Vertrouw op CAS-gebruikersnaam",
-  "CAS_trust_username_description": "Indien ingeschakeld, vertrouwt Rocket.Chat erop dat elke gebruikersnaam van CAS toebehoort aan dezelfde gebruiker op Rocket.Chat.<br/>Dit kan nodig zijn als de naam van een gebruiker wordt gewijzigd op CAS, maar het kan mensen ook toestaan de controle over Rocket.Chat-accounts te nemen door hun eigen CAS-gebruikers te hernoemen.",
+  "CAS_trust_username_description": "Indien ingeschakeld, vertrouwt Rocket.Chat erop dat elke gebruikersnaam van CAS toebehoort aan dezelfde gebruiker op Rocket.Chat.  \nDit kan nodig zijn als de naam van een gebruiker wordt gewijzigd op CAS, maar het kan mensen ook toestaan de controle over Rocket.Chat-accounts te nemen door hun eigen CAS-gebruikers te hernoemen.",
   "CAS_version": "CAS-versie",
   "CAS_version_Description": "Gebruik alleen een ondersteunde CAS-versie die wordt ondersteund door uw CAS SSO-service.",
   "Categories": "Categorieën",

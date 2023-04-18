@@ -876,7 +876,7 @@
   "CAS_Sync_User_Data_FieldMap": "Määritekartta",
   "CAS_Sync_User_Data_FieldMap_Description": "Tämän JSON-syötteen avulla voit koota sisäiset määritteet (avain) ulkoisista määritteistä (arvo). '%'-merkkeihin kirjoitetut ulkoisten määritteiden nimet interpoloidaan arvomerkkijonoissa.<br/>Esimerkki: `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>Määritekartta interpoloidaan aina. CAS 1.0 -versiossa on käytettävissä vain `username`-määrite. Käytettävissä ovat seuraavat sisäiset määritteet: username, name, email, rooms; rooms on pilkulla eroteltu luettelo huoneista, joihin liittyä käyttäjää luotaessa, esim. {\"rooms\": \"%team%,%department%\"} liittää CAS-käyttäjät luotaessa heidän tiiminsä ja osastonsa kanavaan.",
   "CAS_trust_username": "Luota CAS-käyttäjätunnukseen",
-  "CAS_trust_username_description": "Kun tämä on käytössä, Rocket.Chat luottaa siihen, että kaikki CAS-käyttäjätunnukset kuuluvat samalle käyttäjälle Rocket.Chatissa.<br/>Tätä voidaan tarvita, jos käyttäjä on nimetty uudelleen CASissa, mutta sen avulla ihmiset voivat lisäksi hallita Rocket.Chat-tilejä haltuunsa nimeämällä omia CAS-käyttäjiään uudelleen.",
+  "CAS_trust_username_description": "Kun tämä on käytössä, Rocket.Chat luottaa siihen, että kaikki CAS-käyttäjätunnukset kuuluvat samalle käyttäjälle Rocket.Chatissa.  \nTätä voidaan tarvita, jos käyttäjä on nimetty uudelleen CASissa, mutta sen avulla ihmiset voivat lisäksi hallita Rocket.Chat-tilejä haltuunsa nimeämällä omia CAS-käyttäjiään uudelleen.",
   "CAS_version": "CAS-versio",
   "CAS_version_Description": "Käytä vain CAS SSO -palvelun tukemaa CAS-versiota.",
   "Categories": "Luokat",
