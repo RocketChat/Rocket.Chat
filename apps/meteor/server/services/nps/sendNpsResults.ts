@@ -1,9 +1,9 @@
 import type { INpsVote } from '@rocket.chat/core-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { SystemLogger } from '../../lib/logger/system';
+import { fetch } from '../../lib/http/fetch';
 
 type NPSResultPayload = {
 	total: number;
@@ -25,7 +25,7 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
-				body: data,
+				body: JSON.stringify(data),
 			})
 		).json();
 	} catch (e) {

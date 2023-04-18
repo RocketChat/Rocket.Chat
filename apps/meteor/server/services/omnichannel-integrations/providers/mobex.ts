@@ -1,9 +1,9 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fetch } from '../../../lib/http/fetch';
 
 type MobexData = {
 	from: string;
@@ -119,18 +119,13 @@ export class Mobex implements ISMSProvider {
 		};
 
 		try {
-			const response = await fetch(`${currentAddress}/send`, {
-				params: {
-					username: currentUsername,
-					password: currentPassword,
-					to: strippedTo,
-					from: currentFrom,
-					content: message,
-				},
-			});
+			const response = await fetch(
+				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
+			);
 
+			const json = await response.json();
 			if (response.ok) {
-				result.resultMsg = await response.text();
+				result.resultMsg = json;
 				result.isSuccess = true;
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${response.status}`;
@@ -165,7 +160,7 @@ export class Mobex implements ISMSProvider {
 				headers: {
 					Authorization: `Basic ${authToken}`,
 				},
-				body: {
+				body: JSON.stringify({
 					messages: [
 						{
 							to: toNumbersArr,
@@ -173,7 +168,7 @@ export class Mobex implements ISMSProvider {
 							content: message,
 						},
 					],
-				},
+				}),
 			});
 
 			result.isSuccess = response.ok;

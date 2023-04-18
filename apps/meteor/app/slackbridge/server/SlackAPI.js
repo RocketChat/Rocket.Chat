@@ -1,13 +1,14 @@
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { HTTP } from 'meteor/http';
 
 export class SlackAPI {
 	constructor(apiToken) {
 		this.apiToken = apiToken;
 	}
 
-	async getChannels(cursor = null) {
+	getChannels(cursor = null) {
 		let channels = [];
-		const request = await fetch('https://slack.com/api/conversations.list', {
+
+		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'public_channel',
@@ -16,12 +17,11 @@ export class SlackAPI {
 				cursor,
 			},
 		});
-		const response = await request.json();
 
-		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
-			channels = channels.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
-				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
+			channels = channels.concat(response.data.channels);
+			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
+				const nextChannels = this.getChannels(response.data.response_metadata.next_cursor);
 				channels = channels.concat(nextChannels);
 			}
 		}
@@ -29,9 +29,9 @@ export class SlackAPI {
 		return channels;
 	}
 
-	async getGroups(cursor = null) {
+	getGroups(cursor = null) {
 		let groups = [];
-		const request = await fetch('https://slack.com/api/conversations.list', {
+		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'private_channel',
@@ -40,12 +40,11 @@ export class SlackAPI {
 				cursor,
 			},
 		});
-		const response = await request.json();
 
-		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
-			groups = groups.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
-				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
+			groups = groups.concat(response.data.channels);
+			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
+				const nextGroups = this.getGroups(response.data.response_metadata.next_cursor);
 				groups = groups.concat(nextGroups);
 			}
 		}
@@ -53,26 +52,24 @@ export class SlackAPI {
 		return groups;
 	}
 
-	async getRoomInfo(roomId) {
-		const request = await fetch(`https://slack.com/api/conversations.info`, {
+	getRoomInfo(roomId) {
+		const response = HTTP.get('https://slack.com/api/conversations.info', {
 			params: {
 				token: this.apiToken,
 				channel: roomId,
 				include_num_members: true,
 			},
 		});
-		const response = await request.json();
-		return response && response && request.status === 200 && request.ok && response.channel;
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.channel;
 	}
 
-	async getMembers(channelId) {
+	getMembers(channelId) {
 		const { num_members } = this.getRoomInfo(channelId);
 		const MAX_MEMBERS_PER_CALL = 100;
 		let members = [];
 		let currentCursor = '';
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
-			// eslint-disable-next-line no-await-in-loop
-			const request = await fetch('https://slack.com/api/conversations.members', {
+			const response = HTTP.get('https://slack.com/api/conversations.members', {
 				params: {
 					token: this.apiToken,
 					channel: channelId,
@@ -80,93 +77,65 @@ export class SlackAPI {
 					cursor: currentCursor,
 				},
 			});
-			// eslint-disable-next-line no-await-in-loop
-			const response = await request.json();
-			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
-				members = members.concat(response.members);
-				const hasMoreItems = response.response_metadata && response.response_metadata.next_cursor;
+			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
+				members = members.concat(response.data.members);
+				const hasMoreItems = response.data.response_metadata && response.data.response_metadata.next_cursor;
 				if (hasMoreItems) {
-					currentCursor = response.response_metadata.next_cursor;
+					currentCursor = response.data.response_metadata.next_cursor;
 				}
 			}
 		}
 		return members;
 	}
 
-	async react(data) {
-		const request = await fetch('https://slack.com/api/reactions.add', {
-			method: 'POST',
-			body: data,
-		});
-		const response = await request.json();
-		return response && request.status === 200 && response && request.ok;
+	react(data) {
+		const response = HTTP.post('https://slack.com/api/reactions.add', { params: data });
+		return response && response.statusCode === 200 && response.data && response.data.ok;
 	}
 
-	async removeReaction(data) {
-		const request = await fetch('https://slack.com/api/reactions.remove', {
-			method: 'POST',
-			body: data,
-		});
-		const response = await request.json();
-		return response && request.status === 200 && response && request.ok;
+	removeReaction(data) {
+		const response = HTTP.post('https://slack.com/api/reactions.remove', { params: data });
+		return response && response.statusCode === 200 && response.data && response.data.ok;
 	}
 
-	async removeMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.delete', {
-			method: 'POST',
-			body: data,
-		});
-		const response = await request.json();
-		return response && request.status === 200 && response && request.ok;
+	removeMessage(data) {
+		const response = HTTP.post('https://slack.com/api/chat.delete', { params: data });
+		return response && response.statusCode === 200 && response.data && response.data.ok;
 	}
 
-	async sendMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.postMessage', {
-			method: 'POST',
-			body: data,
-		});
-		return request.json();
+	sendMessage(data) {
+		return HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 	}
 
-	async updateMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.update', {
-			method: 'POST',
-			body: data,
-		});
-		const response = await request.json();
-		return response && request.status === 200 && response && request.ok;
+	updateMessage(data) {
+		const response = HTTP.post('https://slack.com/api/chat.update', { params: data });
+		return response && response.statusCode === 200 && response.data && response.data.ok;
 	}
 
-	async getHistory(family, options) {
-		const request = await fetch(`https://slack.com/api/${family}.history`, {
-			params: {
-				token: this.apiToken,
-				...options,
-			},
+	getHistory(family, options) {
+		const response = HTTP.get(`https://slack.com/api/${family}.history`, {
+			params: Object.assign({ token: this.apiToken }, options),
 		});
-		const response = await request.json();
-		return response;
+		return response && response.data;
 	}
 
-	async getPins(channelId) {
-		const request = await fetch('https://slack.com/api/pins.list', {
+	getPins(channelId) {
+		const response = HTTP.get('https://slack.com/api/pins.list', {
 			params: {
 				token: this.apiToken,
 				channel: channelId,
 			},
 		});
-		const response = await request.json();
-		return response && response && request.status === 200 && request.ok && response.items;
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.items;
 	}
 
-	async getUser(userId) {
-		const request = await fetch('https://slack.com/api/users.info', {
+	getUser(userId) {
+		const response = HTTP.get('https://slack.com/api/users.info', {
 			params: {
 				token: this.apiToken,
 				user: userId,
 			},
 		});
-		const response = await request.json();
-		return response && response && request.status === 200 && request.ok && response.user;
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.user;
 	}
 }
