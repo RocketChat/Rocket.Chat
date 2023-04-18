@@ -1030,7 +1030,7 @@
   "Direct_Reply_Port": "Porta de resposta directa",
   "Direct_Reply_Protocol": "Protocolo de resposta directa",
   "Direct_Reply_Separator": "Separador",
-  "Direct_Reply_Separator_Description": "[Altere apenas se souber exatamente o que está a fazer, consulte docs]<br/>Separador entre base e etiqueta parte do email",
+  "Direct_Reply_Separator_Description": "[Altere apenas se souber exatamente o que está a fazer, consulte docs]  \nSeparador entre base e etiqueta parte do email",
   "Direct_Reply_Username": "Nome de utilizador",
   "Direct_Reply_Username_Description": "Use e-mail completo, não é permitida a marcação, seria sobre-escrito",
   "Directory": "Directório",

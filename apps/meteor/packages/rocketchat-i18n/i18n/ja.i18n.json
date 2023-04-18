@@ -1395,7 +1395,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "直接返信プロトコル",
   "Direct_Reply_Separator": "セパレーター",
-  "Direct_Reply_Separator_Description": "[操作内容がわかる場合にのみ変更してください。ドキュメントを参照してください] <br/>メールのベースとタグの間の区切り文字",
+  "Direct_Reply_Separator_Description": "[操作内容がわかる場合にのみ変更してください。ドキュメントを参照してください]  \nメールのベースとタグの間の区切り文字",
   "Direct_Reply_Username": "ユーザー名",
   "Direct_Reply_Username_Description": "絶対メールを使用してください、タグ付けは許可されておらず、上書きされます",
   "Directory": "ディレクトリ",

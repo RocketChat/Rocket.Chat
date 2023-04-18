@@ -1505,7 +1505,7 @@
   "Direct_Reply_Port": "Порт прямого ответа",
   "Direct_Reply_Protocol": "Протокол прямого ответа",
   "Direct_Reply_Separator": "Разделитель",
-  "Direct_Reply_Separator_Description": "[Меняйте только в случае, если вы точно знаете, что делаете, см. документацию] <br/>Разделитель между базой и тегом в email",
+  "Direct_Reply_Separator_Description": "[Меняйте только в случае, если вы точно знаете, что делаете, см. документацию]  \nРазделитель между базой и тегом в email",
   "Direct_Reply_Username": "Имя пользователя",
   "Direct_Reply_Username_Description": "Пожалуйста, используйте абсолютную электронную почту, tagging не разрешено, оно будет переписана.",
   "Directory": "Каталог",

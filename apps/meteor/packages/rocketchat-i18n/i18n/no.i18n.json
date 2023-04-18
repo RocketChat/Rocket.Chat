@@ -927,7 +927,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direkte svarprotokoll",
   "Direct_Reply_Separator": "separator",
-  "Direct_Reply_Separator_Description": "[Endre bare hvis du vet nøyaktig hva du gjør, referer til dokumenter]<br/>Separator mellom base og tagdel av e-post",
+  "Direct_Reply_Separator_Description": "[Endre bare hvis du vet nøyaktig hva du gjør, referer til dokumenter]  \nSeparator mellom base og tagdel av e-post",
   "Direct_Reply_Username": "Brukernavn",
   "Direct_Reply_Username_Description": "Bruk absolutt e-post, tagging er ikke tillatt, det ville være over-skrevet",
   "Directory": "Directory",

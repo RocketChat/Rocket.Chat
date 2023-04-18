@@ -861,7 +861,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Шууд хариултын протокол",
   "Direct_Reply_Separator": "Тусгаарлагч",
-  "Direct_Reply_Separator_Description": "[Та яг одоо юу хийж байгааг нь мэдэж байгаа бол docs-ыг үзнэ үү]<br/>Имэйлийн үндсэн & хаягны хэсэгийн хоорондох тусгаарлагч",
+  "Direct_Reply_Separator_Description": "[Та яг одоо юу хийж байгааг нь мэдэж байгаа бол docs-ыг үзнэ үү]  \nИмэйлийн үндсэн & хаягны хэсэгийн хоорондох тусгаарлагч",
   "Direct_Reply_Username": "Хэрэглэгчийн нэр",
   "Direct_Reply_Username_Description": "Үнэмлэхүй имэйл ашиглах уу, шошго нь зөвшөөрөгдөөгүй, хэтэрхий бичнэ",
   "Directory": "Лавлах",

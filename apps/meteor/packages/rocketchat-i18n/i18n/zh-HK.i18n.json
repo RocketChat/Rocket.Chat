@@ -884,7 +884,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "直接回复协议",
   "Direct_Reply_Separator": "分隔器",
-  "Direct_Reply_Separator_Description": "[只有当您确切知道您在做什么时，才可以修改，请参阅文档]<br/>电子邮件的标记和标记部分之间的分隔符",
+  "Direct_Reply_Separator_Description": "[只有当您确切知道您在做什么时，才可以修改，请参阅文档]  \n电子邮件的标记和标记部分之间的分隔符",
   "Direct_Reply_Username": "用户名",
   "Direct_Reply_Username_Description": "请使用绝对电子邮件，不允许标记，否则将被覆盖",
   "Directory": "目录",

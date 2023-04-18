@@ -868,7 +868,7 @@
   "Direct_Reply_Port": "Port_priamej_odpovede",
   "Direct_Reply_Protocol": "Protokol priamej odpovede",
   "Direct_Reply_Separator": "Oddeľovač",
-  "Direct_Reply_Separator_Description": "[Zmeniť len vtedy, ak presne viete, čo robíte, preštudujte si dokumentáciu] <br/>Oddeľovač medzi základňou a časťou značiek e-mailu",
+  "Direct_Reply_Separator_Description": "[Zmeniť len vtedy, ak presne viete, čo robíte, preštudujte si dokumentáciu]  \nOddeľovač medzi základňou a časťou značiek e-mailu",
   "Direct_Reply_Username": "Používateľské meno",
   "Direct_Reply_Username_Description": "Používajte prosím absolútnu e-mailovú adresu, značkovanie nie je povolené, bude prepisované",
   "Directory": "Adresár",

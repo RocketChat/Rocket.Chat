@@ -958,7 +958,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Giao thức trả lời trực tiếp",
   "Direct_Reply_Separator": "Phân cách",
-  "Direct_Reply_Separator_Description": "[Chỉ thay đổi nếu bạn biết chính xác mình đang làm gì, tham khảo tài liệu]<br/>Phân cách giữa phần cơ sở và phần nhãn của email",
+  "Direct_Reply_Separator_Description": "[Chỉ thay đổi nếu bạn biết chính xác mình đang làm gì, tham khảo tài liệu]  \nPhân cách giữa phần cơ sở và phần nhãn của email",
   "Direct_Reply_Username": "Tên đăng nhập",
   "Direct_Reply_Username_Description": "Vui lòng sử dụng email tuyệt đối, không được phép gắn thẻ, nó sẽ được ghi đè lại",
   "Directory": "Danh mục",

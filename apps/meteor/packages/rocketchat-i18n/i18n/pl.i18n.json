@@ -1525,7 +1525,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protokół odpowiedzi bezpośrednich",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Zmień tylko wtedy, gdy wiesz dokładnie, co robisz; zapoznaj się z dokumentacją]<br/>Separator pomiędzy treścią a znacznikami wiadomości e-mail",
+  "Direct_Reply_Separator_Description": "[Zmień tylko wtedy, gdy wiesz dokładnie, co robisz; zapoznaj się z dokumentacją]  \nSeparator pomiędzy treścią a znacznikami wiadomości e-mail",
   "Direct_Reply_Username": "Nazwa użytkownika",
   "Direct_Reply_Username_Description": "Użyj pełnego adresu e-mail; używanie znaczników jest niedozwolone, ponieważ zostałyby one nadpisane.",
   "Directory": "Katalog",

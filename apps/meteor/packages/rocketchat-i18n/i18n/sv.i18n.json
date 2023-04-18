@@ -1597,7 +1597,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direktsök protokoll",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Ändra bara om du vet exakt vad du gör, se dokumentationen]<br/>Separator mellan bas och taggdel av e-post",
+  "Direct_Reply_Separator_Description": "[Ändra bara om du vet exakt vad du gör, se dokumentationen]  \nSeparator mellan bas och taggdel av e-post",
   "Direct_Reply_Username": "Användarnamn",
   "Direct_Reply_Username_Description": "Använd absolut e-post, tagging är inte tillåtet, det kommer skrivas över",
   "Directory": "Katalog",

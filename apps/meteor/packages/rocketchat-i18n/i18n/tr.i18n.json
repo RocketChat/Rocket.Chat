@@ -1035,7 +1035,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Doğrudan Yanıt Protokolü",
   "Direct_Reply_Separator": "Ayraç",
-  "Direct_Reply_Separator_Description": "[Sadece ne yaptığınızı biliyorsanız değişin, dokümanlara bakın]<br/>E-postanın taban ve etiket kısmı arasındaki ayırıcı",
+  "Direct_Reply_Separator_Description": "[Sadece ne yaptığınızı biliyorsanız değişin, dokümanlara bakın]  \nE-postanın taban ve etiket kısmı arasındaki ayırıcı",
   "Direct_Reply_Username": "Kullanıcı Adı",
   "Direct_Reply_Username_Description": "Lütfen mutlak e-postayı kullanın, etiketleme işlemine izin verilmiyor, üzerine yazılmış olacaktır",
   "Directory": "Dizin",

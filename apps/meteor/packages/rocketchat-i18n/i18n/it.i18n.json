@@ -896,7 +896,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protocollo di risposta diretta",
   "Direct_Reply_Separator": "Separatore",
-  "Direct_Reply_Separator_Description": "[Cambia solo se sai esattamente cosa stai facendo, consulta i documenti]<br/>Separatore tra la base e la parte del tag dell'email",
+  "Direct_Reply_Separator_Description": "[Cambia solo se sai esattamente cosa stai facendo, consulta i documenti]  \nSeparatore tra la base e la parte del tag dell'email",
   "Direct_Reply_Username": "Nome utente",
   "Direct_Reply_Username_Description": "Si prega di utilizzare l'e-mail assoluta, la codifica non è consentita, sarebbe sovrascritta",
   "Directory": "Directory",

@@ -863,7 +863,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protocolul de răspuns direct",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Modificați numai dacă știți exact ce faceți, consultați docs]<br/>Separator între partea de bază și eticheta din e-mail",
+  "Direct_Reply_Separator_Description": "[Modificați numai dacă știți exact ce faceți, consultați docs]  \nSeparator între partea de bază și eticheta din e-mail",
   "Direct_Reply_Username": "Utilizator",
   "Direct_Reply_Username_Description": "Utilizați un e-mail absolut, etichetarea nu este permisă, ar fi suprascrisă",
   "Directory": "Director",

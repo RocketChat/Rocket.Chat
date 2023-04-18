@@ -870,7 +870,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Atbildes protokols",
   "Direct_Reply_Separator": "Atdalītājs",
-  "Direct_Reply_Separator_Description": "[Mainīt tikai tad, ja jūs precīzi zināt, ko darāt, skatiet dokumentus]<br/>Atdalītājs starp e-pasta bāzes un tagu daļu",
+  "Direct_Reply_Separator_Description": "[Mainīt tikai tad, ja jūs precīzi zināt, ko darāt, skatiet dokumentus]  \nAtdalītājs starp e-pasta bāzes un tagu daļu",
   "Direct_Reply_Username": "Lietotājvārds",
   "Direct_Reply_Username_Description": "Lūdzu, izmantojiet pilnu e-pastu, tagošana nav atļauta, tas tiktu pārrakstīts",
   "Directory": "Direktorijs",

@@ -1406,7 +1406,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "بروتوكول الرد المباشر",
   "Direct_Reply_Separator": "الفاصل",
-  "Direct_Reply_Separator_Description": "[يمكنك التعديل فقط إذا كنت تعرف بالضبط ما تفعله، راجع المستندات]<br/>الفاصل بين الجزء الأساسي وجزء العلامة من البريد الإلكتروني",
+  "Direct_Reply_Separator_Description": "[يمكنك التعديل فقط إذا كنت تعرف بالضبط ما تفعله، راجع المستندات]  \nالفاصل بين الجزء الأساسي وجزء العلامة من البريد الإلكتروني",
   "Direct_Reply_Username": "اسم المستخدم",
   "Direct_Reply_Username_Description": "يرجى استخدام البريد الإلكتروني المطلق، لا يسمح بوضع العلامات، سيتم تجاوزه",
   "Directory": "الدليل",

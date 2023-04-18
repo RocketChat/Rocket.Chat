@@ -1195,7 +1195,7 @@
   "Direct_Reply_Port": "Port pro přímé odpovědi",
   "Direct_Reply_Protocol": "Protokol pro přímé odpovědi",
   "Direct_Reply_Separator": "Oddělovač",
-  "Direct_Reply_Separator_Description": "[Upravte pouze pokud přesně víte co děláte - konzultujte dokumentaci]<br/>Separátor mezi hlavní a tagovací částí emailu",
+  "Direct_Reply_Separator_Description": "[Upravte pouze pokud přesně víte co děláte - konzultujte dokumentaci]  \nSeparátor mezi hlavní a tagovací částí emailu",
   "Direct_Reply_Username": "Uživatelské jméno",
   "Direct_Reply_Username_Description": "Prosím použijte celý email, tagování není povoleno a bude přepsáno",
   "Directory": "Adresář",

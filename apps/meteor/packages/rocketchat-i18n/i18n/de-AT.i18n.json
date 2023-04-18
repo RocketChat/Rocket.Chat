@@ -865,7 +865,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direktantwortprotokoll",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Ändern Sie nur, wenn Sie genau wissen, was Sie tun, siehe Dokumentation]<br/>Trennzeichen zwischen Basis- und Tag-Teil der E-Mail",
+  "Direct_Reply_Separator_Description": "[Ändern Sie nur, wenn Sie genau wissen, was Sie tun, siehe Dokumentation]  \nTrennzeichen zwischen Basis- und Tag-Teil der E-Mail",
   "Direct_Reply_Username": "Nutzername",
   "Direct_Reply_Username_Description": "Bitte verwenden Sie absolute E-Mail, das Markieren ist nicht erlaubt, es wäre überschrieben",
   "Directory": "Verzeichnis",

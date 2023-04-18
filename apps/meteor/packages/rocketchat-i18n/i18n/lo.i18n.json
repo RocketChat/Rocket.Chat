@@ -881,7 +881,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direct Response Protocol",
   "Direct_Reply_Separator": "ແຍກຕ່າງຫາກ",
-  "Direct_Reply_Separator_Description": "[ປ່ຽນແປງພຽງແຕ່ຖ້າທ່ານຮູ້ແນ່ນອນວ່າທ່ານກໍາລັງເຮັດຫຍັງ, ເບິ່ງເອກະສານຕ່າງໆ]<br/>ແຍກຕົວລະຫວ່າງຖານແລະແທັກສ່ວນອີເມວ",
+  "Direct_Reply_Separator_Description": "[ປ່ຽນແປງພຽງແຕ່ຖ້າທ່ານຮູ້ແນ່ນອນວ່າທ່ານກໍາລັງເຮັດຫຍັງ, ເບິ່ງເອກະສານຕ່າງໆ]  \nແຍກຕົວລະຫວ່າງຖານແລະແທັກສ່ວນອີເມວ",
   "Direct_Reply_Username": "ຊື່ຜູ້ໃຊ້",
   "Direct_Reply_Username_Description": "ກະລຸນາໃຊ້ອີເມວຢ່າງແທ້ຈິງ, ການນໍາໃຊ້ທີ່ບໍ່ຖືກຕ້ອງ, ມັນຈະຖືກລາຍລັກອັກສອນ",
   "Directory": "Directory",

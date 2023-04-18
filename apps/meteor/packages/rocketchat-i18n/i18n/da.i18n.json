@@ -1200,7 +1200,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direkte svarprotokol",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Ændre kun dette, hvis du ved præcis hvad du laver, refer docs]<br/>Separator mellem base og tag-del af e-mail",
+  "Direct_Reply_Separator_Description": "[Ændre kun dette, hvis du ved præcis hvad du laver, refer docs]  \nSeparator mellem base og tag-del af e-mail",
   "Direct_Reply_Username": "Brugernavn",
   "Direct_Reply_Username_Description": "Angiv venligst hele emailen. Tagging er ikke tilladt. Det vil blive overskrevet",
   "Directory": "Vejviser",

@@ -863,7 +863,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protokolli i përgjigjes së drejtpërdrejt",
   "Direct_Reply_Separator": "ndarës",
-  "Direct_Reply_Separator_Description": "[Ndrysho vetëm nëse e dini saktësisht se çfarë po bëni, referoju dokumenteve]<br/>Ndarës midis pjesës bazë dhe tagut të emailit",
+  "Direct_Reply_Separator_Description": "[Ndrysho vetëm nëse e dini saktësisht se çfarë po bëni, referoju dokumenteve]  \nNdarës midis pjesës bazë dhe tagut të emailit",
   "Direct_Reply_Username": "Emri i përdoruesit",
   "Direct_Reply_Username_Description": "Ju lutemi përdorni email absolut, tagging nuk lejohet, ajo do të jetë mbi-shkruar",
   "Directory": "drejtori",

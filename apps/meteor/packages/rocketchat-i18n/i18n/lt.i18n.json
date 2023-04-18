@@ -917,7 +917,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Tiesioginio atsakymo protokolas",
   "Direct_Reply_Separator": "Atskyriklis",
-  "Direct_Reply_Separator_Description": "[Pakeiskite tik tada, jei tiksliai žinote, ką darai, peržiūrėkite dokumentus]<br/>Atskiras el. Pašto bazės ir žymos dalis",
+  "Direct_Reply_Separator_Description": "[Pakeiskite tik tada, jei tiksliai žinote, ką darai, peržiūrėkite dokumentus]  \nAtskiras el. Pašto bazės ir žymos dalis",
   "Direct_Reply_Username": "Vartotojo vardas",
   "Direct_Reply_Username_Description": "Prašau naudoti absoliučią el. Laišką, žymėjimas neleidžiamas, jis bus perrašytas",
   "Directory": "Katalogas",

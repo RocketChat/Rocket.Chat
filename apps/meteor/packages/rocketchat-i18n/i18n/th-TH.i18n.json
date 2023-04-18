@@ -861,7 +861,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "พิธีสารตอบกลับโดยตรง",
   "Direct_Reply_Separator": "เครื่องสกัด",
-  "Direct_Reply_Separator_Description": "[เปลี่ยนเฉพาะเมื่อคุณรู้ว่าคุณกำลังทำอะไรอยู่ดูเอกสาร]<br/>การแบ่งแยกระหว่างส่วนที่เป็นฐานและแท็กของอีเมล",
+  "Direct_Reply_Separator_Description": "[เปลี่ยนเฉพาะเมื่อคุณรู้ว่าคุณกำลังทำอะไรอยู่ดูเอกสาร]  \nการแบ่งแยกระหว่างส่วนที่เป็นฐานและแท็กของอีเมล",
   "Direct_Reply_Username": "ชื่อผู้ใช้",
   "Direct_Reply_Username_Description": "โปรดใช้อีเมลแบบไม่ จำกัด การติดแท็กไม่ได้รับอนุญาตจะเป็นการเขียนทับ",
   "Directory": "ไดเรกทอรี",

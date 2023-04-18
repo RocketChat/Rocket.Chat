@@ -1406,7 +1406,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direct antwoordprotocol",
   "Direct_Reply_Separator": "Scheidingsteken",
-  "Direct_Reply_Separator_Description": "[Alleen wijzigen als u precies weet wat u aan het doen bent, raadpleeg de documentatie]<br/>Separator tussen basis- en taggedeelte van e-mail",
+  "Direct_Reply_Separator_Description": "[Alleen wijzigen als u precies weet wat u aan het doen bent, raadpleeg de documentatie]  \nSeparator tussen basis- en taggedeelte van e-mail",
   "Direct_Reply_Username": "Gebruikersnaam",
   "Direct_Reply_Username_Description": "Gebruik absolute e-mail, tagging is niet toegestaan, het zou worden overschreven",
   "Directory": "Directory",

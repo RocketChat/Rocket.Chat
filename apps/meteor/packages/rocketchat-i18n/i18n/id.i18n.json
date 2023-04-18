@@ -862,7 +862,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protokol Balas Langsung",
   "Direct_Reply_Separator": "Pemisah",
-  "Direct_Reply_Separator_Description": "[Alter only jika Anda tahu persis apa yang Anda lakukan, lihat dokumen]<br/>Pemisah antara bagian dasar & tag email",
+  "Direct_Reply_Separator_Description": "[Alter only jika Anda tahu persis apa yang Anda lakukan, lihat dokumen]  \nPemisah antara bagian dasar & tag email",
   "Direct_Reply_Username": "Nama pengguna",
   "Direct_Reply_Username_Description": "Harap gunakan email absolut, pemberian tag tidak diperbolehkan, akan terlalu banyak ditulis",
   "Directory": "Direktori",

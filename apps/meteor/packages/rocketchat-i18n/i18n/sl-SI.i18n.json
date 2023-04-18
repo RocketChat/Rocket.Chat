@@ -859,7 +859,7 @@
   "Direct_Reply_Port": "Vrata_za_neposreden_odgovor",
   "Direct_Reply_Protocol": "Protokol za neposreden odgovor",
   "Direct_Reply_Separator": "Ločilo",
-  "Direct_Reply_Separator_Description": "[Alter only if you know exactly what you are doing, refer docs] <br/> Ločilo med osnovnih in označevalnim delom e-pošte",
+  "Direct_Reply_Separator_Description": "[Alter only if you know exactly what you are doing, refer docs]   \n Ločilo med osnovnih in označevalnim delom e-pošte",
   "Direct_Reply_Username": "Uporabniško ime",
   "Direct_Reply_Username_Description": "Prosimo, uporabite absolutni e-poštni naslov, označevanje ni dovoljeno in bo prepisano",
   "Directory": "Imenik",

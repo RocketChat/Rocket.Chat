@@ -862,7 +862,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Протокол за директен отговор",
   "Direct_Reply_Separator": "сепаратор",
-  "Direct_Reply_Separator_Description": "[Променете само ако знаете точно какво правите, препратете док.]<br/>Разделител между базата и частта от маркера на имейла",
+  "Direct_Reply_Separator_Description": "[Променете само ако знаете точно какво правите, препратете док.]  \nРазделител между базата и частта от маркера на имейла",
   "Direct_Reply_Username": "Потребителско име",
   "Direct_Reply_Username_Description": "Моля, използвайте абсолютно имейл, маркирането не е разрешено, то ще бъде надписано",
   "Directory": "указател",

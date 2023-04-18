@@ -1411,7 +1411,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protocole de réponse directe",
   "Direct_Reply_Separator": "Séparateur",
-  "Direct_Reply_Separator_Description": " [Alter only if you know exactly what you are doing, refer docs]<br/>Séparateur entre la base et les balises d'adresse e-mail",
+  "Direct_Reply_Separator_Description": " [Alter only if you know exactly what you are doing, refer docs]  \nSéparateur entre la base et les balises d'adresse e-mail",
   "Direct_Reply_Username": "Nom d'utilisateur",
   "Direct_Reply_Username_Description": "Veuillez utiliser une adresse e-mail absolue, les balises ne sont pas autorisées et seraient écrasées",
   "Directory": "Répertoire",

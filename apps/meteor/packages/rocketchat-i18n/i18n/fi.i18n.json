@@ -1597,7 +1597,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Suoran vastauksen yhteyskäytäntö",
   "Direct_Reply_Separator": "Erotin",
-  "Direct_Reply_Separator_Description": "[Muuta vain, jos tiedät tarkalleen mitä olet tekemässä, katso oppaita]<br/>Erotin sähköpostiosoitteen perus- ja tunnisteosan välissä",
+  "Direct_Reply_Separator_Description": "[Muuta vain, jos tiedät tarkalleen mitä olet tekemässä, katso oppaita]  \nErotin sähköpostiosoitteen perus- ja tunnisteosan välissä",
   "Direct_Reply_Username": "Käyttäjätunnus",
   "Direct_Reply_Username_Description": "Käytä absoluuttista sähköpostia, tunnisteiden lisääminen ei ole sallittua, se korvataan",
   "Directory": "Hakemisto",

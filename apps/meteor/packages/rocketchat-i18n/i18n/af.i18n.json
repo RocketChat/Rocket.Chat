@@ -862,7 +862,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direkte antwoord protokol",
   "Direct_Reply_Separator": "separator",
-  "Direct_Reply_Separator_Description": "[Wysig slegs as jy presies weet wat jy doen, verwys dokumente]<br/>Afskeider tussen basis en tag deel van e-pos",
+  "Direct_Reply_Separator_Description": "[Wysig slegs as jy presies weet wat jy doen, verwys dokumente]  \nAfskeider tussen basis en tag deel van e-pos",
   "Direct_Reply_Username": "Gebruikersnaam",
   "Direct_Reply_Username_Description": "Gebruik asseblief absolute e-pos, tagging is nie toegelaat nie, dit sal oorskryf wees",
   "Directory": "Gids",

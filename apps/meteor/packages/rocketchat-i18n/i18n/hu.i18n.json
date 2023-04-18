@@ -1550,7 +1550,7 @@
   "Direct_Reply_Port": "Közvetlen válasz portja",
   "Direct_Reply_Protocol": "Közvetlen válasz protokollja",
   "Direct_Reply_Separator": "Elválasztó",
-  "Direct_Reply_Separator_Description": "[Csak akkor változtassa meg, ha pontosan tudja, hogy mit csinál, nézze meg a dokumentációt]<br/>Elválasztó az e-mail alap és címke része között",
+  "Direct_Reply_Separator_Description": "[Csak akkor változtassa meg, ha pontosan tudja, hogy mit csinál, nézze meg a dokumentációt]  \nElválasztó az e-mail alap és címke része között",
   "Direct_Reply_Username": "Felhasználónév",
   "Direct_Reply_Username_Description": "Használjon abszolút e-mailt, a címkézés nem engedélyezett, felül lenne írva",
   "Directory": "Könyvtár",

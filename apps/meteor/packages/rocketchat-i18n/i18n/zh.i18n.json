@@ -1260,7 +1260,7 @@
   "Direct_Reply_Port": "直接回复端口",
   "Direct_Reply_Protocol": "直接回复协议",
   "Direct_Reply_Separator": "分隔符",
-  "Direct_Reply_Separator_Description": "[当您确切知道您在做什么时再修改，参见文档]<br/>电子邮件的标记和标记部分之间的分隔符",
+  "Direct_Reply_Separator_Description": "[当您确切知道您在做什么时再修改，参见文档]  \n电子邮件的标记和标记部分之间的分隔符",
   "Direct_Reply_Username": "用户名",
   "Direct_Reply_Username_Description": "请使用绝对电子邮件地址，标签将被覆盖",
   "Directory": "目录",

@@ -1243,7 +1243,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "직접 응답 프로토콜",
   "Direct_Reply_Separator": "구분자",
-  "Direct_Reply_Separator_Description": "[자신이하는 일을 정확하게 알고있는 경우에만 변경, 문서 참조]<br/>이메일의 기본 및 태그 부분 사이의 구분 기호",
+  "Direct_Reply_Separator_Description": "[자신이하는 일을 정확하게 알고있는 경우에만 변경, 문서 참조]  \n이메일의 기본 및 태그 부분 사이의 구분 기호",
   "Direct_Reply_Username": "사용자명",
   "Direct_Reply_Username_Description": "절대 이메일 사용하세요. 태그 지정은 허용되지 않으며 덮어 쓰게됩니다.",
   "Directory": "디렉토리",

@@ -1400,7 +1400,7 @@
   "Direct_Reply_Port": "Port de resposta directa",
   "Direct_Reply_Protocol": "Protocol de resposta directa",
   "Direct_Reply_Separator": "Separador",
-  "Direct_Reply_Separator_Description": "[Modifiqueu només si sabeu exactament què feu, consulteu documents]<br/>Separador entre base i etiqueta del correu electrònic",
+  "Direct_Reply_Separator_Description": "[Modifiqueu només si sabeu exactament què feu, consulteu documents]  \nSeparador entre base i etiqueta del correu electrònic",
   "Direct_Reply_Username": "Nom d'usuari",
   "Direct_Reply_Username_Description": "Utilitzeu el correu electrònic absolut, l'etiquetatge no està permès, se sobreescriurà",
   "Directory": "Directori",

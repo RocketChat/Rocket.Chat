@@ -1393,7 +1393,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "直接回覆協定",
   "Direct_Reply_Separator": "分隔器",
-  "Direct_Reply_Separator_Description": "[只有當您確切知道您在做什麼時，才可以修改，請參閱文檔]<br/>電子郵件的標記和標記部分之間的分隔符",
+  "Direct_Reply_Separator_Description": "[只有當您確切知道您在做什麼時，才可以修改，請參閱文檔]  \n電子郵件的標記和標記部分之間的分隔符",
   "Direct_Reply_Username": "使用者名稱",
   "Direct_Reply_Username_Description": "請使用絕對電子郵件，不允許標記，否則將被覆蓋",
   "Directory": "目錄",

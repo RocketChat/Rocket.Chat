@@ -986,7 +986,7 @@
   "Direct_Reply_Port": "Port für Direktantworten",
   "Direct_Reply_Protocol": "Protokoll für Direktantworten",
   "Direct_Reply_Separator": "Trennzeichen",
-  "Direct_Reply_Separator_Description": "[Nur verändern, wenn Du wirklich sicher bist, was Du da tust (s. Dokumentation).]<br/>Trennzeichen zwischen Base- und Tag-Teil der E-Mail",
+  "Direct_Reply_Separator_Description": "[Nur verändern, wenn Du wirklich sicher bist, was Du da tust (s. Dokumentation).]  \nTrennzeichen zwischen Base- und Tag-Teil der E-Mail",
   "Direct_Reply_Username": "Benutzername",
   "Direct_Reply_Username_Description": "Bitte verwende eine absolute E-Mail-Adresse. Tagging ist nicht erlaubt und würde überschrieben.",
   "Directory": "Verzeichnis",

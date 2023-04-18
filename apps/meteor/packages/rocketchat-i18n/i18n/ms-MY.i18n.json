@@ -862,7 +862,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protokol Balas Terus",
   "Direct_Reply_Separator": "Pemisah",
-  "Direct_Reply_Separator_Description": "[Alter hanya jika anda tahu dengan tepat apa yang anda lakukan, rujuk dokumen]<br/>Separator antara asas & tag bahagian e-mel",
+  "Direct_Reply_Separator_Description": "[Alter hanya jika anda tahu dengan tepat apa yang anda lakukan, rujuk dokumen]  \nSeparator antara asas & tag bahagian e-mel",
   "Direct_Reply_Username": "Nama pengguna",
   "Direct_Reply_Username_Description": "Sila gunakan e-mel mutlak, penandaan tidak dibenarkan, ia akan ditulis secara bertulis",
   "Directory": "Direktori",

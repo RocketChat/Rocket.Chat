@@ -974,7 +974,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Protokol za izravni odgovor",
   "Direct_Reply_Separator": "Separator",
-  "Direct_Reply_Separator_Description": "[Izmijenite samo ako točno znate što radite, pogledajte dokumente]<br/>Odvajanje između baze i oznake dijela e-pošte",
+  "Direct_Reply_Separator_Description": "[Izmijenite samo ako točno znate što radite, pogledajte dokumente]  \nOdvajanje između baze i oznake dijela e-pošte",
   "Direct_Reply_Username": "Korisničko ime",
   "Direct_Reply_Username_Description": "Molimo koristite apsolutnu e-poštu, označavanje nije dopušteno, bilo bi previše napisano",
   "Directory": "Imenik",
