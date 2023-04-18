@@ -41,7 +41,7 @@
   "Accounts_BlockedDomainsList_Description": "Senarai diasingkan koma bagi domain disekat",
   "Accounts_BlockedUsernameList": "Senarai Nama pengguna Disekat",
   "Accounts_BlockedUsernameList_Description": "senarai-dipisah-koma nama pengguna yang disekat (kes sensitif)",
-  "Accounts_CustomFields_Description": "Haruskah JSON yang sah di mana kekunci adalah nama medan yang mengandungi kamus tetapan medan. Contoh: <br/><code>{\n\"peranan\": {\n\"jenis\": \"pilih\",\n\"defaultValue\": \"pelajar\",\n\"pilihan\": [\"guru\", \"pelajar\"],\n\"diperlukan\": benar,\n\"modifyRecordField\": {\n\"array\": benar,\n\"medan\": \"peranan\"\n}\n},\n\"twitter\": {\n\"taip\": \"teks\",\n\"diperlukan\": benar,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Haruskah JSON yang sah di mana kekunci adalah nama medan yang mengandungi kamus tetapan medan. Contoh:  \n`{\"peranan\": {\"jenis\": \"pilih\",\"defaultValue\": \"pelajar\",\"pilihan\": [\"guru\", \"pelajar\"],\"diperlukan\": benar,\"modifyRecordField\": {\"array\": benar,\"medan\": \"peranan\"}},\"twitter\": {\"taip\": \"teks\",\"diperlukan\": benar,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Medan Custom untuk Tunjukkan dalam Maklumat Pengguna",
   "Accounts_Default_User_Preferences": "Keutamaan Pengguna Lalai",
   "Accounts_Default_User_Preferences_audioNotifications": "Alert Default Pemberitahuan Audio",

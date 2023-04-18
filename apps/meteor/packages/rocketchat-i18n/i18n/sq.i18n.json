@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "lista të ndara me presje të fushave të bllokuara",
   "Accounts_BlockedUsernameList": "Blocked List Emri i përdoruesit",
   "Accounts_BlockedUsernameList_Description": "lista të ndara me presje e përdoruesve të bllokuara (rasti-i pandjeshëm)",
-  "Accounts_CustomFields_Description": "Duhet të jetë një JSON i vlefshëm ku çelësat janë emrat e fushës që përmbajnë një fjalor të cilësimeve të fushës. Shembull:<br/><code>{\n\"rol\": {\n\"tipi\": \"zgjidhni\",\n\"defaultValue\": \"student\",\n\"opsionet\": [\"mësues\", \"student\"],\n\"e nevojshme\": e vërtetë,\n\"modifyRecordField\": {\n\"array\": e vërtetë,\n\"fushë\": \"role\"\n}\n}\n\"Cicëroj\": {\n\"tipi\": \"tekst\",\n\"e nevojshme\": e vërtetë,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Duhet të jetë një JSON i vlefshëm ku çelësat janë emrat e fushës që përmbajnë një fjalor të cilësimeve të fushës. Shembull:  \n`{\"rol\": {\"tipi\": \"zgjidhni\",\"defaultValue\": \"student\",\"opsionet\": [\"mësues\", \"student\"],\"e nevojshme\": e vërtetë,\"modifyRecordField\": {\"array\": e vërtetë,\"fushë\": \"role\"}}\"Cicëroj\": {\"tipi\": \"tekst\",\"e nevojshme\": e vërtetë,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Fushat e personalizuara për të shfaqur në informacionin e përdoruesit",
   "Accounts_Default_User_Preferences": "Preferencat e preferuara të përdoruesit",
   "Accounts_Default_User_Preferences_audioNotifications": "Njoftimet audio Default Alert",

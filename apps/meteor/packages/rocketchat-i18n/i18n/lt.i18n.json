@@ -59,7 +59,7 @@
   "Accounts_BlockedDomainsList_Description": "Kableliais atskirtas užblokuotų domenų sąrašas",
   "Accounts_BlockedUsernameList": "Užblokuoto vartotojo vardo sąrašas",
   "Accounts_BlockedUsernameList_Description": "Kableliais atskirtas užblokuotų naudotojų vardų sąrašas (neatsižvelgiant į atvejį)",
-  "Accounts_CustomFields_Description": "Turėtų būti galiojantis JSON, kurio raktai yra laukų pavadinimai, kuriuose yra laukų nustatymų žodynas. Pavyzdys:<br/><code> {\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Turėtų būti galiojantis JSON, kurio raktai yra laukų pavadinimai, kuriuose yra laukų nustatymų žodynas. Pavyzdys:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Pasirinktiniai laukai, rodomi vartotojo informacijai",
   "Accounts_Default_User_Preferences": "Vartotojo nustatymai pagal nutylėjimą",
   "Accounts_Default_User_Preferences_audioNotifications": "Garso pranešimų numatytasis įspėjimas",

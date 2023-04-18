@@ -58,7 +58,7 @@
   "Accounts_BlockedDomainsList_Description": "Čárkami oddělený seznam blokovaných domén",
   "Accounts_BlockedUsernameList": "Zakázaná uživatelská jména",
   "Accounts_BlockedUsernameList_Description": "čárkou oddělený seznam uživatelských jmen (na velikosti písmen nezáleží)",
-  "Accounts_CustomFields_Description": "Validní JSON obsahující klíče polí s nastavením. Například:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Validní JSON obsahující klíče polí s nastavením. Například:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Vlastní pole zobrazená v uživatelském profilu",
   "Accounts_Default_User_Preferences": "Výchozí uživatelské nastavení",
   "Accounts_Default_User_Preferences_audioNotifications": "Výchozí zvuk upozornění audia",

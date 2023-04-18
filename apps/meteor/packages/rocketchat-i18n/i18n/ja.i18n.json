@@ -63,7 +63,7 @@
   "Accounts_BlockedDomainsList_Description": "ブロックされたドメインのコンマ区切り一覧",
   "Accounts_BlockedUsernameList": "ブロックされたユーザー名一覧",
   "Accounts_BlockedUsernameList_Description": "ブロックされたユーザー名のコンマ区切り一覧（大文字と小文字の区別なし）",
-  "Accounts_CustomFields_Description": "キーがフィールド設定の辞書が含まれるフィールド名である、有効なJSONであることが必要です。例：<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "キーがフィールド設定の辞書が含まれるフィールド名である、有効なJSONであることが必要です。例：  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "ユーザー情報に表示するカスタムフィールド",
   "Accounts_Default_User_Preferences": "デフォルトのユーザー基本設定",
   "Accounts_Default_User_Preferences_audioNotifications": "音声通知のデフォルトアラート",

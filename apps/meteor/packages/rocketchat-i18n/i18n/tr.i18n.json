@@ -52,7 +52,7 @@
   "Accounts_BlockedDomainsList_Description": "Engellenen alanların virgülle ayrılmış listesi",
   "Accounts_BlockedUsernameList": "Engellenen Kullanıcı Adı Listesi",
   "Accounts_BlockedUsernameList_Description": "Engellenen kullanıcı adlarının virgülle ayrılmış listesi (harf büyüklüğüne duyarsız)",
-  "Accounts_CustomFields_Description": "Geçerli bir JSON olmalı; anahtar sözcükler, alan ayarları sözlüğünü içeren alan adlarıdır. Örnek:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Geçerli bir JSON olmalı; anahtar sözcükler, alan ayarları sözlüğünü içeren alan adlarıdır. Örnek:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Kullanıcı Bilgilerini Göstermek için Özel alanlar",
   "Accounts_Default_User_Preferences": "Varsayılan Kullanıcı Tercihleri",
   "Accounts_Default_User_Preferences_audioNotifications": "Sesli Bildirimler için Varsayılan Uyarı",

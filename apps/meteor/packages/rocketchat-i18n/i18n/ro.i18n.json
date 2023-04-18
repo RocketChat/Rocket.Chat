@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Lista de elemente separate prin virgulă de domenii blocate",
   "Accounts_BlockedUsernameList": "Utilizator blocat Lista",
   "Accounts_BlockedUsernameList_Description": "Lista de elemente separate prin virgulă de nume de utilizator blocate (caz-insensibil)",
-  "Accounts_CustomFields_Description": "Ar trebui să fie un JSON valid, unde cheile sunt numele câmpurilor care conțin un dicționar de setări de câmp. Exemplu: <br/><code>{\n\"rol\": {\n\"tip\": \"selectați\",\n\"defaultValue\": \"student\",\n\"opțiuni\": [\"profesor\", \"student\"],\n\"necesar\": adevărat,\n\"modifyRecordField\": {\n\"matrice\": adevărat,\n\"câmp\": \"roluri\"\n}\n},\n\"twitter\": {\n\"tip\": \"text\",\n\"necesar\": adevărat,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Ar trebui să fie un JSON valid, unde cheile sunt numele câmpurilor care conțin un dicționar de setări de câmp. Exemplu:  \n`{\"rol\": {\"tip\": \"selectați\",\"defaultValue\": \"student\",\"opțiuni\": [\"profesor\", \"student\"],\"necesar\": adevărat,\"modifyRecordField\": {\"matrice\": adevărat,\"câmp\": \"roluri\"}},\"twitter\": {\"tip\": \"text\",\"necesar\": adevărat,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Câmpurile personalizate pentru a fi afișate în informațiile despre utilizator",
   "Accounts_Default_User_Preferences": "Setările prestabilite ale utilizatorilor",
   "Accounts_Default_User_Preferences_audioNotifications": "Notificări audio Alertă implicită",

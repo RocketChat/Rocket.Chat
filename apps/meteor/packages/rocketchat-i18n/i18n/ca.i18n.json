@@ -63,7 +63,7 @@
   "Accounts_BlockedDomainsList_Description": "Llista de dominis bloquejats separada per comes",
   "Accounts_BlockedUsernameList": "Llista de noms d'usuari bloquejats",
   "Accounts_BlockedUsernameList_Description": "Llista de noms d'usuaris bloquejats separada per comes (no distingeix majúscules i minúscules)",
-  "Accounts_CustomFields_Description": "Ha de ser un JSON vàlid, on les claus són els noms dels camps que contenen un diccionari de configuració de camps. Exemple:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "Ha de ser un JSON vàlid, on les claus són els noms dels camps que contenen un diccionari de configuració de camps. Exemple:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}` ",
   "Accounts_CustomFieldsToShowInUserInfo": "Camps personalitzats a mostrar a l'informació d'usuari",
   "Accounts_Default_User_Preferences": "Preferències d'usuari per defecte",
   "Accounts_Default_User_Preferences_audioNotifications": "Alerta de notificacions d'àudio per defecte",

@@ -50,7 +50,7 @@
   "Accounts_BlockedDomainsList_Description": "Kommaseparert liste over blokkerte domener",
   "Accounts_BlockedUsernameList": "Blokkert brukernavnsliste",
   "Accounts_BlockedUsernameList_Description": "Kommaseparert liste over blokkerte brukernavn (ikke-følsom)",
-  "Accounts_CustomFields_Description": "Skal være et gyldig JSON der nøkler er feltnavnene som inneholder en ordbok med feltinnstillinger. Eksempel:<br/><code>{\n\"rolle\": {\n\"type\": \"velg\",\n\"standardValue\": \"student\",\n\"alternativer\": [\"lærer\", \"student\"],\n\"nødvendig\": sant,\n\"modifyRecordField\": {\n\"array\": sant,\n\"felt\": \"roller\"\n}\n}\n\"twitter\": {\n\"type\": \"tekst\",\n\"nødvendig\": sant,\n\"minLength\": 2,\n\"maksimal lengde\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Skal være et gyldig JSON der nøkler er feltnavnene som inneholder en ordbok med feltinnstillinger. Eksempel:  \n`{\"rolle\": {\"type\": \"velg\",\"standardValue\": \"student\",\"alternativer\": [\"lærer\", \"student\"],\"nødvendig\": sant,\"modifyRecordField\": {\"array\": sant,\"felt\": \"roller\"}}\"twitter\": {\"type\": \"tekst\",\"nødvendig\": sant,\"minLength\": 2,\"maksimal lengde\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Egendefinerte felt å vise i brukerinformasjon",
   "Accounts_Default_User_Preferences": "Standard brukerinnstillinger",
   "Accounts_Default_User_Preferences_audioNotifications": "Lydvarsler Standardvarsel",

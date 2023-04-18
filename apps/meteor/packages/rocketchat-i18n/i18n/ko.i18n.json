@@ -61,7 +61,7 @@
   "Accounts_BlockedDomainsList_Description": "쉼표로 구문된 차단 도메인 리스트",
   "Accounts_BlockedUsernameList": "차단된 사용자 리스트",
   "Accounts_BlockedUsernameList_Description": "쉼표로 구문된 차단 사용자 리스트 (대소 문자 구분)",
-  "Accounts_CustomFields_Description": "필드 설정에 포함된 필드명을 사용한 올바른 JSON 이여야 합니다. 예:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "필드 설정에 포함된 필드명을 사용한 올바른 JSON 이여야 합니다. 예:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}` ",
   "Accounts_CustomFieldsToShowInUserInfo": "사용자 정보에 표시할 사용자 정의 필드",
   "Accounts_Default_User_Preferences": "기본 사용자 환경 설정",
   "Accounts_Default_User_Preferences_audioNotifications": "소리 알림",

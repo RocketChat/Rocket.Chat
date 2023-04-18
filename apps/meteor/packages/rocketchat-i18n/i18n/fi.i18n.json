@@ -79,7 +79,7 @@
   "Accounts_BlockedDomainsList_Description": "Pilkulla eroteltu estettyjen toimialueiden luettelo",
   "Accounts_BlockedUsernameList": "Estettyjen käyttäjätunnusten luettelo",
   "Accounts_BlockedUsernameList_Description": "Pilkulla erotettu Estettyjen käyttäjätunnusten luettelo(kirjainkoosta riippumaton)",
-  "Accounts_CustomFields_Description": "Oltava voimassa oleva JSON, jossa avaimet ovat kentän nimiä, jotka sisältävät kenttäasetusten sanakirjan. Esimerkki:<br/><code>{\n\"role\": {\n\"type\": \"select\",\n\"defaultValue\": \"student\",\n\"options\": [\"teacher\", \"student\"],\n\"required\": true,\n\"modifyRecordField\": {\n\"array\": true,\n\"field\": \"roles\"\n}\n},\n\"twitter\": {\n\"type\": \"text\",\n\"required\": true,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Oltava voimassa oleva JSON, jossa avaimet ovat kentän nimiä, jotka sisältävät kenttäasetusten sanakirjan. Esimerkki:  \n`{\"role\": {\"type\": \"select\",\"defaultValue\": \"student\",\"options\": [\"teacher\", \"student\"],\"required\": true,\"modifyRecordField\": {\"array\": true,\"field\": \"roles\"}},\"twitter\": {\"type\": \"text\",\"required\": true,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Mukautetut kentät, jotka näkyvät käyttäjätiedoissa",
   "Accounts_Default_User_Preferences": "Käyttäjän oletusasetukset",
   "Accounts_Default_User_Preferences_audioNotifications": "Ääni-ilmoitusten oletusilmoitus",

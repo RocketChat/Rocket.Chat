@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Kommata getrennte Liste von geblockten Domains",
   "Accounts_BlockedUsernameList": "Liste gesperrter Benutzernamen",
   "Accounts_BlockedUsernameList_Description": "Komma-getrennte Liste gesperrter Benutzernamen (case-insensitive)",
-  "Accounts_CustomFields_Description": "Sollte ein gültiger JSON sein, wobei Schlüssel die Feldnamen sind, die ein Wörterbuch von Feldeinstellungen enthalten. Beispiel:<br/><code>{\n\"Rolle\": {\n\"Typ\": \"auswählen\",\n\"defaultValue\": \"Schüler\",\n\"Optionen\": [\"Lehrer\", \"Schüler\"],\n\"erforderlich\": wahr,\n\"modifyRecordField\": {\n\"Array\": stimmt,\n\"Feld\": \"Rollen\"\n}\n},\n\"Twitter\": {\n\"Text eingeben\",\n\"erforderlich\": wahr,\n\"MinLänge\": 2,\n\"maxLänge\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Sollte ein gültiger JSON sein, wobei Schlüssel die Feldnamen sind, die ein Wörterbuch von Feldeinstellungen enthalten. Beispiel:  \n`{\"Rolle\": {\"Typ\": \"auswählen\",\"defaultValue\": \"Schüler\",\"Optionen\": [\"Lehrer\", \"Schüler\"],\"erforderlich\": wahr,\"modifyRecordField\": {\"Array\": stimmt,\"Feld\": \"Rollen\"}},\"Twitter\": {\"Text eingeben\",\"erforderlich\": wahr,\"MinLänge\": 2,\"maxLänge\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Benutzerdefinierte Felder, die in Benutzerinformationen angezeigt werden",
   "Accounts_Default_User_Preferences": "Standardbenutzereinstellungen",
   "Accounts_Default_User_Preferences_audioNotifications": "Audio Benachrichtigungen Standardalarm",

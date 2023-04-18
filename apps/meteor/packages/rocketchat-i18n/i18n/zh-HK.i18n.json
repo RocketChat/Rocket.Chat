@@ -52,7 +52,7 @@
   "Accounts_BlockedDomainsList_Description": "逗号分隔的阻止域列表",
   "Accounts_BlockedUsernameList": "被阻止的用户名单",
   "Accounts_BlockedUsernameList_Description": "逗号分隔的阻止用户名列表（不区分大小写）",
-  "Accounts_CustomFields_Description": "应该是有效的JSON，其中键是包含字段设置字典的字段名称。例如：<br/><code>{\n“角色”：{\n“type”：“select”，\n“defaultValue”：“学生”，\n“选项”：[“老师”，“学生”]，\n“required”：是的，\n“modifyRecordField”：{\n“数组”：是的，\n“字段”：“角色”\n}\n}，\n“推特”： {\n“type”：“text”，\n“required”：是的，\n“minLength”：2，\n“maxLength”：10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "应该是有效的JSON，其中键是包含字段设置字典的字段名称。例如：  \n`{“角色”：{“type”：“select”，“defaultValue”：“学生”，“选项”：[“老师”，“学生”]，“required”：是的，“modifyRecordField”：{“数组”：是的，“字段”：“角色”}}，“推特”： {“type”：“text”，“required”：是的，“minLength”：2，“maxLength”：10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "要在用户信息中显示的自定义字段",
   "Accounts_Default_User_Preferences": "默认用户首选项",
   "Accounts_Default_User_Preferences_audioNotifications": "音频通知默认警报",

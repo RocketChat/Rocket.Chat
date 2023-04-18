@@ -63,7 +63,7 @@
   "Accounts_BlockedDomainsList_Description": "以逗號分隔的網域黑名單",
   "Accounts_BlockedUsernameList": "使用者黑名單",
   "Accounts_BlockedUsernameList_Description": "被封鎖的使用者名稱（逗號分隔，不分大小寫）",
-  "Accounts_CustomFields_Description": "應該是有效的JSON，其中鍵是包含字段設置字典的字段名稱。例如:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n},\n\"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "應該是有效的JSON，其中鍵是包含字段設置字典的字段名稱。例如:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  }},\"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "顯示於使用者資訊的自訂欄位",
   "Accounts_Default_User_Preferences": "預設使用者喜好設定",
   "Accounts_Default_User_Preferences_audioNotifications": "預設音效通知",

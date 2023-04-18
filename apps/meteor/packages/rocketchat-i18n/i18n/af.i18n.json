@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Komma geskeide lys van geblokkeerde domeine",
   "Accounts_BlockedUsernameList": "Geblokkeerde gebruikerslys",
   "Accounts_BlockedUsernameList_Description": "Komma-geskeide lys van geblokkeerde gebruikersname (gevalinsensitief)",
-  "Accounts_CustomFields_Description": "Moet 'n geldige JSON wees waar sleutels die veldname bevat wat 'n woordeboek van veldinstellings bevat. Voorbeeld:<br/><code>{\n\"rol\": {\n\"tipe\": \"kies\",\n\"defaultValue\": \"student\",\n\"opsies\": [\"onderwyser\", \"student\"],\n\"vereiste\": waar,\n\"modifyRecordField\": {\n\"skikking\": waar,\n\"veld\": \"rolle\"\n}\n},\n\"twitter\": {\n\"tipe\": \"teks\",\n\"vereiste\": waar,\n\"minlengte\": 2,\n\"maksimum lengte\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Moet 'n geldige JSON wees waar sleutels die veldname bevat wat 'n woordeboek van veldinstellings bevat. Voorbeeld:  \n`{\"rol\": {\"tipe\": \"kies\",\"defaultValue\": \"student\",\"opsies\": [\"onderwyser\", \"student\"],\"vereiste\": waar,\"modifyRecordField\": {\"skikking\": waar,\"veld\": \"rolle\"}},\"twitter\": {\"tipe\": \"teks\",\"vereiste\": waar,\"minlengte\": 2,\"maksimum lengte\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Aangepaste velde om in gebruikersinligting te wys",
   "Accounts_Default_User_Preferences": "Standaard gebruikersvoorkeure",
   "Accounts_Default_User_Preferences_audioNotifications": "Oudio-kennisgewings Standaardwaarskuwing",

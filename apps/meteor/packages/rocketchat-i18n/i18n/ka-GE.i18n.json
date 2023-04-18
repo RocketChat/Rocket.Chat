@@ -57,7 +57,7 @@
   "Accounts_BlockedDomainsList_Description": "დაბლოკილი დომენების მძიმით გამოყოფილი სია",
   "Accounts_BlockedUsernameList": "დაბლოკილი მომხმარებლები",
   "Accounts_BlockedUsernameList_Description": "დაბლოკილი მომხმარებლების მძიმით გამოყოფილი სია",
-  "Accounts_CustomFields_Description": "უნდა იყოს მოქმედი JSON, სადაც გასაღებები არის ველების სახელები, რომლებიც შეიცავს ველების პარამეტრების ლექსიკონს. მაგალითი: <br/> <code> {\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }}, \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }} </code>",
+  "Accounts_CustomFields_Description": "უნდა იყოს მოქმედი JSON, სადაც გასაღებები არის ველების სახელები, რომლებიც შეიცავს ველების პარამეტრების ლექსიკონს. მაგალითი:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "მომხმარებლის ინფოში დამატებითი ველების ჩვენება",
   "Accounts_Default_User_Preferences": "მომხმარებლის სტანდარტული პარამეტრები",
   "Accounts_Default_User_Preferences_audioNotifications": "აუდიო შეტყობინებების ზარი",

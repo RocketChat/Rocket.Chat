@@ -52,7 +52,7 @@
   "Accounts_BlockedDomainsList_Description": "لیست کاما جدا از دامنه های مسدود شده",
   "Accounts_BlockedUsernameList": "لیست نام های کاربری مسدود شده",
   "Accounts_BlockedUsernameList_Description": "لیست کاما جدا از نام های کاربری مسدود شده (غیر حساس به کوچکی و بزرگی حروف)",
-  "Accounts_CustomFields_Description": "باید از یک JSON معتبر که شامل یک لیست از کلید ها و مقادیر باشد، مثل: <br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "باید از یک JSON معتبر که شامل یک لیست از کلید ها و مقادیر باشد، مثل:   \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "گزینه‌های سفارشی برای نمایش در اطلاعات کاربری",
   "Accounts_Default_User_Preferences": "تنظیمات پیش‌فرض کاربر",
   "Accounts_Default_User_Preferences_audioNotifications": "هشدار پیش فرض اعلان‌های صوتی",

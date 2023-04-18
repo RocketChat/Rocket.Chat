@@ -79,7 +79,7 @@
   "Accounts_BlockedDomainsList_Description": "Kommaseparerad lista över blockerade domäner",
   "Accounts_BlockedUsernameList": "Blockerade användare",
   "Accounts_BlockedUsernameList_Description": "Kommaseparerad lista över blockerade användarnamn (skiftlägeskänsligt)",
-  "Accounts_CustomFields_Description": "Ska vara en giltig JSON där nycklarna är fältnamn som innehåller en ordbok för fältinställningar. Exempel:<br/><code>{\n\"roll\": {\n\"typ\": \"välj\",\n\"defaultValue\": \"student\",\n\"alternativ\": [\"lärare\", \"student\"],\n\"krävs\": sant,\n\"modifyRecordField\": {\n\"array\": true,\n\"fält\": \"roller\"\n}\n},\n\"Twitter\": {\n\"typ\": \"text\",\n\"krävs\": sant,\n\"minlängd\": 2,\n\"maxlängd\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Ska vara en giltig JSON där nycklarna är fältnamn som innehåller en ordbok för fältinställningar. Exempel:  \n`{\"roll\": {\"typ\": \"välj\",\"defaultValue\": \"student\",\"alternativ\": [\"lärare\", \"student\"],\"krävs\": sant,\"modifyRecordField\": {\"array\": true,\"fält\": \"roller\"}},\"Twitter\": {\"typ\": \"text\",\"krävs\": sant,\"minlängd\": 2,\"maxlängd\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Anpassade fält att visa i användarinfo",
   "Accounts_Default_User_Preferences": "Standardanvändarinställningar",
   "Accounts_Default_User_Preferences_audioNotifications": "Larmmeddelanden Standardvarning",

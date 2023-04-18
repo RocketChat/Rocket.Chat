@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Списък с блокирани домейни, разделен със запетаи",
   "Accounts_BlockedUsernameList": "Списък с блокирани потребителски номера",
   "Accounts_BlockedUsernameList_Description": "Списък с блокирани потребителски имена, разделени със запетаи (нечувствителни към малки и малки букви)",
-  "Accounts_CustomFields_Description": "Трябва да е валидна JSON, където ключовете са имената на полетата, съдържащи речник на настройките на полето. Пример: <br/><code>{\n\"роля\": {\n\"тип\": \"изберете\",\n\"defaultValue\": \"студент\",\n\"опции\": [\"учител\", \"студент\"],\n\"required\": true,\n\"modifyRecordField\": {\n\"масив\": true,\n\"поле\": \"роли\"\n}\n}\n\"Twitter\": {\n\"тип\": \"текст\",\n\"required\": true,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Трябва да е валидна JSON, където ключовете са имената на полетата, съдържащи речник на настройките на полето. Пример:  \n`{\"роля\": {\"тип\": \"изберете\",\"defaultValue\": \"студент\",\"опции\": [\"учител\", \"студент\"],\"required\": true,\"modifyRecordField\": {\"масив\": true,\"поле\": \"роли\"}}\"Twitter\": {\"тип\": \"текст\",\"required\": true,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Персонализирани полета, които да се показват в потребителската информация",
   "Accounts_Default_User_Preferences": "Потребителски предпочитания по подразбиране",
   "Accounts_Default_User_Preferences_audioNotifications": "Аудио известия По подразбиране Сигнал",

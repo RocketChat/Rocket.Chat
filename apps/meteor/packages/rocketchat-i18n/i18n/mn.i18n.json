@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Хаалттай домэйны коммандаас тусгаарлагдсан жагсаалт",
   "Accounts_BlockedUsernameList": "Хаалттай Хэрэглэгчийн жагсаалт",
   "Accounts_BlockedUsernameList_Description": "Хаалттай хэрэглэгчийн нэрийг коммандаас тусгаарласан жагсаалт (тохиолдолгүй)",
-  "Accounts_CustomFields_Description": "Хэрвээ түлхүүрүүд нь хээрийн тохиргоонуудын толь бичиг агуулсан хээрийн нэртэй бол хүчинтэй JSON байх ёстой. Жишээ нь: <br/><code>{\n\"үүрэг\": {\n\"төрөл\": \"сонгох\",\n\"defaultValue\": \"оюутан\",\n\"сонголтууд\": [\"багш\", \"оюутан\"],\n\"шаардлагатай\": үнэн,\n\"modifyRecordField\": {\n\"массив\": үнэн,\n\"талбар\": \"үүрэг\"\n}\n},\n\"twitter\": {\n\"төрөл\": \"текст\",\n\"шаардлагатай\": үнэн,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Хэрвээ түлхүүрүүд нь хээрийн тохиргоонуудын толь бичиг агуулсан хээрийн нэртэй бол хүчинтэй JSON байх ёстой. Жишээ нь:  \n`{\"үүрэг\": {\"төрөл\": \"сонгох\",\"defaultValue\": \"оюутан\",\"сонголтууд\": [\"багш\", \"оюутан\"],\"шаардлагатай\": үнэн,\"modifyRecordField\": {\"массив\": үнэн,\"талбар\": \"үүрэг\"}},\"twitter\": {\"төрөл\": \"текст\",\"шаардлагатай\": үнэн,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Гаалийн талбарууд нь Хэрэглэгчийн мэдээллийг харуулах",
   "Accounts_Default_User_Preferences": "Хэрэглэгчийн анхдагч тохиргоо",
   "Accounts_Default_User_Preferences_audioNotifications": "Аудио Мэдэгдэл Стандарт Alert",

@@ -57,7 +57,7 @@
   "Accounts_BlockedDomainsList_Description": "Kommasepareret liste over blokerede domæner",
   "Accounts_BlockedUsernameList": "Liste over blokerede brugernavne",
   "Accounts_BlockedUsernameList_Description": "Kommasepareret liste over blokerede brugernavne (der er ikke forskel på store og små bogstaver)",
-  "Accounts_CustomFields_Description": "Skal være gyldigt JSON, hvor nøgler er feltnavne, der indeholder en ordbog med feltindstillinger. Eksempel:<br/><code>{\n\"role\": {\n\"type\": \"select\",\n\"defaultValue\": \"student\",\n\"options\": [\"lærer\", \"studerende\"],\n\"required\": true,\n\"modifyRecordField\": {\n\"array\": true,\n\"felt\": \"roller\"\n}\n},\n\"twitter\": {\n\"type\": \"text\",\n\"required\": sandt,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Skal være gyldigt JSON, hvor nøgler er feltnavne, der indeholder en ordbog med feltindstillinger. Eksempel:  \n`{\"role\": {\"type\": \"select\",\"defaultValue\": \"student\",\"options\": [\"lærer\", \"studerende\"],\"required\": true,\"modifyRecordField\": {\"array\": true,\"felt\": \"roller\"}},\"twitter\": {\"type\": \"text\",\"required\": sandt,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Brugerdefinerede felter der skal vises i brugerinfo",
   "Accounts_Default_User_Preferences": "Standard-brugerindstillinger",
   "Accounts_Default_User_Preferences_audioNotifications": "Standardlyd for lydnotifikationer",

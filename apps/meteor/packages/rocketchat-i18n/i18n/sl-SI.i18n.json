@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Z vejicami ločen seznam blokiranih domen",
   "Accounts_BlockedUsernameList": "Seznam blokiranih uporabnikov",
   "Accounts_BlockedUsernameList_Description": "Z vejicami ločen seznam blokiranih uporabnikov (ne glede na začetnico)",
-  "Accounts_CustomFields_Description": "Format JSON mora biti veljaven, kjer so ključi imena polj, ki vsebujejo slovar posameznih nastavitev. Primer:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "Format JSON mora biti veljaven, kjer so ključi imena polj, ki vsebujejo slovar posameznih nastavitev. Primer:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}` ",
   "Accounts_CustomFieldsToShowInUserInfo": "Polja po meri, prikazana v razdelku Uporabniške informacije",
   "Accounts_Default_User_Preferences": "Prednostne nastavitve privzetega uporabnika",
   "Accounts_Default_User_Preferences_audioNotifications": "Privzeta opozorila zvočnih obvestil",

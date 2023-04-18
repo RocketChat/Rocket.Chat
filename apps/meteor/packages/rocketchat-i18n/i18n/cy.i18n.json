@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Rhestr wedi'i wahanu gan Comma o barthau sydd wedi'u blocio",
   "Accounts_BlockedUsernameList": "Rhestr Enw Defnyddiwr Rhwystredig",
   "Accounts_BlockedUsernameList_Description": "Rhestr wedi'i wahanu gan Comma o enwau defnyddwyr sydd wedi'u blocio (achos-ansensitif)",
-  "Accounts_CustomFields_Description": "Dylai fod yn JSON dilys lle mae'r allweddi yn enwau'r caeau sy'n cynnwys geiriadur o leoliadau caeau. Enghraifft: <br / ><code>{\n\"rôl\": {\n\"math\": \"dewis\",\n\"defaultValue\": \"myfyriwr\",\n\"opsiynau\": [\"athro\", \"myfyriwr\"],\n\"gofynnol\": gwir,\n\"modifyRecordField\": {\n\"amrywiaeth\": gwir,\n\"maes\": \"rolau\"\n}\n},\n\"twitter\": {\n\"math\": \"testun\",\n\"gofynnol\": gwir,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Dylai fod yn JSON dilys lle mae'r allweddi yn enwau'r caeau sy'n cynnwys geiriadur o leoliadau caeau. Enghraifft:  \n`{\"rôl\": {\"math\": \"dewis\",\"defaultValue\": \"myfyriwr\",\"opsiynau\": [\"athro\", \"myfyriwr\"],\"gofynnol\": gwir,\"modifyRecordField\": {\"amrywiaeth\": gwir,\"maes\": \"rolau\"}},\"twitter\": {\"math\": \"testun\",\"gofynnol\": gwir,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Maesau Perthnasol i'w Dangos mewn Gwybodaeth Defnyddwyr",
   "Accounts_Default_User_Preferences": "Dewisiadau Diofyn Defnyddiwr",
   "Accounts_Default_User_Preferences_audioNotifications": "Hysbysiadau Sain Rhybudd Diofyn",

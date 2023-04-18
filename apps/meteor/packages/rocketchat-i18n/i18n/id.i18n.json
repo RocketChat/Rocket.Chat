@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Dipisahkan dengan koma daftar domain diblokir",
   "Accounts_BlockedUsernameList": "Diblokir Daftar Nama",
   "Accounts_BlockedUsernameList_Description": "Dipisahkan koma daftar nama pengguna diblokir (case-sensitive)",
-  "Accounts_CustomFields_Description": "Harus menjadi JSON yang valid dimana kunci adalah nama field yang berisi kamus pengaturan lapangan. Contoh: <br/><code>{\n\"peran\": {\n\"ketik\": \"pilih\",\n\"defaultValue\": \"pelajar\",\n\"pilihan\": [\"guru\", \"pelajar\"],\n\"dibutuhkan\": benar,\n\"modifyRecordField\": {\n\"array\": benar,\n\"lapangan\": \"peran\"\n}\n},\n\"twitter\": {\n\"tipe\": \"teks\",\n\"dibutuhkan\": benar,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Harus menjadi JSON yang valid dimana kunci adalah nama field yang berisi kamus pengaturan lapangan. Contoh:  \n`{\"peran\": {\"ketik\": \"pilih\",\"defaultValue\": \"pelajar\",\"pilihan\": [\"guru\", \"pelajar\"],\"dibutuhkan\": benar,\"modifyRecordField\": {\"array\": benar,\"lapangan\": \"peran\"}},\"twitter\": {\"tipe\": \"teks\",\"dibutuhkan\": benar,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Bidang Kustom untuk Ditampilkan di Info Pengguna",
   "Accounts_Default_User_Preferences": "Preferensi Pengguna Standar",
   "Accounts_Default_User_Preferences_audioNotifications": "Notifikasi Audio Pemberitahuan Default",

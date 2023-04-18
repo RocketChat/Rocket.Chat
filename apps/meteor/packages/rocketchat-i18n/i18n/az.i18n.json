@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Bloklanan domenlərin virgülle ayrılmış siyahısı",
   "Accounts_BlockedUsernameList": "Bloklanan İstifadəçi Siyahısı",
   "Accounts_BlockedUsernameList_Description": "Bloklanan istifadəçi adlarının virgülle ayrılmış siyahısı (kassir-laqeyd)",
-  "Accounts_CustomFields_Description": "Sahə parametrlərinin lüğəti olan sahə adları olan qüvvədə olan JSON olmalıdır. Məsələn:<br/><code>{\n\"rol\": {\n\"növü\": \"seçin\",\n\"defaultValue\": \"tələbə\",\n\"variantları\": [\"müəllim\", \"tələbə\"],\n\"lazımlı\": doğru,\n\"modifyRecordField\": {\n\"array\": doğru,\n\"sahə\": \"rollar\"\n}\n},\n\"twitter\": {\n\"tip\": \"mətn\",\n\"lazımlı\": doğru,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Sahə parametrlərinin lüğəti olan sahə adları olan qüvvədə olan JSON olmalıdır. Məsələn:  \n`{\"rol\": {\"növü\": \"seçin\",\"defaultValue\": \"tələbə\",\"variantları\": [\"müəllim\", \"tələbə\"],\"lazımlı\": doğru,\"modifyRecordField\": {\"array\": doğru,\"sahə\": \"rollar\"}},\"twitter\": {\"tip\": \"mətn\",\"lazımlı\": doğru,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "İstifadəçi Məlumatında Göstəriləcək Xüsusi Alanlar",
   "Accounts_Default_User_Preferences": "Default İstifadəçi Tənzimləmələri",
   "Accounts_Default_User_Preferences_audioNotifications": "Audio Bildirişlər Default Alert",

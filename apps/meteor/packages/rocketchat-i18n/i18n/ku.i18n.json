@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "lîsteya bêhnok-cuda ji qada astengkirin",
   "Accounts_BlockedUsernameList": "Astengkirin Lîsteya Username",
   "Accounts_BlockedUsernameList_Description": "lîsteya bêhnok-cuda yên bikarhêneran yê hatine astengkirin (dozê-tîpan)",
-  "Accounts_CustomFields_Description": "Pêdivî ye ku JSON derbasdar e ku kûreyên navên nav hene ku di nav deverên peldankê hene. Nimûne: <br/><code>{\n\"rola\": {\n\"type\": \"select\"\n\"defaultValue\": \"xwendekaran\"\n\"alternatîf\": [\"mamoste\", \"xwendekaran\"],\n\"pêwîst\": rast,\n\"ModifyRecordField\": {\n\"array\": rast,\n\"qada\": \"roles\"\n}\n},\n\"twitter\": {\n\"type\": \"text\"\n\"pêwîst\": rast,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Pêdivî ye ku JSON derbasdar e ku kûreyên navên nav hene ku di nav deverên peldankê hene. Nimûne:  \n`{\"rola\": {\"type\": \"select\"\"defaultValue\": \"xwendekaran\"\"alternatîf\": [\"mamoste\", \"xwendekaran\"],\"pêwîst\": rast,\"ModifyRecordField\": {\"array\": rast,\"qada\": \"roles\"}},\"twitter\": {\"type\": \"text\"\"pêwîst\": rast,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Zeviyên Taybet ên ji bo agahdariya User Show",
   "Accounts_Default_User_Preferences": "Pêşniyarên default default",
   "Accounts_Default_User_Preferences_audioNotifications": "Alert Notifications Default Alert",

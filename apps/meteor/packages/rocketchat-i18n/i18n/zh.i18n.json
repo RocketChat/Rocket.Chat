@@ -60,7 +60,7 @@
   "Accounts_BlockedDomainsList_Description": "逗号分隔的屏蔽的域名列表",
   "Accounts_BlockedUsernameList": "已屏蔽的用户名列表",
   "Accounts_BlockedUsernameList_Description": "以逗号分隔的已屏蔽用户名列表（不区分大小写）",
-  "Accounts_CustomFields_Description": "应该为有效的 JSON，键为字段名，值为该字段的字典设置项。例如：<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "应该为有效的 JSON，键为字段名，值为该字段的字典设置项。例如：  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "要在用户信息中显示的自定义信息",
   "Accounts_Default_User_Preferences": "默认用户首选项",
   "Accounts_Default_User_Preferences_audioNotifications": "音频通知默认提醒",

@@ -52,7 +52,7 @@
   "Accounts_BlockedDomainsList_Description": "ບັນຊີລາຍຊື່ຈຸດ, ແຍກຂອງໂດເມນກັດ",
   "Accounts_BlockedUsernameList": "ບັນຊີ Username ກັດ",
   "Accounts_BlockedUsernameList_Description": "ບັນຊີລາຍຊື່ຈຸດ, ແຍກຊື່ຜູ້ໃຊ້ກັດ (ກໍລະນີ, ຄວາມຮູ້ສຶກ)",
-  "Accounts_CustomFields_Description": "ຄວນຈະມີ JSON ທີ່ຖືກຕ້ອງທີ່ມີປຸ່ມທີ່ມີຊື່ພາກສະຫນາມທີ່ມີພົດຈະນານຸກົມຂອງການຕັ້ງຄ່າພາກສະຫນາມ. ຕົວຢ່າງ: <br/><code>{\n\"ບົດບາດ\": {\n\"ປະເພດ\": \"ເລືອກ\",\n\"defaultValue\": \"ນັກຮຽນ\",\n\"ທາງເລືອກ\": [\"ຄູ\", \"ນັກຮຽນ\"],\n\"ຕ້ອງການ\": ຄວາມຈິງ,\n\"modifyRecordField\": {\n\"array\": true,\n\"ພາກສະຫນາມ\": \"ພາລະບົດບາດ\"\n}\n},\n\"twitter\": {\n\"ປະເພດ\": \"ຂໍ້ຄວາມ\",\n\"ຕ້ອງການ\": ຄວາມຈິງ,\n\"minLength\": 2,\n\"maxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "ຄວນຈະມີ JSON ທີ່ຖືກຕ້ອງທີ່ມີປຸ່ມທີ່ມີຊື່ພາກສະຫນາມທີ່ມີພົດຈະນານຸກົມຂອງການຕັ້ງຄ່າພາກສະຫນາມ. ຕົວຢ່າງ:  \n`{\"ບົດບາດ\": {\"ປະເພດ\": \"ເລືອກ\",\"defaultValue\": \"ນັກຮຽນ\",\"ທາງເລືອກ\": [\"ຄູ\", \"ນັກຮຽນ\"],\"ຕ້ອງການ\": ຄວາມຈິງ,\"modifyRecordField\": {\"array\": true,\"ພາກສະຫນາມ\": \"ພາລະບົດບາດ\"}},\"twitter\": {\"ປະເພດ\": \"ຂໍ້ຄວາມ\",\"ຕ້ອງການ\": ຄວາມຈິງ,\"minLength\": 2,\"maxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "ທົ່ງນາທີ່ຕ້ອງການສະແດງຢູ່ໃນຂໍ້ມູນຜູ້ໃຊ້",
   "Accounts_Default_User_Preferences": "Default User Preferences",
   "Accounts_Default_User_Preferences_audioNotifications": "ການແຈ້ງເຕືອນແບບສຽງ",

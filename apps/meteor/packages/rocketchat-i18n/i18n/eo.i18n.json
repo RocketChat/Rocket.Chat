@@ -42,7 +42,7 @@
   "Accounts_BlockedDomainsList_Description": "Komma-disigita listo de blokitaj regnoj",
   "Accounts_BlockedUsernameList": "Blokita Uzantnomo Listo",
   "Accounts_BlockedUsernameList_Description": "Komma-disigita listo de blokitaj uznomnomoj (kazo-sensenca)",
-  "Accounts_CustomFields_Description": "Devus esti valida JSON kie klavoj estas la kampo-nomoj enhavantaj vortaron de kampo-agordoj. Ekzemplo:<br/><code>{\n\"rolo\": {\n\"tipo\": \"elektu\",\n\"defaultValue\": \"studento\",\n\"ebloj\": [\"instruisto\", \"studento\"],\n\"postulita\": vera,\n\"modifiRecordField\": {\n\"tabelo\": vera,\n\"kampo\": \"roloj\"\n}\n},\n\"twitter\": {\n\"tipo\": \"teksto\",\n\"postulita\": vera,\n\"MinLength\": 2,\n\"MaxLength\": 10\n}\n}</code>",
+  "Accounts_CustomFields_Description": "Devus esti valida JSON kie klavoj estas la kampo-nomoj enhavantaj vortaron de kampo-agordoj. Ekzemplo:  \n`{\"rolo\": {\"tipo\": \"elektu\",\"defaultValue\": \"studento\",\"ebloj\": [\"instruisto\", \"studento\"],\"postulita\": vera,\"modifiRecordField\": {\"tabelo\": vera,\"kampo\": \"roloj\"}},\"twitter\": {\"tipo\": \"teksto\",\"postulita\": vera,\"MinLength\": 2,\"MaxLength\": 10}}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Propraj Kampoj por Montri en Uzanto-Informoj",
   "Accounts_Default_User_Preferences": "Defaŭlta uzanto-preferoj",
   "Accounts_Default_User_Preferences_audioNotifications": "Aŭdiaj Sciigoj Defaŭlta Garde",

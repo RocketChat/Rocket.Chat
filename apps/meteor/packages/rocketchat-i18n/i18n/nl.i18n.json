@@ -63,7 +63,7 @@
   "Accounts_BlockedDomainsList_Description": "Door komma's gescheiden lijst van geblokkeerde domeinen",
   "Accounts_BlockedUsernameList": "Lijst met geblokkeerde gebruikersnamen",
   "Accounts_BlockedUsernameList_Description": "Komma's gescheiden lijst met geblokkeerde gebruikersnamen (niet hoofdlettergevoelig)",
-  "Accounts_CustomFields_Description": "Moet een geldige JSON zijn waarbij de sleutels de veldnamen zijn die een woordenboek met veldinstellingen bevatten. Voorbeeld:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n},\n\"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Moet een geldige JSON zijn waarbij de sleutels de veldnamen zijn die een woordenboek met veldinstellingen bevatten. Voorbeeld:  \n`{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  }},\"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10 }}`",
   "Accounts_CustomFieldsToShowInUserInfo": "Aangepaste velden om weer te geven in gebruikersinfo",
   "Accounts_Default_User_Preferences": "Standaard gebruikersvoorkeuren",
   "Accounts_Default_User_Preferences_audioNotifications": "Audiomeldingen Standaardwaarschuwing",
