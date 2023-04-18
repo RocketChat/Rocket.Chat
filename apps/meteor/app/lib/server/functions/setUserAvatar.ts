@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import type { Response } from '@rocket.chat/server-fetch';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,

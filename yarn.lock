@@ -7168,6 +7168,7 @@ __metadata:
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
@@ -7381,6 +7382,7 @@ __metadata:
     nats: ^2.6.1
     node-abort-controller: ^3.1.1
     node-dogstatsd: ^0.0.7
+    node-fetch: 2.3.0
     node-gcm: 1.0.5
     node-rsa: ^1.1.1
     nodemailer: ^6.7.8
@@ -7780,6 +7782,23 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/server-fetch@workspace:^, @rocket.chat/server-fetch@workspace:packages/server-fetch":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/server-fetch@workspace:packages/server-fetch"
+  dependencies:
+    "@types/jest": ^27.4.1
+    "@types/proxy-from-env": ^1.0.1
+    eslint: ^8.12.0
+    http-proxy-agent: ^5.0.0
+    https-proxy-agent: ^5.0.1
+    jest: ~29.5.0
+    node-fetch: 2.3.0
+    proxy-from-env: ^1.1.0
+    ts-jest: ~29.0.5
+    typescript: ~5.0.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/sha256@workspace:^, @rocket.chat/sha256@workspace:packages/sha256":
   version: 0.0.0-use.local
@@ -28636,6 +28655,13 @@ __metadata:
   version: 0.0.7
   resolution: "node-dogstatsd@npm:0.0.7"
   checksum: db08589823b12c2cfe9e072b4996b6b91c5ba67e36c737186837c979be45cfe5029b558904127859a4e808ccaa328a5c493fd4a0bfe5436797118f3d8b6d5eaa
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:2.3.0":
+  version: 2.3.0
+  resolution: "node-fetch@npm:2.3.0"
+  checksum: 674f25e8630aee89925d26d899436e58ea51a6b8a071f3dc352af5f0eb6581d6ebc40d4ab8b45ec033bb1110fc959f84366bd5e8bac45823baffcd55198a9c03
   languageName: node
   linkType: hard
 

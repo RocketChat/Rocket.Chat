@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { AppsTokens } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
@@ -108,11 +108,10 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
-			body: JSON.stringify({
+			body: {
 				token,
 				options: notification,
-			}),
-			headers: {},
+			},
 		};
 
 		if (token && this.options.getAuthorization) {
