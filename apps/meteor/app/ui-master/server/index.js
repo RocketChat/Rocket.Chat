@@ -161,14 +161,4 @@ void injectIntoBody(
 `,
 );
 
-const promisifiedAsset = new Promise((resolve, reject) => {
-	Assets.getText('public/icons.svg', (err, data) => {
-		if (err) {
-			reject(err);
-		} else {
-			resolve(data);
-		}
-	});
-});
-
-void injectIntoBody('icons', promisifiedAsset);
+void injectIntoBody('icons', Assets.getText('public/icons.svg'));

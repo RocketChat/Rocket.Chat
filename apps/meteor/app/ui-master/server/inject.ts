@@ -102,8 +102,7 @@ export const addStyle = (key: string, content: string): void => {
 };
 
 export const injectIntoBody = async (key: string, value: string): Promise<void> => {
-	const v = await value;
-	Inject.rawBody(key, v);
+	Inject.rawBody(key, await value);
 };
 
 export const applyHeadInjections = (injections: Injection[]): ((html: string) => string) => {

@@ -5,17 +5,7 @@ import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
-const promisifiedAsset = new Promise<string>((resolve, reject) => {
-	Assets.getText('livechat/index.html', (err: any, data: string) => {
-		if (err) {
-			reject(err);
-		} else {
-			resolve(data);
-		}
-	});
-});
-
-const indexHtmlWithServerURL = async () => addServerUrlToIndex((await promisifiedAsset) || '');
+const indexHtmlWithServerURL = async () => addServerUrlToIndex((await Assets.getText('livechat/index.html')) || '');
 
 WebApp.connectHandlers.use('/livechat', async (req, res, next) => {
 	if (!req.url) {
