@@ -83,6 +83,11 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
+	if(data?.result.length > 0)
+	{
+		data?.result = data?.result.sort((a, b) => (a.name < b.name) ? -1 : 1);
+	}
+
 	const handleClick = useCallback(
 		(username) => (e: React.KeyboardEvent | React.MouseEvent) => {
 			if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
