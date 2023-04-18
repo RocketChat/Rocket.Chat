@@ -36,7 +36,7 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	const onDeactivateUser = async () => {
 		setModal();
 		await handleDeleteMessages.mutateAsync({ userId });
-		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false });
+		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false, confirmRelinquish: true });
 		onChange();
 		onReload();
 		moderationRoute.push({});
