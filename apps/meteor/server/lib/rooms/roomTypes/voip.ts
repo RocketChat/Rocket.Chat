@@ -1,6 +1,6 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
 import { roomCoordinator } from '../roomCoordinator';
@@ -19,7 +19,7 @@ roomCoordinator.add(VoipRoomType, {
 		return { title, text };
 	},
 
-	getMsgSender(senderId) {
+	async getMsgSender(senderId) {
 		return Users.findOneById(senderId);
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'roomName'>);

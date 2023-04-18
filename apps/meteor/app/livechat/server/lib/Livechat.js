@@ -6,7 +6,6 @@ import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import UAParser from 'ua-parser-js';
 import {
 	LivechatVisitors,
@@ -52,7 +51,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-	webhookLogger: logger.section('Webhook'),
 
 	async sendMessage({ guest, message, roomInfo, agent }) {
 		const { room, newRoom } = await LivechatTyped.getRoom(guest, message, roomInfo, agent);
@@ -461,31 +459,6 @@ export const Livechat = {
 		return true;
 	},
 
-	sendRequest(postData, callback, attempts = 10) {
-		if (!attempts) {
-			return;
-		}
-		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			data: postData,
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-		};
-		try {
-			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
-		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 10 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(
-				Meteor.bindEnvironment(function () {
-					Livechat.sendRequest(postData, callback, attempts - 1);
-				}),
-				10000,
-			);
-		}
-	},
-
 	async getLivechatRoomGuestInfo(room) {
 		const visitor = await LivechatVisitors.findOneById(room.v._id);
 		const agent = await Users.findOneById(room.servedBy && room.servedBy._id);
@@ -787,8 +760,8 @@ export const Livechat = {
 		return showConnecting;
 	},
 
-	sendEmail(from, to, replyTo, subject, html) {
-		Mailer.send({
+	async sendEmail(from, to, replyTo, subject, html) {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -911,7 +884,7 @@ export const Livechat = {
 		const from = `${name} - ${email} <${fromEmail}>`;
 		const replyTo = `${name} <${email}>`;
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		this.sendEmail(from, emailTo, replyTo, subject, html);
+		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);
