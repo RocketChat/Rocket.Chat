@@ -6,6 +6,12 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelDepartments } from './page-objects';
 import { test, expect } from './utils/test';
 
+const ERROR = {
+	requiredName: 'The field name is required.',
+	requiredEmail: 'The field email is required.',
+	invalidEmail: 'Invalid email address',
+};
+
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('omnichannel-departments', () => {
@@ -43,21 +49,21 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.inputName.fill('any_text');
 			await poOmnichannelDepartments.inputName.fill('');
 			await expect(poOmnichannelDepartments.invalidInputName).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage('The field name is required.')).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).toBeVisible();
 			await poOmnichannelDepartments.inputName.fill('any_text');
 			await expect(poOmnichannelDepartments.invalidInputName).not.toBeVisible();
 
 			await poOmnichannelDepartments.inputEmail.fill('any_text');
 			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage('Invalid email address')).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
 
 			await poOmnichannelDepartments.inputEmail.fill('');
 			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage('The field email is required.')).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
 
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
 			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage('The field email is required.')).not.toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
 		});
 
 		await test.step('expect create new department', async () => {
