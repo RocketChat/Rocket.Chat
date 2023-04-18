@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('OAuth', async function () {
+void settingsRegistry.addGroup('OAuth', async function () {
 	return this.section('WordPress', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Wordpress',

@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('OTR', async function () {
+void settingsRegistry.addGroup('OTR', async function () {
 	await this.add('OTR_Enable', true, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

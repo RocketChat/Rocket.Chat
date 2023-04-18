@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('General', async function () {
+void settingsRegistry.addGroup('General', async function () {
 	await this.section('Update', async function () {
 		await this.add('Update_LatestAvailableVersion', '0.0.0', {
 			type: 'string',

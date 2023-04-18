@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-await settingsRegistry.addGroup('Email', async function () {
+void settingsRegistry.addGroup('Email', async function () {
 	await this.section('Style', async function () {
 		await this.add('email_plain_text_only', false, {
 			type: 'boolean',

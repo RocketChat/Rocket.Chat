@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('WebRTC', async function () {
+void settingsRegistry.addGroup('WebRTC', async function () {
 	await this.add('WebRTC_Enabled', false, {
 		type: 'boolean',
 		group: 'WebRTC',

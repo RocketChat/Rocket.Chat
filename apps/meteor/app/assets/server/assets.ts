@@ -329,7 +329,7 @@ class RocketChatAssetsClass {
 
 export const RocketChatAssets = new RocketChatAssetsClass();
 
-await settingsRegistry.addGroup('Assets', async function () {
+void settingsRegistry.addGroup('Assets', async function () {
 	await this.add('Assets_SvgFavicon_Enable', true, {
 		type: 'boolean',
 		group: 'Assets',
