@@ -429,7 +429,7 @@
   "CAS_Sync_User_Data_Enabled": "Vienmēr sinhronizēt lietotāja datus",
   "CAS_Sync_User_Data_Enabled_Description": "Pieslēdzoties, vienmēr sinhronizējiet ārējos CAS lietotāja datus pieejamos rekvizītus. Piezīme - Rekvizīti vienmēr tiek sinhronizēti pie konta izveides.",
   "CAS_Sync_User_Data_FieldMap": "Rekvizītu karte",
-  "CAS_Sync_User_Data_FieldMap_Description": "Izmantojiet šo JSON ievadi, lai izveidotu iekšējos atribūtus (atslēgu) no ārējiem atribūtiem (vērtība).<br/>Piemērs, `{\"e pastsmail\":\"% email% \",\" name \":\"% firstname%,% lastname% \"}` <br/><br/>Atribūtu karte vienmēr tiek interpolēta. Iekš CAS 1.0 ir pieejami tikai `lietotājvārda`atribūti. Pieejamie iekšējie atribūti ir: lietotājvārds, vārds, e-pasts, istabas; istabas ir ar komatu atdalītu istabu saraksts, kas jāveido pēc lietotāju izveidošanas, piemēram: {\"istabas\": \"%komanda%,% departments%\"} CAS lietotāji pievienotos izveidojot savu komandu un departamentu kanālus.",
+  "CAS_Sync_User_Data_FieldMap_Description": "Izmantojiet šo JSON ievadi, lai izveidotu iekšējos atribūtus (atslēgu) no ārējiem atribūtiem (vērtība).  \nPiemērs, `{\"e pastsmail\":\"% email% \",\" name \":\"% firstname%,% lastname% \"}`   \n  \nAtribūtu karte vienmēr tiek interpolēta. Iekš CAS 1.0 ir pieejami tikai `lietotājvārda`atribūti. Pieejamie iekšējie atribūti ir: lietotājvārds, vārds, e-pasts, istabas; istabas ir ar komatu atdalītu istabu saraksts, kas jāveido pēc lietotāju izveidošanas, piemēram: {\"istabas\": \"%komanda%,% departments%\"} CAS lietotāji pievienotos izveidojot savu komandu un departamentu kanālus.",
   "CAS_version": "CAS versija",
   "CAS_version_Description": "Izmantojiet tikai atbalstīto CAS versiju, kuru atbalsta jūsu CAS SSO pakalpojums.",
   "CDN_PREFIX": "CDN prefikss",

@@ -420,7 +420,7 @@
   "CAS_Sync_User_Data_Enabled": "Uvijek sinkronizirajte korisničke podatke",
   "CAS_Sync_User_Data_Enabled_Description": "Uvijek sinkronizirajte vanjske korisničke podatke CAS-a s dostupnim atributima prilikom prijave. Napomena: atributi se uvijek sinkroniziraju prilikom izrade računa.",
   "CAS_Sync_User_Data_FieldMap": "Karta atributa",
-  "CAS_Sync_User_Data_FieldMap_Description": "Koristite ovaj ulaz JSON za izradu internih atributa (ključa) od vanjskih atributa (vrijednost).<br/>Primjer, \"{\" email \":\"% e-mail% \",\" ime \":\"% ime1%,% prezime% \"}<br/><br/>Karta atributa uvijek je interpolirana. U CAS 1.0, dostupan je samo atribut \"korisničko ime\". Dostupni unutarnji atributi su: korisničko ime, ime, e-mail, sobe; soba je odvojeni popis mjesta za pridruživanje korisniku, primjerice: {\"sobe\": \"% team%,% odjel%\"} pridružit će se korisnicima CAS-a na stvaranju kanala njihovog tima i odjela.",
+  "CAS_Sync_User_Data_FieldMap_Description": "Koristite ovaj ulaz JSON za izradu internih atributa (ključa) od vanjskih atributa (vrijednost).  \nPrimjer, \"{\" email \":\"% e-mail% \",\" ime \":\"% ime1%,% prezime% \"}  \n  \nKarta atributa uvijek je interpolirana. U CAS 1.0, dostupan je samo atribut \"korisničko ime\". Dostupni unutarnji atributi su: korisničko ime, ime, e-mail, sobe; soba je odvojeni popis mjesta za pridruživanje korisniku, primjerice: {\"sobe\": \"% team%,% odjel%\"} pridružit će se korisnicima CAS-a na stvaranju kanala njihovog tima i odjela.",
   "CAS_version": "CAS verzija",
   "CAS_version_Description": "Koristite samo podržanu CAS verziju koju podržava CAS SSO usluga.",
   "CDN_PREFIX": "CDN Prefiks",

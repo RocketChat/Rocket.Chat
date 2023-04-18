@@ -743,7 +743,7 @@
   "CAS_Sync_User_Data_Enabled": "永遠同步使用者資料",
   "CAS_Sync_User_Data_Enabled_Description": "在登入時始終將外部 CAS 使用者資料同步到可用屬性中。注意：無論如何，帳號建立時都會同步屬性。",
   "CAS_Sync_User_Data_FieldMap": "屬性對應",
-  "CAS_Sync_User_Data_FieldMap_Description": "使用此JSON輸入從外部屬性（值）構建內部屬性（鍵）。用'%'括起的外部屬性名稱將以值字符串進行插值。<br/>示例，`{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>始終對屬性映射進行插值。在CAS 1.0中，只有`username`屬性可用。可用的內部屬性包括：用戶名，姓名，電子郵件，房間; rooms是一個以逗號分隔的房間列表，可在用戶創建時加入，例如：{\"rooms\": \"%team%,%department%\"}會將建立時的 CAS 使用者加入他們的團隊和部門頻道。",
+  "CAS_Sync_User_Data_FieldMap_Description": "使用此JSON輸入從外部屬性（值）構建內部屬性（鍵）。用'%'括起的外部屬性名稱將以值字符串進行插值。  \n示例，`{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`  \n  \n始終對屬性映射進行插值。在CAS 1.0中，只有`username`屬性可用。可用的內部屬性包括：用戶名，姓名，電子郵件，房間; rooms是一個以逗號分隔的房間列表，可在用戶創建時加入，例如：{\"rooms\": \"%team%,%department%\"}會將建立時的 CAS 使用者加入他們的團隊和部門頻道。",
   "CAS_trust_username": "信任 CAS 使用者名稱",
   "CAS_trust_username_description": "當啟用後，Rocket.Chat 將信任 CAS 中的任何使用者名稱且屬於Rocket.Chat上的相同使用者。 \n如果在 CAS 上重新命名了使用者，則可能需要這樣做，但也可能允許人們通過重命名自己的 CAS 使用者來控制 Rocket.Chat 帳號。",
   "CAS_version": "CAS 版本",

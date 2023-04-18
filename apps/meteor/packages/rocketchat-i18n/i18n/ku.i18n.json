@@ -419,7 +419,7 @@
   "CAS_Sync_User_Data_Enabled": "Always Sync User Data",
   "CAS_Sync_User_Data_Enabled_Description": "Heya herdem taybetmendiyên CAS-ê bikarhênerê bikarhênerê li ser têketinê peyda bikin. Têbînî: Herkes herdem her tim çêbikin.",
   "CAS_Sync_User_Data_FieldMap": "Map Attribute",
-  "CAS_Sync_User_Data_FieldMap_Description": "Ji vê inputê JSON bikar bînin ku ji bo taybetmendiyên derveyî (nirx) ji taybetmendiyên navxweyî (key) ava bikin. Navên taybet ên taybet ên '%' ê di binavên nirxan de bistînin.<br/>Nimûne, `{\" email \":\"% email% \",\" nav \":\"% firstname%,% lastname% \"}`<br/><br/>Nexşeya taybetmendiyê her tim her demokrasî ye. Di CAS 1.0 de tenê tenê `` bikarhêner 'taybet' heye. Taybetmendiyên navxweyî hene: Bikarhêner, navnîşan, navnîşan, odeyan; odeyên lîsteya cûda tête ku odeyên bikarhêneran bikar anîn.",
+  "CAS_Sync_User_Data_FieldMap_Description": "Ji vê inputê JSON bikar bînin ku ji bo taybetmendiyên derveyî (nirx) ji taybetmendiyên navxweyî (key) ava bikin. Navên taybet ên taybet ên '%' ê di binavên nirxan de bistînin.  \nNimûne, `{\" email \":\"% email% \",\" nav \":\"% firstname%,% lastname% \"}`  \n  \nNexşeya taybetmendiyê her tim her demokrasî ye. Di CAS 1.0 de tenê tenê `` bikarhêner 'taybet' heye. Taybetmendiyên navxweyî hene: Bikarhêner, navnîşan, navnîşan, odeyan; odeyên lîsteya cûda tête ku odeyên bikarhêneran bikar anîn.",
   "CAS_version": "CAS संस्करण",
   "CAS_version_Description": "Tenê tenê xizmeta CAS-ê piştevanîya ku ji hêla CAS SSO re piştgirî tê bikaranîn.",
   "CDN_PREFIX": "CDN pêşbendik",

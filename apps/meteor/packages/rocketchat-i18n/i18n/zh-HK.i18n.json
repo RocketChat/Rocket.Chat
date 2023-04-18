@@ -441,7 +441,7 @@
   "CAS_Sync_User_Data_Enabled": "始终同步用户数据",
   "CAS_Sync_User_Data_Enabled_Description": "在登录时始终将外部CAS用户数据同步到可用属性中。注意：无论如何，帐户创建时都会同步属性。",
   "CAS_Sync_User_Data_FieldMap": "属性映射",
-  "CAS_Sync_User_Data_FieldMap_Description": "使用此JSON输入从外部属性（值）构建内部属性（键）。使用'％'括起来的外部属性名称将插入到值字符串中。<br/>例如，“{”email“：”％email％“，”name“：”％firstname％，％lastname％“}`<br/><br/>属性贴图始终是插值的。在CAS 1.0中只有`username`属性可用。可用的内部属性是：用户名，姓名，电子邮件，房间;房间是用户创建时加入房间的逗号分隔列表，例如：{“房间”：“％team％，％department％”}将在创建时加入CAS用户到他们的团队和部门渠道。",
+  "CAS_Sync_User_Data_FieldMap_Description": "使用此JSON输入从外部属性（值）构建内部属性（键）。使用'％'括起来的外部属性名称将插入到值字符串中。  \n例如，“{”email“：”％email％“，”name“：”％firstname％，％lastname％“}`  \n  \n属性贴图始终是插值的。在CAS 1.0中只有`username`属性可用。可用的内部属性是：用户名，姓名，电子邮件，房间;房间是用户创建时加入房间的逗号分隔列表，例如：{“房间”：“％team％，％department％”}将在创建时加入CAS用户到他们的团队和部门渠道。",
   "CAS_version": "CAS版本",
   "CAS_version_Description": "仅使用您的CAS SSO服务支持的受支持的CAS版本。",
   "CDN_PREFIX": "CDN前缀",

@@ -475,7 +475,7 @@
   "CAS_Sync_User_Data_Enabled": "Visada sinchronizuoti naudotojo duomenis",
   "CAS_Sync_User_Data_Enabled_Description": "Prisijungę, visada sinchronizuokite išorinius CAS vartotojo duomenis prie prieinamų atributų. Pastaba: bet kuriuo atveju atributai visada sinchronizuojami paskyros sukūrimo metu.",
   "CAS_Sync_User_Data_FieldMap": "Atributo žemėlapis",
-  "CAS_Sync_User_Data_FieldMap_Description": "Naudokite šį JSON įvestį, kad sukurtumėte vidinius atributus (raktą) iš išorinių atributų (vertė).<br/>Pavyzdžiui, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>Atributų žemėlapis visada interpoliuojamas. CAS 1.0 tik atributas `username` yra prieinamas. Galimi vidiniai atributai: vartotojo vardas, vardas, el. Paštas, kambariai; kambariai yra kableliais atskirtų kambarių sąrašas, skirtas prisijungti prie vartotojo sukūrimo, pvz .:{\"rooms\": \"%team%,%department%\"} prisijungs prie CAS vartotojų kūrimo savo komandos ir departamento kanale.",
+  "CAS_Sync_User_Data_FieldMap_Description": "Naudokite šį JSON įvestį, kad sukurtumėte vidinius atributus (raktą) iš išorinių atributų (vertė).  \nPavyzdžiui, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`  \n  \nAtributų žemėlapis visada interpoliuojamas. CAS 1.0 tik atributas `username` yra prieinamas. Galimi vidiniai atributai: vartotojo vardas, vardas, el. Paštas, kambariai; kambariai yra kableliais atskirtų kambarių sąrašas, skirtas prisijungti prie vartotojo sukūrimo, pvz .:{\"rooms\": \"%team%,%department%\"} prisijungs prie CAS vartotojų kūrimo savo komandos ir departamento kanale.",
   "CAS_version": "CAS versija",
   "CAS_version_Description": "Naudokite tik palaikomą CAS versiją, kurią palaiko jūsų CAS SSO paslauga.",
   "CDN_PREFIX": "CDN prefiksas",
