@@ -11,7 +11,6 @@ const fs = Npm.require('fs');
 
 Package.onUse(function (api) {
 	api.use('templating', 'client');
-
 	const workingDir = process.env.PWD || '.';
 	const i18nDir = `${workingDir}/packages/rocketchat-i18n/i18n`;
 
@@ -26,7 +25,7 @@ Package.onUse(function (api) {
 
 	fs.readdirSync(i18nDir).forEach(function (filename) {
 		if (filename.indexOf('.json') > -1 && filename.indexOf('livechat.') === -1 && fs.statSync(`${i18nDir}/${filename}`).size > 16) {
-			api.addFiles(`i18n/${filename}`);
+			api.addAssets(`i18n/${filename}`, ['client', 'server']);
 		}
 	});
 
