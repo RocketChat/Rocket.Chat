@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
 import { SettingsRegistry } from './SettingsRegistry';
-// import { initializeSettings } from './startup';
+import { initializeSettings } from './startup';
 import { settings } from './cached';
 import './applyMiddlewares';
 import { use } from './Middleware';
@@ -20,4 +20,4 @@ settingsRegistry.addGroup = use(settingsRegistry.addGroup, (context, next) => {
 	return Promise.await(next(...context)) as any;
 });
 
-// await initializeSettings({ model: Settings, settings });
+await initializeSettings({ model: Settings, settings });
