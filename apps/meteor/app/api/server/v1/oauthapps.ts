@@ -1,4 +1,4 @@
-import { isOauthAppsGetParams, isOauthAppsAddParams } from '@rocket.chat/rest-typings';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -50,6 +50,48 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'oauth-apps.update',
+	{
+		authRequired: true,
+		validateParams: isUpdateOAuthAppParams,
+	},
+	{
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
+			const { appId } = this.bodyParams;
+
+			const result = Meteor.call('updateOAuthApp', appId, this.bodyParams);
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.delete',
+	{
+		authRequired: true,
+		validateParams: isDeleteOAuthAppParams,
+	},
+	{
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
+			const { appId } = this.bodyParams;
+
+			const result = Meteor.call('deleteOAuthApp', appId);
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
 	'oauth-apps.create',
 	{
 		authRequired: true,
@@ -57,6 +99,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });

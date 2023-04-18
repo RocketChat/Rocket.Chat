@@ -1,13 +1,13 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('SlackBridge', function () {
-	this.add('SlackBridge_Enabled', false, {
+void settingsRegistry.addGroup('SlackBridge', async function () {
+	await this.add('SlackBridge_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',
 		public: true,
 	});
 
-	this.add('SlackBridge_APIToken', '', {
+	await this.add('SlackBridge_APIToken', '', {
 		type: 'string',
 		multiline: true,
 		enableQuery: {
@@ -19,7 +19,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		secret: true,
 	});
 
-	this.add('SlackBridge_FileUpload_Enabled', true, {
+	await this.add('SlackBridge_FileUpload_Enabled', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'SlackBridge_Enabled',
@@ -28,7 +28,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		i18nLabel: 'FileUpload',
 	});
 
-	this.add('SlackBridge_Out_Enabled', false, {
+	await this.add('SlackBridge_Out_Enabled', false, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'SlackBridge_Enabled',
@@ -36,7 +36,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		},
 	});
 
-	this.add('SlackBridge_Out_All', false, {
+	await this.add('SlackBridge_Out_All', false, {
 		type: 'boolean',
 		enableQuery: [
 			{
@@ -50,7 +50,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		],
 	});
 
-	this.add('SlackBridge_Out_Channels', '', {
+	await this.add('SlackBridge_Out_Channels', '', {
 		type: 'roomPick',
 		enableQuery: [
 			{
@@ -68,7 +68,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		],
 	});
 
-	this.add('SlackBridge_AliasFormat', '', {
+	await this.add('SlackBridge_AliasFormat', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'SlackBridge_Enabled',
@@ -78,7 +78,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		i18nDescription: 'Alias_Format_Description',
 	});
 
-	this.add('SlackBridge_ExcludeBotnames', '', {
+	await this.add('SlackBridge_ExcludeBotnames', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'SlackBridge_Enabled',
@@ -88,7 +88,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		i18nDescription: 'Exclude_Botnames_Description',
 	});
 
-	this.add('SlackBridge_Reactions_Enabled', true, {
+	await this.add('SlackBridge_Reactions_Enabled', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'SlackBridge_Enabled',
@@ -97,7 +97,7 @@ void settingsRegistry.addGroup('SlackBridge', function () {
 		i18nLabel: 'Reactions',
 	});
 
-	this.add('SlackBridge_Remove_Channel_Links', 'removeSlackBridgeChannelLinks', {
+	await this.add('SlackBridge_Remove_Channel_Links', 'removeSlackBridgeChannelLinks', {
 		type: 'action',
 		actionText: 'Remove_Channel_Links',
 		i18nDescription: 'SlackBridge_Remove_Channel_Links_Description',

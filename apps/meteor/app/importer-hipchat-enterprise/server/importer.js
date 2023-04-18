@@ -30,7 +30,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareUsersFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		let count = 0;
 
 		for (const u of file) {
@@ -54,12 +54,12 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
-		super.updateRecord({ 'count.users': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.users': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareRoomsFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		let count = 0;
 
 		for await (const r of file) {
@@ -79,8 +79,8 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 		}
 
-		super.updateRecord({ 'count.channels': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.channels': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareUserMessagesFile(file) {
@@ -230,12 +230,12 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareMessagesFile(file, info) {
-		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+		await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		const [type, id] = info.dir.split('/');
 		const roomIdentifier = `${type}/${id}`;
 
-		super.updateRecord({ messagesstatus: roomIdentifier });
+		await super.updateRecord({ messagesstatus: roomIdentifier });
 
 		switch (type) {
 			case 'users':
@@ -285,60 +285,46 @@ export class HipChatEnterpriseImporter extends Base {
 		let messageCount = 0;
 
 		const promise = new Promise((resolve, reject) => {
-			this.extract.on(
-				'entry',
-				Meteor.bindEnvironment((header, stream, next) => {
-					this.logger.debug(`new entry from import file: ${header.name}`);
-					if (!header.name.endsWith('.json')) {
-						stream.resume();
-						return next();
-					}
-
-					const info = this.path.parse(header.name);
-					let pos = 0;
-					let data = Buffer.allocUnsafe(header.size);
-
-					stream.on(
-						'data',
-						Meteor.bindEnvironment((chunk) => {
-							data.fill(chunk, pos, pos + chunk.length);
-							pos += chunk.length;
-						}),
-					);
-
-					stream.on(
-						'end',
-						Meteor.bindEnvironment(async () => {
-							this.logger.info(`Processing the file: ${header.name}`);
-							const newMessageCount = await this.prepareFile(info, data, header.name);
-
-							messageCount += newMessageCount;
-							super.updateRecord({ 'count.messages': messageCount });
-							super.addCountToTotal(newMessageCount);
-
-							data = undefined;
-
-							this.logger.debug('next import entry');
-							next();
-						}),
-					);
-
-					stream.on('error', () => next());
+			this.extract.on('entry', (header, stream, next) => {
+				this.logger.debug(`new entry from import file: ${header.name}`);
+				if (!header.name.endsWith('.json')) {
 					stream.resume();
-				}),
-			);
+					return next();
+				}
+
+				const info = this.path.parse(header.name);
+				let pos = 0;
+				let data = Buffer.allocUnsafe(header.size);
+
+				stream.on('data', (chunk) => {
+					data.fill(chunk, pos, pos + chunk.length);
+					pos += chunk.length;
+				});
+
+				stream.on('end', async () => {
+					this.logger.info(`Processing the file: ${header.name}`);
+					const newMessageCount = await this.prepareFile(info, data, header.name);
+
+					messageCount += newMessageCount;
+					await super.updateRecord({ 'count.messages': messageCount });
+					await super.addCountToTotal(newMessageCount);
+
+					data = undefined;
+
+					this.logger.debug('next import entry');
+					next();
+				});
+
+				stream.on('error', () => next());
+				stream.resume();
+			});
 
 			this.extract.on('error', (err) => {
 				this.logger.error({ msg: 'extract error:', err });
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
-			this.extract.on(
-				'finish',
-				Meteor.bindEnvironment(() => {
-					resolve();
-				}),
-			);
+			this.extract.on('finish', resolve);
 
 			const rs = fs.createReadStream(fullFilePath);
 			const gunzip = this.zlib.createGunzip();

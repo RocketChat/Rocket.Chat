@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
-
-import { Users, Subscriptions } from '../../app/models/server';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 type UserPreferences = {
 	language: string;
@@ -48,7 +47,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	saveUserPreferences(settings) {
+	async saveUserPreferences(settings) {
 		const keys = {
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
@@ -83,7 +82,7 @@ Meteor.methods<ServerMethods>({
 			omnichannelTranscriptPDF: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		const user = Meteor.user() as IUser | null;
+		const user = (await Meteor.userAsync()) as IUser | null;
 
 		if (!user) {
 			return false;
@@ -96,11 +95,11 @@ Meteor.methods<ServerMethods>({
 		} = user.settings?.preferences || {};
 
 		if (user.settings == null) {
-			Users.clearSettings(user._id);
+			await Users.clearSettings(user._id);
 		}
 
 		if (settings.language != null) {
-			Users.setLanguage(user._id, settings.language);
+			await Users.setLanguage(user._id, settings.language);
 		}
 
 		// Keep compatibility with old values
@@ -114,15 +113,15 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 		}
 
-		Users.setPreferences(user._id, settings);
+		await Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences
-		Meteor.defer(() => {
+		Meteor.defer(async () => {
 			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
+					await Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(
+					await Subscriptions.updateNotificationUserPreferences(
 						user._id,
 						settings.desktopNotifications,
 						'desktopNotifications',
@@ -133,9 +132,9 @@ Meteor.methods<ServerMethods>({
 
 			if (settings.pushNotifications && oldMobileNotifications !== settings.pushNotifications) {
 				if (settings.pushNotifications === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
+					await Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(
+					await Subscriptions.updateNotificationUserPreferences(
 						user._id,
 						settings.pushNotifications,
 						'mobilePushNotifications',
@@ -146,9 +145,9 @@ Meteor.methods<ServerMethods>({
 
 			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
+					await Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(
+					await Subscriptions.updateNotificationUserPreferences(
 						user._id,
 						settings.emailNotificationMode,
 						'emailNotifications',
@@ -158,7 +157,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			if (Array.isArray(settings.highlights)) {
-				Subscriptions.updateUserHighlights(user._id, settings.highlights);
+				await Subscriptions.updateUserHighlights(user._id, settings.highlights);
 			}
 		});
 

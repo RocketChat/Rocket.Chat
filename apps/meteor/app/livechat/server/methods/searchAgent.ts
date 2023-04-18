@@ -1,23 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:searchAgent'(username: string): { _id: string; username: string } | undefined;
+		'livechat:searchAgent'(username: string): { _id: string; username?: string } | undefined;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:searchAgent'(username) {
+	async 'livechat:searchAgent'(username) {
 		methodDeprecationLogger.warn('livechat:searchAgent will be deprecated in future versions of Rocket.Chat');
 
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:searchAgent',
 			});
@@ -29,7 +30,9 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsernameIgnoringCase<Pick<IUser, 'username' | '_id'>>(username, {
+			projection: { _id: 1, username: 1 },
+		});
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

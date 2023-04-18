@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -16,11 +16,11 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeRoom'(rid) {
 		const user = Meteor.userId();
-		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-rooms'))) {
+		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

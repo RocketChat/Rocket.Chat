@@ -18,11 +18,11 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
+import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -30,6 +30,9 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
+import { getLoggedInUser } from '../helpers/getLoggedInUser';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -64,7 +67,7 @@ async function findChannelByIdOrName({
 		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
 		room.lastMessage = lastMessage;
 	}
 
@@ -82,7 +85,7 @@ API.v1.addRoute(
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params, userId: this.userId });
 
-			await Meteor.call('addAllUserToRoom', findResult._id, activeUsersOnly);
+			await Meteor.callAsync('addAllUserToRoom', findResult._id, activeUsersOnly);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -101,7 +104,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('archiveRoom', findResult._id);
+			await Meteor.callAsync('archiveRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -125,7 +128,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
 			}
 
-			await Meteor.call('unarchiveRoom', findResult._id);
+			await Meteor.callAsync('unarchiveRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -146,9 +149,9 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			const { count = 20, offset = 0 } = this.getPaginationItems();
+			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const result = await Meteor.call('getChannelHistory', {
+			const result = await Meteor.callAsync('getChannelHistory', {
 				rid: findResult._id,
 				latest: latest ? new Date(latest) : new Date(),
 				oldest: oldest && new Date(oldest),
@@ -178,7 +181,7 @@ API.v1.addRoute(
 		async get() {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await Meteor.call('getRoomRoles', findResult._id);
+			const roles = await Meteor.callAsync('getRoomRoles', findResult._id);
 
 			return API.v1.success({
 				roles,
@@ -198,7 +201,7 @@ API.v1.addRoute(
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('joinRoom', findResult._id, joinCode);
+			await Meteor.callAsync('joinRoom', findResult._id, joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -218,9 +221,9 @@ API.v1.addRoute(
 			const { ...params /* userId */ } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('removeUserFromRoom', { rid: findResult._id, username: user.username });
+			await Meteor.callAsync('removeUserFromRoom', { rid: findResult._id, username: user.username });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -240,7 +243,7 @@ API.v1.addRoute(
 			const { ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('leaveRoom', findResult._id);
+			await Meteor.callAsync('leaveRoom', findResult._id);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -262,19 +265,19 @@ API.v1.addRoute(
 				params: { roomId },
 				checkedArchived: false,
 			});
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = { ...query, rid: findResult._id };
 
 			// Special check for the permissions
 			if (
-				(await hasPermission(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.unauthorized();
 			}
-			if (!(await hasPermission(this.userId, 'view-c-room'))) {
+			if (!(await hasPermissionAsync(this.userId, 'view-c-room'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -288,7 +291,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -322,7 +325,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
 			}
 
-			await Meteor.call('openRoom', findResult._id);
+			await Meteor.callAsync('openRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -343,7 +346,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -364,7 +367,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
 
 			return API.v1.success({
 				announcement: this.bodyParams.announcement,
@@ -382,10 +385,10 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await Meteor.call('getUserMentionsByChannel', {
+			const mentions = await Meteor.callAsync('getUserMentionsByChannel', {
 				roomId,
 				options: {
 					sort: sort || { ts: 1 },
@@ -394,7 +397,7 @@ API.v1.addRoute(
 				},
 			});
 
-			const allMentions = await Meteor.call('getUserMentionsByChannel', {
+			const allMentions = await Meteor.callAsync('getUserMentionsByChannel', {
 				roomId,
 				options: {},
 			});
@@ -421,11 +424,11 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			const moderators = await SubscriptionsSync.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				fields: { u: 1 },
-			})
-				.fetch()
-				.map((sub: ISubscription) => sub.u);
+			const moderators = (
+				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+					projection: { u: 1 },
+				}).toArray()
+			).map((sub: ISubscription) => sub.u);
 
 			return API.v1.success({
 				moderators,
@@ -447,7 +450,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await Meteor.call('eraseRoom', room._id);
+			await Meteor.callAsync('eraseRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -462,7 +465,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!(await hasPermission(this.userId, 'create-team'))) {
+			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -472,7 +475,7 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermission(this.userId, 'edit-room', channelId))) {
+			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -517,9 +520,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('addRoomModerator', findResult._id, user._id);
+			await Meteor.callAsync('addRoomModerator', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -533,9 +536,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('addRoomOwner', findResult._id, user._id);
+			await Meteor.callAsync('addRoomOwner', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -562,7 +565,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
 			}
 
-			await Meteor.call('hideRoom', findResult._id);
+			await Meteor.callAsync('hideRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -574,7 +577,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermission(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
 			let unreads = null;
@@ -623,14 +626,14 @@ API.v1.addRoute(
 	},
 );
 
-function createChannelValidator(params: {
+async function createChannelValidator(params: {
 	user: { value: string };
 	name?: { key: string; value?: string };
 	members?: { key: string; value?: string[] };
 	customFields?: { key: string; value?: string };
 	teams?: { key: string; value?: string[] };
-}): void {
-	if (!hasPermission(params.user.value, 'create-c')) {
+}) {
+	if (!(await hasPermissionAsync(params.user.value, 'create-c'))) {
 		throw new Error('unauthorized');
 	}
 
@@ -656,7 +659,7 @@ async function createChannel(
 	params: { name?: string; members?: string[]; customFields?: Record<string, any>; extraData?: Record<string, any>; readOnly?: boolean },
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
-	const id = Meteor.call(
+	const id = await Meteor.callAsync(
 		'createChannel',
 		params.name,
 		params.members ? params.members : [],
@@ -687,7 +690,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				API.channels.create.validate({
+				await API.channels?.create.validate({
 					user: {
 						value: userId,
 					},
@@ -717,7 +720,7 @@ API.v1.addRoute(
 			}
 
 			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermission(this.userId, 'view-all-teams');
+				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
 				const teamMembers = [];
 
@@ -735,7 +738,7 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 			}
 
-			return API.v1.success(await API.channels.create.execute(userId, bodyParams));
+			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
 		},
 	},
 );
@@ -754,8 +757,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
@@ -784,7 +787,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (
-				!(await hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
@@ -814,8 +817,9 @@ API.v1.addRoute(
 				};
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields: projection, query } = this.parseJsonQuery();
+			const params = this.queryParams;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
 			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 
@@ -861,13 +865,13 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const users = this.getUserListFromParams();
+			const users = await getUserListFromParams(this.bodyParams);
 
 			if (!users.length) {
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
 			}
 
-			await Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
+			await Meteor.callAsync('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -881,28 +885,28 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermission(this.userId, 'view-c-room');
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
 
 			const ourQuery: Record<string, any> = { ...query, t: 'c' };
 
 			if (!hasPermissionToSeeAllPublicChannels) {
-				if (!(await hasPermission(this.userId, 'view-joined-room'))) {
+				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
 					return API.v1.unauthorized();
 				}
-				const roomIds = await SubscriptionsSync.findByUserIdAndType(this.userId, 'c', {
-					fields: { rid: 1 },
-				})
-					.fetch()
-					.map((s: Record<string, any>) => s.rid);
+				const roomIds = (
+					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+						projection: { rid: 1 },
+					}).toArray()
+				).map((s) => s.rid);
 				ourQuery._id = { $in: roomIds };
 			}
 
 			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = await SubscriptionsSync.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
-				.fetch()
-				.map((item: Record<string, any>) => item.rid);
+			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+				(item: Record<string, any>) => item.rid,
+			);
 
 			ourQuery.$or = [
 				{
@@ -944,14 +948,19 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('c', rids, {
@@ -983,12 +992,12 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (findResult.broadcast && !(await hasPermission(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
 
-			const { offset: skip, count: limit } = this.getPaginationItems();
-			const { sort = {} } = this.parseJsonQuery();
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
 
 			check(
 				this.queryParams,
@@ -1028,7 +1037,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { query } = this.parseJsonQuery();
+			const { query } = await this.parseJsonQuery();
 			if (!query || Object.keys(query).length === 0) {
 				return API.v1.failure('Invalid query');
 			}
@@ -1040,15 +1049,15 @@ API.v1.addRoute(
 				return API.v1.failure('Channel does not exists');
 			}
 
-			const user = this.getLoggedInUser();
+			const user = await getLoggedInUser(this.request);
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await UsersSync.findUsersNotOffline({
-				fields: { username: 1 },
-			}).fetch();
+			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+				projection: { username: 1 },
+			}).toArray();
 
 			const onlineInRoom = await Promise.all(
 				online.map(async (user) => {
@@ -1078,9 +1087,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('removeRoomModerator', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomModerator', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1094,9 +1103,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('removeRoomOwner', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomOwner', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1118,7 +1127,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel name is the same as what it would be renamed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({
@@ -1141,7 +1150,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -1168,7 +1177,7 @@ API.v1.addRoute(
 				);
 			}
 
-			await Meteor.call(
+			await Meteor.callAsync(
 				'saveRoomSettings',
 				findResult._id,
 				'default',
@@ -1197,7 +1206,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel description is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
 
 			return API.v1.success({
 				description: this.bodyParams.description || '',
@@ -1221,7 +1230,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
 
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
@@ -1245,7 +1254,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel topic is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
 
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
@@ -1269,7 +1278,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel type is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
 
 			const room = await Rooms.findOneById(findResult._id, { projection: API.v1.defaultFieldsToExclude });
 
@@ -1291,9 +1300,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('addRoomLeader', findResult._id, user._id);
+			await Meteor.callAsync('addRoomLeader', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1307,9 +1316,9 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.call('removeRoomLeader', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomLeader', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1327,7 +1336,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -1345,8 +1354,8 @@ API.v1.addRoute(
 				params: this.queryParams,
 				checkedArchived: false,
 			});
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
@@ -1366,7 +1375,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId || ''),
+				messages: await normalizeMessagesForUser(messages, this.userId || ''),
 				count: messages.length,
 				offset,
 				total,

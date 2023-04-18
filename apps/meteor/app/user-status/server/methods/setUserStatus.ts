@@ -4,7 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
-import { RateLimiter, setStatusText } from '../../../lib/server';
+import { RateLimiter } from '../../../lib/server';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setUserStatus: (statusType, statusText) => {
+	setUserStatus: async (statusType, statusText) => {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
@@ -26,7 +27,7 @@ Meteor.methods<ServerMethods>({
 					method: 'setUserStatus',
 				});
 			}
-			Meteor.call('UserPresence:setDefaultStatus', statusType);
+			await Meteor.callAsync('UserPresence:setDefaultStatus', statusType);
 		}
 
 		if (statusText || statusText === '') {
@@ -38,7 +39,7 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			setStatusText(userId, statusText);
+			await setStatusText(userId, statusText);
 		}
 	},
 });

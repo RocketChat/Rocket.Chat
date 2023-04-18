@@ -1,31 +1,31 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('OAuth', function () {
-	return this.section('WordPress', function () {
+void settingsRegistry.addGroup('OAuth', async function () {
+	return this.section('WordPress', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Wordpress',
 			value: true,
 		};
-		this.add('Accounts_OAuth_Wordpress', false, {
+		await this.add('Accounts_OAuth_Wordpress', false, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('API_Wordpress_URL', '', {
+		await this.add('API_Wordpress_URL', '', {
 			type: 'string',
 			enableQuery,
 			public: true,
 			secret: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_id', '', {
+		await this.add('Accounts_OAuth_Wordpress_id', '', {
 			type: 'string',
 			enableQuery,
 		});
-		this.add('Accounts_OAuth_Wordpress_secret', '', {
+		await this.add('Accounts_OAuth_Wordpress_secret', '', {
 			type: 'string',
 			enableQuery,
 			secret: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_server_type', '', {
+		await this.add('Accounts_OAuth_Wordpress_server_type', '', {
 			type: 'select',
 			enableQuery,
 			public: true,
@@ -57,27 +57,27 @@ void settingsRegistry.addGroup('OAuth', function () {
 			},
 		];
 
-		this.add('Accounts_OAuth_Wordpress_identity_path', '', {
+		await this.add('Accounts_OAuth_Wordpress_identity_path', '', {
 			type: 'string',
 			enableQuery: customOAuthQuery,
 			public: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_identity_token_sent_via', '', {
+		await this.add('Accounts_OAuth_Wordpress_identity_token_sent_via', '', {
 			type: 'string',
 			enableQuery: customOAuthQuery,
 			public: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_token_path', '', {
+		await this.add('Accounts_OAuth_Wordpress_token_path', '', {
 			type: 'string',
 			enableQuery: customOAuthQuery,
 			public: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_authorize_path', '', {
+		await this.add('Accounts_OAuth_Wordpress_authorize_path', '', {
 			type: 'string',
 			enableQuery: customOAuthQuery,
 			public: true,
 		});
-		this.add('Accounts_OAuth_Wordpress_scope', '', {
+		await this.add('Accounts_OAuth_Wordpress_scope', '', {
 			type: 'string',
 			enableQuery: customOAuthQuery,
 			public: true,

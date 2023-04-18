@@ -1,6 +1,6 @@
 import { Permissions } from '@rocket.chat/models';
 
-import { createOrUpdateProtectedRole } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const createPermissions = async () => {
 	const permissions = [
@@ -17,5 +17,5 @@ export const createPermissions = async () => {
 		void Permissions.create(permission._id, permission.roles);
 	}
 
-	return Promise.all(defaultRoles.map((role) => createOrUpdateProtectedRole(role.name, role)));
+	return Promise.all(defaultRoles.map((role) => createOrUpdateProtectedRoleAsync(role.name, role)));
 };
