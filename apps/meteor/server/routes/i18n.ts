@@ -6,6 +6,17 @@ import { WebApp } from 'meteor/webapp';
 
 const matchRoute = match<{ lng: string }>('/:lng.json', { decode: decodeURIComponent });
 
+const promisifiedAsset = (name: string) =>
+	new Promise<string>((resolve, reject) => {
+		Assets.getText(name, (err: any, data: string) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(data);
+			}
+		});
+	});
+
 const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
 	const match = matchRoute(req.url ?? '/');
 
@@ -18,7 +29,7 @@ const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
 	const { lng } = match.params;
 
 	try {
-		const data = await Assets.getText(`i18n/${lng}.i18n.json`);
+		const data = await promisifiedAsset(`i18n/${lng}.i18n.json`);
 		if (!data) {
 			throw new Error();
 		}

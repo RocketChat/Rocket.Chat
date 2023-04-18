@@ -4,7 +4,7 @@ import parseRequest from 'parseurl';
 import type { NextHandleFunction } from 'connect';
 import { WebApp } from 'meteor/webapp';
 import { ReactiveDict } from 'meteor/reactive-dict';
-// import { Inject } from 'meteor/meteorhacks:inject-initial';
+import { Inject } from 'meteor/meteorhacks:inject-initial';
 
 import { getURL } from '../../utils/server';
 
@@ -101,8 +101,9 @@ export const addStyle = (key: string, content: string): void => {
 	});
 };
 
-export const injectIntoBody = (_key: string, _value: string): void => {
-	// Inject.rawBody(key, value);
+export const injectIntoBody = async (key: string, value: string): Promise<void> => {
+	const v = await value;
+	Inject.rawBody(key, v);
 };
 
 export const applyHeadInjections = (injections: Injection[]): ((html: string) => string) => {
