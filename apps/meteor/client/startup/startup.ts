@@ -1,6 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { Meteor } from 'meteor/meteor';
+import { UserPresence } from 'meteor/rocketchat:user-presence';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
