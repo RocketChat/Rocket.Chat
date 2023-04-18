@@ -268,7 +268,7 @@ const RoomBody = (): ReactElement => {
 		Tracker.afterFlush(() => {
 			// Find a better way to do this, declaratively
 			if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
-				tabBar.openRoomInfo();
+				setTimeout(() => tabBar.openRoomInfo(), 0);
 			}
 		});
 	}, [room._id]);
