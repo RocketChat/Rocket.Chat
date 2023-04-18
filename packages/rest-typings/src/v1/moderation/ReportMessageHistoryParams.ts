@@ -1,7 +1,9 @@
 import Ajv from 'ajv';
 // ajv for params { userId: string; sort?: string; selector?: string; count?: number }
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 export type ReportMessageHistoryParams = {
 	userId: string;

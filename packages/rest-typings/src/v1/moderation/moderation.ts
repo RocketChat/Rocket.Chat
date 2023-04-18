@@ -4,10 +4,10 @@ import type { UpdateResult, Document } from 'mongodb';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportProps } from './ArchiveReportProps';
 import type { ReportHistoryProps } from './ReportHistoryProps';
-import type { ReportMessageHistoryParams } from './ReportMessageHistory';
-import type { ModerationDeleteMsgHistoryParams } from './ModerationDeleteMsgHistory';
-import type { ReportsByMsgIdParams } from './ReportsByMsgId';
-import type { ReportInfoParams } from './ReportInfo';
+import type { ReportMessageHistoryParams } from './ReportMessageHistoryParams';
+import type { ModerationDeleteMsgHistoryParams } from './ModerationDeleteMsgHistoryParams';
+import type { ReportsByMsgIdParams } from './ReportsByMsgIdParams';
+import type { ReportInfoParams } from './ReportInfoParams';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
