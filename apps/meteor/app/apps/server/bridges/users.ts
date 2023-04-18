@@ -121,13 +121,6 @@ export class AppUserBridge extends UserBridge {
 			return true;
 		}
 
-		const { status } = fields;
-		delete fields.status;
-
-		if (status) {
-			fields.statusDefault = status;
-		}
-
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
 
 		return true;
