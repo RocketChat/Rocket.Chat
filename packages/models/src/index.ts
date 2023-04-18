@@ -74,6 +74,7 @@ import type {
 	IFederationRoomEventsModel,
 	IAppsTokensModel,
 	IAuditLogModel,
+	IMigrationsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -162,3 +163,4 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 	'IOmnichannelServiceLevelAgreementsModel',
 );
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
+export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');

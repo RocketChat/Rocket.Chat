@@ -165,14 +165,13 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	// TODO change to await once Email.send is converted to Email.sendAsync
-	void Settings.incrementValueById('Triggered_Emails_Count');
+	await Settings.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
 
-	Meteor.defer(() => Email.send(eventResult || email));
+	Meteor.defer(() => Email.sendAsync(eventResult || email));
 };
 
 export const send = async ({
