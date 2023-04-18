@@ -11,15 +11,15 @@ type ParentRoomProps = {
 };
 
 const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
-	const href = roomCoordinator.getRouteLink(room.t, room) || undefined;
+	const handleClick = (): void => {
+		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	};
 	const icon = useRoomIcon(room);
 
 	return (
-		<Header.Tag>
-			<Header.Link href={href}>
-				<Header.Tag.Icon icon={icon} />
-				{roomCoordinator.getRoomName(room.t, room)}
-			</Header.Link>
+		<Header.Tag onClick={handleClick}>
+			<Header.Tag.Icon icon={icon} />
+			{roomCoordinator.getRoomName(room.t, room)}
 		</Header.Tag>
 	);
 };
