@@ -161,4 +161,5 @@ injectIntoBody(
 `,
 );
 
+// TODO: await Assets.getText
 injectIntoBody('icons', Assets.getText('public/icons.svg'));

@@ -3,11 +3,11 @@ import url from 'url';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
-// import { addServerUrlToIndex } from '../lib/Assets';
+import { addServerUrlToIndex } from '../lib/Assets';
 
-const indexHtmlWithServerURL = ''; // addServerUrlToIndex(Assets.getText('livechat/index.html') || '');
+const indexHtmlWithServerURL = async () => addServerUrlToIndex((await Assets.getText('livechat/index.html')) || '');
 
-WebApp.connectHandlers.use('/livechat', (req, res, next) => {
+WebApp.connectHandlers.use('/livechat', async (req, res, next) => {
 	if (!req.url) {
 		return next();
 	}
@@ -36,6 +36,6 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 		res.removeHeader('Content-Security-Policy');
 	}
 
-	res.write(indexHtmlWithServerURL);
+	res.write(await indexHtmlWithServerURL());
 	res.end();
 });
