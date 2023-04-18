@@ -1,10 +1,12 @@
 /* eslint-disable new-cap */
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { getOutlookEvents } from '../lib/outlookCalendar/getOutlookEvents';
 
-export const useSyncOutlookEvents = (date: Date, server: string, user: string, password: string): (() => Promise<void>) => {
+export const useSyncOutlookEvents = (date: Date): ((user: string, password: string) => Promise<void>) => {
+	const server = useSetting('Outlook_Calendar_Exchange_Url') as string;
+
 	const getCalendarEventsList = useEndpoint('GET', '/v1/calendar-events.list');
 	const createCalendarEvent = useEndpoint('POST', '/v1/calendar-events.create');
 	const updateCalendarEvent = useEndpoint('POST', '/v1/calendar-events.update');
@@ -15,7 +17,7 @@ export const useSyncOutlookEvents = (date: Date, server: string, user: string, p
 		getCalendarEventsList({ date: date.toISOString().substring(0, 10) }),
 	);
 
-	const syncEvents = async () => {
+	const syncEvents = async (user: string, password: string) => {
 		const externalEvents = serverEvents?.data.filter(({ externalId }) => externalId);
 
 		const appointments = await getOutlookEvents(date, server, user, password);

@@ -9,8 +9,8 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
+import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
-import { syncOutlookEvents } from '../../../lib/outlookCalendar/syncOutlookEvents';
 import type { CalendarAuthPayload } from '../../calendarIntegration/CalendarAuthModal';
 import CalendarAuthModal from '../../calendarIntegration/CalendarAuthModal';
 import OutlookEventItem from './OutlookEventItem';
@@ -37,9 +37,10 @@ const OutlookEventsList = ({
 	const setModal = useSetModal();
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const outlookExchangeUrl = useSetting('Outlook_Calendar_Exchange_Url') as string;
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
 	const [outlookToken, setOutlookToken] = useSessionStorage('outlookToken', '');
+
+	const syncOutlookEvents = useSyncOutlookEvents(new Date());
 
 	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
@@ -60,7 +61,7 @@ const OutlookEventsList = ({
 			const token = window.btoa(`${login}:${password}`);
 
 			try {
-				await syncOutlookEvents(new Date(), outlookExchangeUrl, token);
+				await syncOutlookEvents(login, password);
 
 				if (rememberCredentials) {
 					setOutlookToken(token);
