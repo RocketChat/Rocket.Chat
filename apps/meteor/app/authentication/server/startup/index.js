@@ -13,7 +13,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';

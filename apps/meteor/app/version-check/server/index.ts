@@ -4,7 +4,6 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
-import './addSettings';
 
 const jobName = 'version_check';
 
