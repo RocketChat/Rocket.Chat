@@ -6,7 +6,7 @@ import React from 'react';
 export const DepartmentBusinessHours = ({ bhId }: { bhId: string | undefined }) => {
 	const t = useTranslation();
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');
-	const { data } = useQuery(['/v1/livechat/business-hour'], () => getBusinessHour({ _id: bhId, type: 'custom' }));
+	const { data } = useQuery(['/v1/livechat/business-hour', bhId], () => getBusinessHour({ _id: bhId, type: 'custom' }));
 
 	const name = data?.businessHour?.name;
 
