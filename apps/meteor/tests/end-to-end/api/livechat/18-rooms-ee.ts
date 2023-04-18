@@ -128,7 +128,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
-			expect(response.body.error).to.be.equal('This_conversation_is_already_closed');
+			expect(response.body.error).to.be.equal('error-room-already-closed');
 		});
 		it('should fail if user is not serving the chat and doesnt have on-hold-others-livechat-room permission', async () => {
 			const { room } = await startANewLivechatRoomAndTakeIt();
