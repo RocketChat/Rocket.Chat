@@ -123,9 +123,8 @@ export class Mobex implements ISMSProvider {
 				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
 			);
 
-			const json = await response.json();
 			if (response.ok) {
-				result.resultMsg = json;
+				result.resultMsg = await response.text();
 				result.isSuccess = true;
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${response.status}`;
@@ -173,7 +172,7 @@ export class Mobex implements ISMSProvider {
 
 			result.isSuccess = response.ok;
 			result.resultMsg = 'Success';
-			result.response = await response.json();
+			result.response = await response.text();
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
 			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });
