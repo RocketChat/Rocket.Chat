@@ -1376,7 +1376,7 @@
   "Email_already_exists": "이메일이 이미 있습니다.",
   "Email_body": "이메일 본문",
   "Email_Change_Disabled": "시스템 관리자가 이메일 변경을 비활성화했습니다.",
-  "Email_Changed_Description": "다음과 같은 지시어를 사용할 수 있습니다: <br/><ul><li> [email] 사용자의 이메일.</li><li>[Site_Name] 와 [Site_URL] 은 사이트 명과 사이트 URL로 각각 표시됩니다.</li></ul>",
+  "Email_Changed_Description": "다음과 같은 지시어를 사용할 수 있습니다:  \n - [email] 사용자의 이메일.  \n - [Site_Name] 와 [Site_URL] 은 사이트 명과 사이트 URL로 각각 표시됩니다.",
   "Email_Changed_Email_Subject": "[Site_Name]-이메일 주소가 변경되었습니다",
   "Email_changed_section": "이메일 주소 변경",
   "Email_Footer_Description": "다음과 같은 지시어를 사용할 수 있습니다: <br/><ul><li> [Site_Name]와 [Site_URL] : 응용 프로그램 이름 및 URL</li></ul>",

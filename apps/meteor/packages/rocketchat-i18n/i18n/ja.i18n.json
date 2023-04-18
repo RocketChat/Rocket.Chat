@@ -1545,7 +1545,7 @@
   "Email_already_exists": "メールはすでに存在します",
   "Email_body": "メール本文",
   "Email_Change_Disabled": "Rocket.Chat管理者が、メールアドレスの変更を無効にしています",
-  "Email_Changed_Description": "次のプレースホルダーを使用できます。<br/><ul><li>[email]（ユーザーのメールアドレス）</li><li>[Site_Name]（アプリケーション名）と[Site_URL]（URL）</li></ul>",
+  "Email_Changed_Description": "次のプレースホルダーを使用できます。  \n - [email]（ユーザーのメールアドレス）  \n - [Site_Name]（アプリケーション名）と[Site_URL]（URL）",
   "Email_Changed_Email_Subject": "[Site_Name] - メールアドレスが変更されました",
   "Email_changed_section": "メールアドレスが変更されました",
   "Email_Footer_Description": "次のプレースホルダーを使用できます。<br/><ul><li>[Site_Name]（アプリケーション名）と[Site_URL]（URL）</li></ul>",

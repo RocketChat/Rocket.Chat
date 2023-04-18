@@ -1768,7 +1768,7 @@
   "Email_already_exists": "Email already exists",
   "Email_body": "Email body",
   "Email_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of email",
-  "Email_Changed_Description": "You may use the following placeholders: <br/><ul><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
+  "Email_Changed_Description": "You may use the following placeholders:  \n - [email] for the user's email.  \n- [Site_Name] and [Site_URL] for the Application Name and URL respectively.",
   "Email_Changed_Email_Subject": "[Site_Name] - Email address has been changed",
   "Email_changed_section": "Email Address Changed",
   "Email_Footer_Description": "You may use the following placeholders: <br/><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",

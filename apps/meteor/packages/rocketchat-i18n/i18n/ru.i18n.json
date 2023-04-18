@@ -1662,7 +1662,7 @@
   "Email_already_exists": "Такой адрес электронной почты уже используется",
   "Email_body": "Тело письма",
   "Email_Change_Disabled": "Администратор вашего Rocket.Chat запретил изменение адреса электронной почты",
-  "Email_Changed_Description": "Вы можете использовать следующие подстановки: <br/><ul><li>[email] для электронной почты получателя.</li><li>[Site_Name] и [Site_URL] для названия приложения и его URL.</li></ul>",
+  "Email_Changed_Description": "Вы можете использовать следующие подстановки:  \n - [email] для электронной почты получателя.  \n - [Site_Name] и [Site_URL] для названия приложения и его URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - Адрес электронной почты изменен",
   "Email_changed_section": "Адрес электронной почты изменен",
   "Email_Footer_Description": "Вы можете использовать следующие подстановки: <br/><ul><li>[Site_Name] и [Site_URL] для имени приложения и его URL соответственно.</li></ul>",

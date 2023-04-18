@@ -1718,7 +1718,7 @@
   "Email_already_exists": "Az e-mail-cím már létezik",
   "Email_body": "E-mail törzse",
   "Email_Change_Disabled": "A Rocket.Chat adminisztrátora letiltotta az e-mail-cím megváltoztatását",
-  "Email_Changed_Description": "A következő helykitöltőket használhatja: <br/><ul><li>[email] a felhasználó e-mail-címéhez.</li><li>[Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.</li></ul>",
+  "Email_Changed_Description": "A következő helykitöltőket használhatja:\n - [email] a felhasználó e-mail-címéhez.  \n - [Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.",
   "Email_Changed_Email_Subject": "[Site_Name] – Az e-mail-cím megváltozott",
   "Email_changed_section": "Az e-mail-cím megváltozott",
   "Email_Footer_Description": "A következő helykitöltőket használhatja: <br/><ul><li>[Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.</li></ul>",

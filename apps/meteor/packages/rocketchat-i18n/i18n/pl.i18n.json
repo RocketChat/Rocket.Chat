@@ -1693,7 +1693,7 @@
   "Email_already_exists": "Ten email jest zajęty",
   "Email_body": "Treść wiadomości",
   "Email_Change_Disabled": "Administrator wyłączył zmianę adresów e-mail",
-  "Email_Changed_Description": "Możesz korzystać z następujących placeholder'ów: <br/><ul><li>[e-mail] dla e-mail  użytkownika.</li><li>[Site_Name] i [Site_URL] odpowiednio dla nazwy aplikacji i adresu URL.</li></ul>",
+  "Email_Changed_Description": "Możesz korzystać z następujących placeholder'ów:  \n - [e-mail] dla e-mail  użytkownika.  \n - [Site_Name] i [Site_URL] odpowiednio dla nazwy aplikacji i adresu URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - Adres e-mail został zmieniony",
   "Email_changed_section": "Adres email zmieniony",
   "Email_Footer_Description": "Możesz użyć następujących symboli zastępczych: <br/><ul><li> [Site_Name] i [Site_URL] dla nazwy aplikacji i zawartości odpowiednio. </li></ul>",

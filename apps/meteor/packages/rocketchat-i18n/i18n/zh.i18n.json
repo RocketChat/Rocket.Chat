@@ -1395,7 +1395,7 @@
   "Email_already_exists": "邮箱已存在",
   "Email_body": "邮件正文",
   "Email_Change_Disabled": "您的 Rocket.Chat 管理员已禁止修改电子邮箱地址",
-  "Email_Changed_Description": "您可以使用以下占位符： <br/><ul><li> [email]为电子邮件地址，</li><li>[Site_Name] 和 [Site_URL] 分别为应用程序名和网址。</li></ul>",
+  "Email_Changed_Description": "您可以使用以下占位符：  \n - [email]为电子邮件地址，  \n - [Site_Name] 和 [Site_URL] 分别为应用程序名和网址。",
   "Email_Changed_Email_Subject": "[Site_Name] - 电子邮箱已更改",
   "Email_changed_section": "电子邮箱已更改",
   "Email_Footer_Description": "您可以使用以下占位符： <br/><ul><li> [Site_Name] 和 [Site_URL] 分别作为应用程序的名称和网址。</li></ul>",

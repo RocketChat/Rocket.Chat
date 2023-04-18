@@ -1549,7 +1549,7 @@
   "Email_already_exists": "El correo electrónico ya existe",
   "Email_body": "Cuerpo del correo electrónico",
   "Email_Change_Disabled": "Tu administrador de Rocket.Chat ha deshabilitado el cambio de correo electrónico",
-  "Email_Changed_Description": "Puedes usar los siguientes marcadores de posición: <br/><ul><li>[email] para el correo electrónico del usuario.</li><li>[Site_Name] y [Site_URL] para el nombre y la URL de la aplicación, respectivamente.</li></ul>",
+  "Email_Changed_Description": "Puedes usar los siguientes marcadores de posición:  \n - [email] para el correo electrónico del usuario.  \n - [Site_Name] y [Site_URL] para el nombre y la URL de la aplicación, respectivamente.",
   "Email_Changed_Email_Subject": "[Site_Name] - La dirección de correo electrónico se ha cambiado",
   "Email_changed_section": "Dirección de correo electrónico cambiada",
   "Email_Footer_Description": "Puedes usar los siguientes marcadores de posición: <br/><ul><li>[Site_Name] y [Site_URL] para el nombre y la URL de la aplicación, respectivamente.</li></ul>",

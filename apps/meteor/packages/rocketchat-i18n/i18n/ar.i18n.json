@@ -1558,7 +1558,7 @@
   "Email_already_exists": "سبق وجود البريد الإلكتروني",
   "Email_body": "نص البريد الإلكتروني",
   "Email_Change_Disabled": "قام مسؤول Rocket.Chat لديك بتعطيل تغيير البريد الإلكتروني",
-  "Email_Changed_Description": "يمكنك استخدام العناصر النائبة التالية: <br/><ul><li> [email] للبريد الإلكتروني للمستخدم.</li></li>\">و[Site_URL] لاسم التطبيق وعنوان URL على التوالي.<li></ul>",
+  "Email_Changed_Description": "يمكنك استخدام العناصر النائبة التالية:  \n - [email] للبريد الإلكتروني للمستخدم.  \n - \"و[Site_URL] لاسم التطبيق وعنوان URL على التوالي.",
   "Email_Changed_Email_Subject": "[Site_Name] - تم تغيير عنوان البريد الإلكتروني.",
   "Email_changed_section": "تم تغيير عنوان البريد الإلكتروني",
   "Email_Footer_Description": "يمكنك استخدام العناصر النائبة التالية: <br/><ul><li> [Site_Name] و[Site_URL] لاسم التطبيق وعنوان URL على التوالي.</li></ul>",

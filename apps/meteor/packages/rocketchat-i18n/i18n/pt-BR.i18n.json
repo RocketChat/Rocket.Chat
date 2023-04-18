@@ -1585,7 +1585,7 @@
   "Email_already_exists": "E-mail já existe",
   "Email_body": "Corpo do e-mail",
   "Email_Change_Disabled": "O administrador do Rocket.Chat desativou a mudança de e-mail",
-  "Email_Changed_Description": "Você pode usar os seguintes placeholders: <br/><ul><li>[email] para o e-mail do usuário.</li><li>[Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente.</li></ul>",
+  "Email_Changed_Description": "Você pode usar os seguintes placeholders:  \n - [email] para o e-mail do usuário.  \n - [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente.",
   "Email_Changed_Email_Subject": "[Site_Name] - Endereço de e-mail foi alterado",
   "Email_changed_section": "Endereço de e-mail alterado",
   "Email_Footer_Description": "Você pode usar os seguintes placeholders: <br/><ul><li> [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente. </li></ul>",

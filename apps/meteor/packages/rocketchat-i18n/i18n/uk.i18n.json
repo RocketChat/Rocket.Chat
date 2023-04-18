@@ -1238,7 +1238,7 @@
   "Email_already_exists": "Email вже існує",
   "Email_body": "Тіло електронної пошти",
   "Email_Change_Disabled": "Ваш Rocket.Chat адміністратор відключив можливість зміни електронної пошти",
-  "Email_Changed_Description": "Доступні такі заповнювачі: <br/><ul><li>[email] для електронної пошти користувача.</li> <li>[Site_Name] та [Site_URL] для імені додатка та URL-адреси відповідно. </li></ul>",
+  "Email_Changed_Description": "Доступні такі заповнювачі:  \n - [email] для електронної пошти користувача.  \n - [Site_Name] та [Site_URL] для імені додатка та URL-адреси відповідно.",
   "Email_Changed_Email_Subject": "[Site_Name] - адресу електронної пошти було змінено",
   "Email_changed_section": "Адреса електронної пошти змінена",
   "Email_Footer_Description": "Ви можете використовувати наступні наповнювачі: <br/><ul><li> [Site_Name] і [Site_URL] для імені додатку і URL відповідно. </li></ul>",

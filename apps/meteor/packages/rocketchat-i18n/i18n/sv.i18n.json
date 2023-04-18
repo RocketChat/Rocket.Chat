@@ -1767,7 +1767,7 @@
   "Email_already_exists": "E-postadressen finns redan",
   "Email_body": "E-post text",
   "Email_Change_Disabled": "Din Rocket.Chatadministratör har inaktiverat möjligheten att byta e-postadress",
-  "Email_Changed_Description": "Du kan använda följande platshållare: <br/><ul><li>[email] för användarens e-postadress.</li><li>[Site_Name] och [Site_URL] för respektive applikationsnamn och URL.</li></ul>",
+  "Email_Changed_Description": "Du kan använda följande platshållare:  \n - [email] för användarens e-postadress.  \n - [Site_Name] och [Site_URL] för respektive applikationsnamn och URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - E-postadressen har ändrats",
   "Email_changed_section": "E-postadressen har ändrats",
   "Email_Footer_Description": "Du kan använda följande platsmarkörer: <br/><ul><li> [Site_Name] och [Site_URL] för programnamn och webbadress. </li></ul>",

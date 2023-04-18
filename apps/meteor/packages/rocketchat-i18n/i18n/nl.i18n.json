@@ -1558,7 +1558,7 @@
   "Email_already_exists": "E-mailadres bestaat al",
   "Email_body": "E-mailtekst",
   "Email_Change_Disabled": "Je Rocket.Chat-beheerder heeft het wijzigen van e-mailadressen uitgeschakeld",
-  "Email_Changed_Description": "U kunt de volgende variabels gebruiken: <br/><ul><li>[email] voor het e-mailadres van de gebruiker.</li><li>[Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL.</li></ul>",
+  "Email_Changed_Description": "U kunt de volgende variabels gebruiken:  \n - [email] voor het e-mailadres van de gebruiker.  \n - [Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - E-mailadres is gewijzigd",
   "Email_changed_section": "E-mailadres gewijzigd",
   "Email_Footer_Description": "U kunt de volgende variabels gebruiken: <br/><ul><li> [Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL. </li></ul>",

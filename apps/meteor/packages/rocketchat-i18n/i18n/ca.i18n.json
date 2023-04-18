@@ -1550,7 +1550,7 @@
   "Email_already_exists": "L'adreça de correu electrònic ja existeix",
   "Email_body": "Cos del missatge",
   "Email_Change_Disabled": "El canvi de correu electrònic està desactivat",
-  "Email_Changed_Description": "Podeu utilitzar les adreces d'interès següents: <br/><ul><li> [email] per al correu electrònic de l'usuari. </li><li>[Site_Name] i [Site_URL] per al nom de l'aplicació i l'URL respectivament. </li> </ul>",
+  "Email_Changed_Description": "Podeu utilitzar les adreces d'interès següents:  \n - [email] per al correu electrònic de l'usuari.  \n - [Site_Name] i [Site_URL] per al nom de l'aplicació i l'URL respectivament.",
   "Email_Changed_Email_Subject": "[Site_name] - La direcció de correu electrònic ha estat modificada",
   "Email_changed_section": "Adreça de correu electrònic modificada",
   "Email_Footer_Description": "Podeu utilitzar les adreces d'interès següents: <br/><li><ul> [Site_Name] i [Site_URL] per al nom de l'aplicació i l'URL respectivament. </li></ul>",

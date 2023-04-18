@@ -1767,7 +1767,7 @@
   "Email_already_exists": "Sähköpostiosoite on jo olemassa",
   "Email_body": "Sähköpostiviestin runko",
   "Email_Change_Disabled": "Rocket.Chatin järjestelmänvalvoja on estänyt sähköpostin vaihtamisen",
-  "Email_Changed_Description": "Voit käyttää seuraavia paikkamerkkejä: <br/><ul><li>[email] käyttäjän sähköpostin sijasta.</li><li>[Site_Name] ja [Site_URL] sovelluksen nimen ja URL-osoitteen sijasta.</li></ul>",
+  "Email_Changed_Description": "Voit käyttää seuraavia paikkamerkkejä:  \n - [email] käyttäjän sähköpostin sijasta.  \n - [Site_Name] ja [Site_URL] sovelluksen nimen ja URL-osoitteen sijasta.",
   "Email_Changed_Email_Subject": "[Site_Name] - Sähköpostiosoite on vaihdettu",
   "Email_changed_section": "Sähköpostiosoite vaihdettu",
   "Email_Footer_Description": "Voit käyttää seuraavia paikkamerkkejä: <br/><ul><li>[Site_Name] ja [Site_URL] sovelluksen nimen ja URL-osoitteen sijasta.</li></ul>",

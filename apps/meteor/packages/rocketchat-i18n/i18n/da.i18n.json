@@ -1327,7 +1327,7 @@
   "Email_already_exists": "E-mailen eksisterer allerede",
   "Email_body": "E-mail-brødtekst",
   "Email_Change_Disabled": "Din Rocket.Chat-administrator har deaktiveret ændring af e-mail",
-  "Email_Changed_Description": "Du kan bruge følgende felter: <br/> <ul> <li> [email] til brugerens e-mail. </li><li> [Site_Name] og [Site_URL] til henholdsvis applikationsnavnet og URL.</li></ul>",
+  "Email_Changed_Description": "Du kan bruge følgende felter:  \n - [email] til brugerens e-mail.  \n - [Site_Name] og [Site_URL] til henholdsvis applikationsnavnet og URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - E-mail-adresse er blevet ændret",
   "Email_changed_section": "E-mail-adressen blev ændret",
   "Email_Footer_Description": "Du kan bruge følgende felter: <br/><ul><li>[Site_Name] og [Site_URL] for henholdsvis applikationsnavnet og URL.</li></ul>",

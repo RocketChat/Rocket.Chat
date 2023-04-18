@@ -1542,7 +1542,7 @@
   "Email_already_exists": "電子郵件已存在",
   "Email_body": "電子郵件內容",
   "Email_Change_Disabled": "您的 Rocket.Chat 管理員設定禁止更改電子郵件",
-  "Email_Changed_Description": "您可以使用以下的佔位符: <br/><ul><li>[email] 為此使用者的電子郵件。</li><li>[Site_Name] 和 [Site_URL] 分別為應用程式名稱和網址。</li></ul>",
+  "Email_Changed_Description": "您可以使用以下的佔位符:  \n - [email] 為此使用者的電子郵件。  \n - [Site_Name] 和 [Site_URL] 分別為應用程式名稱和網址。",
   "Email_Changed_Email_Subject": "[Site_Name] - 電子郵件地址已變更",
   "Email_changed_section": "電子郵件地址已變更",
   "Email_Footer_Description": "您可以使用以下佔位符： <br/><ul><li> [Site_Name]和[Site_URL]分別為應用程式的名稱和網址。 </li></ul>",

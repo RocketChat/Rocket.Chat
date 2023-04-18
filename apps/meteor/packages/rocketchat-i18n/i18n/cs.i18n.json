@@ -1319,7 +1319,7 @@
   "Email_already_exists": "Email již existuje",
   "Email_body": "Obsah e-mailu",
   "Email_Change_Disabled": "Váš Rocket.Chat Administrátor zakázal změnu e-mailů",
-  "Email_Changed_Description": "Můžete použít následující zástupné symboly: <br/><ul><li>[email] pro e-mail uživatele.</li><li>[Site_Name] a [Site_URL] pro název aplikace či její URL.</li></ul>",
+  "Email_Changed_Description": "Můžete použít následující zástupné symboly:  \n - [email] pro e-mail uživatele.  \n - [Site_Name] a [Site_URL] pro název aplikace či její URL.",
   "Email_Changed_Email_Subject": "[Site_Name] - E-mailová adresa byla změněna",
   "Email_changed_section": "E-mailová adresa změněna",
   "Email_Footer_Description": "Můžete použít: <br/><ul><li>[Site_Name] a [Site_URL] pro jméno a URL aplikace.</li></ul>",

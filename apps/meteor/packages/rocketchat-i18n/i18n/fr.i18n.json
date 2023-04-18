@@ -1563,7 +1563,7 @@
   "Email_already_exists": "L'adresse e-mail existe déjà",
   "Email_body": "Corps de l'e-mail",
   "Email_Change_Disabled": "Votre administrateur Rocket.Chat a désactivé la modification d'adresse e-mail",
-  "Email_Changed_Description": "Vous pouvez utiliser les variables suivantes : <br/><ul><li>[email] pour l'adresse e-mail de l'utilisateur.</li><li>[Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement.</li></ul>",
+  "Email_Changed_Description": "Vous pouvez utiliser les variables suivantes :  \n - [email] pour l'adresse e-mail de l'utilisateur.  \n - [Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement.",
   "Email_Changed_Email_Subject": "[Site_Name] - L'adresse e-mail a été modifiée",
   "Email_changed_section": "Adresse e-mail modifiée",
   "Email_Footer_Description": "Vous pouvez utiliser les variables suivantes : <br/><ul><li> [Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement. </li></ul>",
