@@ -1,4 +1,113 @@
 
+# 6.1.3
+`2023-04-17  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.1`
+
+### 🐛 Bug fixes
+
+
+- Livechat notifications not working correctly ([#28741](https://github.com/RocketChat/Rocket.Chat/pull/28741))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@tassoevan](https://github.com/tassoevan)
+
+
+# 6.1.2
+`2023-04-13  ·  4 🐛  ·  3 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.1`
+
+### 🐛 Bug fixes
+
+
+- Add function to get installation source ([#28806](https://github.com/RocketChat/Rocket.Chat/pull/28806))
+
+  There have been reports of problems regarding the missing information of `installationSource` in apps. The only scenario where this information could be missing is if migrations failed to run properly when upgrading to 6.0. We haven't been able to identify the root cause yet, so we decided to provide a workaround in the meanwhile
+
+- Fixed no role assign to manual registered users despite of Default Roles for Users settings ([#28293](https://github.com/RocketChat/Rocket.Chat/pull/28293) by [@bhardwajdisha](https://github.com/bhardwajdisha))
+
+- Quotes chain off by one error in quote chain limit settings ([#28281](https://github.com/RocketChat/Rocket.Chat/pull/28281) by [@jayesh-jain252](https://github.com/jayesh-jain252))
+
+  Fixed off by one error in Quote Chain Limit. Now if a user sets Message_QuoteChainLimit (default is 2) the number of quotes chained matches the setting.
+  Changes are made in apps/meteor/app/oembed/server/jumpToMessage.ts file
+
+  With Message_QuoteChainLimit=2
+  Before:
+  ![quote_limit2_before](https://user-images.githubusercontent.com/79307894/222970577-5d2b2dc9-c191-4758-acea-909786d974ac.PNG)
+
+  After:
+  ![quote_limit2_after](https://user-images.githubusercontent.com/79307894/222970247-fa0bcfcf-e7f3-4102-b7b3-820fb43677c1.PNG)
+
+- SMTP warnings on user form ([#28832](https://github.com/RocketChat/Rocket.Chat/pull/28832))
+
+  Check for SMTP config on server side and then show warning on client side
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Add `rid` to scope of `create-invite-links` permission check ([#28241](https://github.com/RocketChat/Rocket.Chat/pull/28241))
+
+  This PR fixes a bug where users with the `owner` role can't create invites because the button isn't being displayed for him, to solve this issue the `rid` was added to the scope of the check.
+
+- bump apps-engine version to 1.38.1 ([#28885](https://github.com/RocketChat/Rocket.Chat/pull/28885))
+
+- Upgrade `vm2` ([#28860](https://github.com/RocketChat/Rocket.Chat/pull/28860))
+
+  It patches `vm2`.
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@bhardwajdisha](https://github.com/bhardwajdisha)
+- [@jayesh-jain252](https://github.com/jayesh-jain252)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@casalsgh](https://github.com/casalsgh)
+- [@d-gubert](https://github.com/d-gubert)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+
+# 6.1.1
+`2023-04-04  ·  1 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.0`
+
+### 🐛 Bug fixes
+
+
+- Messages jumping after reaction ([#28770](https://github.com/RocketChat/Rocket.Chat/pull/28770))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@casalsgh](https://github.com/casalsgh)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+
 # 6.1.0
 `2023-03-29  ·  1 🎉  ·  1 🚀  ·  4 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
 
