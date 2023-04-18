@@ -265,8 +265,8 @@ export const normalizeAgent = async (agentId) => {
 	return Object.assign(extraData, { ...(customFields && { customFields }) });
 };
 
-export const dispatchAgentDelegated = (rid, agentId) => {
-	const agent = normalizeAgent(agentId);
+export const dispatchAgentDelegated = async (rid, agentId) => {
+	const agent = await normalizeAgent(agentId);
 
 	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
