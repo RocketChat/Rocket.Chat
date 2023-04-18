@@ -42,6 +42,12 @@ import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
+import { IAppsApiService } from './types/IAppsApiService';
+import { IAppsManagerService } from './types/IAppsManagerService';
+import { IAppsService } from './types/IAppsService';
+import { IAppsStatisticsService } from './types/IAppsStatisticsService';
+import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
+import { IAppsConverterService } from './types/IAppsConverterService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -58,7 +64,13 @@ export {
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
+	IAppsApiService,
+	IAppsConverterService,
 	IAppsEngineService,
+	IAppsManagerService,
+	IAppsService,
+	IAppsStatisticsService,
+	IAppsVideoManagerService,
 	IAuthorization,
 	IAuthorizationLivechat,
 	IAuthorizationVoip,
@@ -119,6 +131,12 @@ export {
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
 export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
+// export const Apps = proxifyWithWait<IAppsService>('apps');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');

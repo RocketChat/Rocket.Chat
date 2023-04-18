@@ -6,16 +6,49 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { Db } from 'mongodb';
 
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { SystemLogger } from '../../lib/logger/system';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps, AppEvents } from '../orchestrator';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';
 
-	constructor() {
+	private apps: AppServerOrchestrator;
+
+	constructor(db: Db) {
 		super();
 
+		this.apps = OrchestratorFactory.getOrchestrator(db);
+	}
+
+	async started(): Promise<void> {
+		this.initializeEventListeners();
+	}
+
+	async isInitialized(): Promise<boolean> {
+		return Apps.isInitialized();
+	}
+
+	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
+		return Apps.getManager()
+			?.get(query)
+			.map((app) => app.getApp().getInfo());
+	}
+
+	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
+		const app = Apps.getManager()?.getOneById(appId);
+
+		if (!app) {
+			return;
+		}
+
+		return app.getStorageItem();
+	}
+
+	private initializeEventListeners() {
 		this.onEvent('presence.status', async ({ user, previousStatus }): Promise<void> => {
 			await Apps.triggerEvent(AppEvents.IPostUserStatusChanged, {
 				user,
@@ -88,25 +121,5 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 
 			await appManager.getSettingsManager().updateAppSetting(appId, setting as any);
 		});
-	}
-
-	isInitialized(): boolean {
-		return Apps.isInitialized();
-	}
-
-	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
-		return Apps.getManager()
-			?.get(query)
-			.map((app) => app.getApp().getInfo());
-	}
-
-	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
-		const app = Apps.getManager()?.getOneById(appId);
-
-		if (!app) {
-			return;
-		}
-
-		return app.getStorageItem();
 	}
 }
