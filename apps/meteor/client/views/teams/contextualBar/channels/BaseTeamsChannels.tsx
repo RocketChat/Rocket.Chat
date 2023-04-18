@@ -56,7 +56,7 @@ const BaseTeamsChannels = ({
 
 	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
-	const loadMoreMembers = useDebouncedCallback(
+	const loadMoreChannels = useDebouncedCallback(
 		() => {
 			if (channels.length >= total) {
 				return;
@@ -121,7 +121,7 @@ const BaseTeamsChannels = ({
 							totalCount={total}
 							data={channels}
 							// eslint-disable-next-line react/no-multi-comp
-							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
 						/>
 					</Box>
