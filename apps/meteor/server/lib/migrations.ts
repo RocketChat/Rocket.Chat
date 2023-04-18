@@ -1,17 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Migrations } from '@rocket.chat/models';
+import type { IControl } from '@rocket.chat/core-typings';
 
 import { Info } from '../../app/utils/server';
 import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
-
-type IControl = {
-	_id?: string;
-	version: number;
-	locked: boolean;
-	buildAt?: string;
-	lockedAt?: string;
-};
 
 type IMigration = {
 	name?: string;
@@ -24,11 +17,9 @@ const log = new Logger('Migrations');
 
 const migrations = new Set<IMigration>();
 
-const collection = new Mongo.Collection('migrations');
-
 // sets the control record
-function setControl(control: IControl): IControl {
-	void collection.updateAsync(
+function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IControl, 'version' | 'locked'> {
+	void Migrations.updateMany(
 		{
 			_id: 'control',
 		},
@@ -48,7 +39,7 @@ function setControl(control: IControl): IControl {
 
 // gets the current control record, optionally creating it if non-existant
 export async function getControl(): Promise<IControl> {
-	const control = (await collection.findOneAsync({
+	const control = (await Migrations.findOne({
 		_id: 'control',
 	})) as IControl;
 
@@ -62,7 +53,7 @@ export async function getControl(): Promise<IControl> {
 }
 
 // Returns true if lock was acquired.
-function lock(): boolean {
+async function lock(): Promise<boolean> {
 	const date = new Date();
 	const dateMinusInterval = new Date();
 	dateMinusInterval.setMinutes(dateMinusInterval.getMinutes() - 5);
@@ -73,33 +64,35 @@ function lock(): boolean {
 	// the unlocked control, and locking occurs in the same update's modifier.
 	// All other simultaneous callers will get false back from the update.
 	return (
-		collection.update(
-			{
-				_id: 'control',
-				$or: [
-					{
-						locked: false,
-					},
-					{
-						lockedAt: {
-							$lt: dateMinusInterval,
+		(
+			await Migrations.updateMany(
+				{
+					_id: 'control',
+					$or: [
+						{
+							locked: false,
 						},
-					},
-					{
-						buildAt: {
-							$ne: build,
+						{
+							lockedAt: {
+								$lt: dateMinusInterval,
+							},
 						},
-					},
-				],
-			},
-			{
-				$set: {
-					locked: true,
-					lockedAt: date,
-					buildAt: build,
+						{
+							buildAt: {
+								$ne: build,
+							},
+						},
+					],
 				},
-			},
-		) === 1
+				{
+					$set: {
+						locked: true,
+						lockedAt: date,
+						buildAt: build,
+					},
+				},
+			)
+		).matchedCount === 1
 	);
 }
 
@@ -187,7 +180,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	// get latest version
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
 
-	if (!lock()) {
+	if (!(await lock())) {
 		const msg = `Not migrating, control is locked. Attempt ${currentAttempt}/${maxAttempts}`;
 		if (currentAttempt <= maxAttempts) {
 			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
