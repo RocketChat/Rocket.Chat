@@ -15,6 +15,7 @@ export class AppsConverterService extends ServiceClass implements IAppsConverter
 
 	constructor() {
 		super();
+
 		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 

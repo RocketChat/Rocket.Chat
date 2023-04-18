@@ -3,7 +3,7 @@ import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFil
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
-import type { IAppsEngineService } from './types/IAppsEngineService';
+import type { IAppsEngineService, AppsEngineAppResult } from './types/IAppsEngineService';
 import type { IPresence } from './types/IPresence';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { ILicense } from './types/ILicense';
@@ -44,7 +44,6 @@ import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import { IAppsApiService } from './types/IAppsApiService';
 import { IAppsManagerService } from './types/IAppsManagerService';
-import { IAppsService } from './types/IAppsService';
 import { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import { IAppsConverterService } from './types/IAppsConverterService';
@@ -67,8 +66,8 @@ export {
 	IAppsApiService,
 	IAppsConverterService,
 	IAppsEngineService,
+	AppsEngineAppResult,
 	IAppsManagerService,
-	IAppsService,
 	IAppsStatisticsService,
 	IAppsVideoManagerService,
 	IAuthorization,
@@ -131,7 +130,6 @@ export {
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
 export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
-// export const Apps = proxifyWithWait<IAppsService>('apps');
 export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
 export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
