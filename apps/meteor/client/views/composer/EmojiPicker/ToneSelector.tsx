@@ -55,44 +55,6 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='bottom-end'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
-
-			{/* <div className='change-tone'>
-				<a href='#change-tone'>
-					<span className={`current-tone ${currentTone}`}></span>
-				</a>
-				<ul className='tone-selector secondary-background-color'>
-					<li>
-						<a href='#tone' className='tone' data-tone='0'>
-							<span className='tone-0'></span>
-						</a>
-					</li>
-					<li>
-						<a href='#tone' className='tone' data-tone='1'>
-							<span className='tone-1'></span>
-						</a>
-					</li>
-					<li>
-						<a href='#tone' className='tone' data-tone='2'>
-							<span className='tone-2'></span>
-						</a>
-					</li>
-					<li>
-						<a href='#tone' className='tone' data-tone='3'>
-							<span className='tone-3'></span>
-						</a>
-					</li>
-					<li>
-						<a href='#tone' className='tone' data-tone='4'>
-							<span className='tone-4'></span>
-						</a>
-					</li>
-					<li>
-						<a href='#tone' className='tone' data-tone='5'>
-							<span className='tone-5'></span>
-						</a>
-					</li>
-				</ul>
-			</div> */}
 		</>
 	);
 };
