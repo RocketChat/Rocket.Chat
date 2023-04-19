@@ -23,7 +23,7 @@ export interface IAppsManagerService {
 	update(appPackage: Buffer, permissionsGranted: Array<IPermission>, updateOptions?: any): Promise<AppFabricationFulfillment | undefined>;
 	updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer): Promise<void>;
 	enable(appId: string): Promise<boolean | undefined>;
-	disable(appId: string): Promise<boolean | undefined>;
+	disable(appId: string, status?: AppStatus, silent?: boolean): Promise<boolean | undefined>;
 	loadOne(appId: string): Promise<ProxiedApp | undefined>;
 	getOneById(appId: string): ProxiedApp | undefined;
 	getAllActionButtons(): IUIActionButton[];
@@ -39,4 +39,5 @@ export interface IAppsManagerService {
 	): Promise<ISlashCommandPreview | undefined>;
 	commandExecuteCommand(command: string, context: SlashCommandContext): Promise<void>;
 	findLogs(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry> | undefined>;
+	getAppStorageItemById(appId: string): Promise<IAppStorageItem | null>;
 }

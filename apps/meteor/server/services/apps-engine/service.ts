@@ -1,5 +1,5 @@
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
-import { ServiceClassInternal, Apps } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Apps, AppsManager } from '@rocket.chat/core-services';
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -26,53 +26,53 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
 			// if the app already exists in this instance, don't load it again
-			const app = Apps.getManager()?.getOneById(appId);
+			const app = await AppsManager.getOneById(appId);
 
 			if (app) {
 				return;
 			}
 
-			await (Apps.getManager() as any)?.loadOne(appId);
+			await AppsManager.loadOne(appId);
 		});
 
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
-			const app = Apps.getManager()?.getOneById(appId);
+			const app = await AppsManager.getOneById(appId);
 			if (!app) {
 				return;
 			}
 
-			await Apps.getManager()?.removeLocal(appId);
+			await await AppsManager.removeLocal(appId);
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
-			const storageItem = await Apps.getStorage()?.retrieveOne(appId);
+			const storageItem = await AppsManager.getAppStorageItemById(appId);
 			if (!storageItem) {
 				return;
 			}
 
-			const appPackage = await Apps.getAppSourceStorage()?.fetch(storageItem);
+			const appPackage = await Apps.fetchAppSourceStorage(storageItem);
 			if (!appPackage) {
 				return;
 			}
 
-			await Apps.getManager()?.updateLocal(storageItem, appPackage);
+			await await AppsManager.updateLocal(storageItem, appPackage);
 		});
 
 		this.onEvent('apps.statusUpdate', async (appId: string, status: AppStatus): Promise<void> => {
-			const app = Apps.getManager()?.getOneById(appId);
+			const app = await AppsManager.getOneById(appId);
 			if (!app || app.getStatus() === status) {
 				return;
 			}
 
 			if (AppStatusUtils.isEnabled(status)) {
-				await Apps.getManager()?.enable(appId).catch(SystemLogger.error);
+				await AppsManager.enable(appId).catch(SystemLogger.error);
 			} else if (AppStatusUtils.isDisabled(status)) {
-				await Apps.getManager()?.disable(appId, status, true).catch(SystemLogger.error);
+				await AppsManager.disable(appId, status, true).catch(SystemLogger.error);
 			}
 		});
 
 		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
-			const app = Apps.getManager()?.getOneById(appId);
+			const app = await AppsManager.getOneById(appId);
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
 
 			// avoid updating the setting if the value is the same,
@@ -81,27 +81,22 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
-			const appManager = Apps.getManager();
-			if (!appManager) {
-				return;
-			}
-
-			await appManager.getSettingsManager().updateAppSetting(appId, setting as any);
+			await AppsManager.updateAppSetting(appId, setting as any);
 		});
 	}
 
-	isInitialized(): boolean {
+	async isInitialized(): Promise<boolean> {
 		return Apps.isInitialized();
 	}
 
-	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
-		return Apps.getManager()
-			?.get(query)
-			.map((app) => app.getApp().getInfo());
+	async getApps(query: IGetAppsFilter): Promise<Array<IAppInfo | undefined>> {
+		const proxiedApps = await AppsManager.get(query);
+
+		return proxiedApps.map((app) => app?.getApp()?.getInfo());
 	}
 
 	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
-		const app = Apps.getManager()?.getOneById(appId);
+		const app = await AppsManager.getOneById(appId);
 
 		if (!app) {
 			return;

@@ -38,8 +38,8 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 		return this.apps.getManager()?.enable(appId);
 	}
 
-	async disable(appId: string): Promise<boolean | undefined> {
-		return this.apps.getManager()?.disable(appId);
+	async disable(appId: string, status?: AppStatus, silent?: boolean): Promise<boolean | undefined> {
+		return this.apps.getManager()?.disable(appId, status, silent);
 	}
 
 	get(filter?: IGetAppsFilter | undefined): ProxiedApp[] {
@@ -112,5 +112,9 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 
 	async findLogs(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry> | undefined> {
 		return this.apps.getManager()?.getLogStorage().find(query, options);
+	}
+
+	async getStorageItemById(id: string): Promise<IAppStorageItem | null> {
+		return this.apps.getManager()?.getStorage().retrieveOne(id) ?? null;
 	}
 }
