@@ -1,5 +1,5 @@
 declare module 'xml-encryption' {
-	export interface IDecryptOptions {
+	interface IDecryptOptions {
 		disallowDecryptionWithInsecureAlgorithm?: boolean;
 		warnInsecureAlgorithm?: boolean;
 		key: string;
@@ -8,7 +8,7 @@ declare module 'xml-encryption' {
 	export function decrypt(xml: string | Element | Document, options: IDecryptOptions, callback: (err: Error, result: any) => void): string;
 	export function decryptKeyInfo(doc: string | Element | Document, options: IDecryptOptions): string;
 
-	export interface IEncryptOptions {
+	interface IEncryptOptions {
 		rsa_pub: string;
 		pem: Buffer | string;
 		disallowEncryptionWithInsecureAlgorithm: boolean;

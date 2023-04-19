@@ -1,17 +1,17 @@
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isURL } from '../../../lib/utils/isURL';
+import { ltrim, rtrim, trim } from '../../../lib/utils/stringUtils';
 import { settings } from '../../settings';
 
 function getCloudUrl(path, _site_url, cloudRoute, cloudParams = {}) {
 	const cloudBaseUrl = (settings.get('DeepLink_Url') || '').replace(/\/+$/, '');
 
-	const siteUrl = s.rtrim(_site_url, '/');
+	const siteUrl = rtrim(_site_url, '/');
 
 	// Remove the protocol
 	const host = siteUrl.replace(/https?\:\/\//i, '');
-	path = s.ltrim(path, '/');
+	path = ltrim(path, '/');
 
 	Object.assign(cloudParams, {
 		host,
@@ -38,14 +38,14 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	path = _path;
 	const query = _query ? `?${_query}` : '';
 
-	const siteUrl = s.rtrim(s.trim(_site_url || ''), '/');
-	const cloudRoute = s.trim(cloud_route || '');
-	const cdnPrefix = s.rtrim(s.trim(_cdn_prefix || ''), '/');
-	const pathPrefix = s.rtrim(s.trim(_root_url_path_prefix || ''), '/');
+	const siteUrl = rtrim(trim(_site_url || ''), '/');
+	const cloudRoute = trim(cloud_route || '');
+	const cdnPrefix = rtrim(trim(_cdn_prefix || ''), '/');
+	const pathPrefix = rtrim(trim(_root_url_path_prefix || ''), '/');
 
-	const finalPath = s.ltrim(s.trim(path), '/');
+	const finalPath = ltrim(trim(path), '/');
 
-	const url = s.rtrim(`${pathPrefix}/${finalPath}`, '/') + query;
+	const url = rtrim(`${pathPrefix}/${finalPath}`, '/') + query;
 
 	if (cloud) {
 		const cloudParams = cloud_params || {};

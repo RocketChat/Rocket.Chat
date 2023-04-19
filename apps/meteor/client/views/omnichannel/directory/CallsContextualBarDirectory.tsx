@@ -7,9 +7,9 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { FormSkeleton } from './Skeleton';
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
+import { FormSkeleton } from './components/FormSkeleton';
 
 const CallsContextualBarDirectory: FC = () => {
 	const directoryRoute = useRoute('omnichannel-directory');

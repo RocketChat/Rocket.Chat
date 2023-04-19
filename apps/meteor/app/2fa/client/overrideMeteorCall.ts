@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { t } from '../../utils/client';
 import { process2faReturn, process2faAsyncReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 const { call, callAsync } = Meteor;
 
@@ -24,8 +25,8 @@ const callWithTotp =
 		});
 
 const callWithoutTotp = (methodName: string, args: unknown[], callback: Callback) => (): unknown =>
-	call(methodName, ...args, (error: unknown, result: unknown): void => {
-		process2faReturn({
+	call(methodName, ...args, async (error: unknown, result: unknown): Promise<void> => {
+		await process2faReturn({
 			error,
 			result,
 			onCode: callWithTotp(methodName, args, callback),
@@ -43,6 +44,7 @@ const callAsyncWithTotp =
 			return result;
 		} catch (error: unknown) {
 			if (isTotpInvalidError(error)) {
+				dispatchToastMessage({ type: 'error', message: t('TOTP Invalid [totp-invalid]') });
 				throw new Error(twoFactorMethod === 'password' ? t('Invalid_password') : t('Invalid_two_factor_code'));
 			}
 

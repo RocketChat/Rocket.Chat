@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Team } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { validateName } from './validateName';
@@ -16,9 +16,9 @@ settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 });
 
 const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
-	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(escapeRegExp(username))));
+	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
-export const checkUsernameAvailability = function (username: string): boolean {
+export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
@@ -27,18 +27,18 @@ export const checkUsernameAvailability = function (username: string): boolean {
 	}
 
 	// Make sure no users are using this username
-	const existingUser = Meteor.users.findOne(
+	const existingUser = await Users.findOne(
 		{
 			username: toRegExp(username),
 		},
-		{ fields: { _id: 1 } },
+		{ projection: { _id: 1 } },
 	);
 	if (existingUser) {
 		return false;
 	}
 
 	// Make sure no teams are using this username
-	const existingTeam = Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
+	const existingTeam = await Team.getOneByName(toRegExp(username), { projection: { _id: 1 } });
 	if (existingTeam) {
 		return false;
 	}

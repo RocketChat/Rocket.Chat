@@ -31,7 +31,7 @@ const getIdentity = function (accessToken, fields, secret) {
 	}
 };
 
-registerAccessTokenService('facebook', function (options) {
+registerAccessTokenService('facebook', async function (options) {
 	check(
 		options,
 		Match.ObjectIncluding({

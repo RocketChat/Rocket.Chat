@@ -1,5 +1,5 @@
+import { SHA256 } from '@rocket.chat/sha256';
 import { Meteor } from 'meteor/meteor';
-import { SHA256 } from 'meteor/sha';
 
 import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
@@ -7,7 +7,7 @@ import { isTotpRequiredError } from './utils';
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
-type TwoFactorMethod = typeof twoFactorMethods[number];
+type TwoFactorMethod = (typeof twoFactorMethods)[number];
 
 const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
@@ -33,7 +33,7 @@ function assertModalProps(props: {
 	}
 }
 
-export function process2faReturn({
+export async function process2faReturn({
 	error,
 	result,
 	originalCallback,
@@ -48,7 +48,7 @@ export function process2faReturn({
 	};
 	onCode: (code: string, method: string) => void;
 	emailOrUsername: string | null | undefined;
-}): void {
+}): Promise<void> {
 	if (!isTotpRequiredError(error) || !hasRequiredTwoFactorMethod(error)) {
 		originalCallback(error, result);
 		return;
@@ -83,11 +83,11 @@ export async function process2faAsyncReturn({
 	emailOrUsername,
 }: {
 	promise: Promise<unknown>;
-	onCode: (code: string, method: string) => void;
+	onCode: (code: string, method: string) => unknown | Promise<unknown>;
 	emailOrUsername: string | null | undefined;
 }): Promise<unknown> {
 	// if the promise is rejected, we need to check if it's a 2fa error
-	return promise.catch((error) => {
+	return promise.catch(async (error) => {
 		// if it's not a 2fa error, we reject the promise
 		if (!isTotpRequiredError(error) || !hasRequiredTwoFactorMethod(error)) {
 			throw error;

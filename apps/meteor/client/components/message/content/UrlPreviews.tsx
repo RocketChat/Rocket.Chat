@@ -1,19 +1,16 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageOembedMaxWidth } from '../../../views/room/contexts/MessageContext';
+import { useOembedLayout } from '../hooks/useOembedLayout';
 import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';
 import OEmbedResolver from './urlPreviews/OEmbedResolver';
 import UrlPreview from './urlPreviews/UrlPreview';
 import type { UrlPreviewMetadata } from './urlPreviews/UrlPreviewMetadata';
 import { buildImageURL } from './urlPreviews/buildImageURL';
 
-type OembedUrlLegacy = {
-	url: string;
-	meta: Record<string, string>;
-	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
-};
+type OembedUrlLegacy = Required<IMessage>['urls'][0];
 
 type PreviewTypes = 'headers' | 'oembed';
 
@@ -22,7 +19,7 @@ type PreviewData = {
 	data: OEmbedPreviewMetadata | UrlPreviewMetadata;
 };
 
-const normalizeMeta = ({ url, meta }: OembedUrlLegacy): OEmbedPreviewMetadata => {
+const normalizeMeta = ({ url, meta }: { url: string; meta: Record<string, string> }): OEmbedPreviewMetadata => {
 	const image = meta.ogImage || meta.twitterImage || meta.msapplicationTileImage || meta.oembedThumbnailUrl || meta.oembedThumbnailUrl;
 
 	const imageHeight = meta.ogImageHeight || meta.oembedHeight || meta.oembedThumbnailHeight;
@@ -82,12 +79,14 @@ const isValidPreviewMeta = ({
 }: OEmbedPreviewMetadata): boolean =>
 	!((!siteName || !siteUrl) && (!authorName || !authorUrl) && !title && !description && !image && !html);
 
+const hasMeta = (url: OembedUrlLegacy): url is { url: string; meta: Record<string, string> } => !!url.meta && !!Object.values(url.meta);
+
 const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
 	if (!url.headers && !url.meta) {
 		return false;
 	}
 
-	const data = url.meta && Object.values(url.meta) && normalizeMeta(url);
+	const data = hasMeta(url) ? normalizeMeta(url) : undefined;
 	if (data && isValidPreviewMeta(data)) {
 		return { type: 'oembed', data };
 	}
@@ -110,7 +109,7 @@ const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is
 type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
 
 const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
-	const oembedWidth = useMessageOembedMaxWidth();
+	const { maxWidth: oembedMaxWidth } = useOembedLayout();
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
@@ -118,13 +117,13 @@ const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
+						<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
 							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
+					<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
 						<UrlPreview {...data} />
 					</MessageBlock>
 				);

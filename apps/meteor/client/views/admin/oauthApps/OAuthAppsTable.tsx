@@ -1,17 +1,23 @@
 import { Table } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { value: data } = useEndpointData('/v1/oauth-apps.list');
+	const uid = { uid: useUserId() || '' };
+
+	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
+	const { data } = useQuery(['oauth-apps', { uid }], async () => {
+		const oauthApps = await getOauthApps(uid);
+		return oauthApps;
+	});
 
 	const router = useRoute('admin-oauth-apps');
 

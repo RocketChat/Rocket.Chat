@@ -1,4 +1,5 @@
-import { RegisteredServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
+import { RegisterServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState } from 'react';
 
@@ -10,18 +11,18 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const {
-		goToPreviousStep,
-		currentStep,
-		setSetupWizardData,
-		setupWizardData: { adminData },
-		registerServer,
-		maxSteps,
-		completeSetupWizard,
-	} = useSetupWizardContext();
+	const { goToPreviousStep, currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } =
+		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
-	const handleRegister: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
+	const router = useRoute('cloud');
+
+	const handleRegisterOffline: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async () => {
+		await completeSetupWizard();
+		router.push({}, { register: 'true' });
+	};
+
+	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data) => {
 		if (data.registerType !== 'standalone') {
 			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
 			await registerServer(data);
@@ -46,13 +47,13 @@ const RegisterServerStep = (): ReactElement => {
 	}
 
 	return (
-		<RegisteredServerPage
-			onClickContinue={(): void => setServerOption(SERVER_OPTIONS.STANDALONE)}
+		<RegisterServerPage
+			onClickRegisterLater={(): void => setServerOption(SERVER_OPTIONS.STANDALONE)}
 			onBackButtonClick={goToPreviousStep}
 			stepCount={maxSteps}
-			onSubmit={handleRegister}
+			onSubmit={offline ? handleRegisterOffline : handleRegister}
 			currentStep={currentStep}
-			initialValues={{ email: adminData.email }}
+			offline={offline}
 		/>
 	);
 };
