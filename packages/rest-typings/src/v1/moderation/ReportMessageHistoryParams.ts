@@ -1,16 +1,12 @@
-import Ajv from 'ajv';
-// ajv for params { userId: string; sort?: string; selector?: string; count?: number }
+import { ajv } from '../Ajv';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type ReportMessageHistoryParams = {
+type ReportMessageHistoryParams = {
 	userId: string;
-	sort?: string;
 	selector?: string;
-	count?: number;
 };
+
+export type ReportMessageHistoryParamsGET = PaginatedRequest<ReportMessageHistoryParams>;
 
 const ajvParams = {
 	type: 'object',
@@ -18,18 +14,12 @@ const ajvParams = {
 		userId: {
 			type: 'string',
 		},
-		sort: {
-			type: 'string',
-		},
 		selector: {
 			type: 'string',
-		},
-		count: {
-			type: 'number',
 		},
 	},
 	required: ['userId'],
 	additionalProperties: false,
 };
 
-export const isReportMessageHistoryParams = ajv.compile<ReportMessageHistoryParams>(ajvParams);
+export const isReportMessageHistoryParams = ajv.compile<ReportMessageHistoryParamsGET>(ajvParams);

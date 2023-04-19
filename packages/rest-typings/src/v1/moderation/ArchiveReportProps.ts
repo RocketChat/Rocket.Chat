@@ -1,18 +1,15 @@
 import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({ coerceTypes: true });
+import { ajv } from '../Ajv';
 
-// Define the type of the request body of call to hide the reported message
-
-export type ArchiveReportProps = {
+export type ArchiveReportPropsPOST = {
 	userId?: IUser['_id'];
 	msgId?: IModerationReport['message']['_id'];
 	actionTaken?: string;
 	reasonForHiding?: string;
 };
 
-const ArchiveReportPropsSchema = {
+const archiveReportPropsSchema = {
 	type: 'object',
 	properties: {
 		userId: {
@@ -34,4 +31,4 @@ const ArchiveReportPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isArchiveReportProps = ajv.compile<ArchiveReportProps>(ArchiveReportPropsSchema);
+export const isArchiveReportProps = ajv.compile<ArchiveReportPropsPOST>(archiveReportPropsSchema);

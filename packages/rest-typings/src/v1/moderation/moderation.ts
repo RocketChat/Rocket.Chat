@@ -2,17 +2,17 @@ import type { IModerationReport, IModerationAudit } from '@rocket.chat/core-typi
 import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
-import type { ArchiveReportProps } from './ArchiveReportProps';
-import type { ReportHistoryProps } from './ReportHistoryProps';
-import type { ReportMessageHistoryParams } from './ReportMessageHistoryParams';
-import type { ModerationDeleteMsgHistoryParams } from './ModerationDeleteMsgHistoryParams';
-import type { ReportsByMsgIdParams } from './ReportsByMsgIdParams';
+import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
+import type { ReportHistoryPropsGET } from './ReportHistoryProps';
+import type { ReportMessageHistoryParamsGET } from './ReportMessageHistoryParams';
+import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
+import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
 import type { ReportInfoParams } from './ReportInfoParams';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
 	'/v1/moderation.getReports': {
-		GET: (params: ReportHistoryProps) => PaginatedResult<{
+		GET: (params: ReportHistoryPropsGET) => PaginatedResult<{
 			reports: IModerationAudit[];
 			count: number;
 			offset: number;
@@ -20,20 +20,20 @@ export type ModerationEndpoints = {
 		}>;
 	};
 	'/v1/moderation.user.getMessageHistory': {
-		GET: (params: ReportMessageHistoryParams) => PaginatedResult<{
+		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
 			messages: Pick<IModerationReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteMessageHistory': {
-		POST: (params: ModerationDeleteMsgHistoryParams) => void;
+		POST: (params: ModerationDeleteMsgHistoryParamsPOST) => void;
 	};
 	'/v1/moderation.markChecked': {
-		POST: (params: ArchiveReportProps) => {
+		POST: (params: ArchiveReportPropsPOST) => {
 			update: Document | UpdateResult;
 		};
 	};
 	'/v1/moderation.reportsByMessage': {
-		GET: (params: ReportsByMsgIdParams) => PaginatedResult<{
+		GET: (params: ReportsByMsgIdParamsGET) => PaginatedResult<{
 			reports: Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];
 		}>;
 	};

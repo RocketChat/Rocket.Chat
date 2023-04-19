@@ -48,7 +48,6 @@ API.v1.addRoute(
 	},
 );
 
-// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.user.getMessageHistory',
 	{
@@ -64,12 +63,12 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId as string, { projection: { _id: 1 } });
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 			if (!user) {
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort });
+			const { cursor, totalCount } = ModerationReports.findUserMessages(userId, '', { offset, count, sort });
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -83,7 +82,6 @@ API.v1.addRoute(
 	},
 );
 
-// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.user.deleteMessageHistory',
 	{
@@ -168,7 +166,6 @@ API.v1.addRoute(
 	},
 );
 
-// TODO add ajv validation
 API.v1.addRoute(
 	'moderation.reportsByMessage',
 	{
@@ -184,11 +181,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { selector = '' } = this.queryParams;
 
-			if (!msgId) {
-				return API.v1.failure('The required "msgId" query param is missing.');
-			}
-
-			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId as string, selector, { count, sort, offset });
+			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId, selector, { count, sort, offset });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -202,7 +195,6 @@ API.v1.addRoute(
 	},
 );
 
-// TODO add validation
 API.v1.addRoute(
 	'moderation.getReportInfo',
 	{
@@ -213,10 +205,6 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { reportId } = this.queryParams;
-
-			if (!reportId) {
-				return API.v1.failure('"reportId" is a required parameter');
-			}
 
 			const report = await ModerationReports.findOneById(reportId);
 

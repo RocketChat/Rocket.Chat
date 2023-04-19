@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type ModerationDeleteMsgHistoryParams = {
+export type ModerationDeleteMsgHistoryParamsPOST = {
 	userId: string;
 	reasonForHiding?: string;
 };
@@ -23,4 +19,4 @@ const ajvParams = {
 	additionalProperties: false,
 };
 
-export const isModerationDeleteMsgHistoryParams = ajv.compile<ModerationDeleteMsgHistoryParams>(ajvParams);
+export const isModerationDeleteMsgHistoryParams = ajv.compile<ModerationDeleteMsgHistoryParamsPOST>(ajvParams);

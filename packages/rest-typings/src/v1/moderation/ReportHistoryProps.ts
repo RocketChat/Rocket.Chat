@@ -1,43 +1,24 @@
-import Ajv from 'ajv';
-
+import { ajv } from '../Ajv';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv({ coerceTypes: true });
-
-// Define the type of the request body of call to fetch the reported messages
-
-export type ReportHistoryProps = PaginatedRequest<{
+type ReportHistoryProps = {
 	latest?: string;
 	oldest?: string;
-	count?: number;
-	offset?: number;
-	sort?: string;
 	selector?: string;
-}>;
+};
+
+export type ReportHistoryPropsGET = PaginatedRequest<ReportHistoryProps>;
 
 const reportHistoryPropsSchema = {
-	type: 'object',
 	properties: {
 		latest: {
 			type: 'string',
-			minLength: 1,
+			format: 'date',
 			nullable: true,
 		},
 		oldest: {
 			type: 'string',
-			minLength: 1,
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
+			format: 'date',
 			nullable: true,
 		},
 		selector: {
@@ -48,4 +29,4 @@ const reportHistoryPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isReportHistoryProps = ajv.compile<ReportHistoryProps>(reportHistoryPropsSchema);
+export const isReportHistoryProps = ajv.compile<ReportHistoryPropsGET>(reportHistoryPropsSchema);

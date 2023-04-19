@@ -1,15 +1,12 @@
-import Ajv from 'ajv';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from '../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type ReportsByMsgIdParams = {
+type ReportsByMsgIdParams = {
 	msgId: string;
-	sort?: string;
 	selector?: string;
-	count?: number;
 };
+
+export type ReportsByMsgIdParamsGET = PaginatedRequest<ReportsByMsgIdParams>;
 
 const schema = {
 	type: 'object',
@@ -17,18 +14,12 @@ const schema = {
 		msgId: {
 			type: 'string',
 		},
-		sort: {
-			type: 'string',
-		},
 		selector: {
 			type: 'string',
-		},
-		count: {
-			type: 'number',
 		},
 	},
 	required: ['msgId'],
 	additionalProperties: false,
 };
 
-export const isReportsByMsgIdParams = ajv.compile<ReportsByMsgIdParams>(schema);
+export const isReportsByMsgIdParams = ajv.compile<ReportsByMsgIdParamsGET>(schema);
