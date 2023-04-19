@@ -4,9 +4,8 @@ import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
 import type { Request, Response } from 'express';
 import type { IUser } from '@rocket.chat/core-typings';
-import { OAuthApps } from '@rocket.chat/models';
+import { OAuthApps, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
@@ -26,10 +25,10 @@ function getAccessToken(accessToken: string): any {
 	});
 }
 
-export function oAuth2ServerAuth(partialRequest: {
+export async function oAuth2ServerAuth(partialRequest: {
 	headers: Record<string, any>;
 	query: Record<string, any>;
-}): { user: IUser } | undefined {
+}): Promise<{ user: IUser } | undefined> {
 	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
 	const queryToken = partialRequest.query.access_token;
 
@@ -40,7 +39,7 @@ export function oAuth2ServerAuth(partialRequest: {
 		return;
 	}
 
-	const user = Users.findOne(accessToken.userId);
+	const user = await Users.findOneById(accessToken.userId);
 
 	if (user == null) {
 		return;
@@ -54,7 +53,7 @@ oauth2server.routes.disable('x-powered-by');
 
 WebApp.connectHandlers.use(oauth2server.app);
 
-oauth2server.routes.get('/oauth/userinfo', function (req: Request, res: Response) {
+oauth2server.routes.get('/oauth/userinfo', async function (req: Request, res: Response) {
 	if (req.headers.authorization == null) {
 		return res.sendStatus(401).send('No token');
 	}
@@ -63,15 +62,15 @@ oauth2server.routes.get('/oauth/userinfo', function (req: Request, res: Response
 	if (token == null) {
 		return res.sendStatus(401).send('Invalid Token');
 	}
-	const user = Users.findOneById(token.userId);
+	const user = await Users.findOneById(token.userId);
 	if (user == null) {
 		return res.sendStatus(401).send('Invalid Token');
 	}
 	return res.send({
 		sub: user._id,
 		name: user.name,
-		email: user.emails[0].address,
-		email_verified: user.emails[0].verified,
+		email: user.emails?.[0].address,
+		email_verified: user.emails?.[0].verified,
 		department: '',
 		birthdate: '',
 		preffered_username: user.username,
@@ -80,6 +79,6 @@ oauth2server.routes.get('/oauth/userinfo', function (req: Request, res: Response
 	});
 });
 
-API.v1.addAuthMethod(function () {
+API.v1.addAuthMethod(async function () {
 	return oAuth2ServerAuth(this.request);
 });

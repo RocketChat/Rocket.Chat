@@ -13,12 +13,20 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
-	get messagePopUpItems(): Locator {
-		return this.page.locator('.message-popup-items');
+	get messagePopupUsers(): Locator {
+		return this.page.locator('role=menu[name="People"]');
 	}
 
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
+	}
+
+	get lastUserMessageNotThread(): Locator {
+		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
+	}
+
+	get lastUserMessageBody(): Locator {
+		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
 	get lastUserMessageNotSequential(): Locator {
@@ -29,12 +37,34 @@ export class HomeContent {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
 	}
 
+	get btnJoinRoom(): Locator {
+		return this.page.locator('//button[contains(text(), "Join")]');
+	}
+
+	async joinRoom(): Promise<void> {
+		await this.btnJoinRoom.click();
+	}
+
+	async joinRoomIfNeeded(): Promise<void> {
+		if (await this.inputMessage.isEnabled()) {
+			return;
+		}
+		if (!(await this.btnJoinRoom.isVisible())) {
+			return;
+		}
+		await this.joinRoom();
+	}
+
 	async sendMessage(text: string): Promise<void> {
+		await this.joinRoomIfNeeded();
+		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.joinRoomIfNeeded();
+		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
@@ -78,6 +108,14 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
+	get lastThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+	}
+
+	get lastThreadMessagePreviewText(): Locator {
+		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+	}
+
 	get btnOptionEditMessage(): Locator {
 		return this.page.locator('[data-qa-id="edit-message"]');
 	}
@@ -99,7 +137,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+		return this.page.locator('[data-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -128,6 +166,14 @@ export class HomeContent {
 
 	get btnSendTranscript(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
+	get btnSendTranscriptToEmail(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Send via email' });
+	}
+
+	get btnSendTranscriptAsPDF(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
 	}
 
 	get btnCannedResponses(): Locator {
@@ -189,6 +235,10 @@ export class HomeContent {
 			.click();
 	}
 
+	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
+		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
+	}
+
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
@@ -198,7 +248,7 @@ export class HomeContent {
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rcx-button--primary >> text=Resume');
+		return this.page.locator('button.rcx-button--primary >> text="Resume"');
 	}
 
 	get btnOnHold(): Locator {

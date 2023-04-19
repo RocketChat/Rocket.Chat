@@ -1,21 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import './methods';
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
-import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
-import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(function () {
+Meteor.startup(async function () {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
 	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
@@ -40,13 +37,13 @@ Meteor.startup(function () {
 		});
 	});
 
-	const { workspaceRegistered } = retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
 		try {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
-			if (!Promise.await(connectWorkspace(process.env.REG_TOKEN))) {
+			if (!(await connectWorkspace(process.env.REG_TOKEN))) {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 
@@ -57,4 +54,4 @@ Meteor.startup(function () {
 	}
 });
 
-export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };
+export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope };

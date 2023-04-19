@@ -20,6 +20,8 @@ function UserStatus({ small, status, statusText, ...props }: UserStatusProps): R
 			return <StatusBullet size={size} status={status} title={statusText || t('Away')} {...props} />;
 		case 'offline':
 			return <StatusBullet size={size} status={status} title={statusText || t('Offline')} {...props} />;
+		case 'disabled':
+			return <StatusBullet size={size} status={status} title={statusText || t('Disabled')} {...props} />;
 		default:
 			return <StatusBullet size={size} title={t('Loading')} {...props} />;
 	}

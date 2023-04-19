@@ -22,6 +22,7 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				overflow='hidden'
 				aria-labelledby='PageHeader-title'
 				bg={background}
+				color='default'
 				{...props}
 			/>
 		</PageContext.Provider>

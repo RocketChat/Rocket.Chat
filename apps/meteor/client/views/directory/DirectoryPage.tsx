@@ -4,9 +4,9 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../components/Page';
-import ChannelsTab from './ChannelsTab';
-import TeamsTab from './TeamsTab';
-import UsersTab from './UsersTab';
+import ChannelsTab from './tabs/channels/ChannelsTab';
+import TeamsTab from './tabs/teams/TeamsTab';
+import UsersTab from './tabs/users/UsersTab';
 
 const DirectoryPage = (): ReactElement => {
 	const t = useTranslation();

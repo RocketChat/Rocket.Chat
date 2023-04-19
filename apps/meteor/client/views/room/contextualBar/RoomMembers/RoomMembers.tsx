@@ -17,6 +17,7 @@ type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
+	isFederated?: boolean;
 	loading: boolean;
 	text: string;
 	type: string;
@@ -52,6 +53,7 @@ const RoomMembers = ({
 	rid,
 	isTeam,
 	isDirect,
+	isFederated,
 	reload,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
@@ -147,7 +149,7 @@ const RoomMembers = ({
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<VerticalBar.Footer>
 					<ButtonGroup stretch>
-						{onClickInvite && (
+						{!isFederated && onClickInvite && (
 							<Button onClick={onClickInvite} width='50%'>
 								<Icon name='link' size='x20' mie='x4' />
 								{t('Invite_Link')}

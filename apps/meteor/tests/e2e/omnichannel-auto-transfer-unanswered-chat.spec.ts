@@ -1,18 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { IS_EE } from './config/constants';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeChannel };
-};
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
@@ -24,22 +17,29 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		// make "user-1" & "user-2" an agent
-		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		expect(statusCode).toBe(200);
-		statusCode = (await api.post('/livechat/users/agent', { username: 'user2' })).status();
-		expect(statusCode).toBe(200);
+		await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
-		// turn on auto selection routing
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		expect(statusCode).toBe(200);
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent1 = { page, poHomeChannel: new HomeChannel(page) };
 
-		// make auto close on-hold chats timeout to be 5 seconds
-		statusCode = (await api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 })).status();
-		expect(statusCode).toBe(200);
+		const { page: page2 } = await createAuxContext(browser, Users.user2);
+		agent2 = { page: page2, poHomeChannel: new HomeChannel(page2) };
+	});
 
-		agent1 = await createAuxContext(browser, 'user1-session.json');
-		agent2 = await createAuxContext(browser, 'user2-session.json');
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent1.page.close();
+		await agent2.page.close();
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -69,19 +69,5 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent1.page.waitForTimeout(7000);
 
 		await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
-	});
-
-	test.afterAll(async ({ api }) => {
-		// delete "user-1" from agents
-		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		expect(statusCode).toBe(200);
-
-		// delete "user-2" from agents
-		statusCode = (await api.delete('/livechat/users/agent/user2')).status();
-		expect(statusCode).toBe(200);
-
-		// reset auto close on-hold chats timeout
-		statusCode = (await api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 })).status();
-		expect(statusCode).toBe(200);
 	});
 });

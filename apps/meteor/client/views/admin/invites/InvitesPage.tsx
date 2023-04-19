@@ -21,8 +21,20 @@ const InvitesPage = (): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const getInvitesList = useEndpoint('GET', '/v1/listInvites');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['invites'], () => getInvitesList());
+	const getInvites = useEndpoint('GET', '/v1/listInvites');
+
+	const { data, isLoading, refetch, isSuccess, isError } = useQuery(
+		['invites'],
+		async () => {
+			const invites = await getInvites();
+			return invites;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const onRemove = (removeInvite: () => Promise<boolean>): void => {
 		const confirmRemove = async (): Promise<void> => {

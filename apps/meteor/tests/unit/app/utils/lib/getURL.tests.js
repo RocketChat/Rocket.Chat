@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import s from 'underscore.string';
+
+import { ltrim, rtrim } from '../../../../../lib/utils/stringUtils';
 
 const { _getURL } = proxyquire.noCallThru().load('../../../../../app/utils/lib/getURL', {
 	'meteor/meteor': {
@@ -38,7 +39,7 @@ const testPaths = (o, _processPath) => {
 };
 
 const getCloudUrl = (_site_url, path) => {
-	path = s.ltrim(path, '/');
+	path = ltrim(path, '/');
 	const url = `https://go.rocket.chat/?host=${encodeURIComponent(_site_url.replace(/https?:\/\//, ''))}&path=${encodeURIComponent(path)}`;
 	if (_site_url.includes('http://')) {
 		return `${url}&secure=no`;
@@ -47,7 +48,7 @@ const getCloudUrl = (_site_url, path) => {
 };
 
 const testCases = (options) => {
-	const _site_url = s.rtrim(options._site_url, '/');
+	const _site_url = rtrim(options._site_url, '/');
 
 	if (!options.cloud) {
 		if (options._cdn_prefix === '') {

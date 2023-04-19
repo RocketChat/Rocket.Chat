@@ -4,7 +4,7 @@ import { UAParser } from 'ua-parser-js';
 import type { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import * as Mailer from '../../../../app/mailer';
+import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
@@ -52,7 +52,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 				name,
 				username,
 				browserInfo: `${browser.name} ${browser.version}`,
-				osInfo: `${os.name} ${os.version || ''}`,
+				osInfo: `${os.name}`,
 				deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
 					cpu.architecture || ''
 				}`,
@@ -65,17 +65,17 @@ export const listenSessionLogin = async (): Promise<void> => {
 				case 'tablet':
 				case 'smarttv':
 					mailData.browserInfo = `${browser.name} ${browser.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = `${device.type} ${device.vendor || ''} ${device.model || ''} ${cpu.architecture || ''}`;
 					break;
 				case 'mobile-app':
 					mailData.browserInfo = `Rocket.Chat App ${app?.bundle || app?.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = 'Mobile App';
 					break;
 				case 'desktop-app':
 					mailData.browserInfo = `Rocket.Chat ${app?.name || browser.name} ${app?.bundle || app?.version || browser.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = `Desktop App ${cpu.architecture || ''}`;
 					break;
 				default:
@@ -85,12 +85,12 @@ export const listenSessionLogin = async (): Promise<void> => {
 
 			try {
 				const userReceiveLoginEmailPreference = settings.get('Device_Management_Allow_Login_Email_preference')
-					? getUserPreference(userId, 'receiveLoginDetectionEmail', true)
+					? await getUserPreference(userId, 'receiveLoginDetectionEmail', true)
 					: true;
 				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
 
 				if (shouldSendLoginEmail) {
-					Mailer.send({
+					await Mailer.send({
 						to: `${name} <${email}>`,
 						from: Accounts.emailTemplates.from,
 						subject: settings.get('Device_Management_Email_Subject'),
@@ -98,7 +98,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 						data: mailData,
 					});
 				}
-			} catch ({ message }) {
+			} catch ({ message }: any) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'listenSessionLogin',
 					message,

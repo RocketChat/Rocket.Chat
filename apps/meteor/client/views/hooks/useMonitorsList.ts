@@ -39,7 +39,7 @@ export const useMonitorsList = (
 				items: monitors.map((members: any) => {
 					members._updatedAt = new Date(members._updatedAt);
 					members.label = members.username;
-					members.value = { value: members._id, label: members.username };
+					members.value = members._id;
 					return members;
 				}),
 				itemCount: total,
