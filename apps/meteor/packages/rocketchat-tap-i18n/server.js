@@ -1,22 +1,3 @@
-export const TAPi18n = {
-	__(text) {
-		return text;
-	},
-};
+import { TAPi18nServer } from './lib/tap_i18n/tap_i18n-server.coffee';
 
-export const TAPi18next = {
-	addResourceBundle(language, project, scopedTranslations) {},
-	exists(key) {
-		return true;
-	},
-	init() {},
-	lng() {
-		return 'en';
-	},
-	setLng(lang) {
-		return true;
-	},
-	t(key) {
-		return key;
-	},
-};
+export const TAPi18n = new TAPi18nServer();

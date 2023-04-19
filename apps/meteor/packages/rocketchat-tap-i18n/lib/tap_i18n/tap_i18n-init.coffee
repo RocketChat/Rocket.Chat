@@ -1,0 +1,1 @@
+TAPi18n = new TAPi18n()
