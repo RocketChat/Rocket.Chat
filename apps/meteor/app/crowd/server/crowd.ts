@@ -3,13 +3,13 @@ import { SHA256 } from '@rocket.chat/sha256';
 import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { _setRealName } from '../../lib/server';
 import { settings } from '../../settings/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { logger } from './logger';
-import { defaultCronJobs } from '../../utils/server/lib/cron/Cronjobs';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
 
@@ -344,15 +344,15 @@ Meteor.startup(() => {
 	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], async function addCronJobDebounced([data, interval]) {
 		if (data !== true) {
 			logger.info('Disabling CROWD Background Sync');
-			if (await defaultCronJobs.has(jobName)) {
-				await defaultCronJobs.remove(jobName);
+			if (await cronJobs.has(jobName)) {
+				await cronJobs.remove(jobName);
 			}
 			return;
 		}
 		const crowd = new CROWD();
 		if (interval) {
 			logger.info('Enabling CROWD Background Sync');
-			await defaultCronJobs.add(jobName, String(interval), () => crowd.sync());
+			await cronJobs.add(jobName, String(interval), () => crowd.sync());
 		}
 	});
 });

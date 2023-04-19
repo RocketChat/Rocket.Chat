@@ -1,9 +1,10 @@
+import { cronJobs } from '@rocket.chat/cron';
+
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { fetch } from '../../../server/lib/http/fetch';
-import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
@@ -62,4 +63,4 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	}
 };
 
-await defaultCronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());
+await cronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());

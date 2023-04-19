@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
-import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../lib/callbacks';
 import { onLicense } from '../../app/license/server';
@@ -20,22 +20,22 @@ Meteor.startup(async () => {
 			let lastSchedule: string;
 			return async function addCronJobDebounced(): Promise<void> {
 				if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {
-					if (await defaultCronJobs.has(jobName)) {
+					if (await cronJobs.has(jobName)) {
 						logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
-						await defaultCronJobs.remove(jobName);
+						await cronJobs.remove(jobName);
 					}
 					return;
 				}
 
 				const schedule = settings.get<string>(intervalSetting);
 				if (schedule) {
-					if (schedule !== lastSchedule && (await defaultCronJobs.has(jobName))) {
-						await defaultCronJobs.remove(jobName);
+					if (schedule !== lastSchedule && (await cronJobs.has(jobName))) {
+						await cronJobs.remove(jobName);
 					}
 
 					lastSchedule = schedule;
 					logger.info({ msg: 'Enabling LDAP Background Sync', jobName });
-					await defaultCronJobs.add(jobName, schedule, async () => cb());
+					await cronJobs.add(jobName, schedule, cb);
 				}
 			};
 		}

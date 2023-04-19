@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
 import { fetch } from '../lib/http/fetch';
 import type { Logger } from '../lib/logger/Logger';
-import { defaultCronJobs } from '../../app/utils/server/lib/cron/Cronjobs';
 
 async function generateStatistics(logger: Logger): Promise<void> {
 	const cronStatistics: Record<string, any> = await statistics.save();
@@ -50,7 +50,7 @@ export async function statsCron(logger: Logger): Promise<void> {
 		previousValue = value;
 
 		if (value) {
-			await defaultCronJobs.remove(name);
+			await cronJobs.remove(name);
 			return;
 		}
 
@@ -58,6 +58,6 @@ export async function statsCron(logger: Logger): Promise<void> {
 
 		const now = new Date();
 
-		await defaultCronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
+		await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
 	});
 }

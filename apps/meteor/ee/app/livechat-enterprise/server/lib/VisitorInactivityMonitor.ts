@@ -1,12 +1,12 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
-import { defaultCronJobs } from '../../../../../app/utils/server/lib/cron/Cronjobs';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -19,7 +19,7 @@ export class VisitorInactivityMonitor {
 
 	user: IUser;
 
-	private scheduler = defaultCronJobs;
+	private scheduler = cronJobs;
 
 	constructor() {
 		this._started = false;

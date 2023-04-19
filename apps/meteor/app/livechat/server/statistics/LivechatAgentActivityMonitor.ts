@@ -2,9 +2,9 @@ import moment from 'moment';
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { defaultCronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 
 const formatDate = (dateTime = new Date()): { date: number } => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),
@@ -15,7 +15,7 @@ export class LivechatAgentActivityMonitor {
 
 	private _name: string;
 
-	private scheduler = defaultCronJobs;
+	private scheduler = cronJobs;
 
 	constructor() {
 		this._started = false;

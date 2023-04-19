@@ -1,12 +1,11 @@
 import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour, ICronJobs } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import type { BusinessHourCronJob } from './Helper';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -23,11 +22,11 @@ export class BusinessHourManager {
 
 	private behavior: IBusinessHourBehavior;
 
-	private cronJobs: BusinessHourCronJob;
+	private cronJobs: ICronJobs;
 
 	private cronJobsCache: string[] = [];
 
-	constructor(cronJobs: BusinessHourCronJob) {
+	constructor(cronJobs: ICronJobs) {
 		this.cronJobs = cronJobs;
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
@@ -143,7 +142,7 @@ export class BusinessHourManager {
 				const time = moment(hour, 'HH:mm');
 				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
 				this.addToCache(jobName);
-				return this.cronJobs.addBusinessHourJob(jobName, scheduleAt, job);
+				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),
 		);
 	}

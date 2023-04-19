@@ -4,7 +4,6 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
-import { AbstractDefaultAgendaCronJobs, runCronJobFunctionAndPersistResult } from '../../../utils/server/lib/cron/Cronjobs';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
@@ -62,18 +61,3 @@ export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };
-
-export class BusinessHourCronJob extends AbstractDefaultAgendaCronJobs {
-	public async addBusinessHourJob(
-		name: string,
-		schedule: string,
-		callback: (day: string, hour: string) => void | Promise<void>,
-	): Promise<void> {
-		await this.scheduler.start();
-		this.scheduler.define(name, async ({ attrs: { name } }) => {
-			const [day, hour] = name.split('/');
-			await runCronJobFunctionAndPersistResult(async () => callback(day, hour), name);
-		});
-		await this.scheduler.every(schedule, name, {}, {});
-	}
-}

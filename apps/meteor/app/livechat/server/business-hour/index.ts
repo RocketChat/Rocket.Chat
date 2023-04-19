@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { BusinessHourManager } from './BusinessHourManager';
 import { SingleBusinessHourBehavior } from './Single';
 import { callbacks } from '../../../../lib/callbacks';
 import { DefaultBusinessHour } from './Default';
-import { BusinessHourCronJob } from './Helper';
 
-export const businessHourManager = new BusinessHourManager(new BusinessHourCronJob());
+export const businessHourManager = new BusinessHourManager(cronJobs);
 
 Meteor.startup(() => {
 	const { BusinessHourBehaviorClass } = callbacks.run('on-business-hour-start', {

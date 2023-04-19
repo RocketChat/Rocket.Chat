@@ -2,12 +2,12 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 import { fetch } from '../../../server/lib/http/fetch';
-import { defaultCronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
@@ -101,4 +101,4 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
 };
 
-await defaultCronJobs.add('Apps-Engine:check', '0 4 * * *', async () => appsUpdateMarketplaceInfo());
+await cronJobs.add('Apps-Engine:check', '0 4 * * *', async () => appsUpdateMarketplaceInfo());

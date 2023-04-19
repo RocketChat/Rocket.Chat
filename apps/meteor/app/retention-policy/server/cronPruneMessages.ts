@@ -1,9 +1,9 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../settings/server';
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
-import { defaultCronJobs } from '../../utils/server/lib/cron/Cronjobs';
 
 const maxTimes = {
 	c: 0,
@@ -91,10 +91,10 @@ function getSchedule(precision: '0' | '1' | '2' | '3'): string {
 const pruneCronName = 'Prune old messages by retention policy';
 
 async function deployCron(precision: string): Promise<void> {
-	if (await defaultCronJobs.has(pruneCronName)) {
-		await defaultCronJobs.remove(pruneCronName);
+	if (await cronJobs.has(pruneCronName)) {
+		await cronJobs.remove(pruneCronName);
 	}
-	await defaultCronJobs.add(pruneCronName, precision, async () => job());
+	await cronJobs.add(pruneCronName, precision, async () => job());
 }
 
 settings.watchMultiple(
@@ -114,7 +114,7 @@ settings.watchMultiple(
 		types = [];
 
 		if (!settings.get('RetentionPolicy_Enabled')) {
-			return defaultCronJobs.remove(pruneCronName);
+			return cronJobs.remove(pruneCronName);
 		}
 		if (settings.get('RetentionPolicy_AppliesToChannels')) {
 			types.push('c');

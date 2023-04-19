@@ -1,12 +1,12 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../app/settings/server';
 import * as dataExport from '../lib/dataExport';
-import { defaultCronJobs } from '../../app/utils/server/lib/cron/Cronjobs';
 
 export const userDataDownloadsCron = (): void => {
 	const jobName = 'Generate download files for user data';
-	const name = 'VideoConferences';
+	const name = 'UserDataDownload';
 
 	const plug = async ({
 		disabled,
@@ -19,10 +19,10 @@ export const userDataDownloadsCron = (): void => {
 			return;
 		}
 
-		await defaultCronJobs.add(name, `*/${processingFrequency} * * * *`, async () => dataExport.processDataDownloads());
+		await cronJobs.add(name, `*/${processingFrequency} * * * *`, async () => dataExport.processDataDownloads());
 
 		return async () => {
-			await defaultCronJobs.remove(jobName);
+			await cronJobs.remove(jobName);
 		};
 	};
 

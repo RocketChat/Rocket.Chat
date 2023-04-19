@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
@@ -8,7 +9,6 @@ import { connectWorkspace } from './functions/connectWorkspace';
 import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
-import { defaultCronJobs } from '../../utils/server/lib/cron/Cronjobs';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
@@ -22,11 +22,11 @@ Meteor.startup(async function () {
 		TroubleshootDisableWorkspaceSync = value;
 
 		if (value) {
-			return defaultCronJobs.remove(licenseCronName);
+			return cronJobs.remove(licenseCronName);
 		}
 
 		Meteor.defer(() => syncWorkspace());
-		await defaultCronJobs.add(licenseCronName, '0 */12 * * *', async () => {
+		await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
 			await syncWorkspace();
 		});
 	});

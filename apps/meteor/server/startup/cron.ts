@@ -7,10 +7,13 @@ import { npsCron } from '../cron/nps';
 import { federationCron } from '../cron/federation';
 import { videoConferencesCron } from '../cron/videoConferences';
 import { userDataDownloadsCron } from '../cron/userDataDownloads';
+import { startCron } from '../cron/start';
 
 const logger = new Logger('SyncedCron');
 
 Meteor.defer(async function () {
+	await startCron();
+
 	await oembedCron();
 	await statsCron(logger);
 	await npsCron();

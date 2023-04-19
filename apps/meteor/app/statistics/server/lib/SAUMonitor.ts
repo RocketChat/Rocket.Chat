@@ -3,6 +3,7 @@ import UAParser from 'ua-parser-js';
 import mem from 'mem';
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { Sessions, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { aggregates } from '../../../../server/models/raw/Sessions';
@@ -10,7 +11,6 @@ import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { defaultCronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -41,7 +41,7 @@ export class SAUMonitorClass {
 
 	private _dailyFinishSessionsJobName: string;
 
-	private scheduler = defaultCronJobs;
+	private scheduler = cronJobs;
 
 	constructor() {
 		this._started = false;

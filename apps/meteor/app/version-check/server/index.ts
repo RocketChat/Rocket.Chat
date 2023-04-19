@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';
-import { defaultCronJobs } from '../../utils/server/lib/cron/Cronjobs';
 
 const jobName = 'version_check';
 
-if (await defaultCronJobs.has(jobName)) {
-	await defaultCronJobs.remove(jobName);
+if (await cronJobs.has(jobName)) {
+	await cronJobs.remove(jobName);
 }
 
 const addVersionCheckJob = async () => {
-	await defaultCronJobs.add(jobName, '0 2 * * *', async () => checkVersionUpdate());
+	await cronJobs.add(jobName, '0 2 * * *', async () => checkVersionUpdate());
 };
 
 Meteor.startup(() => {
@@ -27,7 +27,7 @@ Meteor.startup(() => {
 settings.watch('Update_EnableChecker', async () => {
 	const checkForUpdates = settings.get('Update_EnableChecker');
 
-	if (checkForUpdates && (await defaultCronJobs.has(jobName))) {
+	if (checkForUpdates && (await cronJobs.has(jobName))) {
 		return;
 	}
 
@@ -36,5 +36,5 @@ settings.watch('Update_EnableChecker', async () => {
 		return;
 	}
 
-	await defaultCronJobs.remove(jobName);
+	await cronJobs.remove(jobName);
 });
