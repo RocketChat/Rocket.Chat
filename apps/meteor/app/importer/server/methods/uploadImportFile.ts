@@ -35,12 +35,9 @@ export const executeUploadImportFile = async (
 	const readStream = RocketChatFile.bufferToStream(file);
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
 
-	writeStream.on(
-		'end',
-		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
-		}),
-	);
+	writeStream.on('end', () => {
+		importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+	});
 
 	readStream.pipe(writeStream);
 };

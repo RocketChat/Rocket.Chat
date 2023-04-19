@@ -96,7 +96,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 						resolve(undefined);
 					}),
 				),
-			loginWithPassword: (user: string | object, password: string): Promise<void> =>
+			loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string): Promise<void> =>
 				new Promise((resolve, reject) => {
 					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
 						if (error) {

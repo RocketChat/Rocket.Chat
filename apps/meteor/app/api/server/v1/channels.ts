@@ -955,7 +955,12 @@ API.v1.addRoute(
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('c', rids, {
