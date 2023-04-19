@@ -11,10 +11,9 @@ type ParentRoomProps = {
 };
 
 const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
-	const handleClick = (): void => {
-		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
-	};
 	const icon = useRoomIcon(room);
+
+	const handleClick = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
 
 	return (
 		<Header.Tag onClick={handleClick}>
