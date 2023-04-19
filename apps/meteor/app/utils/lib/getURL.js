@@ -63,6 +63,7 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	return url;
 };
 
+// Problem with isomorphic imports on meteor, using raw values for testing
 export const getURL = (path, { cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} } = {}) =>
 	_getURL(path, {
 		cdn,
@@ -70,7 +71,9 @@ export const getURL = (path, { cdn = true, full = false, cloud = false, cloud_ro
 		cloud,
 		cloud_route,
 		cloud_params,
-		_cdn_prefix: settings.get('CDN_PREFIX'),
+		// _cdn_prefix: settings.get('CDN_PREFIX'),
+		_cdn_prefix: '',
 		_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
-		_site_url: settings.get('Site_Url'),
+		// _site_url: settings.get('Site_Url'),
+		_site_url: 'http://localhost:3000/',
 	});

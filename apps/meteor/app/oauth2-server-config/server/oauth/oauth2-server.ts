@@ -19,10 +19,11 @@ const oauth2server = new OAuth2Server({
 });
 
 // https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
-function getAccessToken(accessToken: string): any {
-	return oauth2server.oauth.model.AccessTokens.findOne({
+function getAccessToken(_accessToken: string): any {
+	/* return oauth2server.oauth.model.AccessTokens.findOne({
 		accessToken,
-	});
+	}); */
+	return null;
 }
 
 export async function oAuth2ServerAuth(partialRequest: {
