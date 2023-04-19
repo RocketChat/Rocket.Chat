@@ -13,9 +13,23 @@ const ajvParams = {
 	properties: {
 		userId: {
 			type: 'string',
+			nullable: false,
 		},
 		selector: {
 			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'integer',
+			nullable: true,
+		},
+		offset: {
+			type: 'integer',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['userId'],

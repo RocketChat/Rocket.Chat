@@ -24,17 +24,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		pagination: PaginationParams<IModerationReport>,
 	): AggregationCursor<IModerationAudit>;
 
-	findReportsByRoom(
-		roomId: string,
-		selector: string,
-		pagination: PaginationParams<IModerationReport>,
-	): FindPaginated<FindCursor<IModerationReport>>;
-
-	findReportsByUser(
-		userId: string,
-		selector: string,
-		pagination: PaginationParams<IModerationReport>,
-	): FindPaginated<FindCursor<IModerationReport>>;
+	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
 	findReportsByMessageId(
 		messageId: IModerationReport['message']['_id'],
@@ -42,18 +32,12 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		pagination: PaginationParams<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>>;
 
-	findUserMessages(
+	findReportedMessagesByReportedUserId(
 		userId: string,
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
+		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>>;
-
-	hideReportById(
-		reportId: IModerationReport['_id'],
-		userId: string,
-		reasonForHiding: string,
-		actionTaken: string,
-	): Promise<UpdateResult | Document>;
 
 	hideReportsByMessageId(
 		messageId: IModerationReport['message']['_id'],
@@ -63,12 +47,4 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 	): Promise<UpdateResult | Document>;
 
 	hideReportsByUserId(userId: string, moderatorId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document>;
-
-	countReportsByMessageId(messageId: IModerationReport['message']['_id'], count?: number): Promise<number>;
-
-	countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number>;
-
-	getDistinctRooms(): Promise<Array<{ _id: string }>>;
-
-	getDistinctUsers(): Promise<Array<{ _id: string }>>;
 }

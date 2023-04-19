@@ -25,6 +25,18 @@ const reportHistoryPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		count: {
+			type: 'integer',
+			nullable: true,
+		},
+		offset: {
+			type: 'integer',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	additionalProperties: false,
 };

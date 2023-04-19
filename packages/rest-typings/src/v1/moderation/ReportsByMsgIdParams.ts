@@ -17,6 +17,18 @@ const schema = {
 		selector: {
 			type: 'string',
 		},
+		count: {
+			type: 'integer',
+			nullable: true,
+		},
+		offset: {
+			type: 'integer',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['msgId'],
 	additionalProperties: false,

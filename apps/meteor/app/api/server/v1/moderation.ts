@@ -7,10 +7,13 @@ import {
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
 import { ModerationReports, Users, Messages } from '@rocket.chat/models';
+import type { IModerationReport } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+
+type ReportMessage = Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>;
 
 API.v1.addRoute(
 	'moderation.getReports',
@@ -21,22 +24,26 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { latest, oldest, selector = '' } = this.queryParams;
+			const { latest: _latest, oldest: _oldest, selector = '' } = this.queryParams;
 
 			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const cursor = ModerationReports.findReportsGroupedByUser(
-				latest ? new Date(latest) : new Date(),
-				oldest ? new Date(oldest) : new Date(0),
-				selector,
-				{ offset, count, sort },
-			);
+			const latest = _latest ? new Date(_latest) : new Date();
+			const oldest = _oldest ? new Date(_oldest) : new Date(0);
 
-			const reports = await cursor.toArray();
+			const reports = await ModerationReports.findReportsGroupedByUser(latest, oldest, selector, { offset, count, sort }).toArray();
 
-			// TODO this is wrong
-			const total = reports.reduce((total: number, report) => total + report.count, 0);
+			if (reports.length === 0) {
+				return API.v1.success({
+					reports,
+					count: 0,
+					offset,
+					total: 0,
+				});
+			}
+
+			const total = await ModerationReports.countReportsInRange(latest, oldest, selector);
 
 			return API.v1.success({
 				reports,
@@ -68,13 +75,23 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findUserMessages(userId, '', { offset, count, sort });
+			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', { offset, count, sort });
 
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			const uniqueMessages: ReportMessage[] = [];
+			const visited = new Set<string>();
+			for (const report of reports) {
+				if (visited.has(report.message._id)) {
+					continue;
+				}
+				visited.add(report.message._id);
+				uniqueMessages.push(report);
+			}
 
 			return API.v1.success({
-				messages,
-				count: messages.length,
+				messages: uniqueMessages,
+				count: reports.length,
 				total,
 				offset,
 			});
@@ -105,13 +122,16 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findUserMessages(userId as string, '', { offset, count, sort: { ts: -1 } });
+			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', {
+				offset,
+				count,
+				sort: { ts: -1 },
+			});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			// TODO check this
-			if (total < 0) {
-				return API.v1.failure('No messages found for this user.');
+			if (total === 0) {
+				return API.v1.failure('No reported messages found for this user.');
 			}
 
 			// TODO optimize

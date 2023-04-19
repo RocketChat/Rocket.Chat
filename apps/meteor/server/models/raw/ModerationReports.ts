@@ -1,6 +1,6 @@
 import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
-import type { AggregationCursor, Collection, Db, Document, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
+import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -49,14 +49,13 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				$lt: latest,
 				$gt: oldest,
 			},
+			...this.getSearchQueryForSelector(selector),
 		};
 
 		const { sort, offset, count } = pagination;
 
-		const cquery = this.getSearchQueryForSelector(selector);
-
 		const params = [
-			{ $match: { ...query, ...cquery } },
+			{ $match: query },
 			{
 				$group: {
 					_id: { user: '$message.u._id' },
@@ -77,6 +76,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				$limit: count,
 			},
 			{
+				// TODO: maybe clean up the projection, i.e. exclude things we don't need
 				$project: {
 					_id: 0,
 					message: '$reports.message.msg',
@@ -94,10 +94,19 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	findUserMessages(
+	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
+		return this.col.countDocuments({
+			_hidden: { $ne: true },
+			ts: { $lt: latest, $gt: oldest },
+			...this.getSearchQueryForSelector(selector),
+		});
+	}
+
+	findReportedMessagesByReportedUserId(
 		userId: string,
 		selector: string,
-		pagination?: PaginationParams<IModerationReport>,
+		pagination: PaginationParams<IModerationReport>,
+		options: FindOptions<IModerationReport> = {},
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
@@ -106,9 +115,9 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			'message.u._id': userId,
 		};
 
-		const { sort, offset, count } = pagination ?? {};
+		const { sort, offset, count } = pagination;
 
-		const cquery = selector
+		const fuzzyQuery = selector
 			? {
 					$or: [
 						{
@@ -128,118 +137,15 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			skip: offset,
 			limit: count,
 			projection: {
-				_id: 1,
+				_id: 0,
 				message: 1,
 				ts: 1,
 				room: 1,
 			},
+			...options,
 		};
 
-		return this.findPaginated({ ...query, ...cquery }, params);
-	}
-
-	// NOTE: not used
-	findReportsByRoom(
-		roomId: string,
-		selector: string,
-		pagination: PaginationParams<IModerationReport>,
-	): FindPaginated<FindCursor<IModerationReport>> {
-		const query = {
-			'_hidden': {
-				$ne: true,
-			},
-			'message.rid': roomId,
-		};
-
-		const { count, offset, sort } = pagination;
-
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
-
-		return this.findPaginated(
-			{ ...query, ...cquery },
-			{
-				sort: sort || {
-					ts: -1,
-				},
-				skip: offset,
-				limit: count,
-			},
-		);
-	}
-
-	// NOTE: not used
-	findReportsByUser(
-		userId: string,
-		selector: string,
-		pagination: PaginationParams<IModerationReport>,
-	): FindPaginated<FindCursor<IModerationReport>> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			userId,
-		};
-
-		const { count, offset, sort } = pagination;
-
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
-
-		return this.findPaginated(
-			{ ...query, ...cquery },
-			{
-				sort: sort || {
-					ts: -1,
-				},
-				skip: offset,
-				limit: count,
-			},
-		);
+		return this.findPaginated({ ...query, ...fuzzyQuery }, params);
 	}
 
 	findReportsByMessageId(
@@ -252,15 +158,12 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				$ne: true,
 			},
 			'message._id': messageId,
+			...this.getSearchQueryForSelector(selector),
 		};
 
 		const { count, offset, sort } = pagination;
 
-		const cquery = this.getSearchQueryForSelector(selector);
-
-		// get the user data from collection users for each report
-
-		const lookup = {
+		const opts = {
 			sort: sort || {
 				ts: -1,
 			},
@@ -275,22 +178,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			},
 		};
 
-		return this.findPaginated({ ...query, ...cquery }, lookup);
-	}
-
-	async hideReportById(_id: string, userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document> {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				_hidden: true,
-				moderationInfo: { hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
-			},
-		};
-
-		return this.updateOne(query, update);
+		return this.findPaginated(query, opts);
 	}
 
 	async hideReportsByMessageId(
@@ -330,118 +218,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			},
 		};
 		return this.updateMany(query, update);
-	}
-
-	// misc
-
-	// method to return the reports count by msgId
-
-	async countReportsByMessageId(messageId: string, count?: number): Promise<number> {
-		const query = {
-			'_hidden': {
-				$ne: true,
-			},
-			'message._id': messageId,
-		};
-
-		return this.col.countDocuments(query, { limit: count });
-	}
-
-	getDistinctRooms(): Promise<{ _id: string }[]> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-		};
-
-		const params = [
-			{
-				$match: query,
-			},
-			{
-				$group: {
-					_id: '$message.rid',
-				},
-			},
-		];
-
-		return this.col.aggregate(params).toArray() as Promise<{ _id: string }[]>;
-	}
-
-	getDistinctUsers(): Promise<{ _id: string }[]> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-		};
-
-		const params = [
-			{
-				$match: query,
-			},
-			{
-				$group: {
-					_id: '$userId',
-				},
-			},
-		];
-
-		return this.col.aggregate(params).toArray() as Promise<{ _id: string }[]>;
-	}
-
-	async countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			ts: {
-				$lt: latest,
-				$gt: oldest || new Date(0),
-			},
-		};
-
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'message.u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
-
-		const params = [
-			{ $match: { ...query, ...cquery } },
-
-			{
-				$group: {
-					_id: { user: '$message.u._id' },
-					reports: { $push: '$$ROOT' },
-				},
-			},
-			{
-				$count: 'total_count',
-			},
-		];
-
-		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
-
-		return result[0]?.total_count || 0;
 	}
 
 	private getSearchQueryForSelector(selector?: string): any {
