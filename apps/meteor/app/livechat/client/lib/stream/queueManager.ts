@@ -4,6 +4,7 @@ import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { queryClient } from '../../../../../client/lib/queryClient';
 
 const departments = new Set();
 
@@ -14,21 +15,23 @@ const events = {
 		delete inquiry.type;
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 	},
-	changed: (inquiry: ILivechatInquiryWithType) => {
+	changed: async (inquiry: ILivechatInquiryWithType) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
+
 		delete inquiry.type;
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await queryClient.invalidateQueries({ queryKey: ['rooms', inquiry.rid], exact: true });
 	},
 	removed: (inquiry: ILivechatInquiryWithType) => LivechatInquiry.remove(inquiry._id),
 };
 
-const updateCollection = (inquiry: ILivechatInquiryWithType) => {
+const updateCollection = async (inquiry: ILivechatInquiryWithType) => {
 	if (!inquiry.type) {
 		return;
 	}
-	events[inquiry.type](inquiry);
+	await events[inquiry.type](inquiry);
 };
 
 const getInquiriesFromAPI = async () => {

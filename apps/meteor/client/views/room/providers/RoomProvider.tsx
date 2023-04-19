@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useRoute, useStream } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -29,10 +29,13 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const roomQuery = useReactiveQuery(['rooms', rid], () => ChatRoom.findOne({ _id: rid }));
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
 	const subscribeToRoom = useStream('room-data');
 
 	const queryClient = useQueryClient();
+	const userId = useUserId();
+	const isLivechatAdmin = usePermission('view-livechat-rooms');
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
@@ -53,7 +56,20 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+	// TODO: Review the necessity of this effect when we move away from cached collections
+	useEffect(() => {
+		const { data: room } = roomQuery;
+
+		if (!room || !isOmnichannelRoom(room) || !room.servedBy) {
+			return;
+		}
+
+		if (!isLivechatAdmin && room.servedBy._id !== userId) {
+			homeRoute.push();
+			ChatRoom.remove(room._id);
+			queryClient.removeQueries({ queryKey: ['rooms', room._id], exact: true });
+		}
+	}, [homeRoute, isLivechatAdmin, queryClient, userId, roomQuery]);
 
 	const pseudoRoom = useMemo(() => {
 		if (!roomQuery.data) {
