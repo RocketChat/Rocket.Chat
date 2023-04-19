@@ -130,9 +130,7 @@ export type ChatAPI = {
 
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
-
-		// open(username: string): (event: UIEvent) => void;
-		// close(): void;
+		close(): void;
 	};
 
 	readonly action: {

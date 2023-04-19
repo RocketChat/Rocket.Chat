@@ -4,7 +4,6 @@ import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useQuer
 import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
@@ -124,12 +123,8 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			useOpenEmojiPicker: uid
 				? (message) =>
 						(e): void => {
-							console.log(message);
 							e.nativeEvent.stopImmediatePropagation();
 							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
-							// EmojiPicker.open(
-							// 	 as unknown as void,
-							// );
 						}
 				: () => (): void => undefined,
 		}),

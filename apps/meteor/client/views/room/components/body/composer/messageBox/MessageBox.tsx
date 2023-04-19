@@ -13,11 +13,10 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
-// import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -142,21 +141,16 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	// const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
-	// 	e.stopPropagation();
-	// 	e.preventDefault();
+	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
+		e.stopPropagation();
+		e.preventDefault();
 
-	// 	if (!useEmojis) {
-	// 		return;
-	// 	}
+		if (!useEmojis) {
+			return;
+		}
 
-	// 	if (EmojiPicker.isOpened()) {
-	// 		EmojiPicker.close();
-	// 		return;
-	// 	}
-
-	// 	EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
-	// });
+		chat?.emojiPicker.open(e?.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+	});
 
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat?.composer?.text ?? '';
@@ -341,11 +335,6 @@ const MessageBox = ({
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
-	const handleOpenTest = (event: UIEvent) => {
-		// EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
-		chat?.emojiPicker.open(event?.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
-	};
-
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -401,7 +390,7 @@ const MessageBox = ({
 						<MessageComposerAction
 							icon='emoji'
 							disabled={!useEmojis || isRecording || !canSend}
-							onClick={handleOpenTest}
+							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
 						/>
 						<MessageComposerActionsDivider />

@@ -38,7 +38,10 @@ export class ChatMessages implements ChatAPI {
 
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
-	public emojiPicker: { open(ref, cb: () => void): void };
+	public emojiPicker: {
+		open(el: Element, cb: (emoji: string) => void): void;
+		close(): void;
+	};
 
 	public action: {
 		start(action: 'typing'): Promise<void> | void;
@@ -133,7 +136,7 @@ export class ChatMessages implements ChatAPI {
 
 		this.emojiPicker = {
 			open: unimplemented,
-			// close: unimplemented,
+			close: unimplemented,
 		};
 
 		this.action = {

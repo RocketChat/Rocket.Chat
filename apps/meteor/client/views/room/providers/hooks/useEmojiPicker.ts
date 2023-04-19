@@ -1,4 +1,3 @@
-import type { RefObject, UIEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 
 import { openEmojiPicker, closeEmojiPicker } from '../../../../../app/ui/client/lib/emojiPicker';
@@ -10,14 +9,12 @@ export const useEmojiPicker = () => {
 		};
 	}, []);
 
-	const open = useCallback((ref: RefObject<HTMLElement>, callback: (emoji: string) => void) => {
-		// event.preventDefault();
+	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
 		openEmojiPicker({
 			reference: ref,
 			onClose: closeEmojiPicker,
 			onPickEmoji: (emoji: string) => {
 				callback(emoji);
-				closeEmojiPicker();
 			},
 		});
 	}, []);
