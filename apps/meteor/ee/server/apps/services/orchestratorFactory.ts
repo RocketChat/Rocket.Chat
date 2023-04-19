@@ -1,7 +1,8 @@
 import type { Db } from 'mongodb';
 
 import { settings } from '../../../../app/settings/server';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps } from '../orchestrator';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
@@ -10,7 +11,7 @@ type AppsInitParams = {
 };
 
 export class OrchestratorFactory {
-	private static orchestrator: AppServerOrchestrator;
+	private static orchestrator: AppServerOrchestrator = Apps;
 
 	private static createOrchestrator(_db: Db) {
 		const appsInitParams: AppsInitParams = {
@@ -19,7 +20,6 @@ export class OrchestratorFactory {
 			marketplaceUrl: 'https://marketplace.rocket.chat',
 		};
 
-		this.orchestrator = new AppServerOrchestrator();
 		// this.orchestrator = new AppServerOrchestrator(db);
 
 		const { OVERWRITE_INTERNAL_MARKETPLACE_URL } = process.env || {};
@@ -28,7 +28,6 @@ export class OrchestratorFactory {
 			appsInitParams.marketplaceUrl = OVERWRITE_INTERNAL_MARKETPLACE_URL;
 		}
 
-		this.orchestrator.initialize();
 		// this.orchestrator.initialize(appsInitParams);
 	}
 
