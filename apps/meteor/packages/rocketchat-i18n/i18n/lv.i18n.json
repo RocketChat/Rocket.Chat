@@ -1195,7 +1195,7 @@
   "force-delete-message": "Piespiedu dzēst ziņojumu",
   "force-delete-message_description": "Atļauja izdzēst ziņu, apejot visus ierobežojumus",
   "Forgot_password": "Aizmirsi savu paroli",
-  "Forgot_Password_Description": "Jūs varat izmantot šādus vietturus: <br/><ul><li>[Forgot_Password_Url][lname] paroles atjaunošanas URL.</li><li>[name], [fname], ietotāja pilnam vārdam, attiecīgi vārds vai uzvārds.</li><li>[e-mail] lietotāja e-pastam.</li><li>[Site_Name] un [Site_URL] attiecīgi lietotnes nosaukums un URL.</li></ul>",
+  "Forgot_Password_Description": "Jūs varat izmantot šādus vietturus:  \n - [Forgot_Password_Url][lname] paroles atjaunošanas URL.  \n - [name], [fname], ietotāja pilnam vārdam, attiecīgi vārds vai uzvārds.  \n - [e-mail] lietotāja e-pastam.  \n - [Site_Name] un [Site_URL] attiecīgi lietotnes nosaukums un URL.",
   "Forgot_Password_Email": "Lai atiestatītu paroli, noklikšķiniet uz <a href=\"[Forgot_Password_Url]\">šeit</a>.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Paroles atjaunošana",
   "Forgot_password_section": "Aizmirsi paroli",

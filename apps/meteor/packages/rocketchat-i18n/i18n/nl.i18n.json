@@ -2026,7 +2026,7 @@
   "force-delete-message": "Het verwijderen van bericht forceren",
   "force-delete-message_description": "Toestemming om een bericht te verwijderen waarbij alle beperkingen worden omzeild",
   "Forgot_password": "Wachtwoord vergeten?",
-  "Forgot_Password_Description": "U kunt de volgende placeholders gebruiken: <br/><ul><li>[Forgot_Password_Url] voor de URL voor wachtwoordherstel.</li><li>[naam], [fname], [lname] voor de volledige naam, voornaam of achternaam van de gebruiker, respectievelijk.</li><li>[email] voor het e-mailadres van de gebruiker.</li><li>[Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL.</li></ul>",
+  "Forgot_Password_Description": "U kunt de volgende placeholders gebruiken:  \n - [Forgot_Password_Url] voor de URL voor wachtwoordherstel.  \n - [naam], [fname], [lname] voor de volledige naam, voornaam of achternaam van de gebruiker, respectievelijk.  \n - [email] voor het e-mailadres van de gebruiker.  \n - [Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL.",
   "Forgot_Password_Email": "Klik <a href=\"[Forgot_Password_Url]\">hier</a> om uw wachtwoord opnieuw in te stellen.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Wachtwoordherstel",
   "Forgot_password_section": "Wachtwoord vergeten",

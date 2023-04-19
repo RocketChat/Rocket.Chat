@@ -1179,7 +1179,7 @@
   "force-delete-message": "Neges Dileu Heddlu",
   "force-delete-message_description": "Caniatâd i ddileu neges osgoi pob cyfyngiad",
   "Forgot_password": "Wedi anghofio eich cyfrinair",
-  "Forgot_Password_Description": "Efallai y byddwch chi'n defnyddio'r canlynol i ddeiliaid lle: <br / ><ul><li>[Forgot_Password_Url] ar gyfer yr URL adfer cyfrinair.</li><li>[name], [fname], [lname] ar gyfer enw llawn, enw cyntaf neu enw olaf y defnyddiwr, yn y drefn honno.</li><li>[e-bost] ar gyfer e-bost y defnyddiwr.</li><li>[Site_Name] a [Site_URL] ar gyfer yr Enw Cais a'r URL yn y drefn honno.</li></ul>",
+  "Forgot_Password_Description": "Efallai y byddwch chi'n defnyddio'r canlynol i ddeiliaid lle:  \n - [Forgot_Password_Url] ar gyfer yr URL adfer cyfrinair.  \n - [name], [fname], [lname] ar gyfer enw llawn, enw cyntaf neu enw olaf y defnyddiwr, yn y drefn honno.  \n - [e-bost] ar gyfer e-bost y defnyddiwr.  \n - [Site_Name] a [Site_URL] ar gyfer yr Enw Cais a'r URL yn y drefn honno.",
   "Forgot_Password_Email": "Cliciwch <a href = \"[Forgot_Password_Url]\">yma</a>i ailosod eich cyfrinair.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Adfer Cyfrinair",
   "Forgot_password_section": "Wedi anghofio cyfrinair",

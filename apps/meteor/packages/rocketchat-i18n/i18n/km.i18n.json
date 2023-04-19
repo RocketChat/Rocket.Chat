@@ -1431,7 +1431,7 @@
   "force-delete-message": "បង្ខំលុបសារ",
   "force-delete-message_description": "សិទ្ធិក្នុងការលុបសារដោយឆ្លងកាត់ការរឹតបន្តឹងទាំងអស់",
   "Forgot_password": "ភ្លេច​ពាក្យ​សម្ងាត់",
-  "Forgot_Password_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម: <br/><ul><li>[Forgot_Password_Url] សម្រាប់ URL សង្គ្រោះពាក្យសម្ងាត់។</li><li>[ឈ្មោះ], [fname], [lname] សម្រាប់ឈ្មោះអ្នកប្រើនាមត្រកូលឬនាមត្រកូលរៀងៗខ្លួន។</li><li>[អ៊ីមែល] សម្រាប់អ៊ីម៉ែលរបស់អ្នកប្រើ។</li><li>[Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។</li></ul>",
+  "Forgot_Password_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម:  \n - [Forgot_Password_Url] សម្រាប់ URL សង្គ្រោះពាក្យសម្ងាត់។  \n - [ឈ្មោះ], [fname], [lname] សម្រាប់ឈ្មោះអ្នកប្រើនាមត្រកូលឬនាមត្រកូលរៀងៗខ្លួន។  \n - [អ៊ីមែល] សម្រាប់អ៊ីម៉ែលរបស់អ្នកប្រើ។  \n - [Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។",
   "Forgot_Password_Email": "ចុច <a href=\"[Forgot_Password_Url]\">ទីនេះ</a>ដើម្បីកំណត់ពាក្យសម្ងាត់របស់អ្នកឡើងវិញ។",
   "Forgot_Password_Email_Subject": "[Site_Name] - ការសង្គ្រោះពាក្យសម្ងាត់",
   "Forgot_password_section": "ភ្លេច​លេខសំងាត់​",

@@ -1583,7 +1583,7 @@
   "force-delete-message": "Примусове видалення повідомлення",
   "force-delete-message_description": "Дозвіл на видалення повідомлення, обминаючи всі обмеження",
   "Forgot_password": "Забули пароль?",
-  "Forgot_Password_Description": "Ви можете використовувати наступні заповнювачі: <br/><ul><li>[Forgot_Password_Url] для URL-адреси відновлення пароля.</li><li>[name], [fname], [lname] для повного ім'я користувача, ім'я або прізвища,  відповідно.</li><li>[email] для електронної адреси.</li><li>[Site_Name]  і [Site_URL] для назви  програми та URL-адреси, відповідно.</li></ul>",
+  "Forgot_Password_Description": "Ви можете використовувати наступні заповнювачі:  \n - [Forgot_Password_Url] для URL-адреси відновлення пароля.  \n - [name], [fname], [lname] для повного ім'я користувача, ім'я або прізвища,  відповідно.  \n - [email] для електронної адреси.  \n - [Site_Name]  і [Site_URL] для назви  програми та URL-адреси, відповідно.",
   "Forgot_Password_Email": "Натисніть <a href=\"[Forgot_Password_Url]\">тут</a>, щоб скинути свій пароль.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Відновлення пароля",
   "Forgot_password_section": "Забув пароль",

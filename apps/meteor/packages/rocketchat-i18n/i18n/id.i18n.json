@@ -1182,7 +1182,7 @@
   "force-delete-message": "Paksa Hapus Pesan",
   "force-delete-message_description": "Izin untuk menghapus pesan yang melewati semua batasan",
   "Forgot_password": "Lupa kata sandi anda",
-  "Forgot_Password_Description": "Anda dapat menggunakan placeholder berikut: <br/><ul><li>[Lupa_Password_Url] untuk URL pemulihan kata sandi.</li><li>[nama], [fname], [lname] untuk nama lengkap pengguna, nama depan, atau nama belakang masing-masing.</li><li>[email] untuk email pengguna.</li><li>[Site_Name] dan [Site_URL] untuk Nama Aplikasi dan URL masing-masing.</li></ul>",
+  "Forgot_Password_Description": "Anda dapat menggunakan placeholder berikut:  \n - [Lupa_Password_Url] untuk URL pemulihan kata sandi.  \n - [nama], [fname], [lname] untuk nama lengkap pengguna, nama depan, atau nama belakang masing-masing.  \n - [email] untuk email pengguna.  \n - [Site_Name] dan [Site_URL] untuk Nama Aplikasi dan URL masing-masing.",
   "Forgot_Password_Email": "Klik <a href=\"[Forgot_Password_Url]\">di sini</a> untuk mereset kata sandi Anda.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Pemulihan Sandi",
   "Forgot_password_section": "lupa kata sandi",

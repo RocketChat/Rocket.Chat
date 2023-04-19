@@ -1442,7 +1442,7 @@
   "force-delete-message": "İletiyi Sil zorla",
   "force-delete-message_description": "Tüm kısıtlamaları atlayarak bir iletiyi silmek için izin",
   "Forgot_password": "Şifrenizi mi unuttunuz?",
-  "Forgot_Password_Description": "Şu yer tutucularını kullanabilirsiniz: <br/><ul><li>Şifre kurtarma URL'si için [Forgot_Password_Url]. Sırasıyla kullanıcının tam adı, adı veya soyadı için</li><li>[ad], [fname], [lname].</li><li>[e-posta] kullanıcının e-postası için. Sırasıyla Uygulama Adı ve URL için</li><li>[Site_Name] ve [Site_URL].</li></ul>",
+  "Forgot_Password_Description": "Şu yer tutucularını kullanabilirsiniz:  \n - Şifre kurtarma URL'si için [Forgot_Password_Url]. Sırasıyla kullanıcının tam adı, adı veya soyadı için  \n - [ad], [fname], [lname].  \n - [e-posta] kullanıcının e-postası için. Sırasıyla Uygulama Adı ve URL için  \n - [Site_Name] ve [Site_URL].",
   "Forgot_Password_Email": "Şifrenizi sıfırlamak için <a href=\"[Forgot_Password_Url]\">burayı</a>tıklayın.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Şifre Kurtarma",
   "Forgot_password_section": "Şifremi unuttum",

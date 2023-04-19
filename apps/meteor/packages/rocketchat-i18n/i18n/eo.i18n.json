@@ -1183,7 +1183,7 @@
   "force-delete-message": "Forigi Forigi Mesaĝon",
   "force-delete-message_description": "Permeso forigi mesaĝon preterpasante ĉiujn limigojn",
   "Forgot_password": "Ĉu vi forgesis vian pasvorton",
-  "Forgot_Password_Description": "Vi povas uzi la jenajn anstataŭilojn: <br/><ul><li>[Forgot_Password_Url] por la pasvorta reakiro URL.</li><li>[nomo], [fname], [lname] por la plena nomo, unua nomo aŭ familinomo de la uzanto, respektive.</li><li>[retpoŝto] por la retpoŝto de la uzanto.</li><li>[Site_Name] kaj [Site_URL] por la Aplika nomo kaj URL respektive.</li></ul>",
+  "Forgot_Password_Description": "Vi povas uzi la jenajn anstataŭilojn:  \n - [Forgot_Password_Url] por la pasvorta reakiro URL.  \n - [nomo], [fname], [lname] por la plena nomo, unua nomo aŭ familinomo de la uzanto, respektive.  \n - [retpoŝto] por la retpoŝto de la uzanto.  \n - [Site_Name] kaj [Site_URL] por la Aplika nomo kaj URL respektive.",
   "Forgot_Password_Email": "Alklaku <a href=\"[Forgot_Password_Url]\">ĉi tie</a>por restarigi vian pasvorton.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Pasvorta Reakiro",
   "Forgot_password_section": "Ĉu vi forgesis la pasvorton",

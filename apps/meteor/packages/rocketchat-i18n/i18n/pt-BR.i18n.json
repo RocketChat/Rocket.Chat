@@ -2057,7 +2057,7 @@
   "force-delete-message": "Forçar exclusão de mensagem",
   "force-delete-message_description": "Permissão para excluir uma mensagem ignorando todas as restrições",
   "Forgot_password": "Esqueceu sua senha?",
-  "Forgot_Password_Description": "Você pode usar os seguintes placeholders: <br/><ul><li>[Forgot_Password_Url] para o URL de recuperação de senha.</li><li>[nome], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do usuário, respectivamente.</li><li>[email] para o e-mail do usuário.</li><li>[Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente.</li></ul>",
+  "Forgot_Password_Description": "Você pode usar os seguintes placeholders:  \n - [Forgot_Password_Url] para o URL de recuperação de senha.  \n - [nome], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do usuário, respectivamente.  \n - [email] para o e-mail do usuário.  \n - [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente.",
   "Forgot_Password_Email": "Clique <a href=\"[Forgot_Password_Url]\">aqui</a> para redefinir sua senha.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Recuperar Senha",
   "Forgot_password_section": "Esqueceu senha",

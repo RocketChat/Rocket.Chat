@@ -2018,7 +2018,7 @@
   "force-delete-message": "Forçar esborrar missatge",
   "force-delete-message_description": "Permís per esborrar un missatge ignorant totes les restriccions",
   "Forgot_password": "Heu oblidat la contrasenya?",
-  "Forgot_Password_Description": "Podeu utilitzar les adreces d'interès següents:<br/><ul><li>[Forgot_Password_Url] per a la URL de recuperació de contrasenya. </li> <li> [name], [fname] , [lname] per al nom complet, nom o cognom de l'usuari, respectivament. </li><li> [email] per al correu electrònic de l'usuari. </li><li>[Site_Name ] i [Site_URL] per al nom de l'aplicació i l'URL respectivament. </li> </ul>",
+  "Forgot_Password_Description": "Podeu utilitzar les adreces d'interès següents:  \n - [Forgot_Password_Url] per a la URL de recuperació de contrasenya.  \n - [name], [fname] , [lname] per al nom complet, nom o cognom de l'usuari, respectivament.  \n - [email] per al correu electrònic de l'usuari.  \n - [Site_Name ] i [Site_URL] per al nom de l'aplicació i l'URL respectivament.",
   "Forgot_Password_Email": "Fes clic <a href=\"[Forgot_Password_Url]\">aquí</a> per restablir la teva contrasenya.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Recuperació de contrasenya",
   "Forgot_password_section": "No recordo la contrasenya",

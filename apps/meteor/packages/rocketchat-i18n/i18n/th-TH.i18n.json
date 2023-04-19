@@ -1179,7 +1179,7 @@
   "force-delete-message": "บังคับให้ลบข้อความ",
   "force-delete-message_description": "อนุญาตให้ลบข้อความโดยเลี่ยงข้อ จำกัด ทั้งหมด",
   "Forgot_password": "ลืมรหัสผ่านหรือไม่",
-  "Forgot_Password_Description": "คุณสามารถใช้ตัวยึดตำแหน่งต่อไปนี้: <br/><ul><li>[ลืมรหัสผ่าน] สำหรับ URL การกู้คืนรหัสผ่าน</li><li>[name], [fname], [lname] สำหรับชื่อเต็มของผู้ใช้ชื่อหรือนามสกุลตามลำดับ</li><li>[email] สำหรับอีเมลของผู้ใช้</li><li>[Site_Name] และ [Site_URL] สำหรับชื่อแอ็พพลิเคชันและ URL ตามลำดับ</li></ul>",
+  "Forgot_Password_Description": "คุณสามารถใช้ตัวยึดตำแหน่งต่อไปนี้:  \n - [ลืมรหัสผ่าน] สำหรับ URL การกู้คืนรหัสผ่าน  \n - [name], [fname], [lname] สำหรับชื่อเต็มของผู้ใช้ชื่อหรือนามสกุลตามลำดับ  \n - [email] สำหรับอีเมลของผู้ใช้  \n - [Site_Name] และ [Site_URL] สำหรับชื่อแอ็พพลิเคชันและ URL ตามลำดับ",
   "Forgot_Password_Email": "คลิก <a href=\"[Forgot_Password_Url]\">ที่นี่</a>เพื่อรีเซ็ตรหัสผ่านของคุณ",
   "Forgot_Password_Email_Subject": "[Site_Name] - การกู้คืนรหัสผ่าน",
   "Forgot_password_section": "ลืมรหัสผ่าน",

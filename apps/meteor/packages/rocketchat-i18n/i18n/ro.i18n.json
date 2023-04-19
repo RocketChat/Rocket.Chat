@@ -1182,7 +1182,7 @@
   "force-delete-message": "Forțați ștergerea mesajului",
   "force-delete-message_description": "Permisiunea de a șterge un mesaj prin ignorarea tuturor restricțiilor",
   "Forgot_password": "Parolă uitată",
-  "Forgot_Password_Description": "Puteți utiliza următorii substituenți: <br/><ul><li>[Forgot_Password_Url] pentru adresa URL de recuperare a parolei.</li><li>[name], [fname], [lname] pentru numele complet al utilizatorului, prenumele sau numele de familie.</li><li>[e-mail] pentru e-mailul utilizatorului.</li><li>[Site_Name] și [Site_URL] pentru numele aplicației și respectiv adresa URL.</li></ul>",
+  "Forgot_Password_Description": "Puteți utiliza următorii substituenți:  \n - [Forgot_Password_Url] pentru adresa URL de recuperare a parolei.  \n - [name], [fname], [lname] pentru numele complet al utilizatorului, prenumele sau numele de familie.  \n - [e-mail] pentru e-mailul utilizatorului.  \n - [Site_Name] și [Site_URL] pentru numele aplicației și respectiv adresa URL.",
   "Forgot_Password_Email": "Faceți clic pe <a href=\"[Forgot_Password_Url]\">aici</a>pentru a vă reseta parola.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Parola de recuperare",
   "Forgot_password_section": "Aţi uitat parola",

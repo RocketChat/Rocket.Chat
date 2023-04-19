@@ -1277,7 +1277,7 @@
   "force-delete-message": "Buộc xóa tin nhắn",
   "force-delete-message_description": "Cho phép xóa một tin nhắn bỏ qua tất cả các hạn chế",
   "Forgot_password": "Quên mật khẩu",
-  "Forgot_Password_Description": "Bạn có thể sử dụng các placeholder sau: <br/><ul><li>[Forget_Password_Url] cho URL khôi phục mật khẩu.</li><li>[name], [fname], [lname] tương ứng cho tên, họ hoặc họ của người dùng, tương ứng.</li><li>[email] cho email của người dùng.</li><li>[Site_Name] và [Site_URL] cho Tên Ứng dụng và URL tương ứng.</li></ul>",
+  "Forgot_Password_Description": "Bạn có thể sử dụng các placeholder sau:  \n - [Forget_Password_Url] cho URL khôi phục mật khẩu.  \n - [name], [fname], [lname] tương ứng cho tên, họ hoặc họ của người dùng, tương ứng.  \n - [email] cho email của người dùng.  \n - [Site_Name] và [Site_URL] cho Tên Ứng dụng và URL tương ứng.",
   "Forgot_Password_Email": "Nhấp vào <a href=\"[Forgot_Password_Url]\">ở đây</a> để đặt lại mật khẩu của bạn.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Phục hồi mật khẩu",
   "Forgot_password_section": "Quên mật khẩu",

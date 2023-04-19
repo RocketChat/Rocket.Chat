@@ -1183,7 +1183,7 @@
   "force-delete-message": "Forcë fshini mesazhin",
   "force-delete-message_description": "Leja për të fshirë një mesazh duke anashkaluar të gjitha kufizimet",
   "Forgot_password": "Keni harruar fjalëkalimin tuaj",
-  "Forgot_Password_Description": "Mund të përdorësh vendin e mëposhtëm:<br/><ul><li>[Forgot_Password_Url] për URL-në e rimëkëmbjes së fjalëkalimeve.</li><li>[emër], [fname], [lname] për emrin e plotë, emrin ose mbiemrin e përdoruesit.</li><li>[email] për emailin e përdoruesit.</li><li>[Site_Name] dhe [Site_URL] për emrin e aplikacionit dhe URL përkatësisht.</li></ul>",
+  "Forgot_Password_Description": "Mund të përdorësh vendin e mëposhtëm:  \n - [Forgot_Password_Url] për URL-në e rimëkëmbjes së fjalëkalimeve.  \n - [emër], [fname], [lname] për emrin e plotë, emrin ose mbiemrin e përdoruesit.  \n - [email] për emailin e përdoruesit.  \n - [Site_Name] dhe [Site_URL] për emrin e aplikacionit dhe URL përkatësisht.",
   "Forgot_Password_Email": "Kliko <a href=\"[Forgot_Password_Url]\">këtu</a>për të rivendosur fjalëkalimin tuaj.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Rimëkëmbjes Fjalëkalimi",
   "Forgot_password_section": "Keni harruar fjalëkalimin",

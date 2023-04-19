@@ -1178,7 +1178,7 @@
   "force-delete-message": "Snaga brisanja poruke",
   "force-delete-message_description": "Dozvola za brisanje poruke koja zaobilazi sva ograničenja",
   "Forgot_password": "Zaboravih lozinku",
-  "Forgot_Password_Description": "Možete upotrebljavati sljedeća rezervirana mjesta: <br/><ul><li>[Forgot_Password_Url] za URL za oporavak zaporke.</li><li>[ime], [fname], [lname] za puni naziv, ime ili prezime korisnika.</li><li>[e-pošta] za e-poštu korisnika.</li><li>[Site_Name] i [Site_URL] za naziv aplikacije i URL.</li></ul>",
+  "Forgot_Password_Description": "Možete upotrebljavati sljedeća rezervirana mjesta:  \n - [Forgot_Password_Url] za URL za oporavak zaporke.  \n - [ime], [fname], [lname] za puni naziv, ime ili prezime korisnika.  \n - [e-pošta] za e-poštu korisnika.  \n - [Site_Name] i [Site_URL] za naziv aplikacije i URL.",
   "Forgot_Password_Email": "Kliknite <a href=\"[Forgot_Password_Url]\">ovdje</a>da biste ponovo postavili svoju zaporku.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Password Recovery",
   "Forgot_password_section": "Zaboravili ste lozinku",

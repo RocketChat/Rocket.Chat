@@ -2140,7 +2140,7 @@
   "force-delete-message": "Принудительное удаление сообщений",
   "force-delete-message_description": "Разрешение на удаление сообщений в обход всех ограничений",
   "Forgot_password": "Забыли пароль?",
-  "Forgot_Password_Description": "Вы можете использовать следующие подстановки: <br/><ul><li>[Forgot_Password_Url] для URL восстановления пароля. </li><li>[name], [fname], [lname] для полного имени, имени или фамилии пользователя.</li><li>[email] для адреса электронной почты пользователя.</li><li>[Site_Name] и [Site_URL] для имени приложения и его URL.</li></ul>",
+  "Forgot_Password_Description": "Вы можете использовать следующие подстановки:  \n - [Forgot_Password_Url] для URL восстановления пароля.  \n - [name], [fname], [lname] для полного имени, имени или фамилии пользователя.  \n - [email] для адреса электронной почты пользователя.  \n - [Site_Name] и [Site_URL] для имени приложения и его URL.",
   "Forgot_Password_Email": "Нажмите <a href=\"[Forgot_Password_Url]\">сюда</a> для сброса вашего пароля.",
   "Forgot_Password_Email_Subject": "[Site_Name] - восстановление пароля",
   "Forgot_password_section": "Забыл пароль",

@@ -1174,7 +1174,7 @@
   "force-delete-message": "Prisilno izbriši sporočilo",
   "force-delete-message_description": "Dovoljenje za brisanje sporočil, mimo vseh omejitev",
   "Forgot_password": "Pozabljeno geslo",
-  "Forgot_Password_Description": "Uporabite lahko naslednje označbe mesta: <br/><ul><li>[Forgot_Password_Url] za URL za obnovitev gesla.</li><li>[name], [fname], [lname] za polno ime, priimek ali priimek uporabnika.</li><li>[email] za uporabnikov e-poštni naslov.</li><li>[Site_Name] in [Site_URL] za ime aplikacije in URL.</li></ul>",
+  "Forgot_Password_Description": "Uporabite lahko naslednje označbe mesta:  \n - [Forgot_Password_Url] za URL za obnovitev gesla.  \n - [name], [fname], [lname] za polno ime, priimek ali priimek uporabnika.  \n - [email] za uporabnikov e-poštni naslov.  \n - [Site_Name] in [Site_URL] za ime aplikacije in URL.",
   "Forgot_Password_Email": "Za ponastavitev gesla kliknite <a href=\"[Forgot_Password_Url]\">tukaj</a> .",
   "Forgot_Password_Email_Subject": "[Site_Name] - Obnovitev gesla",
   "Forgot_password_section": "Pozabljeno geslo",

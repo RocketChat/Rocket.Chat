@@ -1611,7 +1611,7 @@
   "force-delete-message": "შეტყობინებების იძულებითი წაშლა",
   "force-delete-message_description": "შეზღუდვების გვერდის ავლით შეტყობინებების წაშლის უფლება",
   "Forgot_password": "დაგავიწყდათ პაროლი?",
-  "Forgot_Password_Description": "თქვენ შეგიძლიათ გამოიყენოთ შემდეგი ველები:<br/><ul><li>[Forgot_Password_Url] პაროლის აღსადგენი ბმული.</li><li>[name], [fname], [lname] მომხმარებლის სრული სახელის, სახელის და გვარისთვის.</li><li>[email] ელ.ფოსტისთვის<li>[Site_Name] და [Site_URL] აპლიკაციის სახელი და ბმულისთვის.</li></ul>",
+  "Forgot_Password_Description": "თქვენ შეგიძლიათ გამოიყენოთ შემდეგი ველები:  \n - [Forgot_Password_Url] პაროლის აღსადგენი ბმული.  \n - [name], [fname], [lname] მომხმარებლის სრული სახელის, სახელის და გვარისთვის.  \n - [email] ელ.ფოსტისთვის  \n - [Site_Name] და [Site_URL] აპლიკაციის სახელი და ბმულისთვის.",
   "Forgot_Password_Email": "დააჭირეთ <a href=\"[Forgot_Password_Url]\"> აქ </a> თქვენი პაროლის დარესეტებისთვის",
   "Forgot_Password_Email_Subject": "[Site_Name] - პაროლის აღდგენა",
   "Forgot_password_section": "პაროლი დაგავიწყდა",

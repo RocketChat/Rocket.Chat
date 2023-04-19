@@ -1183,7 +1183,7 @@
   "force-delete-message": "Mesajı silin",
   "force-delete-message_description": "Bütün məhdudiyyətləri atlayaraq bir mesajı silmək üçün icazə",
   "Forgot_password": "Şifrəni unutmusan",
-  "Forgot_Password_Description": "Aşağıdakı yer tutuculardan istifadə edə bilərsiniz: <br/><ul><li>[Parolayı bərpa etmə URL-i] üçün [Forgot_Password_Url].</li><li>[ad], [fname], [lname] istifadəçinin tam adı, adı və soyadı üçün müvafiq olaraq. Istifadəçinin e-poçtu üçün</li><li>[email].</li><li>[Site_Name] və [Site_URL] üçün ərizə adı və URL sırasıyla.</li></ul>",
+  "Forgot_Password_Description": "Aşağıdakı yer tutuculardan istifadə edə bilərsiniz:  \n - [Parolayı bərpa etmə URL-i] üçün [Forgot_Password_Url].  \n - [ad], [fname], [lname] istifadəçinin tam adı, adı və soyadı üçün müvafiq olaraq. Istifadəçinin e-poçtu üçün  \n - [email].  \n - [Site_Name] və [Site_URL] üçün ərizə adı və URL sırasıyla.",
   "Forgot_Password_Email": "Şifrənizi sıfırlamaq üçün <a href=\"[Forgot_Password_Url]\">burada</a>vurun.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Parolun bərpası",
   "Forgot_password_section": "Şifrəni unutmusunuz",

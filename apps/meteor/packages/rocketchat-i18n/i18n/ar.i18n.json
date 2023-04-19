@@ -2039,7 +2039,7 @@
   "force-delete-message": "فرض حذف رسالة",
   "force-delete-message_description": "إذن لحذف رسالة بتخطي كل القيود",
   "Forgot_password": "هل نسيت كلمة المرور؟",
-  "Forgot_Password_Description": "يمكنك استخدام العناصر النائبة التالية: <br/><ul> <li>[Forgot_Password_Url] لعنوان URL لاستعادة كلمة المرور.</li><li>[name]، [fname]، [lname] للاسم الكامل للمستخدم، الاسم الأول أو اسم العائلة، على التوالي.</li><li>[email] للبريد الإلكتروني للمستخدم.</li></li>[Site_Name] و[Site_URL] لاسم التطبيق وعنوان URL على التوالي.<li></ul>",
+  "Forgot_Password_Description": "يمكنك استخدام العناصر النائبة التالية:  \n - [Forgot_Password_Url] لعنوان URL لاستعادة كلمة المرور.  \n - [name]، [fname]، [lname] للاسم الكامل للمستخدم، الاسم الأول أو اسم العائلة، على التوالي.</li>  \n - [email] للبريد الإلكتروني للمستخدم.</li></li>[Site_Name] و[Site_URL] لاسم التطبيق وعنوان URL على التوالي.",
   "Forgot_Password_Email": "انقر <a href=\"[Forgot_Password_Url]\">هنا </a> لإعادة تعيين كلمة المرور الخاصة بك.",
   "Forgot_Password_Email_Subject": "[Site_Name] - استعادة كلمة المرور",
   "Forgot_password_section": "نسيت كلمة المرور",

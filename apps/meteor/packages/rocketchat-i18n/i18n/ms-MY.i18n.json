@@ -1180,7 +1180,7 @@
   "force-delete-message": "Tekan Padam Mesej",
   "force-delete-message_description": "Kebenaran untuk memadamkan mesej melangkau semua sekatan",
   "Forgot_password": "Lupa kata laluan anda",
-  "Forgot_Password_Description": "Anda boleh menggunakan pemegang tempat berikut: <br/><ul><li>[Forgot_Password_Url] untuk URL pemulihan kata laluan.</li><li>[nama], [fname], [lname] untuk nama penuh pengguna, nama pertama atau nama belakangnya masing-masing.</li><li>[email] untuk e-mel pengguna.</li><li>[Site_Name] dan [Site_URL] untuk Nama Aplikasi dan URL masing-masing.</li></ul>",
+  "Forgot_Password_Description": "Anda boleh menggunakan pemegang tempat berikut:  \n - [Forgot_Password_Url] untuk URL pemulihan kata laluan.  \n - [nama], [fname], [lname] untuk nama penuh pengguna, nama pertama atau nama belakangnya masing-masing.  \n - [email] untuk e-mel pengguna.  \n - [Site_Name] dan [Site_URL] untuk Nama Aplikasi dan URL masing-masing.",
   "Forgot_Password_Email": "Klik <a href=\"[Lupa_Password_Url]\">di sini</a>untuk menetapkan semula kata laluan anda.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Pemulihan Kata Laluan",
   "Forgot_password_section": "Lupa kata laluan",

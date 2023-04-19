@@ -2031,7 +2031,7 @@
   "force-delete-message": "Forcer la suppression du message",
   "force-delete-message_description": "Autorisation de supprimer un message en contournant toutes les restrictions",
   "Forgot_password": "Mot de passe oublié ?",
-  "Forgot_Password_Description": "Vous pouvez utiliser les variables suivantes : <br/><ul><li>[Forgot_Password_Url] pour l'URL de récupération du mot de passe.</li><li>[name], [fname], [lname] pour le nom complet, le prénom ou le nom de famille de l'utilisateur, respectivement.</li><li>[email] pour l'adresse e-mail de l'utilisateur.</li><li>[Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement.</li></ul>",
+  "Forgot_Password_Description": "Vous pouvez utiliser les variables suivantes :  \n - [Forgot_Password_Url] pour l'URL de récupération du mot de passe.  \n - [name], [fname], [lname] pour le nom complet, le prénom ou le nom de famille de l'utilisateur, respectivement.  \n - [email] pour l'adresse e-mail de l'utilisateur.  \n - [Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement.",
   "Forgot_Password_Email": "Cliquez <a href=\"[Forgot_Password_Url]\">ici</a> pour réinitialiser votre mot de passe.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Récupération du mot de passe",
   "Forgot_password_section": "Mot de passe oublié",

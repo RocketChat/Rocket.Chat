@@ -2234,7 +2234,7 @@
   "force-delete-message": "Üzenet törlésének kényszerítése",
   "force-delete-message_description": "Jogosultság egy üzenet törléséhez az összes korlátozást megkerülve",
   "Forgot_password": "Elfelejtette a jelszavát?",
-  "Forgot_Password_Description": "A következő helykitöltőket használhatja: <br/><ul><li>[Forgot_Password_Url] a jelszó-helyreállítási URL-hez.</li><li>[name] a felhasználó teljes nevéhez, [lname] a felhasználó vezetéknevéhez és [fname] a felhasználó keresztnevéhez.</li><li>[email] a felhasználó e-mail-címéhez.</li><li>[Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.</li></ul>",
+  "Forgot_Password_Description": "A következő helykitöltőket használhatja:  \n - [Forgot_Password_Url] a jelszó-helyreállítási URL-hez.  \n - [name] a felhasználó teljes nevéhez, [lname] a felhasználó vezetéknevéhez és [fname] a felhasználó keresztnevéhez.  \n - [email] a felhasználó e-mail-címéhez.  \n - [Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.",
   "Forgot_Password_Email": "<a href=\"[Forgot_Password_Url]\">Kattintson ide</a> a jelszava visszaállításához.",
   "Forgot_Password_Email_Subject": "[Site_Name] – jelszó-helyreállítás",
   "Forgot_password_section": "Elfelejtett jelszó",

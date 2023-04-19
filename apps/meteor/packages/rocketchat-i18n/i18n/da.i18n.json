@@ -1708,7 +1708,7 @@
   "force-delete-message": "Gennemtving sletning af besked",
   "force-delete-message_description": "Tilladelse til at slette en meddelelse omgår alle restriktioner",
   "Forgot_password": "Har du glemt din adgangskode?",
-  "Forgot_Password_Description": "Du kan bruge følgende pladsholdere: <br/><ul><li>[Forgot_Password_Url] til adgangskodegendannelseswebadressen.</li><li>[navn], [fname], [lname] for brugerens fulde navn, fornavn eller efternavn.</li><li>[email] for brugerens e-mail.</li><li>[Site_Name] og [Site_URL] for henholdsvis Applikationsnavn og URL.</li></ul>",
+  "Forgot_Password_Description": "Du kan bruge følgende pladsholdere:  \n - [Forgot_Password_Url] til adgangskodegendannelseswebadressen.  \n - [navn], [fname], [lname] for brugerens fulde navn, fornavn eller efternavn.  \n - [email] for brugerens e-mail.  \n - [Site_Name] og [Site_URL] for henholdsvis Applikationsnavn og URL.",
   "Forgot_Password_Email": "Klik <a href=\"[Forgot_Password_Url]\">her</a> for at nulstille din adgangskode.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Genskabelse af kodeord",
   "Forgot_password_section": "Glemt kodeord",

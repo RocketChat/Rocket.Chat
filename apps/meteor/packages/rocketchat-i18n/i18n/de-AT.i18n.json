@@ -1184,7 +1184,7 @@
   "force-delete-message": "Nachricht erzwingen",
   "force-delete-message_description": "Berechtigung zum Löschen einer Nachricht unter Umgehung aller Einschränkungen",
   "Forgot_password": "Passwort vergessen?",
-  "Forgot_Password_Description": "Sie können die folgenden Platzhalter verwenden: <br/><ul><li>[Forgot_Password_Url] für die Passwortwiederherstellungs-URL.</li><li>[Name], [Name], [Name] für den vollständigen Namen, den Vornamen bzw. den Nachnamen des Benutzers.</li><li>[E-Mail] für die E-Mail des Nutzers.</li><li>[Site_Name] und [Site_URL] für den Anwendungsnamen bzw. die URL.</li></ul>",
+  "Forgot_Password_Description": "Sie können die folgenden Platzhalter verwenden:  \n - [Forgot_Password_Url] für die Passwortwiederherstellungs-URL.  \n - [Name], [Name], [Name] für den vollständigen Namen, den Vornamen bzw. den Nachnamen des Benutzers.  \n - [E-Mail] für die E-Mail des Nutzers.  \n - [Site_Name] und [Site_URL] für den Anwendungsnamen bzw. die URL.",
   "Forgot_Password_Email": "Klicken Sie <a href=\"[Forgot_Password_Url]\">hier</a>, um Ihr Passwort zurückzusetzen.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Passwortwiederherstellung",
   "Forgot_password_section": "Passwort vergessen",

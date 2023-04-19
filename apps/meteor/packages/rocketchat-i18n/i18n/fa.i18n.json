@@ -1441,7 +1441,7 @@
   "force-delete-message": "خاموش کردن پیام",
   "force-delete-message_description": "مجاز به حذف یک پیام در دور زدن همه محدودیت ها",
   "Forgot_password": "فراموشی رمز عبور",
-  "Forgot_Password_Description": "شما ممکن است از متغیرهایی زیر استفاده کنید: <br/><ul><li>[Forgot_Password_Url] برای URL بازیابی رمز عبور.</li><li>[نام]، [نام خانوادگی]، [lname] برای نام کامل، نام یا نام خانوادگی کاربر، به ترتیب.</li><li>[ایمیل] برای ایمیل کاربر.</li><li>[نام سایت] و [Site_URL] برای نام برنامه و URL به ترتیب.</li></ul>",
+  "Forgot_Password_Description": "شما ممکن است از متغیرهایی زیر استفاده کنید:  \n - [Forgot_Password_Url] برای URL بازیابی رمز عبور.  \n - [نام]، [نام خانوادگی]، [lname] برای نام کامل، نام یا نام خانوادگی کاربر، به ترتیب.  \n - [ایمیل] برای ایمیل کاربر.  \n - [نام سایت] و [Site_URL] برای نام برنامه و URL به ترتیب.",
   "Forgot_Password_Email": "روی <a href=\"[Forgot_Password_Url]\">اینجا</a>برای بازنشانی گذرواژه خود کلیک کنید.",
   "Forgot_Password_Email_Subject": "[Site_Name] - بازیابی رمز عبور",
   "Forgot_password_section": "رمز عبور را فراموش کرده اید",

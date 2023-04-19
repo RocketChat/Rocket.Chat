@@ -1755,7 +1755,7 @@
   "force-delete-message": "메시지 강제 삭제",
   "force-delete-message_description": "모든 제한을 우회하는 메시지를 삭제할 수있는 권한",
   "Forgot_password": "비밀번호를 잊으셨나요?",
-  "Forgot_Password_Description": "비밀번호 재생 URL은 <br/><ul><li>[Forgot_Password_Url]과 같은 자리 표시자를 사용할 수 있습니다.</li><li>사용자 이름, 성 또는 이름에 대한 [name], [fname], [lname].</li><li>사용자 이메일 용 [email].</li><li>[Application_Name] 및 [Site_URL]은 각각 Application Name 및 URL입니다.</li></ul>",
+  "Forgot_Password_Description": "비밀번호 재생 URL은  \n - [Forgot_Password_Url]과 같은 자리 표시자를 사용할 수 있습니다.  \n - 사용자 이름, 성 또는 이름에 대한 [name], [fname], [lname].  \n - 사용자 이메일 용 [email].  \n - [Application_Name] 및 [Site_URL]은 각각 Application Name 및 URL입니다.",
   "Forgot_Password_Email": "비밀번호를 재설정하려면 <a href=\"[Forgot_Password_Url]\">여기</a> 를 클릭하십시오.",
   "Forgot_Password_Email_Subject": "[Site_Name] - 비밀번호 복구",
   "Forgot_password_section": "비밀번호를 잊으셨나요",

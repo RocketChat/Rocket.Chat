@@ -1697,7 +1697,7 @@
   "force-delete-message": "Smazat zprávu",
   "force-delete-message_description": "Právo smazat zprávu přes všechna omezení",
   "Forgot_password": "Zapomněli jste heslo?",
-  "Forgot_Password_Description": "Můžete použít následující zástupné symboly: <br/><ul><li>[Forgot_Password_Url] pro adresu stránky na obnovu hesla</li><li>[name] pro celé jméno, [fname] pro křestní jméno a [lname] pro příjmení uživatele.</li><li>[email] pro email uživatelé.</li><li>[Site_Name] pro název a [Site_URL] pro a URL stránky.</li></ul>",
+  "Forgot_Password_Description": "Můžete použít následující zástupné symboly:  \n - [Forgot_Password_Url] pro adresu stránky na obnovu hesla  \n - [name] pro celé jméno, [fname] pro křestní jméno a [lname] pro příjmení uživatele.  \n - [email] pro email uživatelé.  \n - [Site_Name] pro název a [Site_URL] pro a URL stránky.",
   "Forgot_Password_Email": "Klikněte na <a href=\"[Forgot_Password_Url]\">tento odkaz</a> pro obnovení vašeho hesla.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Obnova Hesla",
   "Forgot_password_section": "Zapomenuté heslo",

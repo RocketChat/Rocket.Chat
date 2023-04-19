@@ -1202,7 +1202,7 @@
   "force-delete-message": "强制删除消息",
   "force-delete-message_description": "允许删除绕过所有限制的消息",
   "Forgot_password": "忘记密码",
-  "Forgot_Password_Description": "您可以使用以下占位符：<br/><ul><li>[Forgot_Password_Url]获取密码恢复网址。</li><li>[姓名]，[fname]，[lname]分别代表用户的全名，名字或姓氏。用户的电子邮件为</li><li>[email]。分别为应用程序名称和URL分别为</li><li>[Site_Name]和[Site_URL]。</li></ul>",
+  "Forgot_Password_Description": "您可以使用以下占位符：  \n - [Forgot_Password_Url]获取密码恢复网址。  \n - [姓名]，[fname]，[lname]分别代表用户的全名，名字或姓氏。用户的电子邮件为  \n - [email]。分别为应用程序名称和URL分别为  \n - [Site_Name]和[Site_URL]。",
   "Forgot_Password_Email": "点击<a href=\"[Forgot_Password_Url]\">此处</a>重置您的密码。",
   "Forgot_Password_Email_Subject": "[Site_Name]  - 密码恢复",
   "Forgot_password_section": "忘记密码",

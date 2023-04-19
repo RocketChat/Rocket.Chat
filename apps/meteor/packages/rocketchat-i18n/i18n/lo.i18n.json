@@ -1216,7 +1216,7 @@
   "force-delete-message": "Force Delete Message",
   "force-delete-message_description": "ການອະນຸຍາດທີ່ຈະລຶບຂໍ້ຄວາມໂດຍບໍ່ມີຂໍ້ຈໍາກັດທັງຫມົດ",
   "Forgot_password": "ລືມ​ລະ​ຫັດ​ຜ່ານ​",
-  "Forgot_Password_Description": "ທ່ານອາດຈະນໍາໃຊ້ບ່ອນວາງສະຖານດັ່ງຕໍ່ໄປນີ້: <br/><ul><li>[ລືມລະຫັດຜ່ານ] ສໍາລັບ URL ກູ້ຄືນລະຫັດຜ່ານ.</li><li>[ຊື່], [fname], [lname] ສໍາລັບຊື່ເຕັມ, ຊື່ຫຼືນາມສະກຸນຂອງຜູ້ໃຊ້.</li><li>[ອີເມວ] ສໍາລັບອີເມວຂອງຜູ້ໃຊ້.</li><li>[Site_Name] ແລະ [Site_URL] ສໍາລັບຊື່ແອັບຯແລະ URL ຕາມລໍາດັບ.</li></ul>",
+  "Forgot_Password_Description": "ທ່ານອາດຈະນໍາໃຊ້ບ່ອນວາງສະຖານດັ່ງຕໍ່ໄປນີ້:  \n - [ລືມລະຫັດຜ່ານ] ສໍາລັບ URL ກູ້ຄືນລະຫັດຜ່ານ.  \n - [ຊື່], [fname], [lname] ສໍາລັບຊື່ເຕັມ, ຊື່ຫຼືນາມສະກຸນຂອງຜູ້ໃຊ້.  \n - [ອີເມວ] ສໍາລັບອີເມວຂອງຜູ້ໃຊ້.  \n - [Site_Name] ແລະ [Site_URL] ສໍາລັບຊື່ແອັບຯແລະ URL ຕາມລໍາດັບ.",
   "Forgot_Password_Email": "ກົດ <a href=\"[Forgot_Password_Url]\" >ທີ່ນີ້</a>ເພື່ອຕັ້ງຄ່າລະຫັດຜ່ານຂອງທ່ານ.",
   "Forgot_Password_Email_Subject": "[Site_Name] - ການກູ້ຄືນລະຫັດຜ່ານ",
   "Forgot_password_section": "ລືມລະຫັດຜ່ານ",

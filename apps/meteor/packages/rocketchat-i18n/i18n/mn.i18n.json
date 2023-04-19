@@ -1179,7 +1179,7 @@
   "force-delete-message": "Зурвас устгах хүч",
   "force-delete-message_description": "Бүх хязгаарлалтыг багтаасан мессежийг устгах зөвшөөрөл",
   "Forgot_password": "Нууц үгээ мартсан",
-  "Forgot_Password_Description": "Та дараах байршлыг ашиглаж болно: <br/><ul><li>[Forgot_Password_Url] нууц үгийн сэргээлтийн URL-г ашиглаж болно.</li><li>[нэр], [fname], [lname] хэрэглэгчийн бүтэн нэр, эхний нэр эсвэл овог нэр.</li><li>[имэйл] хэрэглэгчийн имэйлийн хувьд.</li><li>[Site_Name] болон [Site_URL] нь Програмын Нэр болон URL-ыг тус тусад нь зааж өгсөн.</li></ul>",
+  "Forgot_Password_Description": "Та дараах байршлыг ашиглаж болно:  \n - [Forgot_Password_Url] нууц үгийн сэргээлтийн URL-г ашиглаж болно.  \n - [нэр], [fname], [lname] хэрэглэгчийн бүтэн нэр, эхний нэр эсвэл овог нэр.  \n - [имэйл] хэрэглэгчийн имэйлийн хувьд.  \n - [Site_Name] болон [Site_URL] нь Програмын Нэр болон URL-ыг тус тусад нь зааж өгсөн.",
   "Forgot_Password_Email": "Энд дарж <a href=\"[Forgot_Password_Url]\">энд</a>нууц үгээ дахин тохируулна уу.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Нууц үг сэргээх",
   "Forgot_password_section": "Нууц үгээ мартсан",

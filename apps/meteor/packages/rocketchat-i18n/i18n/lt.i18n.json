@@ -1238,7 +1238,7 @@
   "force-delete-message": "Priversti ištrinti pranešimą",
   "force-delete-message_description": "Leidimas ištrinti pranešimą apeinant visus apribojimus",
   "Forgot_password": "Pamiršai slaptažodį",
-  "Forgot_Password_Description": "Slaptažodžio atkūrimo URL galite naudoti šiuos užpildytojus: <br/><ul><li>[Forgot_Password_Url].</li><li>[vardas], [fname], [lname] atitinkamai vartotojo vardas, pavardė arba vardas.</li><li>[el. Paštas] naudotojo el. Laiškui.</li><li>> [Site_Name] ir [Site_URL] atitinkamai programos pavadinimui ir URL.</li></ul>",
+  "Forgot_Password_Description": "Slaptažodžio atkūrimo URL galite naudoti šiuos užpildytojus:  \n - [Forgot_Password_Url].  \n - [vardas], [fname], [lname] atitinkamai vartotojo vardas, pavardė arba vardas.  \n - [el. Paštas] naudotojo el. Laiškui.  \n - [Site_Name] ir [Site_URL] atitinkamai programos pavadinimui ir URL.",
   "Forgot_Password_Email": "Spustelėkite <a href=\"[Forgot_Password_Url]\">čia</a>, jei norite iš naujo nustatyti slaptažodį.",
   "Forgot_Password_Email_Subject": "[Site_Name] - slaptažodžio atkūrimas",
   "Forgot_password_section": "Pamiršote slaptažodį",

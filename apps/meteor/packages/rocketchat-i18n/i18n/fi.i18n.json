@@ -2312,7 +2312,7 @@
   "force-delete-message": "Pakota viestin poisto",
   "force-delete-message_description": "Oikeus poistaa viesti ohittaen kaikki rajoitukset",
   "Forgot_password": "Unohditko salasanasi?",
-  "Forgot_Password_Description": "Voit käyttää seuraavia paikkamerkkejä: <br/><ul><li>[Forgot_Password_Url] salasanan palautus-URL-osoitteen paikalla.</li><li>[name], [fname], [lname] käyttäjän koko nimen, etunimen tai sukunimen paikalla.</li><li>[email] käyttäjän sähköpostiosoitteen paikalla.</li><li>[Site_Name] ja [Site_URL] sovelluksen nimen ja URL-osoitteen paikalla.</li></ul>",
+  "Forgot_Password_Description": "Voit käyttää seuraavia paikkamerkkejä:  \n - [Forgot_Password_Url] salasanan palautus-URL-osoitteen paikalla.  \n - [name], [fname], [lname] käyttäjän koko nimen, etunimen tai sukunimen paikalla.  \n - [email] käyttäjän sähköpostiosoitteen paikalla.  \n - [Site_Name] ja [Site_URL] sovelluksen nimen ja URL-osoitteen paikalla.",
   "Forgot_Password_Email": "Nollaa salasanasi napsauttamalla <a href=\"[Forgot_Password_Url]\">tätä</a>.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Salasanan palautus",
   "Forgot_password_section": "Unohtunut salasana",

@@ -1422,7 +1422,7 @@
   "force-delete-message": "Forçar a remoção da mensagem",
   "force-delete-message_description": "Permissão para apagar uma mensagem ignorando todas as restrições",
   "Forgot_password": "Esqueceu a sua senha ?",
-  "Forgot_Password_Description": "Pode usar os seguintes espaços reservados: <br/><ul><li>[Forgot_Password_Url] para o URL de recuperação de senha.</li><li>[name], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do utilizador, respectivamente.</li><li>[email] para o email do utilizador.</li><li>[Site_Name] e [Site_URL] para o Nome da aplicação e o URL, respectivamente.</li></ul>",
+  "Forgot_Password_Description": "Pode usar os seguintes espaços reservados:  \n - [Forgot_Password_Url] para o URL de recuperação de senha.  \n - [name], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do utilizador, respectivamente.  \n - [email] para o email do utilizador.  \n - [Site_Name] e [Site_URL] para o Nome da aplicação e o URL, respectivamente.",
   "Forgot_Password_Email": "Clique em <a href=\"[Forgot_Password_Url]\">aqui</a>para redefinir a sua senha.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Recuperação de senha",
   "Forgot_password_section": "Esqueceu a senha",

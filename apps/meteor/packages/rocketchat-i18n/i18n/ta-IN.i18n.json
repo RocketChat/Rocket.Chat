@@ -1183,7 +1183,7 @@
   "force-delete-message": "செய்தி நீக்கு",
   "force-delete-message_description": "எல்லா கட்டுப்பாடுகளையும் தவிர்த்து ஒரு செய்தியை நீக்க அனுமதி",
   "Forgot_password": "உங்கள் கடவுச்சொல்லை மறந்து விட்டீர்களா",
-  "Forgot_Password_Description": "நீங்கள் பின்வரும் பெட்டிகளைப் பயன்படுத்தலாம்: <br/><ul><li>கடவுச்சொல் மீட்டெடுப்பு URL க்கான [Forget_html_Url]. முறையே பயனரின் முழுப்பெயர், முதல் பெயர் அல்லது கடைசி பெயர்</li><li>[name], [fname], [lname]. பயனர் மின்னஞ்சலுக்கான</li><li>[மின்னஞ்சல்]. விண்ணப்பம் பெயர் மற்றும் URL ஆகியவற்றை முறையே</li><li>[Site_Name] மற்றும் [Site_URL].</li></ul>",
+  "Forgot_Password_Description": "நீங்கள் பின்வரும் பெட்டிகளைப் பயன்படுத்தலாம்:  \n - கடவுச்சொல் மீட்டெடுப்பு URL க்கான [Forget_html_Url]. முறையே பயனரின் முழுப்பெயர், முதல் பெயர் அல்லது கடைசி பெயர்  \n - [name], [fname], [lname]. பயனர் மின்னஞ்சலுக்கான  \n - [மின்னஞ்சல்]. விண்ணப்பம் பெயர் மற்றும் URL ஆகியவற்றை முறையே  \n - [Site_Name] மற்றும் [Site_URL].",
   "Forgot_Password_Email": "உங்கள் கடவுச்சொல்லை மீட்டமைக்க <a href=\"[Forgot_Password_Url]\">இங்கே</a>கிளிக் செய்க.",
   "Forgot_Password_Email_Subject": "[Site_Name] - கடவுச்சொல் மீட்பு",
   "Forgot_password_section": "கடவுச்சொல்லை மறந்துவிட்டீர்களா",

@@ -2310,7 +2310,7 @@
   "force-delete-message": "Tvinga bort meddelande",
   "force-delete-message_description": "Tillstånd att radera ett meddelande och gå förbi alla begränsningar",
   "Forgot_password": "Glömt ditt lösenord?",
-  "Forgot_Password_Description": "Du kan använda följande platsinnehavare: <br/><ul><li>[Forgot_Password_Url] för URL-återställningsadressen.</li><li>[namn], [fname], [lname] för användarens fullständiga namn, förnamn eller efternamn.</li><li>[email] för användarens email.</li><li>[Site_Name] och [Site_URL] för respektive programnamn och URL.</li></ul>",
+  "Forgot_Password_Description": "Du kan använda följande platsinnehavare:  \n - [Forgot_Password_Url] för URL-återställningsadressen.  \n - [namn], [fname], [lname] för användarens fullständiga namn, förnamn eller efternamn.  \n - [email] för användarens email.  \n - [Site_Name] och [Site_URL] för respektive programnamn och URL.",
   "Forgot_Password_Email": "Klicka på <a href=\"[Forgot_Password_Url]\">här</a> för att återställa ditt lösenord.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Återställning av lösenord",
   "Forgot_password_section": "Glömt lösenord",

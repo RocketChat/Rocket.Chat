@@ -2013,7 +2013,7 @@
   "force-delete-message": "メッセージを強制的に削除",
   "force-delete-message_description": "すべての制限をバイパスしてメッセージを削除する権限",
   "Forgot_password": "パスワードをお忘れですか？",
-  "Forgot_Password_Description": "次のプレースホルダーを使用できます。<br/><ul><li>[Forgot_Password_Url] （パスワード復元URL）</li><li>[name]（氏名）、[fname]（名）、[lname]（姓）</li><li>[email] （ユーザーのメールアドレス）</li><li>[Site_Name]（アプリケーション名）と[Site_URL]（URL）</li></ul>",
+  "Forgot_Password_Description": "次のプレースホルダーを使用できます。  \n - [Forgot_Password_Url] （パスワード復元URL）  \n - [name]（氏名）、[fname]（名）、[lname]（姓）  \n - [email] （ユーザーのメールアドレス）  \n - [Site_Name]（アプリケーション名）と[Site_URL]（URL）",
   "Forgot_Password_Email": "パスワードをリセットするには、<a href=\"[Forgot_Password_Url]\">ここ</a>をクリックします。",
   "Forgot_Password_Email_Subject": "[Site_Name]  - パスワードの復元",
   "Forgot_password_section": "パスワードを忘れた場合",

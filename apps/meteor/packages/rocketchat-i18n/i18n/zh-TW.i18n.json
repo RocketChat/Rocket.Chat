@@ -1962,7 +1962,7 @@
   "force-delete-message": "強制刪除訊息",
   "force-delete-message_description": "允許刪除繞過所有限制的訊息",
   "Forgot_password": "忘記密碼",
-  "Forgot_Password_Description": "您可以使用以下佔位符：<br/><ul><li>[Forgot_Password_Url]獲取密碼恢復網址。</li><li>[姓名]，[fname]，[lname]分別代表用戶的全名，名字或姓氏。用戶的電子郵件為</li><li>[email]。分別為應用程序名稱和URL分別為</li><li>[Site_Name]和[Site_URL]。</li></ul>",
+  "Forgot_Password_Description": "您可以使用以下佔位符：  \n - [Forgot_Password_Url]獲取密碼恢復網址。  \n - [姓名]，[fname]，[lname]分別代表用戶的全名，名字或姓氏。用戶的電子郵件為  \n - [email]。分別為應用程序名稱和URL分別為  \n - [Site_Name]和[Site_URL]。",
   "Forgot_Password_Email": "點擊<a href=\"[Forgot_Password_Url]\">此處</a>重置您的密碼。",
   "Forgot_Password_Email_Subject": "[Site_Name]  - 密碼恢復",
   "Forgot_password_section": "忘記密碼",

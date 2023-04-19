@@ -1253,7 +1253,7 @@
   "force-delete-message": "Tving slett melding",
   "force-delete-message_description": "Tillatelse til å slette en melding omgå alle begrensninger",
   "Forgot_password": "Glemt passordet",
-  "Forgot_Password_Description": "Du kan bruke følgende plassholdere:<br/><ul><li>[Forgot_Password_Url] for URL-adressen for passordgjenoppretting.</li><li>[navn], [fname], [lname] for brukerens fulle navn, fornavn eller etternavn.</li><li>[email] for brukerens e-postadresse.</li><li>[Site_Name] og [Site_URL] for henholdsvis programnavnet og nettadressen.</li></ul>",
+  "Forgot_Password_Description": "Du kan bruke følgende plassholdere:  \n - [Forgot_Password_Url] for URL-adressen for passordgjenoppretting.  \n - [navn], [fname], [lname] for brukerens fulle navn, fornavn eller etternavn.  \n - [email] for brukerens e-postadresse.  \n - [Site_Name] og [Site_URL] for henholdsvis programnavnet og nettadressen.",
   "Forgot_Password_Email": "Klikk <a href=\"[Forgot_Password_Url]\">her</a>for å tilbakestille passordet ditt.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Passordgjenoppretting",
   "Forgot_password_section": "Glemt passord",

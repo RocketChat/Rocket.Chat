@@ -1193,7 +1193,7 @@
   "force-delete-message": "Vynútiť vymazanie správy",
   "force-delete-message_description": "Povolenie na odstránenie správy obchádzajúce všetky obmedzenia",
   "Forgot_password": "Zabudol si heslo",
-  "Forgot_Password_Description": "Môžete použiť nasledujúce zástupné symboly: <br/><ul><li>[Forgot_Password_Url] pre adresu URL na obnovenie hesla.</li><li>[meno], [fname], [lname] pre celé meno používateľa, krstné meno alebo priezvisko.</li><li>[email] pre e-mail používateľa.</li><li>[Site_Name] a [Site_URL] pre názov aplikácie a adresu URL.</li></ul>",
+  "Forgot_Password_Description": "Môžete použiť nasledujúce zástupné symboly:  \n - [Forgot_Password_Url] pre adresu URL na obnovenie hesla.  \n - [meno], [fname], [lname] pre celé meno používateľa, krstné meno alebo priezvisko.  \n - [email] pre e-mail používateľa.  \n - [Site_Name] a [Site_URL] pre názov aplikácie a adresu URL.",
   "Forgot_Password_Email": "Ak chcete obnoviť svoje heslo, kliknite <a href=\"[Forgot_Password_Url]\">sem</a>.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Obnova hesla",
   "Forgot_password_section": "Zabudol si heslo",
