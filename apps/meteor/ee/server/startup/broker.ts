@@ -67,27 +67,36 @@ class EJSONSerializer extends Base {
 	}
 
 	deserialize(buf: Buffer): any {
-		const result = EJSON.parse(buf.toString());
+		/**
+		 * The message object may contain a `params` property if it's an action call,
+		 * i.e. service API call in these cases, whenever the service that makes a call
+		 * and sends a buffer as a parameter we want the receiving service to receive a
+		 * buffer instead of a Uint8Array
+		 *
+		 * The message object may contain a `data` property usually when it is a response
+		 * message to an action, i.e. the returning value of a service API call.
+		 * We also want these to be parsed back into a Buffer
+		 */
+		return this.rebufferize(EJSON.parse(buf.toString()));
+	}
 
-		// `result` will contain a `params` property if it's an action call, i.e. service API call
-		// in these cases, whenever the service that makes a call and sends a buffer as a parameter
-		// we want the receiving service to receive a buffer instead of a Uint8Array
-		if (Array.isArray(result.params)) {
-			result.params.forEach((value: any, index: number, source: any[]) => {
-				if (EJSON.isBinary(value)) {
-					source[index] = Buffer.from(value);
-				}
+	/**
+	 * Recrusively convert all EJSON.Binary objects to Buffers
+	 */
+	rebufferize(obj: unknown): any {
+		if (EJSON.isBinary(obj)) {
+			return Buffer.from(obj as Uint8Array);
+		}
+
+		// We exclude strings because they are also iterable but are a primitive type
+		if (obj && typeof obj !== 'string') {
+			// Arrays and objects are iterable and can be handled the same way
+			Object.entries(obj).forEach(([key, value]) => {
+				(obj as Record<string, unknown>)[key] = this.rebufferize(value);
 			});
 		}
 
-		// `result` will contain a `data` property usually when it is a response message to an action,
-		// i.e. the returning value of a service API call
-		// We also want these to be parsed back into a Buffer
-		if (EJSON.isBinary(result.data)) {
-			result.data = Buffer.from(result.data);
-		}
-
-		return result;
+		return obj;
 	}
 }
 
