@@ -1,9 +1,9 @@
 import type { IUser, IMessage, ReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
+import { otrSystemMessages } from '../../../../app/otr/lib/constants';
 
 export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ReadReceipt>>) {
@@ -38,11 +38,16 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		return this.deleteMany({ messageId: { $in: messageIds } });
 	}
 
-	removeByRoomIdAndTypesUntilDate(roomId: string, types: string[], until: Date): Promise<DeleteResult> {
+	removeOTRReceiptsUntilDate(roomId: string, until: Date): Promise<DeleteResult> {
 		const query = {
 			roomId,
 			t: {
-				$in: types,
+				$in: [
+					'otr',
+					otrSystemMessages.USER_JOINED_OTR,
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+				],
 			},
 			ts: { $lte: until },
 		};
@@ -54,7 +59,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
-		users: IUser['username'][],
+		users: IUser['_id'][],
 		ignoreThreads: boolean,
 	): Promise<DeleteResult> {
 		const query: Filter<ReadReceipt> = {
@@ -76,16 +81,16 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		}
 
 		if (users.length) {
-			const uids = await Users.findByUsernames(users, { projection: { _id: 1 } })
-				.map((user: IUser) => user._id)
-				.toArray();
-			query.userId = { $in: uids };
+			query.userId = { $in: users };
 		}
 
 		return this.deleteMany(query);
 	}
 
-	setPinnedByMessageId(messageId: string, pinned: boolean): Promise<Document | UpdateResult> {
+	setPinnedByMessageId(messageId: string, pinned?: boolean): Promise<Document | UpdateResult> {
+		if (pinned == null) {
+			pinned = true;
+		}
 		return this.updateMany({ messageId }, { $set: { pinned } });
 	}
 

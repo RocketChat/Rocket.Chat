@@ -26,7 +26,7 @@ import type {
 	UpdateFilter,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms, ReadReceipts } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -566,12 +566,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async removeById(_id: string): Promise<DeleteResult> {
-		await ReadReceipts.removeByMessageId(_id);
 		return this.deleteMany({ _id });
 	}
 
 	async removeByRoomId(roomId: string): Promise<DeleteResult> {
-		await ReadReceipts.removeByRoomId(roomId);
 		return this.deleteMany({ rid: roomId });
 	}
 
@@ -615,20 +613,18 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
-		const OTRMessageTypes: MessageTypesValues[] = [
-			'otr',
-			otrSystemMessages.USER_JOINED_OTR,
-			otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-			otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-		];
 		const query: Filter<IMessage> = {
 			rid: roomId,
 			t: {
-				$in: OTRMessageTypes,
+				$in: [
+					'otr',
+					otrSystemMessages.USER_JOINED_OTR,
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+				],
 			},
 			ts: { $lte: ts },
 		};
-		await ReadReceipts.removeByRoomIdAndTypesUntilDate(roomId, OTRMessageTypes, ts);
 		return this.deleteMany(query);
 	}
 
@@ -1100,7 +1096,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		await ReadReceipts.setPinnedByMessageId(_id, pinned);
 		return this.updateOne(query, update);
 	}
 
@@ -1256,8 +1251,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	// REMOVE
 
-	async removeByRoomIds(rids: string[]): Promise<DeleteResult> {
-		await ReadReceipts.removeByRoomIds(rids);
+	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ rid: { $in: rids } });
 	}
 
@@ -1298,7 +1292,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
-	): Promise<number> {
+	): Promise<{ count: number; selectedMessageIds?: string[] }> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1320,15 +1314,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount;
-			await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion, ts, users, ignoreThreads);
 
 			// decrease message count
 			await Rooms.decreaseMessageCountById(rid, count);
 
-			return count;
+			return { count };
 		}
 
-		const messagesToDelete = (
+		const selectedMessageIds = (
 			await this.find(query, {
 				projection: {
 					_id: 1,
@@ -1340,23 +1333,20 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const count = (
 			await this.deleteMany({
 				_id: {
-					$in: messagesToDelete,
+					$in: selectedMessageIds,
 				},
 			})
 		).deletedCount;
 
-		await ReadReceipts.removeByMessageIds(messagesToDelete);
-
 		// decrease message count
 		await Rooms.decreaseMessageCountById(rid, count);
 
-		return count;
+		return { count, selectedMessageIds };
 	}
 
 	async removeByUserId(userId: string): Promise<DeleteResult> {
 		const query = { 'u._id': userId };
 
-		await ReadReceipts.removeByUserId(userId);
 		return this.deleteMany(query);
 	}
 
@@ -1527,7 +1517,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		await ReadReceipts.incrementThreadMessagesCountById(tmid);
 		return this.updateOne(query, update);
 	}
 
@@ -1623,7 +1612,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				tcount: inc,
 			},
 		};
-		await ReadReceipts.incrementThreadMessagesCountById(_id, inc);
 		return this.updateOne(query, update);
 	}
 }

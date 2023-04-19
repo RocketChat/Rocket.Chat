@@ -21,6 +21,7 @@ import {
 	LivechatDepartmentAgents,
 	Rooms,
 	Users,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
 
@@ -454,6 +455,7 @@ export const Livechat = {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
@@ -981,6 +983,7 @@ export const Livechat = {
 		for await (const room of cursor) {
 			await FileUpload.removeFilesByRoomId(room._id);
 			await Messages.removeByRoomId(room._id);
+			await ReadReceipts.removeByRoomId(room._id);
 		}
 
 		await Subscriptions.removeByVisitorToken(token);

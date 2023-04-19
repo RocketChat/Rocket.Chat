@@ -1,4 +1,4 @@
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
@@ -19,6 +19,7 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 	];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await ReadReceipts.incrementThreadMessagesCountById(tmid);
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 

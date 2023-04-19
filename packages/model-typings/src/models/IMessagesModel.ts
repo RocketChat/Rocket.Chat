@@ -224,7 +224,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
-	): Promise<number>;
+	): Promise<{ count: number; selectedMessageIds?: string[] }>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;

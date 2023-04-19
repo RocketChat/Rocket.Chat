@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Uploads } from '@rocket.chat/models';
+import { Messages, Rooms, Uploads, ReadReceipts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -24,6 +24,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	if (deletedMsg?.tmid) {
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
+		await ReadReceipts.incrementThreadMessagesCountById(deletedMsg.tmid, -1);
 	}
 
 	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
@@ -42,6 +43,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	} else {
 		if (!showDeletedStatus) {
 			await Messages.removeById(message._id);
+			await ReadReceipts.removeByMessageId(message._id);
 		}
 
 		for await (const file of files) {

@@ -10,16 +10,16 @@ export interface IReadReceiptsModel extends IBaseModel<ReadReceipt> {
 	removeByRoomIds(roomIds: string[]): Promise<DeleteResult>;
 	removeByMessageId(messageId: string): Promise<DeleteResult>;
 	removeByMessageIds(messageIds: string[]): Promise<DeleteResult>;
-	removeByRoomIdAndTypesUntilDate(roomId: string, types: string[], until: Date): Promise<DeleteResult>;
+	removeOTRReceiptsUntilDate(roomId: string, until: Date): Promise<DeleteResult>;
 	removeByIdPinnedTimestampLimitAndUsers(
 		roomId: string,
 		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
-		users: IUser['username'][],
+		users: IUser['_id'][],
 		ignoreThreads: boolean,
 	): Promise<DeleteResult>;
-	setPinnedByMessageId(messageId: string, pinned: boolean): Promise<Document | UpdateResult>;
+	setPinnedByMessageId(messageId: string, pinned?: boolean): Promise<Document | UpdateResult>;
 	incrementThreadMessagesCountById(messageId: string, inc?: number): Promise<Document | UpdateResult>;
 	unsetThreadMessagesCountById(messageId: string): Promise<Document | UpdateResult>;
 }
