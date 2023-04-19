@@ -98,7 +98,9 @@ export class TooltipContainer extends Component {
 	}
 }
 
-export const TooltipTrigger = ({ children, content, placement }) => (
+// TODO: remove placement default value once we convert this to TS
+
+export const TooltipTrigger = ({ children, content, placement = 'bottom' }) => (
 	<TooltipContext.Consumer>
 		{({ showTooltip, hideTooltip }) =>
 			toChildArray(children).map((child, index) =>
