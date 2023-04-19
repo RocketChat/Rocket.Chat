@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import $ from 'jquery';
 
 import { emoji } from '../../lib/rocketchat';
 import { updateRecentEmoji } from '../emojiPicker';
