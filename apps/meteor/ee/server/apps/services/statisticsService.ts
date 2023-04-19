@@ -22,7 +22,7 @@ export class AppsStatisticsService extends ServiceClass implements IAppsStatisti
 		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 
-	getStatistics(): AppStatistics {
+	async getStatistics(): Promise<AppStatistics> {
 		const isInitialized = this.apps.isInitialized();
 		const manager = this.apps.getManager();
 
