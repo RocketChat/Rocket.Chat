@@ -74,3 +74,4 @@ export * from './models/IFederationRoomEventsModel';
 export * from './models/IAppsTokensModel';
 export * from './models/IAuditLogModel';
 export * from './models/IModerationReportsModel';
+export * from './models/IMigrationsModel';
