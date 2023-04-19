@@ -42,7 +42,7 @@ import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
-import { IAppsApiService } from './types/IAppsApiService';
+import { AppsApiServiceResponse, IAppsApiService, IRequestWithPrivateHash } from './types/IAppsApiService';
 import { IAppsManagerService } from './types/IAppsManagerService';
 import { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
@@ -60,6 +60,7 @@ export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } fr
 
 export {
 	AutoUpdateRecord,
+	AppsApiServiceResponse,
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
@@ -125,6 +126,7 @@ export {
 	IMessageService,
 	ISettingsService,
 	IOmnichannelIntegrationService,
+	IRequestWithPrivateHash,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
