@@ -1,4 +1,24 @@
 
+# 6.1.3
+`2023-04-17  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.1`
+
+### 🐛 Bug fixes
+
+
+- Livechat notifications not working correctly ([#28741](https://github.com/RocketChat/Rocket.Chat/pull/28741))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@tassoevan](https://github.com/tassoevan)
+
+
 # 6.1.2
 `2023-04-13  ·  4 🐛  ·  3 🔍  ·  11 👩‍💻👨‍💻`
 
