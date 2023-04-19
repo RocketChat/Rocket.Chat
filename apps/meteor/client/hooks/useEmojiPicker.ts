@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
-import { openEmojiPicker, closeEmojiPicker } from '../../../../../app/ui/client/lib/emojiPicker';
+import { openEmojiPicker, closeEmojiPicker } from '../../app/ui/client/lib/emojiPicker';
 
 export const useEmojiPicker = () => {
 	useEffect(() => {
