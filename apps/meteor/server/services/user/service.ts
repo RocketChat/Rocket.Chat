@@ -3,7 +3,8 @@ import type { ISetUserAvatarParams, IUserService } from '@rocket.chat/core-servi
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { setUserAvatar } from '../../../app/lib/server';
-import { checkUsernameAvailability, deleteUser as meteorDeleteUser } from '../../../app/lib/server/functions';
+import { deleteUser as meteorDeleteUser } from '../../../app/lib/server/functions';
+import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 
 export class UserService extends ServiceClassInternal implements IUserService {
 	protected name = 'user';
@@ -13,8 +14,8 @@ export class UserService extends ServiceClassInternal implements IUserService {
 	}
 
 	async setUserAvatar({ user, dataURI, contentType, service, etag }: ISetUserAvatarParams): Promise<void> {
-		Meteor.runAsUser(user._id, () => {
-			setUserAvatar(user, dataURI, contentType, service, etag);
+		await Meteor.runAsUser(user._id, async () => {
+			await setUserAvatar(user, dataURI, contentType, service, etag);
 		});
 	}
 

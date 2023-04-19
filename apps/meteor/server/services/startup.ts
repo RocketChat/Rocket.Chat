@@ -29,7 +29,7 @@ import { FetchService } from './fetch/service';
 import { LivechatService } from './livechat/service';
 import { NotificationService } from './notification/service';
 import { SlashCommandService } from './slashcommand/service';
-import { MessageService } from './messages/service';
+import { MessageService } from './message/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';

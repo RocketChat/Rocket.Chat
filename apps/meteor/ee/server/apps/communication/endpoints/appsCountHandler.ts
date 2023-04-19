@@ -1,7 +1,7 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { AppsManager } from '@rocket.chat/core-services';
+import type { IAppStorageItem } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
-import type { AppsRestApi } from '../rest';
 import { getAppsConfig } from '../../../../app/license/server/license';
 import type { SuccessResult } from '../../../../../app/api/server/definition';
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
@@ -13,22 +13,23 @@ type AppsCountResult = {
 	maxPrivateApps: number;
 };
 
-export const appsCountHandler = (apiManager: AppsRestApi) =>
+export const appsCountHandler = () =>
 	[
 		{
 			authRequired: false,
 		},
 		{
-			get(): SuccessResult<AppsCountResult> {
-				const manager = apiManager._manager as AppManager;
-
-				const apps = manager.get({ enabled: true });
+			async get(): Promise<SuccessResult<AppsCountResult>> {
+				const apps = await AppsManager.get({ enabled: true });
 				const { maxMarketplaceApps, maxPrivateApps } = getAppsConfig();
 
 				return API.v1.success({
-					totalMarketplaceEnabled: apps.filter((app) => getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'marketplace')
-						.length,
-					totalPrivateEnabled: apps.filter((app) => getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'private').length,
+					totalMarketplaceEnabled: apps.filter(
+						(app) => getInstallationSourceFromAppStorageItem(app?.getStorageItem() as IAppStorageItem) === 'marketplace',
+					).length,
+					totalPrivateEnabled: apps.filter(
+						(app) => getInstallationSourceFromAppStorageItem(app?.getStorageItem() as IAppStorageItem) === 'private',
+					).length,
 					maxMarketplaceApps,
 					maxPrivateApps,
 				});

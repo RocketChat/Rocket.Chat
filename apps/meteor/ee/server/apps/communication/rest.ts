@@ -74,7 +74,7 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler());
-		this.api.addRoute('count', ...appsCountHandler(this));
+		this.api.addRoute('count', ...appsCountHandler());
 
 		this.api.addRoute(
 			'incompatibleModal',
@@ -215,7 +215,7 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
@@ -337,7 +337,7 @@ export class AppsRestApi {
 							return API.v1.success({ buff });
 						}
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-						const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+						const baseUrl = await Apps.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
 						try {
@@ -507,8 +507,8 @@ export class AppsRestApi {
 			'languages',
 			{ authRequired: false },
 			{
-				get() {
-					const apps = Promise.await(AppsManager.get()).map((proxiedApp) => {
+				async get() {
+					const apps = (await AppsManager.get()).map((proxiedApp) => {
 						if (!proxiedApp) return;
 						return {
 							id: proxiedApp.getID(),
@@ -552,7 +552,7 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 
 					const headers: Record<string, any> = {};
 					const token = await getWorkspaceAccessToken();
@@ -585,7 +585,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
 					const token = await getWorkspaceAccessToken();
@@ -618,7 +618,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					if (this.queryParams.marketplace && this.queryParams.version) {
-						const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+						const baseUrl = await Apps.getMarketplaceUrl();
 
 						const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 						const token = await getWorkspaceAccessToken();
@@ -644,7 +644,7 @@ export class AppsRestApi {
 					}
 
 					if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
-						const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+						const baseUrl = await Apps.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
@@ -692,7 +692,7 @@ export class AppsRestApi {
 
 						buff = Buffer.from(await response.arrayBuffer());
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-						const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+						const baseUrl = await Apps.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken(true, 'marketplace:download', false);
@@ -803,7 +803,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 
 					const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 					const token = await getWorkspaceAccessToken();
@@ -871,7 +871,7 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async post() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
 					const token = await getWorkspaceAccessToken();
@@ -942,7 +942,7 @@ export class AppsRestApi {
 			{ authRequired: false },
 			{
 				async get() {
-					const baseUrl = Promise.await(Apps.getMarketplaceUrl());
+					const baseUrl = await Apps.getMarketplaceUrl();
 					const appId = this.urlParams.id;
 					const headers = getDefaultHeaders();
 

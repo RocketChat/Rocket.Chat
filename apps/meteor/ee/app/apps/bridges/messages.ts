@@ -87,7 +87,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				NotificationService.notifyRoom(id, 'typing', username, isTyping);
+				await NotificationService.notifyRoom(id, 'typing', username, isTyping);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');
