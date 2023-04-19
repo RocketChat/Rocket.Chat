@@ -18,10 +18,9 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
+import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Users as UsersSync } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -68,7 +67,7 @@ async function findChannelByIdOrName({
 		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
 		room.lastMessage = lastMessage;
 	}
 
@@ -292,7 +291,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -956,7 +955,12 @@ API.v1.addRoute(
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('c', rids, {
@@ -1051,9 +1055,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await UsersSync.findUsersNotOffline({
-				fields: { username: 1 },
-			}).fetch();
+			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+				projection: { username: 1 },
+			}).toArray();
 
 			const onlineInRoom = await Promise.all(
 				online.map(async (user) => {
@@ -1371,7 +1375,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId || ''),
+				messages: await normalizeMessagesForUser(messages, this.userId || ''),
 				count: messages.length,
 				offset,
 				total,

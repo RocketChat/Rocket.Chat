@@ -106,8 +106,8 @@ export class RocketChatUserAdapter {
 	}
 
 	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {
-		Meteor.runAsUser(federatedUser.getInternalId(), () => {
-			setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
+		await Meteor.runAsUser(federatedUser.getInternalId(), async () => {
+			await setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
 		});
 	}
 
@@ -116,6 +116,6 @@ export class RocketChatUserAdapter {
 	}
 
 	public async updateRealName(internalUser: IUser, name: string): Promise<void> {
-		setRealName(internalUser._id, name, internalUser);
+		await setRealName(internalUser._id, name, internalUser);
 	}
 }

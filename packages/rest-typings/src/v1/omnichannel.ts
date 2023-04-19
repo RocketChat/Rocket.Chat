@@ -928,8 +928,8 @@ export type LivechatRoomsProps = {
 
 export type VisitorSearchChatsResult = Pick<
 	IOmnichannelRoom,
-	'fname' | 'ts' | 'v' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
->;
+	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
+> & { v: Omit<IOmnichannelRoom['v'], 'lastMessageTs'> };
 
 const LivechatRoomsSchema = {
 	type: 'object',
@@ -2887,6 +2887,74 @@ const PUTLivechatPrioritySchema = {
 
 export const isPUTLivechatPriority = ajv.compile<PUTLivechatPriority>(PUTLivechatPrioritySchema);
 
+type POSTomnichannelIntegrations = {
+	LivechatWebhookUrl: string;
+	LivechatSecretToken: string;
+	LivechatHttpTimeout: number;
+	LivechatWebhookOnStart: boolean;
+	LivechatWebhookOnClose: boolean;
+	LivechatWebhookOnChatTaken: boolean;
+	LivechatWebhookOnChatQueued: boolean;
+	LivechatWebhookOnForward: boolean;
+	LivechatWebhookOnOfflineMsg: boolean;
+	LivechatWebhookOnVisitorMessage: boolean;
+	LivechatWebhookOnAgentMessage: boolean;
+};
+
+const POSTomnichannelIntegrationsSchema = {
+	type: 'object',
+	properties: {
+		LivechatWebhookUrl: {
+			type: 'string',
+			nullable: true,
+		},
+		LivechatSecretToken: {
+			type: 'string',
+			nullable: true,
+		},
+		LivechatHttpTimeout: {
+			type: 'number',
+			nullable: true,
+		},
+		LivechatWebhookOnStart: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnClose: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnChatTaken: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnChatQueued: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnForward: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnOfflineMsg: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnVisitorMessage: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnAgentMessage: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isPOSTomnichannelIntegrations = ajv.compile<POSTomnichannelIntegrations>(POSTomnichannelIntegrationsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3187,14 +3255,14 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
 	};
 	'/v1/livechat/page.visited': {
-		POST: (params: POSTLivechatPageVisitedParams) => { page: { msg: string; navigation: string } } | void;
+		POST: (params: POSTLivechatPageVisitedParams) => { page: Pick<IOmnichannelSystemMessage, 'msg' | 'navigation'> } | void;
 	};
 	'/v1/livechat/message': {
 		POST: (params: POSTLivechatMessageParams) => { message: IMessage };
 	};
 	'/v1/livechat/message/:_id': {
-		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage };
-		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage };
+		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage | void };
+		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage | void };
 		DELETE: (params: DELETELivechatMessageIdParams) => { message: Pick<Serialized<IMessage>, 'ts' | '_id'> };
 	};
 	'/v1/livechat/messages.history/:rid': {
@@ -3432,5 +3500,11 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/:rid/request-transcript': {
 		POST: () => void;
+	};
+	'/v1/omnichannel/integrations': {
+		POST: (params: POSTomnichannelIntegrations) => void;
+	};
+	'/v1/livechat/inquiry.setSLA': {
+		PUT: (params: { roomId: string; sla: string }) => void;
 	};
 };

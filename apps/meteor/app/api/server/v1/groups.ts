@@ -5,7 +5,6 @@ import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@r
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
-import { Users as UsersSync } from '../../../models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
 	hasPermissionAsync,
@@ -620,7 +619,12 @@ API.v1.addRoute(
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
 			if (rids.length === 0) {
-				return API.v1.notFound();
+				return API.v1.success({
+					groups: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
 			}
 
 			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
@@ -785,11 +789,11 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await UsersSync.findUsersNotOffline({
-				fields: {
+			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+				projection: {
 					username: 1,
 				},
-			}).fetch();
+			}).toArray();
 
 			const onlineInRoom = await Promise.all(
 				online.map(async (user) => {

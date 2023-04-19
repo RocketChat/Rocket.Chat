@@ -30,39 +30,11 @@ declare module 'meteor/templating' {
 
 	type BlazeTemplates = {
 		emojiPicker: BlazeTemplate;
-		customFieldsForm: BlazeTemplate;
 		ExternalFrameContainer: BlazeTemplate;
 		inputAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
-		CodeMirror: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
-		roomSearch: BlazeTemplate<typeof AutoComplete>;
-		roomSearchEmpty: BlazeTemplate;
-		username: BlazeTemplate<
-			Record<string, never>,
-			{
-				customFields: ReactiveVar<Record<
-					string,
-					{
-						required?: boolean;
-						maxLength?: number;
-						minLength?: number;
-					}
-				> | null>;
-				username: ReactiveVar<{
-					ready: boolean;
-					username: string;
-					empty?: boolean;
-					error?: boolean;
-					invalid?: boolean;
-					escaped?: string;
-					blocked?: boolean;
-					unavailable?: boolean;
-				}>;
-				validate: () => unknown;
-			}
-		>;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<
 			{

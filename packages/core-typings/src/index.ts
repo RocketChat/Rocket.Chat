@@ -41,6 +41,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
+export * from './ee/IAuditLog';
 
 export * from './import';
 export * from './IIncomingMessage';
@@ -124,3 +125,5 @@ export * from './search';
 export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
+
+export * from './migrations/IControl';

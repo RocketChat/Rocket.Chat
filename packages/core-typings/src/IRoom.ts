@@ -36,7 +36,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: MessageTypesValues[];
+	// TODO: this boolean might be an accident
+	sysMes?: MessageTypesValues[] | boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -237,6 +238,16 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	metrics?: {
 		serviceTimeDuration?: number;
 		chatDuration?: number;
+		v?: {
+			lq: Date;
+		};
+		servedBy?: {
+			lr: Date;
+		};
+		response?: {
+			tt: number;
+			total: number;
+		};
 	};
 
 	// Both fields are being used for the auto transfer feature for unanswered chats

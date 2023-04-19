@@ -34,22 +34,39 @@ Template.body.onRendered(function () {
 
 			if (googleId) {
 				/*eslint-disable */
-				(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
-					i['GoogleAnalyticsObject'] = r;
-					(i[r] =
-						i[r] ||
-						function () {
-							(i[r].q = i[r].q || []).push(arguments);
-						}),
-						(i[r].l = new Date().getTime());
-					(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-					a.async = 1;
-					a.src = g;
-					m.parentNode.insertBefore(a, m);
-				})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+				if (googleId.startsWith("G-")) {
+					// Google Analytics 4
+					const f = document.getElementsByTagName('script')[0];
+					const j = document.createElement('script');
+					j.async = true;
+					j.src = `//www.googletagmanager.com/gtag/js?id=${googleId}`;
+					f.parentNode?.insertBefore(j, f);
 
-				window.ga('create', googleId, 'auto');
-				window.ga('send', 'pageview');
+					// injecting the dataLayer into the windows global object
+					const w: Window & { dataLayer?: any } = window;
+					let dataLayer = w.dataLayer || [];
+					function gtag(key: string, value: any) { dataLayer.push(key, value); }
+					gtag('js', new Date());
+					gtag('config', googleId);
+				} else {
+					// Google Analytics 3
+					(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
+						i['GoogleAnalyticsObject'] = r;
+						(i[r] =
+							i[r] ||
+							function () {
+								(i[r].q = i[r].q || []).push(arguments);
+							}),
+							(i[r].l = new Date().getTime());
+						(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+						a.async = 1;
+						a.src = g;
+						m.parentNode.insertBefore(a, m);
+					})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+					window.ga('create', googleId, 'auto');
+					window.ga('send', 'pageview');
+				}
 				/* eslint-enable */
 			}
 		}

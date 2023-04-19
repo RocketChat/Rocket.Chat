@@ -1,12 +1,12 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.addGroup('OTR', function () {
-	this.add('OTR_Enable', true, {
+void settingsRegistry.addGroup('OTR', async function () {
+	await this.add('OTR_Enable', true, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',
 		public: true,
 	});
-	this.add('OTR_Count', 0, {
+	await this.add('OTR_Count', 0, {
 		type: 'int',
 		hidden: true,
 	});

@@ -8,12 +8,12 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 
 	findUsersInQueue(usersList: string[], options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options?:
 			| undefined
@@ -29,7 +29,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options: FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId<P extends Document>(
 		departmentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindPaginated<FindCursor<P>>;
@@ -43,12 +43,12 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 
 	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options?:
 			| undefined

@@ -58,7 +58,7 @@ class FileExternalMessageSender implements IExternalMessageSender {
 		const metadata = await this.internalFileHelper.extractMetadataFromFile(file);
 
 		const externalMessageId = await this.bridge.sendMessageFileToRoom(externalRoomId, externalSenderId, buffer, {
-			filename: file.name,
+			filename: file.name || '',
 			fileSize: file.size,
 			mimeType: file.type,
 			metadata: {
@@ -90,7 +90,7 @@ class FileExternalMessageSender implements IExternalMessageSender {
 			externalSenderId,
 			buffer,
 			{
-				filename: file.name,
+				filename: file.name || '',
 				fileSize: file.size,
 				mimeType: file.type,
 				metadata: {
