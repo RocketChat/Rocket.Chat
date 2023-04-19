@@ -57,7 +57,7 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	const owner = await Users.findOneByUsernameIgnoringCase(ownerUsername, { projection: { username: 1 } });
+	const owner = await Users.findOneByUsernameIgnoringCase(ownerUsername, { projection: { username: 1, name: 1 } });
 
 	if (!ownerUsername || !owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -89,6 +89,7 @@ export const createRoom = async <T extends RoomType>(
 		u: {
 			_id: owner._id,
 			username: owner.username,
+			name: owner.name,
 		},
 		ts: now,
 		ro: readOnly === true,
@@ -189,7 +190,6 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	void Apps.triggerEvent('IPostRoomCreate', room);
-
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,

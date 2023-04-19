@@ -27,7 +27,7 @@ import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessage
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
-import UserAvatar from '../../avatar/UserAvatar';
+import MessageAvatar from '../header/MessageAvatar';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
@@ -56,7 +56,13 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const goToThread = useGoToThread();
 
 	return (
-		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
+		<ThreadMessage
+			{...props}
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			data-qa-selected={isSelected}
+			role='link'
+		>
 			{!sequential && (
 				<ThreadMessageRow
 					role='link'
@@ -95,7 +101,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			)}
 			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && showUserAvatar && <MessageAvatar username={message.u.username} emoji={message.emoji} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>

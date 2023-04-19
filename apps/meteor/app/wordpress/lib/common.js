@@ -20,7 +20,7 @@ const config = {
 const WordPress = new CustomOAuth('wordpress', config);
 
 const fillSettings = _.debounce(
-	Meteor.bindEnvironment(async () => {
+	async () => {
 		config.serverURL = settings.get('API_Wordpress_URL');
 		if (!config.serverURL) {
 			if (config.serverURL === undefined) {
@@ -90,7 +90,7 @@ const fillSettings = _.debounce(
 		}
 
 		return result;
-	}),
+	},
 	Meteor.isServer ? 1000 : 100,
 );
 

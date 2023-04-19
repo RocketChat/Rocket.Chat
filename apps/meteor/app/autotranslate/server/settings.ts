@@ -1,16 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-
+import { onStartup } from '../../../server/lib/onStartup';
 import { settingsRegistry } from '../../settings/server';
 
-Meteor.startup(function () {
-	void settingsRegistry.add('AutoTranslate_Enabled', false, {
+onStartup(async () => {
+	await settingsRegistry.add('AutoTranslate_Enabled', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'AutoTranslate',
 		public: true,
 	});
 
-	void settingsRegistry.add('AutoTranslate_ServiceProvider', 'google-translate', {
+	await settingsRegistry.add('AutoTranslate_ServiceProvider', 'google-translate', {
 		type: 'select',
 		group: 'Message',
 		section: 'AutoTranslate',
@@ -33,7 +32,7 @@ Meteor.startup(function () {
 		public: true,
 	});
 
-	void settingsRegistry.add('AutoTranslate_GoogleAPIKey', '', {
+	await settingsRegistry.add('AutoTranslate_GoogleAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Google',
@@ -51,7 +50,7 @@ Meteor.startup(function () {
 		],
 	});
 
-	void settingsRegistry.add('AutoTranslate_DeepLAPIKey', '', {
+	await settingsRegistry.add('AutoTranslate_DeepLAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_DeepL',
@@ -69,7 +68,7 @@ Meteor.startup(function () {
 		],
 	});
 
-	void settingsRegistry.add('AutoTranslate_MicrosoftAPIKey', '', {
+	await settingsRegistry.add('AutoTranslate_MicrosoftAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Microsoft',
