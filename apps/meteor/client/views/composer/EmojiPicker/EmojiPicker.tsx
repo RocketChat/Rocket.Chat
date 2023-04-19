@@ -5,15 +5,21 @@ import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-context
 import type { ButtonElement } from '@rocket.chat/ui-kit';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent } from 'react';
 import React, { useState, Fragment, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
-// import { FocusScope } from 'react-aria';
 
-import { emoji, updateRecent, getCategoriesList, createEmojiList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
+import type { EmojiItemType } from '../../../../app/emoji/client';
+import {
+	emoji,
+	updateRecent,
+	getCategoriesList,
+	createEmojiList,
+	getEmojisBySearchTerm,
+	createPickerEmojis,
+	CUSTOM_CATEGORY,
+} from '../../../../app/emoji/client';
 import type { EmojiElementType } from './EmojiElement';
 import EmojiElement from './EmojiElement';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
 import ToneSelector from './ToneSelector';
-
-const CUSTOM_CATEGORY = 'rocket';
 
 type EmojiByCategory = {
 	key: string;
@@ -49,32 +55,17 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const canManageEmoji = usePermission('manage-emoji');
 	const customEmojiRoute = useRoute('emoji-custom');
 
-	const [recentEmojis, setRecentEmojis] = useLocalStorage('emoji.recent', []);
+	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 
 	const [searching, setSearching] = useState(false);
 	const [searchItemsLimit, setSearchItemsLimit] = useState(90);
 	const [customItemsLimit, setCustomItemsLimit] = useState(90);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [searchResults, setSearchResults] = useState([]);
+	const [searchResults, setSearchResults] = useState<EmojiItemType[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 
 	useOutsideClick([emojiContainerRef], onClose);
-
-	const createPickerEmojis = (customItemsLimit, actualTone) => {
-		const categories = getCategoriesList();
-
-		const mappedCategories = categories.map((category) => ({
-			key: category.key,
-			i18n: category.i18n,
-			emojis: {
-				list: createEmojiList(category.key, actualTone),
-				limit: category.key === CUSTOM_CATEGORY ? customItemsLimit : null,
-			},
-		}));
-
-		return mappedCategories;
-	};
 
 	useLayoutEffect(() => {
 		if (!reference) {
@@ -113,14 +104,14 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 			updateRecent(recentEmojis);
 		}
 
-		const emojis = createPickerEmojis(customItemsLimit, actualTone);
+		const emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 		setEmojiListByCategory(emojis);
 
 		if (recentEmojis.length === 0 && currentCategory === 'recent') {
 			const customEmojiList = emojis.filter(({ key }) => key === 'rocket');
 			showInitialCategory(customEmojiList);
 		}
-	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, showInitialCategory]);
+	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis, showInitialCategory]);
 
 	const updateEmojiListByCategory = (categoryKey: string, limit?: number) => {
 		const result = emojiListByCategory.map((category) => {
@@ -128,7 +119,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 				? {
 						...category,
 						emojis: {
-							list: createEmojiList(category.key, null),
+							list: createEmojiList(category.key, null, recentEmojis, setRecentEmojis),
 							limit: category.key === CUSTOM_CATEGORY ? limit | customItemsLimit : null,
 						},
 				  }
@@ -164,7 +155,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const addRecentEmoji = (_emoji: string) => {
 		const recent = recentEmojis || [];
 		// const newRecent = recent ? recent.split(',') : [];
-		const pos = recent.indexOf(_emoji);
+		const pos = recent.indexOf(_emoji as never);
 
 		if (pos !== -1) {
 			recent.splice(pos, 1);
@@ -189,7 +180,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone);
+		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
 		setSearchResults(emojisResult);
 	};
 
@@ -233,8 +224,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	return (
 		<PositionAnimated tabIndex={0} is='dialog' visible={AnimatedVisibility.UNHIDING} anchor={ref} placement='top-start'>
 			<div>
-				{/* <FocusScope contain autoFocus> */}
 				<Box
+					color='default'
 					width='x365'
 					ref={emojiContainerRef}
 					height='x300'
@@ -246,7 +237,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 					flexDirection='column'
 					onKeyDown={handleKeyDown}
 				>
-					<Box display='flex' className='emoji-top'>
+					<Box display='flex' alignItems='center'>
 						<Field flexGrow={1} flexShrink={1}>
 							<Field.Row>
 								<TextInput
@@ -346,7 +337,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 								);
 							})}
 					</Box>
-					<Box color='default' p='x4' className='emoji-footer'>
+					<Box display='flex' flexDirection='column' alignItems='center' fontScale='c1' p='x4'>
 						{canManageEmoji && (
 							<a className='add-custom' onClick={() => customEmojiRoute.push()}>
 								{t('Add_custom_emoji')}
@@ -355,7 +346,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						<Box dangerouslySetInnerHTML={{ __html: t('Emoji_provided_by_JoyPixels') }} />
 					</Box>
 				</Box>
-				{/* </FocusScope> */}
 			</div>
 		</PositionAnimated>
 	);
