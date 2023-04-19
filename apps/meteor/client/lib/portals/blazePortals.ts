@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import type { Blaze } from 'meteor/blaze';
-import { Random } from 'meteor/random';
 import type { ReactNode } from 'react';
 import { createElement, Fragment, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -10,7 +10,7 @@ type BlazePortalEntry = {
 	node: ReactNode;
 };
 
-export class BlazePortalsSubscription extends Emitter<{ update: void }> {
+class BlazePortalsSubscription extends Emitter<{ update: void }> {
 	private map = new Map<Blaze.TemplateInstance, BlazePortalEntry>();
 
 	private cache = Array.from(this.map.values());

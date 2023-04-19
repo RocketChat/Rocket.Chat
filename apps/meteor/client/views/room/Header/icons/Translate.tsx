@@ -13,7 +13,7 @@ const Translate: FC<TranslateProps> = ({ room: { autoTranslateLanguage, autoTran
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const encryptedLabel = t('Translated');
 	return autoTranslateEnabled && autoTranslate && autoTranslateLanguage ? (
-		<Header.State title={encryptedLabel} icon='language' color='on-info' />
+		<Header.State title={encryptedLabel} icon='language' color='info' />
 	) : null;
 };
 

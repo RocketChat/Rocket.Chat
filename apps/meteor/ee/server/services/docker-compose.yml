@@ -100,6 +100,28 @@ services:
     depends_on:
       - nats
 
+  queue-worker-service:
+    container_name: queue-worker-service
+    build:
+      context: .
+      args:
+        SERVICE: queue-worker
+    image: rocketchat/queue-worker-service:latest
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
+
+  omnichannel-transcript-service:
+    container_name: omnichannel-transcript-service
+    build:
+      context: .
+      args:
+        SERVICE: omnichannel-transcript
+    image: rocketchat/omnichannel-transcript-service:latest
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
+
   nats:
     image: nats
     ports:

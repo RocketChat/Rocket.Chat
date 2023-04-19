@@ -1,9 +1,10 @@
-import { test, expect } from './utils/test';
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
+import { test, expect } from './utils/test';
 
 test.skip(!IS_EE, 'Engagemente Dashboard > Enterprise Only');
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe('engagement-dashboard', () => {
 	test.describe.parallel('expect to trigger fallback error component', () => {

@@ -28,7 +28,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		throw Error('Room not provided');
 	}
 
-	const { roomCanIgnore } = getRoomDirectives(room);
+	const { roomCanIgnore } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
@@ -48,7 +48,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 			roomCanIgnore && uid !== ownUserId
 				? {
 						label: t(isIgnored ? 'Unignore' : 'Ignore'),
-						icon: 'ban',
+						icon: 'ban' as const,
 						action: ignoreUserAction,
 				  }
 				: undefined,

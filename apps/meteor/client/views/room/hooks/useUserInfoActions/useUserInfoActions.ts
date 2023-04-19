@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
+import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useCallAction } from './actions/useCallAction';
@@ -28,10 +29,11 @@ export const useUserInfoActions = (
 	const muteUserOption = useMuteUserAction(user, rid);
 	const removeUserOption = useRemoveUserAction(user, rid, reload);
 	const callOption = useCallAction(user);
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return useMemo(
 		() => ({
-			...(openDirectMessageOption && { openDirectMessage: openDirectMessageOption }),
+			...(openDirectMessageOption && !isLayoutEmbedded && { openDirectMessage: openDirectMessageOption }),
 			...(callOption && { call: callOption }),
 			...(changeOwnerOption && { changeOwner: changeOwnerOption }),
 			...(changeLeaderOption && { changeLeader: changeLeaderOption }),
@@ -51,6 +53,7 @@ export const useUserInfoActions = (
 			removeUserOption,
 			callOption,
 			blockUserOption,
+			isLayoutEmbedded,
 		],
 	);
 };

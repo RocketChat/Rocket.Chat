@@ -4,6 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, MouseEvent } from 'react';
 import React, { forwardRef } from 'react';
 
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
 import UserAvatar from '../avatar/UserAvatar';
@@ -65,6 +66,7 @@ const UserCard = forwardRef(function UserCard(
 	ref,
 ) {
 	const t = useTranslation();
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
 		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
@@ -111,7 +113,7 @@ const UserCard = forwardRef(function UserCard(
 						{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
 					</UserCardInfo>
 				)}
-				{!isLoading && open && <a onClick={open}>{t('See_full_profile')}</a>}
+				{!isLoading && open && !isLayoutEmbedded && <a onClick={open}>{t('See_full_profile')}</a>}
 			</Box>
 			{onClose && (
 				<Box>

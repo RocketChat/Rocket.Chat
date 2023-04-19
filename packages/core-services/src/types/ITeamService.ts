@@ -10,7 +10,7 @@ import type {
 	IUser,
 	IRole,
 } from '@rocket.chat/core-typings';
-import type { Filter, FindOptions } from 'mongodb';
+import type { Document, Filter, FindOptions } from 'mongodb';
 
 import type { ICreateRoomParams } from './IRoomService';
 
@@ -107,7 +107,7 @@ export interface ITeamService {
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(uid: string, teamId: string): void;
 	getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null>;
-	getOneById<P>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
+	getOneById<P extends Document>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | null>;
@@ -123,4 +123,5 @@ export interface ITeamService {
 	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 	getStatistics(): Promise<ITeamStats>;
 	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
+	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
 }

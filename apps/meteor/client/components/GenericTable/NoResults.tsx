@@ -11,7 +11,7 @@ type NoResultsProps = {
 };
 
 const NoResults: FC<NoResultsProps> = ({ icon, title, description, buttonTitle, buttonAction }) => (
-	<Box textAlign='center'>
+	<Box textAlign='center' color='default'>
 		<Box
 			mbs='x60'
 			mbe='x20'

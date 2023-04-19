@@ -35,9 +35,28 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }: FormSectionP
 	const { handleNewRoomNotification, handleNewMessageNotification, handleMuteFocusedConversations, handleNotificationsSoundVolume } =
 		handlers;
 
+	const onChangeNewRoomNotification = useCallback(
+		(value) => {
+			handleNewRoomNotification(value);
+			CustomSounds.play(value, { volume: notificationsSoundVolume / 100 });
+		},
+		[handleNewRoomNotification, notificationsSoundVolume],
+	);
+
+	const onChangeNewMessageNotification = useCallback(
+		(value) => {
+			handleNewMessageNotification(value);
+			CustomSounds.play(value, { volume: notificationsSoundVolume / 100 });
+		},
+		[handleNewMessageNotification, notificationsSoundVolume],
+	);
+
 	const onChangeNotificationsSoundVolume = useCallback(
-		(e) => handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100))),
-		[handleNotificationsSoundVolume],
+		(e) => {
+			CustomSounds.play(newMessageNotification, { volume: e.currentTarget.value / 100 });
+			handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
+		},
+		[handleNotificationsSoundVolume, newMessageNotification],
 	);
 
 	commitRef.current.sound = commit;
@@ -50,22 +69,22 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }: FormSectionP
 						<Field>
 							<Field.Label>{t('New_Room_Notification')}</Field.Label>
 							<Field.Row>
-								<Select value={newRoomNotification} onChange={handleNewRoomNotification} options={soundsList} />
+								<Select value={newRoomNotification} onChange={onChangeNewRoomNotification} options={soundsList} />
 							</Field.Row>
 						</Field>
 					),
-					[handleNewRoomNotification, newRoomNotification, soundsList, t],
+					[onChangeNewRoomNotification, newRoomNotification, soundsList, t],
 				)}
 				{useMemo(
 					() => (
 						<Field>
 							<Field.Label>{t('New_Message_Notification')}</Field.Label>
 							<Field.Row>
-								<Select value={newMessageNotification} onChange={handleNewMessageNotification} options={soundsList} />
+								<Select value={newMessageNotification} onChange={onChangeNewMessageNotification} options={soundsList} />
 							</Field.Row>
 						</Field>
 					),
-					[handleNewMessageNotification, newMessageNotification, soundsList, t],
+					[onChangeNewMessageNotification, newMessageNotification, soundsList, t],
 				)}
 				{useMemo(
 					() => (

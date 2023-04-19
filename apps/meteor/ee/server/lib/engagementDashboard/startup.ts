@@ -22,5 +22,5 @@ export const prepareAnalytics = async (): Promise<void> => {
 };
 
 export const prepareAuthorization = async (): Promise<void> => {
-	Permissions.create('view-engagement-dashboard', ['admin']);
+	void Permissions.create('view-engagement-dashboard', ['admin']);
 };

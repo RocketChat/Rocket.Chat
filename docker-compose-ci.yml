@@ -110,6 +110,38 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
+  
+  queue-worker-service:
+    platform: linux/amd64
+    build:
+      dockerfile: ee/apps/queue-worker/Dockerfile
+      args:
+        SERVICE: queue-worker
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+  
+  omnichannel-transcript-service:
+    platform: linux/amd64
+    build:
+      dockerfile: ee/apps/omnichannel-transcript/Dockerfile
+      args:
+        SERVICE: omnichannel-transcript
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
 
   nats:
     image: nats:2.6-alpine

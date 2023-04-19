@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
+import { FieldGroup, Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -19,7 +19,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const t = useTranslation();
 	const { _id, name, statusType } = status || {};
 	const setModal = useSetModal();
-	const route = useRoute('custom-user-status');
+	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -87,47 +87,49 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 
 	return (
 		<VerticalBar.ScrollableContent>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
-				</Field.Row>
-				{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Label>{t('Presence')}</Field.Label>
-				<Field.Row>
-					<Controller
-						name='statusType'
-						control={control}
-						rules={{ required: true }}
-						render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
-					/>
-				</Field.Row>
-				{errors?.statusType && <Field.Error>{t('error-the-field-is-required', { field: t('Presence') })}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSubmit(handleSave)} disabled={!isDirty}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			{_id && (
+			<FieldGroup is='form' onSubmit={handleSubmit(handleSave)}>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
+					</Field.Row>
+					{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+				</Field>
+				<Field>
+					<Field.Label>{t('Presence')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='statusType'
+							control={control}
+							rules={{ required: true }}
+							render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+						/>
+					</Field.Row>
+					{errors?.statusType && <Field.Error>{t('error-the-field-is-required', { field: t('Presence') })}</Field.Error>}
+				</Field>
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
-							<Button danger onClick={handleDeleteStatus}>
-								<Icon name='trash' mie='x4' />
-								{t('Delete')}
+							<Button onClick={onClose}>{t('Cancel')}</Button>
+							<Button primary type='submit' disabled={!isDirty}>
+								{t('Save')}
 							</Button>
 						</ButtonGroup>
 					</Field.Row>
 				</Field>
-			)}
+				{_id && (
+					<Field>
+						<Field.Row>
+							<ButtonGroup stretch w='full'>
+								<Button danger onClick={handleDeleteStatus}>
+									<Icon name='trash' mie='x4' />
+									{t('Delete')}
+								</Button>
+							</ButtonGroup>
+						</Field.Row>
+					</Field>
+				)}
+			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 	);
 };

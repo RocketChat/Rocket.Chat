@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
+import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
 
 export const validateCustomFields = function (fields) {
 	// Special Case:
 	// If an admin didn't set any custom fields there's nothing to validate against so consider any customFields valid
-	if (s.trim(settings.get('Accounts_CustomFields')) === '') {
+	if (trim(settings.get('Accounts_CustomFields')) === '') {
 		return;
 	}
 
@@ -23,7 +23,7 @@ export const validateCustomFields = function (fields) {
 		const field = customFieldsMeta[fieldName];
 
 		customFields[fieldName] = fields[fieldName];
-		const fieldValue = s.trim(fields[fieldName]);
+		const fieldValue = trim(fields[fieldName]);
 
 		if (field.required && fieldValue === '') {
 			throw new Meteor.Error('error-user-registration-custom-field', `Field ${fieldName} is required`, { method: 'registerUser' });

@@ -4,14 +4,14 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { unregisterWorkspace } from './unregisterWorkspace';
+import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { userLoggedOut } from './userLoggedOut';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function getUserCloudAccessToken(userId: string, forceNew = false, scope = '', save = true) {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
@@ -75,11 +75,11 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 		if (err.response?.data?.error) {
 			if (err.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
-				unregisterWorkspace();
+				await removeWorkspaceRegistrationInfo();
 			}
 
 			if (err.response.data.error === 'unauthorized') {
-				userLoggedOut(userId);
+				await userLoggedOut(userId);
 			}
 		}
 

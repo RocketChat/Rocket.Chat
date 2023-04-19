@@ -8,10 +8,10 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'shrug',
-	callback: (_command: 'shrug', params, item): void => {
+	callback: async (_command: 'shrug', params, item): Promise<void> => {
 		const msg = item;
 		msg.msg = `${params} ¯\\\\_(ツ)_/¯`;
-		Meteor.call('sendMessage', msg);
+		await Meteor.callAsync('sendMessage', msg);
 	},
 	options: {
 		description: 'Slash_Shrug_Description',
