@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('Omnichannel', async function () {
+await settingsRegistry.addGroup('Omnichannel', async function () {
 	await this.section('External Frame', async function () {
 		await this.add('Omnichannel_External_Frame_Enabled', false, {
 			type: 'boolean',

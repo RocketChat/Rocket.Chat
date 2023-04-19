@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-void settingsRegistry.add('theme-custom-css', '', {
+await settingsRegistry.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
 	code: 'text/css',

@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-void settingsRegistry.addGroup('RetentionPolicy', async function () {
+await settingsRegistry.addGroup('RetentionPolicy', async function () {
 	const globalQuery = {
 		_id: 'RetentionPolicy_Enabled',
 		value: true,
