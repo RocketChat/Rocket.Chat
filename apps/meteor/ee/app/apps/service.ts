@@ -82,6 +82,10 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getRocketChatLogger()?.warn(obj, args);
 	}
 
+	rocketChatLoggerDebug(args?: any) {
+		return this.apps.debugLog(args);
+	}
+
 	getProvidedComponents(): IExternalComponent[] {
 		return this.apps.getProvidedComponents();
 	}

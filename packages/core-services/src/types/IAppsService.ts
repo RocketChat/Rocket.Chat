@@ -17,6 +17,7 @@ export interface IAppsService {
 	getProvidedComponents: () => IExternalComponent[];
 	rocketChatLoggerWarn<T>(obj: T, args?: any): void;
 	rocketChatLoggerError<T>(obj: T, args?: any): void;
+	rocketChatLoggerDebug(args?: any): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
 	setStorage(value: string): void;

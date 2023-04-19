@@ -3,10 +3,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
-import { api, Apps } from '@rocket.chat/core-services';
+import { api, Apps, Message } from '@rocket.chat/core-services';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api, Message } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
 	Users as UsersRaw,
