@@ -1,13 +1,13 @@
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
-import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { callbacks } from '../../../../lib/callbacks';
-import { useForm } from '../../../hooks/useForm';
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
@@ -15,23 +15,31 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const homeRoute = useRoute('home');
 	const user = useUser();
 
-	const publicKey = useLocalStorage('public_key', undefined);
-	const privateKey = useLocalStorage('private_key', undefined);
+	const publicKey = localStorage.getItem('public_key');
+	const privateKey = localStorage.getItem('private_key');
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 
-	const { values, handlers, reset } = useForm({ password: '', passwordConfirm: '' });
-	const { password, passwordConfirm } = values as {
-		password: string;
-		passwordConfirm: string;
-	};
-	const { handlePassword, handlePasswordConfirm } = handlers;
+	const {
+		register,
+		handleSubmit,
+		watch,
+		reset,
+		resetField,
+		formState: { errors, isValid },
+	} = useForm({
+		defaultValues: {
+			password: '',
+			passwordConfirm: '',
+		},
+		mode: 'onChange',
+	});
 
-	const keysExist = publicKey && privateKey;
+	const { password } = watch();
 
-	const hasTypedPassword = password.trim().length > 0;
-	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
-	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
+	const keysExist = Boolean(publicKey && privateKey);
+
+	const hasTypedPassword = Boolean(password?.trim().length);
 
 	const handleLogout = useMutableCallback(() => {
 		Meteor.logout(() => {
@@ -41,15 +49,15 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 		});
 	});
 
-	const saveNewPassword = useCallback(async () => {
+	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
 		try {
-			await e2e.changePassword(password);
-			reset();
+			await e2e.changePassword(data.password);
+			resetField('password');
 			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, password, reset, t]);
+	};
 
 	const handleResetE2eKey = useCallback(async () => {
 		try {
@@ -64,10 +72,10 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
 
 	useEffect(() => {
-		if (password.trim() === '') {
-			handlePasswordConfirm('');
+		if (password?.trim() === '') {
+			resetField('passwordConfirm');
 		}
-	}, [handlePasswordConfirm, password]);
+	}, [password, resetField]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
@@ -79,8 +87,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						<Field.Label id='New_encryption_password'>{t('New_encryption_password')}</Field.Label>
 						<Field.Row>
 							<PasswordInput
-								value={password}
-								onChange={handlePassword}
+								{...register('password', { required: true })}
 								placeholder={t('New_Password_Placeholder')}
 								disabled={!keysExist}
 								aria-labelledby='New_encryption_password'
@@ -92,17 +99,24 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						<Field>
 							<Field.Label id='Confirm_new_encryption_password'>{t('Confirm_new_encryption_password')}</Field.Label>
 							<PasswordInput
-								error={passwordError}
-								value={passwordConfirm}
-								onChange={handlePasswordConfirm}
+								error={errors.passwordConfirm?.message}
+								{...register('passwordConfirm', {
+									required: true,
+									validate: (value: string) => (password !== value ? 'Your passwords do no match' : true),
+								})}
 								placeholder={t('Confirm_New_Password_Placeholder')}
 								aria-labelledby='Confirm_new_encryption_password'
 							/>
-							<Field.Error>{passwordError}</Field.Error>
+							{errors.passwordConfirm && <Field.Error>{errors.passwordConfirm.message}</Field.Error>}
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!canSave} onClick={saveNewPassword} data-qa-type='e2e-encryption-save-password-button'>
+				<Button
+					primary
+					disabled={!(keysExist && isValid)}
+					onClick={handleSubmit(saveNewPassword)}
+					data-qa-type='e2e-encryption-save-password-button'
+				>
 					{t('Save_changes')}
 				</Button>
 				<Box fontScale='h4' mbs='x16'>
