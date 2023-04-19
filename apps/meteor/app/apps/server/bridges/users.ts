@@ -106,11 +106,7 @@ export class AppUserBridge extends UserBridge {
 		return true;
 	}
 
-	protected async update(
-		user: IUser & { id: string },
-		fields: Partial<IUser> & { statusDefault: string },
-		appId: string,
-	): Promise<boolean> {
+	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
 
 		if (!user) {
