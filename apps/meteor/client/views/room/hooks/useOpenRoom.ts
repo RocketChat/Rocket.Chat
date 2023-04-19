@@ -21,7 +21,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const directRoute = useRoute('direct');
 
 	return useQuery(
-		['rooms', { type, reference }] as const,
+		['rooms', { type, reference }, { uid: user?._id, username: user?.username }] as const,
 		async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
