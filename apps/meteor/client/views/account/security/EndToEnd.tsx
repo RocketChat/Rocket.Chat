@@ -1,19 +1,15 @@
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
-import { callbacks } from '../../../../lib/callbacks';
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const homeRoute = useRoute('home');
-	const user = useUser();
+	const logout = useLogout();
 
 	const publicKey = localStorage.getItem('public_key');
 	const privateKey = localStorage.getItem('private_key');
@@ -24,7 +20,6 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 		register,
 		handleSubmit,
 		watch,
-		reset,
 		resetField,
 		formState: { errors, isValid },
 	} = useForm({
@@ -41,13 +36,6 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	const hasTypedPassword = Boolean(password?.trim().length);
 
-	const handleLogout = useMutableCallback(() => {
-		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
-			homeRoute.push({});
-		});
-	});
 
 	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
 		try {
@@ -64,12 +52,12 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 			const result = await resetE2eKey();
 			if (result) {
 				dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
-				handleLogout();
+				logout();
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
+	}, [dispatchToastMessage, resetE2eKey, logout, t]);
 
 	useEffect(() => {
 		if (password?.trim() === '') {
