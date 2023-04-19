@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('Smarsh', async function addSettings() {
+void settingsRegistry.addGroup('Smarsh', async function addSettings() {
 	await this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Smarsh_Enabled',

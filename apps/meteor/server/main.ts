@@ -1,7 +1,7 @@
 import './models/startup';
-import '../app/settings/server';
 import '../ee/server/models/startup';
 import './services/startup';
+import '../app/settings/server';
 import '../lib/oauthRedirectUri';
 import './overrides/http';
 import './lib/logger/startup';

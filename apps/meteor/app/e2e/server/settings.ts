@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('E2E Encryption', async function () {
+void settingsRegistry.addGroup('E2E Encryption', async function () {
 	await this.add('E2E_Enable', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

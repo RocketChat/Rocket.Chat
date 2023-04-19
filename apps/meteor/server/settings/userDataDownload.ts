@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-await settingsRegistry.addGroup('UserDataDownload', async function () {
+void settingsRegistry.addGroup('UserDataDownload', async function () {
 	await this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
 		public: true,

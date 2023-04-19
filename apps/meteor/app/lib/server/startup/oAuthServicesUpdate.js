@@ -194,7 +194,7 @@ function customOAuthServicesInit() {
 					avatarField: process.env[`${serviceKey}_avatar_field`],
 				};
 
-				void addOAuthService(name, values);
+				addOAuthService(name, values);
 			}
 		}
 	});

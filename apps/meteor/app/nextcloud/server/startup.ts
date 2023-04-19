@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('OAuth', async function () {
+void settingsRegistry.addGroup('OAuth', async function () {
 	await this.section('Nextcloud', async function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Nextcloud',

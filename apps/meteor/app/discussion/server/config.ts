@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-await settingsRegistry.addGroup('Discussion', async function () {
+void settingsRegistry.addGroup('Discussion', async function () {
 	// the channel for which discussions are created if none is explicitly chosen
 
 	await this.add('Discussion_enabled', true, {
@@ -16,7 +16,7 @@ const globalQuery = {
 	value: true,
 };
 
-await settingsRegistry.add('RetentionPolicy_DoNotPruneDiscussion', true, {
+void settingsRegistry.add('RetentionPolicy_DoNotPruneDiscussion', true, {
 	group: 'RetentionPolicy',
 	section: 'Global Policy',
 	type: 'boolean',
@@ -26,7 +26,7 @@ await settingsRegistry.add('RetentionPolicy_DoNotPruneDiscussion', true, {
 	enableQuery: globalQuery,
 });
 
-await settingsRegistry.add('RetentionPolicy_DoNotPruneThreads', true, {
+void settingsRegistry.add('RetentionPolicy_DoNotPruneThreads', true, {
 	group: 'RetentionPolicy',
 	section: 'Global Policy',
 	type: 'boolean',

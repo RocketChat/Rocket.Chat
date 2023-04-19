@@ -389,7 +389,7 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should call `settings.watch` callback on setting changed registering before initialized', async (done) => {
+	it('should call `settings.watch` callback on setting changed registering before initialized', (done) => {
 		const spiedCallback1 = spy();
 		const spiedCallback2 = spy();
 		const settings = new CachedSettings();
@@ -400,7 +400,7 @@ describe('Settings', () => {
 		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
 		settings.initialized();
-		await settingsRegistry.addGroup('group', async function () {
+		void settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('setting_callback', 'value2', {
 					type: 'string',

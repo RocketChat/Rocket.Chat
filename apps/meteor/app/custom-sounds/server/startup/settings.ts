@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-await settingsRegistry.addGroup('CustomSoundsFilesystem', async function () {
+void settingsRegistry.addGroup('CustomSoundsFilesystem', async function () {
 	await this.add('CustomSounds_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [

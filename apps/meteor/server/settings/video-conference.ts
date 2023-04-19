@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-await settingsRegistry.addGroup('Video_Conference', async function () {
+void settingsRegistry.addGroup('Video_Conference', async function () {
 	await this.add('VideoConf_Default_Provider', '', {
 		type: 'lookup',
 		lookupEndpoint: 'v1/video-conference.providers',

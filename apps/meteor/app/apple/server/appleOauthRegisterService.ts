@@ -7,7 +7,7 @@ import { AppleCustomOAuth } from './AppleCustomOAuth';
 
 new AppleCustomOAuth('apple', config);
 
-await settingsRegistry.addGroup('OAuth', async function () {
+void settingsRegistry.addGroup('OAuth', async function () {
 	await this.section('Apple', async function () {
 		await this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
 

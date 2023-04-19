@@ -29,6 +29,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await addOAuthService(name);
+		addOAuthService(name);
 	},
 });

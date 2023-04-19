@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-await settingsRegistry.addGroup('Accounts', async function () {
+void settingsRegistry.addGroup('Accounts', async function () {
 	await this.section('Two Factor Authentication', async function () {
 		const enable2FA = {
 			_id: 'Accounts_TwoFactorAuthentication_Enabled',

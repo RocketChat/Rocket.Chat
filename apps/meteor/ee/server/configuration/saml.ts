@@ -67,4 +67,4 @@ await onLicense('saml-enterprise', () => {
 });
 
 // For setting creation we add the listener first because the event is emmited during startup
-SAMLUtils.events.on('addSettings', (name: string): void | Promise<void> => onLicense('saml-enterprise', () => void addSettings(name)));
+SAMLUtils.events.on('addSettings', (name: string): void | Promise<void> => onLicense('saml-enterprise', () => addSettings(name)));
