@@ -1,5 +1,6 @@
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
+import { createAssetsSettings } from './assets';
 import { createBotsSettings } from './bots';
 import { createCallCenterSettings } from './call-center';
 import { createCasSettings } from './cas';
@@ -40,6 +41,7 @@ async function createSettings() {
 	await Promise.all([
 		createAccountSettings(),
 		createAnalyticsSettings(),
+		createAssetsSettings(),
 		createBotsSettings(),
 		createCallCenterSettings(),
 		createCasSettings(),
