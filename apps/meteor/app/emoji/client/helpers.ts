@@ -1,23 +1,59 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import type { EmojiCategoriesType, EmojiItemType } from '.';
 import { emoji } from '../lib/rocketchat';
 
-export const createEmojiList = (category: string, actualTone: number | null) => {
-	const emojiList = [];
+export const CUSTOM_CATEGORY = 'rocket';
+
+export const createPickerEmojis = (
+	customItemsLimit: number,
+	actualTone: number,
+	recentEmojis: string[],
+	setRecentEmojis: (emojis: string[]) => void,
+) => {
+	const categories = getCategoriesList();
+
+	const mappedCategories = categories.map((category) => ({
+		key: category.key,
+		i18n: category.i18n,
+		emojis: {
+			list: createEmojiList(category.key, actualTone, recentEmojis, setRecentEmojis),
+			limit: category.key === CUSTOM_CATEGORY ? customItemsLimit : null,
+		},
+	}));
+
+	return mappedCategories;
+};
+
+export const createEmojiList = (
+	category: string,
+	actualTone: number | null,
+	recentEmojis: string[],
+	setRecentEmojis: (emojis: string[]) => void,
+) => {
+	const emojiList: EmojiItemType[] = [];
 	const emojiPackages = Object.values(emoji.packages);
+
 	emojiPackages.forEach((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
+		if (!emojiPackage.emojisByCategory?.[category]) {
 			return;
 		}
 
 		const total = emojiPackage.emojisByCategory[category].length;
-		// const listTotal = limit ? Math.min(limit, total) : total;
 
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
 			const tone = actualTone && actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
-			emojiList.push({ emoji: current, image: emojiPackage.renderPicker(`:${current}${tone}:`) });
+
+			const emojiToRender = `:${current}${tone}:`;
+
+			if (!emoji.list[emojiToRender]) {
+				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
+				return;
+			}
+
+			emojiList.push({ emoji: current, image: emojiPackage.renderPicker(emojiToRender) });
 		}
 	});
 
@@ -25,7 +61,7 @@ export const createEmojiList = (category: string, actualTone: number | null) => 
 };
 
 export const getCategoriesList = () => {
-	let categoriesList = [];
+	let categoriesList: EmojiCategoriesType[] = [];
 
 	for (const emojiPackage in emoji.packages) {
 		if (emoji.packages.hasOwnProperty(emojiPackage)) {
@@ -42,7 +78,12 @@ export const getCategoriesList = () => {
 	return categoriesList;
 };
 
-export const getEmojisBySearchTerm = (searchTerm: string, actualTone: number) => {
+export const getEmojisBySearchTerm = (
+	searchTerm: string,
+	actualTone: number,
+	recentEmojis: string[],
+	setRecentEmojis: (emojis: string[]) => void,
+) => {
 	const emojis = [];
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
@@ -76,12 +117,30 @@ export const getEmojisBySearchTerm = (searchTerm: string, actualTone: number) =>
 			}
 
 			if (emojiFound) {
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(`:${current}${tone}:`) });
+				const emojiToRender = `:${current}${tone}:`;
+
+				if (!emoji.list[emojiToRender]) {
+					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
+					return;
+				}
+
+				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
 			}
 		}
 	}
 
 	return emojis;
+};
+
+export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis: (emojis: string[]) => void) => {
+	const _emoji = emoji.replace(/(^:|:$)/g, '');
+	const pos = recentEmojis.indexOf(_emoji as never);
+
+	if (pos === -1) {
+		return;
+	}
+	recentEmojis.splice(pos, 1);
+	setRecentEmojis(recentEmojis);
 };
 
 export const updateRecent = (recentList: string[]) => {
