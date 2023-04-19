@@ -2,7 +2,7 @@ import { CloudWorkspaceBridge } from '@rocket.chat/apps-engine/server/bridges/Cl
 import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
 
 import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
+import { getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 
 export class AppCloudBridge extends CloudWorkspaceBridge {
 	// eslint-disable-next-line no-empty-function

@@ -1,6 +1,6 @@
 import { AppsManager } from '@rocket.chat/core-services';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../app/api/server';
 
 export const actionButtonsHandler = () =>
 	[

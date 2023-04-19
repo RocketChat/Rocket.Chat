@@ -4,7 +4,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Users } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { AppEvents } from '../../../../app/apps/server/communication';
+import { AppEvents } from '../../../server/apps/communication';
 
 export class AppActivationBridge extends ActivationBridge {
 	// eslint-disable-next-line no-empty-function
