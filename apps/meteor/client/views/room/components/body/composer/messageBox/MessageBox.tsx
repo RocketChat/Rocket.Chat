@@ -149,12 +149,12 @@ const MessageBox = ({
 			return;
 		}
 
-		chat?.emojiPicker.open(e?.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(e.currentTarget, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
-		const text = chat?.composer?.text ?? '';
-		chat?.composer?.clear();
+		const text = chat.composer?.text ?? '';
+		chat.composer?.clear();
 
 		onSend?.({
 			value: text,
@@ -175,14 +175,14 @@ const MessageBox = ({
 
 			event.preventDefault();
 			if (!isSending) {
-				chat?.composer?.insertNewLine();
+				chat.composer?.insertNewLine();
 				return false;
 			}
 			handleSendMessage();
 			return false;
 		}
 
-		if (chat?.composer && handleFormattingShortcut(event, [...formattingButtons], chat?.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
 			return;
 		}
 
@@ -192,13 +192,13 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				if (chat?.currentEditing) {
+				if (chat.currentEditing) {
 					event.preventDefault();
 					event.stopPropagation();
 
-					chat?.currentEditing.reset().then((reset) => {
+					chat.currentEditing.reset().then((reset) => {
 						if (!reset) {
-							chat?.currentEditing?.cancel();
+							chat.currentEditing?.cancel();
 						}
 					});
 
@@ -337,7 +337,7 @@ const MessageBox = ({
 
 	return (
 		<>
-			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
+			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
 			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
 
