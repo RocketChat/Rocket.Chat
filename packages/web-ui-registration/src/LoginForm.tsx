@@ -48,6 +48,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
 	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
 
+	const showRegistrationForm = useSetting<string>('Accounts_RegistrationForm') === 'Public';
+
 	const loginMutation: UseMutationResult<
 		void,
 		Error,
@@ -191,11 +193,13 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>
-						<p>
-							<Trans i18nKey='registration.page.login.register'>
-								New here? <ActionLink onClick={(): void => setLoginRoute('register')}>Create an account</ActionLink>
-							</Trans>
-						</p>
+						{showRegistrationForm && (
+							<p>
+								<Trans i18nKey='registration.page.login.register'>
+									New here? <ActionLink onClick={(): void => setLoginRoute('register')}>Create an account</ActionLink>
+								</Trans>
+							</p>
+						)}
 					</Form.Footer>
 				</>
 			)}
