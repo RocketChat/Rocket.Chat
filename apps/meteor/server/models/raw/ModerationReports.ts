@@ -183,12 +183,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.findPaginated(query, opts);
 	}
 
-	async hideReportsByMessageId(
-		messageId: string,
-		userId: string,
-		reason: string,
-		action: string,
-	): Promise<UpdateResult | Document> {
+	async hideReportsByMessageId(messageId: string, userId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
 		};
@@ -203,12 +198,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.updateMany(query, update);
 	}
 
-	async hideReportsByUserId(
-		userId: string,
-		moderatorId: string,
-		reason: string,
-		action: string,
-	): Promise<UpdateResult | Document> {
+	async hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message.u._id': userId,
 		};
