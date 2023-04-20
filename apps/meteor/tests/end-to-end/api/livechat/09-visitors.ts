@@ -11,6 +11,8 @@ import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, tak
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
+import { adminUsername } from '../../../data/user';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);
@@ -848,6 +850,60 @@ describe('LIVECHAT - visitors', function () {
 			if (contact.phone?.[0]) {
 				expect(contact.phone[0].phoneNumber).to.equal(phone);
 			}
+		});
+		(IS_EE ? it : it.skip)('should change the contact manager', async () => {
+			const managerUsername = adminUsername;
+
+			const res = await request
+				.post(api('omnichannel/contact'))
+				.set(credentials)
+				.send({
+					contactManager: {
+						username: managerUsername,
+					},
+					token: contact.token,
+					name: contact.name,
+				});
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('contact');
+			expect(res.body.contact).to.be.an('string');
+			expect(res.body.contact).to.equal(contact._id);
+
+			contact = await getLivechatVisitorByToken(contact.token);
+			expect(contact.contactManager).to.be.an('object');
+			expect(contact.contactManager).to.have.property('username', managerUsername);
+		});
+		it('should change custom fields', async () => {
+			const cfName = faker.lorem.word();
+			await createCustomField({
+				searchable: true,
+				field: cfName,
+				label: cfName,
+				scope: 'visitor',
+				visibility: 'visible',
+				regexp: '',
+			});
+
+			const res = await request
+				.post(api('omnichannel/contact'))
+				.set(credentials)
+				.send({
+					token: contact.token,
+					name: contact.name,
+					customFields: {
+						[cfName]: 'test',
+					},
+				});
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('contact');
+			expect(res.body.contact).to.be.an('string');
+			expect(res.body.contact).to.equal(contact._id);
+
+			contact = await getLivechatVisitorByToken(contact.token);
+			expect(contact).to.have.property('livechatData');
+			expect(contact.livechatData).to.have.property(cfName, 'test');
 		});
 	});
 });
