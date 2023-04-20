@@ -1138,7 +1138,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Μεταφορτώσεις μεσολάβησης",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Η μεταβίβαση αρχείων διακομιστή μεσολάβησης μέσω του διακομιστή σας αντί για άμεση πρόσβαση στη διεύθυνση URL του στοιχείου",
   "FileUpload_GoogleStorage_Secret": "Το Google Secret Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "Ακολουθήστε τις <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >αυτές τις οδηγίες</a>και επικολλήστε το αποτέλεσμα εδώ.",
+  "FileUpload_GoogleStorage_Secret_Description": "Ακολουθήστε τις [αυτές τις οδηγίες](https://github.com/CulturalMe/meteor-slingshot#google-cloud) και επικολλήστε το αποτέλεσμα εδώ.",
   "FileUpload_MaxFileSize": "Μέγιστο Μεταφόρτωση αρχείου Μέγεθος (σε bytes)",
   "FileUpload_MaxFileSizeDescription": "Ορίστε την ως -1 για να καταργήσετε τον περιορισμό μεγέθους αρχείου.",
   "FileUpload_MediaType_NotAccepted": "Τύποι μέσων εκτύπωσης δεν γίνονται δεκτές",

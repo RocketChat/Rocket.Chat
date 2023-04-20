@@ -1952,7 +1952,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy-uploads",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy upload bestandsoverdracht via uw server in plaats van directe toegang tot de URL van het item",
   "FileUpload_GoogleStorage_Secret": "Google-opslaggeheim",
-  "FileUpload_GoogleStorage_Secret_Description": "Volg <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">deze instructies</a>en plak het resultaat hier.",
+  "FileUpload_GoogleStorage_Secret_Description": "Volg [deze instructies](https://github.com/CulturalMe/meteor-slingshot#google-cloud) en plak het resultaat hier.",
   "FileUpload_json_web_token_secret_for_files": "Json Web Token Secret voor uploaden van bestanden",
   "FileUpload_json_web_token_secret_for_files_description": "Json Web Token Secret voor bestanden uploaden (gebruikt om toegang te krijgen tot geüploade bestanden zonder authenticatie)",
   "FileUpload_MaxFileSize": "Maximale bestandsuploadgrootte (in bytes)",

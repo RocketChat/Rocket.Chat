@@ -1296,7 +1296,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Datei-Uploads proxy-en",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Der Zugriff auf alle hochgelanden Dateien erfolgt über den Rocket.Chat Server als Proxy, anstatt direkt die Asset-URL an den Client weiterzureichen",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "Bitte befolge <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">diese Schritte</a> und füge das Ergebnis hier ein.",
+  "FileUpload_GoogleStorage_Secret_Description": "Bitte befolge [diese Schritte](https://github.com/CulturalMe/meteor-slingshot#google-cloud) und füge das Ergebnis hier ein.",
   "FileUpload_MaxFileSize": "Max. Größe für hochgeladene Dateien (in Bytes)",
   "FileUpload_MaxFileSizeDescription": "Setze den Wert auf -1, um die Dateigrößenbeschränkung zu entfernen.",
   "FileUpload_MediaType_NotAccepted": "Medientyp wird nicht akzeptiert",

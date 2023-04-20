@@ -1022,7 +1022,7 @@
   "FileUpload_File_Empty": "Датотека је празна",
   "FileUpload_FileSystemPath": "Системска путања",
   "FileUpload_GoogleStorage_Secret": "Гоогле Стораге Сецрет",
-  "FileUpload_GoogleStorage_Secret_Description": "Пратите <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">ова упутства </a> и залепите резултат овде.",
+  "FileUpload_GoogleStorage_Secret_Description": "Пратите [ова упутства](https://github.com/CulturalMe/meteor-slingshot#google-cloud) и залепите резултат овде.",
   "FileUpload_MaxFileSize": "Максимална величина уплоад сизе (ин битес)",
   "FileUpload_MaxFileSizeDescription": "Подесите на -1 да уклоните ограничење величине датотеке.",
   "FileUpload_MediaType_NotAccepted": "Врсте медија Није прихваћено",

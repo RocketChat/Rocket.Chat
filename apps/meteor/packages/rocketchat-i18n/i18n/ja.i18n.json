@@ -1939,7 +1939,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "プロキシアップロード",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "アセットのURLに直接アクセスするのではなく、サーバー経由でアップロードファイル転送をプロキシする",
   "FileUpload_GoogleStorage_Secret": "Googleストレージシークレット",
-  "FileUpload_GoogleStorage_Secret_Description": "<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">こちらの手順</a>に従って結果を貼り付けてください。",
+  "FileUpload_GoogleStorage_Secret_Description": "[こちらの手順](https://github.com/CulturalMe/meteor-slingshot#google-cloud) に従って結果を貼り付けてください。",
   "FileUpload_json_web_token_secret_for_files": "ファイルアップロードJson Webトークンシークレット",
   "FileUpload_json_web_token_secret_for_files_description": "ファイルアップロードJson Webトークンシークレット（認証なしでアップロードされたファイルへのアクセスを可能にするために使用）",
   "FileUpload_MaxFileSize": "アップロードできる最大ファイルサイズ（バイト）",

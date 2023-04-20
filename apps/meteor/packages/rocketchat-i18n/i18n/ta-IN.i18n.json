@@ -1131,7 +1131,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "பதிலாள் பதிவேற்றங்கள்",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "சொத்து URL ஐ நேரடியாக அணுகுவதற்குப் பதிலாக, உங்கள் சர்வரில் பதிலாள் பதிவேற்றும் கோப்பு பரிமாற்றங்கள்",
   "FileUpload_GoogleStorage_Secret": "Google சேமிப்பக ரகசியம்",
-  "FileUpload_GoogleStorage_Secret_Description": "<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >இந்த வழிமுறைகளை</a>பின்பற்றவும் மற்றும் விளைவை இங்கே ஒட்டவும்.",
+  "FileUpload_GoogleStorage_Secret_Description": "[இந்த வழிமுறைகளை](https://github.com/CulturalMe/meteor-slingshot#google-cloud) பின்பற்றவும் மற்றும் விளைவை இங்கே ஒட்டவும்.",
   "FileUpload_MaxFileSize": "அதிகபட்ச கோப்பை பதிவேற்ற அளவு (பைட்டுகள்)",
   "FileUpload_MaxFileSizeDescription": "கோப்பு அளவு வரம்பை அகற்றுவதற்கு -1 ஐ அமைக்கவும்.",
   "FileUpload_MediaType_NotAccepted": "மீடியா வகைகள் ஏற்கவில்லை",

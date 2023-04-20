@@ -1151,7 +1151,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "代理上传",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "代理通过您的服务器上传文件传输，而不是直接访问资产的URL",
   "FileUpload_GoogleStorage_Secret": "Google存储密钥",
-  "FileUpload_GoogleStorage_Secret_Description": "请按照<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">这些说明</a>并在此处粘贴结果。",
+  "FileUpload_GoogleStorage_Secret_Description": "请按照 [这些说明](https://github.com/CulturalMe/meteor-slingshot#google-cloud) 并在此处粘贴结果。",
   "FileUpload_MaxFileSize": "最大文件上传大小（以字节为单位）",
   "FileUpload_MaxFileSizeDescription": "将其设置为-1以删除文件大小限制。",
   "FileUpload_MediaType_NotAccepted": "媒体类型不被接受",

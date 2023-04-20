@@ -1186,7 +1186,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy siuntos",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy siuntimo failai perduodami per jūsų serverį, o ne tiesioginę prieigą prie turinio URL",
   "FileUpload_GoogleStorage_Secret": "\"Google\" saugyklos slaptumas",
-  "FileUpload_GoogleStorage_Secret_Description": "Prašome laikytis <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >šių instrukcijų</a>ir įklijuoti rezultatą čia.",
+  "FileUpload_GoogleStorage_Secret_Description": "Prašome laikytis [šių instrukcijų](https://github.com/CulturalMe/meteor-slingshot#google-cloud) ir įklijuoti rezultatą čia.",
   "FileUpload_MaxFileSize": "Maksimalus failo įkėlimo dydis (baitais)",
   "FileUpload_MaxFileSizeDescription": "Nustatykite -1, jei norite pašalinti failo dydžio apribojimą.",
   "FileUpload_MediaType_NotAccepted": "Žiniasklaidos tipai nepriimami",

@@ -1226,7 +1226,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Tải lên proxy",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Tệp tải lên tệp Proxy qua máy chủ của bạn thay vì truy cập trực tiếp vào URL của nội dung",
   "FileUpload_GoogleStorage_Secret": "Khóa Secret của Lưu Trữ Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Hãy làm theo <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >những hướng dẫn này</a>và dán kết quả tại đây.",
+  "FileUpload_GoogleStorage_Secret_Description": "Hãy làm theo [những hướng dẫn này](https://github.com/CulturalMe/meteor-slingshot#google-cloud) và dán kết quả tại đây.",
   "FileUpload_MaxFileSize": "Kích thước Tải lên Tệp Tối đa (bằng byte)",
   "FileUpload_MaxFileSizeDescription": "Đặt nó thành -1 để loại bỏ giới hạn kích thước tệp.",
   "FileUpload_MediaType_NotAccepted": "Các loại phương tiện không được chấp nhận",

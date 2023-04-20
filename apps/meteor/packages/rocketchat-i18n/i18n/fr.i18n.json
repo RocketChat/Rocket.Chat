@@ -1957,7 +1957,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Chargements de proxy",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Transmission de fichiers de chargement de proxy via votre serveur au lieu d'un accès direct à l'URL de la ressource",
   "FileUpload_GoogleStorage_Secret": "Clé secrète de stockage Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Suivez <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">ces instructions</a> et copiez le résultat ici.",
+  "FileUpload_GoogleStorage_Secret_Description": "Suivez [ces instructions](https://github.com/CulturalMe/meteor-slingshot#google-cloud) et copiez le résultat ici.",
   "FileUpload_json_web_token_secret_for_files": "Clé secrète de jeton Web JSON pour le chargement de fichiers",
   "FileUpload_json_web_token_secret_for_files_description": "Clé secrète de jeton Web JSON pour le chargement de fichiers (utilisée pour accéder aux fichiers chargés sans authentification)",
   "FileUpload_MaxFileSize": "Taille maximale pour le chargement de fichier (en octets)",

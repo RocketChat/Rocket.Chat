@@ -2066,7 +2066,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Загрузка прокси",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Передача файлов прокси-сервера через ваш сервер вместо прямого доступа к URL-адресу актива",
   "FileUpload_GoogleStorage_Secret": "Секретный ключ Google Storage",
-  "FileUpload_GoogleStorage_Secret_Description": "Пожалуйста, следуйте <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">этим инструкциям</a> и вставьте результат здесь.",
+  "FileUpload_GoogleStorage_Secret_Description": "Пожалуйста, следуйте [этим инструкциям](https://github.com/CulturalMe/meteor-slingshot#google-cloud) и вставьте результат здесь.",
   "FileUpload_json_web_token_secret_for_files": "Json Web Token Secret Загрузки Файлов",
   "FileUpload_json_web_token_secret_for_files_description": "Json Web Token Secret Загрузки Файлов (используется для доступа к загруженным файлам без аутентификации)",
   "FileUpload_MaxFileSize": "Максимальный размер загружаемых файлов (в байтах)",

@@ -1548,7 +1548,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "პროქსი ატვირთვები",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "პროქსი ავატარის ფაილების გადაცემა თქვენს სერვერზე, ობიექტის URL– ზე პირდაპირი წვდომის ნაცვლად",
   "FileUpload_GoogleStorage_Secret": "Google Storage საიდუმლო",
-  "FileUpload_GoogleStorage_Secret_Description": "გთხოვთ, მიყევით <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\"> მითითებებს </a> და ჩასვით შედეგი აქ.",
+  "FileUpload_GoogleStorage_Secret_Description": "გთხოვთ, მიყევით [მითითებებს](https://github.com/CulturalMe/meteor-slingshot#google-cloud) და ჩასვით შედეგი აქ.",
   "FileUpload_json_web_token_secret_for_files": "ფაილის ატვირთვა Json Web Token Secret",
   "FileUpload_json_web_token_secret_for_files_description": "ფაილის ატვირთვა Json Web Token Secret (გამოიყენება ატვირთული ფაილებისზე ავტორიზაციის გარეშე წვდომისთვის)",
   "FileUpload_MaxFileSize": "ასატვირთი ფაილის მაქსიმალური ზომა ბაიტებში",

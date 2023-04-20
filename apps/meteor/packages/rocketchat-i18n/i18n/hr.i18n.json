@@ -1262,7 +1262,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy učitavanja",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy prenosi datoteke prijenosa putem vašeg poslužitelja umjesto izravnog pristupa URL-u imovine",
   "FileUpload_GoogleStorage_Secret": "Google tajna za pohranu",
-  "FileUpload_GoogleStorage_Secret_Description": "Slijedite <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >ove upute</a>i zalijepite rezultat ovdje.",
+  "FileUpload_GoogleStorage_Secret_Description": "Slijedite [ove upute](https://github.com/CulturalMe/meteor-slingshot#google-cloud) i zalijepite rezultat ovdje.",
   "FileUpload_MaxFileSize": "Maksimalna  Veličina Prenijete Datoteke (u bajtovima)",
   "FileUpload_MaxFileSizeDescription": "Postavite je na -1 kako biste uklonili ograničenje veličine datoteke.",
   "FileUpload_MediaType_NotAccepted": "Neprihvatljive Vrste Medija",

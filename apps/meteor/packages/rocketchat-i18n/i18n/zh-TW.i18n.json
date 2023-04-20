@@ -1890,7 +1890,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "代理上傳",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "代理通過您的伺服器上傳檔案傳輸，而不是直接存取資產的網址",
   "FileUpload_GoogleStorage_Secret": "Google 儲存金鑰",
-  "FileUpload_GoogleStorage_Secret_Description": "請按照<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">這些說明</a>並在此處粘貼結果。",
+  "FileUpload_GoogleStorage_Secret_Description": "請按照 [這些說明](https://github.com/CulturalMe/meteor-slingshot#google-cloud) 並在此處粘貼結果。",
   "FileUpload_json_web_token_secret_for_files": "檔案上傳  Json Web Token 金鑰",
   "FileUpload_json_web_token_secret_for_files_description": "檔案上傳  Json Web Token 金鑰 (使用在不用驗證又有存取上傳檔案的權限)",
   "FileUpload_MaxFileSize": "最大上傳檔案大小 (以bytes為單位)",

@@ -1377,7 +1377,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "ផ្ទុកឡើងប្រូកស៊ី",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "ប្រូកស៊ីបញ្ជូនឯកសារបញ្ជូនតាមរយៈម៉ាស៊ីនមេរបស់អ្នកជំនួសឱ្យការចូលដោយផ្ទាល់ទៅ URL របស់ទ្រព្យសម្បត្តិ",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "សូមធ្វើតាម <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">ការណែនាំទាំងនេះ</a>ហើយបិទភ្ជាប់លទ្ធផលនៅទីនេះ។",
+  "FileUpload_GoogleStorage_Secret_Description": "សូមធ្វើតាម [ការណែនាំទាំងនេះ](https://github.com/CulturalMe/meteor-slingshot#google-cloud) ហើយបិទភ្ជាប់លទ្ធផលនៅទីនេះ។",
   "FileUpload_MaxFileSize": "ទំហំអតិបរិមាកំណត់សម្រាប់ការផ្ទុកឡើយឯកសារ(គឹតជាបៃ)",
   "FileUpload_MaxFileSizeDescription": "កំណត់វាទៅ -1 ដើម្បីលុបការកម្រិតទំហំឯកសារ។",
   "FileUpload_MediaType_NotAccepted": "ប្រភេទប្រព័ន្ធផ្សព្វផ្សាយមិនបានទទួលយក",

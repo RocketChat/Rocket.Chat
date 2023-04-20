@@ -1131,7 +1131,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Volmagoplaaie",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy upload lêer oordragte deur u bediener in plaas van direkte toegang tot die bate se URL",
   "FileUpload_GoogleStorage_Secret": "Google Geheime Geheue",
-  "FileUpload_GoogleStorage_Secret_Description": "Volg asseblief <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >hierdie instruksies</a>en plak die resultaat hier.",
+  "FileUpload_GoogleStorage_Secret_Description": "Volg asseblief [hierdie instruksies](https://github.com/CulturalMe/meteor-slingshot#google-cloud) en plak die resultaat hier.",
   "FileUpload_MaxFileSize": "Maksimum lêeroplaaigrootte (in grepe)",
   "FileUpload_MaxFileSizeDescription": "Stel dit op -1 om die limiet vir lêergrootte te verwyder.",
   "FileUpload_MediaType_NotAccepted": "Media tipes nie aanvaar nie",

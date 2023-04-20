@@ -2236,7 +2236,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Välityspalvelinlataukset",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Välityspalvelin lataa tiedostonsiirrot palvelimen kautta käyttämättä resurssin URL-osoitetta suoraan",
   "FileUpload_GoogleStorage_Secret": "Google-tallennuksen salasana",
-  "FileUpload_GoogleStorage_Secret_Description": "Noudata <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">näitä ohjeita</a>ja liitä tulos tähän.",
+  "FileUpload_GoogleStorage_Secret_Description": "Noudata [näitä ohjeita](https://github.com/CulturalMe/meteor-slingshot#google-cloud) ja liitä tulos tähän.",
   "FileUpload_json_web_token_secret_for_files": "Tiedostonlatauksen Json Web Token -salasana",
   "FileUpload_json_web_token_secret_for_files_description": "Tiedostonlatauksen Json Web Token -salasana (tällä käytetään ladattuja tiedostoja ilman todennusta)",
   "FileUpload_MaxFileSize": "Tiedostolatauksen enimmäiskoko (tavua)",

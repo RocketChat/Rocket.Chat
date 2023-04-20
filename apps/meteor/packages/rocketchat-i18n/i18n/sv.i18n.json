@@ -2234,7 +2234,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy-uppladdningar",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy överför filöverföringar via din server istället för direkt tillgång till tillgångens URL",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "Vänligen följ <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">dessa anvisningar</a>och klistra in resultatet här.",
+  "FileUpload_GoogleStorage_Secret_Description": "Vänligen följ [dessa anvisningar](https://github.com/CulturalMe/meteor-slingshot#google-cloud) och klistra in resultatet här.",
   "FileUpload_json_web_token_secret_for_files": "JWT-hemlighet för filuppladdning",
   "FileUpload_json_web_token_secret_for_files_description": "JWT-hemlighet för filuppladdning (används till att öppna uppladdade filer utan autentisering)",
   "FileUpload_MaxFileSize": "Maximal filstorlek för uppladdning (i bytes)",

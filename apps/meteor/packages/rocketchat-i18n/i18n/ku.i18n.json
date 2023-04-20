@@ -1128,7 +1128,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy Uploads",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy bi rêya veguherandina pelê veguhastina pelê we bi rasterast bi riya gihîştina malpera sîgorteyê",
   "FileUpload_GoogleStorage_Secret": "Secret Secrets of Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Ji kerema xwe <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">van rêvekan</a> û li vir encam bikin.",
+  "FileUpload_GoogleStorage_Secret_Description": "Ji kerema xwe [van rêvekan](https://github.com/CulturalMe/meteor-slingshot#google-cloud) û li vir encam bikin.",
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",
   "FileUpload_MaxFileSizeDescription": "Ji bo sînorkirina pelê pelê jê re 1-ê bike.",
   "FileUpload_MediaType_NotAccepted": "جۆری میدیا ڕێ پێدراو نیە",

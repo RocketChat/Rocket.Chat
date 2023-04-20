@@ -1127,7 +1127,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Llwythi Proxy",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Trosglwyddwch ddirprwy drosglwyddo ffeiliau trwy'ch gweinydd yn lle mynediad uniongyrchol i URL yr ased",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "Dilynwch <a href = \"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >y cyfarwyddiadau</a>a gludwch y canlyniad yma.",
+  "FileUpload_GoogleStorage_Secret_Description": "Dilynwch [y cyfarwyddiadau](https://github.com/CulturalMe/meteor-slingshot#google-cloud) a gludwch y canlyniad yma.",
   "FileUpload_MaxFileSize": "Maint Llwytho Ffeil Uchafswm (mewn bytes)",
   "FileUpload_MaxFileSizeDescription": "Gosodwch i -1 i gael gwared ar gyfyngiad maint y ffeil.",
   "FileUpload_MediaType_NotAccepted": "Mathau o Gyfryngau Heb eu Derbyn",

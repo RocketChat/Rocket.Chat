@@ -1127,7 +1127,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Прокси байршуулах",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Хөрөнгийн URL руу шууд нэвтрэхийн оронд серверт байршуулах файлын дамжуулалт",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">эдгээр зааврыг</a> хаягаар оруулна уу.",
+  "FileUpload_GoogleStorage_Secret_Description": "[эдгээр зааврыг](https://github.com/CulturalMe/meteor-slingshot#google-cloud) хаягаар оруулна уу.",
   "FileUpload_MaxFileSize": "Хамгийн их файлын байршуулах хэмжээ (байтаар)",
   "FileUpload_MaxFileSizeDescription": "Файлын хэмжээг хязгаарлахын тулд -1 болгож тохируулна уу.",
   "FileUpload_MediaType_NotAccepted": "Хэвлэл мэдээллийн төрөл хүлээн зөвшөөрөгдөөгүй",

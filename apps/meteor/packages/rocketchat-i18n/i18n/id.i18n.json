@@ -1131,7 +1131,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Unggah Proksi",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Transmisikan file upload proxy melalui server Anda, bukan akses langsung ke URL aset",
   "FileUpload_GoogleStorage_Secret": "Rahasia Penyimpanan Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Ikuti <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >petunjuk ini</a>dan tempelkan hasilnya di sini.",
+  "FileUpload_GoogleStorage_Secret_Description": "Ikuti [petunjuk ini](https://github.com/CulturalMe/meteor-slingshot#google-cloud) dan tempelkan hasilnya di sini.",
   "FileUpload_MaxFileSize": "Ukuran Maksimal File yang diunggah (in bytes)",
   "FileUpload_MaxFileSizeDescription": "Setel ke -1 untuk menghapus batasan ukuran file.",
   "FileUpload_MediaType_NotAccepted": "Jenis Media Tidak Diterima",

@@ -1388,7 +1388,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "بارگذاری پروکسی",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "پروکسی فایل آپلود فایل را از طریق سرور خود به جای دسترسی مستقیم به آدرس دارایی",
   "FileUpload_GoogleStorage_Secret": "مخفی Google Storage",
-  "FileUpload_GoogleStorage_Secret_Description": "لطفا طبق <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">مراحل زیر</a> عمل کنید و نتیجه در اینجا پیوست کنید",
+  "FileUpload_GoogleStorage_Secret_Description": "لطفا طبق [مراحل زیر](https://github.com/CulturalMe/meteor-slingshot#google-cloud) عمل کنید و نتیجه در اینجا پیوست کنید",
   "FileUpload_MaxFileSize": "حداکثر حجم آپلود فایل (به بایت)",
   "FileUpload_MaxFileSizeDescription": "برای حذف محدودیت اندازه فایل آن را به -1 تنظیم کنید.",
   "FileUpload_MediaType_NotAccepted": "فرمت های فایل غیر مجاز",

@@ -1122,7 +1122,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Nalaganje proxy",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Prenos datotek prek posrednika prek strežnika namesto neposrednega dostopa do URL-ja sredstva",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret ",
-  "FileUpload_GoogleStorage_Secret_Description": "Prosimo, sledite  <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">tem navodilom</a> in tukaj prilepite rezultat.",
+  "FileUpload_GoogleStorage_Secret_Description": "Prosimo, sledite [tem navodilom](https://github.com/CulturalMe/meteor-slingshot#google-cloud) in tukaj prilepite rezultat.",
   "FileUpload_MaxFileSize": "Največja velikost nalaganja datoteke (v bajtih)",
   "FileUpload_MaxFileSizeDescription": "Nastavite na -1, da odstranite omejitev velikosti datoteke.",
   "FileUpload_MediaType_NotAccepted": "Vrste medijev niso sprejete",

@@ -1131,7 +1131,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy yükləmələri",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy, aktivinizin URL'sinə birbaşa daxil olmaq yerine, server vasitəsilə fayl ötürülmələrini yüklə",
   "FileUpload_GoogleStorage_Secret": "Google Saxlama Gizli",
-  "FileUpload_GoogleStorage_Secret_Description": "Xahiş edirik <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >bu təlimatlara</a>əməl edin və nəticəni buraya yapışdırın.",
+  "FileUpload_GoogleStorage_Secret_Description": "Xahiş edirik [bu təlimatlara](https://github.com/CulturalMe/meteor-slingshot#google-cloud) əməl edin və nəticəni buraya yapışdırın.",
   "FileUpload_MaxFileSize": "Maksimum Fayl Yükləmə Ölçüləri (baytlarda)",
   "FileUpload_MaxFileSizeDescription": "Faylın ölçüsünü məhdudlaşdırmaq üçün -1 -ə qoyun.",
   "FileUpload_MediaType_NotAccepted": "Media növləri qəbul edilmədi",

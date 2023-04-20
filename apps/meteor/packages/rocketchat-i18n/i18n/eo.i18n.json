@@ -1131,7 +1131,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proksaj Alŝutoj",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proksxaj alŝuti dosierajn transdonojn tra via servilo anstataŭ rekte al la URL de la aktivaĵo",
   "FileUpload_GoogleStorage_Secret": "Google Subtena Sekreto",
-  "FileUpload_GoogleStorage_Secret_Description": "Bonvolu sekvi <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >ĉi tiuj instrukcioj</a>kaj batu la rezulton ĉi tie.",
+  "FileUpload_GoogleStorage_Secret_Description": "Bonvolu sekvi [ĉi tiuj instrukcioj](https://github.com/CulturalMe/meteor-slingshot#google-cloud) kaj batu la rezulton ĉi tie.",
   "FileUpload_MaxFileSize": "Maksimuma Alŝuta Grandeco (en bajtoj)",
   "FileUpload_MaxFileSizeDescription": "Ŝanĝu ĝin -1 por forigi la limigon de la dosiero.",
   "FileUpload_MediaType_NotAccepted": "Amaskomunikilaj Tipoj Ne Akceptitaj",

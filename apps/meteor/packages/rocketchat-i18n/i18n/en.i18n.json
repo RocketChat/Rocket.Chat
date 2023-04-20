@@ -2239,7 +2239,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy Uploads",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy upload file transmissions through your server instead of direct access to the asset's URL",
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "Please follow <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">these instructions</a> and paste the result here.",
+  "FileUpload_GoogleStorage_Secret_Description": "Please follow [these instructions](https://github.com/CulturalMe/meteor-slingshot#google-cloud) and paste the result here.",
   "FileUpload_json_web_token_secret_for_files": "File Upload Json Web Token Secret",
   "FileUpload_json_web_token_secret_for_files_description": "File Upload Json Web Token Secret (Used to be able to access uploaded files without authentication)",
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",

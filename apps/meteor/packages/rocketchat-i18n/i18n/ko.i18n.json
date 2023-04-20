@@ -1688,7 +1688,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "프록시 업로드",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "애셋의 URL에 직접 액세스하는 대신 서버를 통해 프록시 전송 파일 전송",
   "FileUpload_GoogleStorage_Secret": "Google 스토리지  Secret",
-  "FileUpload_GoogleStorage_Secret_Description": "<a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">이 지침</a>을 따라 여기에 결과를 붙여 넣으십시오.",
+  "FileUpload_GoogleStorage_Secret_Description": "[이 지침](https://github.com/CulturalMe/meteor-slingshot#google-cloud) 을 따라 여기에 결과를 붙여 넣으십시오.",
   "FileUpload_json_web_token_secret_for_files": "파일 업로드 Json Web Token Secret",
   "FileUpload_json_web_token_secret_for_files_description": "파일 업로드 Json Web Token Secret (인증없이 업로드 된 파일에 액세스하는 데 사용됨)",
   "FileUpload_MaxFileSize": "파일 업로드 최대 크기 (바이트 단위)",

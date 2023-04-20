@@ -1143,7 +1143,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Starpniekservera augšupielādes",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Starpniekservera augšupielādētie faili tiek pārsūtīti, izmantojot jūsu serveri, nevis tiešu piekļuvi aktīva URL",
   "FileUpload_GoogleStorage_Secret": "Google krātuves noslēpums",
-  "FileUpload_GoogleStorage_Secret_Description": "Lūdzu, sekojiet <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">šiem norādījumiem</a>un ielīmējiet rezultātu šeit.",
+  "FileUpload_GoogleStorage_Secret_Description": "Lūdzu, sekojiet [šiem norādījumiem](https://github.com/CulturalMe/meteor-slingshot#google-cloud) un ielīmējiet rezultātu šeit.",
   "FileUpload_MaxFileSize": "Maksimālais faila augšupielādes lielums (baitos)",
   "FileUpload_MaxFileSizeDescription": "Iestatiet to uz -1, lai noņemtu faila lieluma ierobežojumu.",
   "FileUpload_MediaType_NotAccepted": "Multivides veidi nav pieņemti",

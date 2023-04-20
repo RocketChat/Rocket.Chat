@@ -1523,7 +1523,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Проксі завантажень",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Проксі-сервер завантажує файли через ваш сервер замість прямого доступу до URL-адреси ресурсу",
   "FileUpload_GoogleStorage_Secret": "Секретне сховище Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Будь ласка, дотримуйтесь <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">цих інструкцій</a>і вставте результат отут.",
+  "FileUpload_GoogleStorage_Secret_Description": "Будь ласка, дотримуйтесь [цих інструкцій](https://github.com/CulturalMe/meteor-slingshot#google-cloud) і вставте результат отут.",
   "FileUpload_json_web_token_secret_for_files": "Json Web токени завантажень файлів",
   "FileUpload_json_web_token_secret_for_files_description": "Json Web токени завантажень файлів (використовується для доступу до завантажених файлів без автентифікації)",
   "FileUpload_MaxFileSize": "Максимальний розмір завантажуваного файлу (в байтах)",

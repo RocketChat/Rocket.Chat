@@ -1129,7 +1129,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Muat Naik Proksi",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Penghantaran proksi muat naik fail melalui pelayan anda dan bukannya akses langsung ke URL aset itu",
   "FileUpload_GoogleStorage_Secret": "Rahsia Penyimpanan Google",
-  "FileUpload_GoogleStorage_Secret_Description": "Sila ikuti <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >arahan ini</a>dan tampal hasilnya di sini.",
+  "FileUpload_GoogleStorage_Secret_Description": "Sila ikuti [arahan ini](https://github.com/CulturalMe/meteor-slingshot#google-cloud) dan tampal hasilnya di sini.",
   "FileUpload_MaxFileSize": "Fail muat naik saiz Maksimum (dalam bytes)",
   "FileUpload_MaxFileSizeDescription": "Tetapkannya kepada -1 untuk menghapuskan had saiz fail.",
   "FileUpload_MediaType_NotAccepted": "Jenis Media Tidak Diterima",

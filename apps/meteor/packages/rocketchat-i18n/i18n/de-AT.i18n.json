@@ -1133,7 +1133,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy-Uploads",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxy-Upload von Dateiübertragungen über Ihren Server anstelle des direkten Zugriffs auf die URL des Assets",
   "FileUpload_GoogleStorage_Secret": "Google-Speichergeheimnis",
-  "FileUpload_GoogleStorage_Secret_Description": "Bitte folgen Sie <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\" >diesen Anweisungen</a>und fügen Sie das Ergebnis hier ein.",
+  "FileUpload_GoogleStorage_Secret_Description": "Bitte folgen Sie [diesen Anweisungen](https://github.com/CulturalMe/meteor-slingshot#google-cloud) und fügen Sie das Ergebnis hier ein.",
   "FileUpload_MaxFileSize": "Max. Größe für hochgeladene Dateien (in Bytes)",
   "FileUpload_MaxFileSizeDescription": "Setzen Sie den Wert auf -1, um die Dateigrößenbeschränkung zu entfernen.",
   "FileUpload_MediaType_NotAccepted": "Medientypen werden nicht akzeptiert",

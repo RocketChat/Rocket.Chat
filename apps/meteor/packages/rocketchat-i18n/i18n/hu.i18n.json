@@ -2158,7 +2158,7 @@
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxyfeltöltések",
   "FileUpload_GoogleStorage_Proxy_Uploads_Description": "Proxyfeltöltés fájlátvitelek a kiszolgálón keresztül az eszköz URL-jének közvetlen elérése helyett",
   "FileUpload_GoogleStorage_Secret": "Google-tárhely titok",
-  "FileUpload_GoogleStorage_Secret_Description": "Kövesse <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">ezeket az utasításokat</a>, és illessze be ide az eredményt.",
+  "FileUpload_GoogleStorage_Secret_Description": "Kövesse [ezeket az utasításokat](https://github.com/CulturalMe/meteor-slingshot#google-cloud), és illessze be ide az eredményt.",
   "FileUpload_json_web_token_secret_for_files": "Fájlfeltöltés JSON-webtoken titka",
   "FileUpload_json_web_token_secret_for_files_description": "Fájlfeltöltés JSON-webtoken titka (a feltöltött fájlok hitelesítés nélküli eléréséhez van használva)",
   "FileUpload_MaxFileSize": "Legnagyobb fájlfeltöltési méret (bájtban)",
