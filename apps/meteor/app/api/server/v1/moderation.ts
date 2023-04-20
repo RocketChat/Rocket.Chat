@@ -156,7 +156,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			// TODO change complicated camelcases to simple verbs/nouns
-			const { userId, msgId, reason, action } = this.bodyParams;
+			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
 				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
@@ -173,7 +173,7 @@ API.v1.addRoute(
 			}
 
 			const sanitizedReason: string = reason?.trim() ? reason : 'No reason provided';
-			const action: string = action ?? 'None';
+			const action: string = actionParam ?? 'None';
 
 			const { userId: moderatorId } = this;
 

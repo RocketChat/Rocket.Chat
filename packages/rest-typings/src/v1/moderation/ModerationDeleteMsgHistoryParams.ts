@@ -10,6 +10,8 @@ const ajvParams = {
 	properties: {
 		userId: {
 			type: 'string',
+			nullable: false,
+			minLength: 1,
 		},
 		reason: {
 			type: 'string',

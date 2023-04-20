@@ -13,6 +13,7 @@ const schema = {
 	properties: {
 		msgId: {
 			type: 'string',
+			minLength: 1,
 		},
 		selector: {
 			type: 'string',

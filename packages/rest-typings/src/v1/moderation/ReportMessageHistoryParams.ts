@@ -14,6 +14,7 @@ const ajvParams = {
 		userId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		selector: {
 			type: 'string',

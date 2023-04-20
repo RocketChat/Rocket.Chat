@@ -13,6 +13,8 @@ const ajvParams = {
 	properties: {
 		reportId: {
 			type: 'string',
+			nullable: false,
+			minLength: 1,
 		},
 	},
 	required: ['reportId'],
