@@ -3879,7 +3879,7 @@
   "Pool": "Pool",
   "Port": "Port",
   "Post_as": "Post as",
-  "Moderation_Post_date": "Post date",
+  "Moderation_Report_date": "Report date",
   "Post_to": "Post to",
   "Post_to_Channel": "Post to Channel",
   "Post_to_s_as_s": "Post to <strong>%s</strong> as <strong>%s</strong>",

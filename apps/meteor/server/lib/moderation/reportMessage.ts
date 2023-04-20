@@ -9,7 +9,7 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 		throw new Error('error-invalid-user');
 	}
 
-	if (description == null || description.trim() === '') {
+	if (!description.trim()) {
 		throw new Error('error-invalid-description');
 	}
 

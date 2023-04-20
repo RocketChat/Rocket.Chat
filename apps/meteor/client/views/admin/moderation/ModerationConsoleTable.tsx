@@ -130,7 +130,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.ts'
 			>
-				{t('Moderation_Post_date')}
+				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Report_plural')}
