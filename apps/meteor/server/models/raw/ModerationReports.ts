@@ -11,7 +11,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	modelIndexes(): IndexDescription[] | undefined {
 		return [
-			{ key: { ts: 1 } },
+			{ key: { 'ts': 1, 'reports.ts': 1 } },
 			{ key: { 'message.u._id': 1, 'ts': 1 } },
 			{ key: { 'message.rid': 1, 'ts': 1 } },
 			{ key: { userId: 1, ts: 1 } },
@@ -152,6 +152,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		messageId: string,
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
+		options?: FindOptions<IModerationReport> = {},
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
@@ -176,6 +177,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				reportedBy: 1,
 				room: 1,
 			},
+			...options,
 		};
 
 		return this.findPaginated(query, opts);

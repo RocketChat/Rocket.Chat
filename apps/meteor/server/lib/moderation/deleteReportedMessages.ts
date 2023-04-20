@@ -4,9 +4,8 @@ import { Messages, Uploads } from '@rocket.chat/models';
 import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
 
-// delete files in bulk
-// delete messages in bulk
-
+// heavily inspired from message delete taking place in the user deletion process
+// in this path we don't care about the apps engine events - it's a "raw" bulk action
 export async function deleteReportedMessages(messages: IMessage[], user: IUser): Promise<void> {
 	const keepHistory = settings.get('Message_KeepHistory');
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');

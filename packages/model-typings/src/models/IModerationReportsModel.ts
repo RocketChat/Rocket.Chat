@@ -30,6 +30,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		messageId: IModerationReport['message']['_id'],
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
+		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>>;
 
 	findReportedMessagesByReportedUserId(

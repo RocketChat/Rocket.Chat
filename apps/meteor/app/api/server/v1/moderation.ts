@@ -64,7 +64,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { userId } = this.queryParams;
+			const { userId, selector = '' } = this.queryParams;
 
 			const { sort } = await this.parseJsonQuery();
 
@@ -75,7 +75,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', { offset, count, sort });
+			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, selector, { offset, count, sort });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -117,7 +117,7 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId as string, { projection: { _id: 1 } });
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 			if (!user) {
 				return API.v1.failure('error-invalid-user');
 			}
@@ -139,7 +139,7 @@ API.v1.addRoute(
 				moderator,
 			);
 
-			await ModerationReports.hideReportsByUserId(userId as string, this.userId, sanitizedReason, 'DELETE Messages');
+			await ModerationReports.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
 
 			return API.v1.success();
 		},

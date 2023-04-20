@@ -1,5 +1,4 @@
 import type { IModerationReport, IModerationAudit } from '@rocket.chat/core-typings';
-import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
@@ -21,16 +20,14 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.getMessageHistory': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
-			messages: Pick<IModerationReport, 'message' | 'ts' | 'room' | '_id'>[];
+			messages: Pick<IModerationReport, 'message' | 'ts' | 'room'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteMessageHistory': {
 		POST: (params: ModerationDeleteMsgHistoryParamsPOST) => void;
 	};
 	'/v1/moderation.markChecked': {
-		POST: (params: ArchiveReportPropsPOST) => {
-			update: Document | UpdateResult;
-		};
+		POST: (params: ArchiveReportPropsPOST) => void;
 	};
 	'/v1/moderation.reportsByMessage': {
 		GET: (params: ReportsByMsgIdParamsGET) => PaginatedResult<{
