@@ -343,6 +343,10 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
 		});
 		it('should allow managers to join a room which is already being served by an agent', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			// delay for 1 second to make sure the routing queue gets stopped
+			await sleep(1000);
+
 			const {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
@@ -352,6 +356,8 @@ describe('LIVECHAT - rooms', function () {
 			await createManager(manager.username);
 
 			await request.get(api('livechat/room.join')).set(managerCredentials).query({ roomId }).send().expect(200);
+
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 		});
 	});
 
