@@ -13,12 +13,12 @@ const reportHistoryPropsSchema = {
 	properties: {
 		latest: {
 			type: 'string',
-			format: 'date',
+			format: 'date-time',
 			nullable: true,
 		},
 		oldest: {
 			type: 'string',
-			format: 'date',
+			format: 'date-time',
 			nullable: true,
 		},
 		selector: {

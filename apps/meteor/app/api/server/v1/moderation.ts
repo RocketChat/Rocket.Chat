@@ -134,8 +134,10 @@ API.v1.addRoute(
 				return API.v1.failure('No reported messages found for this user.');
 			}
 
-			// TODO optimize
-			await deleteReportedMessages(messages, moderator);
+			await deleteReportedMessages(
+				messages.map((message) => message.message),
+				moderator,
+			);
 
 			await ModerationReports.hideReportsByUserId(userId as string, this.userId, sanitizedReason, 'DELETE Messages');
 
