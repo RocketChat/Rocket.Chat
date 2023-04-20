@@ -13,16 +13,16 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
 		cursor: pointer;
 		transition: transform 0.2s ease-out;
-		a {
+		a:link {
 			color: ${Palette.text['font-pure-black'].theme('announcement-text')};
-			text-decoration: underline !important;
+			text-decoration: underline;
 		}
 		> * {
 			flex: auto;
 		}
 		&:hover,
 		&:focus {
-			text-decoration: underline !important;
+			text-decoration: underline;
 		}
 	`;
 

@@ -11,6 +11,7 @@ import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
@@ -33,18 +34,20 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, subscription, user }) {
+				condition({ message, subscription, user, room }) {
 					if (!user) {
 						return false;
 					}
 					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
+					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
+					const isDifferentUser = message?.u && message.u._id !== user._id;
+					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
+					const hasLanguage =
+						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
-						(message?.u &&
-							message.u._id !== user._id &&
-							subscription?.autoTranslate &&
-							(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse) ||
-							(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)),
+						(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse ||
+							(isDifferentUser && autoTranslateEnabled && !hasLanguage),
 					);
 				},
 				order: 90,
@@ -65,18 +68,22 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, subscription, user }) {
+				condition({ message, subscription, user, room }) {
 					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
+					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
 					if (!user) {
 						return false;
 					}
+					const isDifferentUser = message?.u && message.u._id !== user._id;
+					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
+					const hasLanguage =
+						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
-						message?.u &&
-							message.u._id !== user._id &&
-							subscription?.autoTranslate &&
-							!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
-							(hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language)),
+						!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
+							isDifferentUser &&
+							autoTranslateEnabled &&
+							hasLanguage,
 					);
 				},
 				order: 90,

@@ -1,27 +1,20 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Button, Field, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps } from 'react';
 import React, { memo, useCallback } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
-import RoomsInput from './RoomsInput';
-
-type AddExistingModalState = {
-	onAdd: any;
-	rooms: Serialized<IRoom>[];
-	onChange: (value: Serialized<IRoom>, action: 'remove' | undefined) => void;
-	hasUnsavedChanges: boolean;
-};
+import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
 
 type AddExistingModalProps = {
-	onClose: () => void;
 	teamId: string;
-	reload: () => void;
+	onClose: () => void;
 };
 
-const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
+const AddExistingModal = ({ onClose, teamId }: AddExistingModalProps) => {
 	const t = useTranslation();
+
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -29,50 +22,30 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 		rooms: [] as Serialized<IRoom>[],
 	});
 
-	const { rooms } = values as { rooms: Serialized<IRoom>[] };
+	const { rooms } = values as { rooms: string[] };
 	const { handleRooms } = handlers;
 
-	const onChange = useCallback<AddExistingModalState['onChange']>(
-		(value, action) => {
-			if (!action) {
-				if (rooms.some((current) => current._id === value._id)) {
-					return;
-				}
+	const handleAddChannels = useCallback(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await addRoomEndpoint({
+					rooms,
+					teamId,
+				});
 
-				return handleRooms([...rooms, value]);
+				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				onClose();
 			}
-
-			handleRooms(rooms.filter((current: any) => current._id !== value._id));
 		},
-		[handleRooms, rooms],
+		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t],
 	);
 
-	const onAdd = useCallback(async () => {
-		try {
-			await addRoomEndpoint({
-				rooms: rooms.map((room) => room._id),
-				teamId,
-			});
-
-			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
-			onClose();
-			reload();
-		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
-
-	return { onAdd, rooms, onChange, hasUnsavedChanges };
-};
-
-const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }) => {
-	const t = useTranslation();
-	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(onClose, teamId, reload);
-
-	const isAddButtonEnabled = hasUnsavedChanges;
-
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleAddChannels} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -80,13 +53,13 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }
 			<Modal.Content>
 				<Field mbe='x24'>
 					<Field.Label>{t('Channels')}</Field.Label>
-					<RoomsInput value={rooms} onChange={onChange} />
+					<RoomsAvailableForTeamsAutoComplete value={rooms} onChange={handleRooms} />
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>
+					<Button disabled={!hasUnsavedChanges} type='submit' primary>
 						{t('Add')}
 					</Button>
 				</Modal.FooterControllers>

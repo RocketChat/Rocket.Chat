@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import { sortAppsByClosestOrFarthestModificationDate } from '../../../../../../../client/views/admin/apps/helpers/sortAppsByClosestOrFarthestModificationDate';
+import { sortAppsByClosestOrFarthestModificationDate } from '../../../../../../../client/views/marketplace/helpers/sortAppsByClosestOrFarthestModificationDate';
 
 describe('sortAppsByClosestOrFarthestModificationDate', () => {
 	it('should return a positive number if firstDate is before secondDate', () => {

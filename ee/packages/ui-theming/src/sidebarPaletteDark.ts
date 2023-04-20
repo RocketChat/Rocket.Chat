@@ -14,8 +14,8 @@ export const palette = [
 		category: 'Font',
 		description: 'These should be applied according to surfaces',
 		list: [
-			{ name: 'font-secondary-info', token: '', color: '#9EA2A8' },
-			{ name: 'font-default', token: '', color: '#E4E7EA' },
+			{ name: 'font-titles-labels', token: '', color: '#E4E7EA' },
+			{ name: 'font-default', token: '', color: '#9EA2A8' },
 		],
 	},
 	{
@@ -33,9 +33,9 @@ export const palette = [
 		description: 'Badge Background',
 		list: [
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
-			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
-			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
-			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
+			{ name: 'badge-background-level-2', token: '', color: '#2C65BA' },
+			{ name: 'badge-background-level-3', token: '', color: '#955828' },
+			{ name: 'badge-background-level-4', token: '', color: '#B43C4C' },
 		],
 	},
 	{

@@ -1,15 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
-import _ from 'underscore';
-import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+import getCaretCoordinates from 'textarea-caret';
 
 import AutoCompleteRecords from './collection';
 import { APIClient } from '../../utils/client';
 
 const isServerSearch = function (rule) {
-	return _.isString(rule.collection);
+	return Object.prototype.toString.call(rule.collection) === '[object String]';
 };
 
 const validateRule = function (rule) {
@@ -39,7 +37,7 @@ const getRegExp = function (rule) {
 const getFindParams = function (rule, filter, limit) {
 	// This is a different 'filter' - the selector from the settings
 	// We need to extend so that we don't copy over rule.filter
-	const selector = _.extend({}, rule.filter || {});
+	const selector = Object.assign({}, rule.filter || {});
 	const options = {
 		limit,
 	};
@@ -53,9 +51,9 @@ const getFindParams = function (rule, filter, limit) {
 		sortspec[rule.field] = 1;
 		options.sort = sortspec;
 	}
-	if (_.isFunction(rule.selector)) {
+	if (Object.prototype.toString.call(rule.selector) === '[object Function]') {
 		// Custom selector
-		_.extend(selector, rule.selector(filter));
+		Object.assign(selector, rule.selector(filter));
 	} else {
 		selector[rule.field] = {
 			$regex: rule.matchAll ? filter : `^${filter}`,
@@ -262,13 +260,13 @@ export default class AutoComplete {
 	onFocus() {
 		// We need to run onKeyUp after the focus resolves,
 		// or the caret position (selectionStart) will not be correct
-		Meteor.defer(() => this.onKeyUp());
+		setTimeout(() => this.onKeyUp(), 0);
 	}
 
 	onBlur() {
 		// We need to delay this so click events work
 		// TODO this is a bit of a hack, see if we can't be smarter
-		Meteor.setTimeout(() => {
+		setTimeout(() => {
 			this.hideList();
 		}, 500);
 	}
@@ -298,7 +296,7 @@ export default class AutoComplete {
 		const params = getFindParams(rule, filter, this.limit);
 		const selector = params[0];
 		const options = params[1];
-		Meteor.defer(() => this.ensureSelection());
+		setTimeout(() => this.ensureSelection(), 0);
 
 		// if server collection, the server has already done the filtering work
 		if (isServerSearch(rule)) {
@@ -315,10 +313,10 @@ export default class AutoComplete {
 
 		// Do this after the render
 		if (showing) {
-			Meteor.defer(() => {
+			setTimeout(() => {
 				this.positionContainer();
 				this.ensureSelection();
-			});
+			}, 0);
 		}
 		return showing;
 	}

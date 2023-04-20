@@ -1,25 +1,30 @@
-import { LivechatInquiry, Users, LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
-import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
+import { updateRoomSLA } from './sla';
 
-export async function setPriorityToInquiry({
-	userId,
-	roomId,
-	priority,
-}: {
-	userId: string;
-	roomId: string;
-	priority: string;
-}): Promise<void> {
+export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla?: string }): Promise<void> {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
 	if (!inquiry || inquiry.status !== 'queued') {
 		throw new Error('error-invalid-inquiry');
 	}
 
-	const priorityData = priority && (await LivechatPriority.findOneByIdOrName(priority));
-	if (!priorityData) {
-		throw new Error('error-invalid-priority');
+	const slaData = sla && (await OmnichannelServiceLevelAgreements.findOneByIdOrName(sla));
+	if (!slaData) {
+		throw new Error('error-invalid-sla');
 	}
 
-	LivechatEnterprise.updateRoomPriority(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), priorityData);
+	const user = await Users.findOneById(userId, { projection: { _id: 1, username: 1, name: 1 } });
+	if (!user?.username) {
+		throw new Error('error-invalid-user');
+	}
+
+	await updateRoomSLA(
+		roomId,
+		{
+			_id: user._id,
+			name: user.name || '',
+			username: user.username,
+		},
+		slaData,
+	);
 }

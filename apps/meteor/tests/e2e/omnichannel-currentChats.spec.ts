@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+import { Users } from './fixtures/userStates';
 import { OmnichannelCurrentChats } from './page-objects';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('Current Chats', () => {
 	let pageOmnichannelCurrentChats: OmnichannelCurrentChats;

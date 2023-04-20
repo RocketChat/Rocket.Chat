@@ -1,20 +1,30 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditRoom from './EditRoom';
 
 const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
-	const {
-		value: data,
-		phase: state,
-		error,
-		reload,
-	} = useEndpointData('/v1/rooms.adminRooms.getRoom', { params: useMemo(() => ({ rid }), [rid]) });
+	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	if (state === AsyncStatePhase.LOADING) {
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, refetch } = useQuery(
+		['rooms', rid, 'admin'],
+		async () => {
+			const rooms = await getAdminRooms({ rid });
+			return rooms;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
+
+	if (isLoading) {
 		return (
 			<Box w='full' p='x24'>
 				<Skeleton mbe='x4' />
@@ -27,12 +37,8 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		);
 	}
 
-	if (state === AsyncStatePhase.REJECTED) {
-		return <>{error?.message}</>;
-	}
-
 	const handleChange = (): void => {
-		reload();
+		refetch();
 		onReload();
 	};
 
