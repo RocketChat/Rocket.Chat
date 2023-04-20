@@ -13,8 +13,8 @@ type RoomMembersActionsProps = {
 	reload: () => void;
 };
 
-const RoomMembersActions = ({ username, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
-	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username }, rid, reload), 0);
+const RoomMembersActions = ({ username, _id, rid: _, reload }: RoomMembersActionsProps): ReactElement | null => {
+	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username }, reload), 0);
 	if (!menuOptions) {
 		return null;
 	}

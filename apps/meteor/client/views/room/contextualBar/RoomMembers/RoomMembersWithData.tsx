@@ -84,7 +84,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}, [setState]);
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
-		return <UserInfoWithData rid={rid} uid={state.userId} onClose={handleClose} onClickBack={handleBack} />;
+		return <UserInfoWithData uid={state.userId} onClose={handleClose} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.INVITE) {

@@ -1,8 +1,8 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation, usePermission, useUserRoom, useUserSubscription, useUser, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useUserSubscription, useUser, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
@@ -10,6 +10,7 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
+import { useRoom } from '../../../contexts/RoomContext';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
@@ -33,23 +34,19 @@ const getWarningModalForFederatedRooms = (
 );
 
 // TODO: Remove endpoint concatenation
-export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
 	const t = useTranslation();
-	const room = useUserRoom(rid);
+	const room = useRoom();
 	const { _id: uid } = user;
 
-	const userCanSetModerator = usePermission('set-moderator', rid);
-	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
-	const userSubscription = useUserSubscription(rid);
+	const userCanSetModerator = usePermission('set-moderator', room._id);
+	const isModerator = useUserHasRoomRole(uid, room._id, 'moderator');
+	const userSubscription = useUserSubscription(room._id);
 	const { _id: loggedUserId = '' } = useUser() || {};
-	const loggedUserIsModerator = useUserHasRoomRole(loggedUserId, rid, 'moderator');
-	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
+	const loggedUserIsModerator = useUserHasRoomRole(loggedUserId, room._id, 'moderator');
+	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, room._id, 'owner');
 	const setModal = useSetModal();
 	const closeModal = useCallback(() => setModal(null), [setModal]);
-
-	if (!room) {
-		throw Error('Room not provided');
-	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanSetModerator } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
@@ -65,14 +62,14 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	});
 
 	const handleConfirm = useCallback(() => {
-		changeModerator({ roomId: rid, userId: uid });
+		changeModerator({ roomId: room._id, userId: uid });
 		closeModal();
-	}, [changeModerator, rid, uid, closeModal]);
+	}, [changeModerator, room._id, uid, closeModal]);
 
 	const handleChangeModerator = useCallback(
 		({ userId }) => {
 			if (!isRoomFederated(room)) {
-				return changeModerator({ roomId: rid, userId: uid });
+				return changeModerator({ roomId: room._id, userId: uid });
 			}
 
 			const changingOwnRole = userId === loggedUserId;
@@ -112,12 +109,12 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 				);
 			}
 
-			changeModerator({ roomId: rid, userId: uid });
+			changeModerator({ roomId: room._id, userId: uid });
 		},
-		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, changeModerator, closeModal, handleConfirm, room],
+		[room, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, changeModerator, uid, setModal, closeModal, handleConfirm, t],
 	);
 
-	const changeModeratorAction = useMutableCallback(() => handleChangeModerator({ roomId: rid, userId: uid }));
+	const changeModeratorAction = useMutableCallback(() => handleChangeModerator({ roomId: room._id, userId: uid }));
 	const changeModeratorOption = useMemo(
 		() =>
 			(isRoomFederated(room) && roomCanSetModerator) || (!isRoomFederated(room) && roomCanSetModerator && userCanSetModerator)

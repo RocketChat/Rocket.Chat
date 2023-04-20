@@ -8,7 +8,6 @@ import {
 	useMethod,
 	useToastMessageDispatch,
 	useTranslation,
-	useUserRoom,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -16,6 +15,7 @@ import React, { useMemo } from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
+import { useRoom } from '../../../contexts/RoomContext';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 const getUserIsMuted = (
@@ -38,25 +38,21 @@ const getUserIsMuted = (
 	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
 };
 
-export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
 	const t = useTranslation();
-	const room = useUserRoom(rid);
-	const userCanMute = usePermission('mute-user', rid);
+	const room = useRoom();
+	const userCanMute = usePermission('mute-user', room._id);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const otherUserCanPostReadonly = useAllPermissions(
 		useMemo(() => ['post-readonly'], []),
-		rid,
+		room._id,
 	);
-	const userSubscription = useUserSubscription(rid);
+	const userSubscription = useUserSubscription(room._id);
 
 	const isMuted = getUserIsMuted(user, room, otherUserCanPostReadonly);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
-
-	if (!room) {
-		throw Error('Room not provided');
-	}
 
 	const { roomCanMute } = getRoomDirectives({ room, showingUserId: user._id, userSubscription });
 
@@ -72,7 +68,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 						throw new Error('User without username');
 					}
 
-					await muteUser({ rid, username: user.username });
+					await muteUser({ rid: room._id, username: user.username });
 
 					return dispatchToastMessage({
 						type: 'success',
@@ -112,7 +108,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		dispatchToastMessage,
 		isMuted,
 		muteUser,
-		rid,
+		room._id,
 		roomCanMute,
 		roomName,
 		setModal,

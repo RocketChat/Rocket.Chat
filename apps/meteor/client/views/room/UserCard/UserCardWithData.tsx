@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
@@ -17,12 +16,11 @@ import { useUserInfoActions } from '../hooks/useUserInfoActions';
 type UserCardWithDataProps = {
 	username: string;
 	target: Element;
-	rid: IRoom['_id'];
 	open: (e: UIEvent) => void;
 	onClose: () => void;
 };
 
-const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
+const UserCardWithData = ({ username, target, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name');
@@ -67,7 +65,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		onClose?.();
 	});
 
-	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
+	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username });
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(userActions);
 
 	const menu = useMemo(() => {

@@ -31,7 +31,7 @@ const MemberListRouter = ({ rid }) => {
 		return <RoomMembers rid={rid} />;
 	}
 
-	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={onClickClose} rid={rid} />;
+	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={onClickClose} />;
 };
 
 export default MemberListRouter;

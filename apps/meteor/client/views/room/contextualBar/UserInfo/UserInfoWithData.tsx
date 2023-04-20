@@ -1,4 +1,4 @@
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -18,12 +18,11 @@ import UserInfoActions from './UserInfoActions';
 type UserInfoWithDataProps = {
 	uid: IUser['_id'];
 	username?: IUser['username'];
-	rid: IRoom['_id'];
 	onClose: () => void;
 	onClickBack: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -98,10 +97,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			)}
 
 			{!isLoading && user && (
-				<UserInfo
-					{...user}
-					actions={<UserInfoActions user={{ _id: user?._id, username: user?.username }} rid={rid} backToList={onClickBack} />}
-				/>
+				<UserInfo {...user} actions={<UserInfoActions user={{ _id: user?._id, username: user?.username }} backToList={onClickBack} />} />
 			)}
 		</>
 	);

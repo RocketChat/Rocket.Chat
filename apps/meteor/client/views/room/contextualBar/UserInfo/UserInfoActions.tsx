@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -9,13 +9,12 @@ import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username'>;
-	rid: IRoom['_id'];
 	backToList: () => void;
 };
 
-const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, backToList }: UserInfoActionsProps): ReactElement => {
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions({ _id: user._id, username: user.username }, rid, backToList),
+		useUserInfoActions({ _id: user._id, username: user.username }, backToList),
 	);
 
 	const menu = useMemo(() => {

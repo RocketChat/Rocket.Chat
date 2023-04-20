@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
@@ -15,19 +15,18 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
-	rid: IRoom['_id'],
 	reload?: () => void,
 ): {
 	[key: string]: Action;
 } => {
-	const blockUserOption = useBlockUserAction(user, rid);
-	const changeLeaderOption = useChangeLeaderAction(user, rid);
-	const changeModeratorOption = useChangeModeratorAction(user, rid);
-	const changeOwnerOption = useChangeOwnerAction(user, rid);
-	const openDirectMessageOption = useDirectMessageAction(user, rid);
-	const ignoreUserOption = useIgnoreUserAction(user, rid);
-	const muteUserOption = useMuteUserAction(user, rid);
-	const removeUserOption = useRemoveUserAction(user, rid, reload);
+	const blockUserOption = useBlockUserAction(user);
+	const changeLeaderOption = useChangeLeaderAction(user);
+	const changeModeratorOption = useChangeModeratorAction(user);
+	const changeOwnerOption = useChangeOwnerAction(user);
+	const openDirectMessageOption = useDirectMessageAction(user);
+	const ignoreUserOption = useIgnoreUserAction(user);
+	const muteUserOption = useMuteUserAction(user);
+	const removeUserOption = useRemoveUserAction(user, reload);
 	const callOption = useCallAction(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
