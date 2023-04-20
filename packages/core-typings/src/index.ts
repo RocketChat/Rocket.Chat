@@ -127,5 +127,3 @@ export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
 
 export * from './IModerationReport';
-
-export * from './migrations/IControl';

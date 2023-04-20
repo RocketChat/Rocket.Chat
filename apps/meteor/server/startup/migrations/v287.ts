@@ -1,4 +1,5 @@
-import { Settings, Messages } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
@@ -38,7 +39,10 @@ addMigration({
 			_id: { $in: deprecatedSettings },
 		});
 
-		await Messages.updateMany(
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		const messages = mongo.db.collection('rocketchat_message');
+
+		await messages.updateMany(
 			{
 				snippeted: true,
 			},
@@ -51,7 +55,7 @@ addMigration({
 				},
 			},
 		);
-		await Messages.col.dropIndex('snippeted_1');
+		await messages.dropIndex('snippeted_1');
 
 		await upsertPermissions();
 	},

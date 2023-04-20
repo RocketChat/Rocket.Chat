@@ -43,7 +43,7 @@ rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
-rocketchat:user-presence
+konecty:user-presence
 
 dispatch:run-as-user
 

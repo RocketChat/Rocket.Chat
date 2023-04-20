@@ -1,4 +1,5 @@
-import { LivechatRooms, Messages, LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
+import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
 import { addMigration } from '../../lib/migrations';
@@ -7,15 +8,19 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 290,
 	async up() {
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		const priorities = mongo.db.collection('rocketchat_livechat_priority');
+		const slas = mongo.db.collection('rocketchat_omnichannel_service_level_agreements');
+
 		// CE may have been EE first, so it may hold priorities which we want to remove
 		// IF env is not EE anymore, then just cleaning the collection is enough
 		// IF it's still EE, populate new collection with SLAs
-		const currentPriorities = await LivechatPriority.col.find().toArray();
-		await LivechatPriority.deleteMany({});
+		const currentPriorities = await priorities.find().toArray();
+		await priorities.deleteMany({});
 
 		try {
 			// remove indexes from livechat_priority collection
-			await LivechatPriority.col.dropIndexes();
+			await priorities.dropIndexes();
 		} catch (error) {
 			// ignore
 			console.warn('Error dropping indexes from livechat_priority collection:', error);
@@ -26,8 +31,7 @@ addMigration({
 		await LivechatRooms.updateMany({ priorityId: { $exists: true } }, { $rename: { priorityId: 'slaId' } });
 		if (currentPriorities.length) {
 			// Since we updated the typings of the model
-			// @ts-expect-error - Types of priorities are incompatible at this point
-			await OmnichannelServiceLevelAgreements.insertMany(currentPriorities);
+			await slas.insertMany(currentPriorities);
 		}
 
 		// migrate old priority history messages to new sla history messages

@@ -1,10 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from '@rocket.chat/models';
-import type { IControl } from '@rocket.chat/core-typings';
+import { Mongo } from 'meteor/mongo';
 
 import { Info } from '../../app/utils/server';
 import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
+
+type IControl = {
+	_id?: string;
+	version: number;
+	locked: boolean;
+	buildAt?: string;
+	lockedAt?: string;
+};
 
 type IMigration = {
 	name?: string;
@@ -17,9 +24,11 @@ const log = new Logger('Migrations');
 
 const migrations = new Set<IMigration>();
 
+const collection = new Mongo.Collection('migrations');
+
 // sets the control record
-function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IControl, 'version' | 'locked'> {
-	void Migrations.updateMany(
+function setControl(control: IControl): IControl {
+	collection.update(
 		{
 			_id: 'control',
 		},
@@ -38,10 +47,10 @@ function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IContro
 }
 
 // gets the current control record, optionally creating it if non-existant
-export async function getControl(): Promise<IControl> {
-	const control = (await Migrations.findOne({
+export function getControl(): IControl {
+	const control = collection.findOne({
 		_id: 'control',
-	})) as IControl;
+	}) as IControl;
 
 	return (
 		control ||
@@ -53,7 +62,7 @@ export async function getControl(): Promise<IControl> {
 }
 
 // Returns true if lock was acquired.
-async function lock(): Promise<boolean> {
+function lock(): boolean {
 	const date = new Date();
 	const dateMinusInterval = new Date();
 	dateMinusInterval.setMinutes(dateMinusInterval.getMinutes() - 5);
@@ -64,35 +73,33 @@ async function lock(): Promise<boolean> {
 	// the unlocked control, and locking occurs in the same update's modifier.
 	// All other simultaneous callers will get false back from the update.
 	return (
-		(
-			await Migrations.updateMany(
-				{
-					_id: 'control',
-					$or: [
-						{
-							locked: false,
-						},
-						{
-							lockedAt: {
-								$lt: dateMinusInterval,
-							},
-						},
-						{
-							buildAt: {
-								$ne: build,
-							},
-						},
-					],
-				},
-				{
-					$set: {
-						locked: true,
-						lockedAt: date,
-						buildAt: build,
+		collection.update(
+			{
+				_id: 'control',
+				$or: [
+					{
+						locked: false,
 					},
+					{
+						lockedAt: {
+							$lt: dateMinusInterval,
+						},
+					},
+					{
+						buildAt: {
+							$ne: build,
+						},
+					},
+				],
+			},
+			{
+				$set: {
+					locked: true,
+					lockedAt: date,
+					buildAt: build,
 				},
-			)
-		).matchedCount === 1
+			},
+		) === 1
 	);
 }
 
@@ -156,7 +163,7 @@ const retryInterval = 10;
 let currentAttempt = 0;
 
 export async function migrateDatabase(targetVersion: 'latest' | number, subcommands?: string[]): Promise<boolean> {
-	const control = await getControl();
+	const control = getControl();
 	const currentVersion = control.version;
 
 	const orderedMigrations = getOrderedMigrations();
@@ -180,7 +187,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	// get latest version
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
 
-	if (!(await lock())) {
+	if (!lock()) {
 		const msg = `Not migrating, control is locked. Attempt ${currentAttempt}/${maxAttempts}`;
 		if (currentAttempt <= maxAttempts) {
 			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
@@ -190,7 +197,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			currentAttempt++;
 			return migrateDatabase(targetVersion, subcommands);
 		}
-		const control = await getControl(); // Side effect: upserts control document.
+		const control = getControl(); // Side effect: upserts control document.
 		showErrorBox(
 			'ERROR! SERVER STOPPED',
 			[
@@ -293,7 +300,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 }
 
 export const onFreshInstall =
-	(await getControl()).version !== 0
+	getControl().version !== 0
 		? async (): Promise<void> => {
 				/* noop */
 		  }

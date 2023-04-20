@@ -350,7 +350,7 @@ export const statistics = {
 				}),
 		);
 
-		statistics.migration = await getControl();
+		statistics.migration = getControl();
 		statsPms.push(
 			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
 				statistics.instanceCount = count;

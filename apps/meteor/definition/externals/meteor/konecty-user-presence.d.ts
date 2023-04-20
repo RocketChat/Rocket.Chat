@@ -1,4 +1,4 @@
-declare module 'meteor/rocketchat:user-presence' {
+declare module 'meteor/konecty:user-presence' {
 	namespace UserPresenceMonitor {
 		function processUserSession(userSession: any, event: string): void;
 		function onSetUserStatus(callback: any): void;
