@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
-import { permissions } from '../../app/authorization/server/constant/permissions';
+import { permissions } from './constants/permissions';
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
