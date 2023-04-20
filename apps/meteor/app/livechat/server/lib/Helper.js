@@ -217,7 +217,7 @@ export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
@@ -282,7 +282,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 
 	const { department, rid, v } = inquiry;
 	const room = await LivechatRooms.findOneById(rid);
-	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+	setImmediate(() => callbacks.run('livechat.chatQueued', room));
 
 	if (RoutingManager.getConfig().autoAssignAgent) {
 		return;
@@ -387,7 +387,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		}
 		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
@@ -407,7 +407,7 @@ export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartment
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
