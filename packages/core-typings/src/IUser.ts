@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
