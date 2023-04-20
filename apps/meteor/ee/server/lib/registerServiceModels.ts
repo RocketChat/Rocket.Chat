@@ -5,7 +5,6 @@ import type {
 	ISetting,
 	ISubscription,
 	RocketChatRecordDeleted,
-	IAppStorageItem,
 } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
 
@@ -27,9 +26,9 @@ import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHis
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
-import { AppsRaw } from '../../../server/models/raw/Apps';
+import { AppsModel as AppsRaw } from '../../../server/models/raw/Apps';
 import { AppsLogsRaw } from '../../../server/models/raw/AppsLogs';
-import { AppsPersistenceRaw } from '../../../server/models/raw/AppsPersistence';
+import { AppsPersistenceModel as AppsPersistenceRaw } from '../../../server/models/raw/AppsPersistence';
 import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { UploadsRaw } from '../../../server/models/raw/Uploads';
@@ -64,7 +63,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
 
-	registerModel('IAppsModel', new AppsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<IAppStorageItem>>));
+	registerModel('IAppsModel', new AppsRaw(db));
 	registerModel('IAppsLogsModel', new AppsLogsRaw(db));
 	registerModel('IAppsPersistenceModel', new AppsPersistenceRaw(db));
 	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));

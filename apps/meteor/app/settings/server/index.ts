@@ -20,4 +20,4 @@ settingsRegistry.addGroup = use(settingsRegistry.addGroup, async (context, next)
 	return (await next(...context)) as any;
 });
 
-await initializeSettings({ model: Settings, settings });
+void initializeSettings({ model: Settings, settings });
