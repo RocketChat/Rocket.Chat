@@ -1,4 +1,24 @@
 
+`2023-04-20  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps-engine to v1.36.2 ([#28993](https://github.com/RocketChat/Rocket.Chat/pull/28993))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@tapiarafael](https://github.com/tapiarafael)
+
+
 # 5.4.7
 `2023-04-17  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
