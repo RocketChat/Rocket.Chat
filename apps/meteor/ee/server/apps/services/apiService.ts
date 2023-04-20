@@ -50,7 +50,7 @@ export class AppsApiService extends ServiceClass implements IAppsApiService {
 	 * It is supposed to be called by the ENDPOINT COMMUNICATOR in the core, as it is
 	 * the component that interfaces directly with the Express server.
 	 *
-	 * The returning promise will ALWAYS resolve, even if the route is not found.
+	 * The returning promise will ALWAYS resolve, even if there's an error in the handler.
 	 *
 	 * The way we indicate an error to the caller is by returning a status code.
 	 *
@@ -79,6 +79,8 @@ export class AppsApiService extends ServiceClass implements IAppsApiService {
 	 *
 	 * It is supposed to be called by the ENDPOINT COMMUNICATOR in the core, as it is
 	 * the component that interfaces directly with the Express server.
+	 *
+	 * The returning promise will ALWAYS resolve, even if there's an error in the handler.
 	 *
 	 * The way we indicate an error to the caller is by returning a status code.
 	 *
