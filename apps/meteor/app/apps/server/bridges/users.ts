@@ -2,6 +2,8 @@ import { Random } from '@rocket.chat/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { Presence } from '@rocket.chat/core-services';
+import type { UserStatus } from '@rocket.chat/core-typings';
 
 import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
@@ -106,11 +108,7 @@ export class AppUserBridge extends UserBridge {
 		return true;
 	}
 
-	protected async update(
-		user: IUser & { id: string },
-		fields: Partial<IUser> & { statusDefault: string },
-		appId: string,
-	): Promise<boolean> {
+	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
 
 		if (!user) {
@@ -125,7 +123,7 @@ export class AppUserBridge extends UserBridge {
 		delete fields.status;
 
 		if (status) {
-			fields.statusDefault = status;
+			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
