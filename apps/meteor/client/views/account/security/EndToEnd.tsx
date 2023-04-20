@@ -36,7 +36,6 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	const hasTypedPassword = Boolean(password?.trim().length);
 
-
 	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
 		try {
 			await e2e.changePassword(data.password);
