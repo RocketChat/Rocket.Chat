@@ -24,13 +24,13 @@ Meteor.startup(() => {
 		const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100);
 
 		if ((Session.get('newRoomSound') || []).length > 0) {
-			Meteor.defer(() => {
+			setTimeout(() => {
 				if (newRoomNotification !== 'none') {
 					CustomSounds.play(newRoomNotification, {
 						volume: Number((audioVolume / 100).toPrecision(2)),
 					});
 				}
-			});
+			}, 0);
 		} else {
 			CustomSounds.pause(newRoomNotification);
 		}

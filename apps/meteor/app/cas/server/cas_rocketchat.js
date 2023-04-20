@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { onStartup } from '../../../server/lib/onStartup';
@@ -51,10 +50,10 @@ let timer;
 
 async function updateServices(/* record*/) {
 	if (typeof timer !== 'undefined') {
-		Meteor.clearTimeout(timer);
+		clearTimeout(timer);
 	}
 
-	timer = Meteor.setTimeout(async function () {
+	timer = setTimeout(async function () {
 		const data = {
 			// These will pe passed to 'node-cas' as options
 			enabled: settings.get('CAS_enabled'),

@@ -52,7 +52,7 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(async () => {
+				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
@@ -60,7 +60,7 @@ FlowRouter.route('/', {
 					} else {
 						FlowRouter.go('home');
 					}
-				});
+				}, 0);
 				c.stop();
 			}
 		});

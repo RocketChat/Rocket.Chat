@@ -276,7 +276,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (user.type !== 'visitor') {
-			Meteor.defer(function () {
+			setImmediate(function () {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -372,7 +372,7 @@ const validateLoginAttemptAsync = async function (login) {
 	login = callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function () {
+	setImmediate(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
