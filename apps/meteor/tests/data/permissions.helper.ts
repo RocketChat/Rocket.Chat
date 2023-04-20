@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
+import { permissions as defaultPermissionMap } from "../../app/authorization/server/functions/upsertPermissions";
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
@@ -56,3 +57,16 @@ export const removePermissions = async (perms: string[]) => {
 export const addPermissions = async (perms: { [key: string]: string[] }) => {
 	await updateManyPermissions(perms);
 };
+
+export const removePermissionFromAllRoles = async (permissionId: string) => {
+    await updatePermission(permissionId, []);
+};
+
+export const addPermissionToDefaultRoles = async (permissionId: string) => {
+    const defaultRoles = defaultPermissionMap.find((p) => p._id === permissionId);
+    if (!defaultRoles) {
+        throw new Error(`No default roles found for permission ${permissionId}`);
+    }
+
+    await updatePermission(permissionId, defaultRoles.roles);
+}

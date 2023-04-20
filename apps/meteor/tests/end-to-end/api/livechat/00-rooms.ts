@@ -21,7 +21,14 @@ import {
 	closeOmnichanelRoom,
 	createManager,
 } from '../../../data/livechat/rooms';
-import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import {
+	addPermissionToDefaultRoles,
+	addPermissions,
+	removePermissionFromAllRoles,
+	updateEEPermission,
+	updatePermission,
+	updateSetting,
+} from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -112,7 +119,7 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/rooms', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-rooms', []);
+			await removePermissionFromAllRoles('view-livechat-rooms');
 			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
@@ -122,9 +129,10 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('unauthorized');
 				});
+
+			await addPermissionToDefaultRoles('view-livechat-rooms');
 		});
 		it('should return an error when the "agents" query parameter is not valid', async () => {
-			await updatePermission('view-livechat-rooms', ['admin']);
 			await request
 				.get(api('livechat/rooms?agents=invalid'))
 				.set(credentials)
@@ -306,11 +314,12 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/room.join', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+
+			await addPermissionToDefaultRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
 		});
 		it('should fail if room is present but invalid', async () => {
@@ -326,11 +335,13 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/room.join', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
+
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+
+			await addPermissionToDefaultRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
 		});
 		it('should fail if room is present but invalid', async () => {
@@ -470,7 +481,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('livechat/room.forward', () => {
 		it('should return an "unauthorized error" when the user does not have "view-l-room" permission', async () => {
 			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 
 			await request
 				.post(api('livechat/room.forward'))
@@ -487,7 +498,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 
 		it('should return an "unauthorized error" when the user does not have "transfer-livechat-guest" permission', async () => {
-			await updatePermission('transfer-livechat-guest', []);
+			await removePermissionFromAllRoles('transfer-livechat-guest');
 			await updatePermission('view-l-room', ['admin']);
 
 			await request
@@ -502,12 +513,12 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
 				});
+
+			await addPermissionToDefaultRoles('transfer-livechat-guest');
+			await addPermissionToDefaultRoles('view-l-room');
 		});
 
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
-			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
-
 			await request
 				.post(api('livechat/room.forward'))
 				.set(credentials)
@@ -730,12 +741,13 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		});
 		it('should throw an error if user doesnt have permission view-l-room', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 
 			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+
+			await addPermissionToDefaultRoles('view-l-room');
 		});
 		it('should return the messages of the room', async () => {
-			await updatePermission('view-l-room', ['admin']);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await sendMessage(room._id, 'Hello', visitor.token);
@@ -1144,16 +1156,17 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/transfer.history/:rid', () => {
 		it('should fail if user doesnt have "view-livechat-rooms" permission', async () => {
-			await updatePermission('view-livechat-rooms', []);
+			await removePermissionFromAllRoles('view-livechat-rooms');
 			const { body } = await request
 				.get(api(`livechat/transfer.history/test`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 			expect(body).to.have.property('success', false);
+
+			await addPermissionToDefaultRoles('view-livechat-rooms');
 		});
 		it('should fail if room is not a valid room id', async () => {
-			await updatePermission('view-livechat-rooms', ['admin', 'livechat-manager']);
 			const { body } = await request
 				.get(api(`livechat/transfer.history/test`))
 				.set(credentials)
