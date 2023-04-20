@@ -7,7 +7,7 @@ import GenericModal from '../../../../components/GenericModal';
 const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onReload: () => void) => {
 	const t = useTranslation();
 	const deleteMessage = useEndpoint('POST', '/v1/chat.delete');
-	const dismissMessage = useEndpoint('POST', '/v1/moderation.markChecked');
+	const dismissMessage = useEndpoint('POST', '/v1/moderation.dismissReports');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 

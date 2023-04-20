@@ -50,7 +50,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 		500,
 	);
 
-	const getReports = useEndpoint('GET', '/v1/moderation.getReports');
+	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

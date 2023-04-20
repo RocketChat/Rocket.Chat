@@ -22,7 +22,7 @@ const UserMessages = ({
 
 	const moderationRoute = useRoute('moderation-console');
 
-	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.getMessageHistory');
+	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const query = useMemo(() => ({ userId }), [userId]);
 

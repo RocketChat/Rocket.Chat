@@ -13,7 +13,7 @@ import { useFormatTime } from '../../../hooks/useFormatTime';
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reportsByMessage`);
+	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reports`);
 	const moderationRoute = useRoute('moderation-console');
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -27,7 +27,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
 	} = useQuery(
-		['moderation.reportsByMessage', { msgId }],
+		['moderation.reports', { msgId }],
 		async () => {
 			const reports = await getReportsByMessage({ msgId });
 			return reports;

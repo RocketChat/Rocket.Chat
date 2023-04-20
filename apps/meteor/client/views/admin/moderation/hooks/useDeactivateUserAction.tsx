@@ -10,7 +10,7 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const deactiveUser = useEndpoint('POST', '/v1/users.setActiveStatus');
-	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteMessageHistory');
+	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteReportedMessages');
 	const moderationRoute = useRoute('moderation-console');
 
 	const handleDeactivateUser = useMutation({

@@ -4,17 +4,17 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-// test for the /moderation.getReports endpoint
+// test for the /moderation.reportsByUsers endpoint
 
 describe('[Moderation]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	describe('[/moderation.getReports]', () => {
+	describe('[/moderation.reportsByUsers]', () => {
 		it('should return an array of reports', async () => {
 			await request
-				.get(api('moderation.getReports'))
+				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -26,7 +26,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with count and offset params', async () => {
 			await request
-				.get(api('moderation.getReports'))
+				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
 				.query({
 					count: 5,
@@ -42,7 +42,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with oldest param', async () => {
 			await request
-				.get(api('moderation.getReports'))
+				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
 				.query({
 					oldest: new Date(),
@@ -57,7 +57,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with latest param', async () => {
 			await request
-				.get(api('moderation.getReports'))
+				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
 				.query({
 					latest: new Date(),
@@ -71,9 +71,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.markChecked endpoint
+	// test for testing out the moderation.dismissReports endpoint
 
-	describe('[/moderation.markChecked]', () => {
+	describe('[/moderation.dismissReports]', () => {
 		let reportedMessage: IModerationAudit;
 		let message: IMessage;
 
@@ -114,7 +114,7 @@ describe('[Moderation]', function () {
 
 		before(async () => {
 			await request
-				.get(api('moderation.getReports'))
+				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
 				.query({
 					count: 5,
@@ -146,7 +146,7 @@ describe('[Moderation]', function () {
 
 		it('should hide reports of a user', async () => {
 			await request
-				.post(api('moderation.markChecked'))
+				.post(api('moderation.dismissReports'))
 				.set(credentials)
 				.send({
 					userId: reportedMessage.userId,
@@ -160,7 +160,7 @@ describe('[Moderation]', function () {
 
 		it('should hide reports of a message', async () => {
 			await request
-				.post(api('moderation.markChecked'))
+				.post(api('moderation.dismissReports'))
 				.set(credentials)
 				.send({
 					msgId: message._id,
@@ -174,7 +174,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the userId && msgId is not provided', async () => {
 			await request
-				.post(api('moderation.markChecked'))
+				.post(api('moderation.dismissReports'))
 				.set(credentials)
 				.send({
 					userId: '',
@@ -189,9 +189,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.reportsByMessage endpoint
+	// test for testing out the moderation.reports endpoint
 
-	describe('[/moderation.reportsByMessage]', () => {
+	describe('[/moderation.reports]', () => {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
@@ -245,7 +245,7 @@ describe('[Moderation]', function () {
 
 		it('should return the reports for a message', async () => {
 			await request
-				.get(api('moderation.reportsByMessage'))
+				.get(api('moderation.reports'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
@@ -260,7 +260,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the msgId is not provided', async () => {
 			await request
-				.get(api('moderation.reportsByMessage'))
+				.get(api('moderation.reports'))
 				.set(credentials)
 				.query({
 					msgId: '',
@@ -274,9 +274,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.getReportInfo endpoint
+	// test for testing out the moderation.reportInfo endpoint
 
-	describe('[/moderation.getReportInfo]', () => {
+	describe('[/moderation.reportInfo]', () => {
 		let message: IMessage;
 		let reportedMessage: IModerationReport;
 
@@ -314,10 +314,10 @@ describe('[Moderation]', function () {
 				});
 		});
 
-		// get the report information by sending a request to moderation.reportsByMessage
+		// get the report information by sending a request to moderation.reports
 		before(async () => {
 			await request
-				.get(api('moderation.reportsByMessage'))
+				.get(api('moderation.reports'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
@@ -348,7 +348,7 @@ describe('[Moderation]', function () {
 
 		it('should return the report information', async () => {
 			await request
-				.get(api('moderation.getReportInfo'))
+				.get(api('moderation.reportInfo'))
 				.set(credentials)
 				.query({
 					reportId: reportedMessage._id,
@@ -364,7 +364,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the reportId is not provided', async () => {
 			await request
-				.get(api('moderation.getReportInfo'))
+				.get(api('moderation.reportInfo'))
 				.set(credentials)
 				.query({
 					reportId: '',
@@ -379,7 +379,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the reportId is invalid', async () => {
 			await request
-				.get(api('moderation.getReportInfo'))
+				.get(api('moderation.reportInfo'))
 				.set(credentials)
 				.query({
 					reportId: 'invalid',
@@ -394,7 +394,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the reportId is not found', async () => {
 			await request
-				.get(api('moderation.getReportInfo'))
+				.get(api('moderation.reportInfo'))
 				.set(credentials)
 				.query({
 					reportId: '123456789012345678901234',
@@ -408,9 +408,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.user.getMessageHistory endpoint
+	// test for testing out the moderation.user.reportedMessages endpoint
 
-	describe('[/moderation.user.getMessageHistory]', () => {
+	describe('[/moderation.user.reportedMessages]', () => {
 		let message: IMessage;
 		let reportedMessage: IModerationReport;
 
@@ -448,10 +448,10 @@ describe('[Moderation]', function () {
 				});
 		});
 
-		// get the report information by sending a request to moderation.reportsByMessage
+		// get the report information by sending a request to moderation.reports
 		before(async () => {
 			await request
-				.get(api('moderation.reportsByMessage'))
+				.get(api('moderation.reports'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
@@ -482,7 +482,7 @@ describe('[Moderation]', function () {
 
 		it('should return the message history', async () => {
 			await request
-				.get(api('moderation.user.getMessageHistory'))
+				.get(api('moderation.user.reportedMessages'))
 				.set(credentials)
 				.query({
 					userId: reportedMessage.reportedBy._id,
@@ -497,7 +497,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the userId is not provided', async () => {
 			await request
-				.get(api('moderation.user.getMessageHistory'))
+				.get(api('moderation.user.reportedMessages'))
 				.set(credentials)
 				.query({
 					userId: '',
@@ -511,9 +511,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.user.deleteMessageHistory endpoint
+	// test for testing out the moderation.user.deleteReportedMessages endpoint
 
-	describe('[/moderation.user.deleteMessageHistory]', () => {
+	describe('[/moderation.user.deleteReportedMessages]', () => {
 		let message: IMessage;
 		let reportedMessage: IModerationReport;
 
@@ -551,10 +551,10 @@ describe('[Moderation]', function () {
 				});
 		});
 
-		// get the report information by sending a request to moderation.reportsByMessage
+		// get the report information by sending a request to moderation.reports
 		before(async () => {
 			await request
-				.get(api('moderation.reportsByMessage'))
+				.get(api('moderation.reports'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
@@ -570,7 +570,7 @@ describe('[Moderation]', function () {
 
 		it('should delete the message history', async () => {
 			await request
-				.post(api('moderation.user.deleteMessageHistory'))
+				.post(api('moderation.user.deleteReportedMessages'))
 				.set(credentials)
 				.send({
 					userId: reportedMessage.reportedBy._id,
@@ -584,7 +584,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the userId is not provided', async () => {
 			await request
-				.post(api('moderation.user.deleteMessageHistory'))
+				.post(api('moderation.user.deleteReportedMessages'))
 				.set(credentials)
 				.send({
 					userId: '',

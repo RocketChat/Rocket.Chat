@@ -6,7 +6,7 @@ import GenericModal from '../../../../components/GenericModal';
 
 const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload: () => void) => {
 	const t = useTranslation();
-	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteMessageHistory');
+	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteReportedMessages');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const moderationRoute = useRoute('moderation-console');

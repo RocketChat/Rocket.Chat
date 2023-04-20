@@ -16,7 +16,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 type ReportMessage = Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>;
 
 API.v1.addRoute(
-	'moderation.getReports',
+	'moderation.reportsByUsers',
 	{
 		authRequired: true,
 		validateParams: isReportHistoryProps,
@@ -56,7 +56,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.user.getMessageHistory',
+	'moderation.user.reportedMessages',
 	{
 		authRequired: true,
 		validateParams: isReportMessageHistoryParams,
@@ -100,7 +100,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.user.deleteMessageHistory',
+	'moderation.user.deleteReportedMessages',
 	{
 		authRequired: true,
 		validateParams: isModerationDeleteMsgHistoryParams,
@@ -147,7 +147,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.markChecked',
+	'moderation.dismissReports',
 	{
 		authRequired: true,
 		validateParams: isArchiveReportProps,
@@ -189,7 +189,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.reportsByMessage',
+	'moderation.reports',
 	{
 		authRequired: true,
 		validateParams: isReportsByMsgIdParams,
@@ -218,7 +218,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.getReportInfo',
+	'moderation.reportInfo',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
