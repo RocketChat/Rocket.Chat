@@ -65,7 +65,7 @@ Meteor.methods<ServerMethods>({
 
 		if (!user.username) {
 			await Meteor.runAsUser(user._id, () => Meteor.callAsync('joinDefaultChannels', joinDefaultChannelsSilenced));
-			Meteor.defer(async function () {
+			setImmediate(async function () {
 				return callbacks.run('afterCreateUser', await Users.findOneById(user._id));
 			});
 		}
