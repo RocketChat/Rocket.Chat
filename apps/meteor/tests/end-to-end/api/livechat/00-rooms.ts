@@ -19,6 +19,7 @@ import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
 	closeOmnichanelRoom,
+	createManager,
 } from '../../../data/livechat/rooms';
 import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
@@ -340,6 +341,17 @@ describe('LIVECHAT - rooms', function () {
 			const room = await createLivechatRoom(visitor.token);
 
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
+		});
+		it('should allow managers to join a room which is already being served by an agent', async () => {
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			const manager: IUser = await createUser();
+			const managerCredentials = await login(manager.username, password);
+			await createManager(manager.username);
+
+			await request.get(api('livechat/room.join')).set(managerCredentials).query({ roomId }).send().expect(200);
 		});
 	});
 
