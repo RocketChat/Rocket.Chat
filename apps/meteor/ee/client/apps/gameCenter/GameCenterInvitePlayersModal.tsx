@@ -54,7 +54,7 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 
 	return (
 		<>
-			<GenericModal onConfirm={sendInvite} title={t('Apps_Game_Center_Invite_Friends')}>
+			<GenericModal onClose={onClose} onCancel={onClose} onConfirm={sendInvite} title={t('Apps_Game_Center_Invite_Friends')}>
 				<Box mbe='x16'>{t('Invite_Users')}</Box>
 				<Box mbe='x16' display='flex' justifyContent='stretch'>
 					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
