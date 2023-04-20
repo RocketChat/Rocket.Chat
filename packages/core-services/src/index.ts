@@ -43,7 +43,7 @@ import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import { AppsApiServiceResponse, IAppsApiService, IRequestWithPrivateHash } from './types/IAppsApiService';
-import { IAppsManagerService } from './types/IAppsManagerService';
+import { AppFabricationFulfillment, IAppsManagerService } from './types/IAppsManagerService';
 import { IAppsStatisticsService, AppsStatisticsResult } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import { IAppsConverterService } from './types/IAppsConverterService';
@@ -62,6 +62,7 @@ export {
 	AutoUpdateRecord,
 	AppsApiServiceResponse,
 	AppsStatisticsResult,
+	AppFabricationFulfillment,
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,

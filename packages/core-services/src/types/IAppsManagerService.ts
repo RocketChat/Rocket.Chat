@@ -9,10 +9,23 @@ import type {
 } from '@rocket.chat/apps-engine/definition/slashcommands';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
-import type { AppFabricationFulfillment } from '@rocket.chat/apps-engine/server/compiler';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import type { AppsEngineAppResult } from './IAppsEngineService';
+
+export type AppFabricationFulfillment = {
+	appId: string;
+	appsEngineResult: AppsEngineAppResult;
+	storageError: string;
+	licenseValidationResult: {
+		errors: Record<string, string>;
+		warnings: Record<string, string>;
+	};
+	appUserError: {
+		username: string;
+		message: string;
+	};
+};
 
 export interface IAppsManagerService {
 	add(appPackage: Buffer, installationParameters: IAppInstallParameters): Promise<AppFabricationFulfillment | undefined>;

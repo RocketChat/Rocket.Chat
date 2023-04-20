@@ -2,7 +2,6 @@ import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/a
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { AppFabricationFulfillment } from '@rocket.chat/apps-engine/server/compiler';
 import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
@@ -12,11 +11,12 @@ import type {
 	ISlashCommandPreviewItem,
 } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { ServiceClass } from '@rocket.chat/core-services';
-import type { AppsEngineAppResult, IAppsManagerService } from '@rocket.chat/core-services';
+import type { AppFabricationFulfillment, AppsEngineAppResult, IAppsManagerService } from '@rocket.chat/core-services';
 
 import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppResult';
+import { transformAppFabricationFulfillment } from './lib/transformAppFabricationFulfillment';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {
 	protected name = 'apps';
@@ -42,7 +42,7 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 	}
 
 	async add(appPackage: Buffer, installationParameters: IAppInstallParameters): Promise<AppFabricationFulfillment | undefined> {
-		return this.apps.getManager()?.add(appPackage, installationParameters);
+		return this.apps.getManager()?.add(appPackage, installationParameters).then(transformAppFabricationFulfillment);
 	}
 
 	async remove(id: string, uninstallationParameters: IAppUninstallParameters): Promise<AppsEngineAppResult | undefined> {
@@ -58,7 +58,7 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 		permissionsGranted: IPermission[],
 		updateOptions = { loadApp: true },
 	): Promise<AppFabricationFulfillment | undefined> {
-		return this.apps.getManager()?.update(appPackage, permissionsGranted, updateOptions);
+		return this.apps.getManager()?.update(appPackage, permissionsGranted, updateOptions).then(transformAppFabricationFulfillment);
 	}
 
 	async updateLocal(stored: IAppStorageItem, appPackageOrInstance: Buffer): Promise<void> {
