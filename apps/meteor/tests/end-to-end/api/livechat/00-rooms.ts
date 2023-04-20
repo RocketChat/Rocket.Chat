@@ -330,7 +330,7 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
 		});
 		it('should fail if no roomId is present on query params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
 		});
 		it('should fail if room is present but invalid', async () => {
