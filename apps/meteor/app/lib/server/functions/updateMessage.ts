@@ -73,7 +73,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 	// so, we don't really care if it is successful or fails
 	void Apps.triggerEvent(AppInterface.IPostMessageUpdated, message);
 
-	Meteor.defer(async function () {
+	setImmediate(async function () {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			callbacks.run('afterSaveMessage', msg, room, user._id);

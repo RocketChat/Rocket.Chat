@@ -432,7 +432,7 @@ export const Livechat = {
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
@@ -578,7 +578,7 @@ export const Livechat = {
 			return false;
 		}
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
@@ -1036,7 +1036,7 @@ export const Livechat = {
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
@@ -1202,7 +1202,7 @@ export const Livechat = {
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
 		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
 		});
 

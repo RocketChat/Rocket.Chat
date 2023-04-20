@@ -23,7 +23,7 @@ const addVersionCheckJob = Meteor.bindEnvironment(() => {
 });
 
 Meteor.startup(() => {
-	Meteor.defer(() => {
+	setImmediate(() => {
 		if (settings.get('Update_EnableChecker')) {
 			void checkVersionUpdate();
 		}
