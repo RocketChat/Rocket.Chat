@@ -71,6 +71,6 @@ Meteor.methods<ServerMethods>({
 		await Message.saveSystemMessage('omnichannel_on_hold_chat_resumed', roomId, '', onHoldChatResumedBy, { comment });
 
 		const updatedRoom = await LivechatRooms.findOneById(roomId);
-		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
+		updatedRoom && setImmediate(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
 	},
 });
