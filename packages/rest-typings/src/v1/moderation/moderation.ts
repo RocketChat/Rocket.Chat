@@ -20,7 +20,7 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.getMessageHistory': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
-			messages: Pick<IModerationReport, 'message' | 'ts' | 'room'>[];
+			messages: Pick<IModerationReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteMessageHistory': {

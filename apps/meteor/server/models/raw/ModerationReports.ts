@@ -137,7 +137,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			skip: offset,
 			limit: count,
 			projection: {
-				_id: 0,
+				_id: 1,
 				message: 1,
 				ts: 1,
 				room: 1,
@@ -152,7 +152,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		messageId: string,
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
-		options?: FindOptions<IModerationReport> = {},
+		options: FindOptions<IModerationReport> = {},
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
