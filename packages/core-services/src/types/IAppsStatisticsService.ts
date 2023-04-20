@@ -1,8 +1,9 @@
-export type AppStatistics = {
+export type AppsStatisticsResult = {
 	totalInstalled: number | false;
 	totalActive: number | false;
 	totalFailed: number | false;
 };
+
 export interface IAppsStatisticsService {
-	getStatistics: () => Promise<AppStatistics>;
+	getStatistics: () => Promise<AppsStatisticsResult>;
 }

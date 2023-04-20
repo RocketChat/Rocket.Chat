@@ -1,15 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { ServiceClass } from '@rocket.chat/core-services';
-import type { IAppsStatisticsService } from '@rocket.chat/core-services';
+import type { AppsStatisticsResult, IAppsStatisticsService } from '@rocket.chat/core-services';
 
 import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
-
-export type AppStatistics = {
-	totalInstalled: number | false;
-	totalActive: number | false;
-	totalFailed: number | false;
-};
 
 export class AppsStatisticsService extends ServiceClass implements IAppsStatisticsService {
 	protected name = 'apps';
@@ -22,7 +16,7 @@ export class AppsStatisticsService extends ServiceClass implements IAppsStatisti
 		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 
-	async getStatistics(): Promise<AppStatistics> {
+	async getStatistics(): Promise<AppsStatisticsResult> {
 		const isInitialized = this.apps.isInitialized();
 		const manager = this.apps.getManager();
 
