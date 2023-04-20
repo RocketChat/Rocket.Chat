@@ -27,36 +27,34 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new NotAuthorizedError();
 			}
 
-			{
-				const room = roomCoordinator.getRoomDirectives(type).findRoom(reference) || (await getRoomByTypeAndName(type, reference));
+			const room = roomCoordinator.getRoomDirectives(type).findRoom(reference) || (await getRoomByTypeAndName(type, reference));
 
-				if (!room._id) {
-					throw new RoomNotFoundError(undefined, { type, reference });
-				}
+			if (!room._id) {
+				throw new RoomNotFoundError(undefined, { type, reference });
+			}
 
-				ChatRoom.upsert({ _id: room._id }, { $set: room });
+			ChatRoom.upsert({ _id: room._id }, { $set: room });
 
-				if (room._id !== reference && type === 'd') {
-					// Redirect old url using username to rid
-					await LegacyRoomManager.close(type + reference);
-					throw new RoomNotFoundError(undefined, { rid: room._id });
-				}
+			if (room._id !== reference && type === 'd') {
+				// Redirect old url using username to rid
+				await LegacyRoomManager.close(type + reference);
+				throw new RoomNotFoundError(undefined, { rid: room._id });
+			}
 
-				LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
+			LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
 
-				if (room._id === RoomManager.opened) {
-					return { rid: room._id };
-				}
-
-				fireGlobalEvent('room-opened', omit(room, 'usernames'));
-
-				// update user's room subscription
-				const sub = ChatSubscription.findOne({ rid: room._id });
-				if (sub && sub.open === false) {
-					await openRoom(room._id);
-				}
+			if (room._id === RoomManager.opened) {
 				return { rid: room._id };
 			}
+
+			fireGlobalEvent('room-opened', omit(room, 'usernames'));
+
+			// update user's room subscription
+			const sub = ChatSubscription.findOne({ rid: room._id });
+			if (sub && sub.open === false) {
+				await openRoom(room._id);
+			}
+			return { rid: room._id };
 		},
 		{
 			onError: async (error) => {
