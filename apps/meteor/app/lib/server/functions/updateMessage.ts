@@ -74,7 +74,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(async function () {
+	setImmediate(async function () {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			callbacks.run('afterSaveMessage', msg, room, user._id);

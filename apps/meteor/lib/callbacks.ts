@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
@@ -353,9 +352,9 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				Meteor.defer(() => {
+				setTimeout(() => {
 					this.runOne(callback, item, constant);
-				});
+				}, 0);
 			}
 
 			return item;
