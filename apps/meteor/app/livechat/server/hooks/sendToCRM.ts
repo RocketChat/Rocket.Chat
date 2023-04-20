@@ -5,6 +5,7 @@ import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 type AdditionalFields =
@@ -127,10 +128,11 @@ async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await Livechat.sendRequest(responseData);
+	const response = await LivechatTyped.sendRequest(responseData);
 
-	if (response?.data?.data) {
-		await LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
+	if (response) {
+		const responseData = await response.text();
+		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
 	}
 
 	return room;
