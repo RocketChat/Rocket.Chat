@@ -2,6 +2,8 @@ import { Random } from '@rocket.chat/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { Presence } from '@rocket.chat/core-services';
+import type { UserStatus } from '@rocket.chat/core-typings';
 
 import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
@@ -115,6 +117,13 @@ export class AppUserBridge extends UserBridge {
 
 		if (!Object.keys(fields).length) {
 			return true;
+		}
+
+		const { status } = fields;
+		delete fields.status;
+
+		if (status) {
+			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
