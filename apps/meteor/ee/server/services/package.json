@@ -18,7 +18,7 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.38.0",
+		"@rocket.chat/apps-engine": "1.38.2",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
