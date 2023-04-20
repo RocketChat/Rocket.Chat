@@ -35,7 +35,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 	}
 
 	async started(): Promise<void> {
-		if (!this.apps.isLoaded()) {
+		if (this.apps.isLoaded()) {
 			return;
 		}
 
