@@ -120,7 +120,7 @@ class PushClass {
 		}
 
 		const result = await fetch(`${gateway}/push/${service}/send`, { ...data, method: 'POST' });
-		const response = await result.json();
+		const response = await result.text();
 
 		if (result.status === 406) {
 			logger.info('removing push token', token);

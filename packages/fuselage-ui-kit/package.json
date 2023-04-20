@@ -73,7 +73,7 @@
     "@storybook/source-loader": "~6.5.15",
     "@storybook/theming": "~6.5.15",
     "@tanstack/react-query": "^4.16.1",
-    "@types/react": "~17.0.48",
+    "@types/react": "~17.0.57",
     "@types/react-dom": "~17.0.17",
     "babel-loader": "~8.2.5",
     "cross-env": "^7.0.3",
@@ -89,7 +89,11 @@
     "webpack": "~5.68.0"
   },
   "dependencies": {
+    "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "next",
     "tslib": "^2.3.1"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

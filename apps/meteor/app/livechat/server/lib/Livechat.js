@@ -44,7 +44,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const logger = new Logger('Livechat');
 
@@ -55,7 +54,6 @@ export const Livechat = {
 	historyMonitorType: 'url',
 
 	logger,
-	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -775,29 +773,6 @@ export const Livechat = {
 		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
-	},
-
-	async sendRequest(postData, callback, attempts = 10) {
-		if (!attempts) {
-			return;
-		}
-		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			method: 'POST',
-			data: JSON.stringify(postData),
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-		};
-		try {
-			return (await fetch(settings.get('Livechat_webhookUrl'), options)).json();
-		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 10 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(async function () {
-				await Livechat.sendRequest(postData, callback, attempts - 1);
-			}, 10000);
-		}
 	},
 
 	async getLivechatRoomGuestInfo(room) {

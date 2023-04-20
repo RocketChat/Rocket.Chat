@@ -14,8 +14,8 @@ export const palette = [
 		category: 'Font',
 		description: 'These should be applied according to surfaces',
 		list: [
-			{ name: 'font-secondary-info', token: '', color: '#9EA2A8' },
-			{ name: 'font-default', token: '', color: '#E4E7EA' },
+			{ name: 'font-titles-labels', token: '', color: '#E4E7EA' },
+			{ name: 'font-default', token: '', color: '#9EA2A8' },
 		],
 	},
 	{
