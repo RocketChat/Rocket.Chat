@@ -54,7 +54,7 @@ const setPrometheusData = async (): Promise<void> => {
 	}
 
 	metrics.version.set({ version: statistics.version }, 1);
-	metrics.migration.set(getControl().version);
+	metrics.migration.set((await getControl()).version);
 	metrics.instanceCount.set(statistics.instanceCount);
 	metrics.oplogEnabled.set({ enabled: `${statistics.oplogEnabled}` }, 1);
 
