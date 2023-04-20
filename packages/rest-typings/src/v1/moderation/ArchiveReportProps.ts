@@ -5,8 +5,8 @@ import { ajv } from '../Ajv';
 export type ArchiveReportPropsPOST = {
 	userId?: IUser['_id'];
 	msgId?: IModerationReport['message']['_id'];
-	actionTaken?: string;
-	reasonForHiding?: string;
+	action?: string;
+	reason?: string;
 };
 
 const archiveReportPropsSchema = {
@@ -18,11 +18,11 @@ const archiveReportPropsSchema = {
 		msgId: {
 			type: 'string',
 		},
-		reasonForHiding: {
+		reason: {
 			type: 'string',
 			nullable: true,
 		},
-		actionTaken: {
+		action: {
 			type: 'string',
 			nullable: true,
 		},

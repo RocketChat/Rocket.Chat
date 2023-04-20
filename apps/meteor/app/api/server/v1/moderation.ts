@@ -109,9 +109,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			// TODO change complicated params
-			const { userId, reasonForHiding } = this.bodyParams;
+			const { userId, reason } = this.bodyParams;
 
-			const sanitizedReason = reasonForHiding?.trim() ? reasonForHiding : 'No reason provided';
+			const sanitizedReason = reason?.trim() ? reason : 'No reason provided';
 
 			const { user: moderator } = this;
 
@@ -156,7 +156,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			// TODO change complicated camelcases to simple verbs/nouns
-			const { userId, msgId, reasonForHiding, actionTaken } = this.bodyParams;
+			const { userId, msgId, reason, action } = this.bodyParams;
 
 			if (userId) {
 				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
@@ -172,8 +172,8 @@ API.v1.addRoute(
 				}
 			}
 
-			const sanitizedReason: string = reasonForHiding?.trim() ? reasonForHiding : 'No reason provided';
-			const action: string = actionTaken ?? 'None';
+			const sanitizedReason: string = reason?.trim() ? reason : 'No reason provided';
+			const action: string = action ?? 'None';
 
 			const { userId: moderatorId } = this;
 

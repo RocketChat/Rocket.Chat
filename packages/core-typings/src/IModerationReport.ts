@@ -6,8 +6,8 @@ import type { IRoom } from './IRoom';
 export interface IModerationInfo {
 	moderatedBy: IUser['_id'];
 	hiddenAt: Date;
-	actionTaken: string;
-	reasonForHiding: string;
+	action: string;
+	reason: string;
 }
 
 export interface IModerationReport extends IRocketChatRecord {

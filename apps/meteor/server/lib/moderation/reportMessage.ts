@@ -51,7 +51,7 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 
 	await ModerationReports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, user, description));
+	await Apps.triggerEvent(AppEvents.IPostMessageReported, message, user, description);
 
 	return true;
 };

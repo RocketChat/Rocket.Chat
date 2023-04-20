@@ -2,7 +2,7 @@ import { ajv } from '../Ajv';
 
 export type ModerationDeleteMsgHistoryParamsPOST = {
 	userId: string;
-	reasonForHiding?: string;
+	reason?: string;
 };
 
 const ajvParams = {
@@ -11,7 +11,7 @@ const ajvParams = {
 		userId: {
 			type: 'string',
 		},
-		reasonForHiding: {
+		reason: {
 			type: 'string',
 		},
 	},

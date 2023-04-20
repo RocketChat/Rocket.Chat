@@ -186,8 +186,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	async hideReportsByMessageId(
 		messageId: string,
 		userId: string,
-		reasonForHiding: string,
-		actionTaken: string,
+		reason: string,
+		action: string,
 	): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
@@ -196,7 +196,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		const update = {
 			$set: {
 				_hidden: true,
-				moderationInfo: { hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: userId, reason, action },
 			},
 		};
 
@@ -206,8 +206,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	async hideReportsByUserId(
 		userId: string,
 		moderatorId: string,
-		reasonForHiding: string,
-		actionTaken: string,
+		reason: string,
+		action: string,
 	): Promise<UpdateResult | Document> {
 		const query = {
 			'message.u._id': userId,
@@ -216,7 +216,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		const update = {
 			$set: {
 				_hidden: true,
-				moderationInfo: { hiddenAt: new Date(), moderatedBy: moderatorId, reasonForHiding, actionTaken },
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: moderatorId, reason, action },
 			},
 		};
 		return this.updateMany(query, update);

@@ -43,9 +43,9 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 	hideReportsByMessageId(
 		messageId: IModerationReport['message']['_id'],
 		userId: string,
-		reasonForHiding: string,
-		actionTaken: string,
+		reason: string,
+		action: string,
 	): Promise<UpdateResult | Document>;
 
-	hideReportsByUserId(userId: string, moderatorId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document>;
+	hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 }
