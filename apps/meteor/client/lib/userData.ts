@@ -35,11 +35,10 @@ type RawUserData = Serialized<
 	> & { statusLivechat?: ILivechatAgent['statusLivechat'] }
 >;
 
-const updateUser = (userData: IUser): void => {
+const updateUser = async (userData: IUser): Promise<void> => {
 	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
-
 	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
-		Meteor.users.upsert({ _id: userData._id }, userData as Meteor.User);
+		await Meteor.users.upsertAsync({ _id: userData._id }, userData as Meteor.User);
 		return;
 	}
 
@@ -47,7 +46,7 @@ const updateUser = (userData: IUser): void => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	Meteor.users.update({ _id: user._id }, { $set: userData as Meteor.User });
+	await Meteor.users.updateAsync({ _id: user._id }, { $set: userData as Meteor.User });
 };
 
 let cancel: undefined | (() => void);
@@ -93,7 +92,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	if (userData) {
 		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
 
-		updateUser({
+		await updateUser({
 			...userData,
 			...(rawServices && {
 				services: {
