@@ -97,9 +97,11 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
-
-			return API.v1.success();
+			const firstUnreadMessage = this.bodyParams.firstUnreadMessage;
+			const roomId = this.bodyParams.roomId;
+			const unreadCount = await Meteor.callAsync('unreadMessages', firstUnreadMessage, roomId);
+			return API.v1.success({ unread: unreadCount });
+			
 		},
 	},
 );
