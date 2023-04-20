@@ -68,5 +68,7 @@ export const addPermissionToDefaultRoles = async (permissionId: string) => {
         throw new Error(`No default roles found for permission ${permissionId}`);
     }
 
+    console.error('Adding permission', permissionId, 'to default roles', defaultRoles.roles);
+
     await updatePermission(permissionId, defaultRoles.roles);
 }
