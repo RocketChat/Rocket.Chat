@@ -212,7 +212,7 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_Your_Encryption_Password'),
+				title: TAPi18n.__('Save_your_encryption_password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
@@ -222,6 +222,7 @@ class E2E extends Emitter {
 						component: SaveE2EPasswordModal,
 						props: {
 							passwordRevealText,
+							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
