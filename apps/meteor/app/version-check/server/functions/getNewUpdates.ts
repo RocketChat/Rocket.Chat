@@ -38,7 +38,7 @@ export const getNewUpdates = async () => {
 			params,
 		});
 
-		const data: any = await response.json();
+		const data = await response.json();
 
 		check(
 			data,

@@ -178,7 +178,7 @@ export class Mobex implements ISMSProvider {
 
 			result.isSuccess = response.ok;
 			result.resultMsg = 'Success';
-			result.response = await response.json();
+			result.response = await response.text();
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
 			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });

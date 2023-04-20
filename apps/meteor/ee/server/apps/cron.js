@@ -89,10 +89,11 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 
 	try {
 		const response = await fetch(fullUrl, options);
+
 		const result = await response.json();
 
-		if (Array.isArray(result.data)) {
-			data = result.data;
+		if (Array.isArray(result)) {
+			data = result;
 		}
 	} catch (err) {
 		Apps.debugLog(err);
