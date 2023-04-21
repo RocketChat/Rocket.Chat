@@ -4,7 +4,7 @@ export const getPathFromTranslationFile = (language: string): string => Assets.a
 export const getSupportedLanguages = async (): Promise<string[]> =>
 	new Promise((resolve, reject) => {
 		try {
-			fs.readdir(`${Assets.getServerDir()}/assets/app/locales`, (err, files) => {
+			fs.readdir(`${Assets.getServerDir()}/assets/app/i18n`, (err, files) => {
 				if (err) {
 					return reject(err);
 				}
