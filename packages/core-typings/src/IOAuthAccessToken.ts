@@ -1,9 +1,9 @@
 export interface IOAuthAccessToken {
 	_id: string;
 	accessToken: string;
-	refreshToken?: string;
-	accessTokenExpiresAt?: Date;
-	refreshTokenExpiresAt?: Date;
+	expires?: Date;
 	clientId: string;
 	userId: string;
+	refreshToken?: string;
+	refreshTokenExpiresAt?: Date;
 }

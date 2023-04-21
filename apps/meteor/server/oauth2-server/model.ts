@@ -1,4 +1,4 @@
-import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens } from '@rocket.chat/models';
+import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
 import type {
 	AuthorizationCode,
 	AuthorizationCodeModel,
@@ -32,7 +32,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			scope = [scope];
 		}
 
-		const allowed = ['authorization_code', 'refresh_token'].filter((t) => scope.includes(t)).length > 0;
+		const allowed = this.grants.filter((t) => scope.includes(t)).length > 0;
 		return allowed;
 	}
 
@@ -188,7 +188,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			await OAuthAccessTokens.insertOne({
 				accessToken: token.accessToken,
 				refreshToken: token.refreshToken,
-				accessTokenExpiresAt: token.accessTokenExpiresAt,
+				expires: token.accessTokenExpiresAt,
 				refreshTokenExpiresAt: token.refreshTokenExpiresAt,
 				clientId: client.id,
 				userId: user.id,
@@ -213,7 +213,10 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			console.log('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);
 		}
 
-		const token = await OAuthAccessTokens.findOneByRefreshToken(refreshToken);
+		// Keep compatibility with old collection
+		// Deprecated: Remove on next major within a migration
+		const token =
+			(await OAuthAccessTokens.findOneByRefreshToken(refreshToken)) || (await OAuthRefreshTokens.findOneByRefreshToken(refreshToken));
 
 		if (!token) {
 			throw new Error('Invalid token');
@@ -228,7 +231,9 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		const result: RefreshToken = {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			refreshToken: token.refreshToken!,
-			refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+			// Keep compatibility with old collection
+			// Deprecated: Remove on next major within a migration
+			refreshTokenExpiresAt: 'refreshTokenExpiresAt' in token ? token.refreshTokenExpiresAt : token.expires,
 			client: {
 				id: client.id,
 				grants: client.grants,
@@ -237,6 +242,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 				id: token.userId,
 			},
 		};
+
 		return result;
 	}
 
@@ -247,9 +253,15 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 		if (token.refreshToken) {
 			await OAuthAccessTokens.deleteOne({ refreshToken: token.refreshToken });
-		} else {
+			// Keep compatibility with old collection
+			// Deprecated: Remove on next major within a migration
+			await OAuthRefreshTokens.deleteOne({ refreshToken: token.refreshToken });
+		}
+
+		if (token.accessToken) {
 			await OAuthAccessTokens.deleteOne({ accessToken: token.accessToken });
 		}
+
 		return true;
 	}
 

@@ -27,7 +27,7 @@ export async function oAuth2ServerAuth(partialRequest: {
 	const accessToken = await getAccessToken(headerToken || queryToken);
 
 	// If there is no token available or the token has expired, return undefined
-	if (!accessToken || (accessToken.accessTokenExpiresAt != null && accessToken.accessTokenExpiresAt < new Date())) {
+	if (!accessToken || (accessToken.expires != null && accessToken.expires < new Date())) {
 		return;
 	}
 

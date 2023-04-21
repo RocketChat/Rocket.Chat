@@ -40,6 +40,7 @@ export * from './models/INpsVoteModel';
 export * from './models/IOAuthAppsModel';
 export * from './models/IOAuthAuthCodesModel';
 export * from './models/IOAuthAccessTokensModel';
+export * from './models/IOAuthRefreshTokensModel';
 export * from './models/IOEmbedCacheModel';
 export * from './models/IPbxEventsModel';
 export * from './models/IPushTokenModel';

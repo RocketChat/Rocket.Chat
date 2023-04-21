@@ -13,6 +13,7 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		return [
 			{ key: { accessToken: 1 } },
 			{ key: { refreshToken: 1 } },
+			{ key: { expires: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },
 			{ key: { refreshTokenExpiresAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },
 		];
 	}

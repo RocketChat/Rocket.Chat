@@ -18,7 +18,7 @@ export class OAuth2Server {
 		if (config == null) {
 			config = {};
 		}
-		config.debug = true;
+
 		this.config = config;
 		this.app = express();
 
