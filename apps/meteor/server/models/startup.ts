@@ -38,6 +38,7 @@ import './NpsVote';
 import './OAuthApps';
 import './OAuthAuthCodes';
 import './OAuthAccessTokens';
+import './OAuthRefreshTokens';
 import './OEmbedCache';
 import './PbxEvents';
 import './PushToken';
