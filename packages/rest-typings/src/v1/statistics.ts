@@ -18,7 +18,7 @@ type Param = {
 	timestamp?: number;
 } & (OTREnded | SlashCommand | SettingsCounter);
 
-export type TelemetryPayload = {
+type TelemetryPayload = {
 	params: Param[];
 };
 

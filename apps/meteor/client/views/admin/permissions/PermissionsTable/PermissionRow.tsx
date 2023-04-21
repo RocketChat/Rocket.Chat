@@ -1,8 +1,10 @@
-import { IRole, IPermission } from '@rocket.chat/core-typings';
+import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useState, memo, ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState, memo } from 'react';
 
 import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { useChangeRole } from '../hooks/useChangeRole';

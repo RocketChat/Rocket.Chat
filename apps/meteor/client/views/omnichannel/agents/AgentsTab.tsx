@@ -1,5 +1,6 @@
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import AgentEditWithData from './AgentEditWithData';

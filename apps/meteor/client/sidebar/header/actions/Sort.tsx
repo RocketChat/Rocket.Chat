@@ -1,5 +1,6 @@
 import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
-import React, { VFC, useRef, HTMLAttributes } from 'react';
+import type { VFC, HTMLAttributes } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import SortList from '../../../components/SortList';

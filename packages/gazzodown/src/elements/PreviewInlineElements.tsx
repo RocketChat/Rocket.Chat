@@ -30,7 +30,9 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 					return <ItalicSpan key={index} children={child.value} />;
 
 				case 'LINK':
-					return <PreviewInlineElements key={index} children={[child.value.label]} />;
+					return (
+						<PreviewInlineElements key={index} children={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />
+					);
 
 				case 'PLAIN_TEXT':
 					return <Fragment key={index} children={child.value} />;

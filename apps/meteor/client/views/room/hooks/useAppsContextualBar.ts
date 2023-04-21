@@ -1,4 +1,4 @@
-import { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { useCurrentRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 

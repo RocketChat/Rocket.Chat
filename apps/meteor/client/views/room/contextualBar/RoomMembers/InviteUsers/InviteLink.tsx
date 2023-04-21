@@ -1,6 +1,7 @@
 import { Box, Field, UrlInput, Icon, Button, InputBox } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
@@ -23,7 +24,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): Re
 					{linkText && <UrlInput value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />}
 				</Field.Row>
 				{captionText && (
-					<Box pb='x8' color='neutral-600' fontScale='c2'>
+					<Box pb='x8' color='annotation' fontScale='c2'>
 						{captionText}
 					</Box>
 				)}

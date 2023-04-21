@@ -9,12 +9,13 @@ import { Notifications } from '../../../notifications/client';
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
 
-export const USER_ACTIVITY = 'user-activity';
+const USER_ACTIVITY = 'user-activity';
 
 export const USER_ACTIVITIES = {
 	USER_RECORDING: 'user-recording',
 	USER_TYPING: 'user-typing',
 	USER_UPLOADING: 'user-uploading',
+	USER_PLAYING: 'user-playing',
 };
 
 const activityTimeouts = new Map();
@@ -35,9 +36,9 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	return user.username;
 };
 
-const emitActivities = debounce((rid: string, extras: IExtras): void => {
+const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
-	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user() as IUser), [...activities], extras);
+	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user() as unknown as IUser), [...activities], extras);
 }, 500);
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
@@ -118,7 +119,7 @@ export const UserAction = new (class {
 		activities.add(activityType);
 		roomActivities.set(trid, activities);
 
-		emitActivities(rid, extras);
+		void emitActivities(rid, extras);
 
 		if (activityTimeouts.get(key)) {
 			clearTimeout(activityTimeouts.get(key));
@@ -152,7 +153,7 @@ export const UserAction = new (class {
 		const activities = roomActivities.get(trid) || new Set();
 		activities.delete(activityType);
 		roomActivities.set(trid, activities);
-		emitActivities(rid, extras);
+		void emitActivities(rid, extras);
 	}
 
 	cancel(rid: string): void {

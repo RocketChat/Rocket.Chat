@@ -1,8 +1,9 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
+import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FC, ReactElement } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserInfo from '../../../components/UserInfo';
@@ -20,7 +21,7 @@ type dataType = {
 type AgentEditProps = {
 	data: dataType;
 	userDepartments: { departments: Pick<ILivechatDepartmentAgents, 'departmentId'>[] };
-	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name'>[] };
+	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] };
 	uid: string;
 	reset: () => void;
 };
@@ -36,11 +37,16 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	const email = getUserEmailAddress(user);
 
-	const options: [string, string][] = useMemo(
-		() =>
-			availableDepartments?.departments ? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id])) : [],
-		[availableDepartments],
-	);
+	const options: [string, string][] = useMemo(() => {
+		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
+
+		return availableDepartments?.departments
+			? availableDepartments.departments.map(({ _id, name, archived }) =>
+					name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
+			  )
+			: [];
+	}, [availableDepartments.departments, t]);
+
 	const initialDepartmentValue = useMemo(
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
@@ -76,14 +82,14 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
 	const { departments, status, voipExtension } = values as {
 		departments: string[];
-		status: string;
+		status: ILivechatAgent['statusLivechat'];
 		voipExtension: string;
 	};
 
 	const MaxChats = useMaxChatsPerAgent();
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
-	const saveAgentStatus = useMethod('livechat:changeLivechatStatus');
+	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

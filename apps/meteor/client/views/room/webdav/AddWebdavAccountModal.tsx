@@ -1,8 +1,10 @@
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, TextInput, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, TextInput, PasswordInput, Button, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;
 
@@ -37,7 +39,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Webdav_add_new_account')}</Modal.Title>
 				<Modal.Close onClick={onClose} />

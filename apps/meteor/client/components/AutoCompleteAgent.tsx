@@ -1,6 +1,7 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
@@ -8,12 +9,17 @@ import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 type AutoCompleteAgentProps = {
 	value: string;
+	error?: string;
+	placeholder?: string;
 	onChange: (value: string) => void;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
 };
+
 const AutoCompleteAgent = ({
 	value,
+	error,
+	placeholder,
 	onChange,
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
@@ -45,6 +51,8 @@ const AutoCompleteAgent = ({
 	return (
 		<PaginatedSelectFiltered
 			value={value}
+			error={error}
+			placeholder={placeholder}
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}

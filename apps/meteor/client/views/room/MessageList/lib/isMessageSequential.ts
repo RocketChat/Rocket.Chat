@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { differenceInSeconds } from 'date-fns';
 
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';

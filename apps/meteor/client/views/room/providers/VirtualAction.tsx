@@ -1,9 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { useLayoutEffect, memo } from 'react';
 
-import { Store } from '../lib/Toolbox/generator';
-import { ToolboxAction } from '../lib/Toolbox/index';
+import type { Store } from '../lib/Toolbox/generator';
+import type { ToolboxAction } from '../lib/Toolbox/index';
 
 const groupsDict: Record<RoomType, string> = {
 	l: 'live',

@@ -1,4 +1,5 @@
-import { RefObject, useEffect } from 'react';
+import type { RefObject } from 'react';
+import { useEffect } from 'react';
 
 export const usePreventDefault = (ref: RefObject<Element>): { ref: RefObject<Element> } => {
 	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,

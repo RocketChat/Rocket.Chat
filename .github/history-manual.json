@@ -203,5 +203,19 @@
 		"contributors": [
 			"ggazzo"
 		]
+	}],
+	"5.3.3": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
+	}],
+	"5.4.3": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
 	}]
 }

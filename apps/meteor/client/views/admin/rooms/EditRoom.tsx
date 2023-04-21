@@ -1,22 +1,16 @@
-import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	usePermission,
-	useEndpoint,
-	useMethod,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, ReactElement } from 'react';
+import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete';
@@ -35,6 +29,7 @@ type EditRoomFormValues = {
 	isDefault: boolean;
 	favorite: boolean;
 	featured: boolean;
+	reactWhenReadOnly: boolean;
 	roomDescription: string;
 	roomAnnouncement: string;
 	roomAvatar: IRoom['avatarETag'];
@@ -49,6 +44,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 	isDefault: !!room.default,
 	favorite: !!room.favorite,
 	featured: !!room.featured,
+	reactWhenReadOnly: !!room.reactWhenReadOnly,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
@@ -67,7 +63,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 
 	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
 		useMemo(() => {
-			const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange;
+			const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
 			return [
 				isAllowed?.(room, RoomSettingsEnum.NAME),
 				isAllowed?.(room, RoomSettingsEnum.TOPIC),
@@ -76,6 +72,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
 				isAllowed?.(room, RoomSettingsEnum.TYPE),
 				isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
+				isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
 			];
 		}, [room]);
 
@@ -83,6 +80,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		roomName,
 		roomType,
 		readOnly,
+		reactWhenReadOnly,
 		archived,
 		isDefault,
 		favorite,
@@ -100,6 +98,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomName,
 		handleRoomType,
 		handleReadOnly,
+		handleReactWhenReadOnly,
 		handleArchived,
 		handleRoomAvatar,
 		handleRoomTopic,
@@ -116,8 +115,10 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
 
-	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointAction('POST', '/v1/rooms.saveRoomSettings', {
+		successMessage: t('Room_updated_successfully'),
+	});
+	const archiveAction = useEndpointAction('POST', '/v1/rooms.changeArchivationState', { successMessage: t(archiveMessage) });
 
 	const handleSave = useMutableCallback(async () => {
 		const save = (): Promise<{ success: boolean; rid: string }> =>
@@ -130,6 +131,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				featured,
+				reactWhenReadOnly,
 				roomDescription,
 				roomAnnouncement,
 				roomAvatar,
@@ -148,54 +150,54 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
 	});
 
-	const eraseRoom = useMethod('eraseRoom');
+	const deleteRoom = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
+		const handleDeleteTeam = async (deletedRooms: IRoom[]): Promise<void> => {
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
+
+			try {
+				setDeleting(true);
+				setModal(null);
+				await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
+				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
+				roomsRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setDeleting(false);
+			} finally {
+				onDelete();
+			}
+		};
+
 		if (room.teamMain) {
 			setModal(
-				<DeleteTeamModalWithRooms
-					onConfirm={async (deletedRooms: IRoom[]): Promise<void> => {
-						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
-
-						try {
-							setDeleting(true);
-							setModal(null);
-							await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
-							dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-							roomsRoute.push({});
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-							setDeleting(false);
-						} finally {
-							onDelete();
-						}
-					}}
-					onCancel={(): void => setModal(null)}
-					teamId={room.teamId as string}
-				/>,
+				<DeleteTeamModalWithRooms onConfirm={handleDeleteTeam} onCancel={(): void => setModal(null)} teamId={room.teamId as string} />,
 			);
 
 			return;
 		}
 
+		const handleDeleteRoom = async (): Promise<void> => {
+			try {
+				setDeleting(true);
+				setModal(null);
+				await deleteRoom({ roomId: room._id });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				roomsRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setDeleting(false);
+			} finally {
+				onDelete();
+			}
+		};
+
 		setModal(
 			<GenericModal
 				variant='danger'
-				onConfirm={async (): Promise<void> => {
-					try {
-						setDeleting(true);
-						setModal(null);
-						await eraseRoom(room._id);
-						dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-						roomsRoute.push({});
-					} catch (error) {
-						dispatchToastMessage({ type: 'error', message: error });
-						setDeleting(false);
-					} finally {
-						onDelete();
-					}
-				}}
+				onConfirm={handleDeleteRoom}
 				onClose={(): void => setModal(null)}
 				onCancel={(): void => setModal(null)}
 				confirmText={t('Yes_delete_it')}
@@ -209,7 +211,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		<VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 			{room.t !== 'd' && (
 				<Box pbe='x24' display='flex' justifyContent='center'>
-					<RoomAvatarEditor roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
+					<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
 				</Box>
 			)}
 			<Field>
@@ -220,17 +222,25 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			{room.t !== 'd' && (
 				<>
-					<Field>
-						<Field.Label>{t('Owner')}</Field.Label>
-						<Field.Row>
-							<Box fontScale='p2'>{room.u?.username}</Box>
-						</Field.Row>
-					</Field>
+					{room.u && (
+						<Field>
+							<Field.Label>{t('Owner')}</Field.Label>
+							<Field.Row>
+								<Box fontScale='p2'>{room.u?.username}</Box>
+							</Field.Row>
+						</Field>
+					)}
 					{canViewDescription && (
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleting} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
+								<TextAreaInput
+									rows={4}
+									disabled={deleting || isRoomFederated(room)}
+									value={roomDescription}
+									onChange={handleRoomDescription}
+									flexGrow={1}
+								/>
 							</Field.Row>
 						</Field>
 					)}
@@ -238,7 +248,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						<Field>
 							<Field.Label>{t('Announcement')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleting} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
+								<TextAreaInput
+									rows={4}
+									disabled={deleting || isRoomFederated(room)}
+									value={roomAnnouncement}
+									onChange={handleRoomAnnouncement}
+									flexGrow={1}
+								/>
 							</Field.Row>
 						</Field>
 					)}
@@ -252,59 +268,72 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					)}
 					{canViewType && (
 						<Field>
-							<Field.Row>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('Private')}</Field.Label>
-								<ToggleSwitch disabled={deleting} checked={roomType === 'p'} onChange={changeRoomType} />
-							</Field.Row>
+								<Field.Row>
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
 						</Field>
 					)}
 					{canViewReadOnly && (
 						<Field>
-							<Field.Row>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Read_only')}</Field.Label>
-									<ToggleSwitch disabled={deleting} checked={readOnly} onChange={handleReadOnly} />
-								</Box>
-							</Field.Row>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('Read_only')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						</Field>
+					)}
+					{readOnly && (
+						<Field>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('React_when_read_only')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch checked={reactWhenReadOnly || isRoomFederated(room)} onChange={handleReactWhenReadOnly} />
+								</Field.Row>
+							</Box>
+							<Field.Hint>{t('React_when_read_only_changed_successfully')}</Field.Hint>
 						</Field>
 					)}
 					{canViewArchived && (
 						<Field>
-							<Field.Row>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
-									<ToggleSwitch disabled={deleting} checked={archived} onChange={handleArchived} />
-								</Box>
-							</Field.Row>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={archived} onChange={handleArchived} />
+								</Field.Row>
+							</Box>
 						</Field>
 					)}
 				</>
 			)}
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Default')}</Field.Label>
-						<ToggleSwitch disabled={deleting} checked={isDefault} onChange={handleIsDefault} />
-					</Box>
-				</Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Default')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={isDefault} onChange={handleIsDefault} />
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Favorite')}</Field.Label>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Favorite')}</Field.Label>
+					<Field.Row>
 						<ToggleSwitch disabled={deleting} checked={favorite} onChange={handleFavorite} />
-					</Box>
-				</Field.Row>
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Featured')}</Field.Label>
-						<ToggleSwitch disabled={deleting} checked={featured} onChange={handleFeatured} />
-					</Box>
-				</Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Featured')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={featured} onChange={handleFeatured} />
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
 				<Field.Row>
@@ -322,7 +351,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
+					<Button flexGrow={1} danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

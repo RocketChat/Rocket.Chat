@@ -1,5 +1,4 @@
 {
-  "403": "Keelatud",
   "500": "Sisemine serveri viga",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ei ole enam __role__ poolt __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ määrati __role__ poolt __user_by__",

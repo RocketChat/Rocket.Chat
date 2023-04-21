@@ -1,6 +1,8 @@
-import { Box, Field, Select, Button, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Field, Select, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 type EditInviteLinkProps = {

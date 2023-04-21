@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
-import { ILivechatTrigger } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const createTrigger = (name: string): Promise<boolean> => {
     return new Promise((resolve, reject) => {

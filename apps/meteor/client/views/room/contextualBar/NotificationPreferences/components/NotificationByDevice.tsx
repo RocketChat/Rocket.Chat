@@ -1,5 +1,6 @@
 import { Box, Accordion, Icon, FieldGroup } from '@rocket.chat/fuselage';
-import React, { ComponentProps, memo, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 type NotificationByDeviceProps = {
 	device: string;
@@ -7,7 +8,7 @@ type NotificationByDeviceProps = {
 	children: ReactNode;
 };
 
-export const NotificationByDevice = ({ device, icon, children }: NotificationByDeviceProps): ReactElement => (
+const NotificationByDevice = ({ device, icon, children }: NotificationByDeviceProps): ReactElement => (
 	<Accordion.Item
 		title={
 			<Box display='flex' alignItems='center'>

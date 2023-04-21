@@ -5,13 +5,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { ChromeScreenShare } from './screenShare';
-import { t } from '../../utils';
-import { Notifications } from '../../notifications';
-import { settings } from '../../settings';
-import { modal } from '../../ui-utils';
+import { t } from '../../utils/client';
+import { Notifications } from '../../notifications/client';
+import { settings } from '../../settings/client';
 import { ChatSubscription } from '../../models/client';
-import { WEB_RTC_EVENTS } from '..';
+import { WEB_RTC_EVENTS } from '../lib/constants';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import GenericModal from '../../../client/components/GenericModal';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {
@@ -179,9 +180,7 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 
-		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
-
-		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
+		setInterval(this.checkPeerConnections.bind(this), 1000);
 	}
 
 	onUserStream(...args) {
@@ -283,8 +282,8 @@ class WebRTCClass {
 	onRemoteStatus(data) {
 		// this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
-		Meteor.clearTimeout(this.callInProgressTimeout);
-		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress, 2000);
+		clearTimeout(this.callInProgressTimeout);
+		this.callInProgressTimeout = setTimeout(this.resetCallInProgress, 2000);
 		if (this.active !== true) {
 			return;
 		}
@@ -365,7 +364,7 @@ class WebRTCClass {
 				peerConnection === this.peerConnections[id]
 			) {
 				this.stopPeerConnection(id);
-				Meteor.setTimeout(() => {
+				setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
 						this.stop();
 					}
@@ -411,9 +410,12 @@ class WebRTCClass {
 		}
 		const getScreen = (audioStream) => {
 			const refresh = function () {
-				modal.open({
-					type: 'warning',
-					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing'),
+				imperativeModal.open({
+					component: GenericModal,
+					props: {
+						variant: 'warning',
+						title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing'),
+					},
 				});
 			};
 
@@ -421,18 +423,15 @@ class WebRTCClass {
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
-				modal.open(
-					{
-						type: 'warning',
+				imperativeModal.open({
+					component: GenericModal,
+					props: {
 						title: TAPi18n.__('Screen_Share'),
-						text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
-						html: true,
-						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('Install_Extension'),
-						cancelButtonText: TAPi18n.__('Cancel'),
-					},
-					(isConfirm) => {
-						if (isConfirm) {
+						variant: 'warning',
+						confirmText: TAPi18n.__('Install_Extension'),
+						cancelText: TAPi18n.__('Cancel'),
+						children: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
+						onConfirm: () => {
 							if (this.navigator === 'chrome') {
 								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
 								try {
@@ -449,9 +448,10 @@ class WebRTCClass {
 								window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
 								refresh();
 							}
-						}
+						},
 					},
-				);
+				});
+
 				return onError(false);
 			}
 
@@ -677,13 +677,13 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			Meteor.defer(() => {
+			setTimeout(() => {
 				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,
 					media: data.media,
 				});
-			});
+			}, 0);
 			return;
 		}
 
@@ -716,27 +716,27 @@ class WebRTCClass {
 			icon = 'phone';
 			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
 		}
-		modal.open(
-			{
-				title: `<i class='icon-${icon} alert-icon success-color'></i>${title}`,
-				text: t('Do_you_want_to_accept'),
-				html: true,
-				showCancelButton: true,
-				confirmButtonText: t('Yes'),
-				cancelButtonText: t('No'),
-			},
-			(isConfirm) => {
-				if (isConfirm) {
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title,
+				icon,
+				confirmText: t('Yes'),
+				cancelText: t('No'),
+				children: t('Do_you_want_to_accept'),
+				onConfirm: () => {
 					goToRoomById(data.room);
 					return this.joinCall({
 						to: data.from,
 						monitor: data.monitor,
 						media: data.media,
 					});
-				}
-				this.stop();
+				},
+				onCancel: () => this.stop(),
+				onClose: () => this.stop(),
 			},
-		);
+		});
 	}
 
 	/*

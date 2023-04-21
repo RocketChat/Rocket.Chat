@@ -1,5 +1,6 @@
 import { Margins } from '@rocket.chat/fuselage';
-import React, { forwardRef, memo, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 import Page from '../Page';
 

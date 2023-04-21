@@ -1,7 +1,8 @@
-import { IWebdavNode } from '@rocket.chat/core-typings';
+import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { Box, Icon, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import {
 	GenericTable,

@@ -1,9 +1,9 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
 
 export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => {
 	const t = useTranslation();

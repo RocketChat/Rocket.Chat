@@ -1,16 +1,17 @@
 import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
 function ViewModeList(): ReactElement {
 	const t = useTranslation();
 
-	const saveUserPreferences = useMethod('saveUserPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
-		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
+		useCallback(() => saveUserPreferences({ data: { sidebarViewMode: value } }), [value]);
 
 	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
@@ -20,7 +21,7 @@ function ViewModeList(): ReactElement {
 	const setToCondensed = useHandleChange('condensed');
 
 	const handleChangeSidebarDisplayAvatar = useCallback(
-		() => saveUserPreferences({ sidebarDisplayAvatar: !sidebarDisplayAvatar }),
+		() => saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } }),
 		[saveUserPreferences, sidebarDisplayAvatar],
 	);
 
@@ -29,49 +30,32 @@ function ViewModeList(): ReactElement {
 			<OptionTitle>{t('Display')}</OptionTitle>
 			<ul>
 				<ListItem
-					icon={'extended-view'}
+					is='label'
+					role='listitem'
+					icon='extended-view'
 					text={t('Extended')}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToExtended}
-							name='sidebarViewMode'
-							value='extended'
-							checked={sidebarViewMode === 'extended'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
-					icon={'medium-view'}
+					is='label'
+					role='listitem'
+					icon='medium-view'
 					text={t('Medium')}
-					input={
-						<RadioButton pis='x24' onChange={setToMedium} name='sidebarViewMode' value='medium' checked={sidebarViewMode === 'medium'} />
-					}
+					input={<RadioButton pis='x24' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
-					icon={'condensed-view'}
+					is='label'
+					role='listitem'
+					icon='condensed-view'
 					text={t('Condensed')}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToCondensed}
-							name='sidebarViewMode'
-							value='condensed'
-							checked={sidebarViewMode === 'condensed'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
-					icon={'user-rounded'}
+					is='label'
+					role='listitem'
+					icon='user-rounded'
 					text={t('Avatars')}
-					input={
-						<ToggleSwitch
-							pis='x24'
-							onChange={handleChangeSidebarDisplayAvatar}
-							name='sidebarDisplayAvatar'
-							checked={sidebarDisplayAvatar}
-						/>
-					}
+					input={<ToggleSwitch pis='x24' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
 				/>
 			</ul>
 		</>

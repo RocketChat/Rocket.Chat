@@ -15,9 +15,17 @@
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
+		"autotranslate",
+		"fname",
+		"Gazzodown",
+		"katex",
+		"listbox",
 		"livechat",
+		"oauthapps",
 		"omnichannel",
 		"photoswipe",
-		"tmid"
+		"searchbox",
+		"tmid",
+		"tshow"
 	]
 }

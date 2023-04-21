@@ -1,6 +1,7 @@
 import { Accordion, Field, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';

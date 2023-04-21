@@ -41,6 +41,4 @@ export interface IOTR {
 	getInstanceByRoomId(roomId: IRoom['_id']): OTRRoom | undefined;
 }
 
-export type publicKeyObject = ReturnType<<T extends U, U extends JsonWebKey>() => T>;
-
 export interface IOTRAlgorithm extends EcKeyAlgorithm, EcdhKeyDeriveParams {}

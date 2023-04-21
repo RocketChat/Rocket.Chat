@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, Modal, IconButton } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { DialInput } from './DialInput';
 import Pad from './Pad';

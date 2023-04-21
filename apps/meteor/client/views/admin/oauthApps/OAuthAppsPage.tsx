@@ -1,6 +1,7 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import EditOauthAppWithData from './EditOauthAppWithData';

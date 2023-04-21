@@ -1,8 +1,9 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { AsyncState } from '../../../../lib/asyncState/AsyncState';
+import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
 import { OmnichannelRoomIconContext } from '../context/OmnichannelRoomIconContext';
 import OmnichannelRoomIcon from '../lib/OmnichannelRoomIcon';

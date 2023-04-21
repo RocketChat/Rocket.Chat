@@ -1,4 +1,5 @@
-import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import type { EventHandlerOf } from '@rocket.chat/emitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 export type Store<T> = Map<string, T>;
 

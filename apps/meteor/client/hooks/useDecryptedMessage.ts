@@ -1,4 +1,5 @@
-import { IMessage, isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useState, useEffect } from 'react';

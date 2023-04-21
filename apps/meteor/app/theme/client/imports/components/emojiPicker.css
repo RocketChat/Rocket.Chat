@@ -25,6 +25,7 @@
 	z-index: 9999;
 
 	display: none;
+	flex-direction: column;
 
 	width: 365px;
 	max-width: 100%;
@@ -33,13 +34,21 @@
 
 	margin-right: 22px;
 
+	padding: 0.5rem;
 	padding-bottom: 0;
+
+	animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
 	white-space: initial;
 
 	opacity: 1;
+	border: 1px solid var(--rcx-color-shadow-elevation-border, var(--rcx-color-stroke-extra-light, var(--rcx-color-neutral-250, #ebecef)));
 
-	background-color: rgba(255, 255, 255, 0.98);
+	border-radius: var(--popover-radius);
+
+	background-color: var(--rcx-color-surface-light, white);
+
+	box-shadow: 0 0 1px 0 var(--rcx-color-shadow-elevation-2x, rgba(47, 52, 61, 0.08)), 0 0 12px 0 var(--rcx-color-shadow-elevation-2y, rgba(47, 52, 61, 0.12));
 
 	&.show {
 		display: flex;
@@ -57,7 +66,7 @@
 
 		padding: 6px 0;
 
-		border-width: 0 0 2px;
+		border-width: 0 0 1px;
 		border-style: solid;
 		flex-grow: 1;
 		justify-content: center;
@@ -99,6 +108,10 @@
 
 					background-color: #dddddd;
 				}
+			}
+
+			& li.emoji-picker-load-more {
+				text-align: center;
 			}
 
 			&.visible {
@@ -204,9 +217,7 @@
 
 			opacity: 0;
 			border-radius: 4px;
-			box-shadow:
-				0 1px 1px 0 rgba(0, 0, 0, 0.2),
-				0 2px 10px 0 rgba(0, 0, 0, 0.16);
+			box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 			&.show {
 				display: block;

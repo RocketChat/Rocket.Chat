@@ -2,7 +2,7 @@ import type { IUser } from './IUser';
 
 export enum ILivechatAgentStatus {
 	AVAILABLE = 'available',
-	UNAVAILABLE = 'unavailable',
+	NOT_AVAILABLE = 'not-available',
 }
 
 export interface ILivechatAgent extends IUser {

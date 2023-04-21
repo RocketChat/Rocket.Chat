@@ -78,7 +78,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
+	async getSupportedLanguages(target: string): Promise<ISupportedLanguage[]> {
 		if (!this.apiKey) {
 			return [];
 		}
@@ -196,12 +196,12 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 		const query = `text=${msgs.join('&text=')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
@@ -231,8 +231,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 						.join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;
@@ -245,10 +245,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
 		const query = `text=${encodeURIComponent(attachment.description || attachment.text || '')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
@@ -272,8 +272,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message attachment', err });
 			}
 		});
 		return translations;

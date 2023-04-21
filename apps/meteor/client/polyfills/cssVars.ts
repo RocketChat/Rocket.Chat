@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 
 type Variables = {
 	[name: string]: (variables: Variables) => string;
@@ -27,7 +27,7 @@ const replaceReferences = (code: string, variables: Variables): string =>
 let cssVariablesElement: HTMLElement;
 const originalCodes = new Map();
 
-const update = _.debounce(() => {
+const update = withDebouncing({ wait: 100 })(() => {
 	const declarations = ([] as [string, Variables[keyof Variables]][]).concat(
 		...Array.from(originalCodes.values(), findDeclarations),
 		findDeclarations(cssVariablesElement.innerHTML),
@@ -52,7 +52,7 @@ const update = _.debounce(() => {
 		}
 		sheet.insertRule(`@media all {${patchedCode}}`, 0);
 	});
-}, 100);
+});
 
 const findAndPatchFromLinkElements = (): void => {
 	Array.from(document.querySelectorAll('link[type="text/css"].__meteor-css__')).forEach(async (linkElement) => {

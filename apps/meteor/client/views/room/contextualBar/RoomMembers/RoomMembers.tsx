@@ -1,8 +1,10 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout, SelectOption } from '@rocket.chat/fuselage';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -15,6 +17,7 @@ type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
+	isFederated?: boolean;
 	loading: boolean;
 	text: string;
 	type: string;
@@ -46,10 +49,11 @@ const RoomMembers = ({
 	total,
 	error,
 	loadMoreItems,
-	renderRow: Row = RoomMembersRow,
+	renderRow: RowComponent = RoomMembersRow,
 	rid,
 	isTeam,
 	isDirect,
+	isFederated,
 	reload,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
@@ -108,18 +112,18 @@ const RoomMembers = ({
 				)}
 
 				{!loading && members.length <= 0 && (
-					<Box textAlign='center' p='x12' color='neutral-600'>
+					<Box textAlign='center' p='x12' color='annotation'>
 						{t('No_members_found')}
 					</Box>
 				)}
 
 				{!loading && members.length > 0 && (
 					<Box pi='x18' pb='x12'>
-						<Box is='span' color='info' fontScale='p2'>
+						<Box is='span' color='hint' fontScale='p2'>
 							{t('Showing')}: {members.length}
 						</Box>
 
-						<Box is='span' color='info' fontScale='p2' mis='x8'>
+						<Box is='span' color='hint' fontScale='p2' mis='x8'>
 							{t('Total')}: {total}
 						</Box>
 					</Box>
@@ -137,7 +141,7 @@ const RoomMembers = ({
 							overscan={50}
 							data={members}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data): ReactElement => <Row data={itemData} user={data} index={index} reload={reload} />}
+							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
 				</Box>
@@ -145,7 +149,7 @@ const RoomMembers = ({
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<VerticalBar.Footer>
 					<ButtonGroup stretch>
-						{onClickInvite && (
+						{!isFederated && onClickInvite && (
 							<Button onClick={onClickInvite} width='50%'>
 								<Icon name='link' size='x20' mie='x4' />
 								{t('Invite_Link')}

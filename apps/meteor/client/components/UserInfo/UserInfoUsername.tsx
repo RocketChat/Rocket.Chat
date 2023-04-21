@@ -1,16 +1,17 @@
-import { IUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Box } from '@rocket.chat/fuselage';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import UserCard from '../UserCard';
 
-type UserInfoUsername = {
+type UserInfoUsernameProps = {
 	username: IUser['username'];
 	status: ReactElement;
 } & ComponentProps<typeof Box>;
 
 // TODO: Remove UserCard.Username
-const UserInfoUsername = ({ username, status, ...props }: UserInfoUsername): ReactElement => (
+const UserInfoUsername = ({ username, status, ...props }: UserInfoUsernameProps): ReactElement => (
 	<UserCard.Username name={username} status={status} {...props} />
 );
 

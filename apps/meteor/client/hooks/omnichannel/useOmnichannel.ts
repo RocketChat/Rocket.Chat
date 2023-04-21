@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 
-import { OmnichannelContext, OmnichannelContextValue } from '../../contexts/OmnichannelContext';
+import type { OmnichannelContextValue } from '../../contexts/OmnichannelContext';
+import { OmnichannelContext } from '../../contexts/OmnichannelContext';
 
 export const useOmnichannel = (): OmnichannelContextValue => useContext(OmnichannelContext);

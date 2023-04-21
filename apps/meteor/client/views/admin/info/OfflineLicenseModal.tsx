@@ -1,7 +1,10 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
+import type { ComponentProps, FormEvent, ReactElement } from 'react';
+import React, { useState } from 'react';
+
+import { queryClient } from '../../../lib/queryClient';
 
 type OfflineLicenseModalProps = {
 	onClose: () => void;
@@ -36,12 +39,14 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 
 	const addLicense = useEndpoint('POST', '/v1/licenses.add');
 
-	const handleApplyLicense = useMutableCallback(async () => {
+	const handleApplyLicense = useMutableCallback(async (e) => {
+		e.preventDefault();
 		setLastSetLicense(newLicense);
-
 		try {
 			setIsUpdating(true);
 			await addLicense({ license: newLicense });
+			queryClient.invalidateQueries(['licenses']);
+
 			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();
 		} catch (error) {
@@ -55,7 +60,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 	});
 
 	return (
-		<Modal {...props}>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleApplyLicense} {...props} />} {...props}>
 			<Modal.Header>
 				<Modal.Title>{t('Cloud_Apply_Offline_License')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -71,7 +76,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 					paddingInline='x16'
 					pb='x8'
 					flexGrow={1}
-					backgroundColor='neutral-800'
+					backgroundColor='dark'
 					mb={status === 'invalid' ? 'x8' : undefined}
 				>
 					<Margins block='x8'>
@@ -81,7 +86,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 								height='x108'
 								fontFamily='mono'
 								fontScale='p2'
-								color='alternative'
+								color='white'
 								style={{ wordBreak: 'break-all', resize: 'none' }}
 								placeholder={t('Paste_here')}
 								disabled={isUpdating}
@@ -105,7 +110,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
-					<Button primary disabled={!hasChanges || isUpdating} onClick={handleApplyLicense}>
+					<Button primary disabled={!hasChanges || isUpdating} type='submit'>
 						{t('Cloud_Apply_license')}
 					</Button>
 				</Modal.FooterControllers>

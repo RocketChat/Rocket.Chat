@@ -1,6 +1,7 @@
 import { Box, Select, Tabs } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import Page from '../../../../../client/components/Page';
 import ChannelsTab from './channels/ChannelsTab';

@@ -1,7 +1,8 @@
 import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/dataView/Growth';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
@@ -60,7 +61,7 @@ const ChannelsOverview = (): ReactElement => {
 			</EngagementDashboardCardFilter>
 			<Box>
 				{channels && !channels.length && (
-					<Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
+					<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
 					</Tile>
 				)}

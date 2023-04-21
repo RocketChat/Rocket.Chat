@@ -1,8 +1,12 @@
-import { SettingsContext, SettingsContextValue, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
-import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { queryClient } from '../lib/queryClient';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 
@@ -18,7 +22,7 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 	const hasPrivateAccess = privileged && hasPrivilegedPermission;
 
 	const cachedCollection = useMemo(
-		() => (hasPrivateAccess ? PrivateSettingsCachedCollection.get() : PublicSettingsCachedCollection.get()),
+		() => (hasPrivateAccess ? PrivateSettingsCachedCollection : PublicSettingsCachedCollection),
 		[hasPrivateAccess],
 	);
 
@@ -47,7 +51,11 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 	}, [cachedCollection]);
 
 	const querySetting = useMemo(
-		() => createReactiveSubscriptionFactory((_id) => ({ ...cachedCollection.collection.findOne(_id) })),
+		() =>
+			createReactiveSubscriptionFactory((_id): ISetting | undefined => {
+				const subscription = cachedCollection.collection.findOne(_id);
+				return subscription ? { ...subscription } : undefined;
+			}),
 		[cachedCollection],
 	);
 
@@ -64,7 +72,7 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 								(query.section
 									? { section: query.section }
 									: {
-											$or: [{ section: { $exists: false } }, { section: null }],
+											$or: [{ section: { $exists: false } }, { section: undefined }],
 									  })),
 						},
 						{
@@ -80,9 +88,23 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 		[cachedCollection],
 	);
 
+	const settingsChangeCallback = (changes: { _id: string }[]): void => {
+		changes.forEach((val) => {
+			switch (val._id) {
+				case 'Enterprise_License':
+					queryClient.invalidateQueries(['licenses']);
+					break;
+
+				default:
+					break;
+			}
+		});
+	};
+
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
 		async (changes) => {
+			settingsChangeCallback(changes);
 			await saveSettings(changes);
 		},
 		[saveSettings],
@@ -103,3 +125,6 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 };
 
 export default SettingsProvider;
+
+// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => {}]'
+// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined]'

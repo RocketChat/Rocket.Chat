@@ -1,14 +1,14 @@
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { settings } from '../../../../../app/settings/server';
 
-const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
 class AutoTransferChatSchedulerClass {
@@ -18,7 +18,7 @@ class AutoTransferChatSchedulerClass {
 
 	user: IUser;
 
-	public init(): void {
+	public async init(): Promise<void> {
 		if (this.running) {
 			return;
 		}
@@ -29,8 +29,12 @@ class AutoTransferChatSchedulerClass {
 			defaultConcurrency: 1,
 		});
 
-		this.scheduler.start();
+		await this.scheduler.start();
 		this.running = true;
+	}
+
+	private async getSchedulerUser(): Promise<IUser | null> {
+		return Users.findOneById('rocket.cat');
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
@@ -53,7 +57,7 @@ class AutoTransferChatSchedulerClass {
 	}
 
 	private async transferRoom(roomId: string): Promise<boolean> {
-		const room = LivechatRooms.findOneById(roomId, {
+		const room = await LivechatRooms.findOneById(roomId, {
 			_id: 1,
 			v: 1,
 			servedBy: 1,
@@ -69,16 +73,24 @@ class AutoTransferChatSchedulerClass {
 			servedBy: { _id: ignoreAgentId },
 		} = room;
 
+		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
+
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			return Livechat.returnRoomAsInquiry(room._id, departmentId);
+			return Livechat.returnRoomAsInquiry(room._id, departmentId, {
+				scope: 'autoTransferUnansweredChatsToQueue',
+				comment: timeoutDuration,
+				transferredBy: await this.getSchedulerUser(),
+			});
 		}
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
 		if (agent) {
 			return forwardRoomToAgent(room, {
 				userId: agent.agentId,
-				transferredBy: schedulerUser,
+				transferredBy: await this.getSchedulerUser(),
 				transferredTo: agent,
+				scope: 'autoTransferUnansweredChatsToAgent',
+				comment: timeoutDuration,
 			});
 		}
 
@@ -89,7 +101,7 @@ class AutoTransferChatSchedulerClass {
 		const { roomId } = data;
 
 		if (await this.transferRoom(roomId)) {
-			LivechatRooms.setAutoTransferredAtById(roomId);
+			await LivechatRooms.setAutoTransferredAtById(roomId);
 		}
 
 		await this.unscheduleRoom(roomId);
@@ -99,5 +111,5 @@ class AutoTransferChatSchedulerClass {
 export const AutoTransferChatScheduler = new AutoTransferChatSchedulerClass();
 
 Meteor.startup(() => {
-	AutoTransferChatScheduler.init();
+	void AutoTransferChatScheduler.init();
 });

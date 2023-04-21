@@ -1,13 +1,17 @@
-import { Box, Button, Field, FieldGroup, Modal, Select, SelectOption, Tabs, TextInput } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldGroup, Modal, Select, Tabs, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
-import { parse as parseDomain, ParsedDomain } from 'psl';
-import React, { FC, ReactElement, useCallback, useState } from 'react';
+import type { ParsedDomain } from 'psl';
+import { parse as parseDomain } from 'psl';
+import type { FC, ReactElement } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';
-import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
+import type { DNSRecordName, ResolvedDNS } from './Types';
+import { TXTRecordValue } from './Types';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
 	const t = useTranslation();
@@ -59,19 +63,23 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 	});
 
 	// Wizard
-	const nextStep = useCallback(() => {
-		if (currentStep === 1 && hasUnsavedChanges) {
-			setFederationDomain(domain);
-			setFederationDiscoveryMethod(discoveryMethod);
-			commit();
-		}
+	const nextStep = useCallback(
+		(e) => {
+			e.preventDefault();
+			if (currentStep === 1 && hasUnsavedChanges) {
+				setFederationDomain(domain);
+				setFederationDiscoveryMethod(discoveryMethod);
+				commit();
+			}
 
-		if (currentStep === 3) {
-			onClose();
-		} else {
-			setCurrentStep(currentStep + 1);
-		}
-	}, [currentStep, hasUnsavedChanges, domain, discoveryMethod, commit, onClose, setFederationDomain, setFederationDiscoveryMethod]);
+			if (currentStep === 3) {
+				onClose();
+			} else {
+				setCurrentStep(currentStep + 1);
+			}
+		},
+		[currentStep, hasUnsavedChanges, domain, discoveryMethod, commit, onClose, setFederationDomain, setFederationDiscoveryMethod],
+	);
 
 	const previousStep = useCallback(() => {
 		if (currentStep === 1) {
@@ -97,7 +105,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 	};
 
 	return (
-		<Modal {...props}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={nextStep} {...props} />} {...props}>
 			{currentStep === 1 && (
 				<>
 					<Modal.Header>
@@ -194,7 +202,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 				)}
 				<Modal.FooterControllers>
 					<Button onClick={previousStep}>{currentStep === 1 ? t('Cancel') : t('Back')}</Button>
-					<Button primary onClick={nextStep}>
+					<Button primary type='submit'>
 						{currentStep === 3 ? t('Finish') : t('Next')}
 					</Button>
 				</Modal.FooterControllers>

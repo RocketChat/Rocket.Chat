@@ -1,8 +1,10 @@
-import { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
-import { Modal, Box, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
+import type { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Box, Button, FieldGroup, Field, Select, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -59,9 +61,12 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 				const fileData = new Uint8Array(arrayBuffer);
 
 				try {
+					if (!title) {
+						throw new Error('File name is required');
+					}
 					const response = await uploadFileToWebdav(accountId, fileData, title);
 					if (!response.success) {
-						return dispatchToastMessage({ type: 'error', message: t(response.message) });
+						throw new Error(response.message ? t(response.message) : 'Error uploading file');
 					}
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
@@ -76,7 +81,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(handleSaveFile)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSaveFile)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Save_To_Webdav')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />

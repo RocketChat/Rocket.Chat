@@ -1,8 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal } from '@rocket.chat/fuselage';
+import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
@@ -46,9 +47,13 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 		onRequest(email, subject);
 	}, [email, onRequest, subject]);
 
-	const handleSend = useCallback(() => {
-		onSend && token && onSend(email, subject, token);
-	}, [email, onSend, subject, token]);
+	const handleSend = useCallback(
+		(e) => {
+			e.preventDefault();
+			onSend && token && onSend(email, subject, token);
+		},
+		[email, onSend, subject, token],
+	);
 
 	const handleDiscard = useCallback(() => onDiscard(), [onDiscard]);
 
@@ -70,7 +75,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 	});
 
 	return (
-		<Modal {...props}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSend} {...props} />} {...props}>
 			<Modal.Header>
 				<Modal.Icon name='mail-arrow-top-right' />
 				<Modal.Title>{t('Transcript')}</Modal.Title>
@@ -109,17 +114,18 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					{roomOpen && transcriptRequest ? (
+					{roomOpen && transcriptRequest && (
 						<Button danger onClick={handleDiscard}>
-							{t('Discard')}
+							{t('Undo_request')}
 						</Button>
-					) : (
+					)}
+					{roomOpen && !transcriptRequest && (
 						<Button disabled={!canSave} primary onClick={handleRequest}>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button disabled={!canSave} primary onClick={handleSend}>
+						<Button disabled={!canSave} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}

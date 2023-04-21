@@ -1,5 +1,6 @@
 import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { Suspense, ReactElement, useEffect, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
 import SettingsProvider from '../../providers/SettingsProvider';

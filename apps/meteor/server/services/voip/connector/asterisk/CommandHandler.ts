@@ -99,7 +99,7 @@ export class CommandHandler {
 		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
 		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
 		const connection = this.connections.get(command.type) as IConnection;
-		if (!connection || !connection.isConnected()) {
+		if (!connection?.isConnected()) {
 			throw Error('Connection error');
 		}
 		command.connection = this.connections.get(command.type) as IConnection;
@@ -130,9 +130,9 @@ export class CommandHandler {
 			return {
 				status: 'connected',
 			};
-		} catch (error: any) {
-			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
-			throw error;
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', err });
+			throw err;
 		}
 	}
 
@@ -150,9 +150,9 @@ export class CommandHandler {
 			return {
 				status: 'connected',
 			};
-		} catch (error: any) {
-			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
-			throw error;
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', err });
+			throw err;
 		}
 	}
 

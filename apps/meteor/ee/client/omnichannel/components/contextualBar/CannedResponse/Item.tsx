@@ -2,7 +2,8 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent, useState } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React, { memo, useState } from 'react';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
@@ -27,7 +28,7 @@ const Item: FC<{
 			pbe={12}
 			pi={24}
 			borderBlockEndWidth='2px'
-			borderBlockEndColor='neutral-200'
+			borderBlockEndColor='light'
 			borderBlockEndStyle='solid'
 			onClick={onClickItem}
 			className={clickable}
@@ -39,7 +40,7 @@ const Item: FC<{
 					<Box fontScale='p2m' withTruncatedText>
 						!{data.shortcut}
 					</Box>
-					<Box fontScale='c1' color='info' withTruncatedText>
+					<Box fontScale='c1' color='hint' withTruncatedText>
 						{scope}
 					</Box>
 				</Box>
@@ -53,10 +54,10 @@ const Item: FC<{
 					>
 						{t('Use')}
 					</Button>
-					<Icon name='chevron-left' size={24} color='neutral-700' />
+					<Icon name='chevron-left' size={24} color='hint' />
 				</Box>
 			</Box>
-			<Box fontScale='p2' mbs='8px' color='info' withTruncatedText>
+			<Box fontScale='p2' mbs='8px' color='hint' withTruncatedText>
 				"{data.text}"
 			</Box>
 			{data.tags && data.tags.length > 0 && (

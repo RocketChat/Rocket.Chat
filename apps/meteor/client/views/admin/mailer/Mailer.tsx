@@ -1,11 +1,12 @@
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, SyntheticEvent, ReactElement } from 'react';
+import type { SyntheticEvent, ReactElement } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
-import { sendMailObject } from './MailerRoute';
+import type { sendMailObject } from './MailerRoute';
 
 type MailerProps = {
 	sendMail: ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;

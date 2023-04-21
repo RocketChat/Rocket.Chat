@@ -1,18 +1,19 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
+import type { ReactElement, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
-import { validate, createSoundData, soundDataType } from './lib';
+import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
-	goToNew: (where: string) => () => void;
+	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
 };
 
-const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -20,7 +21,6 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 	const [sound, setSound] = useState<{ name: string }>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
-
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
 	const handleChangeFile = useCallback((soundFile) => {
@@ -31,7 +31,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
-			const soundData: soundDataType = createSoundData(soundFile, name);
+			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {
@@ -51,7 +51,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result, soundFile.type, {
+						uploadCustomSound(reader.result as string, soundFile.type, {
 							...soundData,
 							_id: soundId,
 							random: Math.round(Math.random() * 1000),
@@ -72,11 +72,8 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			if (!result) {
-				throw new Error('error-something-went-wrong');
-			}
-			goToNew(result);
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			result && goToNew(result);
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
