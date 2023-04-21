@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { waitUntilFind } from '../../../lib/utils/waitUntilFind';
 
@@ -27,13 +27,29 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new NotAuthorizedError();
 			}
 
-			const room = roomCoordinator.getRoomDirectives(type).findRoom(reference) || (await getRoomByTypeAndName(type, reference));
+			const roomData = await getRoomByTypeAndName(type, reference);
 
-			if (!room._id) {
+			if (!roomData._id) {
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			ChatRoom.upsert({ _id: room._id }, { $set: room });
+			const $set: Record<string, unknown> = {};
+			const $unset: Record<string, unknown> = {};
+
+			for (const key of Object.keys(roomFields)) {
+				if (key in roomData) {
+					$set[key] = roomData[key as keyof typeof roomData];
+				} else {
+					$unset[key] = '';
+				}
+			}
+
+			ChatRoom.upsert({ _id: roomData._id }, { $set, $unset });
+			const room = ChatRoom.findOne({ _id: roomData._id });
+
+			if (!room) {
+				throw new TypeError('room is undefined');
+			}
 
 			if (room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
@@ -51,7 +67,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
-			if (sub && sub.open === false) {
+			if (sub && !sub.open) {
 				await openRoom(room._id);
 			}
 			return { rid: room._id };
