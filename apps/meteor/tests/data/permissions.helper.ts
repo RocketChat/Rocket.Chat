@@ -73,7 +73,17 @@ export const addPermissionToDefaultRoles = async (permission: Permission) => {
     type Mutable<Type> = {
         -readonly [Key in keyof Type]: Type[Key];
     };
-    const mutableDefaultRoles = defaultRoles.roles as Mutable<typeof defaultRoles['roles']>;
+    const mutableDefaultRoles: string[] = defaultRoles.roles as Mutable<typeof defaultRoles['roles']>;
+
+    const eeOnlyRoles = ['livechat-monitor'];
+    if (!IS_EE) {
+        eeOnlyRoles.forEach((role) => {
+            const index = mutableDefaultRoles.indexOf(role);
+            if (index !== -1) {
+                mutableDefaultRoles.splice(index, 1);
+            }
+        });
+    }
 
     await updatePermission(permission, mutableDefaultRoles);
 }
