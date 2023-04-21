@@ -4,6 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { isSettingCode } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Translation } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
@@ -90,7 +91,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Promise.all(params.map(({ _id, value }) => Settings.updateValueById(_id, value)));
+		await Promise.all(
+			params.map(async ({ _id, value }) => {
+				if (_id === 'Language') {
+					await Translation.changeServerLanguage((value as string) || 'en');
+				}
+				await Settings.updateValueById(_id, value);
+			}),
+		);
 
 		return true;
 	}, {}),

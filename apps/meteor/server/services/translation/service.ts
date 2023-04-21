@@ -1,4 +1,3 @@
-import { Settings } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import mem from 'mem';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
@@ -8,6 +7,7 @@ import FsBackend from 'i18next-fs-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
 
 import { getPathFromTranslationFile, getSupportedLanguages } from './loader';
+import { settings } from '../../../app/settings/server';
 
 export class TranslationService extends ServiceClassInternal implements ITranslationService {
 	protected name = 'translation';
@@ -20,8 +20,8 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 	private supportedLanguages: string[] = [];
 
-	public async started(): Promise<void> {
-		const serverLanguage = (await this.getServerLanguageCached()).toLowerCase();
+	public async created(): Promise<void> {
+		const serverLanguage = this.getServerLanguageCached().toLowerCase();
 		const supportedLanguages = await getSupportedLanguages();
 
 		await this.i18nextInstance
@@ -62,17 +62,29 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 	// Use translate when you want to translate to the user's language, or server's as a fallback
 	public async translate(text: string, user: IUser, replacements?: TranslationReplacement): Promise<string> {
-		const language = user.language || (await this.getServerLanguageCached());
+		const language = user.language || this.getServerLanguageCached();
 		await this.loadLanguageIfNotLoaded(language);
 
 		return this.translateText(text, language, replacements);
 	}
 
 	public async translateToServerLanguage(text: string, replacements?: TranslationReplacement): Promise<string> {
-		const language = await this.getServerLanguageCached();
-		await this.loadLanguageIfNotLoaded(language);
+		return this.i18nextInstance.t(text, {
+			...(replacements && 'interpolate' in replacements ? replacements.interpolate : {}),
+			...(replacements && 'sprintf' in replacements && replacements?.sprintf?.length
+				? { postProcess: 'sprintf', sprintf: replacements.sprintf }
+				: {}),
+		});
+	}
 
-		return this.translateText(text, language, replacements);
+	public getTranslateToServerLanguageFnWrapper(): (text: string, replacements?: TranslationReplacement) => string {
+		return (text: string, replacements?: TranslationReplacement) =>
+			this.i18nextInstance.t(text, {
+				...(replacements && 'interpolate' in replacements ? replacements.interpolate : {}),
+				...(replacements && 'sprintf' in replacements && replacements?.sprintf?.length
+					? { postProcess: 'sprintf', sprintf: replacements.sprintf }
+					: {}),
+			});
 	}
 
 	public async getLanguageData(language: string): Promise<Record<string, string>> {
@@ -85,11 +97,15 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 		return this.supportedLanguages.map((language) => this.convertLanguageToFileSystemCase(language));
 	}
 
+	public async changeServerLanguage(language: string): Promise<void> {
+		await this.i18nextInstance.changeLanguage(language);
+	}
+
 	// Cache the server language for 1 hour
 	private getServerLanguageCached = mem(this.getServerLanguage.bind(this), { maxAge: 1000 * 60 * 60 });
 
-	private async getServerLanguage(): Promise<string> {
-		return ((await Settings.findOneById('Language'))?.value as string) || 'en';
+	private getServerLanguage(): string {
+		return settings.get<string>('Language') || 'en';
 	}
 
 	private async loadLanguageIfNotLoaded(language: string): Promise<void> {

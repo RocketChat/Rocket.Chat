@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { SettingValue } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
@@ -54,6 +55,9 @@ Meteor.methods<ServerMethods>({
 			default:
 				check(value, String);
 				break;
+		}
+		if (_id === 'Language') {
+			await Translation.changeServerLanguage((value as string) || 'en');
 		}
 
 		await Settings.updateValueAndEditorById(_id, value as SettingValue, editor);

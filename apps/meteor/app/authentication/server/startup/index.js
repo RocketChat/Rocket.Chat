@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -23,8 +23,10 @@ import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
+let translateToServerLanguageFn;
 
-Meteor.startup(() => {
+Meteor.startup(async () => {
+	translateToServerLanguageFn = await Translation.getTranslateToServerLanguageFnWrapper();
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
 		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
 
@@ -36,7 +38,7 @@ Meteor.startup(() => {
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
-		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const subject = translateToServerLanguageFn('Accounts_Admin_Email_Approval_Needed_Subject_Default');
 		const siteName = settings.get('Site_Name');
 
 		return `[${siteName}] ${subject}`;
@@ -47,7 +49,7 @@ Accounts.emailTemplates.userToActivate = {
 			? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default'
 			: 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		return Mailer.replace(TAPi18n.__(email), {
+		return Mailer.replace(translateToServerLanguageFn(email), {
 			name: escapeHTML(options.name),
 			email: escapeHTML(options.email),
 			reason: escapeHTML(options.reason),
@@ -62,14 +64,14 @@ Accounts.emailTemplates.userActivated = {
 		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
-		return `[${siteName}] ${TAPi18n.__(subject)}`;
+		return `[${siteName}] ${translateToServerLanguageFn(subject)}`;
 	},
 
 	html({ active, name, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return Mailer.replace(TAPi18n.__(`Accounts_Email_${action}`), {
+		return Mailer.replace(translateToServerLanguageFn(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
 		});
 	},

@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
+import type { TranslationReplacement } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
@@ -18,17 +19,16 @@ let contentHeader: string | undefined;
 let contentFooter: string | undefined;
 let body: string | undefined;
 
-// define server language for email translations
-// @TODO: change TAPi18n.__ function to use the server language by default
-let lng = 'en';
-settings.watch<string>('Language', (value) => {
-	lng = value || 'en';
+let translateToServerLanguageFn: (text: string, replacements?: TranslationReplacement | undefined) => string;
+
+Meteor.startup(async () => {
+	translateToServerLanguageFn = await Translation.getTranslateToServerLanguageFnWrapper();
 });
 
 export const replacekey = (str: string, key: string, value = ''): string =>
 	str.replace(new RegExp(`(\\[${key}\\]|__${key}__)`, 'igm'), value);
 
-export const translate = (str: string): string => replaceVariables(str, (_match, key) => TAPi18n.__(key, { lng }));
+export const translate = (str: string): string => replaceVariables(str, (_match, key) => translateToServerLanguageFn(key));
 
 export const replace = (str: string, data: { [key: string]: unknown } = {}): string => {
 	if (!str) {
