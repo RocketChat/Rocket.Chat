@@ -7192,6 +7192,7 @@ __metadata:
     "@types/node": ^14.18.21
     "@types/node-rsa": ^1.1.1
     "@types/nodemailer": ^6.4.4
+    "@types/oauth2-server": ^3.0.13
     "@types/object-path": ^0.11.1
     "@types/parseurl": ^1.3.1
     "@types/photoswipe": ^4.1.2
@@ -7338,6 +7339,7 @@ __metadata:
     node-rsa: ^1.1.1
     nodemailer: ^6.7.8
     nyc: ^15.1.0
+    oauth2-server: 3.1.1
     object-path: ^0.11.8
     outdent: ~0.8.0
     path: ^0.12.7
@@ -11998,6 +12000,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/oauth2-server@npm:^3.0.13":
+  version: 3.0.13
+  resolution: "@types/oauth2-server@npm:3.0.13"
+  dependencies:
+    "@types/express": "*"
+  checksum: 126ce8a99a50b515801891212c20a928bd447ea634956aef0073ff704ac19b79ed8800567f3aa433f234bf2ee54b498211e3e23e864c34d211c76ea0662fa3e0
+  languageName: node
+  linkType: hard
+
 "@types/object-path@npm:^0.11.1":
   version: 0.11.1
   resolution: "@types/object-path@npm:0.11.1"
@@ -14857,7 +14868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"basic-auth@npm:~2.0.1":
+"basic-auth@npm:2.0.1, basic-auth@npm:~2.0.1":
   version: 2.0.1
   resolution: "basic-auth@npm:2.0.1"
   dependencies:
@@ -15075,7 +15086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.1.5, bluebird@npm:^3.3.5, bluebird@npm:^3.5.0, bluebird@npm:^3.5.5":
+"bluebird@npm:3.7.2, bluebird@npm:^3.1.5, bluebird@npm:^3.3.5, bluebird@npm:^3.5.0, bluebird@npm:^3.5.5":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -16550,6 +16561,23 @@ __metadata:
   version: 1.1.0
   resolution: "cluster-key-slot@npm:1.1.0"
   checksum: fc953c75209b1ef9088081bab4e40a0b2586491c974ab93460569c014515ca5a2e31c043f185285e177007162fc353d07836d98f570c171dbe055775430e495b
+  languageName: node
+  linkType: hard
+
+"co-bluebird@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "co-bluebird@npm:1.1.0"
+  dependencies:
+    bluebird: ^2.10.0
+    co-use: ^1.1.0
+  checksum: 45a7b5de138cc4bdac82bbceb2e96be9881c319955b69790f05e24c024ccd6524e49ff0b9cbb89a796e3bd005edb0a222e4c65aeb58ccc0318487e25e66eecf2
+  languageName: node
+  linkType: hard
+
+"co-use@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "co-use@npm:1.1.0"
+  checksum: b71977870ad31b23236d72cc283742adad810838aa89c326dbc0afe2272ff4ddb282c8ca0668ba151ab0d090264fb0a01ceb600e434261a6cce5ccc080bd1654
   languageName: node
   linkType: hard
 
@@ -24166,6 +24194,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-generator@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "is-generator@npm:1.0.3"
+  checksum: 3512b4bfd132e4bc3a2263864ac3aa3476bf9af9482cd3d9adb4b9598d4cdc583ecd9eb4163603600ee580c7c773bb0985b53b90ef552ea5d80ceda1cb1888ce
+  languageName: node
+  linkType: hard
+
 "is-gif@npm:^3.0.0":
   version: 3.0.0
   resolution: "is-gif@npm:3.0.0"
@@ -26670,6 +26705,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:4.17.19":
+  version: 4.17.19
+  resolution: "lodash@npm:4.17.19"
+  checksum: a5cc77099fae9f0052003e8242b06d7572be7c88cbe5152ddf5a3d97bc795cfaf73f10befeb6e23efac84fae94e2255d398cb371349cb3f878c9792a0213cacd
+  languageName: node
+  linkType: hard
+
 "log-driver@npm:^1.2.7":
   version: 1.2.7
   resolution: "log-driver@npm:1.2.7"
@@ -29113,6 +29155,20 @@ __metadata:
   version: 0.9.0
   resolution: "oauth-sign@npm:0.9.0"
   checksum: 8f5497a127967866a3c67094c21efd295e46013a94e6e828573c62220e9af568cc1d2d04b16865ba583e430510fa168baf821ea78f355146d8ed7e350fc44c64
+  languageName: node
+  linkType: hard
+
+"oauth2-server@npm:3.1.1":
+  version: 3.1.1
+  resolution: "oauth2-server@npm:3.1.1"
+  dependencies:
+    basic-auth: 2.0.1
+    bluebird: 3.7.2
+    lodash: 4.17.19
+    promisify-any: 2.0.1
+    statuses: 1.5.0
+    type-is: 1.6.18
+  checksum: 3010969fc73e55093f7a299fc257258dd442d8dd8192582250340178eb3237a8e42c9ef3d6ee2b6c571bfdc00c7a988a4526a9ec16b65664fcc1221572d9f15c
   languageName: node
   linkType: hard
 
@@ -31833,6 +31889,17 @@ __metadata:
     define-properties: ^1.1.3
     es-abstract: ^1.19.1
   checksum: aba8af6ae8d076e2c344d2674409b44c8f98b3aba98b78619739aeb4a74ebac80dbba5f9338da7cf0108a34384799d3996c46697d2e21c6e998c04d68041213c
+  languageName: node
+  linkType: hard
+
+"promisify-any@npm:2.0.1":
+  version: 2.0.1
+  resolution: "promisify-any@npm:2.0.1"
+  dependencies:
+    bluebird: ^2.10.0
+    co-bluebird: ^1.1.0
+    is-generator: ^1.0.2
+  checksum: 0ff50b94f52d29aa8dd25f159d9e1c3ac7934a7c4267e988c02aadc316b16e89420d36504795839eaf9e2fc378495e9113fe18ef70dce777e4d818a84f3e5623
   languageName: node
   linkType: hard
 
@@ -35187,17 +35254,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"statuses@npm:1.5.0, statuses@npm:>= 1.4.0 < 2, statuses@npm:>= 1.5.0 < 2, statuses@npm:~1.5.0":
+  version: 1.5.0
+  resolution: "statuses@npm:1.5.0"
+  checksum: c469b9519de16a4bb19600205cffb39ee471a5f17b82589757ca7bd40a8d92ebb6ed9f98b5a540c5d302ccbc78f15dc03cc0280dd6e00df1335568a5d5758a5c
+  languageName: node
+  linkType: hard
+
 "statuses@npm:2.0.1":
   version: 2.0.1
   resolution: "statuses@npm:2.0.1"
   checksum: 18c7623fdb8f646fb213ca4051be4df7efb3484d4ab662937ca6fbef7ced9b9e12842709872eb3020cc3504b93bde88935c9f6417489627a7786f24f8031cbcb
-  languageName: node
-  linkType: hard
-
-"statuses@npm:>= 1.4.0 < 2, statuses@npm:>= 1.5.0 < 2, statuses@npm:~1.5.0":
-  version: 1.5.0
-  resolution: "statuses@npm:1.5.0"
-  checksum: c469b9519de16a4bb19600205cffb39ee471a5f17b82589757ca7bd40a8d92ebb6ed9f98b5a540c5d302ccbc78f15dc03cc0280dd6e00df1335568a5d5758a5c
   languageName: node
   linkType: hard
 
@@ -37216,7 +37283,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:~1.6.18":
+"type-is@npm:1.6.18, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:
