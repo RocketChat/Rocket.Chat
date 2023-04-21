@@ -1,8 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-export type TranslationReplacement =
-	| { interpolation: Record<string, string>; byPosition?: never }
-	| { byPosition: any[]; interpolation?: never };
+export type TranslationReplacement = { interpolate: Record<string, any>; sprintf?: never } | { sprintf: any[]; interpolate?: never };
 export interface ITranslationService {
 	translateText(text: string, targetLanguage: string, replacements?: TranslationReplacement): Promise<string>;
 	translate(text: string, user: IUser, replacements?: TranslationReplacement): Promise<string>;

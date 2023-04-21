@@ -47,15 +47,15 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	public async translateText(text: string, targetLanguage: string, replacements?: TranslationReplacement): Promise<string> {
 		await this.loadLanguageIfNotLoaded(targetLanguage);
 
-		if (replacements && 'interpolation' in replacements && 'byPosition' in replacements) {
+		if (replacements && 'interpolate' in replacements && 'sprintf' in replacements) {
 			throw new Error('You can only use one of the two replacement types at the same time');
 		}
 
 		return this.i18nextInstance.t(text, {
 			lng: targetLanguage,
-			...(replacements && 'interpolation' in replacements ? replacements.interpolation : {}),
-			...(replacements && 'byPosition' in replacements && replacements?.byPosition?.length
-				? { postProcess: 'sprintf', sprintf: replacements.byPosition }
+			...(replacements && 'interpolate' in replacements ? replacements.interpolate : {}),
+			...(replacements && 'sprintf' in replacements && replacements?.sprintf?.length
+				? { postProcess: 'sprintf', sprintf: replacements.sprintf }
 				: {}),
 		});
 	}
