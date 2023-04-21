@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
-import { permissions } from './constants/permissions';
+import { permissions } from '../../app/authorization/server/constant/permissions';
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
@@ -58,17 +58,22 @@ export const addPermissions = async (perms: { [key: string]: string[] }) => {
 	await updateManyPermissions(perms);
 };
 
-export const removePermissionFromAllRoles = async (permissionId: string) => {
-    await updatePermission(permissionId, []);
+type Permission = typeof permissions[number]['_id']
+
+export const removePermissionFromAllRoles = async (permission: Permission) => {
+    await updatePermission(permission, []);
 };
 
-export const addPermissionToDefaultRoles = async (permissionId: string) => {
-    const defaultRoles = permissions.find((p) => p._id === permissionId);
+export const addPermissionToDefaultRoles = async (permission: Permission) => {
+    const defaultRoles = permissions.find((p) => p._id === permission);
     if (!defaultRoles) {
-        throw new Error(`No default roles found for permission ${permissionId}`);
+        throw new Error(`No default roles found for permission ${permission}`);
     }
 
-    console.error('Adding permission', permissionId, 'to default roles', defaultRoles.roles);
+    type Mutable<Type> = {
+        -readonly [Key in keyof Type]: Type[Key];
+    };
+    const mutableDefaultRoles = defaultRoles.roles as Mutable<typeof defaultRoles['roles']>;
 
-    await updatePermission(permissionId, defaultRoles.roles);
+    await updatePermission(permission, mutableDefaultRoles);
 }

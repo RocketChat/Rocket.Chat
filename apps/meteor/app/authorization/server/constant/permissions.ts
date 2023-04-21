@@ -214,4 +214,4 @@ export const permissions = [
 	{ _id: 'clear-oembed-cache', roles: ['admin'] },
 	{ _id: 'videoconf-ring-users', roles: ['admin', 'owner', 'moderator', 'user'] },
 	{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
-];
+] as const;
