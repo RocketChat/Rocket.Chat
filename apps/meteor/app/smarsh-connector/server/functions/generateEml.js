@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
@@ -79,7 +79,12 @@ smarsh.generateEml = () => {
 				if (message.t) {
 					const messageType = MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
+						rows.push(
+							await Translation.translateToServerLanguage(
+								messageType.message,
+								...(messageType.data ? { interpolate: messageType.data(message) } : {}),
+							),
+						);
 					} else {
 						rows.push(`${message.msg} (${message.t})`);
 					}

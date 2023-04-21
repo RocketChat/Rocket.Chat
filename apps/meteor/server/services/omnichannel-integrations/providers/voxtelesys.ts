@@ -1,6 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
-import { api } from '@rocket.chat/core-services';
+import { api, Translation } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
 
@@ -113,14 +112,13 @@ export class Voxtelesys implements ISMSProvider {
 
 			let reason;
 			if (!this.fileUploadEnabled) {
-				reason = TAPi18n.__('FileUpload_Disabled', { lng });
+				reason = await Translation.translateText('FileUpload_Disabled', lng);
 			} else if (size > MAX_FILE_SIZE) {
-				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-					size: filesize(MAX_FILE_SIZE),
-					lng,
+				reason = await Translation.translateText('File_exceeds_allowed_size_of_bytes', lng, {
+					interpolate: { size: filesize(MAX_FILE_SIZE) },
 				});
 			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
-				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
+				reason = await Translation.translateText('File_type_is_not_accepted', lng);
 			}
 
 			if (reason) {

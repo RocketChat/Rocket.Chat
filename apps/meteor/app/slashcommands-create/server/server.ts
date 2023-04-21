@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -39,10 +38,8 @@ slashCommands.add({
 		const room = await Rooms.findOneByName(channelStr);
 		if (room != null) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_already_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_already_exist', settings.get('Language') || 'en', {
 					sprintf: [channelStr],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;

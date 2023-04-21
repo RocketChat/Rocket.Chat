@@ -3,8 +3,8 @@ import path from 'path';
 
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
 import { Info, getMongoInfo } from '../../app/utils/server';
@@ -103,7 +103,11 @@ Meteor.startup(async function () {
 				sendMessagesToAdmins({
 					msgs: async ({ adminUser }) => [
 						{
-							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
+							msg: `*${await Translation.translateText(title, adminUser.language)}*\n${await Translation.translateText(
+								text,
+								adminUser.language,
+								{ sprintf: [mongoVersion] },
+							)}\n${link}`,
 						},
 					],
 					banners: [

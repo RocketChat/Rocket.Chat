@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { SlashCommand } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -21,7 +20,7 @@ const Leave: SlashCommand<'leave'>['callback'] = async function Leave(_command, 
 		}
 		const user = await Users.findOneById(userId);
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__(error, { lng: user?.language || settings.get('Language') || 'en' }),
+			msg: await Translation.translateText(error, user?.language || settings.get('Language') || 'en'),
 		});
 	}
 };

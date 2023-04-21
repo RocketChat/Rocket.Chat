@@ -2,7 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Translation } from '@rocket.chat/core-services';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
@@ -52,10 +52,10 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getProviderMetadata(): IProviderMetadata {
+	async _getProviderMetadata(): Promise<IProviderMetadata> {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_Microsoft'),
+			displayName: await Translation.translateToServerLanguage('AutoTranslate_Microsoft'),
 			settings: this._getSettings(),
 		};
 	}
@@ -189,4 +189,4 @@ class MsAutoTranslate extends AutoTranslate {
 }
 
 // Register Microsoft translation provider to the registry.
-TranslationProviderRegistry.registerProvider(new MsAutoTranslate());
+await TranslationProviderRegistry.registerProvider(new MsAutoTranslate());

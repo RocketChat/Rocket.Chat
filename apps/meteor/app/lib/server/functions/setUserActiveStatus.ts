@@ -127,8 +127,8 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: subject({ active } as any),
-		html: html({
+		subject: await subject({ active } as any),
+		html: await html({
 			active,
 			name: user.name,
 			username: user.username,

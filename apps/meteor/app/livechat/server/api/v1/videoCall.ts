@@ -1,7 +1,6 @@
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages, Settings, Rooms } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Translation } from '@rocket.chat/core-services';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
@@ -47,7 +46,7 @@ API.v1.addRoute(
 				await Message.saveSystemMessage(
 					'livechat_webrtc_video_call',
 					room._id,
-					TAPi18n.__('Join_my_room_to_start_the_video_call'),
+					await Translation.translateToServerLanguage('Join_my_room_to_start_the_video_call'),
 					this.user,
 					{
 						actionLinks: config.theme.actionLinks.webrtc,

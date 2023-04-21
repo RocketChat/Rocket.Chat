@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Translation } from '@rocket.chat/core-services';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
@@ -46,7 +46,7 @@ Accounts.registerLoginHandler('saml', async function (loginRequest) {
 		}
 
 		if (errorCode) {
-			const localizedMessage = TAPi18n.__(errorCode);
+			const localizedMessage = await Translation.translateToServerLanguage(errorCode);
 			if (localizedMessage && localizedMessage !== errorCode) {
 				message = localizedMessage;
 			}

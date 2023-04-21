@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -102,14 +101,7 @@ Meteor.methods<ServerMethods>({
 						return;
 					}
 					void api.broadcast('notify.ephemeralMessage', uid, data.rid, {
-						msg: TAPi18n.__(
-							'Username_is_already_in_here',
-							{
-								postProcess: 'sprintf',
-								sprintf: [newUser.username],
-							},
-							user?.language,
-						),
+						msg: await Translation.translateText('Username_is_already_in_here', user?.language || 'en', { sprintf: [newUser.username] }),
 					});
 				}
 			}),

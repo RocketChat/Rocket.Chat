@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -29,10 +28,8 @@ slashCommands.add({
 		const userId = Meteor.userId() as string;
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('User_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('User_doesnt_exist', settings.get('Language') || 'en', {
 					sprintf: [usernames.join(' @')],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;
@@ -50,10 +47,8 @@ slashCommands.add({
 			}
 			const usernameStr = user.username as string;
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_is_already_in_here', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Username_is_already_in_here', settings.get('Language') || 'en', {
 					sprintf: [usernameStr],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 		}
@@ -71,11 +66,11 @@ slashCommands.add({
 					}
 					if (error === 'cant-invite-for-direct-room') {
 						void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-							msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+							msg: await Translation.translateText('Cannot_invite_users_to_direct_rooms', settings.get('Language') || 'en'),
 						});
 					} else {
 						void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-							msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
+							msg: await Translation.translateText(error, settings.get('Language') || 'en'),
 						});
 					}
 				}

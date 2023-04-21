@@ -2,8 +2,8 @@ import path, { join } from 'path';
 import { mkdir, mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { getURL } from '../../../app/utils/lib/getURL';
 import { getPath } from './getPath';
@@ -73,10 +73,10 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 
-	const subject = TAPi18n.__('Channel_Export');
+	const subject = await Translation.translateToServerLanguage('Channel_Export');
 
-	const body = TAPi18n.__('UserDataDownload_EmailBody', {
-		download_link: getURL(getPath(file._id), { cdn: false, full: true }),
+	const body = await Translation.translateToServerLanguage('UserDataDownload_EmailBody', {
+		interpolate: { download_link: getURL(getPath(file._id), { cdn: false, full: true }) },
 	});
 
 	await sendEmail(user, subject, body);

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -26,10 +25,8 @@ slashCommands.add({
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_doesnt_exist', settings.get('Language') || 'en', {
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;

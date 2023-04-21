@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isRegisterUser } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users, Rooms } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -37,10 +36,8 @@ slashCommands.add({
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_doesnt_exist', settings.get('Language') || 'en', {
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;
@@ -53,10 +50,8 @@ slashCommands.add({
 
 		if (room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Duplicate_archived_channel_name', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Duplicate_archived_channel_name', settings.get('Language') || 'en', {
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;
@@ -65,10 +60,8 @@ slashCommands.add({
 		await archiveRoom(room._id, user);
 
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__('Channel_Archived', {
-				postProcess: 'sprintf',
+			msg: await Translation.translateText('Channel_Archived', settings.get('Language') || 'en', {
 				sprintf: [channel],
-				lng: settings.get('Language') || 'en',
 			}),
 		});
 	},

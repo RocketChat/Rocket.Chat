@@ -4,9 +4,8 @@
  */
 
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -41,10 +40,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 
 		if (!baseChannel) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_doesnt_exist', lng, {
 					sprintf: [channel],
-					lng,
 				}),
 			});
 			return;
@@ -68,10 +65,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-					msg: TAPi18n.__('Channel_created', {
-						postProcess: 'sprintf',
+					msg: await Translation.translateText('Channel_created', lng, {
 						sprintf: [channel],
-						lng,
 					}),
 				});
 			} else {
@@ -81,13 +76,13 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				});
 			}
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Users_added', { lng }),
+				msg: await Translation.translateText('Users_added', lng),
 			});
 			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__(msg, { lng }),
+				msg: await Translation.translateText(msg, lng),
 			});
 		}
 	};

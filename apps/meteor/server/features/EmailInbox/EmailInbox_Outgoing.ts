@@ -1,9 +1,9 @@
 import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
@@ -19,7 +19,7 @@ const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\
 const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => TAPi18n.__(s, { lng: language });
+const t = (s: string): Promise<string> => Translation.translateText(s, language);
 
 // TODO: change these messages with room notifications
 const sendErrorReplyMessage = async (error: string, options: any) => {
@@ -161,7 +161,7 @@ slashCommands.add({
 							elements: [
 								{
 									type: 'mrkdwn',
-									text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
+									text: `**${await t('To')}:** ${room.email.replyTo}\n**${await t('Subject')}:** ${room.email.subject}`,
 								},
 							],
 						},
@@ -208,7 +208,7 @@ callbacks.add(
 							actions: [
 								{
 									type: 'button',
-									text: t('Send_via_Email_as_attachment'),
+									text: await t('Send_via_Email_as_attachment'),
 									msg: `/sendEmailAttachment ${message._id}`,
 									msg_in_chat_window: true,
 									msg_processing_type: 'sendMessage',
@@ -278,7 +278,7 @@ callbacks.add(
 				elements: [
 					{
 						type: 'mrkdwn',
-						text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
+						text: `**${await t('To')}:** ${room.email.replyTo}\n**${await t('Subject')}:** ${room.email.subject}`,
 					},
 				],
 			},

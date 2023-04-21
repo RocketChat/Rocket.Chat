@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -41,14 +40,11 @@ export const saveRoomType = async function (rid, roomType, user, sendMessage = t
 
 	if (sendMessage) {
 		let message;
+		const language = (user && user.language) || settings.get('Language') || 'en';
 		if (roomType === 'c') {
-			message = TAPi18n.__('public', {
-				lng: (user && user.language) || settings.get('Language') || 'en',
-			});
+			message = await Translation.translateText('public', language);
 		} else {
-			message = TAPi18n.__('private', {
-				lng: (user && user.language) || settings.get('Language') || 'en',
-			});
+			message = await Translation.translateText('private', language);
 		}
 		await Message.saveSystemMessage('room_changed_privacy', rid, message, user);
 	}

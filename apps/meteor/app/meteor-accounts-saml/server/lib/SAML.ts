@@ -3,7 +3,7 @@ import type { ServerResponse } from 'http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Translation } from '@rocket.chat/core-services';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
@@ -154,8 +154,8 @@ export class SAML {
 			}
 
 			if (userObject.language) {
-				const languages = TAPi18n.getLanguages();
-				if (languages[userObject.language]) {
+				const languages = await Translation.getSupportedLanguages();
+				if (languages.includes(userObject.language)) {
 					newUser.language = userObject.language;
 				}
 			}

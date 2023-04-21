@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -57,13 +56,11 @@ slashCommands.add({
 			},
 		];
 		let msg = '';
-		keys.forEach((key) => {
-			msg = `${msg}\n${TAPi18n.__(key.key, {
-				postProcess: 'sprintf',
+		for await (const key of keys) {
+			msg = `${msg}\n${await Translation.translateText(key.key, user?.language || settings.get('language') || 'en', {
 				sprintf: [key.command],
-				lng: user?.language || settings.get('language') || 'en',
 			})}`;
-		});
+		}
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg,
 		});

@@ -1,11 +1,11 @@
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
@@ -266,9 +266,9 @@ export async function processDataDownloads(): Promise<void> {
 			return;
 		}
 
-		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', {
-			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
+		const subject = await Translation.translateToServerLanguage('UserDataDownload_EmailSubject');
+		const body = await Translation.translateToServerLanguage('UserDataDownload_EmailBody', {
+			interpolate: { download_link: getURL(getPath(file._id), { cdn: false, full: true }) },
 		});
 
 		await sendEmail(operation.userData, subject, body);

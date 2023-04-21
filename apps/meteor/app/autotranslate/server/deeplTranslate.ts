@@ -1,8 +1,6 @@
 /**
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
-
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type {
@@ -13,6 +11,7 @@ import type {
 	ITranslationResult,
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -50,10 +49,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getProviderMetadata(): IProviderMetadata {
+	async _getProviderMetadata(): Promise<IProviderMetadata> {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_DeepL'),
+			displayName: await Translation.translateToServerLanguage('AutoTranslate_DeepL'),
 			settings: this._getSettings(),
 		};
 	}
@@ -89,99 +88,99 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.supportedLanguages[target] = [
 			{
 				language: 'bg',
-				name: TAPi18n.__('Language_Bulgarian', { lng: target }),
+				name: await Translation.translateText('Language_Bulgarian', target),
 			},
 			{
 				language: 'cs',
-				name: TAPi18n.__('Language_Czech', { lng: target }),
+				name: await Translation.translateText('Language_Czech', target),
 			},
 			{
 				language: 'da',
-				name: TAPi18n.__('Language_Danish', { lng: target }),
+				name: await Translation.translateText('Language_Danish', target),
 			},
 			{
 				language: 'de',
-				name: TAPi18n.__('Language_German', { lng: target }),
+				name: await Translation.translateText('Language_German', target),
 			},
 			{
 				language: 'el',
-				name: TAPi18n.__('Language_Greek', { lng: target }),
+				name: await Translation.translateText('Language_Greek', target),
 			},
 			{
 				language: 'en',
-				name: TAPi18n.__('Language_English', { lng: target }),
+				name: await Translation.translateText('Language_English', target),
 			},
 			{
 				language: 'es',
-				name: TAPi18n.__('Language_Spanish', { lng: target }),
+				name: await Translation.translateText('Language_Spanish', target),
 			},
 			{
 				language: 'et',
-				name: TAPi18n.__('Language_Estonian', { lng: target }),
+				name: await Translation.translateText('Language_Estonian', target),
 			},
 			{
 				language: 'fi',
-				name: TAPi18n.__('Language_Finnish', { lng: target }),
+				name: await Translation.translateText('Language_Finnish', target),
 			},
 			{
 				language: 'fr',
-				name: TAPi18n.__('Language_French', { lng: target }),
+				name: await Translation.translateText('Language_French', target),
 			},
 			{
 				language: 'hu',
-				name: TAPi18n.__('Language_Hungarian', { lng: target }),
+				name: await Translation.translateText('Language_Hungarian', target),
 			},
 			{
 				language: 'it',
-				name: TAPi18n.__('Language_Italian', { lng: target }),
+				name: await Translation.translateText('Language_Italian', target),
 			},
 			{
 				language: 'ja',
-				name: TAPi18n.__('Language_Japanese', { lng: target }),
+				name: await Translation.translateText('Language_Japanese', target),
 			},
 			{
 				language: 'lt',
-				name: TAPi18n.__('Language_Lithuanian', { lng: target }),
+				name: await Translation.translateText('Language_Lithuanian', target),
 			},
 			{
 				language: 'lv',
-				name: TAPi18n.__('Language_Latvian', { lng: target }),
+				name: await Translation.translateText('Language_Latvian', target),
 			},
 			{
 				language: 'nl',
-				name: TAPi18n.__('Language_Dutch', { lng: target }),
+				name: await Translation.translateText('Language_Dutch', target),
 			},
 			{
 				language: 'pl',
-				name: TAPi18n.__('Language_Polish', { lng: target }),
+				name: await Translation.translateText('Language_Polish', target),
 			},
 			{
 				language: 'pt',
-				name: TAPi18n.__('Language_Portuguese', { lng: target }),
+				name: await Translation.translateText('Language_Portuguese', target),
 			},
 			{
 				language: 'ro',
-				name: TAPi18n.__('Language_Romanian', { lng: target }),
+				name: await Translation.translateText('Language_Romanian', target),
 			},
 			{
 				language: 'ru',
-				name: TAPi18n.__('Language_Russian', { lng: target }),
+				name: await Translation.translateText('Language_Russian', target),
 			},
 			{
 				language: 'sk',
-				name: TAPi18n.__('Language_Slovak', { lng: target }),
+				name: await Translation.translateText('Language_Slovak', target),
 			},
 			{
 				language: 'sl',
-				name: TAPi18n.__('Language_Slovenian', { lng: target }),
+				name: await Translation.translateText('Language_Slovenian', target),
 			},
 			{
 				language: 'sv',
-				name: TAPi18n.__('Language_Swedish', { lng: target }),
+				name: await Translation.translateText('Language_Swedish', target),
 			},
 			{
 				language: 'zh',
-				name: TAPi18n.__('Language_Chinese', { lng: target }),
+				name: await Translation.translateText('Language_Chinese', target),
 			},
 		];
 
@@ -281,4 +280,4 @@ class DeeplAutoTranslate extends AutoTranslate {
 }
 
 // Register DeepL translation provider to the registry.
-TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());
+await TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());

@@ -1,6 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUiKitCoreApp } from '@rocket.chat/core-services';
-import { VideoConf } from '@rocket.chat/core-services';
+import { Translation, VideoConf } from '@rocket.chat/core-services';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';
@@ -30,14 +29,14 @@ export class VideoConfModule implements IUiKitCoreApp {
 					id: `${callId}-info`,
 					title: {
 						type: 'plain_text',
-						text: TAPi18n.__('Video_Conference_Info'),
+						text: await Translation.translateToServerLanguage('Video_Conference_Info'),
 						emoji: false,
 					},
 					close: {
 						type: 'button',
 						text: {
 							type: 'plain_text',
-							text: TAPi18n.__('Close'),
+							text: await Translation.translateToServerLanguage('Close'),
 							emoji: false,
 						},
 						actionId: 'cancel',

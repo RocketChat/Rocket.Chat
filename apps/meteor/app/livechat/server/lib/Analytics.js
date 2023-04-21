@@ -1,6 +1,6 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment-timezone';
 import { LivechatRooms } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
@@ -142,7 +142,7 @@ export const Analytics = {
 			return;
 		}
 
-		const t = (s) => TAPi18n.__(s, { lng: language });
+		const t = (s) => Translation.translateText(s, language);
 
 		return this.OverviewData[name](from, to, departmentId, timezone, t);
 	},
@@ -392,7 +392,7 @@ export const Analytics = {
 				},
 				{
 					title: 'Busiest_day',
-					value: t(busiestDay),
+					value: await t(busiestDay),
 				},
 				{
 					title: 'Conversations_per_day',

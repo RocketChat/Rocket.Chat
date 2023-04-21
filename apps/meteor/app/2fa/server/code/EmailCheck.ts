@@ -1,9 +1,9 @@
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -34,7 +34,7 @@ export class EmailCheck implements ICodeCheck {
 	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = (s: string): string => TAPi18n.__(s, { lng: language });
+		const t = (s: string): Promise<string> => Translation.translateText(s, language);
 
 		await Mailer.send({
 			to: address,
@@ -46,20 +46,20 @@ export class EmailCheck implements ICodeCheck {
 			},
 			headers: undefined,
 			text: `
-${t('Here_is_your_authentication_code')}
+${await t('Here_is_your_authentication_code')}
 
 __code__
 
-${t('Do_not_provide_this_code_to_anyone')}
-${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
+${await t('Do_not_provide_this_code_to_anyone')}
+${await t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 `,
 			html: `
-				<p>${t('Here_is_your_authentication_code')}</p>
+				<p>${await t('Here_is_your_authentication_code')}</p>
 				<p style="font-size: 30px;">
 					<b>__code__</b>
 				</p>
-				<p>${t('Do_not_provide_this_code_to_anyone')}</p>
-				<p>${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}</p>
+				<p>${await t('Do_not_provide_this_code_to_anyone')}</p>
+				<p>${await t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}</p>
 			`,
 		});
 	}

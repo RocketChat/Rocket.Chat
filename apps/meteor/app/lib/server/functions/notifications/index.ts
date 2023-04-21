@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../settings/server';
@@ -12,16 +12,18 @@ import { settings } from '../../../../settings/server';
  *
  * @param {object} message the message to be parsed
  */
-export function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: IUser): string {
+export async function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: IUser): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
 	const firstAttachment = message.attachments?.[0];
 	if (!message.msg && firstAttachment && isFileAttachment(firstAttachment) && isFileImageAttachment(firstAttachment)) {
-		return firstAttachment.image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
+		return firstAttachment.image_type
+			? Translation.translateText('User_uploaded_image', lng)
+			: Translation.translateText('User_uploaded_file', lng);
 	}
 
 	if (message.msg && message.t === 'e2e') {
-		return TAPi18n.__('Encrypted_message', { lng });
+		return Translation.translateText('Encrypted_message', lng);
 	}
 
 	// perform processing required before sending message as notification such as markdown filtering

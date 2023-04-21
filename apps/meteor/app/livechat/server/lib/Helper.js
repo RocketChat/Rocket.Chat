@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Translation } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
 	Users as UsersRaw,
@@ -331,8 +330,10 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			notificationMessage: await Translation.translateText('User_started_a_new_conversation', language, {
+				interpolate: { username: notificationUserName },
+			}),
+			room: Object.assign(room, { name: await Translation.translateText('New_chat_in_queue', language) }),
 			mentionIds: [],
 		});
 	}

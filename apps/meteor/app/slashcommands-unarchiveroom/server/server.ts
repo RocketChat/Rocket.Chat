@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 
@@ -38,10 +37,8 @@ slashCommands.add({
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_doesnt_exist', settings.get('Language') || 'en', {
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;
@@ -54,10 +51,8 @@ slashCommands.add({
 
 		if (!room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_already_Unarchived', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Channel_already_Unarchived', settings.get('Language') || 'en', {
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;
@@ -66,10 +61,8 @@ slashCommands.add({
 		await unarchiveRoom(room._id, user);
 
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__('Channel_Unarchived', {
-				postProcess: 'sprintf',
+			msg: await Translation.translateText('Channel_Unarchived', settings.get('Language') || 'en', {
 				sprintf: [channel],
-				lng: settings.get('Language') || 'en',
 			}),
 		});
 	},

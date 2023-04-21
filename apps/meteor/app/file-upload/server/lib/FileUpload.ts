@@ -13,7 +13,6 @@ import streamBuffers from 'stream-buffers';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
@@ -21,6 +20,7 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { NextFunction } from 'connect';
 import type { OptionalId } from 'mongodb';
+import { Translation } from '@rocket.chat/core-services';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
@@ -152,29 +152,25 @@ export const FileUpload = {
 		}
 		const language = user?.language || 'en';
 		if (!fileUploadAllowed) {
-			const reason = TAPi18n.__('FileUpload_Disabled', { lng: language });
+			const reason = await Translation.translateText('FileUpload_Disabled', language);
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
 		if (!directMessageAllowed && room.t === 'd') {
-			const reason = TAPi18n.__('File_not_allowed_direct_messages', { lng: language });
+			const reason = await Translation.translateText('File_not_allowed_direct_messages', language);
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
-					size: filesize(maxFileSize),
-				},
-				language,
-			);
+			const reason = await Translation.translateText('File_exceeds_allowed_size_of_bytes', language, {
+				interpolate: { size: filesize(maxFileSize) },
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
 		if (!fileUploadIsValidContentType(file.type)) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+			const reason = await Translation.translateText('File_type_is_not_accepted', language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
@@ -202,19 +198,17 @@ export const FileUpload = {
 
 		// accept only images
 		if (!/^image\//.test(file.type || '')) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+			const reason = await Translation.translateText('File_type_is_not_accepted', language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
+			const reason = await Translation.translateText('File_exceeds_allowed_size_of_bytes', language, {
+				interpolate: {
 					size: filesize(maxFileSize),
 				},
-				language,
-			);
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 

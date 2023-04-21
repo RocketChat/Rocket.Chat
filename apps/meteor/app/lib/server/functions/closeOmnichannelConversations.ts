@@ -1,6 +1,6 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
@@ -13,7 +13,7 @@ type SubscribedRooms = {
 export const closeOmnichannelConversations = async (user: IUser, subscribedRooms: SubscribedRooms[]): Promise<void> => {
 	const roomsInfo = await LivechatRooms.findByIds(subscribedRooms.map(({ rid }) => rid));
 	const language = settings.get<string>('Language') || 'en';
-	const comment = TAPi18n.__('Agent_deactivated', { lng: language });
+	const comment = await Translation.translateText('Agent_deactivated', language);
 
 	const promises: Promise<void>[] = [];
 	await roomsInfo.forEach((room: any) => {

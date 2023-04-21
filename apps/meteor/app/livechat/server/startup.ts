@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { callbacks } from '../../../lib/callbacks';
@@ -22,14 +22,15 @@ Meteor.startup(async () => {
 
 	callbacks.add(
 		'beforeLeaveRoom',
-		function (user, room) {
+		async function (user, room) {
 			if (!isOmnichannelRoom(room)) {
 				return user;
 			}
 			throw new Meteor.Error(
-				TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-					lng: user.language || settings.get('Language') || 'en',
-				}),
+				await Translation.translateText(
+					'You_cant_leave_a_livechat_room_Please_use_the_close_button',
+					user.language || settings.get('Language') || 'en',
+				),
 			);
 		},
 		callbacks.priority.LOW,

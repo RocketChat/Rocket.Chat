@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
@@ -10,6 +9,7 @@ import type {
 	IOmnichannelRoom,
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -173,12 +173,12 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 					{
 						actionLinksAlignment: 'flex-start',
 						i18nLabel: 'Join_call',
-						label: TAPi18n.__('Join_call'),
+						label: await Translation.translateToServerLanguage('Join_call'),
 						method_id: 'joinLivechatWebRTCCall',
 					},
 					{
 						i18nLabel: 'End_call',
-						label: TAPi18n.__('End_call'),
+						label: await Translation.translateToServerLanguage('End_call'),
 						method_id: 'endLivechatWebRTCCall',
 						danger: true,
 					},

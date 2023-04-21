@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Messages, Users } from '@rocket.chat/models';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -88,7 +87,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: TAPi18n.__(errorMessage, {}, user.language),
+			msg: await Translation.translate(errorMessage, user),
 		});
 
 		if (typeof err === 'string') {

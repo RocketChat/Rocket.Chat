@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { AppsTokens } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
@@ -70,9 +70,9 @@ Meteor.methods<ServerMethods>({
 		await Push.send({
 			from: 'push',
 			title: `@${user.username}`,
-			text: TAPi18n.__('This_is_a_push_test_messsage'),
+			text: await Translation.translateToServerLanguage('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`,
+				text: `@${user.username}:\n${await Translation.translateToServerLanguage('This_is_a_push_test_messsage')}`,
 			},
 			sound: 'default',
 			userId: user._id,

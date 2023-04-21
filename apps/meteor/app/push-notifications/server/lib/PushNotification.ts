@@ -132,7 +132,7 @@ class PushNotification {
 		if (message.mentions && Object.keys(message.mentions).length > 0 && settings.get('UI_Use_Real_Name')) {
 			notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 		}
-		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+		notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
 		const pushData = await getPushData({
 			room,

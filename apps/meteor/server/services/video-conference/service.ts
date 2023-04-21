@@ -27,11 +27,10 @@ import {
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Translation } from '@rocket.chat/core-services';
 
 import { Apps } from '../../../ee/server/apps';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -166,7 +165,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				type: 'section',
 				text: {
 					type: 'mrkdwn',
-					text: `**${TAPi18n.__('Video_Conference_Url')}**: ${call.url}`,
+					text: `**${await Translation.translateToServerLanguage('Video_Conference_Url')}**: ${call.url}`,
 				},
 			} as IBlock,
 		];
@@ -317,7 +316,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.messages.started) {
 			const name =
 				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
-			const text = TAPi18n.__('video_livechat_missed', { username: name });
+			const text = await Translation.translateToServerLanguage('video_livechat_missed', { interpolate: { username: name } });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
 
@@ -528,9 +527,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const user = await Users.findOneById<Pick<IUser, 'language' | 'roles'>>(uid, { projection: { language: 1, roles: 1 } });
 		const language = user?.language || settings.get<string>('Language') || 'en';
 		const key = user?.roles.includes('admin') ? `admin-${i18nKey}` : i18nKey;
-		const msg = TAPi18n.__(key, {
-			lng: language,
-		});
+		const msg = await Translation.translateText(key, language);
 
 		void api.broadcast('notify.ephemeralMessage', uid, rid, {
 			msg,
@@ -539,8 +536,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
 		const username = (settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username) || user.username || '';
-		const text = TAPi18n.__('video_livechat_started', {
-			username,
+		const text = await Translation.translateToServerLanguage('video_livechat_started', {
+			interpolate: { username },
 		});
 
 		return this.createMessage(call, user, [
@@ -557,7 +554,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 						type: 'button',
 						text: {
 							type: 'plain_text',
-							text: TAPi18n.__('Join_call'),
+							text: await Translation.translateToServerLanguage('Join_call'),
 							emoji: true,
 						},
 						url,

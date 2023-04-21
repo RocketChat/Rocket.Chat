@@ -2,7 +2,7 @@ import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Translation } from '@rocket.chat/core-services';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
 
@@ -23,7 +23,7 @@ class OmnichannelQueueInactivityMonitorClass {
 
 	user: IUser;
 
-	message: string;
+	messageFn: () => Promise<string>;
 
 	_db: Db;
 
@@ -41,7 +41,7 @@ class OmnichannelQueueInactivityMonitorClass {
 		});
 		this.createIndex();
 		const language = settings.get<string>('Language') || 'en';
-		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
+		this.messageFn = () => Translation.translateText('Closed_automatically_chat_queued_too_long', language);
 		this.bindedCloseRoom = this.closeRoom.bind(this);
 	}
 
@@ -96,7 +96,7 @@ class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	async closeRoomAction(room: IOmnichannelRoom): Promise<void> {
-		const comment = this.message;
+		const comment = await this.messageFn();
 		return Livechat.closeRoom({
 			comment,
 			room,

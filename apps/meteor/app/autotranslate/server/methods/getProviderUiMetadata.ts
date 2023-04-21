@@ -11,7 +11,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'autoTranslate.getProviderUiMetadata'() {
+	async 'autoTranslate.getProviderUiMetadata'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-action-not-allowed', 'Login neccessary', {
 				method: 'autoTranslate.getProviderUiMetadata',
@@ -19,10 +19,12 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return Object.fromEntries(
-			TranslationProviderRegistry.getProviders().map((provider) => {
-				const { name, displayName } = provider._getProviderMetadata();
-				return [name, { name, displayName }];
-			}),
+			await Promise.all(
+				TranslationProviderRegistry.getProviders().map(async (provider) => {
+					const { name, displayName } = await provider._getProviderMetadata();
+					return [name, { name, displayName }];
+				}),
+			),
 		);
 	},
 });

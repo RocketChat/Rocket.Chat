@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -21,10 +20,8 @@ slashCommands.add({
 		const unmutedUser = await Users.findOneByUsernameIgnoringCase(username);
 		if (unmutedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Username_doesnt_exist', settings.get('Language') || 'en', {
 					sprintf: [username],
-					lng: settings.get('Language') || 'en',
 				}),
 			});
 			return;

@@ -2,7 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Translation } from '@rocket.chat/core-services';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type {
@@ -49,10 +49,10 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @returns {object}
 	 */
-	_getProviderMetadata(): IProviderMetadata {
+	async _getProviderMetadata(): Promise<IProviderMetadata> {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_Google'),
+			displayName: await Translation.translateToServerLanguage('AutoTranslate_Google'),
 			settings: this._getSettings(),
 		};
 	}
@@ -216,4 +216,4 @@ class GoogleAutoTranslate extends AutoTranslate {
 }
 
 // Register Google translation provider.
-TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());
+await TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());

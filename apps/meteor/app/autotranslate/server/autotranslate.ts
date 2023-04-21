@@ -38,9 +38,9 @@ export class TranslationProviderRegistry {
 	 * Registers the translation provider into the registry.
 	 * @param {*} provider
 	 */
-	static registerProvider(provider: AutoTranslate): void {
+	static async registerProvider(provider: AutoTranslate): Promise<void> {
 		// get provider information
-		const metadata = provider._getProviderMetadata();
+		const metadata = await provider._getProviderMetadata();
 		if (!metadata) {
 			translationLogger.error('Provider metadata is not defined');
 			return;
@@ -336,7 +336,7 @@ export abstract class AutoTranslate {
 	 * @returns { name, displayName, settings }
 		};
 	 */
-	abstract _getProviderMetadata(): IProviderMetadata;
+	abstract _getProviderMetadata(): Promise<IProviderMetadata>;
 
 	/**
 	 * Provides the possible languages _from_ which a message can be translated into a target language

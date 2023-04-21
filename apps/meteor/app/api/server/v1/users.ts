@@ -17,11 +17,10 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
-import { Team, api } from '@rocket.chat/core-services';
+import { Team, Translation, api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -624,7 +623,7 @@ API.v1.addRoute(
 					preferences,
 				});
 			}
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
+			return API.v1.failure((await Translation.translateToServerLanguage('Accounts_Default_User_Preferences_not_available')).toUpperCase());
 		},
 	},
 );

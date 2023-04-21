@@ -1,5 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Subscriptions } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../../settings/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
@@ -36,9 +36,9 @@ export async function getPushData({
 
 	let messageText;
 	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
-		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+		messageText = await Translation.translateText('You_have_a_new_message', lng);
 	} else if (!settings.get('Push_show_message')) {
-		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+		messageText = await Translation.translateText('You_have_a_new_message', lng);
 	} else {
 		messageText = notificationMessage;
 	}

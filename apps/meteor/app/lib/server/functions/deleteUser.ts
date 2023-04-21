@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import {
 	Integrations,
 	FederationServers,
@@ -11,7 +10,7 @@ import {
 	Users,
 	LivechatUnitMonitors,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -57,7 +56,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				break;
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');
-				const nameAlias = TAPi18n.__('Removed_User');
+				const nameAlias = await Translation.translateToServerLanguage('Removed_User');
 				if (!rocketCat?._id || !rocketCat?.username) {
 					break;
 				}

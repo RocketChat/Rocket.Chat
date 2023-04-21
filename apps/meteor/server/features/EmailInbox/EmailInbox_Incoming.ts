@@ -1,7 +1,6 @@
 import stripHtml from 'string-strip-html';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -11,6 +10,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { FileUpload } from '../../../app/file-upload/server';
@@ -21,7 +21,7 @@ import { logger } from './logger';
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => TAPi18n.__(s, { lng: language });
+const t = (s: string): Promise<string> => Translation.translateText(s, language);
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
 	logger.debug(`Attempt to register a guest for ${email} on department: ${department}`);
@@ -184,7 +184,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					actions: [
 						{
 							type: 'button',
-							text: t('Reply_via_Email'),
+							text: await t('Reply_via_Email'),
 							msg: 'msg',
 							msgId,
 							msg_in_chat_window: true,
@@ -199,7 +199,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					elements: [
 						{
 							type: 'mrkdwn',
-							text: `**${t('From')}:** ${email.from.text}\n**${t('Subject')}:** ${email.subject}`,
+							text: `**${await t('From')}:** ${email.from.text}\n**${await t('Subject')}:** ${email.subject}`,
 						},
 					],
 				},

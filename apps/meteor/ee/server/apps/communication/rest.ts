@@ -2,10 +2,10 @@ import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings, Users } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { Translation } from '@rocket.chat/core-services';
 
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
@@ -846,12 +846,14 @@ export class AppsRestApi {
 					try {
 						const msgs: (params: { adminUser: IUser }) => Promise<Partial<IMessage>> = async ({ adminUser }) => {
 							return {
-								msg: TAPi18n.__('App_Request_Admin_Message', {
-									admin_name: adminUser.name || '',
-									app_name: appName || '',
-									user_name: `@${this.user.username}`,
-									message: message || '',
-									learn_more: learnMore,
+								msg: await Translation.translateToServerLanguage('App_Request_Admin_Message', {
+									interpolate: {
+										admin_name: adminUser.name || '',
+										app_name: appName || '',
+										user_name: `@${this.user.username}`,
+										message: message || '',
+										learn_more: learnMore,
+									},
 								}),
 							};
 						};

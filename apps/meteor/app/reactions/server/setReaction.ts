@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { Messages, EmojiCustom, Rooms } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
@@ -42,8 +41,8 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username as string) !== -1) {
-		throw new Meteor.Error('error-not-allowed', TAPi18n.__('You_have_been_muted', {}, user.language), {
-			rid: room._id,
+		throw new Meteor.Error('error-not-allowed', await Translation.translateText('You_have_been_muted', user.language || 'en'), {
+			interpolate: { rid: room._id },
 		});
 	}
 

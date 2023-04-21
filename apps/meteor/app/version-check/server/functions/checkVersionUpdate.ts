@@ -1,7 +1,7 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import semver from 'semver';
 import { Settings, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { getNewUpdates } from './getNewUpdates';
 import { settings } from '../../../settings/server';
@@ -23,21 +23,20 @@ const getMessagesToSendToAdmins = async (
 	adminUser: IUser,
 ): Promise<{ msg: string }[]> => {
 	const msgs = [];
+	const language = adminUser.language || settings.get('language') || 'en';
 	for await (const alert of alerts) {
 		if (!(await Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))) {
 			continue;
 		}
 		msgs.push({
-			msg: `*${TAPi18n.__('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${TAPi18n.__(
+			msg: `*${await Translation.translateText('Rocket_Chat_Alert', language)}))}:*\n\n*${await Translation.translateText(
 				alert.title,
-				{ ...(adminUser.language && { lng: adminUser.language }) },
-			)}*\n${TAPi18n.__(alert.text, {
-				...(adminUser.language && { lng: adminUser.language }),
+				language,
+			)})}*\n${await Translation.translateText(alert.text, language, {
 				...(Array.isArray(alert.textArguments) && {
-					postProcess: 'sprintf',
 					sprintf: alert.textArguments,
 				}),
-				...((!Array.isArray(alert.textArguments) && alert.textArguments) || {}), // bien dormido
+				...(!Array.isArray(alert.textArguments) && alert.textArguments ? { interpolate: { ...(alert.textArguments as any) } } : {}), // bien dormido
 			})}\n${alert.infoUrl}`,
 		});
 	}
@@ -68,13 +67,12 @@ export const checkVersionUpdate = async () => {
 		await sendMessagesToAdmins({
 			msgs: async ({ adminUser }) => [
 				{
-					msg: `*${TAPi18n.__('Update_your_RocketChat', { ...(adminUser.language && { lng: adminUser.language }) })}*\n${TAPi18n.__(
-						'New_version_available_(s)',
-						{
-							postProcess: 'sprintf',
-							sprintf: [version.version],
-						},
-					)}\n${version.infoUrl}`,
+					msg: `*${await Translation.translateText(
+						'Update_your_RocketChat',
+						adminUser.language || settings.get('language') || 'en',
+					)}*\n${await Translation.translateToServerLanguage('New_version_available_(s)', {
+						sprintf: [version.version],
+					})}\n${version.infoUrl}`,
 				},
 			],
 			banners: [

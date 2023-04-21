@@ -1,7 +1,6 @@
 // Kick is a named function that will replace /kick commands
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -22,10 +21,8 @@ slashCommands.add({
 
 		if (kickedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
-					postProcess: 'sprintf',
+				msg: await Translation.translateText('Username_doesnt_exist', lng, {
 					sprintf: [username],
-					lng,
 				}),
 			});
 			return;

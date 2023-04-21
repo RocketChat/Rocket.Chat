@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 
@@ -59,7 +58,9 @@ const mention = new MentionsServer({
 	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IUser; rid: string }) {
 		// Get the language of the user for the error notification.
 		const { language } = await this.getUser(sender._id);
-		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
+		const msg = await Translation.translateText('Group_mentions_disabled_x_members', language, {
+			interpolate: { total: this.messageMaxAll },
+		});
 
 		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,

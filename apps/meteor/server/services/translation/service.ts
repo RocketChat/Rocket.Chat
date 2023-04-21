@@ -21,7 +21,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	private supportedLanguages: string[] = [];
 
 	public async started(): Promise<void> {
-		const serverLanguage = await this.getServerLanguageCached();
+		const serverLanguage = (await this.getServerLanguageCached()).toLowerCase();
 		const supportedLanguages = await getSupportedLanguages();
 
 		await this.i18nextInstance
@@ -40,7 +40,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 				},
 			});
 		this.loadedLanguages.push(serverLanguage);
-		this.supportedLanguages = supportedLanguages;
+		this.supportedLanguages = supportedLanguages.map((language) => language.toLowerCase());
 	}
 
 	// Use translateText when you already know the language, or want to translate to a predefined language
@@ -78,7 +78,11 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	public async getLanguageData(language: string): Promise<Record<string, string>> {
 		await this.loadLanguageIfNotLoaded(language);
 
-		return this.i18nextInstance.getResourceBundle(language, this.defaultNamespace);
+		return this.i18nextInstance.getResourceBundle(this.convertLanguageToFileSystemCase(language), this.defaultNamespace);
+	}
+
+	public async getSupportedLanguages(): Promise<string[]> {
+		return this.supportedLanguages.map((language) => this.convertLanguageToFileSystemCase(language));
 	}
 
 	// Cache the server language for 1 hour
@@ -89,12 +93,22 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	}
 
 	private async loadLanguageIfNotLoaded(language: string): Promise<void> {
-		if (this.supportedLanguages.length > 0 && !this.supportedLanguages.includes(language)) {
+		const lower = language.toLowerCase();
+		if (this.supportedLanguages.length > 0 && !this.supportedLanguages.includes(lower)) {
 			throw new Error('Language not supported');
 		}
-		if (!this.loadedLanguages.includes(language)) {
-			await this.i18nextInstance.loadLanguages([language]);
-			this.loadedLanguages.push(language);
+		if (!this.loadedLanguages.includes(lower)) {
+			await this.i18nextInstance.loadLanguages([this.convertLanguageToFileSystemCase(language)]);
+			this.loadedLanguages.push(lower);
 		}
+	}
+
+	private convertLanguageToFileSystemCase(language: string): string {
+		if (!language.includes('-')) {
+			return language;
+		}
+		const [first, last] = language.split('-');
+
+		return `${first.toLowerCase()}-${last.toUpperCase()}`;
 	}
 }

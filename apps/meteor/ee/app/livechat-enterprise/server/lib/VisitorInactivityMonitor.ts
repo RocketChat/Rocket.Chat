@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
@@ -27,7 +27,7 @@ export class VisitorInactivityMonitor {
 
 	async start() {
 		this._startMonitoring();
-		this._initializeMessageCache();
+		await this._initializeMessageCache();
 		const cat = await Users.findOneById('rocket.cat');
 		if (cat) {
 			this.user = cat;
@@ -63,9 +63,13 @@ export class VisitorInactivityMonitor {
 		return this._started;
 	}
 
-	_initializeMessageCache() {
+	async _initializeMessageCache() {
 		this.messageCache.clear();
-		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
+		this.messageCache.set(
+			'default',
+			settings.get('Livechat_abandoned_rooms_closed_custom_message') ||
+				(await Translation.translateToServerLanguage('Closed_automatically')),
+		);
 	}
 
 	async _getDepartmentAbandonedCustomMessage(departmentId: string) {
@@ -106,7 +110,9 @@ export class VisitorInactivityMonitor {
 		}
 
 		const guest = visitor.name || visitor.username;
-		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
+		const comment = await Translation.translateToServerLanguage('Omnichannel_On_Hold_due_to_inactivity', {
+			interpolate: { guest, timeout },
+		});
 
 		const result = await Promise.allSettled([
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
@@ -149,6 +155,6 @@ export class VisitorInactivityMonitor {
 			logger.debug({ msg: 'Rejection results', errors });
 		}
 
-		this._initializeMessageCache();
+		await this._initializeMessageCache();
 	}
 }

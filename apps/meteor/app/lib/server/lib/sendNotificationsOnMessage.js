@@ -73,7 +73,7 @@ export const sendNotification = async ({
 
 	const isThread = !!message.tmid && !message.tshow;
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+	notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 

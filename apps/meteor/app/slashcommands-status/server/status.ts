@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -21,12 +20,12 @@ slashCommands.add({
 			await Meteor.callAsync('setUserStatus', null, params);
 
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng }),
+				msg: await Translation.translateText('StatusMessage_Changed_Successfully', lng),
 			});
 		} catch (err: any) {
 			if (err.error === 'error-not-allowed') {
 				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-					msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng }),
+					msg: await Translation.translateText('StatusMessage_Change_Disabled', lng),
 				});
 			}
 

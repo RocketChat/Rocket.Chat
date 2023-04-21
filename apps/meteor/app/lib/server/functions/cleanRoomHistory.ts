@@ -1,6 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
@@ -34,7 +33,7 @@ export async function cleanRoomHistory({
 
 	const ts = { [gt]: oldest, [lt]: latest };
 
-	const text = `_${TAPi18n.__('File_removed_by_prune')}_`;
+	const text = `_${await Translation.translateToServerLanguage('File_removed_by_prune')}_`;
 
 	let fileCount = 0;
 

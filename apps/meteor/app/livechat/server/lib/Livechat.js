@@ -6,7 +6,6 @@ import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import UAParser from 'ua-parser-js';
 import {
 	LivechatVisitors,
@@ -21,7 +20,7 @@ import {
 	Rooms,
 	Users,
 } from '@rocket.chat/models';
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, Translation, VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -422,7 +421,9 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(
+							await Translation.translateToServerLanguage('error-invalid-custom-field-value', { interpolate: { field: field.label } }),
+						);
 					}
 				}
 				customFields[field._id] = value;
@@ -482,7 +483,9 @@ export const Livechat = {
 		if (customField.regexp !== undefined && customField.regexp !== '') {
 			const regexp = new RegExp(customField.regexp);
 			if (!regexp.test(value)) {
-				throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: key }));
+				throw new Meteor.Error(
+					await Translation.translateToServerLanguage('error-invalid-custom-field-value', { interpolate: { field: key } }),
+				);
 			}
 		}
 
@@ -564,7 +567,9 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(
+							await Translation.translateToServerLanguage('error-invalid-custom-field-value', { interpolate: { field: field.label } }),
+						);
 					}
 				}
 				customFields[field._id] = value;

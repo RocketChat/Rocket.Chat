@@ -1,5 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
@@ -41,16 +41,16 @@ callbacks.add(
 
 		const lng = settings.get<string>('Language') || 'en';
 
-		let msg = `${TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng })}: \n`;
+		let msg = `${await Translation.translateText('New_Livechat_offline_message_has_been_sent', lng)}: \n`;
 		if (host && host !== '') {
-			msg = msg.concat(`${TAPi18n.__('Sent_from', { lng })}: ${host} \n`);
+			msg = msg.concat(`${await Translation.translateText('Sent_from', lng)}: ${host} \n`);
 		}
-		msg = msg.concat(`${TAPi18n.__('Visitor_Name', { lng })}: ${name} \n`);
-		msg = msg.concat(`${TAPi18n.__('Visitor_Email', { lng })}: ${email} \n`);
+		msg = msg.concat(`${await Translation.translateText('Visitor_Name', lng)}: ${name} \n`);
+		msg = msg.concat(`${await Translation.translateText('Visitor_Email', lng)}: ${email} \n`);
 		if (departmentName) {
-			msg = msg.concat(`${TAPi18n.__('Department', { lng })}: ${departmentName} \n`);
+			msg = msg.concat(`${await Translation.translateText('Department', lng)}: ${departmentName} \n`);
 		}
-		msg = msg.concat(`${TAPi18n.__('Message', { lng })}: ${text} \n`);
+		msg = msg.concat(`${await Translation.translateText('Message', lng)}: ${text} \n`);
 
 		const message = {
 			rid: room._id,

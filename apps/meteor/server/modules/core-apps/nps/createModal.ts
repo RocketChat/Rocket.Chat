@@ -1,5 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../../app/settings/server';
 
@@ -13,7 +13,7 @@ type ModalParams = {
 	user: IUser;
 };
 
-export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, score, user }: ModalParams): any => {
+export const createModal = async ({ type = 'modal.open', id, appId, npsId, triggerId, score, user }: ModalParams): Promise<any> => {
 	const language = user.language || settings.get('Language') || 'en';
 
 	return {
@@ -26,14 +26,14 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 			id,
 			title: {
 				type: 'plain_text',
-				text: TAPi18n.__('We_appreciate_your_feedback', { lng: language }),
+				text: await Translation.translateText('We_appreciate_your_feedback', language),
 				emoji: false,
 			},
 			submit: {
 				type: 'button',
 				text: {
 					type: 'plain_text',
-					text: TAPi18n.__('Send', { lng: language }),
+					text: await Translation.translateText('Send', language),
 					emoji: false,
 				},
 				actionId: 'send-vote',
@@ -42,7 +42,7 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 				type: 'button',
 				text: {
 					type: 'plain_text',
-					text: TAPi18n.__('Cancel', { lng: language }),
+					text: await Translation.translateText('Cancel', language),
 					emoji: false,
 				},
 				actionId: 'cancel',
@@ -56,16 +56,16 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 							type: 'linear_scale',
 							initialValue: score,
 							actionId: 'nps-score',
-							preLabel: { type: 'plain_text', text: TAPi18n.__('Not_likely', { lng: language }) },
+							preLabel: { type: 'plain_text', text: await Translation.translateText('Not_likely', language) },
 							postLabel: {
 								type: 'plain_text',
-								text: TAPi18n.__('Extremely_likely', { lng: language }),
+								text: await Translation.translateText('Extremely_likely', language),
 							},
 						},
 					],
 					label: {
 						type: 'plain_text',
-						text: TAPi18n.__('Score', { lng: language }),
+						text: await Translation.translateText('Score', language),
 						emoji: false,
 					},
 				},
@@ -79,7 +79,7 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 					},
 					label: {
 						type: 'plain_text',
-						text: TAPi18n.__('Why_did_you_chose__score__', { score, lng: language }),
+						text: await Translation.translateText('Why_did_you_chose__score__', language, { interpolate: { score } }),
 						emoji: false,
 					},
 				},

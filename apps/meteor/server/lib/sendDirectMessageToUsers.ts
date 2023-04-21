@@ -8,7 +8,7 @@ import { createDirectMessage } from '../methods/createDirectMessage';
 export async function sendDirectMessageToUsers(
 	fromId = 'rocket.cat',
 	toIds: string[],
-	messageFn: (user: IUser) => string,
+	messageFn: (user: IUser) => Promise<string>,
 ): Promise<string[]> {
 	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1, username: 1 } });
 	if (!fromUser) {
@@ -21,7 +21,7 @@ export async function sendDirectMessageToUsers(
 	for await (const user of users) {
 		try {
 			const { rid } = await createDirectMessage([user.username], fromId);
-			const msg = typeof messageFn === 'function' ? messageFn(user) : messageFn;
+			const msg = typeof messageFn === 'function' ? await messageFn(user) : messageFn;
 
 			await executeSendMessage(fromId, { rid, msg });
 			success.push(user._id);

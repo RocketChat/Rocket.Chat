@@ -511,7 +511,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			rolesToRemove,
 			notifyChannel: false,
 		});
-		this.internalNotificationAdapter.notifyWithEphemeralMessage(
+		await this.internalNotificationAdapter.notifyWithEphemeralMessage(
 			'Federation_Matrix_error_applying_room_roles',
 			fromUser.getInternalId(),
 			federatedRoom.getInternalId(),

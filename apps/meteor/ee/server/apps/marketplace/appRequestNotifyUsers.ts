@@ -1,5 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
@@ -22,9 +22,11 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 		return acc;
 	}, []);
 
-	const msgFn = (user: IUser): string => {
+	const msgFn = async (user: IUser): Promise<string> => {
 		const defaultLang = user.language || 'en';
-		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
+		const msg = `${await Translation.translateText('App_request_enduser_message', defaultLang, {
+			interpolate: { appname: appName, learnmore: learnMoreUrl },
+		})}`;
 
 		return msg;
 	};

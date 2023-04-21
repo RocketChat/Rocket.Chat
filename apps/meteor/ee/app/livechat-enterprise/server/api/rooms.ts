@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
@@ -46,8 +46,8 @@ API.v1.addRoute(
 			}
 
 			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
-			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
-				user: onHoldBy.name || `@${onHoldBy.username}`,
+			const comment = await Translation.translateToServerLanguage('Omnichannel_On_Hold_manually', {
+				interpolate: { user: onHoldBy.name || `@${onHoldBy.username}` },
 			});
 
 			await LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);

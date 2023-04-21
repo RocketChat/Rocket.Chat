@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from 'fs/promises';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../app/settings/server';
 import { joinPath } from '../fileUtils';
@@ -62,12 +62,12 @@ type MessageData = Pick<IMessage, 'msg' | 'ts'> & {
 	type?: IMessage['t'];
 };
 
-const getMessageData = (
+const getMessageData = async (
 	msg: IMessage,
 	hideUsers: boolean,
 	userData: Pick<IUser, 'username'> | undefined,
 	usersMap: { userNameTable: Record<string, string> },
-): MessageData => {
+): Promise<MessageData> => {
 	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name || '', userData, usersMap) : msg.u.username;
 
 	const messageObject = {
@@ -82,85 +82,82 @@ const getMessageData = (
 
 	switch (msg.t) {
 		case 'uj':
-			messageObject.msg = TAPi18n.__('User_joined_the_channel');
+			messageObject.msg = await Translation.translateToServerLanguage('User_joined_the_channel');
 			break;
 		case 'ul':
-			messageObject.msg = TAPi18n.__('User_left_this_channel');
+			messageObject.msg = await Translation.translateToServerLanguage('User_left_this_channel');
 			break;
 		case 'ult':
-			messageObject.msg = TAPi18n.__('User_left_this_team');
+			messageObject.msg = await Translation.translateToServerLanguage('User_left_this_team');
 			break;
 		case 'user-added-room-to-team':
-			messageObject.msg = TAPi18n.__('added__roomName__to_this_team', {
-				roomName: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('added__roomName__to_this_team', {
+				interpolate: { roomName: msg.msg },
 			});
 			break;
 		case 'user-converted-to-team':
-			messageObject.msg = TAPi18n.__('Converted__roomName__to_a_team', {
-				roomName: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('Converted__roomName__to_a_team', {
+				interpolate: { roomName: msg.msg },
 			});
 			break;
 		case 'user-converted-to-channel':
-			messageObject.msg = TAPi18n.__('Converted__roomName__to_a_channel', {
-				roomName: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('Converted__roomName__to_a_channel', {
+				interpolate: { roomName: msg.msg },
 			});
 			break;
 		case 'user-deleted-room-from-team':
-			messageObject.msg = TAPi18n.__('Deleted__roomName__room', {
-				roomName: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('Deleted__roomName__room', {
+				interpolate: { roomName: msg.msg },
 			});
 			break;
 		case 'user-removed-room-from-team':
-			messageObject.msg = TAPi18n.__('Removed__roomName__from_the_team', {
-				roomName: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('Removed__roomName__from_the_team', {
+				interpolate: { roomName: msg.msg },
 			});
 			break;
 		case 'ujt':
-			messageObject.msg = TAPi18n.__('User_joined_the_team');
+			messageObject.msg = await Translation.translateToServerLanguage('User_joined_the_team');
 			break;
 		case 'au':
-			messageObject.msg = TAPi18n.__('User_added_to', {
-				user_added: hideUserName(msg.msg, userData, usersMap),
-				user_by: username,
+			messageObject.msg = await Translation.translateToServerLanguage('User_added_to', {
+				interpolate: { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username },
 			});
 			break;
 		case 'added-user-to-team':
-			messageObject.msg = TAPi18n.__('Added__username__to_this_team', {
-				user_added: msg.msg,
+			messageObject.msg = await Translation.translateToServerLanguage('Added__username__to_this_team', {
+				interpolate: { user_added: msg.msg },
 			});
 			break;
 		case 'r':
-			messageObject.msg = TAPi18n.__('Room_name_changed_to', {
-				room_name: msg.msg,
-				user_by: username,
+			messageObject.msg = await Translation.translateToServerLanguage('Room_name_changed_to', {
+				interpolate: { room_name: msg.msg, user_by: username },
 			});
 			break;
 		case 'ru':
-			messageObject.msg = TAPi18n.__('User_has_been_removed', {
-				user_removed: hideUserName(msg.msg, userData, usersMap),
-				user_by: username,
+			messageObject.msg = await Translation.translateToServerLanguage('User_has_been_removed', {
+				interpolate: { user_removed: hideUserName(msg.msg, userData, usersMap), user_by: username },
 			});
 			break;
 		case 'removed-user-from-team':
-			messageObject.msg = TAPi18n.__('Removed__username__from_the_team', {
-				user_removed: hideUserName(msg.msg, userData, usersMap),
+			messageObject.msg = await Translation.translateToServerLanguage('Removed__username__from_the_team', {
+				interpolate: { user_removed: hideUserName(msg.msg, userData, usersMap) },
 			});
 			break;
 		case 'wm':
-			messageObject.msg = TAPi18n.__('Welcome', { user: username });
+			messageObject.msg = await Translation.translateToServerLanguage('Welcome', { interpolate: { user: username } });
 			break;
 		case 'livechat-close':
-			messageObject.msg = TAPi18n.__('Conversation_finished');
+			messageObject.msg = await Translation.translateToServerLanguage('Conversation_finished');
 			break;
 		case 'livechat-started':
-			messageObject.msg = TAPi18n.__('Chat_started');
+			messageObject.msg = await Translation.translateToServerLanguage('Chat_started');
 			break;
 	}
 
 	return messageObject;
 };
 
-const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, messageFile?: FileProp): string => {
+const exportMessageObject = async (type: 'json' | 'html', messageObject: MessageData, messageFile?: FileProp): Promise<string> => {
 	if (type === 'json') {
 		return JSON.stringify(messageObject);
 	}
@@ -180,7 +177,7 @@ const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, 
 	if (messageFile?._id) {
 		const attachment = messageObject.attachments?.find((att) => att.type === 'file' && att.title_link?.includes(messageFile._id));
 
-		const description = attachment?.title || TAPi18n.__('Message_Attachments');
+		const description = attachment?.title || (await Translation.translateToServerLanguage('Message_Attachments'));
 
 		const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
 		const link = `<br/><a href="${assetUrl}">${description}</a>`;
@@ -223,15 +220,15 @@ const exportRoomMessages = async (
 		uploads: [] as FileProp[],
 	};
 
-	results.forEach((msg) => {
-		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
+	for await (const msg of results) {
+		const messageObject = await getMessageData(msg, hideUsers, userData, usersMap);
 
 		if (msg.file) {
 			result.uploads.push(msg.file);
 		}
 
-		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
-	});
+		result.messages.push(await exportMessageObject(exportType, messageObject, msg.file));
+	}
 
 	return result;
 };

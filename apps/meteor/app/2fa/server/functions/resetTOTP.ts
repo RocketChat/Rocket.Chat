@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -21,19 +21,19 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = (s: string): string => TAPi18n.__(s, { lng: language });
+	const t = (s: string): Promise<string> => Translation.translateText(s, language);
 	const text = `
-	${t('Your_TOTP_has_been_reset')}
+	${await t('Your_TOTP_has_been_reset')}
 
-	${t('TOTP_Reset_Other_Key_Warning')}
+	${await t('TOTP_Reset_Other_Key_Warning')}
 	`;
 	const html = `
-		<p>${t('Your_TOTP_has_been_reset')}</p>
-		<p>${t('TOTP_Reset_Other_Key_Warning')}</p>
+		<p>${await t('Your_TOTP_has_been_reset')}</p>
+		<p>${await t('TOTP_Reset_Other_Key_Warning')}</p>
 	`;
 
 	const from = settings.get('From_Email');
-	const subject = t('TOTP_reset_email');
+	const subject = await t('TOTP_reset_email');
 
 	for await (const address of addresses) {
 		try {

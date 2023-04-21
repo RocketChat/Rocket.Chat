@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
@@ -15,6 +14,7 @@ import {
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
+import { Translation } from '@rocket.chat/core-services';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
@@ -114,7 +114,7 @@ API.v1.addRoute(
 			}
 
 			const language = rcSettings.get<string>('Language') || 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+			const comment = await Translation.translateText('Closed_by_visitor', language);
 
 			const options: CloseRoomParams['options'] = {};
 			if (room.servedBy) {
@@ -147,8 +147,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => TAPi18n.__(s, { lng: language });
-					const subject = t('Transcript_of_your_livechat_conversation');
+					const subject = await Translation.translateText('Transcript_of_your_livechat_conversation', language);
 
 					options.emailTranscript = {
 						sendToVisitor: true,

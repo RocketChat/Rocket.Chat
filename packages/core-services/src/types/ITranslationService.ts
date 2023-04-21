@@ -6,4 +6,5 @@ export interface ITranslationService {
 	translate(text: string, user: IUser, replacements?: TranslationReplacement): Promise<string>;
 	translateToServerLanguage(text: string, replacements?: TranslationReplacement): Promise<string>;
 	getLanguageData(language: string): Promise<Record<string, string>>;
+	getSupportedLanguages(): Promise<string[]>;
 }

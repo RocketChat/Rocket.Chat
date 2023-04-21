@@ -1,6 +1,5 @@
 import { Rooms } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { Translation, api } from '@rocket.chat/core-services';
 
 import notifications from '../../../../../../app/notifications/server/lib/Notifications';
 
@@ -36,12 +35,9 @@ export class RocketChatNotificationAdapter {
 		});
 	}
 
-	public notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): void {
+	public async notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): Promise<void> {
 		void api.broadcast('notify.ephemeralMessage', userId, roomId, {
-			msg: TAPi18n.__(i18nMessageKey, {
-				postProcess: 'sprintf',
-				lng: language,
-			}),
+			msg: await Translation.translateText(i18nMessageKey, language),
 		});
 	}
 }

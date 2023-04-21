@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Translation } from '@rocket.chat/core-services';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -165,7 +164,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	let discussionMsg;
 	if (message) {
 		if (parentRoom.encrypted) {
-			message.msg = TAPi18n.__('Encrypted_message');
+			message.msg = await Translation.translateToServerLanguage('Encrypted_message');
 		}
 		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 

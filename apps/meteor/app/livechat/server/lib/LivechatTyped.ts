@@ -8,9 +8,8 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Translation } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -293,12 +292,12 @@ class LivechatClass {
 		);
 
 		let html = '<div> <hr>';
-		await messages.forEach((message) => {
+		for await (const message of messages) {
 			let author;
 			if (message.u._id === visitor._id) {
-				author = TAPi18n.__('You', { lng: userLanguage });
+				author = await Translation.translateText('You', userLanguage);
 			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
+				author = showAgentInfo ? message.u.name || message.u.username : await Translation.translateText('Agent', userLanguage);
 			}
 
 			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
@@ -307,8 +306,7 @@ class LivechatClass {
 				<p>${message.msg}</p>
 			`;
 			html += singleMessage;
-		});
-
+		}
 		html = `${html}</div>`;
 
 		const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
@@ -319,7 +317,7 @@ class LivechatClass {
 			emailFromRegexp = settings.get<string>('From_Email');
 		}
 
-		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+		const mailSubject = subject || (await Translation.translateText('Transcript_of_your_livechat_conversation', userLanguage));
 
 		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 

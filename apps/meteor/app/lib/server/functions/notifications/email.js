@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Translation } from '@rocket.chat/core-services';
 
 import * as Mailer from '../../../../mailer/server/api';
 import { settings } from '../../../../settings/server';
@@ -29,11 +29,16 @@ async function getEmailContent({ message, user, room }) {
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const header = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
-		username: userName,
-		channel: roomName,
+	const header = await Translation.translateText(
+		!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel',
 		lng,
-	});
+		{
+			interpolate: {
+				username: userName,
+				channel: roomName,
+			},
+		},
+	);
 
 	if (message.msg !== '') {
 		if (!settings.get('Email_notification_show_message')) {
@@ -43,7 +48,7 @@ async function getEmailContent({ message, user, room }) {
 		let messageContent = escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
-			messageContent = TAPi18n.__('Encrypted_message', { lng });
+			messageContent = await Translation.translateText('Encrypted_message', lng);
 		}
 
 		message = callbacks.run('renderMessage', message);
@@ -57,11 +62,16 @@ async function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
-			username: userName,
-			channel: roomName,
+		const fileHeader = await Translation.translateText(
+			!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel',
 			lng,
-		});
+			{
+				interpolate: {
+					username: userName,
+					channel: roomName,
+				},
+			},
+		);
 
 		if (!settings.get('Email_notification_show_message')) {
 			return fileHeader;
@@ -127,7 +137,7 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 		subjectKey = 'Offline_Mention_Email';
 	}
 
-	const emailSubject = Mailer.replace(settings.get(subjectKey), {
+	const emailSubject = await Mailer.replace(settings.get(subjectKey), {
 		user: username,
 		room: await roomCoordinator.getRoomName(room.t, room),
 	});

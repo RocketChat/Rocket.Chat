@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
@@ -22,7 +22,10 @@ callbacks.add(
 		}
 
 		if (!(await canAddNewUser())) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+			throw new Meteor.Error(
+				'error-license-user-limit-reached',
+				await Translation.translateToServerLanguage('error-license-user-limit-reached'),
+			);
 		}
 	},
 	callbacks.priority.MEDIUM,
@@ -41,7 +44,10 @@ callbacks.add(
 		}
 
 		if (!(await canAddNewUser())) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+			throw new Meteor.Error(
+				'error-license-user-limit-reached',
+				await Translation.translateToServerLanguage('error-license-user-limit-reached'),
+			);
 		}
 	},
 	callbacks.priority.MEDIUM,
@@ -72,7 +78,10 @@ callbacks.add(
 		}
 
 		if (!(await canAddNewUser())) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+			throw new Meteor.Error(
+				'error-license-user-limit-reached',
+				await Translation.translateToServerLanguage('error-license-user-limit-reached'),
+			);
 		}
 	},
 	callbacks.priority.MEDIUM,
