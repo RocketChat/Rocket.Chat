@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
 import { ironRouterSendErrorToResponse } from './iron-router-error-to-response';
@@ -305,7 +304,7 @@ export class Route {
 			minimumDelayInMilliseconds = 500;
 			randomMultiplierBetweenOneAndTwo = 1 + Math.random();
 			delayInMilliseconds = minimumDelayInMilliseconds * randomMultiplierBetweenOneAndTwo;
-			return Meteor.setTimeout(sendResponse, delayInMilliseconds);
+			return setTimeout(sendResponse, delayInMilliseconds);
 		}
 		return sendResponse();
 	}
