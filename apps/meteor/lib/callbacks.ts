@@ -301,13 +301,13 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
+	private async runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
 			const result = callback(item, constant);
 			if (result && result instanceof Promise) {
-				return Promise.await(result);
+				return await result;
 			}
 
 			return result;
@@ -316,10 +316,10 @@ class Callbacks {
 		}
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			(item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
 				return this.runOne(callback, item, constant) ?? item;
@@ -328,17 +328,17 @@ class Callbacks {
 		const identity = <TItem>(item: TItem): TItem => item;
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			async (item: unknown, constant?: unknown): Promise<unknown> =>
+				next(await curr(item, constant), constant);
 
-		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
+		const fn = callbacks.map(wrapCallback).reduce(pipe, identity as any);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
 			try {
-				return fn(item, constant);
+				return await fn(item, constant);
 			} finally {
 				stopTracking?.();
 			}
@@ -346,15 +346,13 @@ class Callbacks {
 	}
 
 	private createAsyncRunner(_: Hook, callbacks: Callback[]) {
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			if (typeof window !== 'undefined') {
 				throw new Error('callbacks.runAsync on client server not allowed');
 			}
 
-			for (const callback of callbacks) {
-				setTimeout(() => {
-					this.runOne(callback, item, constant);
-				}, 0);
+			for await (const callback of callbacks) {
+				await this.runOne(callback, await item, constant);
 			}
 
 			return item;
