@@ -114,7 +114,7 @@ export async function setUserAvatar(
 
 	const avatarETag = etag || result?.etag || '';
 
-	Meteor.setTimeout(async function () {
+	setTimeout(async function () {
 		if (service) {
 			await Users.setAvatarData(user._id, service, avatarETag);
 			void api.broadcast('user.avatarUpdate', {
