@@ -1,7 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 
-import { API } from '../../../../app/api/server';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 import { fetch } from '../../../../server/lib/http/fetch';
@@ -60,8 +59,7 @@ export const appRequestNotififyForUsers = async (
 
 		const data = await response.json();
 
-		const appRequests = API.v1.success({ data });
-		const { total } = appRequests.body.data.data.meta;
+		const { total } = data.meta;
 
 		if (total === undefined || total === 0) {
 			return [];
@@ -73,11 +71,7 @@ export const appRequestNotififyForUsers = async (
 		const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
 
 		// Notify first batch
-		requestsCollection.push(
-			Promise.resolve(appRequests.body.data.data.data)
-				.then((response) => notifyBatchOfUsers(appName, learnMore, response))
-				.catch(notifyBatchOfUsersError),
-		);
+		requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data).catch(notifyBatchOfUsersError));
 
 		// Batch requests
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,9 +83,9 @@ export const appRequestNotififyForUsers = async (
 				{ headers },
 			);
 
-			const data = await request.json();
+			const { data } = await request.json();
 
-			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data.data));
+			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data));
 		}
 
 		const finalResult = await Promise.all(requestsCollection);

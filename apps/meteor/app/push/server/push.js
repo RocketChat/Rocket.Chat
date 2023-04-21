@@ -53,7 +53,7 @@ class PushClass {
 	sendWorker(task, interval) {
 		logger.debug(`Send worker started, using interval: ${interval}`);
 
-		return Meteor.setInterval(() => {
+		return setInterval(() => {
 			try {
 				task();
 			} catch (error) {
@@ -159,7 +159,7 @@ class PushClass {
 
 			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
-			return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+			return setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
 		}
 	}
 
