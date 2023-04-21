@@ -38,7 +38,7 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|> ?)@(${this.pattern}(@(${this.pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)@(${this.pattern}(@(${this.pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
@@ -115,12 +115,7 @@ export class MentionsParser {
 		});
 
 	getUserMentions(str) {
-		return (str.match(this.userMentionRegex) || []).map((match) => {
-			if (match[0] === '>') {
-				return match.slice(1).trim();
-			}
-			return match.trim();
-		});
+		return (str.match(this.userMentionRegex) || []).map((match) => match.trim());
 	}
 
 	getChannelMentions(str) {
