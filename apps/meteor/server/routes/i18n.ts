@@ -1,34 +1,31 @@
-import type { ServerResponse } from 'http';
-
-import { match } from 'path-to-regexp';
-import type { IncomingMessage } from 'connect';
 import { WebApp } from 'meteor/webapp';
+import express from 'express';
+import type { Request, Response } from 'express';
+import { Translation } from '@rocket.chat/core-services';
 
-const matchRoute = match<{ lng: string }>('/:lng.json', { decode: decodeURIComponent });
+const app = express();
 
-const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
-	const match = matchRoute(req.url ?? '/');
+app.get('/i18n/:lng', async (req: Request, res: Response) => {
+	const { lng } = req.params;
+	const language = lng?.split('.').shift();
 
-	if (match === false) {
+	if (!language) {
 		res.writeHead(400);
 		res.end();
 		return;
 	}
 
-	const { lng } = match.params;
-
-	Assets.getText(`i18n/${lng}.i18n.json`, (err: Error, data: Record<string, any>) => {
-		if (err || !data) {
-			res.writeHead(400);
-			res.end();
-			return;
-		}
+	try {
+		const data = JSON.stringify(await Translation.getLanguageData(language));
 
 		res.setHeader('Content-Type', 'application/json');
 		res.setHeader('Content-Length', data.length);
 		res.writeHead(200);
 		res.end(data);
-	});
-};
+	} catch (error) {
+		res.writeHead(400);
+		res.end();
+	}
+});
 
-WebApp.connectHandlers.use('/i18n/', i18nHandler);
+WebApp.connectHandlers.use(app);

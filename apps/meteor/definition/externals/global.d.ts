@@ -61,4 +61,8 @@ declare global {
 			emit(event: 'message', message: any, sendHandle?: Server | Socket): boolean;
 		}
 	}
+
+	namespace Assets {
+		function getServerDir(): string;
+	}
 }
