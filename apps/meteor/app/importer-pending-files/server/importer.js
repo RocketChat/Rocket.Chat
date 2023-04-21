@@ -32,7 +32,7 @@ export class PendingFileImporter extends Base {
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
-		Meteor.defer(() => {
+		setImmediate(() => {
 			this.startImport(fileData);
 		});
 
