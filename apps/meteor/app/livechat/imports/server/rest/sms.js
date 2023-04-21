@@ -182,7 +182,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		try {
 			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
 						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);

@@ -323,7 +323,7 @@ class LivechatClass {
 
 		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 

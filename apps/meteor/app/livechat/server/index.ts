@@ -1,5 +1,4 @@
 import './livechat';
-import './config';
 import './startup';
 import '../lib/messageTypes';
 import './hooks/beforeDelegateAgent';
