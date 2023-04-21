@@ -14,6 +14,12 @@ Meteor.users.createIndex = function () {
 Mongo.Collection.prototype._ensureIndex = function () {
 	console.error('Calling _ensureIndex from collection', this._name);
 };
+Mongo.Collection.prototype._insert = function () {
+	console.error('Calling _insert from collection', this._name);
+};
+Mongo.Collection.prototype.update = function () {
+	console.error('Calling _update from collection', this._name);
+};
 
 const shouldDisableOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 if (!shouldDisableOplog) {

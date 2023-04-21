@@ -270,8 +270,8 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
+			await Meteor.runAsUser(_id, function () {
+				return Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced);
 			});
 		}
 

@@ -14,15 +14,21 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 		return false;
 	}
 
+	// Temporal while TOTP modal is fixed
+	if (process.env.TEST_MODE) {
+		return false;
+	}
+
 	const regInfo = await buildWorkspaceRegistrationData(email);
 	const cloudUrl = settings.get('Cloud_Url');
 
 	try {
-		HTTP.post(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
+		const x = HTTP.post(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
 			data: regInfo,
 			timeout: 10 * 1000,
 		});
 
+		console.log(x);
 		return true;
 	} catch (err: any) {
 		SystemLogger.error({
