@@ -5,7 +5,6 @@
  */
 
 import { TranslationProviderRegistry } from './autotranslate';
-import './settings';
 import './permissions';
 import './autotranslate';
 import './methods/getSupportedLanguages';

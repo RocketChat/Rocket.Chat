@@ -17,6 +17,7 @@ import type {
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
+import { fetch } from '../../../server/lib/http/fetch';
 
 /**
  * Represents google translate class
@@ -75,7 +76,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {string} target : user language setting or 'en'
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
+	async getSupportedLanguages(target: string): Promise<ISupportedLanguage[]> {
 		if (!this.apiKey) {
 			return [];
 		}
@@ -91,9 +92,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 		};
 
 		try {
-			result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-				params,
-			});
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
+			result = await request.json();
 		} catch (e: any) {
 			// Fallback: Get the English names of the target languages
 			if (
@@ -106,9 +106,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-						params,
-					});
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
+					result = await request.json();
 				}
 			}
 		}
@@ -128,13 +127,13 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
 		const query = `q=${msgs.join('&q=')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -176,10 +175,10 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated attachment descriptions for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
 		const query = `q=${encodeURIComponent(attachment.description || attachment.text || '')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {

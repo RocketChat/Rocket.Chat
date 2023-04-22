@@ -5,7 +5,7 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
@@ -22,14 +22,15 @@ import {
 	decryptAES,
 	generateRSAKey,
 	exportJWKKey,
-	// importRSAKey,
+	importRSAKey,
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
@@ -62,7 +63,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	// private privateKey: CryptoKey | undefined;
+	public privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -98,7 +99,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -246,7 +247,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
-		// this.privateKey = undefined;
+		this.privateKey = undefined;
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
@@ -275,7 +276,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.setItem('public_key', public_key);
 
 		try {
-			// this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
 			Meteor._localStorage.setItem('private_key', private_key);
 		} catch (error) {
@@ -288,7 +289,7 @@ class E2E extends Emitter {
 		let key;
 		try {
 			key = await generateRSAKey();
-			// this.privateKey = key.privateKey;
+			this.privateKey = key.privateKey;
 		} catch (error) {
 			return this.error('Error generating key: ', error);
 		}
@@ -443,7 +444,7 @@ class E2E extends Emitter {
 
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
+			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
 		});
 	}
 
@@ -499,7 +500,8 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url, useRealName);
 
 				message.attachments.push(quoteAttachment);
 			}),

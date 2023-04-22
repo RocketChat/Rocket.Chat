@@ -79,5 +79,5 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 		download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 	});
 
-	sendEmail(user, subject, body);
+	await sendEmail(user, subject, body);
 };

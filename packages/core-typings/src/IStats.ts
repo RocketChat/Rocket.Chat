@@ -75,8 +75,8 @@ export interface IStats {
 		_id?: string;
 		locked: boolean;
 		version: number;
-		buildAt?: string;
-		lockedAt?: string;
+		buildAt?: string | Date;
+		lockedAt?: string | Date;
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;

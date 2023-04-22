@@ -165,17 +165,16 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	// TODO change to await once Email.send is converted to Email.sendAsync
-	void Settings.incrementValueById('Triggered_Emails_Count');
+	await Settings.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
 
-	Meteor.defer(() => Email.send(eventResult || email));
+	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
-export const send = ({
+export const send = async ({
 	to,
 	from,
 	replyTo,
@@ -193,18 +192,16 @@ export const send = ({
 	text?: string;
 	headers?: string;
 	data?: { [key: string]: unknown };
-}): void =>
-	Promise.await(
-		sendNoWrap({
-			to,
-			from,
-			replyTo,
-			subject: replace(subject, data),
-			text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
-			html: html ? wrap(html, data) : undefined,
-			headers,
-		}),
-	);
+}): Promise<void> =>
+	sendNoWrap({
+		to,
+		from,
+		replyTo,
+		subject: replace(subject, data),
+		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		html: html ? wrap(html, data) : undefined,
+		headers,
+	});
 
 // Needed because of https://github.com/microsoft/TypeScript/issues/36931
 type Assert = (input: string, func: string) => asserts input;

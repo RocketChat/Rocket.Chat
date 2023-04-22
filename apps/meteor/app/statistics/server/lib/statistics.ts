@@ -350,7 +350,7 @@ export const statistics = {
 				}),
 		);
 
-		statistics.migration = getControl();
+		statistics.migration = await getControl();
 		statsPms.push(
 			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
 				statistics.instanceCount = count;
@@ -361,7 +361,7 @@ export const statistics = {
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
-		statistics.mongoStorageEngine = mongoStorageEngine;
+		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
 		statsPms.push(
 			Sessions.getUniqueUsersOfYesterday().then((result) => {

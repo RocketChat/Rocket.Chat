@@ -64,7 +64,7 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry[Providers][provider];
 	}
 
-	static getSupportedLanguages(target: string): ISupportedLanguage[] | undefined {
+	static async getSupportedLanguages(target: string): Promise<ISupportedLanguage[] | undefined> {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
@@ -297,12 +297,12 @@ export abstract class AutoTranslate {
 			targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
 		}
 		if (message.msg) {
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				let targetMessage = Object.assign({}, message);
 				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
 
-				const translations = this._translateMessage(targetMessage, targetLanguages);
+				const translations = await this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
 					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
 				}
@@ -310,13 +310,13 @@ export abstract class AutoTranslate {
 		}
 
 		if (message.attachments && message.attachments.length > 0) {
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				for await (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
 						// Removes the initial link `[ ](quoterl)` from quote message before translation
 						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
 						const attachmentMessage = { ...attachment, text: translatedText };
-						const translations = this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+						const translations = await this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
 
 						if (!_.isEmpty(translations)) {
 							await Messages.addAttachmentTranslations(message._id, String(index), translations);
@@ -345,7 +345,7 @@ export abstract class AutoTranslate {
 	 * @param {string} target - the language into which shall be translated
 	 * @returns [{ language, name }]
 	 */
-	abstract getSupportedLanguages(target: string): ISupportedLanguage[];
+	abstract getSupportedLanguages(target: string): Promise<ISupportedLanguage[]>;
 
 	/**
 	 * Performs the actual translation of a message,
@@ -356,7 +356,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	abstract _translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult;
+	abstract _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult>;
 
 	/**
 	 * Performs the actual translation of an attachment (precisely its description),
@@ -366,7 +366,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult;
+	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult>;
 }
 
 Meteor.startup(() => {

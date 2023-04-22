@@ -44,9 +44,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			await Messages.removeById(message._id);
 		}
 
-		files.forEach((file) => {
-			file?._id && FileUpload.getStore('Uploads').deleteById(file._id);
-		});
+		for await (const file of files) {
+			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
+		}
 	}
 
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });

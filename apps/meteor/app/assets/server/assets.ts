@@ -202,7 +202,7 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public setAsset(binaryContent: string, contentType: string, asset: string): void {
+	public async setAsset(binaryContent: string, contentType: string, asset: string): Promise<void> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -231,37 +231,34 @@ class RocketChatAssetsClass {
 		}
 
 		const rs = RocketChatFile.bufferToStream(file);
-		RocketChatAssetsInstance.deleteFile(asset);
+		await RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on(
-			'end',
-			Meteor.bindEnvironment(function () {
-				return Meteor.setTimeout(function () {
-					const key = `Assets_${asset}`;
-					const value = {
-						url: `assets/${asset}.${extension}`,
-						defaultUrl: assetInstance.defaultUrl,
-					};
+		ws.on('end', function () {
+			return setTimeout(async function () {
+				const key = `Assets_${asset}`;
+				const value = {
+					url: `assets/${asset}.${extension}`,
+					defaultUrl: assetInstance.defaultUrl,
+				};
 
-					void Settings.updateValueById(key, value);
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					return RocketChatAssets.processAsset(key, value);
-				}, 200);
-			}),
-		);
+				void Settings.updateValueById(key, value);
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				return RocketChatAssets.processAsset(key, value);
+			}, 200);
+		});
 
 		rs.pipe(ws);
 	}
 
-	public unsetAsset(asset: string): void {
+	public async unsetAsset(asset: string): Promise<void> {
 		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
 			});
 		}
 
-		RocketChatAssetsInstance.deleteFile(asset);
+		await RocketChatAssetsInstance.deleteFile(asset);
 		const key = `Assets_${asset}`;
 		const value = {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
@@ -269,7 +266,7 @@ class RocketChatAssetsClass {
 
 		void Settings.updateValueById(key, value);
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		RocketChatAssets.processAsset(key, value);
+		await RocketChatAssets.processAsset(key, value);
 	}
 
 	public refreshClients(): boolean {
@@ -278,7 +275,7 @@ class RocketChatAssetsClass {
 		});
 	}
 
-	public processAsset(settingKey: string, settingValue: any): Record<string, any> | undefined {
+	public async processAsset(settingKey: string, settingValue: any): Promise<Record<string, any> | undefined> {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}
@@ -295,7 +292,7 @@ class RocketChatAssetsClass {
 			return;
 		}
 
-		const file = RocketChatAssetsInstance.getFileSync(assetKey);
+		const file = await RocketChatAssetsInstance.getFile(assetKey);
 		if (!file) {
 			assetValue.cache = undefined;
 			return;
@@ -331,14 +328,6 @@ class RocketChatAssetsClass {
 }
 
 export const RocketChatAssets = new RocketChatAssetsClass();
-
-void settingsRegistry.addGroup('Assets', function () {
-	this.add('Assets_SvgFavicon_Enable', true, {
-		type: 'boolean',
-		group: 'Assets',
-		i18nLabel: 'Enable_Svg_Favicon',
-	});
-});
 
 async function addAssetToSetting(asset: string, value: IRocketChatAsset): Promise<void> {
 	const key = `Assets_${asset}`;
@@ -377,7 +366,7 @@ void (async () => {
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
 Meteor.startup(() => {
-	Meteor.setTimeout(() => {
+	setTimeout(() => {
 		process.emit('message', {
 			refresh: 'client',
 		});
@@ -497,11 +486,11 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		RocketChatAssets.setAsset(binaryContent, contentType, asset);
+		await RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 
-const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
+const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
 	if (!req.url) {
 		return;
 	}
@@ -558,6 +547,6 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	if (file.size) res.setHeader('Content-Length', file.size);
 	res.writeHead(200);
 	res.end(file.content);
-});
+};
 
 WebApp.connectHandlers.use('/assets/', listener);

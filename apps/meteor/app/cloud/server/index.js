@@ -25,7 +25,7 @@ Meteor.startup(async function () {
 			return SyncedCron.remove(licenseCronName);
 		}
 
-		Meteor.defer(() => syncWorkspace());
+		setImmediate(() => syncWorkspace());
 
 		SyncedCron.add({
 			name: licenseCronName,
@@ -37,7 +37,7 @@ Meteor.startup(async function () {
 		});
 	});
 
-	const { workspaceRegistered } = retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
 		try {

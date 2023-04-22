@@ -41,6 +41,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
+export * from './ee/IAuditLog';
 
 export * from './import';
 export * from './IIncomingMessage';
@@ -72,6 +73,9 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
+export * from './IOAuthAuthCode';
+export * from './IOAuthAccessToken';
+export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
 
@@ -124,3 +128,5 @@ export * from './search';
 export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
+
+export * from './migrations/IControl';

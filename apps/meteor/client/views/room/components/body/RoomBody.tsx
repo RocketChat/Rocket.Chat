@@ -1,5 +1,5 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
@@ -40,7 +40,7 @@ import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword';
+import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
@@ -261,17 +261,6 @@ const RoomBody = (): ReactElement => {
 	roomRef.current = room;
 	const tabBarRef = useRef(toolbox);
 	tabBarRef.current = toolbox;
-
-	useEffect(() => {
-		const room = roomRef.current;
-		const tabBar = tabBarRef.current;
-		Tracker.afterFlush(() => {
-			// Find a better way to do this, declaratively
-			if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
-				tabBar.openRoomInfo();
-			}
-		});
-	}, [room._id]);
 
 	const debouncedReadMessageRead = useMemo(
 		() =>
