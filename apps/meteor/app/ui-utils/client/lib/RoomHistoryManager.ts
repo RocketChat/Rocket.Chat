@@ -37,7 +37,7 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
-	return collection.upsert({ _id }, msg);
+	return collection.upsertAsync({ _id }, msg);
 }
 
 export function upsertMessageBulk(

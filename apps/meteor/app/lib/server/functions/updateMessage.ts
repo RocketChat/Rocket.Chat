@@ -43,7 +43,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 
 	parseUrlsInMessage(message);
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
 

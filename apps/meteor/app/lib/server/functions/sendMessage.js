@@ -238,7 +238,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 	parseUrlsInMessage(message);
 
-	message = callbacks.run('beforeSaveMessage', message, room);
+	message = await callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
 		if (message.t === 'otr') {
 			const otrStreamer = notifications.streamRoomMessage;

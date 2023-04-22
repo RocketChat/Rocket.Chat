@@ -177,6 +177,7 @@ const computation = Tracker.autorun(() => {
 				if (record.streamActive !== true) {
 					void (
 						roomMessagesStream.on(record.rid, async (msg) => {
+							console.log(msg);
 							// Should not send message to room if room has not loaded all the current messages
 							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 							// 	return;
@@ -192,7 +193,7 @@ const computation = Tracker.autorun(() => {
 									name,
 								};
 								if (isNew) {
-									callbacks.run('streamNewMessage', msg);
+									await callbacks.run('streamNewMessage', msg);
 								}
 							}
 
@@ -200,7 +201,7 @@ const computation = Tracker.autorun(() => {
 
 							handleTrackSettingsChange(msg);
 
-							callbacks.run('streamMessage', msg);
+							await callbacks.run('streamMessage', msg);
 
 							fireGlobalEvent('new-message', msg);
 						}) as unknown as Promise<void>
