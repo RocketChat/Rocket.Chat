@@ -89,11 +89,11 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 			setModal(
 				<GenericModal
+					wrapperFunction={(props) => <Box is='form' onSubmit={confirmSearch} {...props} />}
 					variant='info'
 					confirmText={t('Search')}
 					cancelText={t('Cancel')}
 					title={t('Test_LDAP_Search')}
-					onConfirm={confirmSearch}
 					onClose={closeModal}
 				>
 					<Field>

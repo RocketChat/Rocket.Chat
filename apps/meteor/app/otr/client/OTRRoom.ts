@@ -246,17 +246,17 @@ export class OTRRoom implements IOTRRoom {
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
 		switch (type) {
 			case 'handshake':
-				let timeout = 0;
+				let timeout: NodeJS.Timeout;
 
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					try {
 						if (!data.publicKey) throw new Error('Public key is not generated');
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(async () => {
+						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
@@ -266,7 +266,7 @@ export class OTRRoom implements IOTRRoom {
 									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 								});
 							}
-						});
+						}, 0);
 					} catch (e) {
 						dispatchToastMessage({ type: 'error', message: e });
 						throw new Meteor.Error('establish-connection-error', 'Establish connection error.');
@@ -274,7 +274,7 @@ export class OTRRoom implements IOTRRoom {
 				};
 
 				const closeOrCancelModal = (): void => {
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					this.deny();
 					imperativeModal.close();
 				};
@@ -310,7 +310,7 @@ export class OTRRoom implements IOTRRoom {
 								},
 							},
 						});
-						timeout = Meteor.setTimeout(() => {
+						timeout = setTimeout(() => {
 							this.setState(OtrRoomState.TIMEOUT);
 							imperativeModal.close();
 						}, 10000);
