@@ -1,17 +1,17 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type EmojiItemType = {
+export type EmojiItem = {
 	emoji: string;
 	image: string;
 };
 
-export type EmojiCategoriesType = {
+export type EmojiCategories = {
 	key: string;
 	i18n: TranslationKey;
 };
 
-type EmojiPackageType = {
-	emojiCategories: EmojiCategoriesType[];
+type EmojiPackage = {
+	emojiCategories: EmojiCategories[];
 	categoryIndex: number;
 	emojisByCategory: {
 		[key: string]: string[];
@@ -23,10 +23,12 @@ type EmojiPackageType = {
 	renderPicker(emojiToRender: string): string;
 };
 
+export type EmojiPackages = {
+	[packageName: string]: EmojiPackage;
+};
+
 export type EmojiType = {
-	packages: {
-		[key: string]: EmojiPackageType;
-	};
+	packages: EmojiPackages;
 	list: {
 		[key: string]: {
 			category: string;

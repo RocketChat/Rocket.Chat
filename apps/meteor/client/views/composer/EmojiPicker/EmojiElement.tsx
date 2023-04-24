@@ -2,12 +2,9 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import type { MouseEvent } from 'react';
 import React from 'react';
 
-export type EmojiElementType = {
-	emoji: string;
-	image: string;
-};
+import type { EmojiElementType } from './EmojiElementType';
 
-type EmojiElementProps = EmojiElementType & { onClick: (e: MouseEvent) => void };
+type EmojiElementProps = EmojiElementType & { onClick: (e: MouseEvent<HTMLElement>) => void };
 
 // TODO: adapt IconButton with fuselage
 const EmojiElement = ({ emoji, image, onClick }: EmojiElementProps) => {

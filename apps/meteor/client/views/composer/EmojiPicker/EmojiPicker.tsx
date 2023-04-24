@@ -2,11 +2,10 @@ import { Box, PositionAnimated, AnimatedVisibility, Field, TextInput, Icon } fro
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
-import type { ButtonElement } from '@rocket.chat/ui-kit';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent } from 'react';
 import React, { useState, Fragment, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 
-import type { EmojiItemType } from '../../../../app/emoji/client';
+import type { EmojiItem } from '../../../../app/emoji/client';
 import {
 	emoji,
 	updateRecent,
@@ -16,8 +15,8 @@ import {
 	createPickerEmojis,
 	CUSTOM_CATEGORY,
 } from '../../../../app/emoji/client';
-import type { EmojiElementType } from './EmojiElement';
 import EmojiElement from './EmojiElement';
+import type { EmojiElementType } from './EmojiElementType';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
 import ToneSelector from './ToneSelector';
 
@@ -41,6 +40,8 @@ type CategoriesPosition = {
 	top: number;
 };
 
+const DEFAULT_ITEMS_LIMIT = 90;
+
 const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
 
@@ -59,10 +60,10 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 
 	const [searching, setSearching] = useState(false);
-	const [searchItemsLimit, setSearchItemsLimit] = useState(90);
-	const [customItemsLimit, setCustomItemsLimit] = useState(90);
+	const [searchItemsLimit, setSearchItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
+	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [searchResults, setSearchResults] = useState<EmojiItemType[]>([]);
+	const [searchResults, setSearchResults] = useState<EmojiItem[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 
 	useOutsideClick([emojiContainerRef], onClose);
@@ -113,7 +114,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		}
 	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis, showInitialCategory]);
 
-	const updateEmojiListByCategory = (categoryKey: string, limit?: number) => {
+	const updateEmojiListByCategory = (categoryKey: string, limit: number = DEFAULT_ITEMS_LIMIT) => {
 		const result = emojiListByCategory.map((category) => {
 			return categoryKey === category.key
 				? {
@@ -129,10 +130,14 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setEmojiListByCategory(result);
 	};
 
-	const handleSelectEmoji = (event: MouseEvent<ButtonElement>) => {
+	const handleSelectEmoji = (event: MouseEvent<HTMLElement>) => {
 		event.stopPropagation();
 
 		const _emoji = event.currentTarget.dataset?.emoji;
+
+		if (!_emoji) {
+			return;
+		}
 
 		let tone = '';
 

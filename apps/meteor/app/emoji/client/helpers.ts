@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import type { EmojiCategoriesType, EmojiItemType } from '.';
+import type { EmojiCategories, EmojiItem } from '.';
 import { emoji } from '../lib/rocketchat';
 
 export const CUSTOM_CATEGORY = 'rocket';
@@ -31,7 +31,7 @@ export const createEmojiList = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 ) => {
-	const emojiList: EmojiItemType[] = [];
+	const emojiList: EmojiItem[] = [];
 	const emojiPackages = Object.values(emoji.packages);
 
 	emojiPackages.forEach((emojiPackage) => {
@@ -61,7 +61,7 @@ export const createEmojiList = (
 };
 
 export const getCategoriesList = () => {
-	let categoriesList: EmojiCategoriesType[] = [];
+	let categoriesList: EmojiCategories[] = [];
 
 	for (const emojiPackage in emoji.packages) {
 		if (emoji.packages.hasOwnProperty(emojiPackage)) {
@@ -99,7 +99,7 @@ export const getEmojisBySearchTerm = (
 			current = current.replace(/:/g, '');
 			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
 
-			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {
 				tone = `_tone${actualTone}`;
 			}
 
@@ -121,7 +121,7 @@ export const getEmojisBySearchTerm = (
 
 				if (!emoji.list[emojiToRender]) {
 					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-					return;
+					break;
 				}
 
 				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
