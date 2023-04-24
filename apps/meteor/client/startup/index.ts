@@ -8,7 +8,6 @@ import './callbacks';
 import './collections';
 import './contextualBar';
 import './customOAuth';
-import './customTranslations';
 import './e2e';
 import './forceLogout';
 import './i18n';

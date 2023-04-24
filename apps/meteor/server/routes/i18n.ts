@@ -28,4 +28,15 @@ app.get('/i18n/:lng', async (req: Request, res: Response) => {
 	}
 });
 
+app.get('/i18n/languages/available', async (_req: Request, res: Response) => {
+	try {
+		const data = await Translation.getSupportedLanguagesWithNames();
+
+		res.status(200).json(data);
+	} catch (error) {
+		res.writeHead(400);
+		res.end();
+	}
+});
+
 WebApp.connectHandlers.use(app);

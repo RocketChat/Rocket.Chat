@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import FsBackend from 'i18next-fs-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
 
-import { getPathFromTranslationFile, getSupportedLanguages } from './loader';
+import { getAllLanguagesWithNames, getPathFromTranslationFile, getSupportedLanguages } from './loader';
 import { settings } from '../../../app/settings/server';
 
 export class TranslationService extends ServiceClassInternal implements ITranslationService {
@@ -99,6 +99,10 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 	public async changeServerLanguage(language: string): Promise<void> {
 		await this.i18nextInstance.changeLanguage(language);
+	}
+
+	public async getSupportedLanguagesWithNames(): Promise<Record<string, string>> {
+		return getAllLanguagesWithNames();
 	}
 
 	// Cache the server language for 1 hour

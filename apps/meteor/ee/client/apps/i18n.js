@@ -1,5 +1,4 @@
-import { TAPi18next } from 'meteor/rocketchat:tap-i18n';
-
+import { addTranslationsToDefaultNamespace } from '../../../client/lib/i18n/i18nHelper';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from './communication';
 import { Apps } from './orchestrator';
@@ -13,7 +12,7 @@ const loadAppI18nResources = (appId, languages) => {
 				return translations;
 			}, {});
 
-			TAPi18next.addResourceBundle(language, 'project', scopedTranslations);
+			addTranslationsToDefaultNamespace(language, 'project', scopedTranslations);
 		} catch (error) {
 			Apps.handleError(error);
 		}

@@ -1,22 +1,22 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
+import { baseURI } from '../lib/baseURI';
+import { changeLanguage, initializeI18n } from '../lib/i18n/i18nHelper';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
-Meteor.startup(() => {
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
+Meteor.startup(async () => {
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
-	const availableLanguages = TAPi18n.getLanguages();
+	const availableLanguages = await (await fetch(`${baseURI}i18n/languages/available`)).json();
 
 	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
@@ -38,7 +38,7 @@ Meteor.startup(() => {
 			});
 		});
 
-	const applyLanguage = (language: string | undefined = 'en'): void => {
+	const applyLanguage = async (language: string | undefined = 'en'): Promise<void> => {
 		language = filterLanguage(language);
 
 		if (!availableLanguages[language]) {
@@ -52,7 +52,7 @@ Meteor.startup(() => {
 		document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
 		document.documentElement.lang = language;
 
-		TAPi18n.setLanguage(language);
+		await changeLanguage(language);
 		loadMomentLocale(language)
 			.then((locale) => moment.locale(locale))
 			.catch((error) => {
@@ -71,7 +71,7 @@ Meteor.startup(() => {
 	const defaultUserLanguage = (): string => settings.get('Language') || getBrowserLanguage() || 'en';
 	window.defaultUserLanguage = defaultUserLanguage;
 
-	Tracker.autorun(() => {
+	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
@@ -79,13 +79,14 @@ Meteor.startup(() => {
 
 		const user = Users.findOne(uid, { fields: { language: 1 } }) as IUser | undefined;
 
+		await initializeI18n(user?.language || defaultUserLanguage());
 		setLanguage(user?.language || defaultUserLanguage());
 	});
 
-	Tracker.autorun(() => {
+	Tracker.autorun(async () => {
 		const language = currentLanguage.get();
 		if (language) {
-			applyLanguage(language);
+			await applyLanguage(language);
 		}
 	});
 });

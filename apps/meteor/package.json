@@ -342,6 +342,7 @@
 		"ldap-escape": "^2.0.6",
 		"ldapjs": "^2.3.3",
 		"limax": "^3.0.0",
+		"locale-codes": "^1.3.1",
 		"localforage": "^1.10.0",
 		"lodash.clonedeep": "^4.5.0",
 		"lodash.debounce": "^4.0.8",

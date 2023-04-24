@@ -7316,6 +7316,7 @@ __metadata:
     ldap-escape: ^2.0.6
     ldapjs: ^2.3.3
     limax: ^3.0.0
+    locale-codes: ^1.3.1
     localforage: ^1.10.0
     lodash.clonedeep: ^4.5.0
     lodash.debounce: ^4.0.8
@@ -24700,6 +24701,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iso639-codes@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "iso639-codes@npm:1.0.1"
+  checksum: 257d58be87e1693f632b44bdf4a2ebb7e75a98c012494216687132e975c312ff2d53ad37e7b3bb326654ec6c4c5992daf81293c6a268639cb8d142ea8fd99f58
+  languageName: node
+  linkType: hard
+
 "isobject@npm:^2.0.0":
   version: 2.1.0
   resolution: "isobject@npm:2.1.0"
@@ -26158,6 +26166,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"langs@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "langs@npm:2.0.0"
+  checksum: fbf1eab19695727dc84cd2fbf296653aeb865fc4c029e901b7265d78993bcfe6227dfd58fa79d43dad624328836e4523ba4912440a75a99c012d1ea43be7c9f7
+  languageName: node
+  linkType: hard
+
 "latest-version@npm:^3.0.0":
   version: 3.1.0
   resolution: "latest-version@npm:3.1.0"
@@ -26494,6 +26509,17 @@ __metadata:
     emojis-list: ^3.0.0
     json5: ^2.1.2
   checksum: a5281f5fff1eaa310ad5e1164095689443630f3411e927f95031ab4fb83b4a98f388185bb1fe949e8ab8d4247004336a625e9255c22122b815bb9a4c5d8fc3b7
+  languageName: node
+  linkType: hard
+
+"locale-codes@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "locale-codes@npm:1.3.1"
+  dependencies:
+    iso639-codes: ^1.0.1
+    langs: ^2.0.0
+    windows-locale: ^1.1.0
+  checksum: 69462d2e1750a2c78f39133d2a2039949ee9a7a2f01daa3edb0fb503e487fbccd212d92895ab8971f191efbab74a99fe4120c697a256831b767b303b3ab5d138
   languageName: node
   linkType: hard
 
@@ -38857,6 +38883,13 @@ __metadata:
   dependencies:
     string-width: ^4.0.0
   checksum: 03db6c9d0af9329c37d74378ff1d91972b12553c7d72a6f4e8525fe61563fa7adb0b9d6e8d546b7e059688712ea874edd5ded475999abdeedf708de9849310e0
+  languageName: node
+  linkType: hard
+
+"windows-locale@npm:^1.1.0":
+  version: 1.1.3
+  resolution: "windows-locale@npm:1.1.3"
+  checksum: c3c4a3887212d94442bf3d3c205b54ade1fbbf352ba83f7d32de6cceea8f14d3605ce16b88d9f4735448c0d9e1c7dd2db2afcaa04bc0da545a265aca832f1d57
   languageName: node
   linkType: hard
 

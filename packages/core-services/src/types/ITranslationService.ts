@@ -9,4 +9,5 @@ export interface ITranslationService {
 	getLanguageData(language: string): Promise<Record<string, string>>;
 	getSupportedLanguages(): Promise<string[]>;
 	changeServerLanguage(language: string): Promise<void>;
+	getSupportedLanguagesWithNames(): Promise<Record<string, string>>;
 }
