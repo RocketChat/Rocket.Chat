@@ -43,7 +43,7 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 
 	const result = await fileStore.insert(file, buffer);
 
-	Meteor.setTimeout(async function () {
+	setTimeout(async function () {
 		result.etag && (await Rooms.setAvatarData(rid, 'upload', result.etag));
 		await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
 		void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });

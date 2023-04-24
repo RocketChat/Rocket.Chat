@@ -10,6 +10,7 @@ import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib/server';
+import { sleep } from '../../../lib/utils/sleep';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
@@ -298,7 +299,7 @@ export default class RocketAdapter {
 						if (!hasRetried) {
 							rocketLogger.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
-							Meteor._sleepForMs(1000);
+							await sleep(1000);
 							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
 						}
 						rocketLogger.error(e);
@@ -493,7 +494,7 @@ export default class RocketAdapter {
 				rocketMsgObj.pinnedBy = _.pick(rocketUser, '_id', 'username');
 			}
 			if (slackMessage.subtype === 'bot_message') {
-				Meteor.setTimeout(async () => {
+				setTimeout(async () => {
 					if (slackMessage.bot_id && slackMessage.ts) {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
 						const msg = await Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);

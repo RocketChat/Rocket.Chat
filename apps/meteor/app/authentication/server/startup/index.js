@@ -13,7 +13,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
@@ -276,7 +275,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (user.type !== 'visitor') {
-			Meteor.defer(function () {
+			setImmediate(function () {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -372,7 +371,7 @@ const validateLoginAttemptAsync = async function (login) {
 	login = callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function () {
+	setImmediate(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
