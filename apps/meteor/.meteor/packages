@@ -54,7 +54,6 @@ rocketchat:restivus
 ostrio:cookies
 pauli:accounts-linkedin
 
-rocketchat:tap-i18n@3.0.0
 littledata:synced-cron
 
 autoupdate@1.8.0
@@ -68,6 +67,6 @@ templating
 webapp@1.13.4
 webapp-hashing@1.1.1
 rocketchat:oauth2-server
-rocketchat:i18n
 facts-base@1.0.1
 standard-minifier-css@1.9.0
+jquery
