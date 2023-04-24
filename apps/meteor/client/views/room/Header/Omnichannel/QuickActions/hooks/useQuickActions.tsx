@@ -203,8 +203,6 @@ export const useQuickActions = (
 						  }
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
-				homeRoute.push();
-				LegacyRoomManager.close(room.t + rid);
 				LivechatInquiry.remove({ rid });
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
@@ -212,7 +210,7 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, homeRoute, room.t, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
