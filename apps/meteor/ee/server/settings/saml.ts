@@ -11,8 +11,8 @@ import {
 	defaultMetadataCertificateTemplate,
 } from '../../../app/meteor-accounts-saml/server/lib/constants';
 
-export const addSettings = function (name: string): void {
-	void settingsRegistry.addGroup('SAML', async function () {
+export const addSettings = async function (name: string): Promise<void> {
+	await settingsRegistry.addGroup('SAML', async function () {
 		await this.with(
 			{
 				tab: 'SAML_Enterprise',
