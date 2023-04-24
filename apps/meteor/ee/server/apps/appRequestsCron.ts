@@ -1,10 +1,10 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Apps, AppsManager } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {

@@ -265,8 +265,8 @@ export const normalizeAgent = async (agentId) => {
 	return Object.assign(extraData, { ...(customFields && { customFields }) });
 };
 
-export const dispatchAgentDelegated = (rid, agentId) => {
-	const agent = normalizeAgent(agentId);
+export const dispatchAgentDelegated = async (rid, agentId) => {
+	const agent = await normalizeAgent(agentId);
 
 	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
@@ -506,7 +506,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
 		await LivechatInquiry.readyInquiry(inquiry._id);
 		await LivechatRooms.removeAgentByRoomId(rid);
-		dispatchAgentDelegated(rid, null);
+		await dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 

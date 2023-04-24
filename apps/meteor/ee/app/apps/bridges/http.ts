@@ -4,7 +4,6 @@ import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bri
 import { FetchService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -25,8 +24,7 @@ export class AppHttpBridge extends HttpBridge {
 		let { content } = request;
 
 		if (!content && typeof request.data === 'object') {
-			content = JSON.stringify(request.data);
-			headers['Content-Type'] = 'application/json';
+			content = request.data;
 		}
 
 		if (request.auth) {

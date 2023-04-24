@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
 import { Apps } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
@@ -75,10 +75,13 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
+		},
+		params: {
+			seats: currentSeats,
 		},
 	};
 
