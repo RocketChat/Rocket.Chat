@@ -19,7 +19,7 @@ const AuditPage = () => {
 
 	return (
 		<Page>
-			<PageHeader title={t('Audit_messages')} />
+			<PageHeader title={t('Message_auditing')} />
 			<Tabs>
 				<Tabs.Item selected={type === ''} onClick={() => setType('')}>
 					{t('Rooms')}

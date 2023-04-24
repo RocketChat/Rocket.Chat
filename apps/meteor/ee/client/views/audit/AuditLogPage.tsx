@@ -39,7 +39,7 @@ const AuditLogPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<PageHeader title={t('Audit_logs')} />
+			<PageHeader title={t('Message_auditing_log')} />
 			<PageContent>
 				<Field alignSelf='stretch'>
 					<Field.Label>{t('Date')}</Field.Label>
