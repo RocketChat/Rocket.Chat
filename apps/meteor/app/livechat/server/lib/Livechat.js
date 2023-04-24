@@ -154,7 +154,7 @@ export const Livechat = {
 			}
 
 			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			if (onlineAgents && onlineAgents.length) {
+			if (onlineAgents && (await onlineAgents.count())) {
 				return dept;
 			}
 		}
