@@ -1456,7 +1456,7 @@
   "LDAP_Authentication": "Omogči",
   "LDAP_Authentication_Password": "Geslo",
   "LDAP_Authentication_UserDN": "Uporabnik DN",
-  "LDAP_Authentication_UserDN_Description": "Uporabnik protokola LDAP, ki opravi uporabniške poizvedbe za preverjanje pristnosti drugih uporabnikov, ko se prijavijo.<br/>To je običajno račun storitve, ki je bil ustvarjen posebej za integracije tretjih oseb. Uporabite popolnoma kvalificirano ime, na primer `cn=Administrator,cn=Uporabniki,dc = Primer,dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Uporabnik protokola LDAP, ki opravi uporabniške poizvedbe za preverjanje pristnosti drugih uporabnikov, ko se prijavijo.  \nTo je običajno račun storitve, ki je bil ustvarjen posebej za integracije tretjih oseb. Uporabite popolnoma kvalificirano ime, na primer `cn=Administrator,cn=Uporabniki,dc = Primer,dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Najprej morate nastaviti žeton API-ja, da uporabite integracijo.",
   "LDAP_Background_Sync": "Sinhronizacija v ozadju",
   "LDAP_Background_Sync_Import_New_Users": "Sinhronizacija v ozadju Uvozi nove uporabnike",

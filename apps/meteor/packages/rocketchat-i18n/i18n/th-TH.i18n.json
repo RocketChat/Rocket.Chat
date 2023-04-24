@@ -1460,7 +1460,7 @@
   "LDAP_Authentication": "ทำให้สามารถ",
   "LDAP_Authentication_Password": "รหัสผ่าน",
   "LDAP_Authentication_UserDN": "DN ผู้ใช้",
-  "LDAP_Authentication_UserDN_Description": "ผู้ใช้ LDAP ที่ดำเนินการค้นหาผู้ใช้เพื่อตรวจสอบสิทธิ์ผู้ใช้รายอื่นเมื่อลงชื่อเข้าใช้<br/>โดยปกติจะเป็นบัญชีบริการที่สร้างขึ้นโดยเฉพาะสำหรับการผสานรวมของบุคคลที่สาม ใช้ชื่อที่มีคุณสมบัติครบถ้วนเช่น `cn = ผู้ดูแลระบบ cn = ผู้ใช้ dc = ตัวอย่าง dc = com`",
+  "LDAP_Authentication_UserDN_Description": "ผู้ใช้ LDAP ที่ดำเนินการค้นหาผู้ใช้เพื่อตรวจสอบสิทธิ์ผู้ใช้รายอื่นเมื่อลงชื่อเข้าใช้  \nโดยปกติจะเป็นบัญชีบริการที่สร้างขึ้นโดยเฉพาะสำหรับการผสานรวมของบุคคลที่สาม ใช้ชื่อที่มีคุณสมบัติครบถ้วนเช่น `cn = ผู้ดูแลระบบ cn = ผู้ใช้ dc = ตัวอย่าง dc = com`",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "คุณต้องตั้งค่าโทเค็น API ก่อนเพื่อใช้การผสานรวม",
   "LDAP_Background_Sync": "พื้นหลังซิงค์",
   "LDAP_Background_Sync_Import_New_Users": "ซิงค์พื้นหลังนำเข้าผู้ใช้ใหม่",

@@ -1485,7 +1485,7 @@
   "LDAP_Authentication": "启用",
   "LDAP_Authentication_Password": "密码",
   "LDAP_Authentication_UserDN": "用户DN",
-  "LDAP_Authentication_UserDN_Description": "执行用户查找以在其他用户登录时对其进行身份验证的LDAP用户。<br/>这通常是专门为第三方集成创建的服务帐户。使用完全限定的名称，例如`cn = Administrator，cn = Users，dc =示例，dc = com`。",
+  "LDAP_Authentication_UserDN_Description": "执行用户查找以在其他用户登录时对其进行身份验证的LDAP用户。  \n这通常是专门为第三方集成创建的服务帐户。使用完全限定的名称，例如`cn = Administrator，cn = Users，dc =示例，dc = com`。",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "您必须先设置API令牌才能使用集成。",
   "LDAP_Background_Sync": "后台同步",
   "LDAP_Background_Sync_Import_New_Users": "后台同步导入新用户",

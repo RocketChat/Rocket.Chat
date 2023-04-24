@@ -1465,7 +1465,7 @@
   "LDAP_Authentication": "Permite",
   "LDAP_Authentication_Password": "Parolă",
   "LDAP_Authentication_UserDN": "DN utilizator",
-  "LDAP_Authentication_UserDN_Description": "Utilizatorul LDAP care efectuează căutări de utilizator pentru autentificarea altor utilizatori atunci când se conectează. <br/> Aceasta este de obicei un cont de serviciu special creat pentru integrările terțe părți. Utilizați un nume complet calificat, cum ar fi `cn = Administrator, cn = Users, dc = Exemplu, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Utilizatorul LDAP care efectuează căutări de utilizator pentru autentificarea altor utilizatori atunci când se conectează.   \n Aceasta este de obicei un cont de serviciu special creat pentru integrările terțe părți. Utilizați un nume complet calificat, cum ar fi `cn = Administrator, cn = Users, dc = Exemplu, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Trebuie să setați mai întâi un jeton API pentru a utiliza integrarea.",
   "LDAP_Background_Sync": "Background Sync",
   "LDAP_Background_Sync_Import_New_Users": "Background Sincronizare Import utilizatorilor noi",

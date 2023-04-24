@@ -2089,7 +2089,7 @@
   "LDAP_Authentication": "Aktivér",
   "LDAP_Authentication_Password": "Adgangskode",
   "LDAP_Authentication_UserDN": "Bruger DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP-brugeren, der udfører brugeropslag, for at godkende andre brugere, når de logger ind. <br/>Dette er typisk en servicekonto, der er oprettet specifikt til tredjepartsintegrationer. Brug et fuldt kvalificeret navn, f.eks. `Cn = Administrator, cn = Brugere, dc = Eksempel, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP-brugeren, der udfører brugeropslag, for at godkende andre brugere, når de logger ind.   \nDette er typisk en servicekonto, der er oprettet specifikt til tredjepartsintegrationer. Brug et fuldt kvalificeret navn, f.eks. `Cn = Administrator, cn = Brugere, dc = Eksempel, dc = com`.",
   "LDAP_Avatar_Field": "Bruger-Avatar-felt",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Du skal først indstille en API-token for at kunne bruge integrationen.",
   "LDAP_Avatar_Field_Description": "Hvilket felt der vil blive brugt som *avatar* for brugere. Lad det være tomt for at bruge 'thumbnailPhoto' først og dernæst 'jpegPhoto'.",

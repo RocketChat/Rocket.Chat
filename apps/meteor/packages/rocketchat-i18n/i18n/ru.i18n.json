@@ -2597,7 +2597,7 @@
 	"LDAP_Authentication": "Включить",
 	"LDAP_Authentication_Password": "Пароль",
 	"LDAP_Authentication_UserDN": "User DN",
-	"LDAP_Authentication_UserDN_Description": "Пользователь LDAP, который выполняет поиск пользователей для аутентификации других пользователей при входе в систему. <br/> Обычно это учетная запись службы, созданная специально для сторонних интеграций. Используйте полное имя, например\n `cn = Administrator, cn = Users, dc = Example, dc = com`.",
+	"LDAP_Authentication_UserDN_Description": "Пользователь LDAP, который выполняет поиск пользователей для аутентификации других пользователей при входе в систему.   \n Обычно это учетная запись службы, созданная специально для сторонних интеграций. Используйте полное имя, например\n `cn = Administrator, cn = Users, dc = Example, dc = com`.",
 	"LDAP_Avatar_Field": "Пользовательский аватар",
 	"You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Сначала вы должны настроить API токен, чтобы использовать интеграцию.",
 	"LDAP_Avatar_Field_Description": "Какое поле будет использоваться в качестве *аватара* для пользователей. Оставьте пустым, чтобы использовать `thumbnailPhoto` в первую очередь и `jpegPhoto` в качестве запасного варианта.",

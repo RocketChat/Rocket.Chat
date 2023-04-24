@@ -2174,7 +2174,7 @@
   "LDAP_Authentication": "启用",
   "LDAP_Authentication_Password": "密码",
   "LDAP_Authentication_UserDN": "用户DN",
-  "LDAP_Authentication_UserDN_Description": "该LDAP用户将在其他用户登录时被用于在 LDAP 中执行检索和认证。<br/>通常情况下，该用户是在 LDAP 中特地为第三方集成而创建的帐号。请使用有效的全名，如`cn=Administrator,cn=Users,dc=Example,dc=com`。",
+  "LDAP_Authentication_UserDN_Description": "该LDAP用户将在其他用户登录时被用于在 LDAP 中执行检索和认证。  \n通常情况下，该用户是在 LDAP 中特地为第三方集成而创建的帐号。请使用有效的全名，如`cn=Administrator,cn=Users,dc=Example,dc=com`。",
   "LDAP_Avatar_Field": "用户头像字段",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "您必须先设置 API 令牌才能使用集成。",
   "LDAP_Avatar_Field_Description": "用来作为用户 *头像* 的字段。留空以优先使用 `thumbnailPhoto` 并以 `jpegPhoto`作为回退。",

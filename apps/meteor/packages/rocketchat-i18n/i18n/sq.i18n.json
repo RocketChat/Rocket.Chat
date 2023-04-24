@@ -1465,7 +1465,7 @@
   "LDAP_Authentication": "mundësoj",
   "LDAP_Authentication_Password": "Fjalëkalim",
   "LDAP_Authentication_UserDN": "Përdoruesi DN",
-  "LDAP_Authentication_UserDN_Description": "Përdoruesi LDAP që kryen Lookups përdoruesit për të vërtetuar përdoruesit e tjerë, kur ata nënshkruajnë në. <br/> Kjo është zakonisht një llogari të shërbimit krijuar posaçërisht për integrime palë të treta. Përdorni një emër plotësisht të kualifikuar, të tilla si 'cn = Administrator, cn = Përdoruesit, dc = Shembull, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Përdoruesi LDAP që kryen Lookups përdoruesit për të vërtetuar përdoruesit e tjerë, kur ata nënshkruajnë në.   \n Kjo është zakonisht një llogari të shërbimit krijuar posaçërisht për integrime palë të treta. Përdorni një emër plotësisht të kualifikuar, të tilla si 'cn = Administrator, cn = Përdoruesit, dc = Shembull, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Ju duhet të vendosni fillimisht një shenjë API për të përdorur integrimin.",
   "LDAP_Background_Sync": "Sinkronizimi i sfondit",
   "LDAP_Background_Sync_Import_New_Users": "Sinkronizimi i sfondit Importo përdorues të rinj",

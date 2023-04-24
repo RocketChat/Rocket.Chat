@@ -2495,7 +2495,7 @@
   "LDAP_Authentication": "تمكين",
   "LDAP_Authentication_Password": "كلمة المرور",
   "LDAP_Authentication_UserDN": "الاسم المميز للمستخدم",
-  "LDAP_Authentication_UserDN_Description": "مستخدم LDAP الذي يجري عمليات بحث عن المستخدمين لمصادقة مستخدمين آخرين عند تسجيل الدخول. <br/>هذا عادةً حساب خدمة تم إنشاؤه خصوصًا لعمليات تكامل الجهات الخارجية. استخدم اسمًا مؤهلاً بالكامل مثل \"cn=Administrator،‏ cn=Users،‏ dc=Example،‏ dc=com\".",
+  "LDAP_Authentication_UserDN_Description": "مستخدم LDAP الذي يجري عمليات بحث عن المستخدمين لمصادقة مستخدمين آخرين عند تسجيل الدخول.   \nهذا عادةً حساب خدمة تم إنشاؤه خصوصًا لعمليات تكامل الجهات الخارجية. استخدم اسمًا مؤهلاً بالكامل مثل \"cn=Administrator،‏ cn=Users،‏ dc=Example،‏ dc=com\".",
   "LDAP_Avatar_Field": "حقل الصورة الرمزية للمستخدم",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "يجب عليك أولاً تعيين الرمز المميز لواجهة برمجة التطبيقات من أجل استخدام التكامل.",
   "LDAP_Avatar_Field_Description": "الحقل الذي سيتم استخدامه كـ *صورة رمزية* للمستخدمين. اتركه فارغًا لاستخدام \"thumbnailPhoto\" أولاً و\"jpegPhoto\" كبديل.",

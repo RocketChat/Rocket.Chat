@@ -1767,7 +1767,7 @@
   "LDAP_Authentication": "Etkinleştir",
   "LDAP_Authentication_Password": "Şifre",
   "LDAP_Authentication_UserDN": "Kullanıcı DN",
-  "LDAP_Authentication_UserDN_Description": "oturum açtıklarında diğer kullanıcıların kimliğini doğrulamak için kullanıcı aramaları gerçekleştiren LDAP kullanıcı. <br/> Bu genellikle üçüncü parti entegrasyonları için özel olarak oluşturulan bir hizmet hesabıdır. Bir tam adını kullanın, örneğin cn = Yönetici 'olarak, cn Kullanıcıları, dc = Örnek, dc = com` =.",
+  "LDAP_Authentication_UserDN_Description": "oturum açtıklarında diğer kullanıcıların kimliğini doğrulamak için kullanıcı aramaları gerçekleştiren LDAP kullanıcı.   \n Bu genellikle üçüncü parti entegrasyonları için özel olarak oluşturulan bir hizmet hesabıdır. Bir tam adını kullanın, örneğin cn = Yönetici 'olarak, cn Kullanıcıları, dc = Örnek, dc = com` =.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Entegrasyonu kullanmak için önce bir API belirteci ayarlamanız gerekir.",
   "LDAP_Background_Sync": "Arka Plan Senkronizasyonu",
   "LDAP_Background_Sync_Import_New_Users": "Arka Plan Senkronize Etme Yeni Kullanıcıları Al",

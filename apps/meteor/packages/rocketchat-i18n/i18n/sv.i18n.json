@@ -2824,7 +2824,7 @@
 	"LDAP_Authentication": "Aktivera",
 	"LDAP_Authentication_Password": "Lösenord",
 	"LDAP_Authentication_UserDN": "Användar-DN",
-	"LDAP_Authentication_UserDN_Description": "LDAP användare som utför användaruppslag att autentisera andra användare när de loggar in. <br/> Detta är oftast ett servicekonto som skapats speciellt för tredjeparts integrationer. Använd ett fullständigt namn, såsom `cn = administratör, cn = användare, dc = exempel, dc = com`.",
+	"LDAP_Authentication_UserDN_Description": "LDAP användare som utför användaruppslag att autentisera andra användare när de loggar in.   \n Detta är oftast ett servicekonto som skapats speciellt för tredjeparts integrationer. Använd ett fullständigt namn, såsom `cn = administratör, cn = användare, dc = exempel, dc = com`.",
 	"LDAP_Avatar_Field": "Fält för användaravatar",
 	"You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Du måste ange en API-token först för att kunna använda integrationen.",
 	"LDAP_Avatar_Field_Description": " Vilket fält som ska användas för användares *avatar*. Lämna fältet tomt om du vill använda \"thumbnailPhoto\" i första hand och \"jpegPhoto\" i andra hand.",

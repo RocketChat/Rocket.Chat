@@ -2079,7 +2079,7 @@
   "LDAP_Authentication": "Povolit",
   "LDAP_Authentication_Password": "Heslo",
   "LDAP_Authentication_UserDN": "Uživatelské DN",
-  "LDAP_Authentication_UserDN_Description": "Uživatel LDAP, přes kterého se provádí vyhledávání a ověřují ostatní uživatelé při přihlášení. <br/> Obvykle je to účet služby vytvořené speciálně pro integraci do třetích stran. Použijte plně kvalifikovaný název, jako například `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "Uživatel LDAP, přes kterého se provádí vyhledávání a ověřují ostatní uživatelé při přihlášení.   \n Obvykle je to účet služby vytvořené speciálně pro integraci do třetích stran. Použijte plně kvalifikovaný název, jako například `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Pole s obrázkem uživatele",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Pro použití integrace je nejprve potřeba přidat API token.",
   "LDAP_Avatar_Field_Description": "Které pole bude použito pro obrázky uživatelů. Pokud ponecháte prázdné vyzkouší se pole `thumbnailPhoto` případně `jpegPhoto`",

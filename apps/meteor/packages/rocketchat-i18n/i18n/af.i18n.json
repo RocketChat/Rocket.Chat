@@ -1467,7 +1467,7 @@
   "LDAP_Authentication": "in staat te stel",
   "LDAP_Authentication_Password": "wagwoord",
   "LDAP_Authentication_UserDN": "Gebruiker DN",
-  "LDAP_Authentication_UserDN_Description": "Die LDAP-gebruiker wat gebruikersaansoeke uitvoer om ander gebruikers te verifieer wanneer hulle inteken.<br/>Dit is tipies 'n diensrekening wat spesifiek vir integrasies van derde partye geskep is. Gebruik 'n volledig gekwalifiseerde naam, soos `cn = Administrateur, cn = Gebruikers, dc = Voorbeeld, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Die LDAP-gebruiker wat gebruikersaansoeke uitvoer om ander gebruikers te verifieer wanneer hulle inteken.  \nDit is tipies 'n diensrekening wat spesifiek vir integrasies van derde partye geskep is. Gebruik 'n volledig gekwalifiseerde naam, soos `cn = Administrateur, cn = Gebruikers, dc = Voorbeeld, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "U moet eers 'n API-token stel om die integrasie te gebruik.",
   "LDAP_Background_Sync": "Agtergrondsinkronisering",
   "LDAP_Background_Sync_Import_New_Users": "Agtergrond-sinkroniseer invoer nuwe gebruikers",

@@ -1467,7 +1467,7 @@
   "LDAP_Authentication": "Aktivieren",
   "LDAP_Authentication_Password": "Passwort",
   "LDAP_Authentication_UserDN": "Benutzer-DN",
-  "LDAP_Authentication_UserDN_Description": "Der LDAP-Benutzer, der eine Benutzersuche durchführt, um andere Nutzer bei der Anmeldung zu authentifizieren. <br/>Dies ist in der Regel ein Servicekonto, welches für Drittintegrationen erstellt worden ist. Verwenden Sie einen vollen Namen, wie zum Beispiel `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "Der LDAP-Benutzer, der eine Benutzersuche durchführt, um andere Nutzer bei der Anmeldung zu authentifizieren.   \nDies ist in der Regel ein Servicekonto, welches für Drittintegrationen erstellt worden ist. Verwenden Sie einen vollen Namen, wie zum Beispiel `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Feld für das Benutzer Avatar",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Sie müssen zuerst ein API-Token setzen, um die Integration nutzen zu können.",
   "LDAP_Avatar_Field_Description": "Geben Sie an, welches Feld als *Benutzer Avatar* verwendet werden soll. Lassen Sie das Feld leer um das Feld `thumbnailPhoto` als primäres und `jpegPhoto` als alternatives Feld zu verwenden.",

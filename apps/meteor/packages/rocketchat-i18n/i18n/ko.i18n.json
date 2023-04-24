@@ -2136,7 +2136,7 @@
   "LDAP_Authentication": "사용",
   "LDAP_Authentication_Password": "비밀번호",
   "LDAP_Authentication_UserDN": "사용자 DN",
-  "LDAP_Authentication_UserDN_Description": "로그인시 다른 사용자를 인증하기 위해 사용자 조회를 수행하는 LDAP 사용자입니다. <br/>일반적으로 타사 통합을 위해 특별히 만든 서비스 계정입니다. `cn=Administrator,cn=Users,dc=Example,dc=com`와 같은 완전한 이름을 사용하십시오.",
+  "LDAP_Authentication_UserDN_Description": "로그인시 다른 사용자를 인증하기 위해 사용자 조회를 수행하는 LDAP 사용자입니다.   \n일반적으로 타사 통합을 위해 특별히 만든 서비스 계정입니다. `cn=Administrator,cn=Users,dc=Example,dc=com`와 같은 완전한 이름을 사용하십시오.",
   "LDAP_Avatar_Field": "사용자 아바타 필드",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "인티그레이션을 사용하려면 먼저 API 토큰을 설정해야 합니다.",
   "LDAP_Avatar_Field_Description": "사용자의 * 아바타 *로 사용될 필드입니다. `thumbnailPhoto`를 먼저 사용하고`jpegPhoto`를 대체로 사용하려면 비워 두십시오.",

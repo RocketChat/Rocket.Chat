@@ -2489,7 +2489,7 @@
   "LDAP_Authentication": "Activer",
   "LDAP_Authentication_Password": "Mot de passe",
   "LDAP_Authentication_UserDN": "DN utilisateur",
-  "LDAP_Authentication_UserDN_Description": "Utilisateur LDAP qui effectue des recherches d'utilisateurs pour authentifier les autres utilisateurs lorsqu'ils se connectent. <br/>Il s'agit généralement d'un compte de service créé spécifiquement pour les intégrations tierces. Utilisez un nom complet, tel que `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "Utilisateur LDAP qui effectue des recherches d'utilisateurs pour authentifier les autres utilisateurs lorsqu'ils se connectent.   \nIl s'agit généralement d'un compte de service créé spécifiquement pour les intégrations tierces. Utilisez un nom complet, tel que `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Champ d'avatar d'utilisateur",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Vous devez d'abord définir un jeton d'API pour pouvoir utiliser l'intégration.",
   "LDAP_Avatar_Field_Description": "Champ qui sera utilisé comme *avatar* pour les utilisateurs. Laissez ce champ vide pour utiliser `thumbnailPhoto` en priorité et `jpegPhoto` comme solution de secours.",

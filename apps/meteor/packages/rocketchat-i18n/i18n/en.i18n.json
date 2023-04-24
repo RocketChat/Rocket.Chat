@@ -2830,7 +2830,7 @@
   "LDAP_Authentication": "Enable",
   "LDAP_Authentication_Password": "Password",
   "LDAP_Authentication_UserDN": "User DN",
-  "LDAP_Authentication_UserDN_Description": "The LDAP user that performs user lookups to authenticate other users when they sign in. <br/>This is typically a service account created specifically for third-party integrations. Use a fully qualified name, such as `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "The LDAP user that performs user lookups to authenticate other users when they sign in.   \nThis is typically a service account created specifically for third-party integrations. Use a fully qualified name, such as `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "User Avatar Field",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "You have to set an API token first in order to use the integration.",
   "LDAP_Avatar_Field_Description": " Which field will be used as *avatar* for users. Leave empty to use `thumbnailPhoto` first and `jpegPhoto` as fallback.",

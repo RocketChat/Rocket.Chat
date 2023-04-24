@@ -2827,7 +2827,7 @@
   "LDAP_Authentication": "Ota käyttöön",
   "LDAP_Authentication_Password": "Salasana",
   "LDAP_Authentication_UserDN": "Käyttäjän DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP-käyttäjä, joka todentaa muut käyttäjät heidän kirjautuessaan käyttäjähaun avulla. <br/>Tämä on tavallisesti huoltotili, joka on luotu nimenomaisesti kolmannen osapuolen integraatioita varten. Käytä täydellistä nimeä, kuten `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP-käyttäjä, joka todentaa muut käyttäjät heidän kirjautuessaan käyttäjähaun avulla.   \nTämä on tavallisesti huoltotili, joka on luotu nimenomaisesti kolmannen osapuolen integraatioita varten. Käytä täydellistä nimeä, kuten `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Käyttäjän avatar -kenttä",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Määritä API-tunnus, jotta voit käyttää integraatiota.",
   "LDAP_Avatar_Field_Description": " Käyttäjien *avatarina* käytettävä kenttä. Jos jätät tämän tyhjäksi, `thumbnailPhoto` on ensisijainen ja `jpegPhoto` varalla.",

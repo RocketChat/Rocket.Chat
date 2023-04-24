@@ -2682,7 +2682,7 @@
   "LDAP_Authentication": "Włącz",
   "LDAP_Authentication_Password": "Hasło",
   "LDAP_Authentication_UserDN": "DN użytkownika",
-  "LDAP_Authentication_UserDN_Description": "Użytkownik LDAP, który wykonuje wyszukiwań użytkowników do uwierzytelnienia innych użytkowników podczas logowania się. <br/> Jest to zazwyczaj konto usługi stworzony specjalnie dla integracji osób trzecich. Użyj pełnej nazwy, takie jak `cn = Administrator, CN = Users, DC = example, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Użytkownik LDAP, który wykonuje wyszukiwań użytkowników do uwierzytelnienia innych użytkowników podczas logowania się.   \n Jest to zazwyczaj konto usługi stworzony specjalnie dla integracji osób trzecich. Użyj pełnej nazwy, takie jak `cn = Administrator, CN = Users, DC = example, dc = com`.",
   "LDAP_Avatar_Field": "Pole Awatar użytkownika",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Trzeba najpierw ustawić token API, aby móc korzystać z integracji.",
   "LDAP_Avatar_Field_Description": " Które pole będzie używane jako *avatar* dla użytkowników. Pozostaw puste pole, aby użyć `thumbnailPhoto` najpierw oraz `jpegPhoto` jako awaryjne.",

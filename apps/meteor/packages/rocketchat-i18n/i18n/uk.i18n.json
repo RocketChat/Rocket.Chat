@@ -1932,7 +1932,7 @@
   "LDAP_Authentication": "Увімкнути",
   "LDAP_Authentication_Password": "Пароль",
   "LDAP_Authentication_UserDN": "Користувач DN",
-  "LDAP_Authentication_UserDN_Description": "Користувач LDAP, який виконує операцій пошуку користувачів для аутентифікації інших користувачів при вході у систему <br/>Як правило, це обліковий запис служби, створений спеціально для сторонніх інтеграції. Використовуйте повне ім'я, наприклад `cn=Administrator, cn=Users, dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "Користувач LDAP, який виконує операцій пошуку користувачів для аутентифікації інших користувачів при вході у систему   \nЯк правило, це обліковий запис служби, створений спеціально для сторонніх інтеграції. Використовуйте повне ім'я, наприклад `cn=Administrator, cn=Users, dc=Example,dc=com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Перш за все, ви повинні встановити токен API, щоб використовувати інтеграцію.",
   "LDAP_Background_Sync": "Фонова синхронізація",
   "LDAP_Background_Sync_Import_New_Users": "Фонова синхронізація імпортує нових користувачів",

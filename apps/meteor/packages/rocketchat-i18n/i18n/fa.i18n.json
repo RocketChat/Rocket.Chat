@@ -1731,7 +1731,7 @@
   "LDAP_Authentication": "فعال کردن",
   "LDAP_Authentication_Password": "رمز عبور",
   "LDAP_Authentication_UserDN": "کاربر DN",
-  "LDAP_Authentication_UserDN_Description": "کاربر LDAP که انجام جستجوها کاربران برای تأیید هویت کاربران دیگر زمانی که آنها وارد شوید. <br/> این یک حساب خدمات به طور خاص برای یکپارچگی شخص ثالث ایجاد شده است به طور معمول. استفاده از یک نام کاملا مناسب، مانند `CN = مدیر، CN = کاربران، DC = به عنوان مثال، DC = com`.",
+  "LDAP_Authentication_UserDN_Description": "کاربر LDAP که انجام جستجوها کاربران برای تأیید هویت کاربران دیگر زمانی که آنها وارد شوید.   \n این یک حساب خدمات به طور خاص برای یکپارچگی شخص ثالث ایجاد شده است به طور معمول. استفاده از یک نام کاملا مناسب، مانند `CN = مدیر، CN = کاربران، DC = به عنوان مثال، DC = com`.",
   "LDAP_Avatar_Field": "گزینه تصویر کاربر",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "برای استفاده از یکپارچگی ابتدا باید یک شناسه API را تنظیم کنید.",
   "LDAP_Background_Sync": "همگام سازی پس زمینه",

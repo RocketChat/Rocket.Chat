@@ -1480,7 +1480,7 @@
   "LDAP_Authentication": "Iespējot",
   "LDAP_Authentication_Password": "Parole",
   "LDAP_Authentication_UserDN": "Lietotāja DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP lietotājs, kas veic lietotāja meklēšanu, lai autentificētu citus lietotājus, kad tie pierakstās. <br/>Tas parasti ir pakalpojuma konts, kas īpaši izveidots trešo pušu integrācijai. Izmantojiet pilnīgi kvalificētu vārdu, piemēram, `cn = Administrators, cn = Lietotāji, dc = Piemērs, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP lietotājs, kas veic lietotāja meklēšanu, lai autentificētu citus lietotājus, kad tie pierakstās.   \nTas parasti ir pakalpojuma konts, kas īpaši izveidots trešo pušu integrācijai. Izmantojiet pilnīgi kvalificētu vārdu, piemēram, `cn = Administrators, cn = Lietotāji, dc = Piemērs, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Vispirms ir jāiestata API žetons, lai izmantotu integrāciju.",
   "LDAP_Background_Sync": "Fona sinhronizācija",
   "LDAP_Background_Sync_Import_New_Users": "Fona sinhronizācija Importēt jaunus lietotājus",

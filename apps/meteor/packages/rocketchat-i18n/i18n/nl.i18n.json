@@ -2483,7 +2483,7 @@
   "LDAP_Authentication": "Inschakelen",
   "LDAP_Authentication_Password": "Wachtwoord",
   "LDAP_Authentication_UserDN": "Gebruiker DN",
-  "LDAP_Authentication_UserDN_Description": "De LDAP-gebruiker die gebruikerszoekopdrachten uitvoert om andere gebruikers te verifiëren wanneer ze zich aanmelden. <br/> Dit is doorgaans een serviceaccount dat speciaal is gemaakt voor integraties van derden. Gebruik een volledig gekwalificeerde naam, zoals `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "De LDAP-gebruiker die gebruikerszoekopdrachten uitvoert om andere gebruikers te verifiëren wanneer ze zich aanmelden.   \n Dit is doorgaans een serviceaccount dat speciaal is gemaakt voor integraties van derden. Gebruik een volledig gekwalificeerde naam, zoals `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Gebruikersavatarveld",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "U moet eerst een API-token instellen om de integratie te kunnen gebruiken.",
   "LDAP_Avatar_Field_Description": "Welk veld wordt gebruikt als *avatar* voor gebruikers. Laat leeg om eerst `thumbnailPhoto` te gebruiken en `jpegPhoto` als fallback.",

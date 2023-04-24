@@ -1476,7 +1476,7 @@
   "LDAP_Authentication": "umožniť",
   "LDAP_Authentication_Password": "Heslo",
   "LDAP_Authentication_UserDN": "DN užívateľa",
-  "LDAP_Authentication_UserDN_Description": "Používateľ LDAP, ktorý vykonáva vyhľadávanie používateľov na overenie ďalších používateľov pri prihlasovaní. <br/>Toto je zvyčajne účet služby vytvorený špeciálne pre integráciu treťou stranou. Použite plne kvalifikovaný názov, napríklad `cn = Administrator, cn = Users, dc = Example, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Používateľ LDAP, ktorý vykonáva vyhľadávanie používateľov na overenie ďalších používateľov pri prihlasovaní.   \nToto je zvyčajne účet služby vytvorený špeciálne pre integráciu treťou stranou. Použite plne kvalifikovaný názov, napríklad `cn = Administrator, cn = Users, dc = Example, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Najprv musíte použiť token API, aby ste mohli integráciu použiť.",
   "LDAP_Background_Sync": "Synchronizácia pozadia",
   "LDAP_Background_Sync_Import_New_Users": "Synchronizácia na pozadí Import nových používateľov",

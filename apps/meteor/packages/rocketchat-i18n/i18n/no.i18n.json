@@ -1539,7 +1539,7 @@
   "LDAP_Authentication": "Aktiver",
   "LDAP_Authentication_Password": "Passord",
   "LDAP_Authentication_UserDN": "Bruker DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP-brukeren som utfører brukeroppslag for å autentisere andre brukere når de logger på.<br/>Dette er vanligvis en tjenestekonto som er opprettet spesielt for tredjepartsintegrasjoner. Bruk et fullt kvalifisert navn, for eksempel `cn=Administrator,cn=Brukere,dc=Eksempel,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP-brukeren som utfører brukeroppslag for å autentisere andre brukere når de logger på.  \nDette er vanligvis en tjenestekonto som er opprettet spesielt for tredjepartsintegrasjoner. Bruk et fullt kvalifisert navn, for eksempel `cn=Administrator,cn=Brukere,dc=Eksempel,dc=com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Du må sette en API-token først for å kunne bruke integrasjonen.",
   "LDAP_Background_Sync": "Bakgrunnssynkronisering",
   "LDAP_Background_Sync_Import_New_Users": "Bakgrunnssynkronisering Importer nye brukere",

@@ -2721,7 +2721,7 @@
   "LDAP_Authentication": "Engedélyezés",
   "LDAP_Authentication_Password": "Jelszó",
   "LDAP_Authentication_UserDN": "Felhasználó DN",
-  "LDAP_Authentication_UserDN_Description": "Az LDAP-felhasználó, amely felhasználókereséseket hajt végre más felhasználók hitelesítéséhez, amikor bejelentkeznek.<br/>Ez általában egy kifejezetten harmadik féltől származó integrációkhoz létrehozott szolgáltatásfiók. Használjon teljesen minősített tartománynevet, mint például „cn=Administrator,cn=Users,dc=Example,dc=com”.",
+  "LDAP_Authentication_UserDN_Description": "Az LDAP-felhasználó, amely felhasználókereséseket hajt végre más felhasználók hitelesítéséhez, amikor bejelentkeznek.  \nEz általában egy kifejezetten harmadik féltől származó integrációkhoz létrehozott szolgáltatásfiók. Használjon teljesen minősített tartománynevet, mint például „cn=Administrator,cn=Users,dc=Example,dc=com”.",
   "LDAP_Avatar_Field": "Felhasználói profilkép mező",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Először be kell állítania egy API-tokent az integráció használatához.",
   "LDAP_Avatar_Field_Description": " Melyik mező lesz használva a felhasználók *profilképeként*. Hagyja üresen, hogy a „thumbnailPhoto” mezőt használja először és a „jpegPhoto” mezőt tartalékként.",

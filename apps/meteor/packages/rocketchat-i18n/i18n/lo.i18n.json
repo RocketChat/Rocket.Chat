@@ -1503,7 +1503,7 @@
   "LDAP_Authentication": "ເປີດໃຊ້ງານ",
   "LDAP_Authentication_Password": "ລະຫັດຜ່ານ",
   "LDAP_Authentication_UserDN": "User DN",
-  "LDAP_Authentication_UserDN_Description": "ຜູ້ໃຊ້ LDAP ທີ່ດໍາເນີນການຄົ້ນຫາຜູ້ໃຊ້ໃນການກວດສອບຜູ້ຊົມໃຊ້ອື່ນໆໃນເວລາທີ່ພວກເຂົາເຈົ້າເຂົ້າສູ່ລະບົບ. <br/> ນີ້ແມ່ນປົກກະຕິບັນຊີການບໍລິການສ້າງໂດຍສະເພາະສໍາລັບການເຊື່ອມໂຍງພາກສ່ວນທີສາມ. ການນໍາໃຊ້ຊື່ຄົບຖ້ວນ, ເຊັ່ນດຽວກັນ, cn = Administrator, cn = ຜູ້ໃຊ້ dc = ຕົວຢ່າງ, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "ຜູ້ໃຊ້ LDAP ທີ່ດໍາເນີນການຄົ້ນຫາຜູ້ໃຊ້ໃນການກວດສອບຜູ້ຊົມໃຊ້ອື່ນໆໃນເວລາທີ່ພວກເຂົາເຈົ້າເຂົ້າສູ່ລະບົບ.   \n ນີ້ແມ່ນປົກກະຕິບັນຊີການບໍລິການສ້າງໂດຍສະເພາະສໍາລັບການເຊື່ອມໂຍງພາກສ່ວນທີສາມ. ການນໍາໃຊ້ຊື່ຄົບຖ້ວນ, ເຊັ່ນດຽວກັນ, cn = Administrator, cn = ຜູ້ໃຊ້ dc = ຕົວຢ່າງ, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "ທ່ານຕ້ອງຕັ້ງໂປແກຼມ API ກ່ອນທີ່ຈະໃຊ້ການເຊື່ອມໂຍງ.",
   "LDAP_Background_Sync": "Background Sync",
   "LDAP_Background_Sync_Import_New_Users": "Background Sync ນໍາເຂົ້າຜູ້ໃຊ້ໃຫມ່",

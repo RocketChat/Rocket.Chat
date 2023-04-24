@@ -2472,7 +2472,7 @@
   "LDAP_Authentication": "Habilitar",
   "LDAP_Authentication_Password": "Contraseña",
   "LDAP_Authentication_UserDN": "DN de usuario",
-  "LDAP_Authentication_UserDN_Description": "Usuario LDAP que realiza búsquedas de usuario para autenticar a otros usuarios cuando inician sesión. <br/> Suele ser una cuenta de servicio creada específicamente para integraciones de terceros. Usa un nombre completo, como \"cn=Administrator,cn=Users,dc=Example,dc=com\".",
+  "LDAP_Authentication_UserDN_Description": "Usuario LDAP que realiza búsquedas de usuario para autenticar a otros usuarios cuando inician sesión.   \n Suele ser una cuenta de servicio creada específicamente para integraciones de terceros. Usa un nombre completo, como \"cn=Administrator,cn=Users,dc=Example,dc=com\".",
   "LDAP_Avatar_Field": "Campo de avatar de usuario",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Primero debes establecer un token de API para usar la integración.",
   "LDAP_Avatar_Field_Description": "Campo que se usará como *avatar* para los usuarios. Déjalo en blanco para usar \"thumbnailPhoto\" primero y \"jpegPhoto\" como respaldo.",

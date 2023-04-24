@@ -1559,7 +1559,7 @@
   "LDAP_Authentication": "Bật",
   "LDAP_Authentication_Password": "Mật khẩu",
   "LDAP_Authentication_UserDN": "DN người dùng",
-  "LDAP_Authentication_UserDN_Description": "Người dùng LDAP thực hiện tra cứu người dùng để xác thực người dùng khác khi họ đăng nhập<br/>Đây thường là tài khoản dịch vụ được tạo riêng cho tích hợp bên thứ ba. Sử dụng tên đủ điều kiện, chẳng hạn như `cn = Quản trị viên, cn = Người dùng, dc = Ví dụ, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Người dùng LDAP thực hiện tra cứu người dùng để xác thực người dùng khác khi họ đăng nhập  \nĐây thường là tài khoản dịch vụ được tạo riêng cho tích hợp bên thứ ba. Sử dụng tên đủ điều kiện, chẳng hạn như `cn = Quản trị viên, cn = Người dùng, dc = Ví dụ, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Bạn phải thiết lập một mã thông báo API đầu tiên để sử dụng tích hợp.",
   "LDAP_Background_Sync": "Đồng bộ hóa nền",
   "LDAP_Background_Sync_Import_New_Users": "Đồng bộ hóa nền Nhập người dùng mới",

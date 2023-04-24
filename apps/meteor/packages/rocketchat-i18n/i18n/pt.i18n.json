@@ -1738,7 +1738,7 @@
   "LDAP_Authentication": "Habilitar",
   "LDAP_Authentication_Password": "Senha",
   "LDAP_Authentication_UserDN": "DN do utilizador",
-  "LDAP_Authentication_UserDN_Description": "O utilizador LDAP que realiza pesquisas de utilizador para autenticar outros utilizadores quando eles entram. <br/> Isto é tipicamente uma conta de serviço criado especificamente para integrações de terceiros. Usar um nome qualificado, como `cn = administrador, cn = utilizadores, dc = exemplo, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "O utilizador LDAP que realiza pesquisas de utilizador para autenticar outros utilizadores quando eles entram.   \nIsto é tipicamente uma conta de serviço criado especificamente para integrações de terceiros. Usar um nome qualificado, como `cn = administrador, cn = utilizadores, dc = exemplo, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "O utilizador deve primeiro definir um token de API para usar a integração.",
   "LDAP_Background_Sync": "Sincronização fundo",
   "LDAP_Background_Sync_Import_New_Users": "Sincronização de fundo importar novos utilizadores",

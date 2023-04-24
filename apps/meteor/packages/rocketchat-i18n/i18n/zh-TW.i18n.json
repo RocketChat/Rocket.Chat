@@ -2409,7 +2409,7 @@
 	"LDAP_Authentication": "啟用",
 	"LDAP_Authentication_Password": "密碼",
 	"LDAP_Authentication_UserDN": "用戶DN",
-	"LDAP_Authentication_UserDN_Description": "LDAP 使用者當他們登入時可以查詢已驗證的其他使用者。 <br/>這通常是專為第三方整合建立一個服務帳號。使用一個完全合格的名稱，例如`cn=Administrator,cn=Users,dc=Example,dc=com`。",
+	"LDAP_Authentication_UserDN_Description": "LDAP 使用者當他們登入時可以查詢已驗證的其他使用者。   \n這通常是專為第三方整合建立一個服務帳號。使用一個完全合格的名稱，例如`cn=Administrator,cn=Users,dc=Example,dc=com`。",
 	"LDAP_Avatar_Field": "使用者大頭貼欄位",
 	"You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "您必須先設定 API token 才能使用整合。",
 	"LDAP_Avatar_Field_Description": "這個欄位將用作使用者的*大頭貼*。保持空白以首先使用`thumbnailPhoto`和`jpegPhoto`作為後備。",

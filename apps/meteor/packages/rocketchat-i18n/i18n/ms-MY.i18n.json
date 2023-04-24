@@ -1464,7 +1464,7 @@
   "LDAP_Authentication": "Membolehkan",
   "LDAP_Authentication_Password": "Kata laluan",
   "LDAP_Authentication_UserDN": "DN pengguna",
-  "LDAP_Authentication_UserDN_Description": "The LDAP pengguna yang melaksanakan pencarian pengguna untuk mengesahkan pengguna lain apabila mereka log masuk. <br/> Ini biasanya satu akaun perkhidmatan dicipta khusus untuk integrasi pihak ketiga. Gunakan nama yang memenuhi syarat, seperti `cn = Administrator, cn = Pengguna, dc = Contoh, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "The LDAP pengguna yang melaksanakan pencarian pengguna untuk mengesahkan pengguna lain apabila mereka log masuk.   \n Ini biasanya satu akaun perkhidmatan dicipta khusus untuk integrasi pihak ketiga. Gunakan nama yang memenuhi syarat, seperti `cn = Administrator, cn = Pengguna, dc = Contoh, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Anda perlu menetapkan token API terlebih dahulu untuk menggunakan integrasi.",
   "LDAP_Background_Sync": "Penyegerakan Latar Belakang",
   "LDAP_Background_Sync_Import_New_Users": "Latarbelakang Penyegerakan Import Pengguna Baru",

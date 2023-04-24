@@ -1516,7 +1516,7 @@
   "LDAP_Authentication": "Permettere",
   "LDAP_Authentication_Password": "Password",
   "LDAP_Authentication_UserDN": "DN utente",
-  "LDAP_Authentication_UserDN_Description": "L'utente che esegue ricerche LDAP per l'autenticazione degli utenti quando accedono. <br/> Solitamente é un account di servizio creato appositamente per le integrazioni di terze parti. Utilizzare un nome completo, come `cn=Administrator, CN=Users, dc=example, dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "L'utente che esegue ricerche LDAP per l'autenticazione degli utenti quando accedono.   \n Solitamente é un account di servizio creato appositamente per le integrazioni di terze parti. Utilizzare un nome completo, come `cn=Administrator, CN=Users, dc=example, dc=com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Devi prima impostare un token API per poter utilizzare l'integrazione.",
   "LDAP_Background_Sync": "Sincronizzazione di sfondo",
   "LDAP_Background_Sync_Import_New_Users": "Sincronizzazione in background Importa nuovi utenti",

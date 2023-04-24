@@ -1464,7 +1464,7 @@
   "LDAP_Authentication": "Активиране",
   "LDAP_Authentication_Password": "Парола",
   "LDAP_Authentication_UserDN": "Потребителски DN",
-  "LDAP_Authentication_UserDN_Description": "Потребителят LDAP, който извършва потребителски търсения, за да удостовери автентичността на други потребители, когато се влиза. <br/>Това обикновено е акаунт за услуги, създаден специално за интегриране от трети страни. Използвайте напълно квалифицирано име, като \"cn = Administrator, cn = Users, dc = Example, dc = com\".",
+  "LDAP_Authentication_UserDN_Description": "Потребителят LDAP, който извършва потребителски търсения, за да удостовери автентичността на други потребители, когато се влиза.   \nТова обикновено е акаунт за услуги, създаден специално за интегриране от трети страни. Използвайте напълно квалифицирано име, като \"cn = Administrator, cn = Users, dc = Example, dc = com\".",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Първо трябва да зададете първо означение за приложния програмен интерфейс (API), за да използвате интеграцията.",
   "LDAP_Background_Sync": "Синхронизиране на фона",
   "LDAP_Background_Sync_Import_New_Users": "Синхронизиране на фона",

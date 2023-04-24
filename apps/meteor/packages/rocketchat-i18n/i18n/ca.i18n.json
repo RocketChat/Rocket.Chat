@@ -2469,7 +2469,7 @@
   "LDAP_Authentication": "Activa",
   "LDAP_Authentication_Password": "Contrasenya",
   "LDAP_Authentication_UserDN": "User DN",
-  "LDAP_Authentication_UserDN_Description": "Usuari LDAP que fa cerques d'usuari per identificar altres usuaris quan inicien sessió.<br/>Aquest és un compte que s'acostuma a crear específicament per a fer les integracions de tercers. Utilitza un nom complet i qualificat, com `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "Usuari LDAP que fa cerques d'usuari per identificar altres usuaris quan inicien sessió.  \nAquest és un compte que s'acostuma a crear específicament per a fer les integracions de tercers. Utilitza un nom complet i qualificat, com `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Avatar_Field": "Camp d’avatar d’usuari",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Primer ha de configurar un símbol d'API per utilitzar la integració.",
   "LDAP_Avatar_Field_Description": "Quin camp s'utilitzarà com a *avatar* per als usuaris. Deixeu-lo en blanc per utilitzar `thumbnailPhoto` primer i `jpegPhoto` com a respatller.",

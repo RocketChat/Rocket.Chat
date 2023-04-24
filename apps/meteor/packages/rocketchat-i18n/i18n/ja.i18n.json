@@ -2466,7 +2466,7 @@
   "LDAP_Authentication": "有効にする",
   "LDAP_Authentication_Password": "パスワード",
   "LDAP_Authentication_UserDN": "ユーザーDN",
-  "LDAP_Authentication_UserDN_Description": "ユーザーがログインするためにユーザーを検索する時に使用するLDAPユーザー。<br/>これは通常、サードパーティー統合のために特別に作成されるサービスアカウントです。「cn=Administrator,cn=Users,dc=Example,dc=com」などの完全修飾名を使用してください。",
+  "LDAP_Authentication_UserDN_Description": "ユーザーがログインするためにユーザーを検索する時に使用するLDAPユーザー。  \nこれは通常、サードパーティー統合のために特別に作成されるサービスアカウントです。「cn=Administrator,cn=Users,dc=Example,dc=com」などの完全修飾名を使用してください。",
   "LDAP_Avatar_Field": "ユーザーアバターフィールド",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "統合を使用するには、まずAPIトークンを設定する必要があります。",
   "LDAP_Avatar_Field_Description": "ユーザーの*アバター*として使用されるフィールド。最初に「thumbnailPhoto」を使用し、フォールバックとして「jpegPhoto」を使用するには、空のままにします。",

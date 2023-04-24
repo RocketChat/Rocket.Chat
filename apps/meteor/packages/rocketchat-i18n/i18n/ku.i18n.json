@@ -1461,7 +1461,7 @@
   "LDAP_Authentication": "Bikêrkirin",
   "LDAP_Authentication_Password": "Şîfre",
   "LDAP_Authentication_UserDN": "DN bikarhêner",
-  "LDAP_Authentication_UserDN_Description": "The user LDAP ku performs Lookups user piştrastkirin bikarhênerên din, gava ku ew sign in. <br/> Ev account xizmeta bi taybetî ji bo integrations third-party tên afirandin e, bêhtirê. Bi kar tînin a name bi temamî bi kalîte, wek `cn = Administrator, cn = Bikarhêner, dc = mînak, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "The user LDAP ku performs Lookups user piştrastkirin bikarhênerên din, gava ku ew sign in.   \n Ev account xizmeta bi taybetî ji bo integrations third-party tên afirandin e, bêhtirê. Bi kar tînin a name bi temamî bi kalîte, wek `cn = Administrator, cn = Bikarhêner, dc = mînak, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Divê hûn ê yekem yekîneyên API-ê saz bikin ku ji bo întegrasyonê bikar bînin.",
   "LDAP_Background_Sync": "Hevpeywendiya paşde",
   "LDAP_Background_Sync_Import_New_Users": "Sersazên Nû yên Nû Veşirandin Veşêre",

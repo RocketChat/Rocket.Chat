@@ -2517,7 +2517,7 @@
 	"LDAP_Authentication": "Habilitar",
 	"LDAP_Authentication_Password": "Senha",
 	"LDAP_Authentication_UserDN": "DN do usuário",
-	"LDAP_Authentication_UserDN_Description": "O usuário do LDAP que faz pesquisas de usuário para autenticar outros usuários quando eles fazem login. <br/> Isso é tipicamente uma conta de serviço criado especificamente para integrações de terceiros. Use um nome qualificado, como `cn = administrador, cn = usuários, dc = exemplo, dc = com`.",
+	"LDAP_Authentication_UserDN_Description": "O usuário do LDAP que faz pesquisas de usuário para autenticar outros usuários quando eles fazem login.   \nIsso é tipicamente uma conta de serviço criado especificamente para integrações de terceiros. Use um nome qualificado, como `cn = administrador, cn = usuários, dc = exemplo, dc = com`.",
 	"LDAP_Avatar_Field": "Campo avatar do usuário",
 	"You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Você deve primeiro definir um token de API para usar a integração.",
 	"LDAP_Avatar_Field_Description": "Qual campo será usado como *avatar* para usuários. Deixe vazio para usar `thumbnailPhoto` primeiro e `jpegPhoto` como fallback.",

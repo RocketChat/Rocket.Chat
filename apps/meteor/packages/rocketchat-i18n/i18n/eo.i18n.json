@@ -1467,7 +1467,7 @@
   "LDAP_Authentication": "Ebligu",
   "LDAP_Authentication_Password": "Pasvorto",
   "LDAP_Authentication_UserDN": "Uzanto DN",
-  "LDAP_Authentication_UserDN_Description": "La uzanto de LDAP, kiu faras serĉojn de uzantoj aŭtentikigi aliajn uzantojn kiam ili ensalutas. <br/>Ĉi tio estas tipe serva konto kreita specife por triaj integraĵoj. Uzu plene kvalifikita nomo, kiel 'cn = Administranto, cn = Uzantoj, dc = Ekzemplo, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "La uzanto de LDAP, kiu faras serĉojn de uzantoj aŭtentikigi aliajn uzantojn kiam ili ensalutas.   \nĈi tio estas tipe serva konto kreita specife por triaj integraĵoj. Uzu plene kvalifikita nomo, kiel 'cn = Administranto, cn = Uzantoj, dc = Ekzemplo, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Vi devas agordi API-tokenon por uzi la integriĝon.",
   "LDAP_Background_Sync": "Fona Sinkro",
   "LDAP_Background_Sync_Import_New_Users": "Fona Sinkro Importi Novajn Uzantojn",

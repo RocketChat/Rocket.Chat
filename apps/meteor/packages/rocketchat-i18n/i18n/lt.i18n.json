@@ -1522,7 +1522,7 @@
   "LDAP_Authentication": "Įgalinti",
   "LDAP_Authentication_Password": "Slaptažodis",
   "LDAP_Authentication_UserDN": "Vartotojo DN",
-  "LDAP_Authentication_UserDN_Description": "Vartotojas LDAP, kuris atlieka naudotojų ieškos, kad autentifikuotų kitus vartotojus prisijungdami.<br/>Paprastai tai yra paslaugų paskyra, sukurta specialiai trečiųjų šalių integracijai. Naudokite visiškai kvalifikuotą pavadinimą, pvz., `Cn = Administrator, cn = Vartotojai, dc = Pavyzdys, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Vartotojas LDAP, kuris atlieka naudotojų ieškos, kad autentifikuotų kitus vartotojus prisijungdami.  \nPaprastai tai yra paslaugų paskyra, sukurta specialiai trečiųjų šalių integracijai. Naudokite visiškai kvalifikuotą pavadinimą, pvz., `Cn = Administrator, cn = Vartotojai, dc = Pavyzdys, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Pirmiausia turite nustatyti API žetoną, kad galėtumėte naudoti integraciją.",
   "LDAP_Background_Sync": "Fono sinchronizavimas",
   "LDAP_Background_Sync_Import_New_Users": "Fono sinchronizavimas Importuokite naujus vartotojus",

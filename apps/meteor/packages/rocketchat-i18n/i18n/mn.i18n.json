@@ -1462,7 +1462,7 @@
   "LDAP_Authentication": "Бататгах",
   "LDAP_Authentication_Password": "Нууц үг",
   "LDAP_Authentication_UserDN": "Хэрэглэгчийн DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP хэрэглэгчид нэвтрэн орж байхдаа бусад хэрэглэгчдийг шалгаж байхдаа хайлт хийдэг.<br/>Энэ нь гуравдагч этгээдийн интеграцчилалд зориулагдсан үйлчилгээний хаяг юм. Cn = Administrator, cn = Хэрэглэгчид, dc = Жишээ нь, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP хэрэглэгчид нэвтрэн орж байхдаа бусад хэрэглэгчдийг шалгаж байхдаа хайлт хийдэг.  \nЭнэ нь гуравдагч этгээдийн интеграцчилалд зориулагдсан үйлчилгээний хаяг юм. Cn = Administrator, cn = Хэрэглэгчид, dc = Жишээ нь, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Та интеграцыг ашиглахын тулд эхлээд API жетоныг тохируулах хэрэгтэй.",
   "LDAP_Background_Sync": "Үндсэн синх",
   "LDAP_Background_Sync_Import_New_Users": "Үндсэн синкийг шинэ хэрэглэгч импортлох",

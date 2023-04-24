@@ -1467,7 +1467,7 @@
   "LDAP_Authentication": "Enable",
   "LDAP_Authentication_Password": "Şifrə",
   "LDAP_Authentication_UserDN": "İstifadəçi DN",
-  "LDAP_Authentication_UserDN_Description": "Daxil olanda digər istifadəçilərin kimliklərini təsdiqləmək üçün istifadəçi axtarışlarını yerinə yetirən LDAP istifadəçisi.<br/>Bu, adətən üçüncü tərəf inteqrasiya üçün yaradılan xidmət hesabıdır. Cn = Administrator, cn = İstifadəçilər, dc = Məsələn, dc = com 'kimi tam adı istifadə edin.",
+  "LDAP_Authentication_UserDN_Description": "Daxil olanda digər istifadəçilərin kimliklərini təsdiqləmək üçün istifadəçi axtarışlarını yerinə yetirən LDAP istifadəçisi.  \nBu, adətən üçüncü tərəf inteqrasiya üçün yaradılan xidmət hesabıdır. Cn = Administrator, cn = İstifadəçilər, dc = Məsələn, dc = com 'kimi tam adı istifadə edin.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "İnteqrasiyanı istifadə etmək üçün əvvəlcə bir API işarəsi qurmalısınız.",
   "LDAP_Background_Sync": "Background Sync",
   "LDAP_Background_Sync_Import_New_Users": "Background Sync Yeni İstifadəçiləri Alın",

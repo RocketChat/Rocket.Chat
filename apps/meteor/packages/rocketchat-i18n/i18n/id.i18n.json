@@ -1466,7 +1466,7 @@
   "LDAP_Authentication": "Memungkinkan",
   "LDAP_Authentication_Password": "Kata sandi",
   "LDAP_Authentication_UserDN": "Pengguna DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP pengguna yang melakukan pencarian pengguna untuk otentikasi pengguna lain ketika mereka masuk. <br/> Ini biasanya account layanan dibuat khusus untuk integrasi pihak ketiga. Gunakan nama yang memenuhi syarat, seperti `cn = Administrator, cn = Users, dc = Contoh, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP pengguna yang melakukan pencarian pengguna untuk otentikasi pengguna lain ketika mereka masuk.   \n Ini biasanya account layanan dibuat khusus untuk integrasi pihak ketiga. Gunakan nama yang memenuhi syarat, seperti `cn = Administrator, cn = Users, dc = Contoh, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Anda harus mengatur token API terlebih dahulu agar bisa menggunakan integrasi.",
   "LDAP_Background_Sync": "Sinkronisasi Latar Belakang",
   "LDAP_Background_Sync_Import_New_Users": "Latar Belakang Sinkronisasi Impor Pengguna Baru",

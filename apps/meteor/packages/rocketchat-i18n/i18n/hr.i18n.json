@@ -1599,7 +1599,7 @@
   "LDAP_Authentication": "Omogućiti",
   "LDAP_Authentication_Password": "Lozinka",
   "LDAP_Authentication_UserDN": "Korisnički DN",
-  "LDAP_Authentication_UserDN_Description": "LDAP korisnik koja obavlja korisničke dohvate za autentifikaciju drugih korisnika prilikom prijave. <br/> To je obično račun za uslugu izrađen posebno za treće integracijama. Koristite potpuno kvalificirani naziv, kao što je `cn=Administrator,cn=Users,dc=Example,dc=com`.",
+  "LDAP_Authentication_UserDN_Description": "LDAP korisnik koja obavlja korisničke dohvate za autentifikaciju drugih korisnika prilikom prijave.   \n To je obično račun za uslugu izrađen posebno za treće integracijama. Koristite potpuno kvalificirani naziv, kao što je `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Morate najprije postaviti API token kako biste koristili integraciju.",
   "LDAP_Background_Sync": "Sinkronizacija pozadine",
   "LDAP_Background_Sync_Import_New_Users": "Sinkronizacija pozadine Uvoz novih korisnika",

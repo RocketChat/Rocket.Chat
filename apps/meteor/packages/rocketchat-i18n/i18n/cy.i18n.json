@@ -1462,7 +1462,7 @@
   "LDAP_Authentication": "Galluogi",
   "LDAP_Authentication_Password": "Cyfrinair",
   "LDAP_Authentication_UserDN": "DN Defnyddiwr",
-  "LDAP_Authentication_UserDN_Description": "Mae'r defnyddiwr LDAP sy'n perfformio yn chwilio am ddefnyddwyr i ddilysu defnyddwyr eraill pan fyddant yn cofrestru. <br / >Mae hwn fel arfer yn gyfrif gwasanaeth a grëir yn benodol ar gyfer integreiddio trydydd parti. Defnyddiwch enw cymwysedig, fel `cn = Administrator, cn = Users, dc = Enghraifft, dc = com`.",
+  "LDAP_Authentication_UserDN_Description": "Mae'r defnyddiwr LDAP sy'n perfformio yn chwilio am ddefnyddwyr i ddilysu defnyddwyr eraill pan fyddant yn cofrestru.   \nMae hwn fel arfer yn gyfrif gwasanaeth a grëir yn benodol ar gyfer integreiddio trydydd parti. Defnyddiwch enw cymwysedig, fel `cn = Administrator, cn = Users, dc = Enghraifft, dc = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Rhaid i chi osod tocyn API gyntaf er mwyn defnyddio'r integreiddio.",
   "LDAP_Background_Sync": "Sync Cefndir",
   "LDAP_Background_Sync_Import_New_Users": "Cefndir Sync Mewnforio Defnyddwyr Newydd",

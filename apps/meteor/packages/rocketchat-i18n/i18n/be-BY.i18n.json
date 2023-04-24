@@ -1483,7 +1483,7 @@
   "LDAP_Authentication": "Ўключыць",
   "LDAP_Authentication_Password": "пароль",
   "LDAP_Authentication_UserDN": "DN карыстальніка",
-  "LDAP_Authentication_UserDN_Description": "Карыстальнік LDAP, які выконвае Lookups карыстальніка для аўтэнтыфікацыі іншых карыстальнікаў пры ўваходзе ў сістэму. <br/>Гэта, як правіла, уліковы запіс службы, створаная адмыслова для іншых інтэграцыі. Выкарыстоўвайце поўнае імя, напрыклад `CN = Administrator, сп = Users, DC = Example, DC = com`.",
+  "LDAP_Authentication_UserDN_Description": "Карыстальнік LDAP, які выконвае Lookups карыстальніка для аўтэнтыфікацыі іншых карыстальнікаў пры ўваходзе ў сістэму.   \nГэта, як правіла, уліковы запіс службы, створаная адмыслова для іншых інтэграцыі. Выкарыстоўвайце поўнае імя, напрыклад `CN = Administrator, сп = Users, DC = Example, DC = com`.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Вы павінны ўсталяваць маркер API першым, каб выкарыстоўваць інтэграцыю.",
   "LDAP_Background_Sync": "фонавая сінхранізацыя",
   "LDAP_Background_Sync_Import_New_Users": "Фон сінхранізацыі Імпарт новых карыстальнікаў",
