@@ -1,5 +1,4 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import mem from 'mem';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ITranslationService, TranslationReplacement } from '@rocket.chat/core-services';
 import i18next from 'i18next';
@@ -21,7 +20,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	private supportedLanguages: string[] = [];
 
 	public async created(): Promise<void> {
-		const serverLanguage = this.getServerLanguageCached().toLowerCase();
+		const serverLanguage = this.getServerLanguage().toLowerCase();
 		const supportedLanguages = await getSupportedLanguages();
 
 		await this.i18nextInstance
@@ -62,7 +61,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 	// Use translate when you want to translate to the user's language, or server's as a fallback
 	public async translate(text: string, user: IUser, replacements?: TranslationReplacement): Promise<string> {
-		const language = user.language || this.getServerLanguageCached();
+		const language = user.language || this.getServerLanguage();
 		await this.loadLanguageIfNotLoaded(language);
 
 		return this.translateText(text, language, replacements);
@@ -101,15 +100,12 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 		await this.i18nextInstance.changeLanguage(language);
 	}
 
-	// Cache the server language for 1 hour
-	private getServerLanguageCached = mem(this.getServerLanguage.bind(this), { maxAge: 1000 * 60 * 60 });
-
 	private getServerLanguage(): string {
 		return settings.get<string>('Language') || 'en';
 	}
 
 	private async loadLanguageIfNotLoaded(language: string): Promise<void> {
-		const lower = language.toLowerCase();
+		const lower = language?.toLowerCase() || this.getServerLanguage().toLowerCase();
 		if (this.supportedLanguages.length > 0 && !this.supportedLanguages.includes(lower)) {
 			throw new Error('Language not supported');
 		}
