@@ -3,6 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
+import sprintf from 'i18next-sprintf-postprocessor';
 import { Tracker } from 'meteor/tracker';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -75,7 +76,7 @@ const useI18next = (lng: string): typeof i18next => {
 	});
 
 	const [i18n] = useState(() => {
-		const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next);
+		const i18n = i18next.createInstance().use(I18NextHttpBackend).use(sprintf).use(initReactI18next);
 
 		i18n.init({
 			lng,

@@ -1,11 +1,12 @@
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
+import sprintf from 'i18next-sprintf-postprocessor';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../app/settings/client';
 
-export const translationHelper = i18next.createInstance().use(I18NextHttpBackend);
+export const translationHelper = i18next.createInstance().use(I18NextHttpBackend).use(sprintf);
 
 const parseToJSON = (customTranslations: string): Record<string, Record<string, string>> | false => {
 	try {
