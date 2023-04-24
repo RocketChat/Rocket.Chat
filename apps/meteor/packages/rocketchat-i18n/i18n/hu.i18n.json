@@ -4004,7 +4004,7 @@
   "Root": "Gyökér",
   "Required_action": "Szükséges művelet",
   "Default_Referrer_Policy": "Alapértelmezett hivatkozó házirend",
-  "Default_Referrer_Policy_Description": "Ez vezérli a „referrer” fejlécet, amely más kiszolgálókról származó beágyazott média kérésekor kerül elküldésre. További információkért nézze meg <a href='https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy'>ezt az oldalt az MDN-en</a>. Ne feledje, hogy teljes oldalújratöltés szükséges ahhoz, hogy ez életbe lépjen.",
+  "Default_Referrer_Policy_Description": "Ez vezérli a „referrer” fejlécet, amely más kiszolgálókról származó beágyazott média kérésekor kerül elküldésre. További információkért nézze meg [ezt az oldalt az MDN-en](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Ne feledje, hogy teljes oldalújratöltés szükséges ahhoz, hogy ez életbe lépjen.",
   "No_Referrer": "Nincs hivatkozó",
   "No_Referrer_When_Downgrade": "Nincs hivatkozó visszalépéskor",
   "Notes": "Jegyzetek",

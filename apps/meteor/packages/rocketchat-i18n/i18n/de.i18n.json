@@ -4005,7 +4005,7 @@
   "Robot_Instructions_File_Content": "Inhalt von Robots.txt",
   "Required_action": "Aktion notwendig",
   "Default_Referrer_Policy": "Standardweiterleitungsrichtlinie",
-  "Default_Referrer_Policy_Description": "Steuert den Header der 'Weiterleitung', die gesendet wird, wenn eingebettete Medien von anderen Severn angefordert werden. Weitere Informationen finden Sie unter <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">diesem Link von MDN</a>. Beachten Sie, dass eine vollständige Seitenaktualisierung erforderlich ist, damit dies wirksam wird",
+  "Default_Referrer_Policy_Description": "Steuert den Header der 'Weiterleitung', die gesendet wird, wenn eingebettete Medien von anderen Severn angefordert werden. Weitere Informationen finden Sie unter [diesem Link von MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Beachten Sie, dass eine vollständige Seitenaktualisierung erforderlich ist, damit dies wirksam wird",
   "No_Referrer": "Keine Weiterleitung",
   "No_Referrer_When_Downgrade": "Keine Weiterleitung bei Downgrades",
   "Notes": "Hinweise",

@@ -3594,7 +3594,7 @@
   "Return_to_the_queue": "キューに戻る",
   "Robot_Instructions_File_Content": "Robots.txtファイルの内容",
   "Default_Referrer_Policy": "デフォルトの参照元ポリシー",
-  "Default_Referrer_Policy_Description": "これは、他のサーバーから埋め込みメディアを要求するときに送信される「referrer」ヘッダーを制御します。詳細については、<a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">MDNのこちらのリンク</a>を参照してください。これを有効にするには、ページ全体を更新する必要があります",
+  "Default_Referrer_Policy_Description": "これは、他のサーバーから埋め込みメディアを要求するときに送信される「referrer」ヘッダーを制御します。詳細については、[MDNのこちらのリンク](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy)を参照してください。これを有効にするには、ページ全体を更新する必要があります",
   "No_Referrer": "参照元がありません",
   "No_Referrer_When_Downgrade": "ダウングレード時に参照元がありません",
   "Notes": "メモ",

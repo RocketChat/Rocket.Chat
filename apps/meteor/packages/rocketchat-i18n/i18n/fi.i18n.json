@@ -4159,7 +4159,7 @@
   "Root": "Root",
   "Required_action": "Toimia tarvitaan",
   "Default_Referrer_Policy": "Oletusviittauskäytäntö",
-  "Default_Referrer_Policy_Description": "Tämä ohjaa 'Viittaaja'-otsikkoa, joka lähetetään, kun pyydetään upotettua mediaa muilta palvelimilta. Lisätietoja on <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">tässä MDN:n linkissä</a>. Muista, että tämä edellyttää koko sivun päivittämistä, jotta se tulee voimaan",
+  "Default_Referrer_Policy_Description": "Tämä ohjaa 'Viittaaja'-otsikkoa, joka lähetetään, kun pyydetään upotettua mediaa muilta palvelimilta. Lisätietoja on [tässä MDN:n linkissä](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Muista, että tämä edellyttää koko sivun päivittämistä, jotta se tulee voimaan",
   "No_Referrer": "Ei viittaajaa",
   "No_Referrer_When_Downgrade": "Ei vittaajaa kun alennetaan tasoa",
   "Notes": "Muistiinpanot",

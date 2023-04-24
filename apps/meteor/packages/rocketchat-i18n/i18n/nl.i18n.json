@@ -3619,7 +3619,7 @@
   "Ringing": "Rinkelen",
   "Robot_Instructions_File_Content": "Robots.txt-bestandsinhoud",
   "Default_Referrer_Policy": "Standaard Referrer beleid",
-  "Default_Referrer_Policy_Description": "Dit regelt de 'referrer' header die is verzonden bij het aanvragen van embedded media van andere servers. Voor meer informatie, zie <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">deze link van MDN</a>. Vergeet niet dat een volledige pagina verversing nodig is om dit effect te krijgen",
+  "Default_Referrer_Policy_Description": "Dit regelt de 'referrer' header die is verzonden bij het aanvragen van embedded media van andere servers. Voor meer informatie, zie [deze link van MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Vergeet niet dat een volledige pagina verversing nodig is om dit effect te krijgen",
   "No_Referrer": "Geen referrer",
   "No_Referrer_When_Downgrade": "Geen referrer bij downgraden",
   "Notes": "Opmerkingen",

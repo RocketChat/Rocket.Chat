@@ -3626,7 +3626,7 @@
   "Ringing": "Sonnerie",
   "Robot_Instructions_File_Content": "Contenu du fichier robots.txt",
   "Default_Referrer_Policy": "Politique de référent par défaut",
-  "Default_Referrer_Policy_Description": "Contrôle l'en-tête 'referrer' envoyé lors de la demande de médias intégrés à d'autres serveurs. Pour plus d'informations, consultez <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">ce lien MDN</a>. N'oubliez pas qu'une actualisation complète de la page est nécessaire pour que ce paramètre prenne effet.",
+  "Default_Referrer_Policy_Description": "Contrôle l'en-tête 'referrer' envoyé lors de la demande de médias intégrés à d'autres serveurs. Pour plus d'informations, consultez [ce lien MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). N'oubliez pas qu'une actualisation complète de la page est nécessaire pour que ce paramètre prenne effet.",
   "No_Referrer": "Aucun référent",
   "No_Referrer_When_Downgrade": "Pas de référent lors du déclassement",
   "Notes": "Notes",

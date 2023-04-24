@@ -3632,7 +3632,7 @@
   "Ringing": "يرن",
   "Robot_Instructions_File_Content": "محتويات ملف Robots.txt",
   "Default_Referrer_Policy": "نهج المرجع الافتراضي",
-  "Default_Referrer_Policy_Description": "يتحكم هذا في رأس \"المرجع\" الذي يتم إرساله عند طلب وسائط مضمنة من خوادم أخرى. للحصول على المزيد من المعلومات، ارجع إلى <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">هذا الرابط من MDN</a>. تذكر، يلزم تحديث الصفحة بالكامل حتى يتم تفعيل ذلك",
+  "Default_Referrer_Policy_Description": "يتحكم هذا في رأس \"المرجع\" الذي يتم إرساله عند طلب وسائط مضمنة من خوادم أخرى. للحصول على المزيد من المعلومات، ارجع إلى [هذا الرابط من MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). تذكر، يلزم تحديث الصفحة بالكامل حتى يتم تفعيل ذلك",
   "No_Referrer": "لا يوجد مرجع",
   "No_Referrer_When_Downgrade": "لا يوجد مرجع عند الرجوع إلى إصدار أقدم",
   "Notes": "ملاحظات",

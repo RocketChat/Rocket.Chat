@@ -3576,7 +3576,7 @@
   "Return_to_the_queue": "Tornar a la cua",
   "Robot_Instructions_File_Content": "Contingut del fitxer Robots.txt",
   "Default_Referrer_Policy": "Política de referència per defecte",
-  "Default_Referrer_Policy_Description": "Això controla el encapçalat 'referent' que s'envia quan se sol·liciten mitjans integrats d'altres servidors. Per a més informació, consulteu <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\"> aquest enllaç de MDN </a>. Recordeu, es requereix una actualització de pàgina completa perquè això tingui efecte",
+  "Default_Referrer_Policy_Description": "Això controla el encapçalat 'referent' que s'envia quan se sol·liciten mitjans integrats d'altres servidors. Per a més informació, consulteu [aquest enllaç de MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Recordeu, es requereix una actualització de pàgina completa perquè això tingui efecte",
   "No_Referrer": "Sense referent",
   "No_Referrer_When_Downgrade": "Sense referència a el baixar de categoria",
   "Origin": "Origen",

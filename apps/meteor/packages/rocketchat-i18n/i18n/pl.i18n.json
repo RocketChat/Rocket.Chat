@@ -3939,7 +3939,7 @@
   "Robot_Instructions_File_Content": "Zawartość pliku Robots.txt",
   "Root": "Root",
   "Default_Referrer_Policy": "Domyślne Referrer Policy",
-  "Default_Referrer_Policy_Description": "To kontroluje nagłówek 'referrer', który jest wysyłany podczas żądania osadzonych mediów z innych serwerów. Aby uzyskać więcej informacji, zapoznaj się z <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\">tym linkiem z MDN</a>. Pamiętaj, że aby to zadziałało, wymagane jest pełne odświeżenie strony",
+  "Default_Referrer_Policy_Description": "To kontroluje nagłówek 'referrer', który jest wysyłany podczas żądania osadzonych mediów z innych serwerów. Aby uzyskać więcej informacji, zapoznaj się z [tym linkiem z MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Pamiętaj, że aby to zadziałało, wymagane jest pełne odświeżenie strony",
   "No_Referrer": "Brak Referrer",
   "No_Referrer_When_Downgrade": "Brak referrer przy downgrade",
   "Notes": "Uwagi",
