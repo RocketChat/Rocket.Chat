@@ -1,14 +1,16 @@
 import { KJUR } from 'jsrsasign';
 import NodeRSA from 'node-rsa';
-
-import { fetch } from '../../../server/lib/http/fetch';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
 	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
-	const applePublicKeys = (await request.json()).data.keys;
+	const applePublicKeys = ((await request.json()) as { keys: { kid: string; e: string; n: string }[] }).keys;
 	const { kid } = header;
 
 	const key = applePublicKeys.find((k: any) => k.kid === kid);
+	if (!key) {
+		return false;
+	}
 
 	const pubKey = new NodeRSA();
 	pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
