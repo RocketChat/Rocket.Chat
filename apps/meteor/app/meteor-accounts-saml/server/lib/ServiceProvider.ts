@@ -1,7 +1,6 @@
 import zlib from 'zlib';
 import crypto from 'crypto';
 import querystring from 'querystring';
-import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 
@@ -100,64 +99,68 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public async requestToUrl(request: string, operation: string): Promise<string | undefined> {
-		const buffer = await util.promisify(zlib.deflateRaw)(request);
+	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
+		zlib.deflateRaw(request, (err, buffer) => {
+			if (err) {
+				return callback(err);
+			}
 
-		try {
-			const base64 = buffer.toString('base64');
-			let target = this.serviceProviderOptions.entryPoint;
+			try {
+				const base64 = buffer.toString('base64');
+				let target = this.serviceProviderOptions.entryPoint;
 
-			if (operation === 'logout') {
-				if (this.serviceProviderOptions.idpSLORedirectURL) {
-					target = this.serviceProviderOptions.idpSLORedirectURL;
+				if (operation === 'logout') {
+					if (this.serviceProviderOptions.idpSLORedirectURL) {
+						target = this.serviceProviderOptions.idpSLORedirectURL;
+					}
 				}
+
+				if (target.indexOf('?') > 0) {
+					target += '&';
+				} else {
+					target += '?';
+				}
+
+				// TBD. We should really include a proper RelayState here
+				let relayState;
+				if (operation === 'logout') {
+					// in case of logout we want to be redirected back to the Meteor app.
+					relayState = Meteor.absoluteUrl();
+				} else {
+					relayState = this.serviceProviderOptions.provider;
+				}
+
+				const samlRequest: Record<string, any> = {
+					SAMLRequest: base64,
+					RelayState: relayState,
+				};
+
+				if (this.serviceProviderOptions.privateCert) {
+					samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+					samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
+				}
+
+				target += querystring.stringify(samlRequest);
+
+				SAMLUtils.log(`requestToUrl: ${target}`);
+
+				if (operation === 'logout') {
+					// in case of logout we want to be redirected back to the Meteor app.
+					return callback(null, target);
+				}
+				callback(null, target);
+			} catch (error) {
+				callback(error instanceof Error ? error : String(error));
 			}
-
-			if (target.indexOf('?') > 0) {
-				target += '&';
-			} else {
-				target += '?';
-			}
-
-			// TBD. We should really include a proper RelayState here
-			let relayState;
-			if (operation === 'logout') {
-				// in case of logout we want to be redirected back to the Meteor app.
-				relayState = Meteor.absoluteUrl();
-			} else {
-				relayState = this.serviceProviderOptions.provider;
-			}
-
-			const samlRequest: Record<string, any> = {
-				SAMLRequest: base64,
-				RelayState: relayState,
-			};
-
-			if (this.serviceProviderOptions.privateCert) {
-				samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-				samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
-			}
-
-			target += querystring.stringify(samlRequest);
-
-			SAMLUtils.log(`requestToUrl: ${target}`);
-
-			if (operation === 'logout') {
-				// in case of logout we want to be redirected back to the Meteor app.
-				return target;
-			}
-			return target;
-		} catch (error) {
-			throw error instanceof Error ? error : String(error);
-		}
+		});
 	}
 
-	public async getAuthorizeUrl(): Promise<string | undefined> {
+	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
 
-		return this.requestToUrl(request, 'authorize');
+		this.requestToUrl(request, 'authorize', callback);
 	}
 
 	public async validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): Promise<void> {

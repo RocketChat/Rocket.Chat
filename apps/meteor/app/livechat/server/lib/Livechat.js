@@ -8,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import UAParser from 'ua-parser-js';
 import {
 	LivechatVisitors,
@@ -56,7 +55,6 @@ export const Livechat = {
 	historyMonitorType: 'url',
 
 	logger,
-	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -435,7 +433,7 @@ export const Livechat = {
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
@@ -581,7 +579,7 @@ export const Livechat = {
 			return false;
 		}
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
@@ -776,31 +774,6 @@ export const Livechat = {
 		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
-	},
-
-	sendRequest(postData, callback, attempts = 10) {
-		if (!attempts) {
-			return;
-		}
-		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			data: postData,
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-		};
-		try {
-			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
-		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 10 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(
-				Meteor.bindEnvironment(function () {
-					Livechat.sendRequest(postData, callback, attempts - 1);
-				}),
-				10000,
-			);
-		}
 	},
 
 	async getLivechatRoomGuestInfo(room) {
@@ -1064,7 +1037,7 @@ export const Livechat = {
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
@@ -1230,7 +1203,7 @@ export const Livechat = {
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
 		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
 		});
 

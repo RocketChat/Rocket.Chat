@@ -99,10 +99,10 @@ Meteor.methods<ServerMethods>({
 			const importedUser = await Users.findOneByEmailAddress(formData.email);
 
 			if (importedUser?.importIds?.length && !importedUser.lastLogin) {
-				Accounts.setPassword(importedUser._id, userData.password);
+				await Accounts.setPasswordAsync(importedUser._id, userData.password);
 				userId = importedUser._id;
 			} else {
-				userId = Accounts.createUser(userData);
+				userId = await Accounts.createUserAsync(userData);
 			}
 		} catch (e) {
 			if (e instanceof Meteor.Error) {

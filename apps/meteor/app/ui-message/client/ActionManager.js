@@ -11,7 +11,7 @@ import { APIClient, t } from '../../utils/client';
 import * as banners from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import ConnectedModalBlock from '../../../client/views/blocks/ConnectedModalBlock';
+import UiKitModal from '../../../client/views/modal/uikit/UiKitModal';
 
 const events = new Emitter();
 
@@ -90,7 +90,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 
 	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
 		const instance = imperativeModal.open({
-			component: ConnectedModalBlock,
+			component: UiKitModal,
 			props: {
 				triggerId,
 				viewId,

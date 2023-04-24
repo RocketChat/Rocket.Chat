@@ -152,7 +152,7 @@ export class CROWD {
 		};
 
 		if (crowdUser.password) {
-			Accounts.setPassword(id, crowdUser.password, {
+			await Accounts.setPasswordAsync(id, crowdUser.password, {
 				logout: false,
 			});
 
@@ -204,7 +204,7 @@ export class CROWD {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
-						Meteor.defer(async function () {
+						setImmediate(async function () {
 							await deleteUser(user._id);
 							logger.info('User removed:', crowd_username);
 						});
@@ -262,7 +262,7 @@ export class CROWD {
 
 		// Attempt to create the new user
 		try {
-			crowdUser._id = Accounts.createUser(crowdUser);
+			crowdUser._id = await Accounts.createUserAsync(crowdUser);
 
 			// sync the user data
 			await this.syncDataToUser(crowdUser, crowdUser._id);

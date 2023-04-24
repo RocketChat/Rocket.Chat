@@ -22,8 +22,6 @@ class ChatMessageCollection
 
 	public declare _collection: MinimongoCollection<IMessage & { ignored?: boolean }>['_collection'];
 
-	public declare direct: MinimongoCollection<IMessage & { ignored?: boolean }>['direct'];
-
 	public declare queries: MinimongoCollection<IMessage & { ignored?: boolean }>['queries'];
 }
 

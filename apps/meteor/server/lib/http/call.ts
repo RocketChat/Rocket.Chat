@@ -1,8 +1,8 @@
 import { HTTP } from 'meteor/http';
 import { URL, URLSearchParams } from 'meteor/url';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { truncate } from '../../../lib/utils/stringUtils';
-import { fetch } from './fetch';
 
 // Code extracted from https://github.com/meteor/meteor/blob/master/packages/deprecated/http
 // Modified to:

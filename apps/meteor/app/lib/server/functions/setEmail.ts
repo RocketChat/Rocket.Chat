@@ -80,7 +80,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 		email,
 	};
 	if (shouldSendVerificationEmail === true) {
-		Meteor.call('sendConfirmationEmail', result.email);
+		await Meteor.callAsync('sendConfirmationEmail', result.email);
 	}
 	return result;
 };

@@ -1,10 +1,10 @@
 import EJSON from 'ejson';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { encrypt } from './crypt';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;
@@ -19,22 +19,19 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	const response = await fetch(url, {
+	const request = await fetch(url, {
 		method,
-		data,
-		timeout: 2000,
 		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
+		body: data,
+		timeout: 2000,
 	});
-
-	return {
-		data: await response.json(),
-	};
+	return request.json();
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
 	const ignoreErrors = peerDomain === getFederationDomain() ? false : options.ignoreErrors;
 
-	const { url: baseUrl, publicKey } = await search(peerDomain);
+	const { url: baseUrl, publicKey } = search(peerDomain);
 
 	let peerKey = null;
 
@@ -59,5 +56,5 @@ export async function federationRequestToPeer(method, peerDomain, uri, body, opt
 		}
 	}
 
-	return { success: true, data: result.data };
+	return { success: true, data: result };
 }
