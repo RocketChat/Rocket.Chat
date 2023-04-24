@@ -31,7 +31,7 @@ it('should handle a stream of messages', async () => {
 
 	const stream = sdk.stream(streamName, [streamParams], cb);
 
-	const [id] = [...sdk.subscriptions.keys()];
+	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
 		return server.send(`{"msg":"ready","subs":["${id}"]}`);
@@ -65,7 +65,7 @@ it('should ignore messages other from changed', async () => {
 
 	const stream = sdk.stream(streamName, [streamParams], cb);
 
-	const [id] = [...sdk.subscriptions.keys()];
+	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
 		return server.send(`{"msg":"ready","subs":["${id}"]}`);
@@ -96,7 +96,7 @@ it('should handle streams after reconnect', async () => {
 
 	const stream = sdk.stream(streamName, [streamParams], cb);
 
-	const [id] = [...sdk.subscriptions.keys()];
+	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
 		return server.send(`{"msg":"ready","subs":["${id}"]}`);
@@ -160,9 +160,9 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	const stopSubscription = sdk.stream(streamName, [streamParams], cb);
 
-	expect(sdk.subscriptions.size).toBe(1);
+	expect(sdk.client.subscriptions.size).toBe(1);
 
-	const [id] = [...sdk.subscriptions.keys()];
+	const [id] = [...sdk.client.subscriptions.keys()];
 
 	await server.nextMessage.then((message) => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
@@ -209,6 +209,6 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	expect(cb).toBeCalledTimes(4);
 
-	expect(sdk.subscriptions.size).toBe(0);
+	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();
 });

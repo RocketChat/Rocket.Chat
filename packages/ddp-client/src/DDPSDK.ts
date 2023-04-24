@@ -4,6 +4,8 @@ import type { Connection } from './Connection';
 import { ConnectionImpl } from './Connection';
 import { MinimalDDPClient } from './MinimalDDPClient';
 import { TimeoutControl } from './TimeoutControl';
+import type { Account } from './types/Account';
+import { AccountImpl } from './types/Account';
 
 /*
 * The following procedure is used for streaming data:
@@ -20,7 +22,7 @@ import { TimeoutControl } from './TimeoutControl';
 
 * In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
 */
-interface SDK extends ClientStream {
+interface SDK {
 	user?: {
 		_id: string;
 		username: string;
@@ -28,6 +30,10 @@ interface SDK extends ClientStream {
 	stream(name: string, params: unknown[], cb: (data: unknown) => void): () => void;
 
 	connection: Connection;
+	account: Account;
+	client: ClientStream;
+
+	timeoutControl: TimeoutControl;
 }
 
 interface PublicationPayloads {
@@ -47,21 +53,24 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 	return true;
 };
 
-export class DDPSDK extends ClientStreamImpl implements SDK {
+export class DDPSDK implements SDK {
 	public user?: {
 		_id: string;
 		username: string;
 	};
 
-	constructor(ddp: MinimalDDPClient, readonly connection: Connection) {
-		super(ddp);
-	}
+	constructor(
+		readonly connection: Connection,
+		readonly client: ClientStream,
+		readonly account: Account,
+		readonly timeoutControl: TimeoutControl,
+	) {}
 
 	stream(name: string, params: unknown[], cb: (data: PublicationPayloads) => void): () => void {
-		const { id } = this.subscribe(name, ...params);
+		const { id } = this.client.subscribe(name, ...params);
 		const cancel = [
-			() => this.unsubscribe(id),
-			this.onCollection(name, (data) => {
+			() => this.client.unsubscribe(id),
+			this.client.onCollection(name, (data) => {
 				if (!isValidPayload(data)) {
 					return;
 				}
@@ -87,29 +96,16 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
 
-		TimeoutControl.create(ddp, connection);
+		const stream = new ClientStreamImpl(ddp);
 
-		const sdk = new DDPSDK(ddp, connection);
+		const account = new AccountImpl(stream);
 
-		sdk.onCollection('users', (data) => {
-			if (data.collection !== 'users') {
-				return;
-			}
+		const timeoutControl = TimeoutControl.create(ddp, connection);
 
-			if (!('fields' in data) || !('username' in data.fields!)) {
-				return;
-			}
-
-			sdk.user = {
-				...sdk.user,
-				_id: data.id,
-				username: data.fields.username,
-			};
-			sdk.emit('user', sdk.user);
-		});
+		const sdk = new DDPSDK(connection, stream, account, timeoutControl);
 
 		connection.on('connected', () => {
-			Object.entries(sdk.subscriptions).forEach(([, sub]) => {
+			Object.entries(stream.subscriptions).forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, ...sub.params);
 			});
 		});

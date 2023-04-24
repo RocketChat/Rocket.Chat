@@ -8,8 +8,8 @@ const run = async (url: string, token: string) => {
 	const sdk = await DDPSDK.create(url);
 
 	try {
-		await sdk.callAsync('login', { resume: token });
-		console.log('ROOMS', await sdk.callAsync('subscriptions/get'));
+		await sdk.client.callAsync('login', { resume: token });
+		console.log('ROOMS', await sdk.client.callAsync('subscriptions/get'));
 
 		await sdk.stream('stream-room-messages', ['GENERAL'], (args) => console.log('STREAMER -> GENERAL', JSON.stringify(args, undefined, 2)));
 	} catch (error) {
