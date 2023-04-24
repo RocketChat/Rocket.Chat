@@ -27,7 +27,7 @@ function _getLink(attachment) {
 }
 
 smarsh.generateEml = () => {
-	Meteor.defer(async () => {
+	setImmediate(async () => {
 		const smarshMissingEmail = settings.get('Smarsh_MissingEmail_Email');
 		const timeZone = settings.get('Smarsh_Timezone');
 

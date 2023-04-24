@@ -63,7 +63,7 @@ Meteor.methods<ServerMethods>({
 			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
 			contentType,
 		);
-		ws.on('end', () => Meteor.setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500));
+		ws.on('end', () => setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500));
 
 		rs.pipe(ws);
 	},
