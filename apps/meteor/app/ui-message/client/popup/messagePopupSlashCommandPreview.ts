@@ -64,9 +64,9 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 				this.commandArgs.set(params);
 				this.isLoading.set(false);
 
-				Meteor.defer(() => {
+				setTimeout(() => {
 					this.verifySelection();
-				});
+				}, 0);
 			},
 		);
 	});
