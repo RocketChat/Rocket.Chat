@@ -401,7 +401,7 @@
 		"turndown": "^7.1.1",
 		"twilio": "^3.76.1",
 		"twit": "^2.2.11",
-		"ua-parser-js": "^1.0.2",
+		"ua-parser-js": "^1.0.35",
 		"underscore": "^1.13.4",
 		"universal-perf-hooks": "^1.0.1",
 		"url-polyfill": "^1.1.12",
