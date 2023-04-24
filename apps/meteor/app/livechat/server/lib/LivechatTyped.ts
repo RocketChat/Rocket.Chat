@@ -10,6 +10,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import { Message, Translation } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -20,7 +21,6 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -367,10 +367,9 @@ class LivechatClass {
 			const result = await fetch(settings.get('Livechat_webhookUrl'), {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json',
 					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
 				},
-				body: JSON.stringify(postData),
+				body: postData,
 				timeout,
 			});
 
