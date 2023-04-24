@@ -1,11 +1,11 @@
+export type IAlertId = 'UNREAD_MESSAGES' | 'CONNECTING_AGENT' | 'LIVECHAT_CONNECTED' | 'LIVECHAT_DISCONNECTED';
+
 export type IAlert = {
-	_id: string;
-	rid: string;
-	ts: Date;
-	type: string;
-	title: string;
-	message: string;
-	params: string;
+	_id: IAlertId;
+	children?: string;
+	success?: boolean;
+	type?: string;
+	error?: boolean;
 };
 
 export type ILivechatAgent = {
