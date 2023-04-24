@@ -71,7 +71,6 @@
 		"rimraf": "^3.0.2",
 		"sass": "^1.49.10",
 		"sass-loader": "^9.0.3",
-		"serve": "^11.3.2",
 		"style-loader": "^1.2.1",
 		"stylelint": "^14.9.1",
 		"stylelint-order": "^5.0.0",
