@@ -138,7 +138,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
 	return {
-		// @ts-expect-error - fetch types are kinda weird
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
