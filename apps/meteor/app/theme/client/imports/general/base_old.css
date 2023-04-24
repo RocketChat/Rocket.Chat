@@ -828,64 +828,6 @@
 		}
 	}
 
-	& .new-message {
-		position: absolute;
-		z-index: 2;
-		bottom: 8px;
-		left: 50%;
-
-		width: 130px;
-		height: 30px;
-		margin: 0 -65px;
-
-		cursor: pointer;
-		user-select: none;
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: center;
-
-		border-radius: 20px;
-
-		font-size: 0.8em;
-		line-height: 30px;
-
-		&.not {
-			transform: translateY(150%);
-		}
-	}
-
-	& .jump-recent {
-		position: absolute;
-		z-index: 15;
-		right: 20px;
-		bottom: 0;
-		left: 20px;
-
-		height: 24px;
-		padding-right: 20px;
-
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: right;
-
-		border-top-left-radius: 4px;
-		border-top-right-radius: 4px;
-
-		font-size: 0.8em;
-		line-height: 24px;
-
-		&.not {
-			z-index: 1;
-
-			transform: translateY(150%);
-		}
-
-		& button {
-			cursor: pointer;
-			user-select: none;
-		}
-	}
-
 	& .editing .body {
 		border-radius: var(--border-radius);
 	}
