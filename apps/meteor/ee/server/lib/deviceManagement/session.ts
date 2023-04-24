@@ -3,13 +3,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { UAParser } from 'ua-parser-js';
 import type { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Translation } from '@rocket.chat/core-services';
 
 import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
-import { t, getUserPreference } from '../../../../app/utils/server';
+import { getUserPreference } from '../../../../app/utils/server';
 
 let mailTemplates: string;
 
@@ -53,9 +54,9 @@ export const listenSessionLogin = async (): Promise<void> => {
 				username,
 				browserInfo: `${browser.name} ${browser.version}`,
 				osInfo: `${os.name}`,
-				deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
-					cpu.architecture || ''
-				}`,
+				deviceInfo: `${device.type || (await Translation.translateToServerLanguage('Device_Management_Device_Unknown'))} ${
+					device.vendor || ''
+				} ${device.model || ''} ${cpu.architecture || ''}`,
 				ipInfo: connection.clientAddress,
 				userAgent: '',
 			};

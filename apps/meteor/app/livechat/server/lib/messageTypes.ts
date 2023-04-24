@@ -1,10 +1,12 @@
 import formatDistance from 'date-fns/formatDistance';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { Translation } from '@rocket.chat/core-services';
 
-import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
+import { MessageTypes } from '../../../ui-utils/server';
+
+const translateToServerLanguageFn = await Translation.getTranslateToServerLanguageFnWrapper();
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',
@@ -36,32 +38,42 @@ MessageTypes.registerType({
 			message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
 			agent: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_agent${commentLabel}`, {
-					from,
-					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
-					...(comment && { comment }),
+				translateToServerLanguageFn(`Livechat_transfer_to_agent${commentLabel}`, {
+					interpolate: {
+						from,
+						to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
+						...(comment && { comment }),
+					},
 				}),
 			department: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_department${commentLabel}`, {
-					from,
-					to: message?.transferData?.nextDepartment?.name || '',
-					...(comment && { comment }),
+				translateToServerLanguageFn(`Livechat_transfer_to_department${commentLabel}`, {
+					interpolate: {
+						from,
+						to: message?.transferData?.nextDepartment?.name || '',
+						...(comment && { comment }),
+					},
 				}),
 			queue: (): string =>
-				TAPi18n.__(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
-					from,
-					...(comment && { comment }),
+				translateToServerLanguageFn(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
+					interpolate: {
+						from,
+						...(comment && { comment }),
+					},
 				}),
 			autoTransferUnansweredChatsToAgent: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
-					from,
-					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
-					duration: comment,
+				translateToServerLanguageFn(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
+					interpolate: {
+						from,
+						to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
+						duration: comment,
+					},
 				}),
 			autoTransferUnansweredChatsToQueue: (): string =>
-				TAPi18n.__(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
-					from,
-					duration: comment,
+				translateToServerLanguageFn(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
+					interpolate: {
+						from,
+						duration: comment,
+					},
 				}),
 		};
 		return {
@@ -84,13 +96,17 @@ MessageTypes.registerType({
 		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
 		const requestTypes = {
 			visitor: (): string =>
-				TAPi18n.__('Livechat_visitor_transcript_request', {
-					guest: visitor?.name || visitor?.username || '',
+				translateToServerLanguageFn('Livechat_visitor_transcript_request', {
+					interpolate: {
+						guest: visitor?.name || visitor?.username || '',
+					},
 				}),
 			user: (): string =>
-				TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
-					agent: user?.name || user?.username || '',
-					guest: visitor?.name || visitor?.username || '',
+				translateToServerLanguageFn('Livechat_user_sent_chat_transcript_to_visitor', {
+					interpolate: {
+						agent: user?.name || user?.username || '',
+						guest: visitor?.name || visitor?.username || '',
+					},
 				}),
 		};
 
@@ -110,13 +126,15 @@ MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
 	render(message) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-			return TAPi18n.__('WebRTC_call_ended_message', {
-				callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
-				endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+			return translateToServerLanguageFn('WebRTC_call_ended_message', {
+				interpolate: {
+					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
+					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+				},
 			});
 		}
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
-			return TAPi18n.__('WebRTC_call_declined_message');
+			return translateToServerLanguageFn('WebRTC_call_declined_message');
 		}
 		return escapeHTML(message.msg);
 	},

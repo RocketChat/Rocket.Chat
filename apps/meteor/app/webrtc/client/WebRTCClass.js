@@ -2,7 +2,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { ChromeScreenShare } from './screenShare';
 import { t } from '../../utils/client';
@@ -13,6 +12,7 @@ import { WEB_RTC_EVENTS } from '../lib/constants';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { translationHelper } from '../../../client/lib/i18n/i18nHelper';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {
@@ -414,7 +414,7 @@ class WebRTCClass {
 					component: GenericModal,
 					props: {
 						variant: 'warning',
-						title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing'),
+						title: translationHelper.t('Refresh_your_page_after_install_to_enable_screen_sharing'),
 					},
 				});
 			};
@@ -426,11 +426,11 @@ class WebRTCClass {
 				imperativeModal.open({
 					component: GenericModal,
 					props: {
-						title: TAPi18n.__('Screen_Share'),
+						title: translationHelper.t('Screen_Share'),
 						variant: 'warning',
-						confirmText: TAPi18n.__('Install_Extension'),
-						cancelText: TAPi18n.__('Cancel'),
-						children: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
+						confirmText: translationHelper.t('Install_Extension'),
+						cancelText: translationHelper.t('Cancel'),
+						children: translationHelper.t('You_need_install_an_extension_to_allow_screen_sharing'),
 						onConfirm: () => {
 							if (this.navigator === 'chrome') {
 								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';

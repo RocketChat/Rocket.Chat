@@ -1,4 +1,4 @@
-import '../lib/messageTypes';
+import './lib/messageTypes';
 import './voip';
 import './ui';
 import './tabBar';

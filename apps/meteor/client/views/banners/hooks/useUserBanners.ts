@@ -1,8 +1,8 @@
 import { useUser } from '@rocket.chat/ui-contexts';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { useEffect } from 'react';
 
 import * as banners from '../../../lib/banners';
+import { translationHelper } from '../../../lib/i18n/i18nHelper';
 import { useDismissUserBannerMutation } from './useDismissUserBannerMutation';
 
 export const useUserBanners = () => {
@@ -25,8 +25,8 @@ export const useUserBanners = () => {
 
 		banners.open({
 			id: firstBanner.id,
-			title: TAPi18n.__(firstBanner.title),
-			text: TAPi18n.__(firstBanner.text, {
+			title: translationHelper.t(firstBanner.title),
+			text: translationHelper.t(firstBanner.text, {
 				postProcess: 'sprintf',
 				sprintf: firstBanner.textArguments ?? [],
 			}),

@@ -1,13 +1,12 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Meteor } from 'meteor/meteor';
+import { Translation } from '@rocket.chat/core-services';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { MessageTypes } from './MessageTypes';
+import { MessageTypes } from '../lib/MessageTypes';
 import { settings } from '../../settings';
 import { trim } from '../../../lib/utils/stringUtils';
 
 export const Message = {
-	parse(msg, language) {
+	async parse(msg, language) {
 		const messageType = MessageTypes.getType(msg);
 		if (messageType) {
 			if (messageType.render) {
@@ -18,11 +17,8 @@ export const Message = {
 				return;
 			}
 			if (messageType.message) {
-				if (!language) {
-					language = Meteor._localStorage.getItem('userLanguage');
-				}
 				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
-				return TAPi18n.__(messageType.message, data, language);
+				return Translation.translateText(messageType.message, language || 'en', data);
 			}
 		}
 		if (msg.u && msg.u.username === settings.get('Chatops_Username')) {

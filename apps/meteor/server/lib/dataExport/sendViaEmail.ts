@@ -59,19 +59,19 @@ export async function sendViaEmail(
 			localMoment.locale(lang);
 		}
 	}
-
+	const messages = await Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
+		sort: { ts: 1 },
+	}).toArray();
 	const html = (
-		await Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-			sort: { ts: 1 },
-		}).toArray()
-	)
-		.map((message: IMessage) => {
-			const dateTime = moment(message.ts).locale(lang).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${
-				message.u.username
-			}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
-		})
-		.join('');
+		await Promise.all(
+			messages.map(async (message: IMessage) => {
+				const dateTime = moment(message.ts).locale(lang).format('L LT');
+				return `<p style='margin-bottom: 5px'><b>${
+					message.u.username
+				}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${await Message.parse(message, data.language)}</p>`;
+			}),
+		)
+	).join('');
 
 	await Mailer.send({
 		to: emails,

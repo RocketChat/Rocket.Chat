@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
-import { t } from '../../../../app/utils/client';
+import { MessageTypes } from '../../../../../app/ui-utils/client';
+import { translationHelper } from '../../../../../client/lib/i18n/i18nHelper';
 
 MessageTypes.registerType({
 	id: 'omnichannel_priority_change_history',
@@ -10,8 +10,8 @@ MessageTypes.registerType({
 	data(message: IMessage): Record<string, string> {
 		if (!message.priorityData) {
 			return {
-				user: t('Unknown_User'),
-				priority: t('Without_priority'),
+				user: translationHelper.t('Unknown_User'),
+				priority: translationHelper.t('Without_priority'),
 			};
 		}
 		const {
@@ -20,8 +20,8 @@ MessageTypes.registerType({
 		} = message.priorityData;
 
 		return {
-			user: username || t('Unknown_User'),
-			priority: name || (i18n && t(i18n)) || t('Unprioritized'),
+			user: username || translationHelper.t('Unknown_User'),
+			priority: name || (i18n && translationHelper.t(i18n)) || translationHelper.t('Unprioritized'),
 		};
 	},
 });
@@ -33,8 +33,8 @@ MessageTypes.registerType({
 	data(message: IMessage): Record<string, string> {
 		if (!message.slaData) {
 			return {
-				user: t('Unknown_User'),
-				priority: t('Without_SLA'),
+				user: translationHelper.t('Unknown_User'),
+				priority: translationHelper.t('Without_SLA'),
 			};
 		}
 		const {
@@ -43,8 +43,8 @@ MessageTypes.registerType({
 		} = message.slaData;
 
 		return {
-			user: username || t('Unknown_User'),
-			sla: name || t('Without_SLA'),
+			user: username || translationHelper.t('Unknown_User'),
+			sla: name || translationHelper.t('Without_SLA'),
 		};
 	},
 });

@@ -1,5 +1,5 @@
 import { hasLicense } from '../../license/client';
-import '../lib/messageTypes';
+import './lib/messageTypes';
 import './startup';
 
 hasLicense('livechat-enterprise').then((enabled) => {

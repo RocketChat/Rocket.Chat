@@ -6,6 +6,7 @@ import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
+import { Translation } from '@rocket.chat/core-services';
 
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
@@ -13,7 +14,6 @@ import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
-import { t } from '../../../utils/server';
 import { Selection, SelectionChannel, SelectionUser } from '..';
 
 /**
@@ -425,7 +425,17 @@ export class Base {
 		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
-			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
+			selectionChannels.push(
+				new SelectionChannel(
+					'__directMessages__',
+					await Translation.translateToServerLanguage('Direct_Messages'),
+					false,
+					true,
+					true,
+					undefined,
+					true,
+				),
+			);
 		}
 
 		const results = new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);

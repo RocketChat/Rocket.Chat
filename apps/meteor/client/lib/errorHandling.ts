@@ -1,4 +1,4 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { translationHelper } from './i18n/i18nHelper';
 
 const isObject = (obj: unknown): obj is object => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
 
@@ -11,7 +11,7 @@ const hasJQueryXHR = (error: object): error is { xhr: JQuery.jqXHR } => hasPrope
 
 export function getErrorMessage(error: unknown, defaultMessage?: string): string {
 	if (typeof error === 'string') {
-		return TAPi18n.__(error);
+		return translationHelper.t(error);
 	}
 
 	if (!isObject(error)) {
@@ -32,7 +32,10 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 	const details = hasProperty(error, 'details') && isObject(error.details) ? error.details : undefined;
 
 	if (message)
-		return TAPi18n.__(message, Object.fromEntries(Object.entries(details ?? {}).map(([key, value]) => [key, TAPi18n.__(value)])));
+		return translationHelper.t(
+			message,
+			Object.fromEntries(Object.entries(details ?? {}).map(([key, value]) => [key, translationHelper.t(value)])),
+		);
 
 	return getErrorMessage(defaultMessage);
 }
