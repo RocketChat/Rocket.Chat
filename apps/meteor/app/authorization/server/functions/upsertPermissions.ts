@@ -9,7 +9,8 @@ import { permissions } from '../constant/permissions';
 
 export const upsertPermissions = async (): Promise<void> => {
 	for await (const permission of permissions) {
-		await Permissions.create(permission._id, permission.roles);
+		const roles = permission.roles.map((role) => role);
+		await Permissions.create(permission._id, roles);
 	}
 
 	const defaultRoles = [

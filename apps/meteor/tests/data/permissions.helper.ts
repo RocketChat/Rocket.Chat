@@ -70,10 +70,7 @@ export const addPermissionToDefaultRoles = async (permission: Permission) => {
         throw new Error(`No default roles found for permission ${permission}`);
     }
 
-    type Mutable<Type> = {
-        -readonly [Key in keyof Type]: Type[Key];
-    };
-    const mutableDefaultRoles: string[] = defaultRoles.roles as Mutable<typeof defaultRoles['roles']>;
+    const mutableDefaultRoles: string[] = defaultRoles.roles.map((r) => r);
 
     const eeOnlyRoles = ['livechat-monitor'];
     if (!IS_EE) {
