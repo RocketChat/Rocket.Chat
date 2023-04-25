@@ -1,4 +1,5 @@
 import './models/startup';
+import './settings/index';
 import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
@@ -79,6 +80,5 @@ import './routes/i18n';
 import './routes/timesync';
 import './routes/userDataDownload';
 import './stream/stdout';
-import './settings/index';
 
 import './features/EmailInbox/index';
