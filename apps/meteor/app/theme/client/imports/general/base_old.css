@@ -687,41 +687,6 @@
 			font-weight: bold;
 		}
 	}
-
-	& .unread-bar {
-		text-align: center;
-		text-transform: uppercase;
-
-		& > button.mark-read {
-			float: right;
-
-			line-height: inherit;
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		& .unread-count {
-			display: none;
-		}
-
-		& > button.jump-to {
-			float: left;
-
-			line-height: inherit;
-
-			& .jump-to-small {
-				display: none;
-
-				line-height: inherit;
-			}
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-	}
 }
 
 .rc-old .flex-tab-main-content {
