@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Users } from '@rocket.chat/models';
 
 import { getRedirectUri } from './getRedirectUri';
@@ -22,22 +21,27 @@ export async function finishOAuthAuthorization(code, state) {
 
 	let result;
 	try {
-		result = HTTP.post(`${cloudUrl}/api/oauth/token`, {
+		const request = await fetch(`${cloudUrl}/api/oauth/token`, {
+			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			params: {
+			params: new URLSearchParams({
 				client_id: clientId,
 				client_secret: clientSecret,
 				grant_type: 'authorization_code',
 				scope,
 				code,
 				redirect_uri: getRedirectUri(),
-			},
+			}),
 		});
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		result = await request.json();
 	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
 			url: '/api/oauth/token',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
@@ -45,18 +49,18 @@ export async function finishOAuthAuthorization(code, state) {
 	}
 
 	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
+	expiresAt.setSeconds(expiresAt.getSeconds() + result.expires_in);
 
 	await Users.updateOne(
 		{ _id: Meteor.userId() },
 		{
 			$set: {
 				'services.cloud': {
-					accessToken: result.data.access_token,
+					accessToken: result.access_token,
 					expiresAt,
-					scope: result.data.scope,
-					tokenType: result.data.token_type,
-					refreshToken: result.data.refresh_token,
+					scope: result.scope,
+					tokenType: result.token_type,
+					refreshToken: result.refresh_token,
 				},
 			},
 		},

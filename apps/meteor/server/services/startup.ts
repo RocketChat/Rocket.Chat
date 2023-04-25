@@ -30,6 +30,7 @@ import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
+api.registerService(new TranslationService());
 api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
@@ -50,7 +51,6 @@ api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
 api.registerService(new UploadService());
 api.registerService(new MessageService());
-api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
 
