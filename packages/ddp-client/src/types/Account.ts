@@ -52,24 +52,38 @@ export class AccountImpl
 	}
 
 	async loginWithPassword(username: string, password: string): Promise<void> {
-		const { uid } = await this.client.callAsync('login', {
-			user: { username },
-			password: { digest: password, algorithm: 'sha-256' },
-		});
+		const { uid } = await this.client.callAsyncWithOptions(
+			'login',
+			{
+				wait: true,
+			},
+			{
+				user: { username },
+				password: { digest: password, algorithm: 'sha-256' },
+			},
+		);
 		this.uid = uid;
 		this.emit('uid', this.uid);
 	}
 
 	async loginWithToken(token: string): Promise<void> {
-		const { uid } = await this.client.callAsync('login', {
-			resume: token,
-		});
+		const { uid } = await this.client.callAsyncWithOptions(
+			'login',
+			{
+				wait: true,
+			},
+			{
+				resume: token,
+			},
+		);
 		this.uid = uid;
 		this.emit('uid', this.uid);
 	}
 
 	async logout(): Promise<void> {
-		await this.client.callAsync('logout');
+		await this.client.callAsyncWithOptions('logout', {
+			wait: true,
+		});
 		this.uid = undefined;
 		this.emit('uid', this.uid);
 	}
