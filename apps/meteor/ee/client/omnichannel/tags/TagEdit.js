@@ -86,7 +86,7 @@ function TagEdit({ title, data, tagId, reload, currentDepartments, ...props }) {
 						<Field>
 							<Field.Label>{t('Departments')}</Field.Label>
 							<Field.Row>
-								<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} />
+								<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} showArchived />
 							</Field.Row>
 						</Field>
 					</FieldGroup>

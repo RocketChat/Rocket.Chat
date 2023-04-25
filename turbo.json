@@ -42,6 +42,10 @@
 		"@rocket.chat/ui-contexts#build": {
 			"dependsOn": ["^build"],
 			"cache": false
+		},
+		"@rocket.chat/meteor#build:ci": {
+			"dependsOn": ["^build"],
+			"cache": false
 		}
 	}
 }

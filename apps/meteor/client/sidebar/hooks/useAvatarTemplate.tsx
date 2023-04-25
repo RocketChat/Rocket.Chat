@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { ComponentType, useMemo } from 'react';
+import type { ComponentType } from 'react';
+import React, { useMemo } from 'react';
 
 import RoomAvatar from '../../components/avatar/RoomAvatar';
 

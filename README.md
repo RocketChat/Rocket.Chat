@@ -1,5 +1,9 @@
 <img src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="500" />
 
+<h1 align="center">
+  The ultimate Free Open Source Solution for team communications.
+</h1>
+
 [Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
 
 We are a MERN based application enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
@@ -11,7 +15,7 @@ Every day, tens of millions of users in over 150 countries and in organizations 
 
 Using our self-managed offerings you can deploy Rocket.Chat on your own server, or you can use SaaS Rocket.Chat. We offer support for both community as well as commercial plans.
 
-<img src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" width="919" height="511" />
+<img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" data-canonical-src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" width="919" height="511" />
 
 ## Cloud Hosted Rocket.Chat
 
@@ -47,7 +51,7 @@ After initialized, you can access the server at http://localhost:4000
 
 ## Installation
 
-Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 ## Feature Request
@@ -63,7 +67,7 @@ Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.yout
 
 ## Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contributors/how-can-i-help) for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) for more details.
 
 ## Credits
 
@@ -96,3 +100,4 @@ We're hiring developers, support people, and product managers all the time. Plea
 - [Email Newsletter](https://rocket.chat/newsletter)
 
 Any other questions, reach out to us at [our website](https://rocket.chat/contact) or you can email us directly at [contact@rocket.chat](mailto:contact@rocket.chat). We’d be happy to help!
+

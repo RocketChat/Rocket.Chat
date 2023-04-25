@@ -1,14 +1,17 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Option, Menu, Icon } from '@rocket.chat/fuselage';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useMemo } from 'react';
 
 import InfoPanel from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
 import VerticalBar from '../../../../components/VerticalBar';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useActionSpread, Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
+import { useActionSpread } from '../../../hooks/useActionSpread';
 
 type RetentionPolicy = {
 	retentionPolicyEnabled: boolean;
@@ -50,36 +53,36 @@ const TeamsInfo = ({
 			...(onClickEdit && {
 				edit: {
 					label: t('Edit'),
-					icon: 'edit',
 					action: onClickEdit,
+					icon: 'edit' as const,
 				},
 			}),
 			...(onClickDelete && {
 				delete: {
 					label: t('Delete'),
-					icon: 'trash',
 					action: onClickDelete,
+					icon: 'trash' as const,
 				},
 			}),
 			...(onClickConvertToChannel && {
 				convertToChannel: {
 					label: t('Convert_to_channel'),
 					action: onClickConvertToChannel,
-					icon: 'hash',
+					icon: 'hash' as const,
 				},
 			}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
 					action: onClickHide,
-					icon: 'eye-off',
+					icon: 'eye-off' as const,
 				},
 			}),
 			...(onClickLeave && {
 				leave: {
 					label: t('Leave'),
 					action: onClickLeave,
-					icon: 'sign-out',
+					icon: 'sign-out' as const,
 				},
 			}),
 		}),

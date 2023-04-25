@@ -2,7 +2,6 @@ import type {
 	IOmnichannelCannedResponse,
 	ILivechatAgent,
 	ILivechatDepartment,
-	ILivechatDepartmentRecord,
 	ILivechatDepartmentAgents,
 	ILivechatMonitor,
 	ILivechatTag,
@@ -12,7 +11,6 @@ import type {
 	IOmnichannelRoom,
 	IRoom,
 	ISetting,
-	ILivechatPriority,
 	ILivechatAgentActivity,
 	ILivechatCustomField,
 	IOmnichannelSystemMessage,
@@ -20,6 +18,8 @@ import type {
 	ILivechatBusinessHour,
 	ILivechatTrigger,
 	ILivechatInquiryRecord,
+	IOmnichannelServiceLevelAgreements,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -95,6 +95,7 @@ export const isLivechatDepartmentIdProps = ajv.compile<LivechatDepartmentId>(Liv
 type LivechatDepartmentAutocomplete = {
 	selector: string;
 	onlyMyDepartments: booleanString;
+	showArchived?: booleanString;
 };
 
 const LivechatDepartmentAutocompleteSchema = {
@@ -105,6 +106,10 @@ const LivechatDepartmentAutocompleteSchema = {
 		},
 		onlyMyDepartments: {
 			type: 'string',
+		},
+		showArchived: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['selector', 'onlyMyDepartments'],
@@ -329,7 +334,9 @@ type LiveChatRoomSaveInfo = {
 		topic?: string;
 		tags?: string[];
 		livechatData?: { [k: string]: string };
+		// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
 		priorityId?: string;
+		slaId?: string;
 	};
 };
 
@@ -389,6 +396,10 @@ const LiveChatRoomSaveInfoSchema = {
 					nullable: true,
 				},
 				priorityId: {
+					type: 'string',
+					nullable: true,
+				},
+				slaId: {
 					type: 'string',
 					nullable: true,
 				},
@@ -466,10 +477,11 @@ const LivechatTagsListSchema = {
 export const isLivechatTagsListProps = ajv.compile<LivechatTagsListProps>(LivechatTagsListSchema);
 
 type LivechatDepartmentProps = PaginatedRequest<{
-	text: string;
+	text?: string;
 	onlyMyDepartments?: booleanString;
 	enabled?: booleanString;
 	excludeDepartmentId?: string;
+	showArchived?: booleanString;
 }>;
 
 const LivechatDepartmentSchema = {
@@ -492,6 +504,10 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		showArchived: {
+			type: 'string',
+			nullable: true,
+		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -505,10 +521,6 @@ const LivechatDepartmentSchema = {
 			nullable: true,
 		},
 		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -914,6 +926,11 @@ export type LivechatRoomsProps = {
 	onhold?: boolean;
 };
 
+export type VisitorSearchChatsResult = Pick<
+	IOmnichannelRoom,
+	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
+> & { v: Omit<IOmnichannelRoom['v'], 'lastMessageTs'> };
+
 const LivechatRoomsSchema = {
 	type: 'object',
 	properties: {
@@ -964,7 +981,7 @@ const LivechatRoomsSchema = {
 
 export const isLivechatRoomsProps = ajv.compile<LivechatRoomsProps>(LivechatRoomsSchema);
 
-type LivechatRidMessagesProps = PaginatedRequest;
+type LivechatRidMessagesProps = PaginatedRequest<{ searchTerm?: string }>;
 
 const LivechatRidMessagesSchema = {
 	type: 'object',
@@ -978,6 +995,10 @@ const LivechatRidMessagesSchema = {
 			nullable: true,
 		},
 		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		searchTerm: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1045,12 +1066,42 @@ const LivechatPrioritiesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: [],
 	additionalProperties: false,
 };
 
 export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
+
+type CreateOrUpdateLivechatSlaProps = {
+	name: string;
+	description?: string;
+	dueTimeInMinutes: number;
+};
+
+const CreateOrUpdateLivechatSlaPropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		dueTimeInMinutes: {
+			type: 'number',
+		},
+	},
+	required: ['name', 'dueTimeInMinutes'],
+	additionalProperties: false,
+};
+
+export const isCreateOrUpdateLivechatSlaProps = ajv.compile<CreateOrUpdateLivechatSlaProps>(CreateOrUpdateLivechatSlaPropsSchema);
 
 type POSTOmnichannelContactProps = {
 	_id?: string;
@@ -1126,10 +1177,10 @@ export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactPro
 
 type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
 
-type LivechatAnalyticsAgentsAverageServiceTimeProps = {
+type LivechatAnalyticsAgentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsAverageServiceTimeSchema = {
 	type: 'object',
@@ -1196,10 +1247,10 @@ const POSTLivechatAgentStatusPropsSchema = {
 
 export const isPOSTLivechatAgentStatusProps = ajv.compile<POSTLivechatAgentStatusProps>(POSTLivechatAgentStatusPropsSchema);
 
-type LivechatAnalyticsAgentsTotalServiceTimeProps = {
+type LivechatAnalyticsAgentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsTotalServiceTimeSchema = {
 	type: 'object',
@@ -1219,11 +1270,11 @@ export const isLivechatAnalyticsAgentsTotalServiceTimeProps = ajv.compile<Livech
 	LivechatAnalyticsAgentsTotalServiceTimeSchema,
 );
 
-type LivechatAnalyticsAgentsAvailableForServiceHistoryProps = {
+type LivechatAnalyticsAgentsAvailableForServiceHistoryProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	fullReport?: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 	type: 'object',
@@ -1247,12 +1298,12 @@ export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps = ajv.comp
 	LivechatAnalyticsAgentsAvailableForServiceHistorySchema,
 );
 
-type LivechatAnalyticsDepartmentsAmountOfChatsProps = {
+type LivechatAnalyticsDepartmentsAmountOfChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	answered?: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAmountOfChatsSchema = {
 	type: 'object',
@@ -1280,11 +1331,11 @@ export const isLivechatAnalyticsDepartmentsAmountOfChatsProps = ajv.compile<Live
 	LivechatAnalyticsDepartmentsAmountOfChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageServiceTimeProps = {
+type LivechatAnalyticsDepartmentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageServiceTimeSchema = {
 	type: 'object',
@@ -1308,11 +1359,11 @@ export const isLivechatAnalyticsDepartmentsAverageServiceTimeProps = ajv.compile
 	LivechatAnalyticsDepartmentsAverageServiceTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageChatDurationTimeProps = {
+type LivechatAnalyticsDepartmentsAverageChatDurationTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 	type: 'object',
@@ -1335,11 +1386,11 @@ const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 export const isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps =
 	ajv.compile<LivechatAnalyticsDepartmentsAverageChatDurationTimeProps>(LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema);
 
-type LivechatAnalyticsDepartmentsTotalServiceTimeProps = {
+type LivechatAnalyticsDepartmentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalServiceTimeSchema = {
 	type: 'object',
@@ -1363,11 +1414,11 @@ export const isLivechatAnalyticsDepartmentsTotalServiceTimeProps = ajv.compile<L
 	LivechatAnalyticsDepartmentsTotalServiceTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageWaitingTimeProps = {
+type LivechatAnalyticsDepartmentsAverageWaitingTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageWaitingTimeSchema = {
 	type: 'object',
@@ -1391,11 +1442,11 @@ export const isLivechatAnalyticsDepartmentsAverageWaitingTimeProps = ajv.compile
 	LivechatAnalyticsDepartmentsAverageWaitingTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsTotalTransferredChatsProps = {
+type LivechatAnalyticsDepartmentsTotalTransferredChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 	type: 'object',
@@ -1419,11 +1470,11 @@ export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps = ajv.comp
 	LivechatAnalyticsDepartmentsTotalTransferredChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsTotalAbandonedChatsProps = {
+type LivechatAnalyticsDepartmentsTotalAbandonedChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 	type: 'object',
@@ -1447,11 +1498,11 @@ export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps = ajv.compil
 	LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps = {
+type LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema = {
 	type: 'object',
@@ -2002,6 +2053,73 @@ const POSTLivechatRoomCloseParamsSchema = {
 
 export const isPOSTLivechatRoomCloseParams = ajv.compile<POSTLivechatRoomCloseParams>(POSTLivechatRoomCloseParamsSchema);
 
+type POSTLivechatRoomCloseByUserParams = {
+	rid: string;
+	comment?: string;
+	tags?: string[];
+	generateTranscriptPdf?: boolean;
+	transcriptEmail?:
+		| {
+				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+				sendToVisitor: false;
+		  }
+		| {
+				sendToVisitor: true;
+				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+		  };
+};
+
+const POSTLivechatRoomCloseByUserParamsSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		comment: {
+			type: 'string',
+			nullable: true,
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		generateTranscriptPdf: {
+			type: 'boolean',
+			nullable: true,
+		},
+		transcriptEmail: {
+			type: 'object',
+			properties: {
+				sendToVisitor: {
+					type: 'boolean',
+				},
+				requestData: {
+					type: 'object',
+					properties: {
+						email: {
+							type: 'string',
+						},
+						subject: {
+							type: 'string',
+						},
+					},
+					required: ['email', 'subject'],
+					additionalProperties: false,
+				},
+			},
+			required: ['sendToVisitor'],
+			additionalProperties: false,
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomCloseByUserParams = ajv.compile<POSTLivechatRoomCloseByUserParams>(POSTLivechatRoomCloseByUserParamsSchema);
+
 type POSTLivechatRoomTransferParams = {
 	token: string;
 	rid: string;
@@ -2226,6 +2344,7 @@ type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedR
 	searchText?: string;
 	closedChatsOnly?: string;
 	servedChatsOnly?: string;
+	source?: string;
 }>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
@@ -2252,6 +2371,10 @@ const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		servedChatsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+		source: {
 			type: 'string',
 			nullable: true,
 		},
@@ -2448,6 +2571,23 @@ const GETLivechatRoomsParamsSchema = {
 
 export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
 
+export type POSTLivechatRoomPriorityParams = {
+	priorityId: string;
+};
+
+const POSTLivechatRoomPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		priorityId: {
+			type: 'string',
+		},
+	},
+	required: ['priorityId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomPriorityParams = ajv.compile<POSTLivechatRoomPriorityParams>(POSTLivechatRoomPriorityParamsSchema);
+
 type GETLivechatQueueParams = PaginatedRequest<{ agentId?: string; departmentId?: string; includeOfflineAgents?: string }>;
 
 const GETLivechatQueueParamsSchema = {
@@ -2483,52 +2623,70 @@ const GETLivechatQueueParamsSchema = {
 
 export const isGETLivechatQueueParams = ajv.compile<GETLivechatQueueParams>(GETLivechatQueueParamsSchema);
 
-type POSTLivechatFacebookParams = {
-	text?: string;
-	attachments?: unknown[];
-	mid: string;
-	page: string;
-	token: string;
-	first_name: string;
-	last_name: string;
-};
+type GETLivechatPrioritiesParams = PaginatedRequest<{ text?: string }>;
 
-const POSTLivechatFacebookParamsSchema = {
+const GETLivechatPrioritiesParamsSchema = {
 	type: 'object',
 	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
 		text: {
 			type: 'string',
 			nullable: true,
 		},
-		attachments: {
-			type: 'array',
-			items: {
-				type: 'object',
-			},
-			nullable: true,
-		},
-		mid: {
-			type: 'string',
-		},
-		page: {
-			type: 'string',
-		},
-		token: {
-			type: 'string',
-		},
-		first_name: {
-			type: 'string',
-		},
-		last_name: {
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isGETLivechatPrioritiesParams = ajv.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
+
+type DELETELivechatPriorityParams = {
+	priorityId: string;
+};
+
+const DELETELivechatPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		priorityId: {
 			type: 'string',
 		},
 	},
-	// Facebook may send additional props
-	additionalProperties: true,
-	required: ['mid', 'page', 'token', 'first_name', 'last_name'],
+	required: ['priorityId'],
+	additionalProperties: false,
 };
 
-export const isPOSTLivechatFacebookParams = ajv.compile<POSTLivechatFacebookParams>(POSTLivechatFacebookParamsSchema);
+export const isDELETELivechatPriorityParams = ajv.compile<DELETELivechatPriorityParams>(DELETELivechatPriorityParamsSchema);
+
+type POSTLivechatPriorityParams = { name: string; level: string };
+
+const POSTLivechatPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+			nullable: false,
+		},
+		level: {
+			type: 'string',
+			nullable: false,
+		},
+	},
+	required: ['name', 'level'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatPriorityParams = ajv.compile<POSTLivechatPriorityParams>(POSTLivechatPriorityParamsSchema);
 
 type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
 
@@ -2701,6 +2859,102 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
+type PUTLivechatPriority = { name: string } | { reset: boolean };
+const PUTLivechatPrioritySchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				name: {
+					type: 'string',
+				},
+				required: true,
+			},
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				reset: {
+					type: 'boolean',
+				},
+				required: true,
+			},
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isPUTLivechatPriority = ajv.compile<PUTLivechatPriority>(PUTLivechatPrioritySchema);
+
+type POSTomnichannelIntegrations = {
+	LivechatWebhookUrl: string;
+	LivechatSecretToken: string;
+	LivechatHttpTimeout: number;
+	LivechatWebhookOnStart: boolean;
+	LivechatWebhookOnClose: boolean;
+	LivechatWebhookOnChatTaken: boolean;
+	LivechatWebhookOnChatQueued: boolean;
+	LivechatWebhookOnForward: boolean;
+	LivechatWebhookOnOfflineMsg: boolean;
+	LivechatWebhookOnVisitorMessage: boolean;
+	LivechatWebhookOnAgentMessage: boolean;
+};
+
+const POSTomnichannelIntegrationsSchema = {
+	type: 'object',
+	properties: {
+		LivechatWebhookUrl: {
+			type: 'string',
+			nullable: true,
+		},
+		LivechatSecretToken: {
+			type: 'string',
+			nullable: true,
+		},
+		LivechatHttpTimeout: {
+			type: 'number',
+			nullable: true,
+		},
+		LivechatWebhookOnStart: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnClose: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnChatTaken: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnChatQueued: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnForward: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnOfflineMsg: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnVisitorMessage: {
+			type: 'boolean',
+			nullable: true,
+		},
+		LivechatWebhookOnAgentMessage: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isPOSTomnichannelIntegrations = ajv.compile<POSTomnichannelIntegrations>(POSTomnichannelIntegrationsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2741,7 +2995,7 @@ export type OmnichannelEndpoints = {
 		GET: () => ILivechatTag | null;
 	};
 	'/v1/livechat/department': {
-		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
@@ -2751,21 +3005,33 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/department/:_id': {
 		GET: (params: LivechatDepartmentId) => {
-			department: ILivechatDepartmentRecord | null;
+			department: ILivechatDepartment | null;
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
-			department: ILivechatDepartment;
+			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};
 		DELETE: () => void;
 	};
+	'/v1/livechat/departments/archived': {
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
+	'/v1/livechat/department/:_id/archive': {
+		POST: () => void;
+	};
+	'/v1/livechat/department/:_id/unarchive': {
+		POST: () => void;
+	};
+
 	'/v1/livechat/department.autocomplete': {
 		GET: (params: LivechatDepartmentAutocomplete) => {
 			items: ILivechatDepartment[];
 		};
 	};
-	'/v1/livechat/department/:departmentId/agents': {
+	'/v1/livechat/department/:_id/agents': {
 		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};
@@ -2790,6 +3056,10 @@ export type OmnichannelEndpoints = {
 		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
 			departments: ILivechatDepartment[];
 		};
+	};
+
+	'/v1/livechat/department/isDepartmentCreationAvailable': {
+		GET: () => { isDepartmentCreationAvailable: boolean };
 	};
 
 	'/v1/livechat/custom-fields': {
@@ -2851,7 +3121,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/users/agent/:_id': {
 		GET: (
-			params: PaginatedRequest<{
+			params?: PaginatedRequest<{
 				text: string;
 			}>,
 		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
@@ -2921,12 +3191,29 @@ export type OmnichannelEndpoints = {
 		PUT: (params: PUTWebRTCCallId) => { status: string | undefined };
 	};
 
+	'/v1/livechat/sla': {
+		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ sla: IOmnichannelServiceLevelAgreements[] }>;
+		POST: (params: CreateOrUpdateLivechatSlaProps) => { sla: Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'> };
+	};
+
+	'/v1/livechat/sla/:slaId': {
+		GET: () => IOmnichannelServiceLevelAgreements;
+		PUT: (params: CreateOrUpdateLivechatSlaProps) => { sla: Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'> };
+		DELETE: () => void;
+	};
+
 	'/v1/livechat/priorities': {
-		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
+		GET: (params: GETLivechatPrioritiesParams) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority;
+		GET: () => ILivechatPriority | void;
+		PUT: (params: PUTLivechatPriority) => void;
+	};
+
+	'/v1/livechat/priorities.reset': {
+		POST: () => void;
+		GET: () => { reset: boolean };
 	};
 
 	'/v1/livechat/visitors.search': {
@@ -2942,10 +3229,10 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 	'/v1/livechat/agent.info/:rid/:token': {
-		GET: () => { agent: ILivechatAgent };
+		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };
 	};
 	'/v1/livechat/agent.next/:token': {
-		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent } | void;
+		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
 	};
 	'/v1/livechat/config': {
 		GET: (params: GETLivechatConfigParams) => {
@@ -2959,7 +3246,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatCustomFieldsParams) => { fields: { Key: string; value: string; overwrite: boolean }[] };
 	};
 	'/v1/livechat/transfer.history/:rid': {
-		GET: () => PaginatedResult<{ history: Pick<IOmnichannelSystemMessage, 'transferData'>[] }>;
+		GET: () => PaginatedResult<{ history: IOmnichannelSystemMessage['transferData'][] }>;
 	};
 	'/v1/livechat/transcript': {
 		POST: (params: POSTLivechatTranscriptParams) => { message: string };
@@ -2968,14 +3255,14 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
 	};
 	'/v1/livechat/page.visited': {
-		POST: (params: POSTLivechatPageVisitedParams) => { page: { msg: string; navigation: string } } | void;
+		POST: (params: POSTLivechatPageVisitedParams) => { page: Pick<IOmnichannelSystemMessage, 'msg' | 'navigation'> } | void;
 	};
 	'/v1/livechat/message': {
 		POST: (params: POSTLivechatMessageParams) => { message: IMessage };
 	};
 	'/v1/livechat/message/:_id': {
-		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage };
-		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage };
+		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage | void };
+		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage | void };
 		DELETE: (params: DELETELivechatMessageIdParams) => { message: Pick<Serialized<IMessage>, 'ts' | '_id'> };
 	};
 	'/v1/livechat/messages.history/:rid': {
@@ -2989,6 +3276,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.close': {
 		POST: (params: POSTLivechatRoomCloseParams) => { rid: string; comment: string };
+	};
+	'/v1/livechat/room.closeByUser': {
+		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
 	'/v1/livechat/room.transfer': {
 		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;
@@ -3006,7 +3296,9 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
 	};
 	'/v1/livechat/visitors.searchChats/room/:roomId/visitor/:visitorId': {
-		GET: (params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
+		GET: (
+			params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams,
+		) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
 	};
 	'/v1/livechat/visitors.autocomplete': {
 		GET: (params: GETLivechatVisitorsAutocompleteParams) => {
@@ -3016,7 +3308,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'/v1/livechat/agents/:agentId/departments': {
-		GET: (params: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
+		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
 	};
 	'/v1/livechat/business-hour': {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
@@ -3029,6 +3321,10 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/rooms': {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
+	};
+	'/v1/livechat/room/:rid/priority': {
+		POST: (params: POSTLivechatRoomPriorityParams) => void;
+		DELETE: () => void;
 	};
 	'/v1/livechat/queue': {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
@@ -3045,9 +3341,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/upload/:rid': {
 		POST: () => IMessage & { newRoom: boolean; showConnecting: boolean };
-	};
-	'/v1/livechat/facebook': {
-		POST: (params: POSTLivechatFacebookParams) => { message: IMessage };
 	};
 	'/v1/livechat/inquiries.list': {
 		GET: (params: GETLivechatInquiriesListParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
@@ -3111,6 +3404,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/charts/agents-status': {
 		GET: (params: GETDashboardsAgentStatusParams) => { offline: number; away: number; busy: number; available: number };
+	};
+	'/v1/livechat/rooms/filters': {
+		GET: () => { filters: IOmnichannelRoom['source'][] };
 	};
 } & {
 	// EE
@@ -3201,5 +3497,14 @@ export type OmnichannelEndpoints = {
 				percentageOfAbandonedRooms: number;
 			}[];
 		}>;
+	};
+	'/v1/omnichannel/:rid/request-transcript': {
+		POST: () => void;
+	};
+	'/v1/omnichannel/integrations': {
+		POST: (params: POSTomnichannelIntegrations) => void;
+	};
+	'/v1/livechat/inquiry.setSLA': {
+		PUT: (params: { roomId: string; sla: string }) => void;
 	};
 };

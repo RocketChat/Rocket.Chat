@@ -1,7 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, ReactElement, useEffect } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -9,12 +9,12 @@ import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
 	name: string;
-	description: string;
+	topic: string;
 	isPrivate: boolean;
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
-	members?: Exclude<IUser['username'], undefined>[];
+	members?: string[];
 };
 
 const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => {
@@ -42,13 +42,13 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			return;
 		}
 
-		if (!teamNameRegex?.test(name)) {
-			return t('error-invalid-name');
+		if (teamNameRegex && !teamNameRegex?.test(name)) {
+			return t('Teams_Errors_team_name', { name });
 		}
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
 		if (exists) {
-			return t('Teams_Errors_team_name', { name });
+			return t('Teams_Errors_Already_exists', { name });
 		}
 	};
 
@@ -92,7 +92,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		members,
 		isPrivate,
 		readOnly,
-		description,
+		topic,
 		broadcast,
 		encrypted,
 	}: CreateTeamModalInputs): Promise<void> => {
@@ -103,7 +103,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			room: {
 				readOnly,
 				extraData: {
-					description,
+					topic,
 					broadcast,
 					encrypted,
 				},
@@ -122,18 +122,17 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	};
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe='x2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								autoFocus
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
@@ -154,7 +153,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput {...register('description')} placeholder={t('Teams_New_Description_Placeholder')} />
+							<TextInput {...register('topic')} placeholder={t('Teams_New_Description_Placeholder')} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -174,7 +173,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</Box>
 					</Field>
-					<Field disabled={!canChangeReadOnly}>
+					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
@@ -191,7 +190,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</Box>
 					</Field>
-					<Field disabled={!canChangeEncrypted}>
+					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
@@ -233,21 +232,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Controller
 							control={control}
 							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple
-									value={value}
-									onChange={(member, action): void => {
-										if (!action && value) {
-											if (value.includes(member)) {
-												return;
-											}
-											return onChange([...value, member]);
-										}
-
-										onChange(value?.filter((current) => current !== member));
-									}}
-								/>
-							)}
+							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
 						/>
 					</Field>
 				</FieldGroup>
@@ -255,7 +240,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} onClick={handleSubmit(handleCreateTeam)} primary>
+					<Button disabled={!isButtonEnabled} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

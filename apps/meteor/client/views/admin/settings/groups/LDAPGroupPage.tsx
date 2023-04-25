@@ -2,7 +2,8 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FormEvent, memo, useMemo } from 'react';
+import type { FormEvent } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettings } from '../../EditableSettingsContext';
@@ -88,11 +89,11 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 			setModal(
 				<GenericModal
+					wrapperFunction={(props) => <Box is='form' onSubmit={confirmSearch} {...props} />}
 					variant='info'
 					confirmText={t('Search')}
 					cancelText={t('Cancel')}
 					title={t('Test_LDAP_Search')}
-					onConfirm={confirmSearch}
 					onClose={closeModal}
 				>
 					<Field>

@@ -2,8 +2,9 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { MessageList } from '../../lib/lists/MessageList';
-import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';
+import type { MessageList } from '../../lib/lists/MessageList';
+import type { FieldExpression, Query } from '../../lib/minimongo';
+import { createFilterFromQuery } from '../../lib/minimongo';
 
 type RoomMessagesRidEvent = IMessage;
 
@@ -52,13 +53,10 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			messageList.remove(mid);
 		});
 
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-			`${rid}/deleteMessageBulk`,
-			(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-				const matchDeleteCriteria = createDeleteCriteria(params);
-				messageList.prune(matchDeleteCriteria);
-			},
-		);
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
+			const matchDeleteCriteria = createDeleteCriteria(params);
+			messageList.prune(matchDeleteCriteria);
+		});
 
 		return (): void => {
 			unsubscribeFromRoomMessages();

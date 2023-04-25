@@ -25,15 +25,14 @@ export default function NewIncomingWebhook(props) {
 
 	const { values: formValues, handlers: formHandlers, reset } = useForm(initialState);
 
-	const params = useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [formValues]);
-	const saveAction = useEndpointAction('POST', '/v1/integrations.create', params, t('Integration_added'));
+	const saveAction = useEndpointAction('POST', '/v1/integrations.create', { successMessage: t('Integration_added') });
 
 	const handleSave = useCallback(async () => {
-		const result = await saveAction();
+		const result = await saveAction({ ...formValues, type: 'webhook-incoming' });
 		if (result.success) {
 			router.push({ context: 'edit', type: 'incoming', id: result.integration._id });
 		}
-	}, [router, saveAction]);
+	}, [formValues, router, saveAction]);
 
 	const actionButtons = useMemo(
 		() => (

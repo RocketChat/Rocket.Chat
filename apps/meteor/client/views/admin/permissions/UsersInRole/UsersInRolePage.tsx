@@ -1,14 +1,20 @@
-import { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
+
+type UsersInRolePayload = {
+	rid?: IRoom['_id'];
+	users: string[];
+};
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
@@ -21,7 +27,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		formState: { isDirty },
 		reset,
 		getValues,
-	} = useForm<{ rid?: IRoom['_id']; users: IUser['username'][] }>({ defaultValues: { users: [] } });
+	} = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
@@ -36,7 +42,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async ({ users, rid }: { users: IUser['username'][]; rid?: IRoom['_id'] }) => {
+	const handleAdd = useMutableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
 			await Promise.all(
 				users.map(async (user) => {
@@ -84,20 +90,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 									control={control}
 									name='users'
 									render={({ field: { onChange, value } }): ReactElement => (
-										<UserAutoCompleteMultiple
-											value={value}
-											placeholder={t('User')}
-											onChange={(member, action): void => {
-												if (!action && value) {
-													if (value.includes(member)) {
-														return;
-													}
-													return onChange([...value, member]);
-												}
-
-												onChange(value?.filter((current) => current !== member));
-											}}
-										/>
+										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
 								<ButtonGroup mis='x8' align='end'>

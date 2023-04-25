@@ -1,6 +1,7 @@
 import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {

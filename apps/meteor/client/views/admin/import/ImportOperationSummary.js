@@ -16,7 +16,7 @@ function ImportOperationSummary({
 	type,
 	_updatedAt,
 	status,
-	file,
+	file = '',
 	user,
 	small,
 	count: { users = 0, channels = 0, messages = 0, total = 0 } = {

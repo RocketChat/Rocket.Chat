@@ -1,7 +1,8 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -15,10 +16,7 @@ type DeleteTeamModalWithRoomsProps = {
 };
 
 const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps): ReactElement => {
-	const { value, phase } = useEndpointData(
-		'/v1/teams.listRooms',
-		useMemo(() => ({ teamId }), [teamId]),
-	);
+	const { value, phase } = useEndpointData('/v1/teams.listRooms', { params: useMemo(() => ({ teamId }), [teamId]) });
 
 	const t = useTranslation();
 

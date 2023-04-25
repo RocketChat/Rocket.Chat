@@ -6,20 +6,20 @@ import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/
 import { SettingsBase } from '../../lib/settings';
 
 class Settings extends SettingsBase {
-	cachedCollection = PublicSettingsCachedCollection.get();
+	cachedCollection = PublicSettingsCachedCollection;
 
-	collection = PublicSettingsCachedCollection.get().collection;
+	collection = PublicSettingsCachedCollection.collection;
 
 	dict = new ReactiveDict('settings');
 
-	get(_id: string | RegExp, ...args: []): any {
+	get<TValue = any>(_id: string | RegExp, ...args: []): TValue {
 		if (_id instanceof RegExp) {
 			throw new Error('RegExp Settings.get(RegExp)');
 		}
 		if (args.length > 0) {
 			throw new Error('settings.get(String, callback) only works on backend');
 		}
-		return this.dict.get(_id);
+		return this.dict.get(_id) as TValue;
 	}
 
 	private _storeSettingValue(record: { _id: string; value: SettingValue }, initialLoad: boolean): void {

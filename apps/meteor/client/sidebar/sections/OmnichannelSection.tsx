@@ -1,7 +1,9 @@
-import { Box, Sidebar } from '@rocket.chat/fuselage';
+import type { Box } from '@rocket.chat/fuselage';
+import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';

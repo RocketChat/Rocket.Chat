@@ -24,6 +24,7 @@ declare module 'meteor/rocketchat:tap-i18n' {
 				en: string;
 			};
 		};
+		function getLanguage(): string;
 		function setLanguage(language: string): void;
 
 		const _language_changed_tracker: Tracker.Dependency;
@@ -35,5 +36,5 @@ declare module 'meteor/rocketchat:tap-i18n' {
 		};
 	}
 
-	export const TAPi18next: typeof i18next;
+	const TAPi18next: typeof i18next;
 }

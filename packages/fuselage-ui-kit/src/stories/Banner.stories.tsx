@@ -2,7 +2,6 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
-import React from 'react';
 
 import { kitContext, UiKitBanner } from '..';
 import * as payloads from './payloads';

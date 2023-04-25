@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 
-export const useSetLayoutSetting = () => {
-	return useEndpoint('POST', '/v1/settings/Layout_Fuselage_Palette') as unknown as ({ value }: { value: string }) => void;
+export const useSetLayoutSetting = (): (({ value }: { value: string }) => void) => {
+	return useEndpoint('POST', '/v1/settings/:_id', { _id: 'Layout_Fuselage_Palette' });
 };

@@ -1,21 +1,20 @@
 import { Meteor } from 'meteor/meteor';
+import { Imports, RawImports } from '@rocket.chat/models';
 
-import { Imports } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { RawImports } from '../models/RawImports';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
-function runDrop(fn) {
+async function runDrop(fn) {
 	try {
-		fn();
+		await fn();
 	} catch (e) {
 		SystemLogger.error('error', e); // TODO: Remove
 		// ignored
 	}
 }
 
-Meteor.startup(function () {
-	const lastOperation = Imports.findLastImport();
+Meteor.startup(async function () {
+	const lastOperation = await Imports.findLastImport();
 	let idToKeep = false;
 
 	// If the operation is ready to start, or already started but failed
@@ -26,14 +25,14 @@ Meteor.startup(function () {
 	}
 
 	if (idToKeep) {
-		Imports.invalidateOperationsExceptId(idToKeep);
+		await Imports.invalidateOperationsExceptId(idToKeep);
 
 		// Clean up all the raw import data, except for the last operation
-		runDrop(() => RawImports.model.rawCollection().deleteMany({ import: { $ne: idToKeep } }));
+		await runDrop(() => RawImports.deleteMany({ import: { $ne: idToKeep } }));
 	} else {
-		Imports.invalidateAllOperations();
+		await Imports.invalidateAllOperations();
 
 		// Clean up all the raw import data
-		runDrop(() => RawImports.model.rawCollection().deleteMany({}));
+		await runDrop(() => RawImports.deleteMany({}));
 	}
 });

@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -6,6 +5,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { emoji } from '../../lib/rocketchat';
+import { updateRecentEmoji } from '../emojiPicker';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 let updatePositions = true;
 
@@ -45,12 +46,12 @@ export const EmojiPicker = {
 		});
 
 		$(window).resize(
-			_.debounce(() => {
+			withDebouncing({ wait: 300 })(() => {
 				if (!this.opened) {
 					return;
 				}
 				this.setPosition();
-			}, 300),
+			}),
 		);
 	},
 	isOpened() {
@@ -93,6 +94,10 @@ export const EmojiPicker = {
 
 		return $('.emoji-picker').css(cssProperties);
 	},
+	/**
+	 * @param {Element} source
+	 * @param {(emoji: string) => void} callback
+	 */
 	async open(source, callback) {
 		if (!this.initiated) {
 			await this.init();
@@ -122,10 +127,9 @@ export const EmojiPicker = {
 		this.source.focus();
 	},
 	pickEmoji(emoji) {
-		this.pickCallback(emoji);
-
 		this.close();
 		this.addRecent(emoji);
+		this.pickCallback(emoji);
 	},
 	addRecent(_emoji) {
 		const pos = this.recent.indexOf(_emoji);
@@ -153,9 +157,7 @@ export const EmojiPicker = {
 		this.recent.splice(pos, 1);
 		Meteor._localStorage.setItem('emoji.recent', this.recent);
 	},
-	async updateRecent(category) {
-		const emojiPickerImport = await import('../emojiPicker');
-		const { updateRecentEmoji } = emojiPickerImport;
+	updateRecent(category) {
 		updateRecentEmoji(category);
 	},
 	calculateCategoryPositions() {

@@ -4,6 +4,18 @@ import { Component } from 'preact';
 
 import { Livechat, useSsl } from '../api';
 import store from '../store';
+import {
+	MESSAGE_TYPE_COMMAND,
+	MESSAGE_TYPE_LIVECHAT_CLOSED,
+	MESSAGE_TYPE_LIVECHAT_NAVIGATION_HISTORY,
+	MESSAGE_TYPE_PRIORITY_CHANGE,
+	MESSAGE_TYPE_SLA_CHANGE,
+	MESSAGE_TYPE_USER_ADDED,
+	MESSAGE_TYPE_USER_JOINED,
+	MESSAGE_TYPE_USER_LEFT,
+	MESSAGE_VIDEO_CALL,
+	MESSAGE_WEBRTC_CALL,
+} from './Messages/constants';
 
 export function flatMap(arr, mapFunc) {
 	const result = [];
@@ -125,11 +137,22 @@ export const setCookies = (rid, token) => {
 
 export const getAvatarUrl = (username) => (username ? `${Livechat.client.host}/avatar/${username}` : null);
 
-export const msgTypesNotRendered = ['livechat_video_call', 'livechat_navigation_history', 'au', 'command', 'uj', 'ul', 'livechat-close'];
+export const msgTypesNotRendered = [
+	MESSAGE_VIDEO_CALL,
+	MESSAGE_WEBRTC_CALL,
+	MESSAGE_TYPE_LIVECHAT_NAVIGATION_HISTORY,
+	MESSAGE_TYPE_USER_ADDED,
+	MESSAGE_TYPE_COMMAND,
+	MESSAGE_TYPE_USER_JOINED,
+	MESSAGE_TYPE_USER_LEFT,
+	MESSAGE_TYPE_LIVECHAT_CLOSED,
+	MESSAGE_TYPE_PRIORITY_CHANGE,
+	MESSAGE_TYPE_SLA_CHANGE,
+];
 
 export const canRenderMessage = ({ t }) => !msgTypesNotRendered.includes(t);
 
-export const getAttachmentUrl = (url) => `${Livechat.client.host}${url}`;
+export const getAttachmentUrl = (url) => new URL(url, Livechat.client.host).toString();
 
 export const sortArrayByColumn = (array, column, inverted) =>
 	array.sort((a, b) => {
@@ -144,7 +167,7 @@ export const normalizeTransferHistoryMessage = (transferData, sender, t) => {
 		return;
 	}
 
-	const { transferredBy, transferredTo, nextDepartment, scope } = transferData;
+	const { transferredBy, transferredTo, nextDepartment, scope, comment } = transferData;
 	const from = transferredBy && (transferredBy.name || transferredBy.username);
 
 	const transferTypes = {
@@ -170,6 +193,8 @@ export const normalizeTransferHistoryMessage = (transferData, sender, t) => {
 			}
 			return t('from_returned_the_chat_to_the_queue', { from });
 		},
+		autoTransferUnansweredChatsToAgent: () => t('the_chat_was_transferred_to_another_agent_due_to_unanswered', { duration: comment }),
+		autoTransferUnansweredChatsToQueue: () => t('the_chat_was_moved_back_to_queue_due_to_unanswered', { duration: comment }),
 	};
 
 	return transferTypes[scope]();

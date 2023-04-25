@@ -1,4 +1,5 @@
-import { useMemo, lazy, LazyExoticComponent } from 'react';
+import type { LazyExoticComponent } from 'react';
+import { useMemo, lazy } from 'react';
 
 import type AutoCompleteDepartment from '../../../../client/components/AutoCompleteDepartment';
 import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
@@ -16,8 +17,10 @@ import type EeTextInput from './EeTextInput';
 import type MaxChatsPerAgentContainer from './MaxChatsPerAgentContainer';
 import type MaxChatsPerAgentDisplay from './MaxChatsPerAgentDisplay';
 import type PrioritiesSelect from './PrioritiesSelect';
+import type SlaPoliciesSelect from './SlaPoliciesSelect';
 
 declare module '../../../../client/views/omnichannel/additionalForms' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface EEFormHooks {
 		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
 		useMaxChatsPerAgent?: () => LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
@@ -32,6 +35,7 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
 		useDepartmentBusinessHours?: () => LazyExoticComponent<typeof DepartmentBusinessHours>;
 		useDepartmentForwarding?: () => LazyExoticComponent<typeof DepartmentForwarding>;
+		useSlaPoliciesSelect?: () => LazyExoticComponent<typeof SlaPoliciesSelect>;
 		usePrioritiesSelect?: () => LazyExoticComponent<typeof PrioritiesSelect>;
 		useSelectForwardDepartment?: () => LazyExoticComponent<typeof AutoCompleteDepartment>;
 	}
@@ -55,6 +59,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
 		useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
 		useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []),
+		useSlaPoliciesSelect: () => useMemo(() => lazy(() => import('./SlaPoliciesSelect')), []),
 		usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []),
 		useSelectForwardDepartment: () => useMemo(() => lazy(() => import('../../../../client/components/AutoCompleteDepartment')), []),
 	});

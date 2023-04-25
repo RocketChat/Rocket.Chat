@@ -26,30 +26,30 @@ import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHis
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
+import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
+import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
+import { UploadsRaw } from '../../../server/models/raw/Uploads';
+import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
 
 // TODO add trash param to appropiate model instances
-export function registerServiceModels(db: Db, trash?: Collection): void {
+export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IRolesModel', () => new RolesRaw(db));
 	registerModel('IRoomsModel', () => new RoomsRaw(db));
-	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ISetting>>));
-	registerModel(
-		'ISubscriptionsModel',
-		() => new SubscriptionsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ISubscription>>),
-	);
+	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
 	registerModel('ITeamModel', () => new TeamRaw(db));
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
 
-	// @ts-ignore-error
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
 
 	registerModel(
 		'ILivechatInquiryModel',
-		() => new LivechatInquiryRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
+		() => new LivechatInquiryRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
 	);
 	registerModel(
 		'ILivechatDepartmentAgentsModel',
-		() => new LivechatDepartmentAgentsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
+		() => new LivechatDepartmentAgentsRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
 	);
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
 	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
@@ -59,4 +59,8 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
+	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
+	registerModel('IUploadsModel', () => new UploadsRaw(db));
+	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 }

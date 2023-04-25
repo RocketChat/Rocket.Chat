@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
@@ -10,7 +10,7 @@ import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
 
-const emptyQueue: IRoom[] = [];
+const emptyQueue: ILivechatInquiryRecord[] = [];
 
 export const useRoomList = (): Array<ISubscription & IRoom> => {
 	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
@@ -29,7 +29,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 
 	const incomingCalls = useVideoConfIncomingCalls();
 
-	let queue: IRoom[] = emptyQueue;
+	let queue = emptyQueue;
 	if (inquiries.enabled) {
 		queue = inquiries.queue;
 	}
@@ -48,6 +48,10 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			const onHold = new Set();
 
 			rooms.forEach((room) => {
+				if (room.archived) {
+					return;
+				}
+
 				if (incomingCalls.find((call) => call.rid === room.rid)) {
 					return incomingCall.add(room);
 				}

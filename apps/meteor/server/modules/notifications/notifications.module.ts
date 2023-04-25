@@ -1,8 +1,8 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 
-import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -86,7 +86,7 @@ export class NotificationsModule {
 		this.streamLocal = new this.Streamer('local');
 	}
 
-	async configure(): Promise<void> {
+	configure(): void {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
@@ -231,7 +231,6 @@ export class NotificationsModule {
 			}
 		}
 
-		const { streamRoom } = this;
 		this.streamRoom.allowWrite(async function (eventName, username, _activity, extraData): Promise<boolean> {
 			const [rid, e] = eventName.split('/');
 
@@ -240,22 +239,12 @@ export class NotificationsModule {
 				return true;
 			}
 
-			// In fact user-activity streamer will handle typing action.
-			// Need to use 'typing' streamer till all other clients updated to use user-activity streamer.
-			if (e !== 'typing' && e !== 'user-activity') {
+			if (e !== 'user-activity') {
 				return false;
 			}
 
 			if (!(await canType({ extraData, rid, username, userId: this.userId ?? undefined }))) {
 				return false;
-			}
-
-			// DEPRECATED
-			// Keep compatibility between old and new events
-			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
-				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
-			} else if (e === 'typing') {
-				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 
 			return true;

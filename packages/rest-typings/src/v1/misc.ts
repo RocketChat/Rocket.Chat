@@ -1,8 +1,7 @@
-import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -13,6 +12,9 @@ type ShieldSvg = {
 	icon?: 'true' | 'false';
 	channel: string;
 	name: string;
+	userId?: string;
+	username?: string;
+	user?: string;
 };
 
 const ShieldSvgSchema = {
@@ -201,12 +203,6 @@ export type MiscEndpoints = {
 		};
 	};
 
-	'/v1/directory': {
-		GET: (params: Directory) => PaginatedResult<{
-			result: (IUser | IRoom | ITeam)[];
-		}>;
-	};
-
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
@@ -230,6 +226,12 @@ export type MiscEndpoints = {
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
 			message: unknown;
+		};
+	};
+
+	'/v1/smtp.check': {
+		GET: () => {
+			isSMTPConfigured: boolean;
 		};
 	};
 };

@@ -1,21 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { SlackBridge } from './slackbridge';
-import { Rooms } from '../../models/server';
-import { msgStream } from '../../lib';
-import { slashCommands } from '../../utils';
+import { msgStream } from '../../lib/server';
+import { slashCommands } from '../../utils/server';
 
-function SlackBridgeImport(command, params, item) {
+async function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
 
-	const room = Rooms.findOneById(item.rid);
+	const room = await Rooms.findOneById(item.rid);
 	const channel = room.name;
-	const user = Meteor.users.findOne(Meteor.userId());
+	const user = await Users.findOneById(Meteor.userId());
 
 	msgStream.emit(item.rid, {
 		_id: Random.id(),
@@ -33,8 +33,8 @@ function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		SlackBridge.slackAdapters.forEach((slack) => {
-			slack.importMessages(item.rid, (error) => {
+		for await (const slack of SlackBridge.slackAdapters) {
+			await slack.importMessages(item.rid, (error) => {
 				if (error) {
 					msgStream.emit(item.rid, {
 						_id: Random.id(),
@@ -67,7 +67,7 @@ function SlackBridgeImport(command, params, item) {
 					});
 				}
 			});
-		});
+		}
 	} catch (error) {
 		msgStream.emit(item.rid, {
 			_id: Random.id(),

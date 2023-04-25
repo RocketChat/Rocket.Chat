@@ -1,5 +1,6 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React, { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
+import React from 'react';
 
 type LegendSymbolProps = {
 	color?: CSSProperties['backgroundColor'];

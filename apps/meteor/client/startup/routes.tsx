@@ -6,26 +6,34 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
+
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
-const CMSPage = lazy(() => import('../views/root/CMSPage'));
-const ResetPasswordPage = lazy(() => import('../views/login/ResetPassword/ResetPassword'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
+const ResetPasswordPage = lazy(() =>
+	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+);
+
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
-const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
+
+const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
+
+const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
+const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 
 FlowRouter.wait();
 
@@ -44,7 +52,7 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(() => {
+				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
@@ -52,7 +60,7 @@ FlowRouter.route('/', {
 					} else {
 						FlowRouter.go('home');
 					}
-				});
+				}, 0);
 				c.stop();
 			}
 		});
@@ -193,10 +201,17 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
+FlowRouter.route('/conference/:id', {
+	name: 'conference',
+	action: () => {
+		appLayout.render(<ConferenceRoute />);
+	},
+});
+
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render(<SetupWizardRoute />);
+		appLayout.renderStandalone(<SetupWizardRoute />);
 	},
 });
 
@@ -231,36 +246,17 @@ FlowRouter.route('/reset-password/:token', {
 	},
 });
 
-FlowRouter.route('/snippet/:snippetId/:snippetName', {
-	name: 'snippetView',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='snippetPage' />
-			</MainLayout>,
-		);
-	},
-});
-
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='authorize' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthAuthorizationPage />);
 	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
 	name: 'oauth/error',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='oauth404' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthErrorPage />);
 	},
 });
 

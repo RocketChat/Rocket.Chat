@@ -1,11 +1,11 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 type SetupWizardParameters = {
 	settings: ISetting[];
 	serverAlreadyRegistered: boolean;
-	hasAdmin: boolean;
 };
 
 export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }> => {
@@ -15,7 +15,6 @@ export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, E
 		initialData: {
 			settings: [],
 			serverAlreadyRegistered: false,
-			hasAdmin: false,
 		},
 	}) as Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }>;
 };

@@ -1,5 +1,6 @@
 import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
-import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
@@ -50,7 +51,7 @@ function PasswordSettingInput({
 					placeholder={placeholder}
 					disabled={disabled}
 					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
+					autoComplete={autocomplete === false ? 'new-password' : undefined}
 					onChange={handleChange}
 				/>
 			</Field.Row>

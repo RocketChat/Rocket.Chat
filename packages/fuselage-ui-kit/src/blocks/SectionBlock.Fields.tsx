@@ -1,7 +1,6 @@
 import { Grid } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const breakpoints = {
   xs: 4,

@@ -1,8 +1,10 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
-import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Select, Field, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { WebdavAccounts } from '../../../../app/models/client';

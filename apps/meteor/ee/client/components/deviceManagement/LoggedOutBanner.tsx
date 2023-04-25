@@ -1,6 +1,7 @@
 import { Banner, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const LoggedOutBanner = (): ReactElement => {
 	const t = useTranslation();

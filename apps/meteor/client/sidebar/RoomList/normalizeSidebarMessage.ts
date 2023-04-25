@@ -1,12 +1,13 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { useTranslation } from '@rocket.chat/ui-contexts';
+import emojione from 'emojione';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
 
 export const normalizeSidebarMessage = (message: IMessage, t: ReturnType<typeof useTranslation>): string | undefined => {
 	if (message.msg) {
-		return escapeHTML(filterMarkdown(message.msg));
+		return escapeHTML(filterMarkdown(emojione.shortnameToUnicode(message.msg)));
 	}
 
 	if (message.attachments) {

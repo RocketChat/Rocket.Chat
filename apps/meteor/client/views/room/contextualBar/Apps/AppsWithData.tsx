@@ -1,4 +1,4 @@
-import {
+import type {
 	IUIKitContextualBarInteraction,
 	IUIKitErrorInteraction,
 	IUIKitSurface,
@@ -7,12 +7,14 @@ import {
 	IBlock,
 	IBlockElement,
 	IActionsBlock,
-	InputElementDispatchAction,
 } from '@rocket.chat/apps-engine/definition/uikit';
+import { InputElementDispatchAction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent, ContextType } from 'react';
+import type { Block } from '@rocket.chat/ui-kit';
+import type { Dispatch, SyntheticEvent, ContextType } from 'react';
+import React, { memo, useState, useEffect, useReducer } from 'react';
 
 import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
@@ -45,7 +47,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	}));
 
 	const initializer = useMutableCallback(() => {
-		const filterInputFields = (block: IBlock): boolean => {
+		const filterInputFields = (block: IBlock | Block): boolean => {
 			if (isInputBlock(block)) {
 				return true;
 			}
@@ -59,7 +61,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			return false;
 		};
 
-		const mapElementToState = (block: IBlock): InputFieldStateTuple | InputFieldStateTuple[] => {
+		const mapElementToState = (block: IBlock | Block): InputFieldStateTuple | InputFieldStateTuple[] => {
 			if (isInputBlock(block)) {
 				const { element, blockId } = block;
 				return [element.actionId, { value: element.initialValue, blockId } as FieldState];

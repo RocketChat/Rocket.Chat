@@ -1,4 +1,4 @@
-import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
+import type { ISessionsModel } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
 	AnyBulkWriteOperation,
@@ -10,6 +10,7 @@ import type {
 	Filter,
 	IndexDescription,
 	UpdateResult,
+	OptionalId,
 } from 'mongodb';
 import type {
 	ISession,
@@ -1592,7 +1593,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
-	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined> {
+	async createBatch(sessions: OptionalId<ISession>[]): Promise<BulkWriteResult | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;
 		}

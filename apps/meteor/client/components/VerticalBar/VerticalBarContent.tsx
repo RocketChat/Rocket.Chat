@@ -1,4 +1,5 @@
-import React, { ComponentProps, forwardRef, memo } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 import Page from '../Page';
 

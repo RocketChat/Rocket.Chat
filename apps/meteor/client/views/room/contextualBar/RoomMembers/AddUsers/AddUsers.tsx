@@ -1,7 +1,8 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -13,7 +14,7 @@ type AddUsersProps = {
 	onClickSave: () => Promise<void>;
 	users: Exclude<IUser['username'], undefined>[];
 	isRoomFederated: boolean;
-	onChange: (value: IUser['username'][], action?: string) => void;
+	onChange: (value: string | string[]) => void;
 };
 
 const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederated, onChange }: AddUsersProps): ReactElement => {

@@ -6,6 +6,7 @@ import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -42,6 +43,7 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', 0);
 				group._id = res.body.group._id;
+				group.name = res.body.group.name;
 			})
 			.end(done);
 	});
@@ -650,6 +652,22 @@ describe('[Groups]', function () {
 			.end(done);
 	});
 
+	it('/groups.list should return a list of zero length if not a member of any group', async () => {
+		const user = await createUser();
+		const newCreds = await login(user.username, password);
+		request
+			.get(api('groups.list'))
+			.set(newCreds)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count').and.to.equal(0);
+				expect(res.body).to.have.property('total').and.to.equal(0);
+				expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
+			});
+	});
+
 	describe('[/groups.online]', () => {
 		const createUserAndChannel = async (setAsOnline = true) => {
 			const testUser = await createUser();
@@ -743,7 +761,7 @@ describe('[Groups]', function () {
 				});
 		});
 	});
-	describe('/groups.files', () => {
+	describe('/groups.members', () => {
 		it('should return group members when searching by roomId', (done) => {
 			request
 				.get(api('groups.members'))
@@ -784,45 +802,8 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('/groups.files', () => {
-		it('should return group files when searching by roomId', (done) => {
-			request
-				.get(api('groups.files'))
-				.set(credentials)
-				.query({
-					roomId: group._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-		it('should return group files when searching by roomId even requested with count and offset params', (done) => {
-			request
-				.get(api('groups.files'))
-				.set(credentials)
-				.query({
-					roomId: group._id,
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
+	describe('[/groups.files]', async function () {
+		await testFileUploads('groups.files', group);
 	});
 
 	describe('/groups.listAll', () => {

@@ -1,6 +1,7 @@
-import { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useActionSpread } from '../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';

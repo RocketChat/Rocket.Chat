@@ -1,6 +1,8 @@
 import * as UiKit from '@rocket.chat/ui-kit';
+import { parse } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
+import { Markup } from '@rocket.chat/gazzodown';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
@@ -18,17 +20,23 @@ import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 
+export type FuselageSurfaceRendererProps = ConstructorParameters<
+  typeof UiKit.SurfaceRenderer
+>[0];
+
 export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
-  public constructor() {
-    super([
-      'actions',
-      'context',
-      'divider',
-      'image',
-      'input',
-      'section',
-      'preview',
-    ]);
+  public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
+    super(
+      allowedBlocks || [
+        'actions',
+        'context',
+        'divider',
+        'image',
+        'input',
+        'section',
+        'preview',
+      ]
+    );
   }
 
   public plain_text(
@@ -52,7 +60,21 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return text ? <Fragment key={index}>{text}</Fragment> : null;
+    return text ? (
+      <Markup key={index} tokens={parse(text, { emoticons: false })} />
+    ) : null;
+  }
+
+  public text(
+    textObject: UiKit.TextObject,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (textObject.type !== 'mrkdwn') {
+      return this.plain_text(textObject, context, index);
+    }
+
+    return this.mrkdwn(textObject, context, index);
   }
 
   actions(

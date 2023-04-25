@@ -1,7 +1,8 @@
-import { IRole } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 import { TableCell, Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, memo } from 'react';
 
 import { AuthorizationUtils } from '../../../../../app/authorization/lib';
 
