@@ -9,6 +9,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	name = capitalize(name);
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}`, values.enabled || false, {
 		type: 'boolean',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Enable',
@@ -16,6 +17,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-url`, values.serverURL || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'URL',
@@ -23,6 +25,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-token_path`, values.tokenPath || '/oauth/token', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Token_Path',
@@ -30,6 +33,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-token_sent_via`, values.tokenSentVia || 'payload', {
 		type: 'select',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Token_Sent_Via',
@@ -41,6 +45,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-identity_token_sent_via`, values.identityTokenSentVia || 'default', {
 		type: 'select',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Identity_Token_Sent_Via',
@@ -53,6 +58,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-identity_path`, values.identityPath || '/me', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Identity_Path',
@@ -60,6 +66,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-authorize_path`, values.authorizePath || '/oauth/authorize', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Authorize_Path',
@@ -67,6 +74,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-scope`, values.scope || 'openid', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Scope',
@@ -74,6 +82,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-access_token_param`, values.accessTokenParam || 'access_token', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Access_Token_Param',
@@ -81,6 +90,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-id`, values.clientId || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_id',
@@ -88,6 +98,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-secret`, values.clientSecret || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Secret',
@@ -95,6 +106,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-login_style`, values.loginStyle || 'popup', {
 		type: 'select',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Login_Style',
@@ -107,6 +119,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_text`, values.buttonLabelText || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
@@ -114,6 +127,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_color`, values.buttonLabelColor || '#FFFFFF', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
@@ -121,6 +135,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_color`, values.buttonColor || '#1d74f5', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
@@ -128,6 +143,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-key_field`, values.keyField || 'username', {
 		type: 'select',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Key_Field',
@@ -139,6 +155,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-username_field`, values.usernameField || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Username_Field',
@@ -146,6 +163,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-email_field`, values.emailField || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Email_Field',
@@ -153,6 +171,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-name_field`, values.nameField || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Name_Field',
@@ -160,6 +179,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-avatar_field`, values.avatarField || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field',
@@ -167,6 +187,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_claim`, values.rolesClaim || 'roles', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim',
@@ -176,6 +197,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-groups_claim`, values.groupsClaim || 'groups', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim',
@@ -186,6 +208,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-channels_admin`, values.channelsAdmin || 'rocket.cat', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin',
@@ -193,6 +216,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-map_channels`, values.mapChannels || false, {
 		type: 'boolean',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Map_Channels',
@@ -202,6 +226,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_roles`, values.mergeRoles || false, {
 		type: 'boolean',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles',
@@ -211,6 +236,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_to_sync`, values.rolesToSync || '', {
 		type: 'string',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Roles_To_Sync',
@@ -225,6 +251,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users`, values.mergeUsers || false, {
 		type: 'boolean',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users',
@@ -232,6 +259,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton || true, {
 		type: 'boolean',
+		public: false,
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Show_Button_On_Login_Page',
@@ -242,6 +270,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		values.channelsMap || '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}',
 		{
 			type: 'code',
+			public: false,
 			multiline: true,
 			code: 'application/json',
 			group: 'OAuth',
