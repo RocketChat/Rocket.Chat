@@ -1828,7 +1828,7 @@
   "LDAP_Timeout": "Zaman aşımı (ms)",
   "LDAP_Timeout_Description": "Bir hata döndürmeden önce bir arama sonucunu kaç dakika bekleyecektir?",
   "LDAP_Unique_Identifier_Field": "Benzersiz Tanımlayıcı Alan",
-  "LDAP_Unique_Identifier_Field_Description": "Hangi alan LDAP kullanıcı ve Rocket.Chat kullanıcıyı bağlamak için kullanılacaktır. LDAP kaydından değerini almak için denemek için virgülle ayrılmış birden fazla değer bilgilendirebilir. <br/> Varsayılan değer `Objectguıd, IBM-entryUUID, GUID, dominoUNID, nsuniqueId, uidNumber` olduğunu",
+  "LDAP_Unique_Identifier_Field_Description": "Hangi alan LDAP kullanıcı ve Rocket.Chat kullanıcıyı bağlamak için kullanılacaktır. LDAP kaydından değerini almak için denemek için virgülle ayrılmış birden fazla değer bilgilendirebilir.   \n Varsayılan değer `Objectguıd, IBM-entryUUID, GUID, dominoUNID, nsuniqueId, uidNumber` olduğunu",
   "LDAP_User_Search_Field": "Arama alanı",
   "LDAP_User_Search_Field_Description": "kimlik girişimleri LDAP kullanıcı tanımlayan LDAP özelliği. Bu alan `en Active Directory yüklemeleri için sAMAccountName` olmalı, ama böyle OpenLDAP gibi diğer LDAP çözümleri için` uid` olabilir. E-posta ya da her türlü özellik istediğiniz kullanıcıları tanımlamak için `mail` kullanabilirsiniz.   \n Kullanıcıların kullanıcı adı veya e-posta gibi çoklu tanımlayıcıları kullanarak giriş için izin virgülle ayrılmış birden fazla değer kullanabilirsiniz.",
   "LDAP_User_Search_Filter": "Filtre",
