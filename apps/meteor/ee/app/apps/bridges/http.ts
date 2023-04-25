@@ -1,7 +1,7 @@
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
-import { FetchService } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
@@ -71,7 +71,7 @@ export class AppHttpBridge extends HttpBridge {
 			const allowSelfSignedCerts =
 				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized);
-			const response = await FetchService.fetch(
+			const response = await fetch(
 				url.href,
 				{
 					method,

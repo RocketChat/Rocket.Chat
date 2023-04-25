@@ -48,7 +48,6 @@ import type { IAppsManagerService } from './types/IAppsManagerService';
 import type { IAppsService } from './types/IAppsService';
 import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
-import type { IFetchService } from './types/IFetchService';
 import type { ILivechatService, CloseRoomParams } from './types/ILivechatService';
 import type { IMessageService } from './types/IMessageService';
 import type { INotificationService } from './types/INotificationService';
@@ -134,7 +133,6 @@ export {
 	IAppsVideoManagerService,
 	IAppsApiService,
 	IRequestWithPrivateHash,
-	IFetchService,
 	ILivechatService,
 	CloseRoomParams,
 	IMessageService,
@@ -181,7 +179,6 @@ export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
 export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
 export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
-export const FetchService = proxifyWithWait<IFetchService>('fetch');
 export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
 export const MessageService = proxifyWithWait<IMessageService>('message');
 export const NotificationService = proxifyWithWait<INotificationService>('notification');
