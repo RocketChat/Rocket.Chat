@@ -855,11 +855,10 @@ jobs:
       - services-docker-image-publish
       - docker-image-publish
     steps:
-      - name: Send built image details to seperate pipeline
+      - name: Send context to seperate pipeline
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GH_TOKEN }}
-          event-type: images_built
-          repository: RocketChat/Community
-          client-payload: |
-            ${{ format('{"tag":"{0}"}', env.GITHUB_REF_NAME) }}
+          token: ${{ secrets.EXTERNAL_RELEASE_TOKEN }}
+          event-type: new_release
+          repository: RocketChat/Release.Distributions
+          client-payload: ${{ format('{"tag":"{0}"}', github.ref_name) }}
