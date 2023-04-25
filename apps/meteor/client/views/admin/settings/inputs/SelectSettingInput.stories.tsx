@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
+import type keys from '../../../../../private/locales/en.i18n.json';
 import SelectSettingInput from './SelectSettingInput';
 
 export default {

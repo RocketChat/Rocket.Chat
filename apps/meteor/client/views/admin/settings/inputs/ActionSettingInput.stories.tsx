@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
+import type keys from '../../../../../private/locales/en.i18n.json';
 import ActionSettingInput from './ActionSettingInput';
 
 export default {

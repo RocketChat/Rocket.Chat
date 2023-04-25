@@ -17,7 +17,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 			defaultNS: 'project',
 			resources: {
 				en: {
-					project: require('../../../packages/rocketchat-i18n/i18n/en.i18n.json'),
+					project: require('../../../private/locales/en.i18n.json'),
 				},
 			},
 			interpolation: {
