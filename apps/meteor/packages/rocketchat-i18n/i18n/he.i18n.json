@@ -120,7 +120,7 @@
   "Accounts_UseDNSDomainCheck": "הסימון השתמש דומיין DNS",
   "API_EmbedDisabledFor": "בטל הטמעה עבור משתמשים",
   "Accounts_UserAddedEmail_Default": "<h2 style=\";text-align:right;direction:rtl\"> ברוך הבא ל <h1 style=\";text-align:right;direction:rtl\"> [Site_Name] </h1></h2><p style=\";text-align:right;direction:rtl\"> עבור אל `[Site_URL]` ולנסות פתרון הצ'אט פתוח המקור הטוב ביותר הזמינים כיום! </p><p style=\";text-align:right;direction:rtl\"> אתה יכול להתחבר באמצעות הדוא\"ל שלך: [email] וסיסמא: [סיסמא]. ייתכן שתידרש לשנות את זה לאחר ההתחברות הראשונה שלך.",
-  "Accounts_UserAddedEmail_Description": "הנך רשאי להשתמש המשתנים הבאים: \n - `[name]`, `[fname]`, `[lname]` עבור השם המלא של המשתמש, שם פרטי או שם משפחה, בהתאמה.  \n - [email] עבור הדוא\"ל של המשתמש. \n - [password] להזין את הסיסמה של המשתמש. \n - [Site_Name] ו `[Site_URL]` עבור שם היישום וה- URL בהתאמה.  ",
+  "Accounts_UserAddedEmail_Description": "הנך רשאי להשתמש המשתנים הבאים:  \n - `[name]`, `[fname]`, `[lname]` עבור השם המלא של המשתמש, שם פרטי או שם משפחה, בהתאמה.  \n - [email] עבור הדוא\"ל של המשתמש.  \n - [password] להזין את הסיסמה של המשתמש.  \n - [Site_Name] ו `[Site_URL]` עבור שם היישום וה- URL בהתאמה.  ",
   "API_EmbedDisabledFor_Description": "רשימת משתמשים מופרדים בפסיק",
   "Accounts_UserAddedEmailSubject_Default": "נוספת ל[Site_Name]",
   "Activate": "הפעל",
