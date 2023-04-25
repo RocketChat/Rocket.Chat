@@ -1,4 +1,47 @@
 
+`2023-04-24  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.2`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update `vm2` ([#29025](https://github.com/RocketChat/Rocket.Chat/pull/29025))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+
+`2023-04-20  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.2`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps-engine version to 1.38.2 ([#28997](https://github.com/RocketChat/Rocket.Chat/pull/28997))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+
+
 # 6.1.3
 `2023-04-17  ·  1 🐛  ·  2 👩‍💻👨‍💻`
 
@@ -477,11 +520,7 @@
 
   We're working on [MS Teams bridge](https://github.com/RocketChat/Apps.teams.bridge), to make it usable we have created a new method for the apps engine to [create new users](https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/536) and we'll also need to delete all when we uninstall the app. Therefore, we created this bridge to cover the action of deleting users on the app side.
 
-<<<<<<< HEAD
-- Emojis rendering properly on quote message previews ([#27972](https://github.com/RocketChat/Rocket.Chat/pull/27972))
-=======
 - Emojis rendering properly on quote message previews ([#27972](https://github.com/RocketChat/Rocket.Chat/pull/27972) by [@Educg550](https://github.com/Educg550))
->>>>>>> develop
 
   ![image](https://user-images.githubusercontent.com/47800334/217540055-de7cdc29-5478-4a23-a884-4476318bd83d.png)
 
@@ -531,19 +570,11 @@
 
   This PR adds a new permission called `bypass-time-limit-edit-and-delete`, to bypass the time limit when editing or deleting a message, the purpose of this PR is to remove the limitation for bots that cannot change the message after the specified time.
 
-<<<<<<< HEAD
-- Rocket.cat message for users when an app previously requested is installed ([#27672](https://github.com/RocketChat/Rocket.Chat/pull/27672))
-
-- Upload service ([#27543](https://github.com/RocketChat/Rocket.Chat/pull/27543))
-
-- Warning Popup reinforcing Zapier deprecation on Integrations Admin settings ([#27744](https://github.com/RocketChat/Rocket.Chat/pull/27744))
-=======
 - Rocket.cat message for users when an app previously requested is installed ([#27672](https://github.com/RocketChat/Rocket.Chat/pull/27672) by [@matheuslc](https://github.com/matheuslc))
 
 - Upload service ([#27543](https://github.com/RocketChat/Rocket.Chat/pull/27543))
 
 - Warning Popup reinforcing Zapier deprecation on Integrations Admin settings ([#27744](https://github.com/RocketChat/Rocket.Chat/pull/27744) by [@Educg550](https://github.com/Educg550))
->>>>>>> develop
 
   #### Warning being displayed on Zapier settings, above Zapier itself:
   ![warning](https://user-images.githubusercontent.com/47800334/213696834-be7ac8e0-7249-4d02-93ba-e4c5e34b67da.png)
@@ -608,11 +639,7 @@
 ### 🐛 Bug fixes
 
 
-<<<<<<< HEAD
-- "Jump to first unread" banner does not always appear when the first unread message is outside of the visible screen ([#27941](https://github.com/RocketChat/Rocket.Chat/pull/27941))
-=======
 - "Jump to first unread" banner does not always appear when the first unread message is outside of the visible screen ([#27941](https://github.com/RocketChat/Rocket.Chat/pull/27941) by [@Educg550](https://github.com/Educg550))
->>>>>>> develop
 
 - **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
 
@@ -664,11 +691,7 @@
 
 - Broken settings check for updates ([#27779](https://github.com/RocketChat/Rocket.Chat/pull/27779))
 
-<<<<<<< HEAD
-- Comunity users accessing exclusive ee endpoints in omnichannel section ([#27876](https://github.com/RocketChat/Rocket.Chat/pull/27876))
-=======
 - Comunity users accessing exclusive ee endpoints in omnichannel section ([#27876](https://github.com/RocketChat/Rocket.Chat/pull/27876) by [@FabioCavaleti](https://github.com/FabioCavaleti))
->>>>>>> develop
 
 - Custom fields does not appear on the registration form ([#28031](https://github.com/RocketChat/Rocket.Chat/pull/28031))
 
@@ -759,11 +782,7 @@
   Check the changes in this PR: 
   https://github.com/RocketChat/fuselage/pull/962
 
-<<<<<<< HEAD
-- Missing placeholders from encrypted channel preview messages now with expected behavior ([#27699](https://github.com/RocketChat/Rocket.Chat/pull/27699))
-=======
 - Missing placeholders from encrypted channel preview messages now with expected behavior ([#27699](https://github.com/RocketChat/Rocket.Chat/pull/27699) by [@Educg550](https://github.com/Educg550))
->>>>>>> develop
 
   Referent to [TC-259]
 
@@ -850,11 +869,7 @@
 
 - Tokens usage ([#27541](https://github.com/RocketChat/Rocket.Chat/pull/27541))
 
-<<<<<<< HEAD
-- Unintended "Reply on thread" button showing on thread's first message ([#27716](https://github.com/RocketChat/Rocket.Chat/pull/27716))
-=======
 - Unintended "Reply on thread" button showing on thread's first message ([#27716](https://github.com/RocketChat/Rocket.Chat/pull/27716) by [@Educg550](https://github.com/Educg550))
->>>>>>> develop
 
   Referent to TC-128
 
@@ -882,11 +897,7 @@
 
 - Chore: Add dark theme assets ([#28214](https://github.com/RocketChat/Rocket.Chat/pull/28214))
 
-<<<<<<< HEAD
-- Chore: add e2e test coverage for Video Conference ([#27075](https://github.com/RocketChat/Rocket.Chat/pull/27075) by [@lingohub[bot]](https://github.com/lingohub[bot]))
-=======
 - Chore: add e2e test coverage for Video Conference ([#27075](https://github.com/RocketChat/Rocket.Chat/pull/27075) by [@lingohub[bot]](https://github.com/lingohub[bot]) & [@weslley543](https://github.com/weslley543))
->>>>>>> develop
 
   Jira Issue: [VC-49]
 
@@ -1727,11 +1738,7 @@
 
 - Regression: run clientMessageRecieved hooks on thread main message ([#27962](https://github.com/RocketChat/Rocket.Chat/pull/27962))
 
-<<<<<<< HEAD
-- Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183))
-=======
 - Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183) by [@FabioCavaleti](https://github.com/FabioCavaleti))
->>>>>>> develop
 
 - Regression: Scroll bars in sidebar ([#28091](https://github.com/RocketChat/Rocket.Chat/pull/28091))
 
@@ -1845,41 +1852,27 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Dnouv](https://github.com/Dnouv)
-<<<<<<< HEAD
-=======
 - [@Educg550](https://github.com/Educg550)
 - [@FabioCavaleti](https://github.com/FabioCavaleti)
->>>>>>> develop
 - [@Nabhag8848](https://github.com/Nabhag8848)
 - [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@henit-chobisa](https://github.com/henit-chobisa)
 - [@jschirrmacher](https://github.com/jschirrmacher)
 - [@lingohub[bot]](https://github.com/lingohub[bot])
-<<<<<<< HEAD
-=======
 - [@matheuslc](https://github.com/matheuslc)
->>>>>>> develop
 - [@nYCSTs](https://github.com/nYCSTs)
 - [@ostjen](https://github.com/ostjen)
 - [@pouyadarabi](https://github.com/pouyadarabi)
 - [@try-catch-stack](https://github.com/try-catch-stack)
 - [@urbalazs](https://github.com/urbalazs)
-<<<<<<< HEAD
-=======
 - [@weslley543](https://github.com/weslley543)
->>>>>>> develop
 - [@xareyli](https://github.com/xareyli)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@AlenDavid](https://github.com/AlenDavid)
 - [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
-<<<<<<< HEAD
-- [@Educg550](https://github.com/Educg550)
-- [@FabioCavaleti](https://github.com/FabioCavaleti)
-=======
->>>>>>> develop
 - [@Harmeet221](https://github.com/Harmeet221)
 - [@KevLehman](https://github.com/KevLehman)
 - [@LucianoPierdona](https://github.com/LucianoPierdona)
@@ -1905,10 +1898,6 @@
 - [@hugocostadev](https://github.com/hugocostadev)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-<<<<<<< HEAD
-- [@matheuslc](https://github.com/matheuslc)
-=======
->>>>>>> develop
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -1920,11 +1909,6 @@
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@totoi690](https://github.com/totoi690)
-<<<<<<< HEAD
-- [@weslley543](https://github.com/weslley543)
-- [@yash-rajpal](https://github.com/yash-rajpal)
-
-=======
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 5.4.5
@@ -1954,7 +1938,6 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
->>>>>>> develop
 # 5.4.4
 `2023-03-08  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
