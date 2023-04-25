@@ -155,10 +155,8 @@ export class CROWD {
 	}
 
 	async syncDataToUser(crowdUser: Record<string, any>, id: string) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
 		const user = {
-			username: self.cleanUsername(crowdUser.username),
+			username: this.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
 			emails: [
 				{
@@ -197,8 +195,6 @@ export class CROWD {
 			return;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
 		const users =
 			((await Users.findCrowdUsers().toArray()) as unknown as (IUser & { crowd: Record<string, any>; crowd_username: string })[]) || [];
 
@@ -215,7 +211,7 @@ export class CROWD {
 			let crowdUser = null;
 
 			try {
-				crowdUser = await self.fetchCrowdUser(crowdUsername);
+				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			} catch (err) {
 				logger.debug({ err });
 				logger.error({ msg: 'Could not sync user with username', crowd_username: crowdUsername });
@@ -223,7 +219,7 @@ export class CROWD {
 				const email = user.emails?.[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
+				const response = this.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowdUsername, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
@@ -242,14 +238,14 @@ export class CROWD {
 					continue;
 				}
 
-				crowdUser = await self.fetchCrowdUser(crowdUsername);
+				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			}
 
 			if (settings.get('CROWD_Allow_Custom_Username') === true) {
 				crowdUser.username = user.username;
 			}
 
-			await self.syncDataToUser(crowdUser as Record<string, any>, user._id);
+			await this.syncDataToUser(crowdUser as Record<string, any>, user._id);
 		}
 	}
 
