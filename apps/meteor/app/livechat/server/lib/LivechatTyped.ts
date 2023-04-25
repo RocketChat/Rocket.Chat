@@ -24,6 +24,7 @@ import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FindCursor, UpdateFilter } from 'mongodb';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -37,7 +38,6 @@ import { QueueManager } from './QueueManager';
 import { validateEmail } from './Helper';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -492,7 +492,7 @@ class LivechatClass {
 
 		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
@@ -720,10 +720,9 @@ class LivechatClass {
 			const result = await fetch(settings.get('Livechat_webhookUrl'), {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json',
 					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
 				},
-				body: JSON.stringify(postData),
+				body: postData,
 				timeout,
 			});
 

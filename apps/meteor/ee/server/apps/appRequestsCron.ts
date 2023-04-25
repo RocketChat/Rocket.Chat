@@ -1,10 +1,10 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
@@ -35,7 +35,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 
 		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
 		const result = await fetch(pendingSentUrl, options);
-		const data = (await result.json()).data?.data;
+		const { data } = await result.json();
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		for await (const app of filtered) {
