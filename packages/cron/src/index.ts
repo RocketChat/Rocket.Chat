@@ -1,12 +1,9 @@
-import { Agenda } from '@rocket.chat/agenda';
+import type { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { ICronJobs } from '@rocket.chat/core-typings';
 
-export const runCronJobFunctionAndPersistResult = async (
-	fn: () => Promise<any>,
-	jobName: string,
-): Promise<void> => {
+export const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
 		_id: Random.id(),
 		intendedAt: new Date(),
@@ -59,11 +56,7 @@ export class AgendaCronJobs implements ICronJobs {
 		this.reservedJobs = [];
 	}
 
-	public async add(
-		name: string,
-		schedule: string,
-		callback: () => any | Promise<any>,
-	): Promise<void> {
+	public async add(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
 		if (!this.scheduler) {
 			return this.reserve(name, schedule, callback);
 		}
