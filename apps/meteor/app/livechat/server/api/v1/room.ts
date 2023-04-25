@@ -43,7 +43,7 @@ API.v1.addRoute('livechat/room', {
 			agentId: Match.Maybe(String),
 		});
 
-		check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams as any);
 
 		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
