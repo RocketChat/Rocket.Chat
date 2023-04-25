@@ -116,7 +116,7 @@ Meteor.methods<ServerMethods>({
 		await Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences
-		Meteor.defer(async () => {
+		setImmediate(async () => {
 			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
 					await Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
