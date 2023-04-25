@@ -192,7 +192,7 @@ const computation = Tracker.autorun(() => {
 									name,
 								};
 								if (isNew) {
-									callbacks.run('streamNewMessage', msg);
+									await callbacks.run('streamNewMessage', msg);
 								}
 							}
 
@@ -200,7 +200,7 @@ const computation = Tracker.autorun(() => {
 
 							handleTrackSettingsChange(msg);
 
-							callbacks.run('streamMessage', msg);
+							await callbacks.run('streamMessage', msg);
 
 							fireGlobalEvent('new-message', msg);
 						}) as unknown as Promise<void>
