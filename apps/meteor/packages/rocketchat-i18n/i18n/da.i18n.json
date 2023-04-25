@@ -2426,7 +2426,7 @@
   "message_counter": "__counter__ meddelelse",
   "message_counter_plural": "__counter__ meddelelser",
   "Message_DateFormat": "Datoformat",
-  "Message_DateFormat_Description": "Se også: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\" >Moment.js</a>",
+  "Message_DateFormat_Description": "Se også: [Moment.js](http://momentjs.com/docs/#/displaying/format/)",
   "Message_deleting_blocked": "Denne besked kan ikke slettes længere",
   "Message_editing": "Meddelelsesredigering",
   "Message_ErasureType": "Meddelelse Erasure Type",
