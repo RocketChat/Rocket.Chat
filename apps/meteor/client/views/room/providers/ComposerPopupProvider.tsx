@@ -304,6 +304,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				}>({
 					title: t('Canned_Responses'),
 					trigger: '!',
+					prefix: '',
 					triggerAnywhere: true,
 					renderItem: ({ item }) => <ComposerPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
