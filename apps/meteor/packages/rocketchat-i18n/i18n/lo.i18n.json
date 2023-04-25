@@ -1555,7 +1555,7 @@
   "LDAP_Search_Page_Size": "ຂະຫນາດຂອງຫນ້າຄົ້ນຫາ",
   "LDAP_Search_Page_Size_Description": "ຈໍານວນການເຂົ້າເຖິງແຕ່ລະຫນ້າຜົນໄດ້ຮັບຈະຖືກປະຕິບັດ",
   "LDAP_Search_Size_Limit": "ຄົ້ນຫາຂະຫນາດຈໍາກັດ",
-  "LDAP_Search_Size_Limit_Description": "ຈໍານວນຈໍານວນທີ່ຕ້ອງສົ່ງກັບ<br/>** Attention ** ຫມາຍເລກນີ້ຄວນໃຫຍ່ກວ່າ ** ຂະຫນາດຂອງຫນ້າຄົ້ນຫາ **",
+  "LDAP_Search_Size_Limit_Description": "ຈໍານວນຈໍານວນທີ່ຕ້ອງສົ່ງກັບ  \n** Attention ** ຫມາຍເລກນີ້ຄວນໃຫຍ່ກວ່າ ** ຂະຫນາດຂອງຫນ້າຄົ້ນຫາ **",
   "LDAP_Sync_Now": "Background Sync Now",
   "LDAP_Sync_Now_Description": "ຈະປະຕິບັດ ** Background Sync ** ໃນປັດຈຸບັນແທນທີ່ຈະລໍຖ້າ ** Sync Interval ** ເຖິງແມ່ນວ່າ ** Background Sync ** ແມ່ນບໍ່ຖືກຕ້ອງ.<br/>ປະຕິບັດງານນີ້ແມ່ນບໍ່ຖືກຕ້ອງ, ກະລຸນາເບິ່ງບັນທຶກສໍາລັບຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບ ຂະບວນການ",
   "LDAP_Sync_User_Avatar": "Sync User Avatar",

@@ -1611,7 +1611,7 @@
   "LDAP_Search_Page_Size": "Kích thước Trang Tìm kiếm",
   "LDAP_Search_Page_Size_Description": "Số mục nhập tối đa mỗi trang kết quả sẽ trở lại để được xử lý",
   "LDAP_Search_Size_Limit": "Giới hạn Kích thước Tìm kiếm",
-  "LDAP_Search_Size_Limit_Description": "Số mục nhập tối đa để trở lại.<br/>**Chú ý** Số này lớn hơn **Kích thước trang tìm kiếm**",
+  "LDAP_Search_Size_Limit_Description": "Số mục nhập tối đa để trở lại.  \n**Chú ý** Số này lớn hơn **Kích thước trang tìm kiếm**",
   "LDAP_Sync_Now": "Đồng bộ hóa ngay bây giờ",
   "LDAP_Sync_Now_Description": "Sẽ thực hiện **Background Sync** thay vì chờ **Sync Interval** ngay cả khi **Background Sync** là Sai.<br/>Tác vụ này không đồng bộ, vui lòng xem nhật ký để biết thêm thông tin về quá trình",
   "LDAP_Sync_User_Avatar": "Đồng bộ hóa Hình đại diện Người dùng",

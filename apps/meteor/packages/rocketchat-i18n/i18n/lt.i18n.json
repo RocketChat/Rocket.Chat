@@ -1574,7 +1574,7 @@
   "LDAP_Search_Page_Size": "Paieškos puslapio dydis",
   "LDAP_Search_Page_Size_Description": "Maksimalus kiekvieno rezultatų puslapio įrašų skaičius grįš, kad bus apdorotas",
   "LDAP_Search_Size_Limit": "Paieškos ribos dydis",
-  "LDAP_Search_Size_Limit_Description": "Didžiausias norimų grąžinti įrašų skaičius.<br/>** Dėmesio ** Šis numeris turi būti didesnis nei ** ** Puslapio dydis **",
+  "LDAP_Search_Size_Limit_Description": "Didžiausias norimų grąžinti įrašų skaičius.  \n** Dėmesio ** Šis numeris turi būti didesnis nei ** ** Puslapio dydis **",
   "LDAP_Sync_Now": "Fono sinchronizavimas dabar",
   "LDAP_Sync_Now_Description": "Tai pradės ** Foninio sinchronizavimo ** operaciją dabar, nelaukiant kito suplanuoto sinchronizavimo.\nŠis veiksmas yra asinchroninis, daugiau informacijos rasite žurnaluose.",
   "LDAP_Sync_User_Avatar": "Sync User Avatar",

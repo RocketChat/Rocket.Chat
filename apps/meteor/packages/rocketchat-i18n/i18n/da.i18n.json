@@ -2144,7 +2144,7 @@
   "LDAP_Search_Page_Size": "Søg sidestørrelse",
   "LDAP_Search_Page_Size_Description": "Det maksimale antal indlæg hver resultatside vender tilbage for at blive behandlet",
   "LDAP_Search_Size_Limit": "Søg størrelsesbegrænsning",
-  "LDAP_Search_Size_Limit_Description": "Det maksimale antal poster, der skal returneres. <br/>** OBS ** Dette nummer skal være større end ** Søg i sidestørrelse **",
+  "LDAP_Search_Size_Limit_Description": "Det maksimale antal poster, der skal returneres.   \n** OBS ** Dette nummer skal være større end ** Søg i sidestørrelse **",
   "LDAP_Sync_Now": "Baggrundssynkronisér nu",
   "LDAP_Sync_Now_Description": "Vil udføre ** Background Sync ** nu i stedet for at vente ** Sync Interval **, selvom ** Background Sync ** er False. <br/>Denne handling er asynkron, se logfilerne for at få flere oplysninger om behandle",
   "LDAP_Sync_User_Active_State": "Aktive brugeres synkroniseringsstatus",

@@ -1512,7 +1512,7 @@
   "LDAP_Search_Page_Size": "ขนาดหน้าการค้นหา",
   "LDAP_Search_Page_Size_Description": "จำนวนผลลัพธ์สูงสุดของแต่ละหน้าผลลัพธ์จะกลับไปประมวลผล",
   "LDAP_Search_Size_Limit": "ขอบเขตการค้นหา",
-  "LDAP_Search_Size_Limit_Description": "จำนวนรายการที่จะส่งคืนสูงสุด <br/>** ความสนใจ ** จำนวนนี้ควรมากกว่า ** ขนาดหน้าค้นหา **",
+  "LDAP_Search_Size_Limit_Description": "จำนวนรายการที่จะส่งคืนสูงสุด   \n** ความสนใจ ** จำนวนนี้ควรมากกว่า ** ขนาดหน้าค้นหา **",
   "LDAP_Sync_Now": "พื้นหลังซิงค์เดี๋ยวนี้",
   "LDAP_Sync_Now_Description": "จะใช้งาน ** Background Sync ** แทนรอ ** Sync Interval ** แม้ว่า ** Background Sync ** จะเป็นเท็จ <br/>แอ็คชันนี้ไม่ตรงกันโปรดดูบันทึกสำหรับข้อมูลเพิ่มเติมเกี่ยวกับ กระบวนการ",
   "LDAP_Sync_User_Avatar": "ซิงค์ Avatar ผู้ใช้",

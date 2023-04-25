@@ -2471,7 +2471,7 @@
 	"LDAP_Search_Page_Size": "搜尋頁面大小",
 	"LDAP_Search_Page_Size_Description": "每個結果頁面的最大條目數將返回進行處理",
 	"LDAP_Search_Size_Limit": "搜尋大小限制",
-	"LDAP_Search_Size_Limit_Description": "要返回的最大條目數。<br/>**注意**此數字應大於**搜索頁面大小**",
+	"LDAP_Search_Size_Limit_Description": "要返回的最大條目數。  \n**注意**此數字應大於**搜索頁面大小**",
 	"LDAP_Sync_Custom_Fields": "同步自訂欄位",
 	"LDAP_CustomFieldMap": "自訂欄位對應",
 	"LDAP_Sync_AutoLogout_Enabled": "啟用自動登出",

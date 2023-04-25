@@ -1519,7 +1519,7 @@
   "LDAP_Search_Page_Size": "Serĉa Grandeco de Paĝo",
   "LDAP_Search_Page_Size_Description": "La maksimuma nombro da eniroj ĉiu rezulto-paĝo estos procesita",
   "LDAP_Search_Size_Limit": "Serĉa Grandeco Limo",
-  "LDAP_Search_Size_Limit_Description": "La maksimuma nombro da enspezoj por reveni.<br/>**Atento** Ĉi tiu nombro devus pli granda ol **Serĉa Paĝo-Grandeco**",
+  "LDAP_Search_Size_Limit_Description": "La maksimuma nombro da enspezoj por reveni.  \n**Atento** Ĉi tiu nombro devus pli granda ol **Serĉa Paĝo-Grandeco**",
   "LDAP_Sync_Now": "Fona Sinkro Nun",
   "LDAP_Sync_Now_Description": "Volas ekzekuti la **Fono-Sinkronon** nun prefere ol atendi la **Sync Interval** eĉ se **Background Sync** estas Falsa.<br/>Ĉi tiu Ago estas asincrona, vidu la protokolojn por pli da informoj pri la procezo",
   "LDAP_Sync_User_Avatar": "Sinkru Uzanto-Avatar",

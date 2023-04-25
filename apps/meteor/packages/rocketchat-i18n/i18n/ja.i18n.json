@@ -2528,7 +2528,7 @@
   "LDAP_Search_Page_Size": "検索ページサイズ",
   "LDAP_Search_Page_Size_Description": "各結果ページが処理のために返すエントリの最大数",
   "LDAP_Search_Size_Limit": "検索サイズ制限",
-  "LDAP_Search_Size_Limit_Description": "返すエントリの最大数。<br/>**注意** この数値は、**検索ページサイズ**より大きくする必要があります。",
+  "LDAP_Search_Size_Limit_Description": "返すエントリの最大数。  \n**注意** この数値は、**検索ページサイズ**より大きくする必要があります。",
   "LDAP_Sync_Custom_Fields": "カスタムフィールドの同期",
   "LDAP_CustomFieldMap": "カスタムフィールドのマッピング",
   "LDAP_Sync_AutoLogout_Enabled": "自動ログアウトを有効にする",

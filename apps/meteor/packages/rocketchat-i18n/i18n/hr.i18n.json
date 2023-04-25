@@ -1651,7 +1651,7 @@
   "LDAP_Search_Page_Size": "Veličina stranice pretraživanja",
   "LDAP_Search_Page_Size_Description": "Maksimalni broj unosa za svaki rezultat stranice će se vratiti za obradu",
   "LDAP_Search_Size_Limit": "Ograničenje veličine pretraživanja",
-  "LDAP_Search_Size_Limit_Description": "Maksimalni broj unosa za povratak.<br/>** Pažnja ** Ovaj broj bi trebao biti veći od ** veličine stranice pretraživanja **",
+  "LDAP_Search_Size_Limit_Description": "Maksimalni broj unosa za povratak.  \n** Pažnja ** Ovaj broj bi trebao biti veći od ** veličine stranice pretraživanja **",
   "LDAP_Sync_Now": "Pozadinska sinkronizacija sada",
   "LDAP_Sync_Now_Description": "Će izvršiti ** pozadinsku sinkronizaciju ** sada, a ne čekati ** Sync Interval **, čak i ako je ** Sinkronizacija pozadine ** lažna.<br/>Ova akcija je asinkroni, pogledajte zapisnike za više informacija o postupak",
   "LDAP_Sync_User_Avatar": "Sinkronizacija Korisnikovog Avatara",

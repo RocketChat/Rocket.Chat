@@ -1532,7 +1532,7 @@
   "LDAP_Search_Page_Size": "Meklēšanas lapas izmērs",
   "LDAP_Search_Page_Size_Description": "Maksimālais ierakstu skaits katrā rezultātu lapā atgriezīsies apstrādei",
   "LDAP_Search_Size_Limit": "Meklēšanas apjoma ierobežojums",
-  "LDAP_Search_Size_Limit_Description": "Maksimālais ierakstu skaits, lai atgrieztos. <br/>** Uzmanību ** Šis numurs ir lielāks par ** Meklēšanas lapas izmēru **",
+  "LDAP_Search_Size_Limit_Description": "Maksimālais ierakstu skaits, lai atgrieztos.   \n** Uzmanību ** Šis numurs ir lielāks par ** Meklēšanas lapas izmēru **",
   "LDAP_Sync_Now": "Tultēja fona sinhronizācija",
   "LDAP_Sync_Now_Description": "Izpildīs ** Fona sinhronizācija ** tagad, nevis gaidīt ** Sinhronizācijas intervāls **, pat ja ** Fona sinhronizācija ** ir False. <br/>Šī darbība ir asinhrona, lūdzu, skatiet žurnālus, lai iegūtu plašāku informāciju par procesu",
   "LDAP_Sync_User_Avatar": "Sinhronizēt lietotāja avatāru",

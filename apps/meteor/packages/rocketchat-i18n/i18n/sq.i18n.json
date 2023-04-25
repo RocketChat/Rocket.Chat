@@ -1517,7 +1517,7 @@
   "LDAP_Search_Page_Size": "Kërko madhësinë e faqeve",
   "LDAP_Search_Page_Size_Description": "Numri maksimal i hyrjeve çdo faqe rezultati do të kthehet për t'u përpunuar",
   "LDAP_Search_Size_Limit": "Kërko Size Limit",
-  "LDAP_Search_Size_Limit_Description": "Numri maksimal i hyrjeve për t'u kthyer. <br/>** Kujdes ** Ky numër duhet të jetë më i madh se ** Madhësia e faqes së kërkimit **",
+  "LDAP_Search_Size_Limit_Description": "Numri maksimal i hyrjeve për t'u kthyer.   \n** Kujdes ** Ky numër duhet të jetë më i madh se ** Madhësia e faqes së kërkimit **",
   "LDAP_Sync_Now": "Historiku i sinkronizimit tani",
   "LDAP_Sync_Now_Description": "Do të ekzekutojë ** Sync Historiku ** tani, në vend se të presë ** Sync Interval ** edhe nëse ** Sinkronizimi i Historikut ** është i Falsifikuar. <br/>Ky Aksion është asinkron, ju lutem shihni shkrimet për më shumë informacion rreth proces",
   "LDAP_Sync_User_Avatar": "Sync User Avatar",

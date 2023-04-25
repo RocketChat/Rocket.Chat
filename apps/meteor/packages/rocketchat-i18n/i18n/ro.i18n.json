@@ -1517,7 +1517,7 @@
   "LDAP_Search_Page_Size": "Dimensiunea paginii de căutare",
   "LDAP_Search_Page_Size_Description": "Numărul maxim de intrări pe care fiecare pagină de rezultate o va reveni pentru procesare",
   "LDAP_Search_Size_Limit": "Limita de dimensiune a căutării",
-  "LDAP_Search_Size_Limit_Description": "Numărul maxim de intrări pentru a reveni.<br/>** Atenție ** Acest număr trebuie să fie mai mare decât ** Dimensiunea paginii de căutare **",
+  "LDAP_Search_Size_Limit_Description": "Numărul maxim de intrări pentru a reveni.  \n** Atenție ** Acest număr trebuie să fie mai mare decât ** Dimensiunea paginii de căutare **",
   "LDAP_Sync_Now": "Background Sync Now",
   "LDAP_Sync_Now_Description": "Va executa ** Sincronizarea de fundal ** acum, mai degrabă decât să așteptați ** Intervalul de sincronizare ** chiar dacă ** Sincronizarea de fundal ** este Falsă.<br/>Această acțiune este asincronă, vă rugăm să consultați jurnalele pentru mai multe informații despre proces",
   "LDAP_Sync_User_Avatar": "Sincronizare Avatar utilizator",

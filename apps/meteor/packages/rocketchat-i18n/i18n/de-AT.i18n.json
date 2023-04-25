@@ -1521,7 +1521,7 @@
   "LDAP_Search_Page_Size": "Seitengröße suchen",
   "LDAP_Search_Page_Size_Description": "Die maximale Anzahl der Einträge jeder Ergebnisseite wird zur Verarbeitung zurückgegeben",
   "LDAP_Search_Size_Limit": "Suche Größenbeschränkung",
-  "LDAP_Search_Size_Limit_Description": "Die maximale Anzahl der zurückzugebenden Einträge.<br/>** Achtung ** Diese Nummer sollte größer als ** Seitengröße suchen **",
+  "LDAP_Search_Size_Limit_Description": "Die maximale Anzahl der zurückzugebenden Einträge.  \n** Achtung ** Diese Nummer sollte größer als ** Seitengröße suchen **",
   "LDAP_Sync_Now": "Hintergrund-Synchronisierung jetzt",
   "LDAP_Sync_Now_Description": "Wird die ** Hintergrundsynchronisation ** jetzt ausführen, anstatt das ** Synchronisierungsintervall ** zu warten, selbst wenn ** Hintergrundsynchronisation ** Falsch ist.<br/>Diese Aktion ist asynchron, bitte sehen Sie in den Protokollen nach, um weitere Informationen zu erhalten verarbeiten",
   "LDAP_Sync_User_Avatar": "Profilbilder synchronisieren",

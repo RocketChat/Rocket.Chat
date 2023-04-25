@@ -2783,7 +2783,7 @@
   "LDAP_Search_Page_Size": "Keresési oldal mérete",
   "LDAP_Search_Page_Size_Description": "Az egyes találati oldalak által feldolgozásra visszaadott bejegyzések legnagyobb száma",
   "LDAP_Search_Size_Limit": "Keresési méret korlátja",
-  "LDAP_Search_Size_Limit_Description": "A visszaadandó bejegyzések legnagyobb száma.<br/>**Figyelmeztetés** Ennek a számnak nagyobbnak kell lennie mint a **Keresési oldal mérete**",
+  "LDAP_Search_Size_Limit_Description": "A visszaadandó bejegyzések legnagyobb száma.  \n**Figyelmeztetés** Ennek a számnak nagyobbnak kell lennie mint a **Keresési oldal mérete**",
   "LDAP_Sync_Custom_Fields": "Egyéni mezők szinkronizálása",
   "LDAP_CustomFieldMap": "Egyéni mezők leképezése",
   "LDAP_Sync_AutoLogout_Enabled": "Automatikus kijelentkezés engedélyezése",

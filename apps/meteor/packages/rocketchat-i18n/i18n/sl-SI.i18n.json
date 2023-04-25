@@ -1508,7 +1508,7 @@
   "LDAP_Search_Page_Size": "Velikost strani za iskanje",
   "LDAP_Search_Page_Size_Description": "Vrnjeno bo največje število vnosov vsake strani rezultata",
   "LDAP_Search_Size_Limit": "Omejite velikost iskanja",
-  "LDAP_Search_Size_Limit_Description": "Največje število vnosov za vrnitev.<br/>**Pozor** Ta številka mora biti večja od **Velikost strani za iskanje**",
+  "LDAP_Search_Size_Limit_Description": "Največje število vnosov za vrnitev.  \n**Pozor** Ta številka mora biti večja od **Velikost strani za iskanje**",
   "LDAP_Sync_Now": "Sinhroniziraj v ozadju zdaj",
   "LDAP_Sync_Now_Description": "Boste izvedli ** Background Sync ** zdaj, namesto da počakate ** sinhronizacijski interval **, tudi če je ** sinhronizacija v ozadju ** napačna.<br/>To dejanje je asinhrono, prosimo, preglejte dnevnike za več informacij o procesu",
   "LDAP_Sync_User_Avatar": "Sinhroniziraj uporabniškega avatarja",

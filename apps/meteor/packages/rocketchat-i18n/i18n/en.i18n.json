@@ -2892,7 +2892,7 @@
   "LDAP_Search_Page_Size": "Search Page Size",
   "LDAP_Search_Page_Size_Description": "The maximum number of entries each result page will return to be processed",
   "LDAP_Search_Size_Limit": "Search Size Limit",
-  "LDAP_Search_Size_Limit_Description": "The maximum number of entries to return.<br/>**Attention** This number should greater than **Search Page Size**",
+  "LDAP_Search_Size_Limit_Description": "The maximum number of entries to return.  \n**Attention** This number should greater than **Search Page Size**",
   "LDAP_Sync_Custom_Fields": "Sync Custom Fields",
   "LDAP_CustomFieldMap": "Custom Fields Mapping",
   "LDAP_Sync_AutoLogout_Enabled": "Enable Auto Logout",

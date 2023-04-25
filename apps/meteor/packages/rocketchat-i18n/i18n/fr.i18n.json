@@ -2551,7 +2551,7 @@
   "LDAP_Search_Page_Size": "Taille de la page de recherche",
   "LDAP_Search_Page_Size_Description": "Nombre maximal d'entrées que chaque page de résultats retourne pour traitement",
   "LDAP_Search_Size_Limit": "Taille maximale de la recherche",
-  "LDAP_Search_Size_Limit_Description": "Nombre maximal d'entrées à retourner.<br/>**Attention** Ce nombre doit être supérieur à **Taille de la page de recherche**",
+  "LDAP_Search_Size_Limit_Description": "Nombre maximal d'entrées à retourner.  \n**Attention** Ce nombre doit être supérieur à **Taille de la page de recherche**",
   "LDAP_Sync_Custom_Fields": "Synchroniser les champs personnalisés",
   "LDAP_CustomFieldMap": "Mappage de champs personnalisés",
   "LDAP_Sync_AutoLogout_Enabled": "Activer la déconnexion automatique",

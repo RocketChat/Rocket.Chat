@@ -1568,7 +1568,7 @@
   "LDAP_Search_Page_Size": "Cerca dimensioni della pagina",
   "LDAP_Search_Page_Size_Description": "Il numero massimo di voci per ciascuna pagina dei risultati tornerà ad essere elaborato",
   "LDAP_Search_Size_Limit": "Limite dimensioni ricerca",
-  "LDAP_Search_Size_Limit_Description": "Il numero massimo di voci da restituire.<br/>**Attenzione** Questo numero deve essere maggiore di **Dimensione pagina ricerca**",
+  "LDAP_Search_Size_Limit_Description": "Il numero massimo di voci da restituire.  \n**Attenzione** Questo numero deve essere maggiore di **Dimensione pagina ricerca**",
   "LDAP_Sync_Now": "Sincronizzazione in background adesso",
   "LDAP_Sync_Now_Description": "Eseguirà **Sincronizzazione di sfondo** ora anziché attendere **Intervallo di sincronizzazione** anche se **Sincronizzazione in background** è False.<br/>Questa azione è asincrona, consulta i registri per ulteriori informazioni sul processi",
   "LDAP_Sync_User_Avatar": "Sincronizzazione Avatar Utenti",

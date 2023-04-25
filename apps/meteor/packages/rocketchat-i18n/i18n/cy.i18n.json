@@ -1514,7 +1514,7 @@
   "LDAP_Search_Page_Size": "Chwilio Maint Tudalen",
   "LDAP_Search_Page_Size_Description": "Bydd y nifer uchaf o gofnodion yn ôl pob tudalen canlyniad yn cael eu prosesu",
   "LDAP_Search_Size_Limit": "Terfyn Maint Chwilio",
-  "LDAP_Search_Size_Limit_Description": "Y nifer uchaf o gofnodion i'w dychwelyd. <br / >** Sylw ** Dylai'r rhif hwn fod yn fwy na ** Maint Tudalen Chwilio **",
+  "LDAP_Search_Size_Limit_Description": "Y nifer uchaf o gofnodion i'w dychwelyd.   \n** Sylw ** Dylai'r rhif hwn fod yn fwy na ** Maint Tudalen Chwilio **",
   "LDAP_Sync_Now": "Cefndir Sync Nawr",
   "LDAP_Sync_Now_Description": "A fydd yn gweithredu ** Cefndir Sync ** nawr yn hytrach na disgwyl ** Cyfnod Sync ** hyd yn oed os yw ** Cefndir Sync ** yn Ffug. <br / >Mae'r Weithred hon yn asyncronous, gweler y logiau i gael rhagor o wybodaeth am y broses",
   "LDAP_Sync_User_Avatar": "Sync Defnyddiwr Avatar",

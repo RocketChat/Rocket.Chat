@@ -2744,7 +2744,7 @@
   "LDAP_Search_Page_Size": "Rozmiar strony wyszukiwania",
   "LDAP_Search_Page_Size_Description": "Maksymalna liczba wpisów na stronie wyników będzie zwracana do przetworzenia",
   "LDAP_Search_Size_Limit": "Ogranicz rozmiar wyszukiwania",
-  "LDAP_Search_Size_Limit_Description": "Maksymalna liczba pozycji do zwrócenia.<br/>** Uwaga ** Ta liczba powinna być większa niż ** Rozmiar strony wyszukiwania **",
+  "LDAP_Search_Size_Limit_Description": "Maksymalna liczba pozycji do zwrócenia.  \n** Uwaga ** Ta liczba powinna być większa niż ** Rozmiar strony wyszukiwania **",
   "LDAP_Sync_Custom_Fields": "Synchronizacja własnych pól",
   "LDAP_CustomFieldMap": "Mapowanie własnych pól",
   "LDAP_Sync_AutoLogout_Enabled": "Włącz automatyczne wylogowanie",

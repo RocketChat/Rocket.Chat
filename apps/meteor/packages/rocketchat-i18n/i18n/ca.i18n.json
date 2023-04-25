@@ -2531,7 +2531,7 @@
   "LDAP_Search_Page_Size": "Mida de la pàgina de cerca",
   "LDAP_Search_Page_Size_Description": "El nombre màxim d'entrades que cada pàgina de resultats tornarà a processar",
   "LDAP_Search_Size_Limit": "Límit de la mida de la cerca",
-  "LDAP_Search_Size_Limit_Description": "El nombre màxim d'entrades per tornar. <br/> ** Atenció ** Aquest número ha de ser més gran que ** Mida de la pàgina de cerca **",
+  "LDAP_Search_Size_Limit_Description": "El nombre màxim d'entrades per tornar.   \n ** Atenció ** Aquest número ha de ser més gran que ** Mida de la pàgina de cerca **",
   "LDAP_Sync_Custom_Fields": "Sincronitzar camps personalitzats",
   "LDAP_CustomFieldMap": "Assignació de camps personalitzats",
   "LDAP_Sync_AutoLogout_Enabled": "Habilitar tancament de sessió automàtic",

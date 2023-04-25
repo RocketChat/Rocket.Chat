@@ -2557,7 +2557,7 @@
   "LDAP_Search_Page_Size": "حجم صفحة البحث",
   "LDAP_Search_Page_Size_Description": "الحد الأقصى لعدد الإدخالات التي سترجع بها كل صفحة من صفحات النتائج لتتم معالجتها",
   "LDAP_Search_Size_Limit": "حد حجم البحث",
-  "LDAP_Search_Size_Limit_Description": "الحد الأقصى لعدد الإدخالات المراد إرجاعها. <br/> **تنبيه** يجب أن يكون هذا الرقم أكبر من **حجم صفحة البحث**",
+  "LDAP_Search_Size_Limit_Description": "الحد الأقصى لعدد الإدخالات المراد إرجاعها.   \n **تنبيه** يجب أن يكون هذا الرقم أكبر من **حجم صفحة البحث**",
   "LDAP_Sync_Custom_Fields": "مزامنة الحقول المخصصة",
   "LDAP_CustomFieldMap": "تعيين الحقول المخصصة",
   "LDAP_Sync_AutoLogout_Enabled": "تمكين تسجيل الخروج التلقائي",

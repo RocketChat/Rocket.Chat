@@ -2229,7 +2229,7 @@
   "LDAP_Search_Page_Size": "搜索页面大小",
   "LDAP_Search_Page_Size_Description": "每个结果页面的最大条目数将返回进行处理",
   "LDAP_Search_Size_Limit": "搜索大小限制",
-  "LDAP_Search_Size_Limit_Description": "要返回的最大条目数。<br/>**注意**此数字应大于**搜索页面大小**",
+  "LDAP_Search_Size_Limit_Description": "要返回的最大条目数。  \n**注意**此数字应大于**搜索页面大小**",
   "LDAP_Sync_Now": "后台立即同步",
   "LDAP_Sync_Now_Description": "将立即执行 **后台同步**，而不是等待 **同步间隔**，即使 **后台同步** 为 False。<br/>此操作是异步的，请参阅日志以获取有关处理",
   "LDAP_Sync_User_Active_State": "同步用户激活状态",

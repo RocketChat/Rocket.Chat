@@ -1519,7 +1519,7 @@
   "LDAP_Search_Page_Size": "Soek bladsy grootte",
   "LDAP_Search_Page_Size_Description": "Die maksimum aantal inskrywings van elke resultaatbladsy sal teruggaan om verwerk te word",
   "LDAP_Search_Size_Limit": "Soek Grootte Limiet",
-  "LDAP_Search_Size_Limit_Description": "Die maksimum aantal inskrywings om terug te keer.<br/>** Aandag ** Hierdie nommer moet groter as ** Soek bladsy grootte **",
+  "LDAP_Search_Size_Limit_Description": "Die maksimum aantal inskrywings om terug te keer.  \n** Aandag ** Hierdie nommer moet groter as ** Soek bladsy grootte **",
   "LDAP_Sync_Now": "Agtergrondsinkronisering Nou",
   "LDAP_Sync_Now_Description": "Sal die ** Agtergrondsinkronisering ** nou uitvoer eerder as om die ** Sync Interval ** te wag, selfs al is ** Agtergrondsinkronisering ** vals. <br/>Hierdie aksie is asynchroon. Sien asseblief die logs vir meer inligting oor die proses",
   "LDAP_Sync_User_Avatar": "Sinkroniseer gebruiker avatar",

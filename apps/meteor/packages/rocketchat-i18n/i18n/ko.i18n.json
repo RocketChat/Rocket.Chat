@@ -2191,7 +2191,7 @@
   "LDAP_Search_Page_Size": "검색 페이지 크기",
   "LDAP_Search_Page_Size_Description": "각 결과 페이지가 처리되기 위해 반환 할 최대 항목 수",
   "LDAP_Search_Size_Limit": "검색 크기 제한",
-  "LDAP_Search_Size_Limit_Description": "반환 할 최대 항목 수 <br/>**주의 ** ** 검색 페이지 크기 **보다 커야합니다.",
+  "LDAP_Search_Size_Limit_Description": "반환 할 최대 항목 수   \n**주의 ** ** 검색 페이지 크기 **보다 커야합니다.",
   "LDAP_Sync_Now": "지금 백그라운드 동기화",
   "LDAP_Sync_Now_Description": "다음번 동기화를 기다리지 않고, 지금 **백그라운드 동기화** 작업을 시작합니다.\n이 작업은 비동기로 이뤄지며, 자세한 내용은 로그를 참조하십시오.",
   "LDAP_Sync_User_Active_State": "사용자 활성 상태 동기화",

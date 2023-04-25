@@ -1592,7 +1592,7 @@
   "LDAP_Search_Page_Size": "Søkeformat",
   "LDAP_Search_Page_Size_Description": "Maksimalt antall innføringer hver resultatside vil returnere for å bli behandlet",
   "LDAP_Search_Size_Limit": "Søk størrelsesgrense",
-  "LDAP_Search_Size_Limit_Description": "Maksimalt antall oppføringer som skal returneres. <br/>**Oppmerksomhet** Dette nummeret skal være større enn **Søk på sidestørrelse**",
+  "LDAP_Search_Size_Limit_Description": "Maksimalt antall oppføringer som skal returneres.   \n**Oppmerksomhet** Dette nummeret skal være større enn **Søk på sidestørrelse**",
   "LDAP_Sync_Now": "Bakgrunnssynkronisering nå",
   "LDAP_Sync_Now_Description": "Vil utføre **Background Sync** nå i stedet for å vente **Sync Interval** selv om **Bakgrunnssynkronisering** er False.<br/>Denne handlingen er asynkron, se loggene for mer informasjon om prosess",
   "LDAP_Sync_User_Avatar": "Synkroniser User Avatar",

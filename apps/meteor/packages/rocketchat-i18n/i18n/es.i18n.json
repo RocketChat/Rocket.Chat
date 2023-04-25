@@ -2534,7 +2534,7 @@
   "LDAP_Search_Page_Size": "Tamaño de página de búsqueda",
   "LDAP_Search_Page_Size_Description": "Número máximo de entradas para procesar que cada página de resultados devolverá",
   "LDAP_Search_Size_Limit": "Límite de tamaño de búsqueda",
-  "LDAP_Search_Size_Limit_Description": "Número máximo de entradas que se devolverán.<br/>**Atención:** Este número debe ser mayor que **Tamaño de página de búsqueda**",
+  "LDAP_Search_Size_Limit_Description": "Número máximo de entradas que se devolverán.  \n**Atención:** Este número debe ser mayor que **Tamaño de página de búsqueda**",
   "LDAP_Sync_Custom_Fields": "Sincronizar campos personalizados",
   "LDAP_CustomFieldMap": "Asignación de campos personalizados",
   "LDAP_Sync_AutoLogout_Enabled": "Habilitar cierre de sesión automático",

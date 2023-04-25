@@ -2889,7 +2889,7 @@
   "LDAP_Search_Page_Size": "Haun sivukoko",
   "LDAP_Search_Page_Size_Description": "Enimmäismäärä merkintöjä, jonka kukin tulossivu palauttaa käsiteltäväksi",
   "LDAP_Search_Size_Limit": "Haun kokorajoitus",
-  "LDAP_Search_Size_Limit_Description": "Palautettavien tulosten enimmäismäärä.<br/>**Huomio** Tämän numeron on oltava suurempi kuin **Haun sivukoko**",
+  "LDAP_Search_Size_Limit_Description": "Palautettavien tulosten enimmäismäärä.  \n**Huomio** Tämän numeron on oltava suurempi kuin **Haun sivukoko**",
   "LDAP_Sync_Custom_Fields": "Synkronoi mukautetut kentät",
   "LDAP_CustomFieldMap": "Mukautettujen kenttien määritys",
   "LDAP_Sync_AutoLogout_Enabled": "Ota käyttöön automaattinen uloskirjaus",

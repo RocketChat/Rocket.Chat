@@ -2134,7 +2134,7 @@
   "LDAP_Search_Page_Size": "Počet výsledků vyhledávání na stránce",
   "LDAP_Search_Page_Size_Description": "Maximální počet záznamů na každé stránce výsledků pro zpracování",
   "LDAP_Search_Size_Limit": "Limit velikosti vyhledávání ",
-  "LDAP_Search_Size_Limit_Description": "Maximální počet všech výsledků.<br/>**Pozor** Měl by být větší než **Počet výsledků vyhledávání na stránce**",
+  "LDAP_Search_Size_Limit_Description": "Maximální počet všech výsledků.  \n**Pozor** Měl by být větší než **Počet výsledků vyhledávání na stránce**",
   "LDAP_Sync_Now": "Spustit synchronizaci na pozadí",
   "LDAP_Sync_Now_Description": "Spustí **Synchronizaci na pozadí ** nyní místo vyčkání  **Interval synchronizace na pozadí** i pokud je **Synchronizaci na pozadí** zakázána.<br/>Tato akce je asynchroní. Pro více informací o jejím průběhu zkontrolujte log",
   "LDAP_Sync_User_Active_State": "Synchronizovat stavy aktivity uživatelů",

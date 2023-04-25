@@ -1519,7 +1519,7 @@
   "LDAP_Search_Page_Size": "Səhifə ölçüsü",
   "LDAP_Search_Page_Size_Description": "Hər bir nəticə səhifəsinin maksimum sayı işləniləcəyinə dönəcəkdir",
   "LDAP_Search_Size_Limit": "Axtarış Ölçü Limiti",
-  "LDAP_Search_Size_Limit_Description": "Geri dönmək üçün maksimum giriş sayı.<br/>** Diqqət ** Bu ədəddən çox olmalıdır ** Axtarış səhifə ölçüsü **",
+  "LDAP_Search_Size_Limit_Description": "Geri dönmək üçün maksimum giriş sayı.  \n** Diqqət ** Bu ədəddən çox olmalıdır ** Axtarış səhifə ölçüsü **",
   "LDAP_Sync_Now": "İndi Arxa Sinxronlaşdırın",
   "LDAP_Sync_Now_Description": "** Arxa Sinxronlaşdırma ** indi ** Sinxronlaşdırma Aralığını ** Arxa Sinxronlaşdırma ** səhv olsa da gözləyin.<br/>Bu Fəaliyyət asinxron deyil, xahiş edirik, prosesi",
   "LDAP_Sync_User_Avatar": "İstifadəçi Avatarını sinxronlaşdırın",

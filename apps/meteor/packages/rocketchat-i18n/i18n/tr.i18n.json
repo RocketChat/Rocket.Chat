@@ -1819,7 +1819,7 @@
   "LDAP_Search_Page_Size": "Arama Sayfası Boyutu",
   "LDAP_Search_Page_Size_Description": "Her bir sonuç sayfasının işlenmek üzere geri döneceği maksimum kayıt sayısı",
   "LDAP_Search_Size_Limit": "Arama Boyut Sınırı",
-  "LDAP_Search_Size_Limit_Description": "Geri dönülecek maksimum giriş sayısı.<br/>** Dikkat ** Bu numara ** Arama Sayfası Boyutundan ** büyük olmalıdır **",
+  "LDAP_Search_Size_Limit_Description": "Geri dönülecek maksimum giriş sayısı.  \n** Dikkat ** Bu numara ** Arama Sayfası Boyutundan ** büyük olmalıdır **",
   "LDAP_Sync_Now": "Arka Plan Senkronize Edilsin",
   "LDAP_Sync_Now_Description": "** Arka Plan Senkronizasyonu ** yanlış olsa bile ** Eşzamanlı Aralığı ** beklemek yerine şu an ** Arka Plan Senkronizasyonu ** uygulayacaktır.<br/>Bu İşlem eşzamansızdır, lütfen bu işlem hakkında daha fazla bilgi için günlüklere bakın. süreç",
   "LDAP_Sync_User_Avatar": "Kullanıcı Avatarını Senkronize Et",

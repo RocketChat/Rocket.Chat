@@ -2796,7 +2796,7 @@
   "LDAP_Search_Page_Size": "Seitengröße für die Suche",
   "LDAP_Search_Page_Size_Description": "Die maximale Anzahl von Einträgen, die auf einmal verarbeitet werden",
   "LDAP_Search_Size_Limit": "Maximale Treffer-Anzahl",
-  "LDAP_Search_Size_Limit_Description": "Die maximale Anzahl der zurückzugebenden Einträge. <br/>**Achtung** Diese Nummer sollte größer als **Seitengröße für die Suche** sein",
+  "LDAP_Search_Size_Limit_Description": "Die maximale Anzahl der zurückzugebenden Einträge.   \n**Achtung** Diese Nummer sollte größer als **Seitengröße für die Suche** sein",
   "LDAP_Sync_Custom_Fields": "Benutzerdefinierte Felder synchronisieren",
   "LDAP_CustomFieldMap": "Zuordnung benutzerdefinierter Felder",
   "LDAP_Sync_AutoLogout_Enabled": "Automatische Abmeldung aktivieren",

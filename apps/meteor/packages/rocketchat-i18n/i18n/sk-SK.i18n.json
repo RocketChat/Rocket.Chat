@@ -1528,7 +1528,7 @@
   "LDAP_Search_Page_Size": "Veľkosť stránky vyhľadávania",
   "LDAP_Search_Page_Size_Description": "Maximálny počet zadaných záznamov sa vráti na spracovanie",
   "LDAP_Search_Size_Limit": "Veľkosť obmedzenia vyhľadávania",
-  "LDAP_Search_Size_Limit_Description": "Maximálny počet záznamov, ktoré sa majú vrátiť. <br/>** Upozornenie ** Toto číslo by malo byť väčšie ako ** Veľkosť stránky vyhľadávania **",
+  "LDAP_Search_Size_Limit_Description": "Maximálny počet záznamov, ktoré sa majú vrátiť.   \n** Upozornenie ** Toto číslo by malo byť väčšie ako ** Veľkosť stránky vyhľadávania **",
   "LDAP_Sync_Now": "Synchronizácia pozadia teraz",
   "LDAP_Sync_Now_Description": "Spustí sa ** Synchronizácia pozadia ** namiesto toho, aby sa počkať ** Interval synchronizácie **, aj keď ** Synchronizácia pozadia ** je nepravdivá. <br/>Táto akcia je asynchrónna, viac informácií nájdete v protokoloch proces",
   "LDAP_Sync_User_Avatar": "Synchronizovať používateľa Avatar",

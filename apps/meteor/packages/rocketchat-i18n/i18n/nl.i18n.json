@@ -2545,7 +2545,7 @@
   "LDAP_Search_Page_Size": "Zoekpaginaformaat",
   "LDAP_Search_Page_Size_Description": "Het maximale aantal items dat elke resultaatpagina zal terugsturen om te verwerken",
   "LDAP_Search_Size_Limit": "Limiet voor zoekgrootte",
-  "LDAP_Search_Size_Limit_Description": "Het maximumaantal items dat moet worden geretourneerd.<br/>**Attentie** Dit aantal moet groter zijn dan **Zoekpaginaformaat**",
+  "LDAP_Search_Size_Limit_Description": "Het maximumaantal items dat moet worden geretourneerd.  \n**Attentie** Dit aantal moet groter zijn dan **Zoekpaginaformaat**",
   "LDAP_Sync_Custom_Fields": "Aangepaste velden synchroniseren",
   "LDAP_CustomFieldMap": "Mapping van aangepaste velden",
   "LDAP_Sync_AutoLogout_Enabled": "Automatisch uitloggen inschakelen",

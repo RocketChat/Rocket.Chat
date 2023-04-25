@@ -2886,7 +2886,7 @@
 	"LDAP_Search_Page_Size": "Söksidans storlek",
 	"LDAP_Search_Page_Size_Description": "Det maximala antalet poster på varje resultatsida återkommer för att behandlas",
 	"LDAP_Search_Size_Limit": "Begränsning av sökstorlek",
-	"LDAP_Search_Size_Limit_Description": "Det maximala antalet poster som ska returneras.<br/>** Obs! ** Detta nummer ska vara större än ** Sök i sidstorlek **",
+	"LDAP_Search_Size_Limit_Description": "Det maximala antalet poster som ska returneras.  \n** Obs! ** Detta nummer ska vara större än ** Sök i sidstorlek **",
 	"LDAP_Sync_Custom_Fields": "Synkronisera anpassade fält",
 	"LDAP_CustomFieldMap": "Mappning av anpassade fält",
 	"LDAP_Sync_AutoLogout_Enabled": "Aktivera automatisk utloggning",

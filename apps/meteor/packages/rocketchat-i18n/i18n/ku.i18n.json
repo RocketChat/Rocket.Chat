@@ -1513,7 +1513,7 @@
   "LDAP_Search_Page_Size": "Raya Page",
   "LDAP_Search_Page_Size_Description": "Hejmarên herî zêde yên navnîşê rûpelê her encam dê vegerin pêvajoyê",
   "LDAP_Search_Size_Limit": "Rêjeya Girêdanê Bigere",
-  "LDAP_Search_Size_Limit_Description": "Numreya herî zêde ya veguhastinê vegerînin.<br/>** Attention ** Ev hejmar ji bila ** Pûçeya Bigere ***",
+  "LDAP_Search_Size_Limit_Description": "Numreya herî zêde ya veguhastinê vegerînin.  \n** Attention ** Ev hejmar ji bila ** Pûçeya Bigere ***",
   "LDAP_Sync_Now": "Syngra Now Now",
   "LDAP_Sync_Now_Description": "Ma dê li benda dora ** Dema ku li benda benda bisekine, ji hêla sibê ve bikişîne ** bêtir li benda * Navnîşa Navneteweyî ** heger ** Navnîşa paşdewletî * Nehat e. <br/> Ev çalakiyek asynchronous e, ji kerema xwe re bêtir agahdariyên der barê agahdariyên li ser doz",
   "LDAP_Sync_User_Avatar": "Syncê User Avatar",

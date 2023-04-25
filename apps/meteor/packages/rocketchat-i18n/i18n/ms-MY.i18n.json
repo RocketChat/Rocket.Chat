@@ -1516,7 +1516,7 @@
   "LDAP_Search_Page_Size": "Saiz Halaman Cari",
   "LDAP_Search_Page_Size_Description": "Jumlah maksimum penyertaan setiap halaman hasil akan kembali diproses",
   "LDAP_Search_Size_Limit": "Had Saiz Carian",
-  "LDAP_Search_Size_Limit_Description": "Bilangan entri maksimum untuk dikembalikan.<br/>** Perhatian ** Nombor ini harus lebih besar daripada ** Saiz Halaman Carian **",
+  "LDAP_Search_Size_Limit_Description": "Bilangan entri maksimum untuk dikembalikan.  \n** Perhatian ** Nombor ini harus lebih besar daripada ** Saiz Halaman Carian **",
   "LDAP_Sync_Now": "Penyegerakan Latar Belakang Sekarang",
   "LDAP_Sync_Now_Description": "Akan melaksanakan ** Latar Belakang Sync ** sekarang daripada tunggu ** Interval Sync ** walaupun ** Latar Belakang Sync ** adalah Palsu.<br/>Tindakan ini tidak segerak, sila lihat log untuk maklumat lebih lanjut mengenai proses",
   "LDAP_Sync_User_Avatar": "Sync Pengguna Avatar",
