@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { Migrations } from '@rocket.chat/models';
 import type { IControl } from '@rocket.chat/core-typings';
 
 import { Info } from '../../app/utils/server';
 import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
+import { sleep } from '../../lib/utils/sleep';
 
 type IMigration = {
 	name?: string;
@@ -185,7 +185,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		if (currentAttempt <= maxAttempts) {
 			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
 
-			(Meteor as any)._sleepForMs(retryInterval * 1000);
+			await sleep(retryInterval * 1000);
 
 			currentAttempt++;
 			return migrateDatabase(targetVersion, subcommands);
