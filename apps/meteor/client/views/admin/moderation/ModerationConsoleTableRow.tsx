@@ -6,7 +6,7 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
 
-export type MonderationConsoleRowProps = {
+export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
 	onClick: (id: IUser['_id']) => void;
 	onChange: () => void;
@@ -14,7 +14,7 @@ export type MonderationConsoleRowProps = {
 	mediaQuery: boolean;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQuery }: MonderationConsoleRowProps): JSX.Element => {
+const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQuery }: ModerationConsoleRowProps): JSX.Element => {
 	const { userId: _id, rooms, name, count, message, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {

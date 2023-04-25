@@ -59,18 +59,12 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 		refetch: reloadReports,
 		isLoading,
 		isSuccess,
-	} = useQuery(
-		['moderation.reports', query],
-		async () => {
-			const reports = await getReports(query);
-			return reports;
+	} = useQuery(['moderation.reports', query], async () => getReports(query), {
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+		keepPreviousData: true,
+	});
 
 	useEffect(() => {
 		reload.current = reloadReports;
@@ -183,7 +177,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 					/>
 				</>
 			)}
-			{isSuccess && data && data.reports.length === 0 && (
+			{isSuccess && data.reports.length === 0 && (
 				<States>
 					<StatesIcon name='magnifier' />
 					<StatesTitle>{t('No_results_found')}</StatesTitle>

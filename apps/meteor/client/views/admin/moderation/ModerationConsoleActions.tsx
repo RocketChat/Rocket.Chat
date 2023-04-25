@@ -2,13 +2,13 @@ import { Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { MonderationConsoleRowProps } from './ModerationConsoleTableRow';
+import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<MonderationConsoleRowProps, 'mediaQuery'>): JSX.Element => {
+const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<ModerationConsoleRowProps, 'mediaQuery'>): JSX.Element => {
 	const t = useTranslation();
 	const { userId: uid } = report;
 
@@ -28,7 +28,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<
 					deactiveUser: useDeactivateUserAction(uid, onChange, onReload),
 					resetAvatar: useResetAvatarAction(uid, onChange, onReload),
 				}}
-				renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
+				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props} />}
 			/>
 		</>
 	);
