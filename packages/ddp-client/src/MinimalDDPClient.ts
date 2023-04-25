@@ -30,11 +30,20 @@ const getUniqueId = (() => {
 
 const SUPPORTED_DDP_VERSIONS = ['1', 'pre2', 'pre1'];
 
+export interface DDPDispatchOptions {
+	wait?: boolean;
+}
+
+export interface DDPDispatch {
+	payload: OutgoingPayload;
+	options?: DDPDispatchOptions;
+}
+
 interface MinimalDDPClientEvents {
 	pong: PongPayload;
 	connection: ConnectedPayload | FailedPayload;
 	message: IncomingPayload;
-	send: OutgoingPayload;
+	send: DDPDispatch;
 	[x: `publication/${string}`]: NosubPayload | ReadyPayload;
 	[x: `nosub/${string}`]: NosubPayload;
 	[x: `collection/${string}`]: AddedPayload | ChangedPayload | RemovedPayload;
@@ -124,17 +133,17 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 		this.emit('message', data);
 	}
 
-	onDispatchMessage(callback: (msg: string) => void): RemoveListener {
-		return this.on('send', (payload) => {
-			callback(this.encode(payload));
+	onDispatchMessage(callback: (msg: string, options?: DDPDispatchOptions) => void): RemoveListener {
+		return this.on('send', ({ payload, options }) => {
+			callback(this.encode(payload), options);
 		});
 	}
 
-	protected dispatch(payload: OutgoingPayload): void {
-		this.emit('send', payload);
+	protected dispatch(payload: OutgoingPayload, options?: DDPDispatchOptions): void {
+		this.emit('send', { payload, options });
 	}
 
-	call(method: string, ...params: any[]): string {
+	call(method: string, params: any[] = [], options?: DDPDispatchOptions): string {
 		const id = getUniqueId();
 		const payload: MethodPayload = {
 			msg: 'method',
@@ -142,17 +151,17 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			params,
 			id,
 		};
-		this.dispatch(payload);
+		this.dispatch(payload, options);
 		return id;
 	}
 
-	subscribe(name: string, ...params: any[]): string {
+	subscribe(name: string, params?: any[]): string {
 		const id = getUniqueId();
 
-		return this.subscribeWithId(id, name, ...params);
+		return this.subscribeWithId(id, name, params);
 	}
 
-	subscribeWithId(id: string, name: string, ...params: any[]): string {
+	subscribeWithId(id: string, name: string, params?: any[]): string {
 		const payload: SubscribePayload = {
 			msg: 'sub',
 			id,

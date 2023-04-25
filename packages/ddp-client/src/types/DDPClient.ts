@@ -4,6 +4,10 @@ import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
 import type { ResultPayload, UpdatedPayload } from './methodsPayloads';
 import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads';
 
+export interface DDPDispatchOptions {
+	wait?: boolean;
+}
+
 /**
  * A low-level DDP client that can be used to communicate with a DDP server.
  */
@@ -12,9 +16,10 @@ export interface DDPClient {
 	 * Invokes a remote method.
 	 * @param method The name of the method to invoke.
 	 * @param params The parameters to pass to the method.
+	 * @param options The options to pass to the method.
 	 * @returns A string representing the method call.
 	 */
-	call(method: string, ...params: any[]): string;
+	call(method: string, params: any[], options?: DDPDispatchOptions): string;
 
 	/**
 	 * Subscribes to a queue of stream messages.
@@ -22,7 +27,7 @@ export interface DDPClient {
 	 * @param params The parameters that the queue takes.
 	 * @returns A string representing the subscription id.
 	 */
-	subscribe(name: string, ...params: any[]): string;
+	subscribe(name: string, params: any[]): string;
 
 	/**
 	 * Subscribes to a queue of stream messages.
@@ -31,7 +36,7 @@ export interface DDPClient {
 	 * @param params The parameters that the queue takes.
 	 * @returns A string representing the subscription id.
 	 */
-	subscribeWithId(id: string, name: string, ...params: any[]): string;
+	subscribeWithId(id: string, name: string, params: any[]): string;
 
 	/**
 	 * Unsubscribes from a queue of stream messages.
@@ -47,7 +52,7 @@ export interface DDPClient {
 	/**
 	 * Registers a callback to be called every time a message is sent to the server.
 	 */
-	onDispatchMessage(callback: (serialized: string) => void): RemoveListener;
+	onDispatchMessage(callback: (msg: string, options?: DDPDispatchOptions) => void): RemoveListener;
 
 	/**
 	 * Sends a connect message to the server.

@@ -8,7 +8,7 @@ describe('ping/pong mechanism', () => {
 		const client = new MinimalDDPClient(() => undefined);
 
 		client.once('message', handlerCallback);
-		client.once('send', senderCallback);
+		client.once('send', ({ payload }) => senderCallback(payload));
 
 		client.handleMessage(
 			JSON.stringify({
@@ -34,7 +34,7 @@ describe('ping/pong mechanism', () => {
 		const client = new MinimalDDPClient(() => undefined);
 
 		client.on('message', handlerCallback);
-		client.on('send', senderCallback);
+		client.on('send', ({ payload }) => senderCallback(payload));
 
 		client.handleMessage(
 			JSON.stringify({

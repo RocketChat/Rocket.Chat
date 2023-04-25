@@ -23,10 +23,6 @@ import { AccountImpl } from './types/Account';
 * In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
 */
 interface SDK {
-	user?: {
-		_id: string;
-		username: string;
-	};
 	stream(name: string, params: unknown[], cb: (data: unknown) => void): () => void;
 
 	connection: Connection;
@@ -54,11 +50,6 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 };
 
 export class DDPSDK implements SDK {
-	public user?: {
-		_id: string;
-		username: string;
-	};
-
 	constructor(
 		readonly connection: Connection,
 		readonly client: ClientStream,
@@ -106,7 +97,7 @@ export class DDPSDK implements SDK {
 
 		connection.on('connected', () => {
 			Object.entries(stream.subscriptions).forEach(([, sub]) => {
-				ddp.subscribeWithId(sub.id, sub.name, ...sub.params);
+				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});
 		});
 
