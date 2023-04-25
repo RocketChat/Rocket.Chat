@@ -39,9 +39,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 		<Card data-qa-id={id}>
 			<Card.Title>{t(title)}</Card.Title>
 			<Card.Body height='x88'>
-				<Box className={clampStyle}>
-					{description && t.has(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
-				</Box>
+				<Box className={clampStyle}>{description && t.has(description) && <MarkdownText variant='inline' content={t(description)} />}</Box>
 			</Card.Body>
 			<Card.Footer>
 				<Button onClick={handleOpenGroup}>{t('Open')}</Button>
