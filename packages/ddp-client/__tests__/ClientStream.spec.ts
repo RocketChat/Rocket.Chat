@@ -104,7 +104,7 @@ describe('call procedures', () => {
 		});
 	});
 
-	it.only('should only call the further methods after the previous one has been resolved respecting the wait option', async () => {
+	it('should only call the further methods after the previous one has been resolved respecting the wait option', async () => {
 		const fn = jest.fn();
 		const dispatch = jest.fn();
 
