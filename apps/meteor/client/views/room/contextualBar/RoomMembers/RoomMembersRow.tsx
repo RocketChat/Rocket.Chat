@@ -15,7 +15,7 @@ type RoomMembersRowProps = {
 };
 
 const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload }: RoomMembersRowProps): ReactElement => {
-	if (!user?._id) {
+	if (!user || !user._id) {
 		return <RoomMembersItem.Skeleton />;
 	}
 

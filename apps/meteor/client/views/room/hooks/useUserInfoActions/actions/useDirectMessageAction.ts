@@ -1,10 +1,9 @@
-import type { IUser, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, usePermission, useRoute, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { Action } from '../../../../hooks/useActionSpread';
-import { useRoomSubscription } from '../../../contexts/RoomContext';
 
 const getShouldOpenDirectMessage = (
 	currentSubscription?: ISubscription,
@@ -17,10 +16,10 @@ const getShouldOpenDirectMessage = (
 	return (canOpenDm && directMessageIsNotAlreadyOpen) ?? false;
 };
 
-export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
+export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
-	const currentSubscription = useRoomSubscription();
+	const currentSubscription = useUserSubscription(rid);
 	const canOpenDirectMessage = usePermission('create-d');
 	const directRoute = useRoute('direct');
 

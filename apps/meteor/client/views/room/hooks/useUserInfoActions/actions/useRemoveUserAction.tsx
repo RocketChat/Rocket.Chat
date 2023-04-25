@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { usePermission, useSetModal, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -12,19 +12,22 @@ import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
-import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 // TODO: Remove endpoint concatenation
-export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, reload?: () => void): Action | undefined => {
+export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload?: () => void): Action | undefined => {
 	const t = useTranslation();
+	const room = useUserRoom(rid);
 	const currentUser = useUser();
-	const room = useRoom();
-	const subscription = useRoomSubscription();
+	const subscription = useUserSubscription(rid);
 
 	const { _id: uid } = user;
 
-	const hasPermissionToRemove = usePermission('remove-user', room._id);
+	if (!room) {
+		throw Error('Room not provided');
+	}
+
+	const hasPermissionToRemove = usePermission('remove-user', rid);
 	const userCanRemove = isRoomFederated(room)
 		? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 		: hasPermissionToRemove;
@@ -74,7 +77,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, reloa
 				confirmText={t('Yes_remove_user')}
 				onClose={closeModal}
 				onCancel={closeModal}
-				onConfirm={(): Promise<void> => handleRemoveFromRoom(room._id, uid)}
+				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
 			>
 				{t('The_user_will_be_removed_from_s', roomName)}
 			</GenericModal>,

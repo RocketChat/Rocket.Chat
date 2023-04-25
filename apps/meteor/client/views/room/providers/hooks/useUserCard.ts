@@ -2,6 +2,7 @@ import type { UIEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 
 import { openUserCard, closeUserCard } from '../../../../../app/ui/client/lib/userCard';
+import { useRoom } from '../../contexts/RoomContext';
 import { useTabBarOpenUserInfo } from '../../contexts/ToolboxContext';
 
 export const useUserCard = () => {
@@ -11,6 +12,7 @@ export const useUserCard = () => {
 		};
 	}, []);
 
+	const room = useRoom();
 	const openUserInfo = useTabBarOpenUserInfo();
 
 	const open = useCallback(
@@ -19,13 +21,14 @@ export const useUserCard = () => {
 			openUserCard({
 				username,
 				target: event.currentTarget,
+				rid: room._id,
 				open: (event: UIEvent) => {
 					event.preventDefault();
 					openUserInfo(username);
 				},
 			});
 		},
-		[openUserInfo],
+		[openUserInfo, room._id],
 	);
 
 	return { open, close: closeUserCard };

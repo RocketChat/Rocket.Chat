@@ -1,8 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation, usePermission, useUserSubscription, useSetModal, useUser } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useUserRoom, useUserSubscription, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
@@ -10,7 +10,6 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
-import { useRoom } from '../../../contexts/RoomContext';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
@@ -34,16 +33,16 @@ const getWarningModalForFederatedRooms = (
 );
 
 // TODO: Remove endpoint concatenation
-export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
+export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
-	const room = useRoom();
+	const room = useUserRoom(rid);
 	const { _id: uid } = user;
-	const userCanSetOwner = usePermission('set-owner', room._id);
-	const isOwner = useUserHasRoomRole(uid, room._id, 'owner');
-	const userSubscription = useUserSubscription(room._id);
+	const userCanSetOwner = usePermission('set-owner', rid);
+	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
+	const userSubscription = useUserSubscription(rid);
 	const setModal = useSetModal();
 	const { _id: loggedUserId = '' } = useUser() || {};
-	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, room._id, 'owner');
+	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	if (!room) {
@@ -62,14 +61,14 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>): Act
 	});
 
 	const handleConfirm = useCallback(() => {
-		changeOwner({ roomId: room._id, userId: uid });
+		changeOwner({ roomId: rid, userId: uid });
 		closeModal();
-	}, [changeOwner, room._id, uid, closeModal]);
+	}, [changeOwner, rid, uid, closeModal]);
 
 	const handleChangeOwner = useCallback(
 		({ userId }) => {
 			if (!isRoomFederated(room)) {
-				return changeOwner({ roomId: room._id, userId: uid });
+				return changeOwner({ roomId: rid, userId: uid });
 			}
 			const changingOwnRole = userId === loggedUserId;
 
@@ -97,12 +96,12 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>): Act
 				);
 			}
 
-			changeOwner({ roomId: room._id, userId: uid });
+			changeOwner({ roomId: rid, userId: uid });
 		},
-		[setModal, loggedUserId, loggedUserIsOwner, t, uid, changeOwner, closeModal, handleConfirm, room],
+		[setModal, loggedUserId, loggedUserIsOwner, t, rid, uid, changeOwner, closeModal, handleConfirm, room],
 	);
 
-	const changeOwnerAction = useMutableCallback(async () => handleChangeOwner({ roomId: room._id, userId: uid }));
+	const changeOwnerAction = useMutableCallback(async () => handleChangeOwner({ roomId: rid, userId: uid }));
 	const changeOwnerOption = useMemo(
 		() =>
 			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
