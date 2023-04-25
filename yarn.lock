@@ -7121,6 +7121,7 @@ __metadata:
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
@@ -7335,6 +7336,7 @@ __metadata:
     nats: ^2.6.1
     node-abort-controller: ^3.1.1
     node-dogstatsd: ^0.0.7
+    node-fetch: 2.3.0
     node-gcm: 1.0.5
     node-rsa: ^1.1.1
     nodemailer: ^6.7.8
@@ -7407,7 +7409,7 @@ __metadata:
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
-    vm2: ^3.9.16
+    vm2: ^3.9.17
     webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.4
@@ -7735,6 +7737,23 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/server-fetch@workspace:^, @rocket.chat/server-fetch@workspace:packages/server-fetch":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/server-fetch@workspace:packages/server-fetch"
+  dependencies:
+    "@types/jest": ^27.4.1
+    "@types/proxy-from-env": ^1.0.1
+    eslint: ^8.12.0
+    http-proxy-agent: ^5.0.0
+    https-proxy-agent: ^5.0.1
+    jest: ~29.5.0
+    node-fetch: 2.3.0
+    proxy-from-env: ^1.1.0
+    ts-jest: ~29.0.5
+    typescript: ~5.0.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/sha256@workspace:^, @rocket.chat/sha256@workspace:packages/sha256":
   version: 0.0.0-use.local
@@ -28634,6 +28653,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-fetch@npm:2.3.0":
+  version: 2.3.0
+  resolution: "node-fetch@npm:2.3.0"
+  checksum: 674f25e8630aee89925d26d899436e58ea51a6b8a071f3dc352af5f0eb6581d6ebc40d4ab8b45ec033bb1110fc959f84366bd5e8bac45823baffcd55198a9c03
+  languageName: node
+  linkType: hard
+
 "node-fetch@npm:2.6.7, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
@@ -38225,18 +38251,6 @@ __metadata:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: 10a1c50aab54ff8b4c9042c15fc64aefccce8d2fb90c0640403242db0ee7fb269f9b102bdb69cfb435d7ef3180d61fd4fb004a043a12709abaf9056cfd7e039d
-  languageName: node
-  linkType: hard
-
-"vm2@npm:^3.9.16":
-  version: 3.9.16
-  resolution: "vm2@npm:3.9.16"
-  dependencies:
-    acorn: ^8.7.0
-    acorn-walk: ^8.2.0
-  bin:
-    vm2: bin/vm2
-  checksum: 646b45dca721acb3c8e4ae0742129f13612972387911c2475f3c06ac2b4232000cab0bdaaa65d97d6ea8dc70880e039542618b1b3d04adea79cd94803cbc4ab3
   languageName: node
   linkType: hard
 
