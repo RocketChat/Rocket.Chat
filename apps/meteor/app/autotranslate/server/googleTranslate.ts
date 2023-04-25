@@ -3,7 +3,6 @@
  */
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type {
 	IMessage,
@@ -130,39 +129,41 @@ class GoogleAutoTranslate extends AutoTranslate {
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
-		const query = `q=${msgs.join('&q=')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
+						q: msgs,
 					},
-					query,
 				});
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
 
 				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.data &&
-					result.data.data.translations &&
-					Array.isArray(result.data.data.translations) &&
-					result.data.data.translations.length > 0
+					result.status === 200 &&
+					body.data &&
+					body.data.translations &&
+					Array.isArray(body.data.translations) &&
+					body.data.translations.length > 0
 				) {
-					const txt = result.data.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
+					const txt = body.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 
@@ -175,40 +176,40 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		const query = `q=${encodeURIComponent(attachment.description || attachment.text || '')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
+						q: encodeURIComponent(attachment.description || attachment.text || ''),
 					},
-					query,
 				});
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
 
 				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.data &&
-					result.data.data.translations &&
-					Array.isArray(result.data.data.translations) &&
-					result.data.data.translations.length > 0
+					result.status === 200 &&
+					body.data &&
+					body.data.translations &&
+					Array.isArray(body.data.translations) &&
+					body.data.translations.length > 0
 				) {
-					translations[language] = result.data.data.translations
-						.map((translation: IGoogleTranslation) => translation.translatedText)
-						.join('\n');
+					translations[language] = body.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 }
