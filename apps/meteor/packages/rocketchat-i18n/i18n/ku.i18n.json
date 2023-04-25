@@ -1493,7 +1493,7 @@
   "LDAP_Group_Filter_Group_Name": "Navê navê",
   "LDAP_Group_Filter_Group_Name_Description": "Navê navnîşa ku ew bikarhêner e",
   "LDAP_Group_Filter_ObjectClass": "Koma ObjectClass",
-  "LDAP_Group_Filter_ObjectClass_Description": "* * Objectclass * ku komên nas bike.<br/>Erê OpenLDAP: groupOfUniqueNames",
+  "LDAP_Group_Filter_ObjectClass_Description": "* * Objectclass * ku komên nas bike.  \nErê OpenLDAP: groupOfUniqueNames",
   "LDAP_Host": "Mazûban",
   "LDAP_Host_Description": "Mêvandar LDAP, wek nimûne `ldap.example.com` an` 10.0.0.30`.",
   "LDAP_Idle_Timeout": "Idle Timeout (ms)",
