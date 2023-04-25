@@ -9,7 +9,7 @@ import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppsConverterService extends ServiceClass implements IAppsConverterService {
-	protected name = 'apps';
+	protected name = 'apps-converter';
 
 	private apps: AppServerOrchestrator;
 

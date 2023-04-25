@@ -134,11 +134,11 @@ export {
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
 export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
-export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
-export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
-export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
-export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
-export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps-statistics');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps-converter');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps-manager');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps-video-manager');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps-api');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');

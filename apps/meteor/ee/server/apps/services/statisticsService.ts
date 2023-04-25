@@ -6,7 +6,7 @@ import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppsStatisticsService extends ServiceClass implements IAppsStatisticsService {
-	protected name = 'apps';
+	protected name = 'apps-statistics';
 
 	private apps: AppServerOrchestrator;
 

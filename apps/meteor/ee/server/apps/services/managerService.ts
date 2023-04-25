@@ -19,7 +19,7 @@ import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppRe
 import { transformAppFabricationFulfillment } from './lib/transformAppFabricationFulfillment';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {
-	protected name = 'apps';
+	protected name = 'apps-manager';
 
 	private apps: AppServerOrchestrator;
 

@@ -3,7 +3,6 @@ import { api } from '@rocket.chat/core-services';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 
 import { AnalyticsService } from './analytics/service';
-import { AppsEngineService } from '../../ee/server/apps/services/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';
 import { LDAPService } from './ldap/service';
@@ -30,7 +29,6 @@ import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-api.registerService(new AppsEngineService(db));
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());
