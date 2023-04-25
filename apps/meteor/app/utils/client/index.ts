@@ -4,5 +4,5 @@ export { getUserPreference } from './lib/getUserPreference';
 export { fileUploadIsValidContentType } from './restrictions';
 export { getUserAvatarURL } from '../lib/getUserAvatarURL';
 export { slashCommands } from '../lib/slashCommand';
-export { getURL } from '../lib/getURL';
+export { getURL } from './getURL';
 export { APIClient } from './lib/RestApiClient';

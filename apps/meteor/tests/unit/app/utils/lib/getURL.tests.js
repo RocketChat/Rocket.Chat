@@ -12,11 +12,6 @@ const { _getURL } = proxyquire.noCallThru().load('../../../../../app/utils/lib/g
 		},
 		'@global': true,
 	},
-	'../../settings': {
-		settings: {
-			get: () => 'https://go.rocket.chat',
-		},
-	},
 });
 
 const testPaths = (o, _processPath) => {

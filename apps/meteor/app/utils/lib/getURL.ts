@@ -2,10 +2,16 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isURL } from '../../../lib/utils/isURL';
 import { ltrim, rtrim, trim } from '../../../lib/utils/stringUtils';
-import { settings } from '../../settings';
 
-function getCloudUrl(path, _site_url, cloudRoute, cloudParams = {}) {
-	const cloudBaseUrl = (settings.get('DeepLink_Url') || '').replace(/\/+$/, '');
+function getCloudUrl(
+	path: string,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	_site_url: string,
+	cloudRoute: string,
+	cloudParams: Record<string, string> = {},
+	deeplinkUrl = '',
+): string {
+	const cloudBaseUrl = deeplinkUrl.replace(/\/+$/, '');
 
 	const siteUrl = rtrim(_site_url, '/');
 
@@ -29,7 +35,11 @@ function getCloudUrl(path, _site_url, cloudRoute, cloudParams = {}) {
 	return `${cloudBaseUrl}/${cloudRoute}?${params}`;
 }
 
-export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }) => {
+export const _getURL = (
+	path: string,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	{ cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }: Record<string, any>,
+): string => {
 	if (isURL(path)) {
 		return path;
 	}
@@ -63,14 +73,20 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	return url;
 };
 
-export const getURL = (path, { cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} } = {}) =>
+export const getURLWithoutSettings = (
+	path: string,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	{ cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} }: Record<string, any> = {},
+	cdnPrefix: string,
+	siteUrl: string,
+): string =>
 	_getURL(path, {
 		cdn,
 		full,
 		cloud,
 		cloud_route,
 		cloud_params,
-		_cdn_prefix: settings.get('CDN_PREFIX'),
+		_cdn_prefix: cdnPrefix,
 		_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
-		_site_url: settings.get('Site_Url'),
+		_site_url: siteUrl,
 	});
