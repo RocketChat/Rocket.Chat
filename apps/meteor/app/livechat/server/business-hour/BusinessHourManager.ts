@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatBusinessHour, ICronJobs } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { AgendaCronJobs } from '@rocket.chat/agenda';
 import { Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
@@ -22,11 +23,11 @@ export class BusinessHourManager {
 
 	private behavior: IBusinessHourBehavior;
 
-	private cronJobs: ICronJobs;
+	private cronJobs: AgendaCronJobs;
 
 	private cronJobsCache: string[] = [];
 
-	constructor(cronJobs: ICronJobs) {
+	constructor(cronJobs: AgendaCronJobs) {
 		this.cronJobs = cronJobs;
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);

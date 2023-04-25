@@ -1,7 +1,6 @@
 import type { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ICronJobs } from '@rocket.chat/core-typings';
 
 export const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
@@ -36,7 +35,7 @@ export const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>,
 	}
 };
 
-export class AgendaCronJobs implements ICronJobs {
+export class AgendaCronJobs {
 	private reservedJobs: { name: string; schedule: string; callback: () => any | Promise<any> }[] = [];
 
 	private scheduler: Agenda | undefined;
@@ -92,4 +91,4 @@ export class AgendaCronJobs implements ICronJobs {
 	}
 }
 
-export const cronJobs: ICronJobs = new AgendaCronJobs();
+export const cronJobs = new AgendaCronJobs();

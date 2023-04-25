@@ -29,7 +29,6 @@ export * from './IIntegrationHistory';
 export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
-export * from './IDefaultCronJobs';
 export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
