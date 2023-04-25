@@ -3,10 +3,19 @@ import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts
 import type { ServerStreamerNames, StreamerEvents } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 
 import { DDPSDK } from '../src/DDPSDK';
+import type { DDPDispatchOptions } from '../src/types/DDPClient';
 
 declare module '../src/ClientStream' {
 	interface ClientStream {
-		callAsync<MethodName extends keyof ServerMethods>(methodName: MethodName): ServerMethodReturn<MethodName>;
+		callAsync<MethodName extends keyof ServerMethods>(
+			methodName: MethodName,
+			...params: Parameters<ServerMethods[MethodName]>
+		): ServerMethodReturn<MethodName>;
+		callAsyncWithOptions<MethodName extends keyof ServerMethods>(
+			methodName: MethodName,
+			options: DDPDispatchOptions,
+			...params: Parameters<ServerMethods[MethodName]>
+		): ServerMethodReturn<MethodName>;
 	}
 }
 
