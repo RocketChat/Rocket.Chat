@@ -34,16 +34,11 @@ export interface DDPDispatchOptions {
 	wait?: boolean;
 }
 
-export interface DDPDispatch {
-	payload: OutgoingPayload;
-	options?: DDPDispatchOptions;
-}
-
 interface MinimalDDPClientEvents {
 	pong: PongPayload;
 	connection: ConnectedPayload | FailedPayload;
 	message: IncomingPayload;
-	send: DDPDispatch;
+	send: OutgoingPayload;
 	[x: `publication/${string}`]: NosubPayload | ReadyPayload;
 	[x: `nosub/${string}`]: NosubPayload;
 	[x: `collection/${string}`]: AddedPayload | ChangedPayload | RemovedPayload;
@@ -133,17 +128,17 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 		this.emit('message', data);
 	}
 
-	onDispatchMessage(callback: (msg: string, options?: DDPDispatchOptions) => void): RemoveListener {
-		return this.on('send', ({ payload, options }) => {
-			callback(this.encode(payload), options);
+	onDispatchMessage(callback: (msg: string) => void): RemoveListener {
+		return this.on('send', (payload) => {
+			callback(this.encode(payload));
 		});
 	}
 
-	protected dispatch(payload: OutgoingPayload, options?: DDPDispatchOptions): void {
-		this.emit('send', { payload, options });
+	protected dispatch(payload: OutgoingPayload): void {
+		this.emit('send', payload);
 	}
 
-	call(method: string, params: any[] = [], options?: DDPDispatchOptions): string {
+	call(method: string, params: any[] = []) {
 		const id = getUniqueId();
 		const payload: MethodPayload = {
 			msg: 'method',
@@ -151,8 +146,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			params,
 			id,
 		};
-		this.dispatch(payload, options);
-		return id;
+		return payload;
 	}
 
 	subscribe(name: string, params?: any[]): string {

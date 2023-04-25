@@ -2,35 +2,28 @@
  * A queue of ddp blocking methods that are waiting to be sent to the server.
  */
 
-import { Emitter } from '@rocket.chat/emitter';
-
-import type { DDPClient } from './types/DDPClient';
+import type { MethodPayload } from './types/methodsPayloads';
+import { MinimalDDPClient } from './MinimalDDPClient';
 
 type Blocks = {
 	wait: boolean;
-	items: unknown[];
+	items: MethodPayload[];
 };
 
 type Queue = Blocks[];
 
-export class DDPDispatcher extends Emitter<{
-	dispatch: unknown;
-}> {
+export class DDPDispatcher extends MinimalDDPClient {
 	queue: Queue = [];
 
-	constructor(readonly ddp: DDPClient) {
-		super();
-
-		ddp.onDispatchMessage((msg, options) => {
-			if (options?.wait) {
-				this.addBlock(msg);
-				return;
-			}
-			this.pushItem(msg);
-		});
+	dispatch(msg: MethodPayload, options?: { wait?: boolean }) {
+		if (options?.wait) {
+			this.wait(msg);
+			return;
+		}
+		this.pushItem(msg);
 	}
 
-	addBlock(block: unknown) {
+	wait(block: MethodPayload) {
 		this.queue.push({
 			wait: true,
 			items: [block],
@@ -41,7 +34,7 @@ export class DDPDispatcher extends Emitter<{
 		}
 	}
 
-	pushItem(item: unknown) {
+	private pushItem(item: MethodPayload) {
 		const block = this.tail();
 		if (!block || block.wait) {
 			this.queue.push({
@@ -72,22 +65,31 @@ export class DDPDispatcher extends Emitter<{
 			return;
 		}
 
-		block.items.forEach((item) => {
-			this.emit('dispatch', item);
+		block.items.forEach((payload) => {
+			this.emit('send', payload);
 		});
+
+		if (block.wait) {
+			return;
+		}
+
+		this.queue.shift();
+		this.sendOutstandingBlocks();
 	}
 
-	removeItem(item: unknown) {
+	removeItem(item: MethodPayload) {
 		const block = this.queue[0];
 
 		if (!block) {
-			throw new Error('No block to remove item from');
+			return;
+			// throw new Error('No block to remove item from');
 		}
 
 		const index = block.items.indexOf(item);
 
 		if (index === -1) {
-			throw new Error('Item not found in block');
+			return;
+			// throw new Error('Item not found in block');
 		}
 
 		block.items.splice(index, 1);

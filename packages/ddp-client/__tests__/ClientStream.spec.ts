@@ -1,12 +1,30 @@
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
 import { ClientStreamImpl } from '../src/ClientStream';
+import { DDPDispatcher } from '../src/DDPDispatcher';
 
 describe('call procedures', () => {
 	it('should be able to call a method and receive a result', async () => {
 		const callback = jest.fn();
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
+
 		const id = client.call('test', callback);
+
+		expect(client.dispatcher.queue.length).toBe(1);
+		expect(client.dispatcher.queue).toEqual([
+			{
+				wait: false,
+				items: [
+					{
+						msg: 'method',
+						method: 'test',
+						params: [],
+						id,
+					},
+				],
+			},
+		]);
+
 		ws.handleMessage(
 			JSON.stringify({
 				msg: 'result',
@@ -84,6 +102,63 @@ describe('call procedures', () => {
 			message: 'Bad Request [400]',
 			errorType: 'Meteor.Error',
 		});
+	});
+
+	it.only('should only call the further methods after the previous one has been resolved respecting the wait option', async () => {
+		const fn = jest.fn();
+		const dispatch = jest.fn();
+
+		const ws = new DDPDispatcher();
+		const client = new ClientStreamImpl(ws);
+
+		client.dispatcher.on('send', dispatch);
+
+		const call = client.callWithOptions('wait 1', { wait: true }, fn);
+
+		expect(client.dispatcher.queue.length).toBe(1);
+
+		const callNoWait = client.call('no wait', fn);
+
+		expect(client.dispatcher.queue.length).toBe(2);
+
+		const call2 = client.callWithOptions('wait 2', { wait: true }, fn);
+
+		expect(client.dispatcher.queue.length).toBe(3);
+
+		expect(dispatch).toBeCalledTimes(1);
+
+		expect(fn).toBeCalledTimes(0);
+
+		ws.handleMessage(
+			JSON.stringify({
+				msg: 'result',
+				result: ['arg1', 'arg2'],
+				id: call,
+			}),
+		);
+
+		expect(dispatch).toBeCalledTimes(3);
+		expect(fn).toBeCalledTimes(1);
+
+		ws.handleMessage(
+			JSON.stringify({
+				msg: 'result',
+				result: ['arg1', 'arg2'],
+				id: call2,
+			}),
+		);
+
+		expect(fn).toBeCalledTimes(2);
+
+		ws.handleMessage(
+			JSON.stringify({
+				msg: 'result',
+				result: ['arg1', 'arg2'],
+				id: callNoWait,
+			}),
+		);
+
+		expect(fn).toBeCalledTimes(3);
 	});
 });
 

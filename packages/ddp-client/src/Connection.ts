@@ -105,10 +105,10 @@ export class ConnectionImpl
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
 				};
-				const handle = (message: string) => {
+
+				stop = this.client.onDispatchMessage((message: string) => {
 					ws.send(message);
-				};
-				stop = this.client.onDispatchMessage(handle);
+				});
 
 				this.retryCount = 0;
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.

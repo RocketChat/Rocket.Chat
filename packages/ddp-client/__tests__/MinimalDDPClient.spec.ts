@@ -8,7 +8,7 @@ describe('ping/pong mechanism', () => {
 		const client = new MinimalDDPClient(() => undefined);
 
 		client.once('message', handlerCallback);
-		client.once('send', ({ payload }) => senderCallback(payload));
+		client.once('send', senderCallback);
 
 		client.handleMessage(
 			JSON.stringify({
@@ -34,7 +34,7 @@ describe('ping/pong mechanism', () => {
 		const client = new MinimalDDPClient(() => undefined);
 
 		client.on('message', handlerCallback);
-		client.on('send', ({ payload }) => senderCallback(payload));
+		client.on('send', senderCallback);
 
 		client.handleMessage(
 			JSON.stringify({
@@ -128,7 +128,7 @@ describe('subscription mechanism', () => {
 
 		const nosubCallback = jest.fn();
 
-		const client = new MinimalDDPClient(() => undefined);
+		const client = new MinimalDDPClient();
 
 		const id = client.subscribe('test');
 
@@ -342,7 +342,7 @@ describe('method mechanism', () => {
 
 		const client = new MinimalDDPClient(() => undefined);
 
-		const id = client.call('test');
+		const { id } = client.call('test');
 
 		client.onResult(id, handlerCallback);
 

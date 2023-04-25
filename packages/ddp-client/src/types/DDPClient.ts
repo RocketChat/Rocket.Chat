@@ -1,7 +1,7 @@
 import type { IncomingPayload } from './IncomingPayload';
 import type { RemoveListener } from './RemoveListener';
 import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
-import type { ResultPayload, UpdatedPayload } from './methodsPayloads';
+import type { MethodPayload, ResultPayload, UpdatedPayload } from './methodsPayloads';
 import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads';
 
 export interface DDPDispatchOptions {
@@ -19,7 +19,7 @@ export interface DDPClient {
 	 * @param options The options to pass to the method.
 	 * @returns A string representing the method call.
 	 */
-	call(method: string, params: any[], options?: DDPDispatchOptions): string;
+	call(method: string, params: any[], options?: DDPDispatchOptions): MethodPayload;
 
 	/**
 	 * Subscribes to a queue of stream messages.
@@ -52,7 +52,7 @@ export interface DDPClient {
 	/**
 	 * Registers a callback to be called every time a message is sent to the server.
 	 */
-	onDispatchMessage(callback: (msg: string, options?: DDPDispatchOptions) => void): RemoveListener;
+	onDispatchMessage(callback: (msg: string) => void): RemoveListener;
 
 	/**
 	 * Sends a connect message to the server.

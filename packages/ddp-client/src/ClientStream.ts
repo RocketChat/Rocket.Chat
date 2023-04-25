@@ -3,9 +3,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { DDPClient } from './types/DDPClient';
 import type { PublicationPayloads } from './types/publicationPayloads';
 import type { DDPDispatchOptions } from './MinimalDDPClient';
+import { DDPDispatcher } from './DDPDispatcher';
+import type { MethodPayload } from './types/methodsPayloads';
 
 export interface ClientStream extends Emitter {
 	call(method: string, ...params: any[]): string;
+	callWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): string;
 
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string };
 
@@ -36,59 +39,71 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		}
 	>();
 
-	constructor(private ddp: DDPClient) {
+	constructor(private ddp: DDPClient, readonly dispatcher: DDPDispatcher = new DDPDispatcher()) {
 		super();
 	}
 
 	private apply({
-		method,
-		params = [],
+		payload: ddpCallPayload,
 		options,
 		callback,
 	}: {
+		payload: MethodPayload;
 		callback?: (...args: any[]) => void;
-		method: string;
-		params: any[] | undefined;
 		options?: DDPDispatchOptions;
 	}): string {
-		const id = this.ddp.call(method, params, options);
+		this.dispatcher.dispatch(ddpCallPayload, options);
 
-		if (typeof callback === 'function') {
-			this.ddp.onResult(id, (payload) => {
+		this.ddp.onResult(ddpCallPayload.id, (payload) => {
+			this.dispatcher.removeItem(ddpCallPayload);
+			if (typeof callback === 'function') {
 				if ('error' in payload) {
 					callback(payload.error);
 				} else {
 					callback(null, payload.result);
 				}
-			});
-		}
-		return id;
+			}
+		});
+
+		return ddpCallPayload.id;
 	}
 
 	call(method: string, ...params: any[]): string {
+		// get the last argument
+		return this.callWithOptions(method, {}, ...params);
+	}
+
+	callWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): string {
 		// get the last argument
 		const callback = params.pop();
 		// if it's not a function, then push it back
 		if (typeof callback !== 'function') {
 			params.push(callback);
 		}
-		return this.apply({ method, params, callback });
+
+		const payload = this.ddp.call(method, params);
+
+		this.apply({ payload, callback, options });
+
+		return payload.id;
 	}
 
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string } {
-		const id = this.ddp.call(method, params);
-
+		const payload = this.ddp.call(method, params);
 		const result = new Promise((resolve, reject) => {
-			this.ddp.onResult(id, (payload) => {
-				if ('error' in payload) {
-					reject(payload.error);
-				} else {
-					resolve(payload.result);
-				}
+			this.apply({
+				payload,
+				callback: (error, result) => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve(result);
+					}
+				},
 			});
 		});
 
-		return Object.assign(result, { id });
+		return Object.assign(result, { id: payload.id });
 	}
 
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string } {

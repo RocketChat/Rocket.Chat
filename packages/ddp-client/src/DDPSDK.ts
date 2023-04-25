@@ -2,7 +2,7 @@ import { ClientStreamImpl } from './ClientStream';
 import type { ClientStream } from './ClientStream';
 import type { Connection } from './Connection';
 import { ConnectionImpl } from './Connection';
-import { MinimalDDPClient } from './MinimalDDPClient';
+import { DDPDispatcher } from './DDPDispatcher';
 import { TimeoutControl } from './TimeoutControl';
 import type { Account } from './types/Account';
 import { AccountImpl } from './types/Account';
@@ -83,11 +83,11 @@ export class DDPSDK implements SDK {
 	}
 
 	static async create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
-		const ddp = new MinimalDDPClient();
+		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
 
-		const stream = new ClientStreamImpl(ddp);
+		const stream = new ClientStreamImpl(ddp, ddp);
 
 		const account = new AccountImpl(stream);
 
