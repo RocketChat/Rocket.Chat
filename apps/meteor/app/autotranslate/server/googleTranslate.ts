@@ -13,11 +13,11 @@ import type {
 	IGoogleTranslation,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 /**
  * Represents google translate class
@@ -85,29 +85,27 @@ class GoogleAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target];
 		}
 
-		let result;
+		let result: { data?: { languages: ISupportedLanguage[] } } = {};
 		const params = {
 			key: this.apiKey,
 			...(target && { target }),
 		};
 
 		try {
-			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
-			result = await request.json();
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+			if (!request.ok && request.status === 400 && request.statusText === 'INVALID_ARGUMENT') {
+				throw new Error('Failed to fetch supported languages');
+			}
+
+			result = (await request.json()) as typeof result;
 		} catch (e: any) {
 			// Fallback: Get the English names of the target languages
-			if (
-				e.response &&
-				e.response.statusCode === 400 &&
-				e.response.data &&
-				e.response.data.error &&
-				e.response.data.error.status === 'INVALID_ARGUMENT'
-			) {
+			if (e.message === 'Failed to fetch supported languages') {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
-					result = await request.json();
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+					result = (await request.json()) as typeof result;
 				}
 			}
 		}
@@ -115,7 +113,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		this.supportedLanguages[target || 'en'] = result?.data?.data?.languages;
+		this.supportedLanguages[target || 'en'] = result?.data?.languages || [];
 		return this.supportedLanguages[target || 'en'];
 	}
 
