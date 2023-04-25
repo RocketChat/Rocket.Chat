@@ -10,26 +10,35 @@ export interface Account
 	uid?: string;
 	user?: Record<string, unknown>;
 	loginWithPassword(username: string, password: string): Promise<void>;
-	loginWithToken(token: string): Promise<void>;
+	loginWithToken(token: string): Promise<{
+		id: string;
+		token: string;
+		tokenExpires: Date;
+	}>;
 	logout(): Promise<void>;
 }
 
 export class AccountImpl
 	extends Emitter<{
 		uid: string | undefined;
-		user: Record<string, unknown> | undefined;
+		user: {
+			id: string;
+			username: string;
+			token?: string;
+			tokenExpires?: Date;
+		};
 	}>
 	implements Account
 {
 	uid?: string;
 
-	user?: Record<string, unknown>;
+	user?: { id: string; username: string; token?: string; tokenExpires?: Date };
 
 	constructor(private readonly client: ClientStream) {
 		super();
 		this.client.on('connected', () => {
-			if (this.uid) {
-				this.loginWithToken(this.uid);
+			if (this.user?.token) {
+				this.loginWithToken(this.user.token);
 			}
 		});
 
@@ -44,7 +53,7 @@ export class AccountImpl
 
 			this.user = {
 				...this.user,
-				_id: data.id,
+				id: data.id,
 				username: data.fields.username,
 			};
 			this.emit('user', this.user);
@@ -66,8 +75,8 @@ export class AccountImpl
 		this.emit('uid', this.uid);
 	}
 
-	async loginWithToken(token: string): Promise<void> {
-		const { uid } = await this.client.callAsyncWithOptions(
+	async loginWithToken(token: string) {
+		const result = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -76,8 +85,11 @@ export class AccountImpl
 				resume: token,
 			},
 		);
-		this.uid = uid;
+
+		this.uid = result.id;
 		this.emit('uid', this.uid);
+
+		return result;
 	}
 
 	async logout(): Promise<void> {
