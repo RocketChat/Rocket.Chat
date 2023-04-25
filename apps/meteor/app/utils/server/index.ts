@@ -2,7 +2,7 @@ export { t } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { getUserPreference } from './lib/getUserPreference';
-export { fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
+export { fileUploadIsValidContentType } from './restrictions';
 export { isDocker } from './functions/isDocker';
 export { getMongoInfo } from './functions/getMongoInfo';
 export { slashCommands } from '../lib/slashCommand';
