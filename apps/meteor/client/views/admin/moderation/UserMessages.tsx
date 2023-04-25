@@ -16,8 +16,6 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
-	const query = useMemo(() => ({ userId }), [userId]);
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -26,9 +24,9 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		isLoading: isLoadingUserMessages,
 		isSuccess: isSuccessUserMessages,
 	} = useQuery(
-		['moderation.userMessages', query],
+		['moderation.userMessages', { userId }],
 		async () => {
-			const messages = await getUserMessages(query);
+			const messages = await getUserMessages({ userId });
 			return messages;
 		},
 		{

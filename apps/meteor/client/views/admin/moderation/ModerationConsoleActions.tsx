@@ -8,7 +8,7 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'mediaQuery'>): JSX.Element => {
+const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
 	const t = useTranslation();
 	const { userId: uid } = report;
 

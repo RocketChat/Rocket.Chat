@@ -9,10 +9,10 @@ import ModerationConsoleActions from './ModerationConsoleActions';
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
 	onClick: (id: IUser['_id']) => void;
-	mediaQuery: boolean;
+	isDesktopOrLarger: boolean;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, mediaQuery }: ModerationConsoleRowProps): JSX.Element => {
+const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
 	const { userId: _id, rooms, name, count, message, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
@@ -32,7 +32,7 @@ const ModerationConsoleTableRow = ({ report, onClick, mediaQuery }: ModerationCo
 				<Box display='flex' alignItems='center'>
 					{username && (
 						<Box>
-							<UserAvatar size={mediaQuery ? 'x20' : 'x40'} username={username} />
+							<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
 						</Box>
 					)}
 					<Box display='flex' mi='x8' withTruncatedText>
@@ -40,7 +40,7 @@ const ModerationConsoleTableRow = ({ report, onClick, mediaQuery }: ModerationCo
 							<Box fontScale='p2m' color='default' withTruncatedText>
 								{name || username}
 							</Box>
-							{!mediaQuery && name && (
+							{!isDesktopOrLarger && name && (
 								<Box fontScale='p2' color='hint' withTruncatedText>
 									{' '}
 									{`@${username}`}{' '}
@@ -50,7 +50,7 @@ const ModerationConsoleTableRow = ({ report, onClick, mediaQuery }: ModerationCo
 					</Box>
 				</Box>
 			</TableCell>
-			{mediaQuery && (
+			{isDesktopOrLarger && (
 				<TableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}

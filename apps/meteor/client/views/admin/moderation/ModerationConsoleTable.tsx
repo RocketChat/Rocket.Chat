@@ -22,7 +22,7 @@ const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 	const t = useTranslation();
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
@@ -80,7 +80,7 @@ const ModerationConsoleTable: FC = () => {
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
+			isDesktopOrLarger && (
 				<GenericTableHeaderCell
 					w='x140'
 					key='username'
@@ -118,7 +118,7 @@ const ModerationConsoleTable: FC = () => {
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
 		],
-		[sortDirection, sortBy, setSort, t, mediaQuery],
+		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
 	);
 
 	return (
@@ -142,7 +142,12 @@ const ModerationConsoleTable: FC = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (
-								<ModerationConsoleTableRow key={report.userId} report={report} onClick={handleClick} mediaQuery={mediaQuery} />
+								<ModerationConsoleTableRow
+									key={report.userId}
+									report={report}
+									onClick={handleClick}
+									isDesktopOrLarger={isDesktopOrLarger}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
