@@ -239,12 +239,12 @@ export class AppServerOrchestrator {
 			});
 	}
 
-	set appsSourceStorageType(appsSourceStorageType) {
-		this.appsSourceStorageType = appsSourceStorageType;
+	set appsSourceStorageType(value) {
+		appsSourceStorageType = value;
 	}
 
-	set appsSourceStorageFilesystemPath(appsSourceStorageFilesystemPath) {
-		this.appsSourceStorageFilesystemPath = appsSourceStorageFilesystemPath;
+	set appsSourceStorageFilesystemPath(value) {
+		appsSourceStorageFilesystemPath = value;
 	}
 }
 
