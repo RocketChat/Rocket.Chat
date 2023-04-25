@@ -13,6 +13,10 @@ import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
+(async () => {
+	await initializeI18n(Meteor._localStorage.getItem('userLanguage') || 'en');
+})();
+
 Meteor.startup(async () => {
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
@@ -79,7 +83,6 @@ Meteor.startup(async () => {
 
 		const user = Users.findOne(uid, { fields: { language: 1 } }) as IUser | undefined;
 
-		await initializeI18n(user?.language || defaultUserLanguage());
 		setLanguage(user?.language || defaultUserLanguage());
 	});
 
