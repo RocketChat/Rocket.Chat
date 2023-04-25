@@ -1,15 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { fetch } from '../../../server/lib/http/fetch';
 
-const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps) {
+const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -47,9 +46,9 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _noti
 	});
 
 	return apps;
-});
+};
 
-const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _notifyAdminsAboutRenewedApps(apps) {
+const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -67,19 +66,22 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(async function _noti
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
 	});
-});
+};
 
-const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpdateMarketplaceInfo() {
+const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
+		},
+		params: {
+			seats: currentSeats,
 		},
 	};
 
@@ -87,17 +89,18 @@ const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpd
 
 	try {
 		const response = await fetch(fullUrl, options);
+
 		const result = await response.json();
 
-		if (Array.isArray(result.data)) {
-			data = result.data;
+		if (Array.isArray(result)) {
+			data = result;
 		}
 	} catch (err) {
 		Apps.debugLog(err);
 	}
 
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
-});
+};
 
 SyncedCron.add({
 	name: 'Apps-Engine:check',
