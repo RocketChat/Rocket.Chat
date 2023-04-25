@@ -5,7 +5,7 @@ import { api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { getURL } from '../../../utils/lib/getURL';
+import { getURL } from '../../../utils/server/getURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
