@@ -352,7 +352,12 @@ API.v1.addRoute(
 
 			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
 
-			return chatForwardedResult ? API.v1.success() : API.v1.failure();
+			if (!chatForwardedResult) {
+				const { departmentId } = transferData;
+				return API.v1.failure(departmentId ? 'error-no-agents-online-in-department' : 'error-forwarding-chat');
+			}
+
+			return API.v1.success();
 		},
 	},
 );
