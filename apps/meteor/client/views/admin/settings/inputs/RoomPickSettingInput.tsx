@@ -29,7 +29,7 @@ function RoomPickSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: RoomPickSettingInputProps): ReactElement {
-	const parsedValue = value.map(({ _id }) => _id);
+	const parsedValue = value ? value.map(({ _id }) => _id) : [];
 
 	const handleChange = (value: string | string[]) => {
 		if (typeof value === 'object') {
