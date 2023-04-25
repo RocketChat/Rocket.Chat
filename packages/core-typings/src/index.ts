@@ -73,6 +73,9 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
+export * from './IOAuthAuthCode';
+export * from './IOAuthAccessToken';
+export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
 
@@ -126,3 +129,5 @@ export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
 export * from './ICronHistoryItem';
+
+export * from './migrations/IControl';

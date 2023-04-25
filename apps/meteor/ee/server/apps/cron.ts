@@ -3,11 +3,11 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { cronJobs } from '@rocket.chat/cron';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
@@ -78,10 +78,13 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
+		},
+		params: {
+			seats: currentSeats,
 		},
 	};
 
@@ -89,10 +92,11 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 
 	try {
 		const response = await fetch(fullUrl, options);
+
 		const result = await response.json();
 
-		if (Array.isArray(result.data)) {
-			data = result.data;
+		if (Array.isArray(result)) {
+			data = result;
 		}
 	} catch (err) {
 		Apps.debugLog(err);

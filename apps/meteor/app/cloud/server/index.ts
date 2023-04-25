@@ -25,7 +25,7 @@ Meteor.startup(async function () {
 			return cronJobs.remove(licenseCronName);
 		}
 
-		Meteor.defer(() => syncWorkspace());
+		setImmediate(() => syncWorkspace());
 		await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
 			await syncWorkspace();
 		});

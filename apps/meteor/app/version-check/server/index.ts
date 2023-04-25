@@ -4,7 +4,6 @@ import { cronJobs } from '@rocket.chat/cron';
 import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
-import './addSettings';
 
 const jobName = 'version_check';
 
@@ -17,7 +16,7 @@ const addVersionCheckJob = async () => {
 };
 
 Meteor.startup(() => {
-	Meteor.defer(() => {
+	setImmediate(() => {
 		if (settings.get('Update_EnableChecker')) {
 			void checkVersionUpdate();
 		}

@@ -37,6 +37,9 @@ import type {
 	INpsModel,
 	INpsVoteModel,
 	IOAuthAppsModel,
+	IOAuthAuthCodesModel,
+	IOAuthAccessTokensModel,
+	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
 	IPbxEventsModel,
 	IPushTokenModel,
@@ -73,6 +76,7 @@ import type {
 	IAppsTokensModel,
 	IAuditLogModel,
 	ICronHistoryModel,
+	IMigrationsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -128,6 +132,9 @@ export const NotificationQueue = proxify<INotificationQueueModel>('INotification
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
+export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesModel');
+export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
+export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
@@ -160,3 +167,4 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 );
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
+export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');

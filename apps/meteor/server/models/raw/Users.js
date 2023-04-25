@@ -2001,7 +2001,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findByUsernames(usernames, options) {
-		const query = { $in: usernames };
+		const query = { username: { $in: usernames } };
 
 		return this.find(query, options);
 	}

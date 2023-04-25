@@ -67,7 +67,7 @@ Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.yout
 
 ## Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contribute-to-rocket.chat/how-can-i-help) for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) for more details.
 
 ## Credits
 
