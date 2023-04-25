@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
