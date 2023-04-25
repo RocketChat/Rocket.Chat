@@ -10,8 +10,8 @@ export interface ClientStream extends Emitter {
 	call(method: string, ...params: any[]): string;
 	callWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): string;
 
-	callAsync(method: string, ...params: any[]): Promise<any> & { id: string };
-	callAsyncWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): Promise<any> & { id: string };
+	callAsync(method: string, ...params: any[]): Promise<any>;
+	callAsyncWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): Promise<any>;
 
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string };
 	unsubscribe(id: string): Promise<any>;
@@ -89,13 +89,13 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		return payload.id;
 	}
 
-	callAsync(method: string, ...params: any[]): Promise<any> & { id: string } {
+	callAsync(method: string, ...params: any[]): Promise<any> {
 		return this.callAsyncWithOptions(method, {}, ...params);
 	}
 
-	callAsyncWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): Promise<any> & { id: string } {
+	callAsyncWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): Promise<any> {
 		const payload = this.ddp.call(method, params);
-		const result = new Promise((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			this.apply({
 				payload,
 				options,
@@ -108,8 +108,6 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 				},
 			});
 		});
-
-		return Object.assign(result, { id: payload.id });
 	}
 
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string } {

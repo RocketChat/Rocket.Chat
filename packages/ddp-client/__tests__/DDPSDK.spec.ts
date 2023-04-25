@@ -29,7 +29,7 @@ it('should handle a stream of messages', async () => {
 
 	const sdk = await create;
 
-	const stream = sdk.stream(streamName, [streamParams], cb);
+	const stream = sdk.stream(streamName, streamParams, cb);
 
 	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
@@ -63,7 +63,7 @@ it('should ignore messages other from changed', async () => {
 
 	const sdk = await create;
 
-	const stream = sdk.stream(streamName, [streamParams], cb);
+	const stream = sdk.stream(streamName, streamParams, cb);
 
 	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
@@ -94,7 +94,7 @@ it('should handle streams after reconnect', async () => {
 
 	const sdk = await create;
 
-	const stream = sdk.stream(streamName, [streamParams], cb);
+	const stream = sdk.stream(streamName, streamParams, cb);
 
 	const [id] = [...sdk.client.subscriptions.keys()];
 	await server.nextMessage.then((message) => {
@@ -158,7 +158,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	const sdk = await create;
 
-	const stopSubscription = sdk.stream(streamName, [streamParams], cb);
+	const stopSubscription = sdk.stream(streamName, streamParams, cb);
 
 	expect(sdk.client.subscriptions.size).toBe(1);
 

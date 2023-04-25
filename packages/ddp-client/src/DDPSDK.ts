@@ -57,22 +57,23 @@ export class DDPSDK implements SDK {
 		readonly timeoutControl: TimeoutControl,
 	) {}
 
-	stream(name: string, params: unknown[], cb: (data: PublicationPayloads) => void): () => void {
-		const { id } = this.client.subscribe(name, ...params);
+	stream(name: string, key: unknown, cb: (data: PublicationPayloads) => void): () => void {
+		const { id } = this.client.subscribe(`stream-${name}`, key);
+
 		const cancel = [
 			() => this.client.unsubscribe(id),
-			this.client.onCollection(name, (data) => {
+			this.client.onCollection(`stream-${name}`, (data) => {
 				if (!isValidPayload(data)) {
 					return;
 				}
 
-				if (data.collection !== name) {
+				if (data.collection !== `stream-${name}`) {
 					return;
 				}
 				if (data.msg !== 'changed') {
 					return;
 				}
-				if (data.fields.eventName === params[0]) {
+				if (data.fields.eventName === key) {
 					cb(data);
 				}
 			}),
