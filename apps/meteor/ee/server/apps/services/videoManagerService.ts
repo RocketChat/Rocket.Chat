@@ -9,7 +9,7 @@ import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppsVideoManagerService extends ServiceClass implements IAppsVideoManagerService {
-	protected name = 'apps';
+	protected name = 'apps-video-manager';
 
 	private apps: AppServerOrchestrator;
 

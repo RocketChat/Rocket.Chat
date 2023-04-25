@@ -30,7 +30,7 @@ interface IAppsApiRouter {
 }
 
 export class AppsApiService extends ServiceClass implements IAppsApiService {
-	protected name = 'apps';
+	protected name = 'apps-api';
 
 	private apps: AppServerOrchestrator;
 

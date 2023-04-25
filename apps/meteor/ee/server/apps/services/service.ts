@@ -1,4 +1,4 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 import type { AppsEngineAppResult, IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -15,7 +15,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { OrchestratorFactory } from './orchestratorFactory';
 import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppResult';
 
-export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
+export class AppsEngineService extends ServiceClass implements IAppsEngineService {
 	protected name = 'apps-engine';
 
 	private apps: AppServerOrchestrator;
