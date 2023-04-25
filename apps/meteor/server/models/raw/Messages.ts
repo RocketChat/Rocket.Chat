@@ -565,11 +565,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		)[0] as IMessage;
 	}
 
-	async removeById(_id: string): Promise<DeleteResult> {
-		return this.deleteMany({ _id });
-	}
-
-	async removeByRoomId(roomId: string): Promise<DeleteResult> {
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
 
@@ -612,7 +608,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	async deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
+	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
 		const query: Filter<IMessage> = {
 			rid: roomId,
 			t: {
@@ -1074,7 +1070,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	async setPinnedByIdAndUserId(
+	setPinnedByIdAndUserId(
 		_id: string,
 		pinnedBy: Pick<IUser, '_id' | 'username'> | undefined,
 		pinned?: boolean,
@@ -1345,7 +1341,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return { count, selectedMessageIds };
 	}
 
-	async removeByUserId(userId: string): Promise<DeleteResult> {
+	removeByUserId(userId: string): Promise<DeleteResult> {
 		const query = { 'u._id': userId };
 
 		return this.deleteMany(query);
@@ -1424,7 +1420,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1450,7 +1446,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findUnreadThreadMessagesByDate(
+		tmid: string,
+		userId: string,
+		after: Date,
+	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -1499,7 +1499,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.countDocuments({ tcount: { $exists: true } });
 	}
 
-	async updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
+	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
 		};
@@ -1606,7 +1606,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.countDocuments(query);
 	}
 
-	async decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {
+	decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {
 		const query = { _id };
 		const update: UpdateFilter<IMessage> = {
 			$inc: {
