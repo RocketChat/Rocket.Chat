@@ -20,7 +20,7 @@
 		"@storybook/react": "~6.5.15",
 		"@storybook/testing-library": "~0.0.13",
 		"@types/babel__core": "^7.1.20",
-		"@types/jest": "^29.5.0",
+		"@types/jest": "~29.5.0",
 		"@types/postcss-url": "^10",
 		"@types/react": "~17.0.57",
 		"@types/react-dom": "~17.0.17",

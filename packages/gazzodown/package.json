@@ -25,7 +25,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
 		"@types/babel__core": "^7.1.20",
-		"@types/jest": "^29.5.0",
+		"@types/jest": "~29.5.0",
 		"@types/katex": "~0",
 		"@types/react": "~17.0.57",
 		"@types/react-dom": "~17.0.17",
