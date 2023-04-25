@@ -1,13 +1,14 @@
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const useResetAvatarAction = (userId: string, onChange: () => void, onReload: () => void) => {
+const useResetAvatarAction = (userId: string) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const resetAvatar = useEndpoint('POST', '/v1/users.resetAvatar');
 
@@ -24,8 +25,7 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 	const onResetAvatar = async () => {
 		setModal();
 		handleResetAvatar.mutateAsync({ userId });
-		onChange();
-		onReload();
+		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
 	};
 
 	const confirmResetAvatar = (): void => {

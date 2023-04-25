@@ -8,9 +8,9 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const MessageContextFooter: FC<{ userId: string; onChange: () => void; onReload: () => void }> = ({ userId, onChange, onReload }) => {
+const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 	const t = useTranslation();
-	const { action } = useDeleteMessagesAction(userId, onChange, onReload);
+	const { action } = useDeleteMessagesAction(userId);
 
 	return (
 		<ButtonGroup flexGrow={1}>
@@ -20,9 +20,9 @@ const MessageContextFooter: FC<{ userId: string; onChange: () => void; onReload:
 
 			<Menu
 				options={{
-					approve: useDismissUserAction(userId, onChange, onReload),
-					deactivate: useDeactivateUserAction(userId, onChange, onReload),
-					resetAvatar: useResetAvatarAction(userId, onChange, onReload),
+					approve: useDismissUserAction(userId),
+					deactivate: useDeactivateUserAction(userId),
+					resetAvatar: useResetAvatarAction(userId),
 				}}
 				renderItem={({ label: { label, icon }, ...props }): JSX.Element => (
 					<Option aria-label={label} label={label} icon={icon} {...props} />

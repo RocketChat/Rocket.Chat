@@ -9,12 +9,10 @@ import ModerationConsoleActions from './ModerationConsoleActions';
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
 	onClick: (id: IUser['_id']) => void;
-	onChange: () => void;
-	onReload: () => void;
 	mediaQuery: boolean;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQuery }: ModerationConsoleRowProps): JSX.Element => {
+const ModerationConsoleTableRow = ({ report, onClick, mediaQuery }: ModerationConsoleRowProps): JSX.Element => {
 	const { userId: _id, rooms, name, count, message, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
@@ -64,7 +62,7 @@ const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQ
 			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
 			<TableCell withTruncatedText>{count}</TableCell>
 			<TableCell onClick={(e): void => e.stopPropagation()}>
-				<ModerationConsoleActions report={report} onClick={onClick} onChange={onChange} onReload={onReload} />
+				<ModerationConsoleActions report={report} onClick={onClick} />
 			</TableCell>
 		</TableRow>
 	);

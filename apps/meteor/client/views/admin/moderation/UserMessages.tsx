@@ -9,15 +9,7 @@ import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
-const UserMessages = ({
-	userId,
-	reload,
-	onRedirect,
-}: {
-	userId: string;
-	reload: () => void;
-	onRedirect: (mid: string) => void;
-}): JSX.Element => {
+const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
 	const t = useTranslation();
 
 	const moderationRoute = useRoute('moderation-console');
@@ -57,7 +49,6 @@ const UserMessages = ({
 
 	const handleChange = useMutableCallback(() => {
 		reloadUserMessages();
-		reload();
 	});
 
 	const username = useMemo(() => {
@@ -103,7 +94,6 @@ const UserMessages = ({
 								handleClick={handleClick}
 								onRedirect={onRedirect}
 								onChange={handleChange}
-								onReload={reload}
 							/>
 						</Box>
 					))}
@@ -115,9 +105,7 @@ const UserMessages = ({
 				)}
 			</Box>
 			<VerticalBar.Footer display='flex'>
-				{isSuccessUserMessages && userMessages.messages.length > 0 && (
-					<MessageContextFooter userId={userId} onChange={handleChange} onReload={reload} />
-				)}
+				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
 			</VerticalBar.Footer>
 		</>
 	);

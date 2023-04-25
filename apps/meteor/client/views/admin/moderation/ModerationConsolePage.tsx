@@ -1,5 +1,5 @@
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useRef } from 'react';
+import React from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client';
 import Page from '../../../components/Page';
@@ -13,12 +13,6 @@ const ModerationConsolePage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const reloadRef = useRef(() => null);
-
-	const handleReload = (): void => {
-		reloadRef.current();
-	};
 
 	const handleRedirect = async (mid: string) => {
 		try {
@@ -35,12 +29,12 @@ const ModerationConsolePage = () => {
 			<Page>
 				<Page.Header title={t('Moderation_Console')} />
 				<Page.Content>
-					<ModerationConsoleTable reload={reloadRef} onReload={handleReload} />
+					<ModerationConsoleTable />
 				</Page.Content>
 			</Page>
 			{context && (
 				<VerticalBar>
-					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef.current} onRedirect={handleRedirect} />}
+					{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}
 					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
 				</VerticalBar>
 			)}

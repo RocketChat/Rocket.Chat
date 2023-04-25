@@ -1,15 +1,16 @@
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onReload: () => void) => {
+const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 	const t = useTranslation();
 	const deleteMessage = useEndpoint('POST', '/v1/chat.delete');
 	const dismissMessage = useEndpoint('POST', '/v1/moderation.dismissReports');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+	const queryClient = useQueryClient();
 
 	const handleDeleteMessages = useMutation({
 		mutationFn: deleteMessage,
@@ -35,7 +36,9 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 		await handleDeleteMessages.mutateAsync({ msgId: mid, roomId: rid, asUser: true });
 		await handleDismissMessage.mutateAsync({ msgId: mid });
 		onChange();
-		onReload();
+		// onReload();
+
+		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
 		setModal();
 	};
 

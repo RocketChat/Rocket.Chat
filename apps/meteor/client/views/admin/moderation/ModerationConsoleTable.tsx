@@ -2,8 +2,8 @@ import { Pagination, Field, States, StatesIcon, StatesTitle } from '@rocket.chat
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC, MutableRefObject } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import type { FC } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -18,7 +18,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import DateRangePicker from './helpers/DateRangePicker';
 
-const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReload: () => void }> = ({ reload, onReload }) => {
+const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 	const t = useTranslation();
@@ -54,24 +54,11 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const {
-		data,
-		refetch: reloadReports,
-		isLoading,
-		isSuccess,
-	} = useQuery(['moderation.reports', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess } = useQuery(['moderation.reports', query], async () => getReports(query), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		keepPreviousData: true,
-	});
-
-	useEffect(() => {
-		reload.current = reloadReports;
-	}, [reload, reloadReports]);
-
-	const onChange = useMutableCallback(() => {
-		reloadReports();
 	});
 
 	const handleClick = useMutableCallback((id): void => {
@@ -136,7 +123,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={'Search'} onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search')} onChange={({ text }): void => setText(text)} />
 			<Field alignSelf='stretch'>
 				<Field.Label>{t('Date')}</Field.Label>
 				<Field.Row>
@@ -155,14 +142,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (
-								<ModerationConsoleTableRow
-									key={report.userId}
-									report={report}
-									onClick={handleClick}
-									onChange={onChange}
-									onReload={onReload}
-									mediaQuery={mediaQuery}
-								/>
+								<ModerationConsoleTableRow key={report.userId} report={report} onClick={handleClick} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

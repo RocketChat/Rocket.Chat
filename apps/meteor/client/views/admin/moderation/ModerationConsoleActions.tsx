@@ -8,7 +8,7 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<ModerationConsoleRowProps, 'mediaQuery'>): JSX.Element => {
+const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'mediaQuery'>): JSX.Element => {
 	const t = useTranslation();
 	const { userId: uid } = report;
 
@@ -23,10 +23,10 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Omit<
 					divider: {
 						type: 'divider',
 					},
-					approve: useDismissUserAction(uid, onChange, onReload),
-					deleteAll: useDeleteMessagesAction(uid, onChange, onReload),
-					deactiveUser: useDeactivateUserAction(uid, onChange, onReload),
-					resetAvatar: useResetAvatarAction(uid, onChange, onReload),
+					approve: useDismissUserAction(uid),
+					deleteAll: useDeleteMessagesAction(uid),
+					deactiveUser: useDeactivateUserAction(uid),
+					resetAvatar: useResetAvatarAction(uid),
 				}}
 				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props} />}
 			/>

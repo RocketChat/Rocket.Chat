@@ -20,20 +20,18 @@ const ContextMessage = ({
 	handleClick,
 	onRedirect,
 	onChange,
-	onReload,
 }: {
 	message: any;
 	room: IModerationReport['room'];
 	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
-	onReload: () => void;
 }): JSX.Element => {
 	const t = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
-	const deleteMessage = useDeleteMessage(message._id, message.rid, onChange, onReload);
+	const deleteMessage = useDeleteMessage(message._id, message.rid, onChange);
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();

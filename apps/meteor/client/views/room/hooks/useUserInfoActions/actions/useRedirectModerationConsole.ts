@@ -1,11 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 
 import type { Action } from '../../../../hooks/useActionSpread';
 
 export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefined => {
 	const t = useTranslation();
 	const hasPermissionToView = usePermission('view-moderation-console');
+	const router = useRoute('/admin/moderation-console/info/:uid');
 
 	// only rediret if user has permission else return undefined
 	if (!hasPermissionToView) {
@@ -13,7 +14,7 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefi
 	}
 
 	const redirectModerationConsoleAction = () => {
-		window.open(`/admin/moderation-console/info/${uid}`, '_self');
+		router.push({ uid });
 	};
 
 	return {
