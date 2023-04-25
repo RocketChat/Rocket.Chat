@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
-import type { AgendaCronJobs } from '@rocket.chat/agenda';
+import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
