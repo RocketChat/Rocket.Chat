@@ -6316,7 +6316,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.12.0
     jest: ~29.5.0
     ts-jest: ~29.0.5
@@ -6329,7 +6329,7 @@ __metadata:
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
   dependencies:
     "@types/debug": ^4
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     cron: ~1.8.0
     date.js: ~0.3.3
     debug: ~4.1.1
@@ -6349,7 +6349,7 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/strict-uri-encode": ^2.0.0
     eslint: ^8.29.0
     filter-obj: ^3.0.0
@@ -6430,7 +6430,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/cas-validate@workspace:packages/cas-validate"
   dependencies:
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     cheerio: 1.0.0-rc.10
     eslint: ^8.29.0
     jest: ~29.5.0
@@ -6836,7 +6836,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ~12.1.5
     "@types/babel__core": ^7.1.20
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/katex": ~0
     "@types/react": ~17.0.57
     "@types/react-dom": ~17.0.17
@@ -7405,7 +7405,7 @@ __metadata:
   resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/node-rsa": ^1.1.1
     eslint: ^8.29.0
     jest: ~29.5.0
@@ -7420,7 +7420,7 @@ __metadata:
   resolution: "@rocket.chat/models@workspace:packages/models"
   dependencies:
     "@rocket.chat/model-typings": "workspace:^"
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.29.0
     jest: ~29.5.0
     ts-jest: ~29.0.5
@@ -7451,7 +7451,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/node": ^14.18.21
     ejson: ^2.2.2
     emoji-toolkit: ^7.0.0
@@ -7545,7 +7545,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ~13.4.0
     "@types/emojione": ^2.2.6
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/react": ~17.0.57
     "@types/react-dom": ^18
     "@types/testing-library__jest-dom": ~5.14.5
@@ -7567,7 +7567,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/poplib@workspace:packages/node-poplib"
   dependencies:
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.29.0
     jest: ~29.5.0
     ts-jest: ~29.0.5
@@ -7619,7 +7619,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/node": ^14.18.21
-    babel-jest: ^29.5.0
+    babel-jest: ^29.0.3
     eslint: ^8.29.0
     jest: ~29.5.0
     mongodb: ^4.12.1
@@ -7695,7 +7695,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": next
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     ajv: ^8.11.0
     eslint: ^8.29.0
     jest: ~29.5.0
@@ -7833,7 +7833,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/tools@workspace:packages/tools"
   dependencies:
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.12.0
     jest: ~29.5.0
     moment-timezone: ^0.5.40
@@ -7863,7 +7863,7 @@ __metadata:
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/postcss-url": ^10
     "@types/react": ~17.0.57
     "@types/react-dom": ~17.0.17
@@ -7909,7 +7909,7 @@ __metadata:
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.29.0
     eslint-plugin-react: ^7.31.11
     eslint-plugin-react-hooks: ^4.6.0
@@ -7980,7 +7980,7 @@ __metadata:
     "@storybook/manager-webpack4": ~6.5.15
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     "@types/postcss-url": ^10
     "@types/react": ~17.0.57
     eslint: ^8.29.0
@@ -8029,7 +8029,7 @@ __metadata:
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.29.0
     eslint-plugin-react: ^7.31.11
     eslint-plugin-react-hooks: ^4.6.0
@@ -8057,7 +8057,7 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@tanstack/react-query": ^4.16.1
     "@testing-library/react": ^13.3.0
-    "@types/jest": ^29.5.0
+    "@types/jest": ~29.5.0
     eslint: ^8.29.0
     jest: ~29.5.0
     react-hook-form: ^7.34.2
@@ -14461,7 +14461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:^29.5.0":
+"babel-jest@npm:^29.0.3, babel-jest@npm:^29.5.0":
   version: 29.5.0
   resolution: "babel-jest@npm:29.5.0"
   dependencies:
