@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
@@ -14,7 +15,6 @@ import { RoomMembershipChangedEventType } from './definitions/events/RoomMembers
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
-import { fetch } from '../../../../lib/http/fetch';
 
 let MatrixUserInstance: any;
 
@@ -227,7 +227,7 @@ export class MatrixBridge implements IFederationBridge {
 			throw new Error('Not able to download the file');
 		}
 
-		return response.body;
+		return response.body as unknown as ReadableStream;
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {

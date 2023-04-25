@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import type { Response } from '@rocket.chat/server-fetch';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { fetch } from '../../../../server/lib/http/fetch';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -46,7 +47,7 @@ export const setAvatarFromServiceWithValidation = async (
 
 		user = await Users.findOneById(targetUserId, { projection: { _id: 1, username: 1 } });
 	} else {
-		user = (await Meteor.userAsync()) as IUser | null;
+		user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
 	}
 
 	if (!user) {
@@ -164,7 +165,7 @@ export async function setUserAvatar(
 
 	const avatarETag = etag || result?.etag || '';
 
-	Meteor.setTimeout(async function () {
+	setTimeout(async function () {
 		if (service) {
 			await Users.setAvatarData(user._id, service, avatarETag);
 			void api.broadcast('user.avatarUpdate', {
