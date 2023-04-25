@@ -235,7 +235,7 @@ class RocketChatAssetsClass {
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
 		ws.on('end', function () {
-			return Meteor.setTimeout(async function () {
+			return setTimeout(async function () {
 				const key = `Assets_${asset}`;
 				const value = {
 					url: `assets/${asset}.${extension}`,
@@ -329,14 +329,6 @@ class RocketChatAssetsClass {
 
 export const RocketChatAssets = new RocketChatAssetsClass();
 
-void settingsRegistry.addGroup('Assets', async function () {
-	await this.add('Assets_SvgFavicon_Enable', true, {
-		type: 'boolean',
-		group: 'Assets',
-		i18nLabel: 'Enable_Svg_Favicon',
-	});
-});
-
 async function addAssetToSetting(asset: string, value: IRocketChatAsset): Promise<void> {
 	const key = `Assets_${asset}`;
 
@@ -374,7 +366,7 @@ void (async () => {
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
 Meteor.startup(() => {
-	Meteor.setTimeout(() => {
+	setTimeout(() => {
 		process.emit('message', {
 			refresh: 'client',
 		});
