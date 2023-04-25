@@ -1,5 +1,5 @@
-import { HTTP as MeteorHTTP } from 'meteor/http';
 import EJSON from 'ejson';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
@@ -19,11 +19,13 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	return MeteorHTTP.call(method, url, {
-		data,
-		timeout: 2000,
+	const request = await fetch(url, {
+		method,
 		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
+		body: data,
+		timeout: 2000,
 	});
+	return request.json();
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
@@ -54,5 +56,5 @@ export async function federationRequestToPeer(method, peerDomain, uri, body, opt
 		}
 	}
 
-	return { success: true, data: result.data };
+	return { success: true, data: result };
 }
