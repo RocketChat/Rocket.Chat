@@ -6501,7 +6501,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/apps-engine": 1.38.2
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
