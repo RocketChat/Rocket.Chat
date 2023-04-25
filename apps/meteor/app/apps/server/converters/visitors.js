@@ -1,6 +1,6 @@
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { transformMappedData } from '../../../lib/misc/transformMappedData';
+import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppVisitorsConverter {
 	constructor(orch) {

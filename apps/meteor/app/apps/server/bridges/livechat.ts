@@ -15,7 +15,7 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { LivechatService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {

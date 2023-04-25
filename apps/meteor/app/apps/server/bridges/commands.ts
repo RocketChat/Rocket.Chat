@@ -3,9 +3,9 @@ import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBr
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { SlashCommandService } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { AppEvents } from '../../../server/apps';
-import { Utilities } from '../../../lib/misc/Utilities';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { AppEvents } from '../../../../ee/server/apps';
+import { Utilities } from '../../../../ee/lib/misc/Utilities';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, SlashCommand>;

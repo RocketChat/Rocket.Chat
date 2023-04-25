@@ -3,8 +3,8 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { Upload } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { determineFileType } from '../../../lib/misc/determineFileType';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {

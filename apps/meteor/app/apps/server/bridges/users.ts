@@ -5,8 +5,8 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import { User as UserService, Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { getUserCreatedByApp, deleteUser } from '../../../../app/lib/server';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { getUserCreatedByApp, deleteUser } from '../../../lib/server';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function

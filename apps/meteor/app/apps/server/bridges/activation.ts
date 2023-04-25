@@ -3,8 +3,8 @@ import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Users } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
-import { AppEvents } from '../../../server/apps/communication';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { AppEvents } from '../../../../ee/server/apps/communication';
 
 export class AppActivationBridge extends ActivationBridge {
 	// eslint-disable-next-line no-empty-function

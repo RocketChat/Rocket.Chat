@@ -3,7 +3,7 @@ import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessor
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 

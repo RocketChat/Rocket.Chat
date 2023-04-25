@@ -7,7 +7,7 @@ import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPe
 import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { RealAppBridges } from '../../app/apps/bridges';
+import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -17,7 +17,7 @@ import {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
-} from '../../app/apps/converters';
+} from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from '../../app/apps/storage';
 import { canEnableApp } from '../../app/license/server/license';
 
