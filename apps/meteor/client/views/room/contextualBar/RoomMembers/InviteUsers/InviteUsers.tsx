@@ -8,8 +8,8 @@ import EditInviteLink from './EditInviteLink';
 import InviteLink from './InviteLink';
 
 type InviteUsersProps = {
-	onClickBackMembers: () => void;
-	onClickBackLink: () => void;
+	onClickBackMembers?: () => void;
+	onClickBackLink?: () => void;
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 	onClose: () => void;
 	isEditing: boolean;

@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IDiscussionMessage, IMessage } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { MessageList } from './MessageList';
@@ -15,7 +15,7 @@ const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): mes
 
 const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean => regex.test(discussionMessage.msg);
 
-export class DiscussionsList extends MessageList {
+export class DiscussionsList extends MessageList<IDiscussionMessage> {
 	public constructor(private _options: DiscussionsListOptions) {
 		super();
 	}

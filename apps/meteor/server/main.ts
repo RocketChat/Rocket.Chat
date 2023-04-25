@@ -1,4 +1,5 @@
 import './models/startup';
+import './settings/index';
 import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
@@ -64,7 +65,7 @@ import './methods/sendForgotPasswordEmail';
 import './methods/setAvatarFromService';
 import './methods/setUserActiveStatus';
 import './methods/setUserPassword';
-import './methods/toogleFavorite';
+import './methods/toggleFavorite';
 import './methods/unmuteUserInRoom';
 import './methods/userPresence';
 import './methods/userSetUtcOffset';
@@ -79,6 +80,5 @@ import './routes/i18n';
 import './routes/timesync';
 import './routes/userDataDownload';
 import './stream/stdout';
-import './settings/index';
 
 import './features/EmailInbox/index';

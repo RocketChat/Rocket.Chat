@@ -52,13 +52,33 @@ const RoomMessage = proxyquire.noCallThru().load('../../../../../../client/compo
 
 describe('Message', () => {
 	it('should show normal message', () => {
-		render(<RoomMessage message={baseMessage} sequential={false} all={false} mention={false} unread={false} ignoredUser={false} />);
+		render(
+			<RoomMessage
+				message={baseMessage}
+				sequential={false}
+				all={false}
+				mention={false}
+				unread={false}
+				ignoredUser={false}
+				showUserAvatar={true}
+			/>,
+		);
 
 		expect(screen.getByText(baseMessage.msg)).to.exist;
 	});
 
 	it('should show ignored message', () => {
-		render(<RoomMessage message={baseMessage} sequential={false} all={false} mention={false} unread={false} ignoredUser={true} />);
+		render(
+			<RoomMessage
+				message={baseMessage}
+				sequential={false}
+				all={false}
+				mention={false}
+				unread={false}
+				ignoredUser={true}
+				showUserAvatar={true}
+			/>,
+		);
 
 		expect(screen.getByText('message ignored')).to.exist;
 	});
@@ -72,6 +92,7 @@ describe('Message', () => {
 				mention={false}
 				unread={false}
 				ignoredUser={false}
+				showUserAvatar={true}
 			/>,
 		);
 

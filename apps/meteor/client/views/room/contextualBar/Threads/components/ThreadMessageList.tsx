@@ -51,11 +51,16 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
+	const {
+		listWrapperRef: listWrapperScrollRef,
+		listRef: listScrollRef,
+		onScroll: handleScroll,
+	} = useLegacyThreadMessageListScrolling(mainMessage);
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();
@@ -65,13 +70,13 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
 	return (
-		<div
-			className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}
-			style={{ scrollBehavior: 'smooth' }}
-			onScroll={handleScroll}
-		>
-			<ScrollableContentWrapper ref={listWrapperScrollRef}>
-				<ul className='thread' ref={listRef}>
+		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
+			<ScrollableContentWrapper
+				ref={listWrapperScrollRef}
+				onScroll={handleScroll}
+				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
+			>
+				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 					{loading ? (
 						<li className='load-more'>
 							<LoadingMessagesIndicator />
@@ -97,9 +102,14 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 										)}
 										<li>
 											{system ? (
-												<SystemMessage message={message} />
+												<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 											) : (
-												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
+												<ThreadMessage
+													message={message}
+													sequential={shouldShowAsSequential}
+													unread={firstUnread}
+													showUserAvatar={showUserAvatar}
+												/>
 											)}
 										</li>
 									</Fragment>

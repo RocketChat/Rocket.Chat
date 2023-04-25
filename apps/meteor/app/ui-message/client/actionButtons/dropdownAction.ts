@@ -16,7 +16,7 @@ export const onAdded = async (button: IUIActionButton): Promise<void> => {
 };
 export const onRemoved = async (button: IUIActionButton): Promise<void> => {
 	const { appId, actionId, labelI18n, context } = button;
-	AccountBox.deleteItem({
+	await AccountBox.deleteItem({
 		...button,
 		name: button.labelI18n,
 		appId,

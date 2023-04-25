@@ -4,7 +4,7 @@ import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { cryptLogger } from './logger';
 
-export async function decrypt(data, peerKey) {
+async function decrypt(data, peerKey) {
 	//
 	// Decrypt the payload
 	const payloadBuffer = Buffer.from(data);

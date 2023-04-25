@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
@@ -15,6 +15,8 @@ import MainLayout from '../views/root/MainLayout';
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
+
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const ResetPasswordPage = lazy(() =>
@@ -50,7 +52,7 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(() => {
+				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
@@ -58,7 +60,7 @@ FlowRouter.route('/', {
 					} else {
 						FlowRouter.go('home');
 					}
-				});
+				}, 0);
 				c.stop();
 			}
 		});
@@ -199,10 +201,17 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
+FlowRouter.route('/conference/:id', {
+	name: 'conference',
+	action: () => {
+		appLayout.render(<ConferenceRoute />);
+	},
+});
+
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render(<SetupWizardRoute />);
+		appLayout.renderStandalone(<SetupWizardRoute />);
 	},
 });
 

@@ -6,6 +6,7 @@ import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
 import { Notifications } from '../../../app/notifications/server';
+import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 
 const validateSortKeys = (sortKeys: string[]): boolean => {
 	const validSortKeys = ['loginAt', 'device.name', 'device.os.name', 'device.os.version', '_user.name', '_user.username'];
@@ -22,8 +23,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
 			const search = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
@@ -71,7 +72,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
 			]);
@@ -90,8 +91,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
 			const filter = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
@@ -158,7 +159,7 @@ API.v1.addRoute(
 
 			Notifications.notifyUser(sessionObj.userId, 'force_logout');
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
 			]);
