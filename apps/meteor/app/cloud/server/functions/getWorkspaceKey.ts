@@ -8,7 +8,7 @@ export async function getWorkspaceKey() {
 		return false;
 	}
 
-	const publicKey = settings.get('Cloud_Workspace_PublicKey');
+	const publicKey = settings.get<string>('Cloud_Workspace_PublicKey');
 
 	if (!publicKey) {
 		return false;

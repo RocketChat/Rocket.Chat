@@ -3,12 +3,19 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { UpdateResult, Document } from 'mongodb';
 
 import { settings } from '../../../settings/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
-export const saveRoomType = async function (rid, roomType, user, sendMessage = true) {
+export const saveRoomType = async function (
+	rid: string,
+	roomType: IRoom['t'],
+	user: IUser,
+	sendMessage = true,
+): Promise<UpdateResult | Document> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomType',
@@ -43,11 +50,11 @@ export const saveRoomType = async function (rid, roomType, user, sendMessage = t
 		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('public', {
-				lng: (user && user.language) || settings.get('Language') || 'en',
+				lng: user?.language || settings.get('Language') || 'en',
 			});
 		} else {
 			message = TAPi18n.__('private', {
-				lng: (user && user.language) || settings.get('Language') || 'en',
+				lng: user?.language || settings.get('Language') || 'en',
 			});
 		}
 		await Message.saveSystemMessage('room_changed_privacy', rid, message, user);

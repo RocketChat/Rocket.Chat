@@ -1,21 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function finishOAuthAuthorization(code, state) {
-	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
+export async function finishOAuthAuthorization(code: string, state: string) {
+	if (settings.get<string>('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
 			method: 'cloud:finishOAuthAuthorization',
 		});
 	}
 
-	const cloudUrl = settings.get('Cloud_Url');
-	const clientId = settings.get('Cloud_Workspace_Client_Id');
-	const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
+	const cloudUrl = settings.get<string>('Cloud_Url');
+	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
+	const clientSecret = settings.get<string>('Cloud_Workspace_Client_Secret');
 
 	const scope = userScopes.join(' ');
 
@@ -33,6 +34,7 @@ export async function finishOAuthAuthorization(code, state) {
 				redirect_uri: getRedirectUri(),
 			}),
 		});
+
 		if (!request.ok) {
 			throw new Error((await request.json()).error);
 		}
@@ -51,8 +53,15 @@ export async function finishOAuthAuthorization(code, state) {
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.expires_in);
 
+	const uid = Meteor.userId();
+	if (!uid) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'cloud:finishOAuthAuthorization',
+		});
+	}
+
 	await Users.updateOne(
-		{ _id: Meteor.userId() },
+		{ _id: uid },
 		{
 			$set: {
 				'services.cloud': {
