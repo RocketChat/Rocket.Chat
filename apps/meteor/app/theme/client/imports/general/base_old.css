@@ -687,41 +687,6 @@
 			font-weight: bold;
 		}
 	}
-
-	& .unread-bar {
-		text-align: center;
-		text-transform: uppercase;
-
-		& > button.mark-read {
-			float: right;
-
-			line-height: inherit;
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		& .unread-count {
-			display: none;
-		}
-
-		& > button.jump-to {
-			float: left;
-
-			line-height: inherit;
-
-			& .jump-to-small {
-				display: none;
-
-				line-height: inherit;
-			}
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-	}
 }
 
 .rc-old .flex-tab-main-content {
@@ -1252,26 +1217,6 @@
 	.rc-old.main-content {
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		will-change: transform;
-	}
-
-	.rc-old .container-bars .unread-bar {
-		& .unread-count {
-			display: inline-block;
-		}
-
-		& .unread-count-since {
-			display: none;
-		}
-	}
-
-	.rc-old .container-bars .unread-bar > button.jump-to {
-		& .jump-to-small {
-			display: inline-block;
-		}
-
-		& .jump-to-large {
-			display: none;
-		}
 	}
 }
 
