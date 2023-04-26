@@ -11,4 +11,6 @@ export type OauthConfig = {
 	tokenPath?: string;
 	scope?: string;
 	tokenSentVia?: string;
+	usernameField?: string;
+	mergeUsers?: boolean;
 };
