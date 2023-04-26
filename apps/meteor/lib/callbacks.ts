@@ -26,9 +26,6 @@ import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
-// Temporary since we are still using callbacks on client side
-Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
-
 enum CallbackPriority {
 	HIGH = -1000,
 	MEDIUM = 0,
@@ -263,10 +260,11 @@ export type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet';
+	| 'userStatusManuallySet'
+	| 'test';
 
 type Callback = {
-	(item: unknown, constant?: unknown): unknown;
+	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: Hook;
 	id: string;
 	priority: CallbackPriority;
@@ -277,7 +275,7 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-class Callbacks {
+export class Callbacks {
 	private logger: Logger | undefined = undefined;
 
 	private trackCallback: CallbackTracker | undefined = undefined;
@@ -286,7 +284,7 @@ class Callbacks {
 
 	private callbacks = new Map<Hook, Callback[]>();
 
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
+	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
 
 	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
 
@@ -301,47 +299,34 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
+	private runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
 		const stopTracking = this.trackCallback?.(callback);
 
-		try {
-			const result = callback(item, constant);
-			if (result && result instanceof Promise) {
-				return Promise.await(result);
-			}
-
-			return result;
-		} finally {
-			stopTracking?.();
-		}
+		return Promise.resolve(callback(item, constant)).finally(stopTracking);
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			async (item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
-		const identity = <TItem>(item: TItem): TItem => item;
+		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			async (item: unknown, constant?: unknown): Promise<unknown> =>
+				next(await curr(item, constant), constant);
 
 		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
-			try {
-				return fn(item, constant);
-			} finally {
-				stopTracking?.();
-			}
+			return fn(item, constant).finally(() => stopTracking?.());
 		};
 	}
 
@@ -353,7 +338,7 @@ class Callbacks {
 
 			for (const callback of callbacks) {
 				setTimeout(() => {
-					this.runOne(callback, item, constant);
+					void this.runOne(callback, item, constant);
 				}, 0);
 			}
 
@@ -436,9 +421,9 @@ class Callbacks {
 	run<THook extends keyof ChainedCallbackSignatures>(
 		hook: THook,
 		...args: Parameters<ChainedCallbackSignatures[THook]>
-	): ReturnType<ChainedCallbackSignatures[THook]>;
+	): Promise<ReturnType<ChainedCallbackSignatures[THook]>>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -448,8 +433,8 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
+		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown): Promise<unknown> => item);
 		return runner(item, constant);
 	}
 
@@ -467,8 +452,27 @@ class Callbacks {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks();
+
+		return {
+			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
+			remove: (id) => callbacks.remove(hook as any, id),
+			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+		};
+	}
 }
 
+/**
+ * Callback hooks provide an easy way to add extra steps to common operations.
+ * @deprecated
+ */
+type Cb<I, R, C = undefined> = {
+	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
+	remove: (id: string) => void;
+	run: (item: I, constant?: C) => Promise<R>;
+};
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated
