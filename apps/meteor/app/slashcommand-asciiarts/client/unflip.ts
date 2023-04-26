@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 /*
@@ -8,8 +9,8 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'unflip',
-	callback: async (_command: 'unflip', params, item): Promise<void> => {
-		const msg = item;
+	callback: async ({ message, params }: SlashCommandCallbackParams<'unflip'>): Promise<void> => {
+		const msg = message;
 		msg.msg = `${params} ┬─┬ ノ( ゜-゜ノ)`;
 		await Meteor.callAsync('sendMessage', msg);
 	},
