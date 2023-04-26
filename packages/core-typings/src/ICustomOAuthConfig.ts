@@ -1,4 +1,4 @@
-export type WordPressOauthConfig = {
+export type OauthConfig = {
 	serverURL?: string;
 	identityPath?: string;
 	addAutopublishFields: {
@@ -10,4 +10,5 @@ export type WordPressOauthConfig = {
 	authorizePath?: string;
 	tokenPath?: string;
 	scope?: string;
+	tokenSentVia?: string;
 };

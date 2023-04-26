@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
+import type { OauthConfig } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
-import type { WordPressOauthConfig } from '../lib/common';
 
-const config: WordPressOauthConfig = {
+const config: OauthConfig = {
 	serverURL: '',
 	identityPath: '/oauth/me',
 
