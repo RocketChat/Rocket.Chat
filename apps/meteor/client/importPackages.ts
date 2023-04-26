@@ -63,5 +63,4 @@ import '../app/ui-utils/client';
 import '../app/ui-cached-collection/client';
 import '../app/reactions/client';
 import '../app/livechat/client';
-import '../app/meteor-autocomplete/client';
 import '../app/theme/client';
