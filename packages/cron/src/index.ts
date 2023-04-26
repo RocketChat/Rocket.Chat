@@ -84,7 +84,7 @@ export class AgendaCronJobs {
 			return Boolean(this.reservedJobs.find(({ name }) => name === jobName));
 		}
 
-		return this.scheduler.has({ jobName });
+		return this.scheduler.has({ name: jobName });
 	}
 
 	private async reserve(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {

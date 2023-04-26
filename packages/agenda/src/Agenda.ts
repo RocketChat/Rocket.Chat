@@ -401,7 +401,8 @@ export class Agenda extends EventEmitter {
 
 	public async has(query: Record<string, any>): Promise<boolean> {
 		debug('checking whether Agenda has any jobs matching query', query);
-		return (await this._collection.countDocuments(query)) > 0;
+		const record = await this._collection.findOne(query, { projection: { _id: 1 } });
+		return record !== null;
 	}
 
 	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
