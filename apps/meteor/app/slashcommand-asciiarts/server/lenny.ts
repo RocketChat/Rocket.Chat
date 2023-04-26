@@ -1,16 +1,16 @@
-import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 /*
  * Lenny is a named function that will replace /lenny commands
  * @param {Object} message - The message object
  */
 
-async function LennyFace(_command: 'lennyface', params: string, item: RequiredField<Partial<IMessage>, 'rid'>): Promise<void> {
-	const msg = item;
+async function LennyFace({ message, params, userId }: SlashCommandCallbackParams<'lenny'>): Promise<void> {
+	const msg = message;
 	msg.msg = `${params} ( ͡° ͜ʖ ͡°)`;
-	await Meteor.callAsync('sendMessage', msg);
+	await executeSendMessage(userId, msg);
 }
 
 slashCommands.add({

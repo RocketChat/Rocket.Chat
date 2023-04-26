@@ -26,7 +26,7 @@ import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
@@ -173,7 +173,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type)) {
+		if (!fileUploadIsValidContentType(file.type as string, '')) {
 			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}

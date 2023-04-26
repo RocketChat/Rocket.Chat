@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 /*
  * Gimme is a named function that will replace /gimme commands
  * @param {Object} message - The message object
  */
 
-async function Gimme(_command: 'gimme', params: string, item: RequiredField<Partial<IMessage>, 'rid'>): Promise<void> {
-	const msg = item;
+async function Gimme({ message, params, userId }: SlashCommandCallbackParams<'gimme'>): Promise<void> {
+	const msg = message;
 	msg.msg = `༼ つ ◕_◕ ༽つ ${params}`;
-	await Meteor.callAsync('sendMessage', msg);
+	await executeSendMessage(userId, msg);
 }
 
 slashCommands.add({
