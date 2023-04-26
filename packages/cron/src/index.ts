@@ -1,4 +1,5 @@
-import type { Agenda } from '@rocket.chat/agenda';
+import type { Db } from 'mongodb';
+import { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -44,9 +45,13 @@ export class AgendaCronJobs {
 		return Boolean(this.scheduler);
 	}
 
-	public async start(scheduler: Agenda): Promise<void> {
-		this.scheduler = scheduler;
-		scheduler.start();
+	public async start(mongo: Db): Promise<void> {
+		this.scheduler = new Agenda({
+			mongo,
+			db: { collection: 'rocketchat_cron' },
+			defaultConcurrency: 1,
+		});
+		await this.scheduler.start();
 
 		for await (const { name, schedule, callback } of this.reservedJobs) {
 			await this.add(name, schedule, callback);

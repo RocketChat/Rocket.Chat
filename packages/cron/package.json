@@ -25,6 +25,7 @@
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/random": "workspace:^"
+		"@rocket.chat/random": "workspace:^",
+		"mongodb": "^4.12.1"
 	}
 }
