@@ -347,6 +347,10 @@ Meteor.startup(() => {
 		}
 		const crowd = new CROWD();
 		if (interval) {
+			if (await cronJobs.has(jobName)) {
+				await cronJobs.remove(jobName);
+			}
+
 			logger.info('Enabling CROWD Background Sync');
 			await cronJobs.add(jobName, String(interval), () => crowd.sync());
 		}
