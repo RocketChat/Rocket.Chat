@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { ChatRoom } from '../../../app/models/client';
 import { APIClient } from '../../../app/utils/client';
-import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../app/utils/client/getUserAvatarURL';
 import { RoomManager } from '../../../client/lib/RoomManager';
 import { baseURI } from '../../../client/lib/baseURI';
 
@@ -53,7 +53,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		return {
 			id: _id,
 			username,
-			avatarUrl: this.getUserAvatarUrl(username),
+			avatarUrl: this.getUserAvatarUrl(username) || '',
 		};
 	}
 }
