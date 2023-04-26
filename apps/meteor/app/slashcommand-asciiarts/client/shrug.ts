@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 /*
@@ -8,8 +9,8 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'shrug',
-	callback: async (_command: 'shrug', params, item): Promise<void> => {
-		const msg = item;
+	callback: async ({ message, params }: SlashCommandCallbackParams<'shrug'>): Promise<void> => {
+		const msg = message;
 		msg.msg = `${params} ¯\\\\_(ツ)_/¯`;
 		await Meteor.callAsync('sendMessage', msg);
 	},
