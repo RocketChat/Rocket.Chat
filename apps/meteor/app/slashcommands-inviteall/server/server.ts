@@ -5,7 +5,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
+import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
@@ -13,7 +13,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
-	return async function inviteAll(command: T, params: string, item): Promise<void> {
+	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -28,7 +28,6 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		if (!channel) {
 			return;
 		}
-		const userId = Meteor.userId();
 		if (!userId) {
 			return;
 		}
@@ -36,11 +35,11 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		const user = await Users.findOneById(userId);
 		const lng = user?.language || settings.get('Language') || 'en';
 
-		const baseChannel = type === 'to' ? await Rooms.findOneById(item.rid) : await Rooms.findOneByName(channel);
-		const targetChannel = type === 'from' ? await Rooms.findOneById(item.rid) : await Rooms.findOneByName(channel);
+		const baseChannel = type === 'to' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
+		const targetChannel = type === 'from' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -67,7 +66,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
-				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
 						sprintf: [channel],
@@ -80,13 +79,13 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					users,
 				});
 			}
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Users_added', { lng }),
 			});
 			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__(msg, { lng }),
 			});
 		}
