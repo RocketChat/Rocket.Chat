@@ -8,6 +8,7 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
@@ -15,7 +16,6 @@ import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { fetch } from '../../../../server/lib/http/fetch';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
 
@@ -773,7 +773,7 @@ class RocketChatIntegrationHandler {
 			{
 				method: opts.method,
 				headers: opts.headers,
-				...(opts.data && { body: JSON.stringify(opts.data) }),
+				...(opts.data && { body: opts.data }),
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)

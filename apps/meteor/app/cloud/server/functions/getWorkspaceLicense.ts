@@ -1,5 +1,5 @@
-import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings/server';
@@ -26,23 +26,31 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license?version=${LICENSE_VERSION}`, {
+		const request = await fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			params: {
+				version: LICENSE_VERSION,
+			},
 		});
+
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		licenseResult = await request.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to update license from Rocket.Chat Cloud',
 			url: '/license',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
 		return cachedLicenseReturn();
 	}
 
-	const remoteLicense = licenseResult.data;
+	const remoteLicense = licenseResult;
 
 	if (!currentLicense || !currentLicense._updatedAt) {
 		throw new Error('Failed to retrieve current license');
