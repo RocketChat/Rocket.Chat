@@ -10,7 +10,7 @@ import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
-const process = async (chat: ChatAPI, message: IMessage, userId: string | null): Promise<void> => {
+const process = async (chat: ChatAPI, message: IMessage): Promise<void> => {
 	KonchatNotification.removeRoomNotification(message.rid);
 
 	if (await processSetReaction(chat, message)) {
@@ -25,17 +25,14 @@ const process = async (chat: ChatAPI, message: IMessage, userId: string | null):
 		return;
 	}
 
-	if (await processSlashCommand(chat, message, userId)) {
+	if (await processSlashCommand(chat, message)) {
 		return;
 	}
 
 	await call('sendMessage', message);
 };
 
-export const sendMessage = async (
-	chat: ChatAPI,
-	{ text, tshow, userId }: { text: string; tshow?: boolean; userId: string | null },
-): Promise<boolean> => {
+export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
 			await chat.data.joinRoom();
@@ -62,7 +59,7 @@ export const sendMessage = async (
 		});
 
 		try {
-			await process(chat, message, userId);
+			await process(chat, message);
 			chat.composer?.dismissAllQuotedMessages();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

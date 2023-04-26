@@ -1,5 +1,4 @@
 import type { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typings';
-import { useUserId } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
@@ -17,7 +16,6 @@ export const usePerformActionMutation = (
 	options?: Omit<UseMutationOptions<void, Error, UsePerfomActionMutationParams>, 'mutationFn'>,
 ): UseMutationResult<void, Error, UsePerfomActionMutationParams> => {
 	const chat = useChat();
-	const userId = useUserId();
 
 	return useMutation(async ({ processingType, msg, mid }) => {
 		if (!chat) {
@@ -27,7 +25,7 @@ export const usePerformActionMutation = (
 		switch (processingType) {
 			case 'sendMessage':
 				if (!msg) return;
-				await chat.flows.sendMessage({ text: msg, userId });
+				await chat.flows.sendMessage({ text: msg });
 				return;
 
 			case 'respondWithMessage':

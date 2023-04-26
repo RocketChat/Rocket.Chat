@@ -43,7 +43,7 @@ const warnUnrecognizedSlashCommand = async (chat: ChatAPI, command: string): Pro
 	});
 };
 
-export const processSlashCommand = async (chat: ChatAPI, message: IMessage, userId: string | null): Promise<boolean> => {
+export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
 	const match = parse(message.msg);
 
 	if (!match) {
@@ -67,8 +67,8 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage, user
 		return false;
 	}
 
-	if (clientOnly && userId) {
-		handleOnClient?.({ command: commandName, message, params, userId });
+	if (clientOnly && chat.uid) {
+		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
 		return true;
 	}
 

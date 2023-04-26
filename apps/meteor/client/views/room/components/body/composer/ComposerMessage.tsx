@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
@@ -27,7 +27,6 @@ export type ComposerMessageProps = {
 const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const chat = useChat();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const userId = useUserId();
 
 	const composerProps = useMemo(
 		() => ({
@@ -46,7 +45,6 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
-						userId,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
