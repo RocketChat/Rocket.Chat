@@ -2,8 +2,9 @@ import { Box, PositionAnimated, AnimatedVisibility, Field, TextInput, Icon } fro
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent } from 'react';
-import React, { useState, Fragment, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import type { ChangeEvent, KeyboardEvent, MouseEvent, UIEventHandler } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
 import {
@@ -15,12 +16,13 @@ import {
 	createPickerEmojis,
 	CUSTOM_CATEGORY,
 } from '../../../../app/emoji/client';
-import EmojiElement from './EmojiElement';
+import CategoriesResult from './CategoriesResult';
 import type { EmojiElementType } from './EmojiElementType';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
+import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 
-type EmojiByCategory = {
+export type EmojiByCategory = {
 	key: string;
 	i18n: TranslationKey;
 	emojis: {
@@ -93,7 +95,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	const showInitialCategory = useCallback((customEmojiList) => {
 		console.log(customEmojiList);
-		handleGoToCategory(customEmojiList.length > 0 ? 'rocket' : 'people');
+		handleGoToCategory(customEmojiList.length > 0 ? 0 : 1);
 	}, []);
 
 	useEffect(() => {
@@ -114,6 +116,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		}
 	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis, showInitialCategory]);
 
+	// TODO: improve this update
 	const updateEmojiListByCategory = (categoryKey: string, limit: number = DEFAULT_ITEMS_LIMIT) => {
 		const result = emojiListByCategory.map((category) => {
 			return categoryKey === category.key
@@ -204,10 +207,10 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		// updateEmojiListByCategory('rocket', (customItemsLimit += 90));
 	};
 
-	const handleScroll = (e: SyntheticEvent) => {
-		const container = e.currentTarget;
-		const scrollTop = container?.scrollTop + container.clientHeight;
-
+	const handleScroll = (event: UIEventHandler<'div'> & { scrollTop: number }) => {
+		// console.log(container);
+		// const scrollTop = container?.scrollTop + container.clientHeight;
+		const scrollTop = event?.scrollTop;
 		const last = catPositions.current?.filter((pos) => pos.top <= scrollTop).pop();
 
 		if (!last) {
@@ -220,10 +223,13 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory(category);
 	};
 
-	const handleGoToCategory = (categoryKey: string) => {
+	const virtuosoRef = useRef<VirtuosoHandle>(null);
+
+	const handleGoToCategory = (categoryIndex: number) => {
 		setSearching(false);
-		const categoryHeader = document.getElementById(`emoji-list-category-${categoryKey}`);
-		categoryHeader?.scrollIntoView({ behavior: 'smooth' });
+		// const categoryHeader = document.getElementById(`emoji-list-category-${categoryKey}`);
+		// categoryHeader?.scrollIntoView({ behavior: 'smooth' });
+		virtuosoRef.current?.scrollToIndex({ index: categoryIndex, behavior: 'smooth' });
 	};
 
 	return (
@@ -261,86 +267,39 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 					</Box>
 					<Box color='default' className='filter' mbe='x8'>
 						<Box is='ul' display='flex'>
-							{emojiCategories.map((category) => (
+							{emojiCategories.map((category, index) => (
 								<EmojiPickerCategoryItem
 									key={category.key}
+									index={index}
 									category={category}
 									active={category.key === currentCategory}
-									setSearching={setSearching}
 									handleGoToCategory={handleGoToCategory}
 								/>
 							))}
 						</Box>
 					</Box>
-					<Box onScroll={handleScroll} role='three' color='default' className='emojis' overflowY='scroll' height='100%'>
-						{searching && searchResults.length > 0 && (
-							<Box is='ul' mb='x4' display='flex' flexWrap='wrap'>
-								{searchResults?.map(
-									({ emoji, image }, index = 1) =>
-										index < searchItemsLimit && <EmojiElement key={emoji} emoji={emoji} image={image} onClick={handleSelectEmoji} />,
-								)}
-							</Box>
-						)}
-						{searching && searchResults?.length > searchItemsLimit && (
-							<Box display='flex' flexDirection='column' alignItems='center' mbe='x8'>
-								<Box is='a' fontScale='c1' onClick={handleLoadMore}>
-									{t('Load_more')}
-								</Box>
-							</Box>
-						)}
-						{searching && searchResults.length === 0 && (
-							<Box fontScale='c1' mb='x8'>
-								{t('No_emojis_found')}
-							</Box>
-						)}
-
-						{!searching &&
-							emojiListByCategory?.map(({ key, i18n, emojis }) => {
-								return (
-									<Fragment key={key}>
-										<Box
-											is='h4'
-											ref={(element) => {
-												catPositions.current.push({ el: element, top: element?.offsetTop });
-												return element;
-											}}
-											className='emoji-list-category'
-											id={`emoji-list-category-${key}`}
-										>
-											{t(i18n)}
-										</Box>
-										{emojis.list.length > 0 && (
-											<Box is='ul' mb='x8' display='flex' flexWrap='wrap' className={`emoji-list emoji-category-${key}`}>
-												<>
-													{key === CUSTOM_CATEGORY &&
-														emojis.list.map(
-															({ emoji, image }, index = 1) =>
-																index < customItemsLimit && (
-																	<EmojiElement key={emoji + key} emoji={emoji} image={image} onClick={handleSelectEmoji} />
-																),
-														)}
-													{!(key === CUSTOM_CATEGORY) &&
-														emojis.list.map(({ emoji, image }) => (
-															<EmojiElement key={emoji + key} emoji={emoji} image={image} onClick={handleSelectEmoji} />
-														))}
-												</>
-											</Box>
-										)}
-										{emojis.limit && emojis.limit > 0 && emojis.list.length > emojis.limit && (
-											<Box display='flex' flexDirection='column' alignItems='center' mbe='x8'>
-												<Box is='a' fontScale='c1' onClick={handleLoadMore}>
-													{t('Load_more')}
-												</Box>
-											</Box>
-										)}
-										{emojis.list.length === 0 && (
-											<Box fontScale='c1' mb='x8'>
-												{t('No_emojis_found')}
-											</Box>
-										)}
-									</Fragment>
-								);
-							})}
+					<Box role='three' color='default' className='emojis' height='100%'>
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							{searching && (
+								<SearchingResult
+									searchResults={searchResults}
+									_searchItemsLimit={searchItemsLimit}
+									handleSelectEmoji={handleSelectEmoji}
+									_handleLoadMore={handleLoadMore}
+								/>
+							)}
+							{!searching && (
+								<CategoriesResult
+									ref={virtuosoRef}
+									emojiListByCategory={emojiListByCategory}
+									catPositions={catPositions}
+									customItemsLimit={customItemsLimit}
+									handleLoadMore={handleLoadMore}
+									handleSelectEmoji={handleSelectEmoji}
+									handleScroll={handleScroll}
+								/>
+							)}
+						</Box>
 					</Box>
 					<Box display='flex' flexDirection='column' alignItems='center' fontScale='c1' p='x4'>
 						{canManageEmoji && (

@@ -4,16 +4,17 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 type EmojiPickerCategoryItemProps = {
-	category: any;
+	category: unknown;
+	index: number;
 	active: boolean;
-	setSearching: (value: boolean) => void;
-	handleGoToCategory: (categoryKey: string) => void;
+	handleGoToCategory: (categoryIndex: number) => void;
 };
 
-const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory }: EmojiPickerCategoryItemProps) => {
+const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory }: EmojiPickerCategoryItemProps) => {
 	const t = useTranslation();
 
 	const style = css`
+		cursor: pointer;
 		&:hover {
 			border-block-end-color: ${Palette.stroke['stroke-light']};
 		}
@@ -39,8 +40,8 @@ const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory }: Emoji
 		>
 			<Box
 				tabIndex={-1}
-				onClick={() => handleGoToCategory(category.key)}
-				is='a'
+				onClick={() => handleGoToCategory(index)}
+				// is='a'
 				href={`#${category.key}`}
 				className='category-link'
 				color='secondary-info'

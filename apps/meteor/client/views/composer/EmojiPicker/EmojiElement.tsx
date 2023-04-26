@@ -6,17 +6,14 @@ import type { EmojiElementType } from './EmojiElementType';
 
 type EmojiElementProps = EmojiElementType & { onClick: (e: MouseEvent<HTMLElement>) => void };
 
-// TODO: adapt IconButton with fuselage
 const EmojiElement = ({ emoji, image, onClick }: EmojiElementProps) => {
 	if (!image) {
 		return null;
 	}
 
-	return (
-		<IconButton onClick={onClick} data-emoji={emoji} title={emoji} icon={undefined}>
-			<Box dangerouslySetInnerHTML={{ __html: image }} />
-		</IconButton>
-	);
+	const emojiElement = <Box dangerouslySetInnerHTML={{ __html: image }} />;
+
+	return <IconButton onClick={onClick} data-emoji={emoji} title={emoji} icon={emojiElement} />;
 };
 
 export default EmojiElement;
