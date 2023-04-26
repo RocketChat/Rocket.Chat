@@ -245,7 +245,7 @@ export class CROWD {
 				crowdUser.username = user.username;
 			}
 
-			await this.syncDataToUser(crowdUser as Record<string, any>, user._id);
+			await this.syncDataToUser(crowdUser, user._id);
 		}
 	}
 
