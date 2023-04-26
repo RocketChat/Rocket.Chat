@@ -1,6 +1,6 @@
 import './Analytics';
 import './Apps';
-import './AppLogs';
+import './AppsLogs';
 import './AppsPersistence';
 import './Avatars';
 import './Banners';

@@ -2,6 +2,7 @@ import type {
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
+	CreateIndexesOptions,
 	DeleteOptions,
 	DeleteResult,
 	Document,
@@ -10,6 +11,7 @@ import type {
 	FindCursor,
 	FindOneAndUpdateOptions,
 	FindOptions,
+	IndexSpecification,
 	InsertManyResult,
 	InsertOneOptions,
 	InsertOneResult,
@@ -44,6 +46,10 @@ export interface IBaseModel<
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
 > {
 	col: Collection<T>;
+
+	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions): Promise<string>;
+
+	tryDropIndex(index: string): Promise<Document>;
 
 	getCollectionName(): string;
 

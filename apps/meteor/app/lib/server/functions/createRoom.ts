@@ -1,11 +1,10 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Apps } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { getValidRoomName } from '../../../utils/server';

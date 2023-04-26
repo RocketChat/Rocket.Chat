@@ -6,6 +6,7 @@ type SlashCommandCallback<T extends string = string> = (
 	params: string,
 	message: RequiredField<Partial<IMessage>, 'rid'>,
 	triggerId?: string,
+	userId?: string,
 ) => Promise<unknown> | unknown;
 
 export type SlashCommandPreviewItem = {
@@ -23,6 +24,7 @@ type SlashCommandPreviewer = (
 	command: string,
 	params: string,
 	message: RequiredField<Partial<IMessage>, 'rid'>,
+	userId?: string,
 ) => Promise<SlashCommandPreviews | undefined>;
 
 type SlashCommandPreviewCallback = (
@@ -30,7 +32,8 @@ type SlashCommandPreviewCallback = (
 	params: string,
 	message: RequiredField<Partial<IMessage>, 'rid'>,
 	preview: SlashCommandPreviewItem,
-	triggerId?: string,
+	triggerId: string,
+	userId?: string,
 ) => void;
 
 export type SlashCommandOptions = {

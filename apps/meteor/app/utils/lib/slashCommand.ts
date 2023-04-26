@@ -53,6 +53,7 @@ export const slashCommands = {
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string | undefined,
+		userId?: string,
 	): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
@@ -63,12 +64,13 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		return cmd.callback(command, params, message, triggerId);
+		return cmd.callback(command, params, message, triggerId, userId);
 	},
 	async getPreviews(
 		command: string,
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
+		userId?: string,
 	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
@@ -79,7 +81,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = await cmd.previewer(command, params, message);
+		const previewInfo = await cmd.previewer(command, params, message, userId);
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -98,6 +100,7 @@ export const slashCommands = {
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
 		triggerId?: string,
+		userId?: string,
 	) {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
@@ -113,7 +116,7 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return cmd.previewCallback(command, params, message, preview, triggerId, userId);
 	},
 };
 
@@ -126,7 +129,8 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async slashCommand(command) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'slashCommand',
 			});
@@ -137,6 +141,6 @@ Meteor.methods<ServerMethods>({
 				method: 'executeSlashCommandPreview',
 			});
 		}
-		return slashCommands.run(command.cmd, command.params, command.msg, command.triggerId);
+		return slashCommands.run(command.cmd, command.params, command.msg, command.triggerId, userId);
 	},
 });

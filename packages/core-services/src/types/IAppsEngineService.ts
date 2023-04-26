@@ -3,7 +3,7 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 
 export interface IAppsEngineService {
-	isInitialized(): boolean;
-	getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined>;
+	isInitialized(): Promise<boolean>;
+	getApps(query: IGetAppsFilter): Promise<Array<IAppInfo | undefined>>;
 	getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined>;
 }

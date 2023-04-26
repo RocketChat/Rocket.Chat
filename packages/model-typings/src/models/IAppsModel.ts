@@ -1,4 +1,8 @@
+import type { IAppStorageItem } from '@rocket.chat/core-typings';
+
 import type { IBaseModel } from './IBaseModel';
 
-// TODO: type for AppLogs
-export type IAppsModel = IBaseModel<any>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IAppsModel extends IBaseModel<IAppStorageItem> {
+	//
+}

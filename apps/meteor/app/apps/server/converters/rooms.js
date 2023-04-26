@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors, Rooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatVisitors, Rooms, Users } from '@rocket.chat/models';
 
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 

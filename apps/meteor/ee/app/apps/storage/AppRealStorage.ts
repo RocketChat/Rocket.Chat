@@ -29,6 +29,7 @@ export class AppRealStorage extends AppMetadataStorage {
 
 	public async retrieveAll(): Promise<Map<string, IAppStorageItem>> {
 		const docs = await this.db.find({}).toArray();
+
 		const items = new Map();
 
 		docs.forEach((i) => items.set(i.id, i));
@@ -38,11 +39,13 @@ export class AppRealStorage extends AppMetadataStorage {
 
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
 		await this.db.updateOne({ id: item.id }, { $set: item });
+
 		return this.retrieveOne(item.id);
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
 		await this.db.deleteOne({ id });
+
 		return { success: true };
 	}
 }

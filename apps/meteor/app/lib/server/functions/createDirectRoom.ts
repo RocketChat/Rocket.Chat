@@ -5,8 +5,8 @@ import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typin
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
+import { Apps } from '@rocket.chat/core-services';
 
-import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';

@@ -95,6 +95,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		userId: any,
 	): Promise<{ agentId: string; username: string; lastAssignTime: Date; lastRoutingTime: Date; queueInfo: { chats: number } }>;
 
+	getAgentInfo(agentId: string): Promise<any>;
+
 	findAllResumeTokensByUserId(userId: any): any;
 
 	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T = IUser>(
@@ -156,6 +158,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 
+	removeBannerById(_id: string, banner: any): Promise<UpdateResult>;
+
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
 	addBannerById(_id: any, banner: any): any;
@@ -183,6 +187,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countActiveUsersEmail2faEnable(options: any): Promise<number>;
 
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
+
+	getActiveLocalUserCount(): number;
+
+	findActiveRemote(options: any): any;
 
 	setAsFederated(userId: string): any;
 

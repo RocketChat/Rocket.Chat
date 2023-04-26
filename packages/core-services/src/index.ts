@@ -24,7 +24,13 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
+import type {
+	IRoomService,
+	ICreateRoomParams,
+	ISubscriptionExtraData,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
+} from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
@@ -36,10 +42,21 @@ import type { IDeviceManagementService } from './types/IDeviceManagementService'
 import type { IPushService } from './types/IPushService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+import type { IAppsApiService, IRequestWithPrivateHash } from './types/IAppsApiService';
+import type { IAppsConverterService } from './types/IAppsConverterService';
+import type { IAppsManagerService } from './types/IAppsManagerService';
+import type { IAppsService } from './types/IAppsService';
+import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
+import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
+import type { ILivechatService, CloseRoomParams } from './types/ILivechatService';
+import type { IMessageService } from './types/IMessageService';
+import type { INotificationService } from './types/INotificationService';
+import type { ISlashCommandService } from './types/ISlashCommandService';
+import type { ICloudService, IAccessToken } from './types/ICloudService';
+import type { IUserService, ISetUserAvatarParams } from './types/IUserService';
 import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
 import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
 import type { ITranslationService } from './types/ITranslationService';
-import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
@@ -81,6 +98,8 @@ export {
 	IPushService,
 	IMessageReadsService,
 	IRoomService,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
 	ITeamAutocompleteResult,
@@ -107,18 +126,32 @@ export {
 	ISendFileMessageParams,
 	IUploadFileParams,
 	IUploadService,
+	IAppsService,
+	IAppsStatisticsService,
+	IAppsConverterService,
+	IAppsManagerService,
+	IAppsVideoManagerService,
+	IAppsApiService,
+	IRequestWithPrivateHash,
+	ILivechatService,
+	CloseRoomParams,
+	IMessageService,
+	INotificationService,
+	ISlashCommandService,
+	ICloudService,
+	IAccessToken,
+	IUserService,
+	ISetUserAvatarParams,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
 	ITranslationService,
-	IMessageService,
 	ISettingsService,
 	IOmnichannelIntegrationService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
-export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');
@@ -138,6 +171,18 @@ export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Upload = proxifyWithWait<IUploadService>('upload');
+export const Cloud = proxifyWithWait<ICloudService>('cloud');
+export const User = proxifyWithWait<IUserService>('user');
+export const Apps = proxifyWithWait<IAppsService>('apps');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
+export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
+export const MessageService = proxifyWithWait<IMessageService>('message');
+export const NotificationService = proxifyWithWait<INotificationService>('notification');
+export const SlashCommandService = proxifyWithWait<ISlashCommandService>('slashcommand');
 export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxifyWithWait<IMessageService>('message');

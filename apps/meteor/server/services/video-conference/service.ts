@@ -25,15 +25,13 @@ import {
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, AppsVideoManager } from '@rocket.chat/core-services';
 
-import { Apps } from '../../../ee/server/apps';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
@@ -152,7 +150,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
+		const blocks = await AppsVideoManager.getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
 			throw new Error(e);
 		});
 
@@ -502,8 +500,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
-		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		const configured = await AppsVideoManager.isFullyConfigured(providerName).catch(() => false);
 		if (!configured) {
 			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
@@ -748,19 +745,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.getUrl(call, user, options);
 	}
 
-	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
-		if (!Apps?.isLoaded()) {
-			throw new Error('apps-engine-not-loaded');
-		}
-
-		const manager = Apps.getManager()?.getVideoConfProviderManager();
-		if (!manager) {
-			throw new Error(availabilityErrors.NO_APP);
-		}
-
-		return manager;
-	}
-
 	private async getRoomName(rid: string): Promise<string> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(rid, { projection: { name: 1, fname: 1 } });
 
@@ -774,18 +758,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
 
-		return (await this.getProviderManager())
-			.generateUrl(call.providerName, {
-				_id: call._id,
-				type: call.type,
-				rid: call.rid,
-				createdBy: call.createdBy as Required<VideoConference['createdBy']>,
-				title,
-				providerData: call.providerData,
-			})
-			.catch((e) => {
-				throw new Error(e);
-			});
+		return AppsVideoManager.generateUrl(call.providerName, {
+			_id: call._id,
+			type: call.type,
+			rid: call.rid,
+			createdBy: call.createdBy as Required<VideoConference['createdBy']>,
+			title,
+			providerData: call.providerData,
+		}).catch((e) => {
+			throw new Error(e);
+		});
 	}
 
 	private async getCallTitleForUser(call: VideoConference, userId?: IUser['_id']): Promise<string> {
@@ -860,7 +842,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name as string,
 		};
 
-		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options).catch((e) => {
+		return AppsVideoManager.customizeUrl(call.providerName, callData, userData, options).catch((e) => {
 			throw new Error(e);
 		});
 	}
@@ -876,7 +858,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onNewVideoConference(call.providerName, call).catch((e) => {
+		AppsVideoManager.onNewVideoConference(call.providerName, call).catch((e) => {
 			throw new Error(e);
 		});
 	}
@@ -892,7 +874,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call).catch((e) => {
+		AppsVideoManager.onVideoConferenceChanged(call.providerName, call).catch((e) => {
 			throw new Error(e);
 		});
 	}
@@ -908,7 +890,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onUserJoin(call.providerName, call, user).catch((e) => {
+		AppsVideoManager.onUserJoin(call.providerName, call, user).catch((e) => {
 			throw new Error(e);
 		});
 	}

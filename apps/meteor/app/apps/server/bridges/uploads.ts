@@ -1,11 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
+import { Upload } from '@rocket.chat/core-services';
 
-import { FileUpload } from '../../../file-upload/server';
-import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -31,19 +30,7 @@ export class AppUploadBridge extends UploadBridge {
 
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error?: Error, result?: Buffer | false) => {
-				if (error) {
-					return reject(error);
-				}
-
-				if (!(result instanceof Buffer)) {
-					return reject(new Error('Unknown error'));
-				}
-
-				resolve(result);
-			});
-		});
+		return Upload.getBuffer(rocketChatUpload);
 	}
 
 	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
@@ -53,19 +40,27 @@ export class AppUploadBridge extends UploadBridge {
 			throw new Error('Missing user to perform the upload operation');
 		}
 
-		const fileStore = FileUpload.getStore('Uploads');
-
 		details.type = determineFileType(buffer, details.name);
 
-		return Meteor.runAsUser(details.userId, async () => {
-			const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
-			this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-			if (details.visitorToken) {
-				await Meteor.callAsync('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-			} else {
-				await Meteor.callAsync('sendFileMessage', details.rid, null, uploadedFile);
-			}
-			return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
-		});
+		const uploadDetails = getUploadDetails(details);
+		const uploadedFile = await Upload.uploadFile({ buffer, details: uploadDetails, userId: details.userId });
+
+		if (details.visitorToken) {
+			await Upload.sendFileLivechatMessage({
+				file: uploadedFile,
+				roomId: details.rid,
+				visitorToken: details.visitorToken,
+			});
+		} else {
+			await Upload.sendFileMessage({
+				roomId: details.rid,
+				file: uploadedFile,
+				userId: details.userId,
+			});
+		}
+
+		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
+
+		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}
 }

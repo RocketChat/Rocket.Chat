@@ -1,5 +1,4 @@
-import { MongoInternals } from 'meteor/mongo';
-import type { GridFSBucketWriteStream } from 'mongodb';
+import type { Db, GridFSBucketWriteStream } from 'mongodb';
 import { ObjectId, GridFSBucket } from 'mongodb';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
@@ -11,10 +10,8 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 
 	private bucket: GridFSBucket;
 
-	constructor() {
+	constructor(db: Db) {
 		super();
-
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 		this.bucket = new GridFSBucket(db, {
 			bucketName: 'rocketchat_apps_packages',

@@ -20,6 +20,8 @@ import type {
 	InsertManyResult,
 	InsertOneResult,
 	DeleteResult,
+	CreateIndexesOptions,
+	IndexSpecification,
 	DeleteOptions,
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
@@ -87,6 +89,14 @@ export abstract class BaseRaw<
 
 	protected modelIndexes(): IndexDescription[] | undefined {
 		return undefined;
+	}
+
+	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions): Promise<string> {
+		return this.col.createIndex(index, options);
+	}
+
+	tryDropIndex(index: string): Promise<Document> {
+		return this.col.dropIndex(index);
 	}
 
 	getCollectionName(): string {

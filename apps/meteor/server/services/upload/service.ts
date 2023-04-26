@@ -1,6 +1,6 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
-import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUpload } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../app/file-upload/server';
@@ -21,6 +21,18 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	async sendFileLivechatMessage({ roomId, visitorToken, file, message }: ISendFileLivechatMessageParams): Promise<IMessage> {
 		return Meteor.callAsync('sendFileLivechatMessage', roomId, visitorToken, file, message);
+	}
+
+	async getBuffer(cb: Function): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			FileUpload.getBuffer(cb, (error: Error, result: Buffer) => {
+				if (error) {
+					return reject(error);
+				}
+
+				resolve(result);
+			});
+		});
 	}
 
 	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {

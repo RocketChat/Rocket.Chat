@@ -68,6 +68,9 @@ export class AppHttpBridge extends HttpBridge {
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
 		try {
+			const allowSelfSignedCerts =
+				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
+				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized);
 			const response = await fetch(
 				url.href,
 				{
@@ -75,8 +78,7 @@ export class AppHttpBridge extends HttpBridge {
 					body: content,
 					headers,
 				},
-				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
-					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
+				allowSelfSignedCerts,
 			);
 
 			const result: IHttpResponse = {

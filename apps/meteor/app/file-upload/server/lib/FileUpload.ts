@@ -21,6 +21,7 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { NextFunction } from 'connect';
 import type { OptionalId } from 'mongodb';
+import { Apps } from '@rocket.chat/core-services';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
@@ -28,12 +29,12 @@ import { mime } from '../../../utils/lib/mimeTypes';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
-import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
+import { AppEvents } from '../../../../ee/server/apps';
 
 const cookie = new Cookies();
 let maxFileSize = 0;

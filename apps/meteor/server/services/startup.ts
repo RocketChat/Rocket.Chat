@@ -22,7 +22,13 @@ import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
 import { UploadService } from './upload/service';
-import { MessageService } from './messages/service';
+import { CloudService } from './cloud/service';
+import { UserService } from './user/service';
+import { FederationService } from './federation/service';
+import { LivechatService } from './livechat/service';
+import { NotificationService } from './notification/service';
+import { SlashCommandService } from './slashcommand/service';
+import { MessageService } from './message/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
@@ -34,20 +40,27 @@ api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());
+api.registerService(new CloudService());
 api.registerService(new LDAPService());
 api.registerService(new MediaService());
 api.registerService(new MeteorService());
 api.registerService(new NPSService());
 api.registerService(new RoomService());
 api.registerService(new SAUMonitorService());
+api.registerService(new UploadService());
 api.registerService(new VoipService(db));
 api.registerService(new OmnichannelService());
 api.registerService(new OmnichannelVoipService());
 api.registerService(new TeamService());
 api.registerService(new UiKitCoreApp());
+api.registerService(new UserService());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
+api.registerService(new FederationService());
+api.registerService(new LivechatService());
+api.registerService(new NotificationService());
+api.registerService(new SlashCommandService());
 api.registerService(new UploadService());
 api.registerService(new MessageService());
 api.registerService(new TranslationService());
@@ -61,9 +74,22 @@ if (!isRunningMs()) {
 
 		const { Authorization } = await import('./authorization/service');
 
+		const { AppsOrchestratorService } = await import('../../ee/app/apps/service');
+		const { AppsStatisticsService } = await import('../../ee/app/apps/statisticsService');
+		const { AppsConverterService } = await import('../../ee/app/apps/converterService');
+		const { AppsManagerService } = await import('../../ee/app/apps/managerService');
+		const { AppsVideoManagerService } = await import('../../ee/app/apps/videoManagerService');
+		const { AppsApiService } = await import('../../ee/app/apps/apiService');
+
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
 
+		api.registerService(new AppsOrchestratorService(db));
+		api.registerService(new AppsStatisticsService());
+		api.registerService(new AppsConverterService());
+		api.registerService(new AppsManagerService());
+		api.registerService(new AppsVideoManagerService());
+		api.registerService(new AppsApiService());
 		// Run EE services defined outside of the main repo
 		// Otherwise, monolith would ignore them :(
 		// Always register the service and manage licensing inside the service (tbd)

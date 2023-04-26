@@ -3,12 +3,9 @@ import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBr
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { api } from '@rocket.chat/core-services';
-import { Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { Messages, Users, Subscriptions } from '@rocket.chat/models';
+import { api, MessageService, NotificationService } from '@rocket.chat/core-services';
 
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import notifications from '../../../notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
@@ -22,7 +19,7 @@ export class AppMessageBridge extends MessageBridge {
 
 		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const sentMessage = await executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = await MessageService.sendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
@@ -48,10 +45,10 @@ export class AppMessageBridge extends MessageBridge {
 		const editor = await Users.findOneById(message.editor.id);
 
 		if (!editor) {
-			throw new Error('Invalid editor assigned to the message for the update.');
+			throw new Error('Could not find message editor');
 		}
 
-		await updateMessage(msg, editor);
+		await MessageService.updateMessage(msg, editor);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
@@ -90,7 +87,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				notifications.notifyRoom(id, 'typing', username, isTyping);
+				await NotificationService.notifyRoom(id, 'typing', username, isTyping);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');
