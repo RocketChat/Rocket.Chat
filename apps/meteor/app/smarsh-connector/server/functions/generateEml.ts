@@ -56,69 +56,67 @@ export const generateEml = async (): Promise<void> => {
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room?.usernames?.join(' & ')}`,
 			};
 
-			await Promise.all(
-				(
-					await Messages.find(query).toArray()
-				).map(async (message) => {
-					rows.push(opentr);
+			const cursor = Messages.find(query);
 
-					// The timestamp
-					rows.push(open20td);
-					rows.push(moment(message.ts).tz(timeZone).format('YYYY-MM-DD HH-mm-ss z'));
-					rows.push(closetd);
+			for await (const message of cursor) {
+				rows.push(opentr);
 
-					// The sender
-					rows.push(open20td);
-					const sender = await Users.findOne({ _id: message.u._id });
-					if (!sender) {
-						return;
-					}
-					if (data.users.indexOf(sender?._id) === -1) {
-						data.users.push(sender._id);
-					}
+				// The timestamp
+				rows.push(open20td);
+				rows.push(moment(message.ts).tz(timeZone).format('YYYY-MM-DD HH-mm-ss z'));
+				rows.push(closetd);
 
-					// Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
-					if (sender.emails?.[0]?.address) {
-						rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+				// The sender
+				rows.push(open20td);
+				const sender = await Users.findOne({ _id: message.u._id });
+				if (!sender) {
+					return;
+				}
+				if (data.users.indexOf(sender?._id) === -1) {
+					data.users.push(sender._id);
+				}
+
+				// Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
+				if (sender.emails?.[0]?.address) {
+					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+				} else {
+					rows.push(`${sender.name} &lt;${smarshMissingEmail}&gt;`);
+				}
+				rows.push(closetd);
+
+				// The message
+				rows.push(open60td);
+				data.msgs++;
+				if (message.t) {
+					const messageType = MessageTypes.getType(message);
+					if (messageType) {
+						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : {}, 'en'));
 					} else {
-						rows.push(`${sender.name} &lt;${smarshMissingEmail}&gt;`);
+						rows.push(`${message.msg} (${message.t})`);
 					}
-					rows.push(closetd);
-
-					// The message
-					rows.push(open60td);
-					data.msgs++;
-					if (message.t) {
-						const messageType = MessageTypes.getType(message);
-						if (messageType) {
-							rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : {}, 'en'));
-						} else {
-							rows.push(`${message.msg} (${message.t})`);
+				} else if (message.file) {
+					data.files.push(message.file._id);
+					rows.push(`${message?.attachments?.[0].title} (${_getLink({ title_link: message?.attachments?.[0].title_link || '' })})})`);
+				} else if (message.attachments) {
+					const attaches: string[] = [];
+					message.attachments.forEach((a) => {
+						if ('image_url' in a && a.image_url !== undefined) {
+							attaches.push(a.image_url);
 						}
-					} else if (message.file) {
-						data.files.push(message.file._id);
-						rows.push(`${message?.attachments?.[0].title} (${_getLink({ title_link: message?.attachments?.[0].title_link || '' })})})`);
-					} else if (message.attachments) {
-						const attaches: string[] = [];
-						message.attachments.forEach((a) => {
-							if ('image_url' in a && a.image_url !== undefined) {
-								attaches.push(a.image_url);
-							}
-							// TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
-							// } else {
-							// 	console.log(a);
-							// }
-						});
+						// TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
+						// } else {
+						// 	console.log(a);
+						// }
+					});
 
-						rows.push(`${message.msg} (${attaches.join(', ')})`);
-					} else {
-						rows.push(message.msg);
-					}
-					rows.push(closetd);
+					rows.push(`${message.msg} (${attaches.join(', ')})`);
+				} else {
+					rows.push(message.msg);
+				}
+				rows.push(closetd);
 
-					rows.push(closetr);
-				}),
-			);
+				rows.push(closetr);
+			}
 
 			if (rows.length !== 0) {
 				const result = start + rows.join('') + end;
