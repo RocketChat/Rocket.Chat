@@ -260,7 +260,8 @@ export type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet';
+	| 'userStatusManuallySet'
+	| 'test';
 
 type Callback = {
 	(item: unknown, constant?: unknown): Promise<unknown>;
@@ -274,7 +275,7 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-class Callbacks {
+export class Callbacks {
 	private logger: Logger | undefined = undefined;
 
 	private trackCallback: CallbackTracker | undefined = undefined;
@@ -451,8 +452,27 @@ class Callbacks {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks();
+
+		return {
+			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
+			remove: (id) => callbacks.remove(hook as any, id),
+			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+		};
+	}
 }
 
+/**
+ * Callback hooks provide an easy way to add extra steps to common operations.
+ * @deprecated
+ */
+type Cb<I, R, C = undefined> = {
+	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
+	remove: (id: string) => void;
+	run: (item: I, constant?: C) => Promise<R>;
+};
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated
