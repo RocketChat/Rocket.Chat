@@ -42,7 +42,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	// If first time setting username, send Enrollment Email
 	try {
 		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				Accounts.sendEnrollmentEmail(user._id);
 			});
 		}

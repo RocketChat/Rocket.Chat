@@ -22,8 +22,8 @@ export function saveRegistrationData({
 		Settings.updateValueById('Cloud_Workspace_PublicKey', publicKey),
 		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', registration_client_uri),
 		Settings.updateValueById('Cloud_Workspace_License', licenseData.license || ''),
-	]).then((...results) => {
-		callbacks.run('workspaceLicenseChanged', licenseData.license);
+	]).then(async (...results) => {
+		await callbacks.run('workspaceLicenseChanged', licenseData.license);
 		return results;
 	});
 }

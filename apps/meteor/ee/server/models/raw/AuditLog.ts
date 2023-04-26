@@ -5,6 +5,6 @@ import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class AuditLogRaw extends BaseRaw<IAuditLog> {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IAuditLog>>) {
-		super(db, 'read_receipts', trash);
+		super(db, 'audit_log', trash);
 	}
 }

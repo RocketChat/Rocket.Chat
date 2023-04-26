@@ -54,7 +54,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		}),
 	);
 
-	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
@@ -96,7 +96,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
@@ -122,7 +122,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 		}),
 	);
 
-	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
@@ -217,7 +217,7 @@ export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
@@ -265,8 +265,8 @@ export const normalizeAgent = async (agentId) => {
 	return Object.assign(extraData, { ...(customFields && { customFields }) });
 };
 
-export const dispatchAgentDelegated = (rid, agentId) => {
-	const agent = normalizeAgent(agentId);
+export const dispatchAgentDelegated = async (rid, agentId) => {
+	const agent = await normalizeAgent(agentId);
 
 	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
@@ -282,7 +282,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 
 	const { department, rid, v } = inquiry;
 	const room = await LivechatRooms.findOneById(rid);
-	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+	setImmediate(() => callbacks.run('livechat.chatQueued', room));
 
 	if (RoutingManager.getConfig().autoAssignAgent) {
 		return;
@@ -387,7 +387,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		}
 		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
@@ -398,7 +398,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent._id}`);
-	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
+	await callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
 
@@ -407,7 +407,7 @@ export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartment
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
@@ -429,7 +429,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	logger.debug(`Attempting to forward room ${room._id} to department ${transferData.departmentId}`);
 
-	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
+	await callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
@@ -506,7 +506,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
 		await LivechatInquiry.readyInquiry(inquiry._id);
 		await LivechatRooms.removeAgentByRoomId(rid);
-		dispatchAgentDelegated(rid, null);
+		await dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 

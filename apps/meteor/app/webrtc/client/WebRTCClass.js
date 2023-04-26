@@ -180,9 +180,7 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 
-		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
-
-		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
+		setInterval(this.checkPeerConnections.bind(this), 1000);
 	}
 
 	onUserStream(...args) {
@@ -284,8 +282,8 @@ class WebRTCClass {
 	onRemoteStatus(data) {
 		// this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
-		Meteor.clearTimeout(this.callInProgressTimeout);
-		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress, 2000);
+		clearTimeout(this.callInProgressTimeout);
+		this.callInProgressTimeout = setTimeout(this.resetCallInProgress, 2000);
 		if (this.active !== true) {
 			return;
 		}
@@ -366,7 +364,7 @@ class WebRTCClass {
 				peerConnection === this.peerConnections[id]
 			) {
 				this.stopPeerConnection(id);
-				Meteor.setTimeout(() => {
+				setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
 						this.stop();
 					}
@@ -679,13 +677,13 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			Meteor.defer(() => {
+			setTimeout(() => {
 				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,
 					media: data.media,
 				});
-			});
+			}, 0);
 			return;
 		}
 
