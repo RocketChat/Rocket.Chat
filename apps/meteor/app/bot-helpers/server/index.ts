@@ -8,8 +8,6 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { settings } from '../../settings/server';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 
-import './settings';
-
 /**
  * BotHelpers helps bots
  * "private" properties use meteor collection cursors, so they stay reactive

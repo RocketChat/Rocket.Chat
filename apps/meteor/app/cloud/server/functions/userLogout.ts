@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { HTTP } from 'meteor/http';
 import { Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function userLogout(userId: string) {
+export async function userLogout(userId: string): Promise<string | boolean> {
 	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
@@ -27,12 +27,12 @@ export async function userLogout(userId: string) {
 				return '';
 			}
 
-			const cloudUrl = settings.get<string>('Cloud_Url');
-			const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
+			const cloudUrl = settings.get('Cloud_Url');
+			const client_secret = settings.get('Cloud_Workspace_Client_Secret');
 
 			const { refreshToken } = user.services.cloud;
-
-			HTTP.post(`${cloudUrl}/api/oauth/revoke`, {
+			await fetch(`${cloudUrl}/api/oauth/revoke`, {
+				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				params: {
 					client_id,
@@ -41,11 +41,10 @@ export async function userLogout(userId: string) {
 					token_type_hint: 'refresh_token',
 				},
 			});
-		} catch (err: any) {
+		} catch (err) {
 			SystemLogger.error({
 				msg: 'Failed to get Revoke refresh token to logout of Rocket.Chat Cloud',
 				url: '/api/oauth/revoke',
-				...(err.response?.data && { cloudError: err.response.data }),
 				err,
 			});
 		}

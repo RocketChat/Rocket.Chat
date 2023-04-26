@@ -3,12 +3,12 @@ import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../../app/settings/server';
 import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
 import { mime } from '../../../../app/utils/lib/mimeTypes';
 import { SystemLogger } from '../../../lib/logger/system';
-import { fetch } from '../../../lib/http/fetch';
 
 type VoxtelesysData = {
 	from: string;
@@ -135,12 +135,12 @@ export class Voxtelesys implements ISMSProvider {
 			headers: {
 				Authorization: `Bearer ${this.authToken}`,
 			},
-			body: JSON.stringify({
+			body: {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
 				...(media && { media }),
-			}),
+			},
 			method: 'POST',
 		};
 

@@ -1,10 +1,11 @@
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function getWorkspaceAccessTokenWithScope(scope = '') {
 	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();

@@ -54,7 +54,7 @@ Meteor.startup(() => {
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setTimeout(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						e2e.removeInstanceByRoomId(sub.rid);
 						return;
@@ -92,15 +92,15 @@ Meteor.startup(() => {
 					}
 
 					e2eRoom.decryptSubscription();
-				});
+				}, 0);
 			},
 			added: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setTimeout(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						return;
 					}
 					return e2e.getInstanceByRoomId(sub.rid);
-				});
+				}, 0);
 			},
 			removed: (sub: ISubscription) => {
 				e2e.removeInstanceByRoomId(sub.rid);
