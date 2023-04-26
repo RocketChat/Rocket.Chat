@@ -310,7 +310,7 @@ class Callbacks {
 			async (item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
 		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
