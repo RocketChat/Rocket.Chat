@@ -34,18 +34,19 @@ export const EmojiPicker = {
 
 		Blaze.render(Template.emojiPicker, document.body);
 
-		$(document).click((event) => {
+		document.addEventListener('click', (event) => {
 			if (!this.opened) {
 				return;
 			}
-			if (!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
+			if (!event.target.closest('.emoji-picker') && !event.target.matches('.emoji-picker')) {
 				if (this.opened) {
 					this.close();
 				}
 			}
 		});
 
-		$(window).resize(
+		window.addEventListener(
+			'resize',
 			withDebouncing({ wait: 300 })(() => {
 				if (!this.opened) {
 					return;
@@ -92,7 +93,11 @@ export const EmojiPicker = {
 			cssProperties.left = isLargerThanWindow ? 0 : windowWidth - this.width - windowBorder;
 		}
 
-		return $('.emoji-picker').css(cssProperties);
+		const emojiPickerElement = document.querySelector('.emoji-picker');
+		emojiPickerElement.style.top = `${cssProperties.top}px`;
+		emojiPickerElement.style.left = `${cssProperties.left}px`;
+
+		return emojiPickerElement;
 	},
 	/**
 	 * @param {Element} source
@@ -106,12 +111,10 @@ export const EmojiPicker = {
 		this.source = source;
 
 		const containerEl = this.setPosition();
-		containerEl.addClass('show');
+		containerEl.classList.add('show');
 
-		const emojiInput = containerEl.find('.js-emojipicker-search');
-		if (emojiInput) {
-			emojiInput.focus();
-		}
+		const emojiInput = containerEl.querySelector('.js-emojipicker-search');
+		emojiInput?.focus();
 
 		this.calculateCategoryPositions();
 
@@ -122,7 +125,8 @@ export const EmojiPicker = {
 		this.opened = true;
 	},
 	close() {
-		$('.emoji-picker').removeClass('show');
+		const emojiPickerElement = document.querySelector('.emoji-picker');
+		emojiPickerElement.classList.remove('show');
 		this.opened = false;
 		this.source.focus();
 	},
@@ -166,13 +170,12 @@ export const EmojiPicker = {
 		}
 		updatePositions = false;
 
-		const containerScroll = $('.emoji-picker .emojis').scrollTop();
+		const emojisElement = document.querySelector('.emoji-picker .emojis');
 
 		this.catPositions = Array.from(document.querySelectorAll('.emoji-list-category')).map((el) => {
-			const { top } = $(el).position();
 			return {
 				el,
-				top: top + containerScroll,
+				top: el.offsetTop + emojisElement.scrollTop,
 			};
 		});
 	},
@@ -182,29 +185,42 @@ export const EmojiPicker = {
 	showCategory(category, animate = true) {
 		this.scrollingToCategory = animate;
 
-		$('.emoji-picker .js-emojipicker-search').val('').change().focus();
+		const emojiPickerSearchElement = document.querySelector('.emoji-picker .js-emojipicker-search');
+		emojiPickerSearchElement.value = '';
+		emojiPickerSearchElement.dispatchEvent(new Event('change'));
+		emojiPickerSearchElement.focus();
 
 		this.currentCategory.set(category);
 
 		Tracker.afterFlush(() => {
-			const header = $(`#emoji-list-category-${category}`);
-			const container = $('.emoji-picker .emojis');
-
-			const scrollTop = header.position().top + container.scrollTop(); // - container.position().top;
+			const header = document.querySelector(`#emoji-list-category-${category}`);
+			const container = document.querySelector('.emoji-picker .emojis');
 
 			if (animate) {
-				return container.animate(
-					{
-						scrollTop,
-					},
-					300,
-					() => {
-						this.scrollingToCategory = false;
-					},
-				);
+				header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+				const callback = () => {
+					this.scrollingToCategory = false;
+				};
+
+				if ('onscrollend' in window) {
+					container.addEventListener('scrollend', callback, { once: true });
+				} else {
+					let scrollEndTimer;
+					const handler = () => {
+						clearTimeout(scrollEndTimer);
+						scrollEndTimer = setTimeout(() => {
+							callback();
+							container.removeEventListener('scroll', handler);
+						}, 100);
+					};
+					container.addEventListener('scroll', handler);
+				}
+
+				return;
 			}
 
-			container.scrollTop(scrollTop);
+			header.scrollIntoView({ block: 'start' });
 		});
 	},
 };

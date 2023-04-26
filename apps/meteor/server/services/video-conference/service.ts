@@ -741,7 +741,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
+		void callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 

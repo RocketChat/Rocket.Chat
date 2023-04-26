@@ -180,7 +180,7 @@ export const Livechat = {
 		}
 
 		if (room == null) {
-			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+			const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
 				const department = await this.getRequiredDepartment();
