@@ -228,7 +228,9 @@ class KonchatNotification {
 		newRoomSound = newRoomSound.filter((_rid) => _rid !== rid);
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
-		return $(`.link-room-${rid}`).removeClass('new-room-highlight');
+		const link = document.querySelector(`.link-room-${rid}`);
+
+		link?.classList.remove('new-room-highlight');
 	}
 }
 
