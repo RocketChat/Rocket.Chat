@@ -93,7 +93,7 @@ export interface IUserServices {
 		serverURL: string;
 	};
 	dolphin?: {
-		Nickname?: string;
+		NickName?: string;
 	};
 }
 
