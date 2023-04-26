@@ -110,7 +110,7 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
@@ -200,7 +200,7 @@ Meteor.methods<ServerMethods>({
 			_id: userId,
 			username: me.username,
 		};
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!room) {

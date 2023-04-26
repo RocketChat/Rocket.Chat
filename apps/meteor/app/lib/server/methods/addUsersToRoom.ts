@@ -82,7 +82,7 @@ Meteor.methods<ServerMethods>({
 		// Validate each user, then add to room
 		const user = ((await Meteor.userAsync()) as IUser | null) ?? undefined;
 		if (isRoomFederated(room)) {
-			callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
+			await callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
 			return true;
 		}
 
