@@ -82,7 +82,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		cmd: commandName,
 		params,
 		msg: message,
-		userId,
+		userId: chat.uid,
 	} as const;
 
 	try {

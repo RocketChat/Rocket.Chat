@@ -13,7 +13,7 @@ slashCommands.add({
 		if (hasPermission('edit-room', message.rid)) {
 			try {
 				await Meteor.callAsync('saveRoomSettings', message.rid, 'roomTopic', params);
-				await callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
+				await callbacks.run('roomTopicChanged', ChatRoom.findOne(message.rid));
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 				throw error;
