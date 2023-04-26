@@ -9,6 +9,7 @@ import {
 	LivechatTag,
 	LivechatUnitMonitors,
 	LivechatUnit,
+	Subscriptions,
 } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
@@ -186,7 +187,8 @@ export const LivechatEnterprise = {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		await LivechatRooms.setOnHoldByRoomId(roomId);
+
+		await Promise.all([LivechatRooms.setOnHoldByRoomId(roomId), Subscriptions.setOnHoldByRoomId(roomId)]);
 
 		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
 
@@ -202,8 +204,11 @@ export const LivechatEnterprise = {
 			return;
 		}
 
-		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
+		await Promise.all([
+			AutoCloseOnHoldScheduler.unscheduleRoom(roomId),
+			LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId),
+			Subscriptions.unsetOnHoldByRoomId(roomId),
+		]);
 	},
 
 	/**
