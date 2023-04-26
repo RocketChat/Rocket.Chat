@@ -56,6 +56,6 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	if (sendMessage) {
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
-	callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
+	await callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
 }
