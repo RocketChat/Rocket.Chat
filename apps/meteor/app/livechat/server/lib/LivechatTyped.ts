@@ -324,7 +324,7 @@ class LivechatClass {
 		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
 		setImmediate(() => {
-			callbacks.run('livechat.sendTranscript', messages, email);
+			void callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
 		const requestData: IOmnichannelSystemMessage['requestData'] = {

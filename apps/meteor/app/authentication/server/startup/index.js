@@ -156,7 +156,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	callbacks.run('beforeCreateUser', options, user);
+	await callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -216,7 +216,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await Mailer.send(email);
 	}
 
-	callbacks.run('onCreateUser', options, user);
+	await callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
 	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
@@ -321,7 +321,7 @@ Accounts.insertUserDoc = function (...args) {
 };
 
 const validateLoginAttemptAsync = async function (login) {
-	login = callbacks.run('beforeValidateLogin', login);
+	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
@@ -368,7 +368,7 @@ const validateLoginAttemptAsync = async function (login) {
 		}
 	}
 
-	login = callbacks.run('onValidateLogin', login);
+	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
 	setImmediate(function () {

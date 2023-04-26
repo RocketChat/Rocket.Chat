@@ -33,7 +33,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
-	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
+	await callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
@@ -126,7 +126,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'c') {
-		callbacks.run('beforeCreateChannel', owner, roomProps);
+		await callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 	const room = await Rooms.createWithFullRoomData(roomProps);
 	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
@@ -150,7 +150,7 @@ export const createRoom = async <T extends RoomType>(
 			}
 
 			try {
-				callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 			} catch (error) {
 				continue;
 			}
@@ -180,7 +180,7 @@ export const createRoom = async <T extends RoomType>(
 				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
 			}
 		}
-		callbacks.run('afterCreateChannel', owner, room);
+		await callbacks.run('afterCreateChannel', owner, room);
 	} else if (type === 'p') {
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
