@@ -12,7 +12,7 @@ import { settings } from '../../../../settings/server';
  *
  * @param {object} message the message to be parsed
  */
-export function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: IUser): string {
+export async function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: IUser): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
 	const firstAttachment = message.attachments?.[0];

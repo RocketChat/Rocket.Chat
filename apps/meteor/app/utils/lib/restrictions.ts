@@ -1,15 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-let settings;
-if (Meteor.isClient) {
-	settings = require('../../settings/client').settings;
-} else {
-	settings = require('../../settings/server').settings;
-}
-
-export const fileUploadMediaWhiteList = function (customWhiteList) {
-	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
+export const fileUploadMediaWhiteList = function (customWhiteList: string): string[] | undefined {
+	const mediaTypeWhiteList = customWhiteList;
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
@@ -19,8 +11,8 @@ export const fileUploadMediaWhiteList = function (customWhiteList) {
 	});
 };
 
-const fileUploadMediaBlackList = function () {
-	const blacklist = settings.get('FileUpload_MediaTypeBlackList');
+const fileUploadMediaBlackList = function (customBlackList: string): string[] | undefined {
+	const blacklist = customBlackList;
 	if (!blacklist) {
 		return;
 	}
@@ -28,7 +20,7 @@ const fileUploadMediaBlackList = function () {
 	return _.map(blacklist.split(','), (item) => item.trim());
 };
 
-const isTypeOnList = function (type, list) {
+const isTypeOnList = function (type: string, list: string[]): boolean | undefined {
 	if (_.contains(list, type)) {
 		return true;
 	}
@@ -41,8 +33,8 @@ const isTypeOnList = function (type, list) {
 	}
 };
 
-export const fileUploadIsValidContentType = function (type, customWhiteList) {
-	const blackList = fileUploadMediaBlackList();
+export const fileUploadIsValidContentTypeFromSettings = function (type: string, customWhiteList: string, customBlackList: string): boolean {
+	const blackList = fileUploadMediaBlackList(customBlackList);
 	const whiteList = fileUploadMediaWhiteList(customWhiteList);
 
 	if (!type && blackList) {
@@ -57,5 +49,5 @@ export const fileUploadIsValidContentType = function (type, customWhiteList) {
 		return true;
 	}
 
-	return isTypeOnList(type, whiteList);
+	return !!isTypeOnList(type, whiteList);
 };

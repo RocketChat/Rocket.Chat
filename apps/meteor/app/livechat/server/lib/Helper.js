@@ -54,7 +54,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		}),
 	);
 
-	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
@@ -96,7 +96,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
@@ -122,7 +122,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 		}),
 	);
 
-	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
@@ -398,7 +398,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent._id}`);
-	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
+	await callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
 
@@ -429,7 +429,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	logger.debug(`Attempting to forward room ${room._id} to department ${transferData.departmentId}`);
 
-	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
+	await callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
