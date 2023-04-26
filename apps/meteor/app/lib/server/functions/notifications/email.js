@@ -46,7 +46,7 @@ async function getEmailContent({ message, user, room }) {
 			messageContent = TAPi18n.__('Encrypted_message', { lng });
 		}
 
-		message = callbacks.run('renderMessage', message);
+		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
 				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');

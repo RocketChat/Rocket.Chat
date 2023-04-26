@@ -5,7 +5,7 @@ import { Message } from '@rocket.chat/core-services';
 import { callbacks } from '../../../../lib/callbacks';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
-	callbacks.run('beforeJoinDefaultChannels', user);
+	await callbacks.run('beforeJoinDefaultChannels', user);
 	const defaultRooms = await Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
 		projection: { usernames: 0 },
 	}).toArray();
