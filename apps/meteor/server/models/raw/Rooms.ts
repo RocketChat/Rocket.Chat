@@ -463,21 +463,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>({
+	getChannelsWithNumberOfMessagesBetweenDateQuery({
 		start,
 		end,
 		startOfLastWeek,
 		endOfLastWeek,
-		onlyCount,
 		options,
 	}: {
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount: T;
 		options?: any;
-	}): AggregationCursor<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate> {
+	}) {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -577,11 +575,34 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $limit: options.count });
 		}
 
-		if (onlyCount) {
-			params.push({ $count: 'total' });
-		}
+		return params;
+	}
 
-		return this.col.aggregate<T extends true ? { total: number } : IChannelsWithNumberOfMessagesBetweenDate>(params, {
+	findChannelsWithNumberOfMessagesBetweenDate(params: {
+		start: number;
+		end: number;
+		startOfLastWeek: number;
+		endOfLastWeek: number;
+		options?: any;
+	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
+		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
+		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
+	}
+
+	countChannelsWithNumberOfMessagesBetweenDate(params: {
+		start: number;
+		end: number;
+		startOfLastWeek: number;
+		endOfLastWeek: number;
+		options?: any;
+	}): AggregationCursor<{ total: number }> {
+		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
+		aggregationParams.push({ $count: 'total' });
+
+		return this.col.aggregate<{ total: number }>(aggregationParams, {
 			allowDiskUse: true,
 			readPreference: readSecondaryPreferred(),
 		});
