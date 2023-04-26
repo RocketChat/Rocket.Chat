@@ -14,11 +14,15 @@ function getInviteUrl(invite) {
 
 	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
 
-	return getURL(`invite/${_id}`, {
-		full: useDirectLink,
-		cloud: !useDirectLink,
-		cloud_route: 'invite',
-	});
+	return getURL(
+		`invite/${_id}`,
+		{
+			full: useDirectLink,
+			cloud: !useDirectLink,
+			cloud_route: 'invite',
+		},
+		settings.get('DeepLink_Url'),
+	);
 }
 
 const possibleDays = [0, 1, 7, 15, 30];

@@ -39,6 +39,7 @@ export const _getURL = (
 	path: string,
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	{ cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }: Record<string, any>,
+	deeplinkUrl?: string,
 ): string => {
 	if (isURL(path)) {
 		return path;
@@ -59,7 +60,7 @@ export const _getURL = (
 
 	if (cloud) {
 		const cloudParams = cloud_params || {};
-		return getCloudUrl(url, siteUrl, cloudRoute, cloudParams);
+		return getCloudUrl(url, siteUrl, cloudRoute, cloudParams, deeplinkUrl);
 	}
 
 	if (cdn && cdnPrefix !== '') {
@@ -79,14 +80,19 @@ export const getURLWithoutSettings = (
 	{ cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} }: Record<string, any> = {},
 	cdnPrefix: string,
 	siteUrl: string,
+	cloudDeepLinkUrl?: string,
 ): string =>
-	_getURL(path, {
-		cdn,
-		full,
-		cloud,
-		cloud_route,
-		cloud_params,
-		_cdn_prefix: cdnPrefix,
-		_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
-		_site_url: siteUrl,
-	});
+	_getURL(
+		path,
+		{
+			cdn,
+			full,
+			cloud,
+			cloud_route,
+			cloud_params,
+			_cdn_prefix: cdnPrefix,
+			_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
+			_site_url: siteUrl,
+		},
+		cloudDeepLinkUrl,
+	);
