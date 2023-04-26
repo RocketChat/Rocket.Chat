@@ -629,7 +629,7 @@ jobs:
       - name: Send context to seperate pipeline
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.EXTERNAL_RELEASE_TOKEN }}
+          token: ${{ secrets.DISTRIBUTION_TOKEN }}
           event-type: new_release
           repository: RocketChat/Release.Distributions
           client-payload: ${{ format('{"tag":"{0}"}', github.ref_name) }}
