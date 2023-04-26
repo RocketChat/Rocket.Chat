@@ -352,6 +352,7 @@ Meteor.startup(() => {
 			}
 
 			logger.info('Enabling CROWD Background Sync');
+			// TODO parse text to cron format
 			await cronJobs.add(jobName, String(interval), () => crowd.sync());
 		}
 	});

@@ -13,6 +13,7 @@ settings.watchMultiple(
 		}
 
 		if (settings.get('Smarsh_Enabled') && settings.get('Smarsh_Email') !== '' && settings.get('From_Email') !== '') {
+			// TODO parse text to cron format
 			await cronJobs.add(smarshJobName, settings.get<string>('Smarsh_Interval').replace(/_/g, ' '), async () => generateEml());
 		}
 	},
