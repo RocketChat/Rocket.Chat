@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Rooms } from '@rocket.chat/models';
 
-export const saveStreamingOptions = async function (rid, options) {
+export const saveStreamingOptions = async function (rid: string, options: Record<string, any>): Promise<void> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveStreamingOptions',

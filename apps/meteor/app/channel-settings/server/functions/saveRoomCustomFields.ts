@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { UpdateResult } from 'mongodb';
 
-export const saveRoomCustomFields = async function (rid, roomCustomFields) {
+export const saveRoomCustomFields = async function (rid: string, roomCustomFields: Record<string, any>): Promise<UpdateResult> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomCustomFields',

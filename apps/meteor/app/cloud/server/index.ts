@@ -14,8 +14,8 @@ const licenseCronName = 'Cloud Workspace Sync';
 
 Meteor.startup(async function () {
 	// run token/license sync if registered
-	let TroubleshootDisableWorkspaceSync;
-	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
+	let TroubleshootDisableWorkspaceSync: boolean;
+	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', (value) => {
 		if (TroubleshootDisableWorkspaceSync === value) {
 			return;
 		}
@@ -33,6 +33,7 @@ Meteor.startup(async function () {
 				// Every 12 hours
 				return parser.cron('0 */12 * * *');
 			},
+			// @ts-expect-error - Check type after removing syncedcron :)
 			job: syncWorkspace,
 		});
 	});
@@ -48,7 +49,7 @@ Meteor.startup(async function () {
 			}
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
-		} catch (e) {
+		} catch (e: any) {
 			SystemLogger.error('An error occured registering with token.', e.message);
 		}
 	}

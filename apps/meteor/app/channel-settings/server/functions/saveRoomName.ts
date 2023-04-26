@@ -1,18 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
+import type { Document, UpdateResult } from 'mongodb';
 
 import { getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const updateFName = async (rid, displayName) => {
+const updateFName = async (rid: string, displayName: string): Promise<(UpdateResult | Document)[]> => {
 	return Promise.all([Rooms.setFnameById(rid, displayName), Subscriptions.updateFnameByRoomId(rid, displayName)]);
 };
 
-const updateRoomName = async (rid, displayName) => {
+const updateRoomName = async (rid: string, displayName: string) => {
 	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 
 	// Check if the username is available
@@ -29,8 +31,19 @@ const updateRoomName = async (rid, displayName) => {
 	]);
 };
 
-export async function saveRoomName(rid, displayName, user, sendMessage = true) {
+export async function saveRoomName(
+	rid: string,
+	displayName: string | undefined,
+	user: IUser,
+	sendMessage = true,
+): Promise<string | undefined> {
 	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			function: 'RocketChat.saveRoomdisplayName',
+		});
+	}
+
 	if (roomCoordinator.getRoomDirectives(room.t).preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
@@ -39,8 +52,12 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	if (displayName === room.name) {
 		return;
 	}
-	const isDiscussion = Boolean(room && room.prid);
+	const isDiscussion = Boolean(room?.prid);
 	let update;
+
+	if (!displayName?.trim()) {
+		return;
+	}
 
 	if (isDiscussion || isRoomFederated(room)) {
 		update = await updateFName(rid, displayName);
@@ -52,7 +69,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 		return;
 	}
 
-	await Integrations.updateRoomName(room.name, displayName);
+	room.name && (await Integrations.updateRoomName(room.name, displayName));
 	if (sendMessage) {
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
