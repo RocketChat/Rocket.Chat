@@ -13,7 +13,7 @@ import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from 
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
-import { getURL } from '../../utils/server';
+import { getURL } from '../../utils/server/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';

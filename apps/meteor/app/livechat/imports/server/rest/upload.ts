@@ -37,7 +37,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const { fields, fileBuffer, filename, mimetype } = file;
 
-		if (!fileUploadIsValidContentType(mimetype, '')) {
+		if (!fileUploadIsValidContentType(mimetype)) {
 			return API.v1.failure({
 				reason: 'error-type-not-allowed',
 			});
