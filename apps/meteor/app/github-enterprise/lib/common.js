@@ -12,6 +12,7 @@ const config = {
 	identityPath: '/api/v3/user',
 	authorizePath: '/login/oauth/authorize',
 	tokenPath: '/login/oauth/access_token',
+	tokenSentVia: 'header',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.github-enterprise'],
 		forOtherUsers: ['services.github-enterprise.username'],
