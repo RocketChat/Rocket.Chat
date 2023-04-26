@@ -217,6 +217,6 @@ export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> 
 }
 
 // TODO: please forgive me for this. Still finding the good types for these callbacks
-export function onCheckRoomParams(params: any): any {
+export function onCheckRoomParams(params: any): Promise<unknown> {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

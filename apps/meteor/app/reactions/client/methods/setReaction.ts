@@ -55,10 +55,10 @@ Meteor.methods<ServerMethods>({
 			if (!message.reactions || typeof message.reactions !== 'object' || Object.keys(message.reactions).length === 0) {
 				delete message.reactions;
 				Messages.update({ _id: messageId }, { $unset: { reactions: 1 } });
-				callbacks.run('unsetReaction', messageId, reaction);
+				await callbacks.run('unsetReaction', messageId, reaction);
 			} else {
 				Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
-				callbacks.run('setReaction', messageId, reaction);
+				await callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
 			if (!message.reactions) {
@@ -72,7 +72,7 @@ Meteor.methods<ServerMethods>({
 			message.reactions[reaction].usernames.push(user.username);
 
 			Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
-			callbacks.run('setReaction', messageId, reaction);
+			await callbacks.run('setReaction', messageId, reaction);
 		}
 	},
 });

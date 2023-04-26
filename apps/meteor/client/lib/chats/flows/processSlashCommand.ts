@@ -67,8 +67,8 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		return false;
 	}
 
-	if (clientOnly) {
-		handleOnClient?.(commandName, params, message);
+	if (clientOnly && chat.uid) {
+		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
 		return true;
 	}
 
@@ -82,6 +82,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		cmd: commandName,
 		params,
 		msg: message,
+		userId: chat.uid,
 	} as const;
 
 	try {

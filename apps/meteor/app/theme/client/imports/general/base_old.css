@@ -687,41 +687,6 @@
 			font-weight: bold;
 		}
 	}
-
-	& .unread-bar {
-		text-align: center;
-		text-transform: uppercase;
-
-		& > button.mark-read {
-			float: right;
-
-			line-height: inherit;
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		& .unread-count {
-			display: none;
-		}
-
-		& > button.jump-to {
-			float: left;
-
-			line-height: inherit;
-
-			& .jump-to-small {
-				display: none;
-
-				line-height: inherit;
-			}
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-	}
 }
 
 .rc-old .flex-tab-main-content {
@@ -825,64 +790,6 @@
 
 			border-width: 1px 0 0;
 			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, rgba(255, 255, 255, 0) 100%);
-		}
-	}
-
-	& .new-message {
-		position: absolute;
-		z-index: 2;
-		bottom: 8px;
-		left: 50%;
-
-		width: 130px;
-		height: 30px;
-		margin: 0 -65px;
-
-		cursor: pointer;
-		user-select: none;
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: center;
-
-		border-radius: 20px;
-
-		font-size: 0.8em;
-		line-height: 30px;
-
-		&.not {
-			transform: translateY(150%);
-		}
-	}
-
-	& .jump-recent {
-		position: absolute;
-		z-index: 15;
-		right: 20px;
-		bottom: 0;
-		left: 20px;
-
-		height: 24px;
-		padding-right: 20px;
-
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: right;
-
-		border-top-left-radius: 4px;
-		border-top-right-radius: 4px;
-
-		font-size: 0.8em;
-		line-height: 24px;
-
-		&.not {
-			z-index: 1;
-
-			transform: translateY(150%);
-		}
-
-		& button {
-			cursor: pointer;
-			user-select: none;
 		}
 	}
 
@@ -1310,26 +1217,6 @@
 	.rc-old.main-content {
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		will-change: transform;
-	}
-
-	.rc-old .container-bars .unread-bar {
-		& .unread-count {
-			display: inline-block;
-		}
-
-		& .unread-count-since {
-			display: none;
-		}
-	}
-
-	.rc-old .container-bars .unread-bar > button.jump-to {
-		& .jump-to-small {
-			display: inline-block;
-		}
-
-		& .jump-to-large {
-			display: none;
-		}
 	}
 }
 

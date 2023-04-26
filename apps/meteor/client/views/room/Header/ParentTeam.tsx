@@ -40,7 +40,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
 	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
 
-	const teamMainRoomHref = (): void => {
+	const redirectToMainRoom = (): void => {
 		const rid = teamInfoData?.teamInfo.roomId;
 
 		if (!rid) {
@@ -58,19 +58,8 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		return null;
 	}
 
-	if (isTeamPublic || userBelongsToTeam) {
-		return (
-			<Header.Tag>
-				<Header.Link onClick={teamMainRoomHref}>
-					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-					{teamInfoData?.teamInfo.name}
-				</Header.Link>
-			</Header.Tag>
-		);
-	}
-
 	return (
-		<Header.Tag>
+		<Header.Tag onClick={isTeamPublic || userBelongsToTeam ? redirectToMainRoom : undefined}>
 			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamInfoData?.teamInfo.name}
 		</Header.Tag>
