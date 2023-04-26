@@ -47,15 +47,16 @@ const CalendarAuthModal = ({ onCancel, onConfirm }: CalendarAuthModalProps) => {
 					<Field.Row>
 						<TextInput {...register('login', { required: true })} />
 					</Field.Row>
-					{errors.login && <Field.Error>Required</Field.Error>}
+					{errors.login && <Field.Error>{t('Field_required')}</Field.Error>}
 				</Field>
 				<Field>
 					<Label>{t('Password')}</Label>
 					<Field.Row>
 						<PasswordInput {...register('password', { required: true })} />
 					</Field.Row>
-					{errors.password && <Field.Error>Required</Field.Error>}
+					{errors.password && <Field.Error>{t('Field_required')}</Field.Error>}
 				</Field>
+				{/* // TODO: check if it will be needed */}
 				{rememberCredentials && (
 					<Callout title='Security warning' type='warning'>
 						Your credentials will be saved on plain text. Do not share your browser session.
@@ -70,7 +71,7 @@ const CalendarAuthModal = ({ onCancel, onConfirm }: CalendarAuthModalProps) => {
 								<CheckBox ref={ref} onChange={onChange} checked={value} id='check-box' />
 							)}
 						/>
-						<Field.Label htmlFor='check-box'>Remember my credentials</Field.Label>
+						<Field.Label htmlFor='check-box'>{t('Remember_my_credentials')}</Field.Label>
 					</Field.Row>
 				</Field>
 			</FieldGroup>

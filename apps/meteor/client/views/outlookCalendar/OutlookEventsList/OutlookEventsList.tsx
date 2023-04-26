@@ -1,4 +1,3 @@
-import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useResizeObserver, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useSetModal, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
@@ -18,21 +17,9 @@ import OutlookEventItem from './OutlookEventItem';
 type OutlookEventsListProps = {
 	onClose: () => void;
 	onChangeRoute: () => void;
-	total: number;
-	videoConfs: IGroupVideoConference[];
-	loading: boolean;
-	error?: Error;
-	reload: () => void;
-	loadMoreItems: (min: number, max: number) => void;
 };
 
-const OutlookEventsList = ({
-	onClose,
-	onChangeRoute,
-	// total = calendarEvents.length,
-	error,
-	loadMoreItems,
-}: OutlookEventsListProps): ReactElement => {
+const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const [isSyncing, setIsSyncing] = useState(false);
@@ -44,7 +31,9 @@ const OutlookEventsList = ({
 
 	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
-	const { data, isLoading, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }), { refetchOnWindowFocus: false });
+	const { data, isLoading, isError, error, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }), {
+		refetchOnWindowFocus: false,
+	});
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -52,9 +41,6 @@ const OutlookEventsList = ({
 
 	const calendarEvents = data?.data;
 	const total = calendarEvents?.length || 0;
-
-	console.log('outlookCredential', outlookToken);
-	console.log(data);
 
 	const handleSync = () => {
 		const fetchCalendarData = async ({ login, password, rememberCredentials }: CalendarAuthPayload) => {
@@ -99,20 +85,19 @@ const OutlookEventsList = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
-				{(total === 0 || error) && (
+				{(total === 0 || isError) && (
 					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
-						{error && (
+						{isError && (
 							<States>
 								<StatesIcon name='circle-exclamation' variation='danger' />
 								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
 							</States>
 						)}
-						{!error && total === 0 && (
+						{!isError && total === 0 && (
 							<States>
 								<StatesIcon name='calendar' />
 								<StatesTitle>{t('No_history')}</StatesTitle>
-								{/* <StatesSubtitle>{t('There_is_no_video_conference_history_in_this_room')}</StatesSubtitle> */}
 							</States>
 						)}
 					</Box>
@@ -125,11 +110,10 @@ const OutlookEventsList = ({
 								width: inlineSize,
 							}}
 							totalCount={total}
-							// endReached={(start): unknown => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={calendarEvents}
 							components={{ Scroller: ScrollableContentWrapper as any }}
-							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem calendarData={calendarData} />}
+							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
 						/>
 					</Box>
 				)}

@@ -8,11 +8,9 @@ import GenericModal from '../../../components/GenericModal';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import OutlookEventItemContent from './OutlookEventItemContent';
 
-type OutlookEventItemProps = {
-	calendarData: ICalendarEvent;
-};
+type OutlookEventItemProps = Omit<Partial<ICalendarEvent>, 'startTime' | '_updatedAt'> & { startTime: string };
 
-const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
+const OutlookEventItem = ({ subject, description, startTime }: OutlookEventItemProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -33,12 +31,12 @@ const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
 			<GenericModal
 				tagline={t('Outlook_calendar_event')}
 				icon={null}
-				title={calendarData.subject}
+				title={subject}
 				confirmText={t('Close')}
 				onClose={() => setModal(null)}
 				onConfirm={() => setModal(null)}
 			>
-				<OutlookEventItemContent html={calendarData.description} />
+				{description && <OutlookEventItemContent html={description} />}
 			</GenericModal>,
 		);
 	};
@@ -56,8 +54,8 @@ const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
 			onClick={handleOpenEvent}
 		>
 			<Box>
-				<Box fontScale='h4'>{calendarData.subject}</Box>
-				<Box fontScale='c1'>{formatDateAndTime(calendarData.startTime)}</Box>
+				<Box fontScale='h4'>{subject}</Box>
+				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
 			</Box>
 			<Box>
 				<Button onClick={() => console.log('join')} small>

@@ -1,8 +1,7 @@
-import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import OutlookSettingItem from './OutlookSettingItem';
@@ -10,44 +9,41 @@ import OutlookSettingItem from './OutlookSettingItem';
 type OutlookSettingsListProps = {
 	onClose: () => void;
 	onChangeRoute: () => void;
-	total: number;
-	videoConfs: IGroupVideoConference[];
-	loading: boolean;
-	error?: Error;
-	reload: () => void;
-	loadMoreItems: (min: number, max: number) => void;
 };
 
-const calendarSettings = [
-	{
-		title: 'Event notifications',
-		subTitle: 'By disabling this setting you’ll prevent the app to notify you of upcoming events.',
-		link: '#',
-	},
-	{
-		title: 'Authentication',
-		subTitle: 'This allows for the app to work properly. You’ll have to authenticate again if you disable this.',
-		link: '#',
-	},
-];
-
-const OutlookSettingsList = ({ onClose, onChangeRoute, loading, error, reload, loadMoreItems }: OutlookSettingsListProps): ReactElement => {
+const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProps): ReactElement => {
 	const t = useTranslation();
 
-	if (loading) {
-		return <VerticalBar.Skeleton />;
-	}
+	const [notificationsEnabled, setEnableNotifications] = useState(false);
+	const [authEnabled, setEnableAuth] = useState(false);
+
+	const calendarSettings = [
+		{
+			title: 'Event notifications',
+			subTitle: 'By disabling this setting you’ll prevent the app to notify you of upcoming events.',
+			link: '#',
+			enabled: notificationsEnabled,
+			handleEnable: setEnableNotifications,
+		},
+		{
+			title: 'Authentication',
+			subTitle: 'This allows for the app to work properly. You’ll have to authenticate again if you disable this.',
+			link: '#',
+			enabled: authEnabled,
+			handleEnable: setEnableAuth,
+		},
+	];
 
 	return (
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='calendar' />
-				<VerticalBar.Text>{t('Outlook_Calendar_settings')}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Outlook_calendar_settings')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 			<VerticalBar.Content paddingInline={0} color='default'>
 				{calendarSettings.map((setting) => (
-					<OutlookSettingItem settingData={setting} />
+					<OutlookSettingItem {...setting} />
 				))}
 			</VerticalBar.Content>
 			<VerticalBar.Footer>
