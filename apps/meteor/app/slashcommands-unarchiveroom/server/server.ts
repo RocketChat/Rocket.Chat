@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -12,12 +13,12 @@ import { unarchiveRoom } from '../../lib/server';
 
 slashCommands.add({
 	command: 'unarchive',
-	callback: async function Unarchive(_command: 'unarchive', params, item): Promise<void> {
+	callback: async function Unarchive({ params, message, userId }: SlashCommandCallbackParams<'unarchive'>): Promise<void> {
 		let channel = params.trim();
 		let room;
 
 		if (channel === '') {
-			room = await Rooms.findOneById(item.rid);
+			room = await Rooms.findOneById(message.rid);
 			if (room?.name) {
 				channel = room.name;
 			}
@@ -26,7 +27,6 @@ slashCommands.add({
 			room = await Rooms.findOneByName(channel);
 		}
 
-		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
@@ -37,7 +37,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -53,7 +53,7 @@ slashCommands.add({
 		}
 
 		if (!room.archived) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Channel_already_Unarchived', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -65,7 +65,7 @@ slashCommands.add({
 
 		await unarchiveRoom(room._id, user);
 
-		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: TAPi18n.__('Channel_Unarchived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
