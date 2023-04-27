@@ -18,7 +18,7 @@ type BaseTeamsChannelsProps = {
 	text: string;
 	type: 'all' | 'autoJoin';
 	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
-	setText: Dispatch<SetStateAction<string>>;
+	setText: (e: ChangeEvent<HTMLInputElement>) => void;
 	onClickClose: () => void;
 	onClickAddExisting: false | ((e: SyntheticEvent) => void);
 	onClickCreateNew: false | ((e: SyntheticEvent) => void);
@@ -84,7 +84,7 @@ const BaseTeamsChannels = ({
 								placeholder={t('Search')}
 								value={text}
 								ref={inputRef}
-								onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.currentTarget.value)}
+								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
 							<Select flexGrow={0} width='110px' onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
