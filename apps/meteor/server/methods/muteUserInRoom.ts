@@ -80,13 +80,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
+		await callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
 
 		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
 		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
 
-		callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
+		await callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 
 		return true;
 	},
