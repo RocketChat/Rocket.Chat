@@ -26,7 +26,10 @@ import { Team, api } from '@rocket.chat/core-services';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import {
+	checkUsernameAvailability,
+	checkUsernameAvailabilityWithValidation,
+} from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
@@ -40,6 +43,8 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -156,7 +161,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
+			await saveUserPreferences(this.bodyParams.data, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -564,7 +569,7 @@ API.v1.addRoute(
 
 			// Now set their username
 			const { fields } = await this.parseJsonQuery();
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('setUsername', this.bodyParams.username));
+			await setUsernameWithValidation(userId, this.bodyParams.username);
 
 			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
@@ -666,7 +671,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { username } = this.queryParams;
-			const result = await Meteor.callAsync('checkUsernameAvailability', username);
+
+			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
 
 			return API.v1.success({ result });
 		},
