@@ -4,7 +4,6 @@ import HeaderContent from './HeaderContent';
 import HeaderContentRow from './HeaderContentRow';
 import HeaderDivider from './HeaderDivider';
 import HeaderIcon from './HeaderIcon';
-import HeaderLink from './HeaderLink';
 import HeaderState from './HeaderState';
 import HeaderSubtitle from './HeaderSubtitle';
 import HeaderTag from './HeaderTag';
@@ -23,7 +22,6 @@ export default Object.assign(Header, {
 	Subtitle: HeaderSubtitle,
 	Divider: HeaderDivider,
 	Icon: HeaderIcon,
-	Link: HeaderLink,
 	ToolBox: Object.assign(ToolBox, {
 		Action: ToolBox.Action,
 		ActionBadge: ToolBox.ActionBadge,

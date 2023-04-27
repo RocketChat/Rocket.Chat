@@ -11,7 +11,7 @@ import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { getPath } from './getPath';
 import { joinPath } from '../fileUtils';
-import { getURL } from '../../../app/utils/lib/getURL';
+import { getURL } from '../../../app/utils/server/getURL';
 import { getRoomData } from './getRoomData';
 import { sendEmail } from './sendEmail';
 import { makeZipFile } from './makeZipFile';

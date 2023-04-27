@@ -79,7 +79,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+		await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 		await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
@@ -95,7 +95,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		setImmediate(function () {
-			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+			void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
 
 		return true;
