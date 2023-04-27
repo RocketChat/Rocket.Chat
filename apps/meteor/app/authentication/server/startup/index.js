@@ -13,7 +13,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
@@ -157,7 +156,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	callbacks.run('beforeCreateUser', options, user);
+	await callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -217,7 +216,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await Mailer.send(email);
 	}
 
-	callbacks.run('onCreateUser', options, user);
+	await callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
 	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
@@ -276,7 +275,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (user.type !== 'visitor') {
-			Meteor.defer(function () {
+			setImmediate(function () {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -322,7 +321,7 @@ Accounts.insertUserDoc = function (...args) {
 };
 
 const validateLoginAttemptAsync = async function (login) {
-	login = callbacks.run('beforeValidateLogin', login);
+	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
@@ -369,10 +368,10 @@ const validateLoginAttemptAsync = async function (login) {
 		}
 	}
 
-	login = callbacks.run('onValidateLogin', login);
+	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function () {
+	setImmediate(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
 

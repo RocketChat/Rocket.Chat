@@ -5,6 +5,7 @@ import { DDPRateLimiter } from '@rocket.chat/ddp-rate-limit';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { Logger } from '../../../logger/server';
+import { sleep } from '../../../../lib/utils/sleep';
 
 const logger = new Logger('RateLimiter');
 

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Users, Rooms } from '@rocket.chat/models';
@@ -10,13 +11,13 @@ import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 
 slashCommands.add({
 	command: 'archive',
-	callback: async function Archive(_command, params, item): Promise<void> {
+	callback: async function Archive({ params, message, userId }: SlashCommandCallbackParams<'archive'>): Promise<void> {
 		let channel = params.trim();
 
 		let room;
 
 		if (channel === '') {
-			room = await Rooms.findOneById(item.rid);
+			room = await Rooms.findOneById(message.rid);
 			if (room?.name) {
 				channel = room.name;
 			}
@@ -24,8 +25,6 @@ slashCommands.add({
 			channel = channel.replace('#', '');
 			room = await Rooms.findOneByName(channel);
 		}
-
-		const userId = Meteor.userId();
 		if (!userId) {
 			return;
 		}
@@ -36,7 +35,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -52,7 +51,7 @@ slashCommands.add({
 		}
 
 		if (room.archived) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -64,7 +63,7 @@ slashCommands.add({
 
 		await archiveRoom(room._id, user);
 
-		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

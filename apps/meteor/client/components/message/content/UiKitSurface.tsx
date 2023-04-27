@@ -17,6 +17,7 @@ import {
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import GazzodownText from '../../GazzodownText';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -98,7 +99,9 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	return (
 		<MessageBlock fixedWidth>
 			<kitContext.Provider value={context}>
-				<UiKitComponent render={UiKitMessage} blocks={blocks} />
+				<GazzodownText>
+					<UiKitComponent render={UiKitMessage} blocks={blocks} />
+				</GazzodownText>
 			</kitContext.Provider>
 		</MessageBlock>
 	);

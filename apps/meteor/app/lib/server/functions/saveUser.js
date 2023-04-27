@@ -108,7 +108,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles) {
-		callbacks.run('validateUserRoles', userData);
+		await callbacks.run('validateUserRoles', userData);
 	}
 
 	let nameValidation;
@@ -419,7 +419,7 @@ export const saveUser = async function (userId, userData) {
 
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
-	callbacks.run('afterSaveUser', userData);
+	await callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userId);

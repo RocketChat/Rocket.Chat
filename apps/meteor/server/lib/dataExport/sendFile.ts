@@ -5,7 +5,7 @@ import { tmpdir } from 'os';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { getURL } from '../../../app/utils/lib/getURL';
+import { getURL } from '../../../app/utils/server/getURL';
 import { getPath } from './getPath';
 import { copyFileUpload } from './copyFileUpload';
 import { getRoomData } from './getRoomData';
