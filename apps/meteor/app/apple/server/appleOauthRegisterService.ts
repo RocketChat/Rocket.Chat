@@ -1,23 +1,11 @@
 import { KJUR } from 'jsrsasign';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings, settingsRegistry } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { config } from '../lib/config';
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 
 new AppleCustomOAuth('apple', config);
-
-void settingsRegistry.addGroup('OAuth', async function () {
-	await this.section('Apple', async function () {
-		await this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
-
-		await this.add('Accounts_OAuth_Apple_id', '', { type: 'string', public: true });
-		await this.add('Accounts_OAuth_Apple_secretKey', '', { type: 'string', multiline: true });
-
-		await this.add('Accounts_OAuth_Apple_iss', '', { type: 'string' });
-		await this.add('Accounts_OAuth_Apple_kid', '', { type: 'string' });
-	});
-});
 
 settings.watchMultiple(
 	[

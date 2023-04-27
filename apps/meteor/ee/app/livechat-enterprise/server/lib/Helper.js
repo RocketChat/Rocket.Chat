@@ -127,8 +127,8 @@ export const processWaitingQueue = async (department, inquiry) => {
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
-	const propagateAgentDelegated = (rid, agentId) => {
-		dispatchAgentDelegated(rid, agentId);
+	const propagateAgentDelegated = async (rid, agentId) => {
+		await dispatchAgentDelegated(rid, agentId);
 	};
 
 	if (room && room.servedBy) {
