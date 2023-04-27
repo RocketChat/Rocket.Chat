@@ -85,9 +85,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { externalRoomId } = this.bodyParams;
+			const { externalRoomId, roomName, pageToken } = this.bodyParams;
 
-			await FederationEE.joinExternalPublicRoom(this.userId, externalRoomId);
+			await FederationEE.scheduleJoinExternalPublicRoom(this.userId, externalRoomId, roomName, decodeURIComponent(pageToken || ''));
 
 			return API.v1.success();
 		},
