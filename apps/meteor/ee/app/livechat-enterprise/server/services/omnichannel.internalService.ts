@@ -53,7 +53,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
 		]);
 
-		callbacks.run('livechat:afterOnHold', room);
+		await callbacks.run('livechat:afterOnHold', room);
 
 		this.logger.debug(`Room ${room._id} set on hold successfully`);
 	}
@@ -104,7 +104,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
 		]);
 
-		callbacks.run('livechat:afterOnHoldChatResumed', room);
+		await callbacks.run('livechat:afterOnHoldChatResumed', room);
 
 		this.logger.debug(`Room ${room._id} resumed successfully`);
 	}
@@ -173,7 +173,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
 
-		dispatchAgentDelegated(roomId, null);
+		await dispatchAgentDelegated(roomId, null);
 
 		this.logger.debug(`Current agent removed from room ${room._id} successfully`);
 	}
