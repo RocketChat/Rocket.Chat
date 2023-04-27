@@ -1,3 +1,5 @@
+import { RestClient } from '@rocket.chat/api-client';
+
 import { ClientStreamImpl } from './ClientStream';
 import type { ClientStream } from './ClientStream';
 import type { Connection } from './Connection';
@@ -30,6 +32,7 @@ interface SDK {
 	client: ClientStream;
 
 	timeoutControl: TimeoutControl;
+	rest: RestClient;
 }
 
 interface PublicationPayloads {
@@ -55,6 +58,7 @@ export class DDPSDK implements SDK {
 		readonly client: ClientStream,
 		readonly account: Account,
 		readonly timeoutControl: TimeoutControl,
+		readonly rest: RestClient,
 	) {}
 
 	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): () => void {
@@ -94,7 +98,19 @@ export class DDPSDK implements SDK {
 
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
-		const sdk = new DDPSDK(connection, stream, account, timeoutControl);
+		const rest = new (class RestApiClient extends RestClient {
+			getCredentials() {
+				if (!account.uid || !account.user?.token) {
+					return;
+				}
+				return {
+					'X-User-Id': account.uid,
+					'X-Auth-Token': account.user?.token,
+				};
+			}
+		})({ baseUrl: url });
+
+		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
 		connection.on('connected', () => {
 			Object.entries(stream.subscriptions).forEach(([, sub]) => {
