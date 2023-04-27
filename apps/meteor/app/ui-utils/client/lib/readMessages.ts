@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
-import $ from 'jquery';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { LegacyRoomManager } from './LegacyRoomManager';
@@ -64,10 +63,9 @@ class ReadMessage extends Emitter {
 		}
 
 		// Only read messages if user saw the first unread message
-		const unreadMark = $('.message.first-unread, .rcx-message-divider--unread');
-		if (unreadMark.length > 0) {
-			const position = unreadMark.position();
-			const visible = (position ? position.top : 0) >= 0;
+		const unreadMark = document.querySelector<HTMLElement>('.message.first-unread, .rcx-message-divider--unread');
+		if (unreadMark) {
+			const visible = unreadMark.offsetTop >= 0;
 
 			if (!visible) {
 				this.log('readMessage -> readNow canceled, unread mark visible:', visible);

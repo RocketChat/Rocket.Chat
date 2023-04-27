@@ -116,7 +116,7 @@ const defaultGalleryOptions = {
 
 const createEventListenerFor =
 	(className: string) =>
-	(event: JQuery.ClickEvent): void => {
+	(event: Event): void => {
 		event.preventDefault();
 		event.stopPropagation();
 

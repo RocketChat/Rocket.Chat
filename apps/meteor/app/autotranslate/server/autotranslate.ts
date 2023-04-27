@@ -297,7 +297,7 @@ export abstract class AutoTranslate {
 			targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
 		}
 		if (message.msg) {
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				let targetMessage = Object.assign({}, message);
 				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
@@ -310,7 +310,7 @@ export abstract class AutoTranslate {
 		}
 
 		if (message.attachments && message.attachments.length > 0) {
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				for await (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
 						// Removes the initial link `[ ](quoterl)` from quote message before translation
