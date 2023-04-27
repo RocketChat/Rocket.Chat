@@ -124,32 +124,31 @@ slashCommands.add({
 			return;
 		}
 
-		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer | false) => {
-			!_err &&
-				buffer &&
-				void sendEmail(
-					inbox,
-					{
-						to: room.email?.replyTo,
-						subject: room.email?.subject,
-						text: message?.attachments?.[0].description || '',
-						attachments: [
-							{
-								content: buffer,
-								contentType: file.type,
-								filename: file.name,
-							},
-						],
-						inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
-						references: ([] as string[]).concat(room.email?.thread || []),
-					},
-					{
-						msgId: message._id,
-						sender: message.u.username,
-						rid: message.rid,
-					},
-				).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
-		});
+		const buffer = await FileUpload.getBuffer(file);
+		if (buffer) {
+			void sendEmail(
+				inbox,
+				{
+					to: room.email?.replyTo,
+					subject: room.email?.subject,
+					text: message?.attachments?.[0].description || '',
+					attachments: [
+						{
+							content: buffer,
+							contentType: file.type,
+							filename: file.name,
+						},
+					],
+					inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
+					references: ([] as string[]).concat(room.email?.thread || []),
+				},
+				{
+					msgId: message._id,
+					sender: message.u.username,
+					rid: message.rid,
+				},
+			).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		}
 
 		await Messages.updateOne(
 			{ _id: message._id },
