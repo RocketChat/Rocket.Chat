@@ -1,11 +1,11 @@
 import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
 import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
 import { slashCommands, APIClient, t } from '../../../../app/utils/client';
-import { getRandomId } from '../../../../lib/random';
 import { call } from '../../utils/call';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -30,7 +30,7 @@ const warnUnrecognizedSlashCommand = async (chat: ChatAPI, command: string): Pro
 	console.error(t('No_such_command', { command: escapeHTML(command) }));
 
 	await chat.data.pushEphemeralMessage({
-		_id: getRandomId(),
+		_id: Random.id(),
 		ts: new Date(),
 		msg: t('No_such_command', { command: escapeHTML(command) }),
 		u: {
@@ -67,8 +67,8 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		return false;
 	}
 
-	if (clientOnly) {
-		handleOnClient?.(commandName, params, message);
+	if (clientOnly && chat.uid) {
+		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
 		return true;
 	}
 
@@ -82,6 +82,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		cmd: commandName,
 		params,
 		msg: message,
+		userId: chat.uid,
 	} as const;
 
 	try {

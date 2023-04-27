@@ -9,9 +9,6 @@ import './methods/removeUnit';
 import './methods/saveUnit';
 import './methods/removeBusinessHour';
 import './methods/resumeOnHold';
-import LivechatUnit from '../../models/server/models/LivechatUnit';
-import LivechatTag from '../../models/server/models/LivechatTag';
-import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
@@ -33,7 +30,7 @@ import { onLicense } from '../../license/server';
 import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
-onLicense('livechat-enterprise', async () => {
+await onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
 	await import('./startup');
@@ -41,10 +38,8 @@ onLicense('livechat-enterprise', async () => {
 	const { createSettings } = await import('./settings');
 
 	Meteor.startup(function () {
-		createSettings();
-		createPermissions();
-		createDefaultPriorities();
+		void createSettings();
+		void createPermissions();
+		void createDefaultPriorities();
 	});
 });
-
-export { LivechatUnit, LivechatTag, LivechatUnitMonitors };

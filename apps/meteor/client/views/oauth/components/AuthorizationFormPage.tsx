@@ -42,11 +42,13 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 
 	const submitRef = useRef<HTMLButtonElement>(null);
 
+	const hasAuthorized = user.oauth?.authorizedClients?.includes(oauthApp.clientId);
+
 	useEffect(() => {
-		if (user.oauth?.authorizedClients?.includes(oauthApp.clientId)) {
+		if (hasAuthorized) {
 			submitRef.current?.click();
 		}
-	}, [oauthApp.clientId, user]);
+	}, [oauthApp.clientId, hasAuthorized]);
 
 	return (
 		<Layout>
@@ -68,7 +70,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 							<li>{t('core.access_your_basic_information')}</li>
 						</ul>
 					</Box>
-					<input type='hidden' name='token' value={token} />
+					<input type='hidden' name='access_token' value={token} />
 					<input type='hidden' name='client_id' value={oauthApp.clientId} />
 					<input type='hidden' name='redirect_uri' value={redirectUri} />
 					<input type='hidden' name='response_type' value='code' />

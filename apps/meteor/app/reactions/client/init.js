@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { MessageAction } from '../../ui-utils';
+import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { EmojiPicker } from '../../emoji';
+import { EmojiPicker } from '../../emoji/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {

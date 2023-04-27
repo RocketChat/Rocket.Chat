@@ -159,7 +159,7 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
-		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
 			request
 				.get(api('channels.info'))
 				.set(credentials)
@@ -2092,6 +2092,22 @@ describe('[Channels]', function () {
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
+		});
+
+		it('/channels.list.join should return empty list when member of no group', async () => {
+			const user = await createUser({ joinDefaultChannels: false });
+			const newCreds = await login(user.username, password);
+			await request
+				.get(api('channels.list.joined'))
+				.set(newCreds)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.equal(0);
+					expect(res.body).to.have.property('total').that.is.equal(0);
+					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);
+				});
 		});
 	});
 });

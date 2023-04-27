@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { UIEvent } from 'react';
 
 import {
@@ -13,7 +13,7 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
-import { UserAction } from '..';
+import { UserAction } from './UserAction';
 import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
@@ -25,6 +25,8 @@ type DeepWritable<T> = T extends (...args: any) => any
 	  };
 
 export class ChatMessages implements ChatAPI {
+	public uid: string | null;
+
 	public composer: ComposerAPI | undefined;
 
 	public setComposerAPI = (composer: ComposerAPI): void => {
@@ -39,9 +41,9 @@ export class ChatMessages implements ChatAPI {
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
 	public action: {
-		start(action: 'typing'): void;
-		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
-		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
+		start(action: 'typing'): Promise<void> | void;
+		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): Promise<void> | void;
+		performContinuously(action: 'recording' | 'uploading' | 'playing'): Promise<void> | void;
 	};
 
 	private currentEditingMID?: string;
@@ -114,9 +116,11 @@ export class ChatMessages implements ChatAPI {
 		private params: {
 			rid: IRoom['_id'];
 			tmid?: IMessage['_id'];
+			uid: IUser['_id'] | null;
 		},
 	) {
 		const { rid, tmid } = params;
+		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
 

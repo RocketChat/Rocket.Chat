@@ -4,8 +4,7 @@
  * @module AutoTranslate, TranslationProviderRegistry
  */
 
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import './settings';
+import { TranslationProviderRegistry } from './autotranslate';
 import './permissions';
 import './autotranslate';
 import './methods/getSupportedLanguages';
@@ -16,4 +15,4 @@ import './deeplTranslate';
 import './msTranslate';
 import './methods/getProviderUiMetadata';
 
-export { AutoTranslate, TranslationProviderRegistry };
+export { TranslationProviderRegistry };

@@ -25,7 +25,7 @@ export class AudioRecorder {
 			return;
 		}
 
-		this.audioContext.close();
+		void this.audioContext.close();
 		delete this.audioContext;
 	}
 

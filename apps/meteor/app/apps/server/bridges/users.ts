@@ -1,10 +1,12 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
-import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
+import { Presence } from '@rocket.chat/core-services';
+import type { UserStatus } from '@rocket.chat/core-typings';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
-import { Users } from '../../../models/server';
+import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppUserBridge extends UserBridge {
@@ -28,7 +30,11 @@ export class AppUserBridge extends UserBridge {
 	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting its assigned user`);
 
-		const user = Users.findOneByAppId(appId, {});
+		if (!appId) {
+			return;
+		}
+
+		const user = await Users.findOneByAppId(appId, {});
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
@@ -66,14 +72,14 @@ export class AppUserBridge extends UserBridge {
 		switch (user.type) {
 			case 'bot':
 			case 'app':
-				if (!checkUsernameAvailability(user.username)) {
+				if (!(await checkUsernameAvailability(user.username))) {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
-				Users.insert(user);
+				await Users.insertOne(user);
 
 				if (options?.avatarUrl) {
-					setUserAvatar(user, options.avatarUrl, '', 'local');
+					await setUserAvatar(user, options.avatarUrl, '', 'local');
 				}
 
 				break;
@@ -94,7 +100,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
-			deleteUser(user.id);
+			await deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);
 		}
@@ -102,11 +108,7 @@ export class AppUserBridge extends UserBridge {
 		return true;
 	}
 
-	protected async update(
-		user: IUser & { id: string },
-		fields: Partial<IUser> & { statusDefault: string },
-		appId: string,
-	): Promise<boolean> {
+	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
 
 		if (!user) {
@@ -121,10 +123,10 @@ export class AppUserBridge extends UserBridge {
 		delete fields.status;
 
 		if (status) {
-			fields.statusDefault = status;
+			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
 		}
 
-		await UsersRaw.updateOne({ _id: user.id }, { $set: fields as any });
+		await Users.updateOne({ _id: user.id }, { $set: fields as any });
 
 		return true;
 	}

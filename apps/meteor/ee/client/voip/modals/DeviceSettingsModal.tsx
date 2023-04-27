@@ -57,7 +57,7 @@ const DeviceSettingsModal = (): ReactElement => {
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Device_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />

@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
@@ -86,6 +87,11 @@ export interface IUserServices {
 		id: string;
 		idAttribute?: string;
 	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
+	};
 }
 
 export interface IUserEmail {
@@ -95,7 +101,7 @@ export interface IUserEmail {
 
 export interface IUserSettings {
 	profile: any;
-	preferences: {
+	preferences?: {
 		[key: string]: any;
 	};
 }
@@ -158,6 +164,19 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	banners?: {
+		[key: string]: {
+			id: string;
+			priority: number;
+			title: string;
+			text: string;
+			textArguments?: string[];
+			modifiers: ('large' | 'danger')[];
+			link: string;
+			read?: boolean;
+		};
+	};
+	importIds?: string[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -166,7 +185,7 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
-export const isUserFederated = (user: Partial<IUser>): user is IUser => 'federated' in user && user.federated === true;
+export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;

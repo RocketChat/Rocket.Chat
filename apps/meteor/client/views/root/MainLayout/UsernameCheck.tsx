@@ -5,13 +5,10 @@ import React, { useCallback } from 'react';
 
 import { Users } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import BlazeTemplate from '../BlazeTemplate';
 import PasswordChangeCheck from './PasswordChangeCheck';
-import { useViewportScrolling } from './useViewportScrolling';
+import RegisterUsername from './RegisterUsername';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
-	useViewportScrolling();
-
 	const uid = useUserId();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
@@ -27,7 +24,7 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	);
 
 	if (!hasUsername) {
-		return <BlazeTemplate template='username' />;
+		return <RegisterUsername />;
 	}
 
 	return <PasswordChangeCheck>{children}</PasswordChangeCheck>;

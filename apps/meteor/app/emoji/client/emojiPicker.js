@@ -3,6 +3,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
@@ -160,6 +161,8 @@ Template.emojiPicker.helpers({
 		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get(), Template.instance().searchTermItems.get());
 	},
 	emojiList() {
+		emojiListByCategory.all();
+
 		return (category) => {
 			return emojiListByCategory.get(category);
 		};
@@ -244,7 +247,7 @@ Template.emojiPicker.events({
 		}
 
 		customItems += 90;
-		emojiListByCategory.set('rocket', createEmojiList('rocket', 0, customItems));
+		emojiListByCategory.set('rocket', createEmojiList('rocket', null, customItems));
 	},
 	'click .tone-selector .tone'(event, instance) {
 		event.stopPropagation();
