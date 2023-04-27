@@ -2,9 +2,24 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import { getOutlookEvents } from '../lib/outlookCalendar/getOutlookEvents';
+type AppointmentData = {
+	id: string;
+	subject: string;
+	startTime: Date;
+	endTime: Date;
+	description: string;
 
-export const useSyncOutlookEvents = (date: Date, server: string, user: string, password: string): (() => Promise<void>) => {
+	isAllDay: boolean;
+	isCanceled: boolean;
+	organizer?: string;
+	meetingUrl?: string;
+	reminderMinutesBeforeStart?: number;
+	reminderDueBy?: Date;
+};
+
+
+export const useSyncOutlookEvents = (): (() => Promise<void>) => {
+	const date = new Date();
 	const getCalendarEventsList = useEndpoint('GET', '/v1/calendar-events.list');
 	const createCalendarEvent = useEndpoint('POST', '/v1/calendar-events.create');
 	const updateCalendarEvent = useEndpoint('POST', '/v1/calendar-events.update');
@@ -18,19 +33,17 @@ export const useSyncOutlookEvents = (date: Date, server: string, user: string, p
 	const syncEvents = async () => {
 		const externalEvents = serverEvents?.data.filter(({ externalId }) => externalId);
 
-		const appointments = await getOutlookEvents(date, server, user, password);
-		const appointmentsFound = appointments.map((appointment) => appointment.Id.UniqueId);
+		const appointments = await window.RocketChatDesktop.getOutlookEvents(date) as AppointmentData[];
+		const appointmentsFound = appointments.map((appointment) => appointment.id);
 
 		for await (const appointment of appointments) {
 			try {
-				const existingEvent = externalEvents?.find(({ externalId }) => externalId === appointment.Id.UniqueId);
+				const existingEvent = externalEvents?.find(({ externalId }) => externalId === appointment.id);
 
-				const externalId = appointment.Id.UniqueId;
-				const subject = appointment.Subject;
-				const startTime = appointment.Start.ToISOString();
-				const description = appointment.Body?.Text || '';
+				const { id: externalId, subject, startTime: startTimeObj, description } = appointment;
+				const startTime = startTimeObj.toISOString();
 
-				// If the appointment is not in the rocket.chat calendar, add it.
+				// If the appointment is not in the rocket.chat calendar for today, add it.
 				if (!existingEvent) {
 					await createCalendarEvent({
 						externalId,
