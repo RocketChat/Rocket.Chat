@@ -96,6 +96,34 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
+      - name: Start httpbin container
+        uses: docker://kennethreitz/httpbin
+        with:
+          ports: '10000:80'
+          detach: true
+          name: httpbin
+        env:
+          DOCKER_TLS_CERTDIR: ''
+
+      - name: Verify httpbin is running
+        run: |
+          i=0
+          while [ $i -lt 10 ]; do
+            if curl -s -o /dev/null http://localhost:10000; then
+              break
+            fi
+            i=$((i + 1))
+            sleep 30
+          done
+          if [ $i -eq 10 ]; then
+            echo "Failed to verify httpbin is running"
+            exit 1
+          fi
+
+      - name: Test with httpbin
+        run: |
+          curl http://localhost:10000/get
+
       - name: yarn build
         run: yarn build
 
@@ -192,32 +220,6 @@ jobs:
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done;
-
-      - name: Start httpbin container
-        uses: docker://kennethreitz/httpbin
-        with:
-          ports: '10000:80'
-          detach: true
-          name: httpbin
-
-      - name: Verify httpbin is running
-        run: |
-          i=0
-          while [ $i -lt 10 ]; do
-            if curl -s -o /dev/null http://localhost:10000; then
-              break
-            fi
-            i=$((i + 1))
-            sleep 30
-          done
-          if [ $i -eq 10 ]; then
-            echo "Failed to verify httpbin is running"
-            exit 1
-          fi
-
-      - name: Test with httpbin
-        run: |
-          curl http://localhost:10000/get
 
       - name: E2E Test API
         if: inputs.type == 'api'
