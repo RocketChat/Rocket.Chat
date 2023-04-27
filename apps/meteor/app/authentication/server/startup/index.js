@@ -18,6 +18,8 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
+import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -269,9 +271,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
-			});
+			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
 		}
 
 		if (user.type !== 'visitor') {
@@ -281,17 +281,13 @@ const insertUserDocAsync = async function (options, user) {
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			Object.keys(avatarSuggestions).some((service) => {
+			for await (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function () {
-						return Promise.await(Meteor.callAsync('setAvatarFromService', avatarData.blob, '', service));
-					});
-					return true;
+					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
+					break;
 				}
-
-				return false;
-			});
+			}
 		}
 	}
 
