@@ -206,7 +206,6 @@
 	*/
 	--sidebar-width: 280px;
 	--sidebar-small-width: 90%;
-
 	--sidebar-background-hover: var(--rc-color-primary-dark);
 	--sidebar-background-light: var(--rc-color-primary-lightest);
 	--sidebar-background-light-hover: var(--rc-color-primary-light);
@@ -353,7 +352,8 @@
 }
 
 .rcx-sidebar--main {
-	/* --sidebar-background: red; */
 	--sidebar-background: var(--rcx-color-surface-tint, #262931);
-	--sidebar-item-text-color: var(--rcx-color-font-default, #9EA2A8);
+	--sidebar-item-text-color: var(--rcx-color-font-default, #9ea2a8);
 }
+
+/* #endregion */
