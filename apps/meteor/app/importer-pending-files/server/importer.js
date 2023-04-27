@@ -1,7 +1,6 @@
 import https from 'https';
 import http from 'http';
 
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
 
