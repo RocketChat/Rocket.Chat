@@ -7,7 +7,18 @@ const hasProperty = <TProperty extends number | string | symbol>(
 	property: TProperty,
 ): obj is { [key in TProperty]: unknown } => isObject(obj) && property in obj;
 
-const hasJQueryXHR = (error: object): error is { xhr: JQuery.jqXHR } => hasProperty(error, 'xhr') && hasProperty(error.xhr, 'responseJSON');
+const hasXHR = (
+	error: object,
+): error is {
+	xhr: {
+		responseJSON: {
+			error: string;
+			status: string;
+			messages: string[];
+			payload?: any;
+		};
+	};
+} => hasProperty(error, 'xhr') && hasProperty(error.xhr, 'responseJSON');
 
 export function getErrorMessage(error: unknown, defaultMessage?: string): string {
 	if (typeof error === 'string') {
@@ -20,7 +31,7 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 		throw new TypeError('no default error message specified');
 	}
 
-	if (hasJQueryXHR(error)) {
+	if (hasXHR(error)) {
 		return getErrorMessage(error.xhr.responseJSON, defaultMessage);
 	}
 

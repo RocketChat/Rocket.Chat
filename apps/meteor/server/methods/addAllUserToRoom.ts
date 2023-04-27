@@ -54,7 +54,7 @@ Meteor.methods<ServerMethods>({
 			if (subscription != null) {
 				continue;
 			}
-			callbacks.run('beforeJoinRoom', user, room);
+			await callbacks.run('beforeJoinRoom', user, room);
 			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 				groupMentions: 0,
 			});
 			await Message.saveSystemMessage('uj', rid, user.username || '', user, { ts: now });
-			callbacks.run('afterJoinRoom', user, room);
+			await callbacks.run('afterJoinRoom', user, room);
 		}
 		return true;
 	},

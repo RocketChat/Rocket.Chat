@@ -46,7 +46,7 @@ async function getEmailContent({ message, user, room }) {
 			messageContent = TAPi18n.__('Encrypted_message', { lng });
 		}
 
-		message = callbacks.run('renderMessage', message);
+		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
 				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
@@ -102,15 +102,19 @@ const getButtonUrl = (room, subscription, message) => {
 	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
 
 	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
-	return getURL(path, {
-		full: true,
-		cloud: settings.get('Offline_Message_Use_DeepLink'),
-		cloud_route: 'room',
-		cloud_params: {
-			rid: room._id,
-			mid: message._id,
+	return getURL(
+		path,
+		{
+			full: true,
+			cloud: settings.get('Offline_Message_Use_DeepLink'),
+			cloud_route: 'room',
+			cloud_params: {
+				rid: room._id,
+				mid: message._id,
+			},
 		},
-	});
+		settings.get('DeepLink_Url'),
+	);
 };
 
 function generateNameEmail(name, email) {
