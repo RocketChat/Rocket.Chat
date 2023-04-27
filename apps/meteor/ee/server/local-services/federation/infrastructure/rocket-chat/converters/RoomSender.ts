@@ -197,12 +197,19 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toJoinExternalPublicRoomDto(internalUserId: string, externalRoomId: string): FederationJoinExternalPublicRoomInputDto {
+	public static toJoinExternalPublicRoomDto(
+		internalUserId: string,
+		externalRoomId: string,
+		roomName?: string,
+		pageToken?: string,
+	): FederationJoinExternalPublicRoomInputDto {
 		return new FederationJoinExternalPublicRoomInputDto({
 			externalRoomId,
 			internalUserId,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalRoomId),
 			externalRoomHomeServerName: extractServerNameFromExternalIdentifier(externalRoomId),
+			roomName,
+			pageToken,
 		});
 	}
 
