@@ -206,7 +206,7 @@
 	*/
 	--sidebar-width: 280px;
 	--sidebar-small-width: 90%;
-	--sidebar-background: var(--rc-color-primary-background);
+
 	--sidebar-background-hover: var(--rc-color-primary-dark);
 	--sidebar-background-light: var(--rc-color-primary-lightest);
 	--sidebar-background-light-hover: var(--rc-color-primary-light);
@@ -350,4 +350,10 @@
 	--tooltip-text-color: var(--color-white);
 	--tooltip-text-size: 0.75rem;
 	--tooltip-radius: var(--border-radius);
+}
+
+.rcx-sidebar--main {
+	/* --sidebar-background: red; */
+	--sidebar-background: var(--rcx-color-surface-tint, #262931);
+	--sidebar-item-text-color: var(--rcx-color-font-default, #9EA2A8);
 }
