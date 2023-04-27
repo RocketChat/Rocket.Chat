@@ -15,6 +15,7 @@ services:
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
+      - 'WEBHOOK_TEST_URL=host.docker.internal:4000'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -154,3 +155,8 @@ services:
       - 3000:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  
+  httpbin:
+    image: kennethreitz/httpbin
+    ports:
+      - '4000:80'
