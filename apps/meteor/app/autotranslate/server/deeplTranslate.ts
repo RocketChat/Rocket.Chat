@@ -3,7 +3,6 @@
  */
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type {
 	IMessage,
@@ -13,6 +12,7 @@ import type {
 	ITranslationResult,
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -200,31 +200,24 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations: { [k: string]: string } = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
-		const query = `text=${msgs.join('&text=')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
-					params: {
-						auth_key: this.apiKey,
-						target_lang: language,
-					},
-					query,
-				});
+				const result = await fetch(this.apiEndPointUrl, { params: { auth_key: this.apiKey, target_lang: language, text: msgs } });
 
-				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.translations &&
-					Array.isArray(result.data.translations) &&
-					result.data.translations.length > 0
-				) {
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+
+				const body = await result.json();
+
+				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
-					const translatedText = result.data.translations
+					const translatedText = body.translations
 						.map((translation: IDeepLTranslation, index: number) =>
 							translation.detected_source_language !== language ? translation.text : msgs[index],
 						)
@@ -234,7 +227,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 
@@ -247,35 +240,32 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		const query = `text=${encodeURIComponent(attachment.description || attachment.text || '')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
+						text: encodeURIComponent(attachment.description || attachment.text || ''),
 					},
-					query,
 				});
-				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.translations &&
-					Array.isArray(result.data.translations) &&
-					result.data.translations.length > 0
-				) {
-					if (result.data.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
+				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
+					if (body.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						translations[language] = body.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message attachment', err });
 			}
-		});
+		}
 		return translations;
 	}
 }
