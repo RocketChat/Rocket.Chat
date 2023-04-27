@@ -17,7 +17,6 @@ type AppointmentData = {
 	reminderDueBy?: Date;
 };
 
-
 export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 	const date = new Date();
 	const getCalendarEventsList = useEndpoint('GET', '/v1/calendar-events.list');
