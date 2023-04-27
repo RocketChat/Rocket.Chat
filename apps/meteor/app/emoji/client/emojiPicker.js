@@ -7,7 +7,7 @@ import $ from 'jquery';
 
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
-import { emoji } from '../lib/rocketchat';
+import { emoji } from './lib';
 import { withThrottling } from '../../../lib/utils/highOrderFunctions';
 import { baseURI } from '../../../client/lib/baseURI';
 import './emojiPicker.html';
