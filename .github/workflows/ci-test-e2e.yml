@@ -202,9 +202,18 @@ jobs:
 
       - name: Verify httpbin is running
         run: |
-          curl -s -o /dev/null http://localhost:10000 || exit 1
-        retries: 10
-        timeout-minutes: 5
+          i=0
+          while [ $i -lt 10 ]; do
+            if curl -s -o /dev/null http://localhost:10000; then
+              break
+            fi
+            i=$((i + 1))
+            sleep 30
+          done
+          if [ $i -eq 10 ]; then
+            echo "Failed to verify httpbin is running"
+            exit 1
+          fi
 
       - name: Test with httpbin
         run: |
