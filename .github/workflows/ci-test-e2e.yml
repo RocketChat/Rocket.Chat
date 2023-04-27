@@ -193,6 +193,17 @@ jobs:
             sleep 10
           done;
 
+      - name: Start httpbin container
+        uses: docker://kennethreitz/httpbin
+        with:
+          ports: '10000:80'
+          detach: true
+          name: httpbin
+
+      - name: Test with httpbin
+        run: |
+          curl http://localhost:10000/get
+
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
