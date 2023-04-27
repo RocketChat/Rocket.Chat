@@ -1,0 +1,17 @@
+{
+	"extends": "../../../tsconfig.base.server.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": false,
+		"preserveSymlinks": true,
+		"strictPropertyInitialization": false,
+		// "types": ["meteor", "node"],
+		/* Module Resolution Options */
+		"outDir": "./dist",
+		"module": "esnext",
+		"target": "es2018"
+	},
+	"files": ["./src/service.ts", "../../../apps/meteor/client/definitions/info.d.ts"],
+	"include": ["../../../apps/meteor/definition/externals"],
+	"exclude": ["./dist"]
+}
