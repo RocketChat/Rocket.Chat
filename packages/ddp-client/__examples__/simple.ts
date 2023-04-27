@@ -1,10 +1,9 @@
 import WebSocket from 'ws';
 import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
-// import type { ServerStreamerNames, StreamerEvents } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
+import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 
 import { DDPSDK } from '../src/DDPSDK';
 import type { DDPDispatchOptions } from '../src/types/DDPClient';
-import { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 
 declare module '../src/ClientStream' {
 	interface ClientStream {
