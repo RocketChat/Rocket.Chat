@@ -351,10 +351,8 @@ API.v1.addRoute(
 			}
 
 			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
-
 			if (!chatForwardedResult) {
-				const { departmentId } = transferData;
-				return API.v1.failure(departmentId ? 'error-no-agents-online-in-department' : 'error-forwarding-chat');
+				throw new Error('error-forwarding-chat');
 			}
 
 			return API.v1.success();
