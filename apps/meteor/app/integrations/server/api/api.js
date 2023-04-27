@@ -15,6 +15,7 @@ import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
@@ -148,7 +149,7 @@ async function removeIntegration(options, user) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	await Meteor.runAsUser(user._id, () => Meteor.callAsync('deleteOutgoingIntegration', integrationToRemove._id));
+	await deleteOutgoingIntegration(integrationToRemove._id, user._id);
 
 	return API.v1.success();
 }
