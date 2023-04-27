@@ -996,12 +996,12 @@
 }
 
 .rc-old .highlight-text {
-	padding: 2px;
+	padding: 0 2px 2px;
 
-	color: inherit;
+	color: var(--rcx-color-font-pure-black, #2f343d);
 
-	border-radius: 15px;
-	background-color: var(--selection-background);
+	border-radius: var(--border-radius);
+	background-color: var(--rcx-color-status-background-info, #d1ebfe);
 }
 
 @keyframes zoomIn {
