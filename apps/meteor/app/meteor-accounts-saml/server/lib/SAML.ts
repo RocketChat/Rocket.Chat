@@ -374,22 +374,28 @@ export class SAML {
 		res.end();
 	}
 
-	private static processAuthorizeAction(res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	private static async processAuthorizeAction(
+		res: ServerResponse,
+		service: IServiceProviderOptions,
+		samlObject: ISAMLAction,
+	): Promise<void> {
 		service.id = samlObject.credentialToken;
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.getAuthorizeUrl((err, url) => {
-			if (err) {
-				SAMLUtils.error('Unable to generate authorize url');
-				SAMLUtils.error(err);
-				url = Meteor.absoluteUrl();
-			}
+		let url: string | undefined;
 
-			res.writeHead(302, {
-				Location: url,
-			});
-			res.end();
+		try {
+			url = await serviceProvider.getAuthorizeUrl();
+		} catch (err: any) {
+			SAMLUtils.error('Unable to generate authorize url');
+			SAMLUtils.error(err);
+			url = Meteor.absoluteUrl();
+		}
+
+		res.writeHead(302, {
+			Location: url,
 		});
+		res.end();
 	}
 
 	private static processValidateAction(
