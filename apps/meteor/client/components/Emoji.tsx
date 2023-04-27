@@ -11,7 +11,7 @@ type EmojiProps = {
 };
 
 const EmojiComponent = styled('span', ({ fillContainer: _fillContainer, ...props }: { fillContainer?: boolean }) => props)`
-	${(fillContainer) =>
+	${({ fillContainer }) =>
 		fillContainer
 			? `
 				display: inline-block;

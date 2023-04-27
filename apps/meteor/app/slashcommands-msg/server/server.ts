@@ -3,9 +3,11 @@ import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 
 /*
  * Msg is a named function that will replace /msg commands
@@ -13,10 +15,9 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'msg',
-	callback: async function Msg(_command: 'msg', params, item): Promise<void> {
+	callback: async function Msg({ params, message: item, userId }: SlashCommandCallbackParams<'msg'>): Promise<void> {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');
-		const userId = Meteor.userId() as string;
 		if (separator === -1) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_and_message_must_not_be_empty', { lng: settings.get('Language') || 'en' }),
@@ -44,7 +45,7 @@ slashCommands.add({
 			rid,
 			msg: message,
 		};
-		await Meteor.callAsync('sendMessage', msgObject);
+		await executeSendMessage(userId, msgObject);
 	},
 	options: {
 		description: 'Direct_message_someone',

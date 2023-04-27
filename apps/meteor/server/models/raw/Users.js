@@ -1293,6 +1293,12 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
+
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		const username = {
@@ -2001,7 +2007,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findByUsernames(usernames, options) {
-		const query = { $in: usernames };
+		const query = { username: { $in: usernames } };
 
 		return this.find(query, options);
 	}

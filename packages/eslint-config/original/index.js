@@ -22,7 +22,6 @@ module.exports = {
 		commonjs: true,
 		es6: true,
 		node: true,
-		jquery: true,
 	},
 	// rules: {
 	//  // 'no-multi-spaces': 2,
