@@ -15,6 +15,7 @@ import type { RocketChatMessageAdapter } from '../../../../../server/services/fe
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
+import { RocketChatQueueAdapterEE } from './rocket-chat/adapters/Queue';
 
 export class FederationFactoryEE extends FederationFactory {
 	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
@@ -33,6 +34,10 @@ export class FederationFactoryEE extends FederationFactory {
 		return new RocketChatUserAdapterEE();
 	}
 
+	public static buildInternalQueueAdapter(): RocketChatQueueAdapterEE {
+		return new RocketChatQueueAdapterEE();
+	}
+
 	public static buildRoomServiceSenderEE(
 		internalRoomAdapter: RocketChatRoomAdapterEE,
 		internalUserAdapter: RocketChatUserAdapterEE,
@@ -40,6 +45,7 @@ export class FederationFactoryEE extends FederationFactory {
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalMessageAdapter: RocketChatMessageAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
+		internalQueueAdapter: RocketChatQueueAdapterEE,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(
@@ -49,6 +55,7 @@ export class FederationFactoryEE extends FederationFactory {
 			internalSettingsAdapter,
 			internalMessageAdapter,
 			internalNotificationAdapter,
+			internalQueueAdapter,
 			bridge,
 		);
 	}
