@@ -33,6 +33,8 @@ export interface Connection
 		reconnecting: void;
 		close: void;
 	}> {
+	url: string;
+
 	session?: string;
 
 	status: ConnectionStatus;
