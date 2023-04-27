@@ -11,7 +11,7 @@ const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
-	callbacks.run('livechat.afterInquiryQueued', inquiry);
+	await callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {

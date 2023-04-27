@@ -37,13 +37,13 @@ const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agent
 API.v1.addRoute('livechat/room', {
 	async get() {
 		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-		const extraCheckParams = onCheckRoomParams({
+		const extraCheckParams = await onCheckRoomParams({
 			token: String,
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
 		});
 
-		check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams as any);
 
 		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
@@ -447,7 +447,7 @@ API.v1.addRoute(
 
 			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
 
-			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
+			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,
 				oldRoom: room,
 			});

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 
 import { isSetNotNull } from './function-isSet';
 import { LegacyRoomManager } from '../../../ui-utils/client';
