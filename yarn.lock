@@ -6962,6 +6962,7 @@ __metadata:
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.12
     "@types/cssom": ^0.4.1
+    "@types/deasync": ^0
     "@types/dompurify": ^2.3.3
     "@types/ejson": ^2.2.0
     "@types/emojione": ^2.2.6
@@ -7061,6 +7062,7 @@ __metadata:
     csv-parse: ^5.2.0
     date-fns: ^2.28.0
     date.js: ~0.3.3
+    deasync: ^0.1.28
     debug: ~4.1.1
     dompurify: ^2.3.8
     ejson: ^2.2.2
@@ -10280,6 +10282,13 @@ __metadata:
   version: 0.4.1
   resolution: "@types/cssom@npm:0.4.1"
   checksum: 0f44f5ff27f5dfadfb89c8bd00f8d588dc1aaa77ec05ffa3ab732929683aef842f55a6c52c9a75586a28987f009b45f6ea5f63dbc34660f6bb98650eea7f59e9
+  languageName: node
+  linkType: hard
+
+"@types/deasync@npm:^0":
+  version: 0.1.2
+  resolution: "@types/deasync@npm:0.1.2"
+  checksum: 28a49e42c0d459afabdab02f0464a0231e24ef79bf800f15f779897d9564fb2b95d887e6f338a9bc5fa67186594dc1977dd5565fea3c7e0c9b282032c7b20c51
   languageName: node
   linkType: hard
 
@@ -13741,6 +13750,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bluebird@npm:^2.10.0":
+  version: 2.11.0
+  resolution: "bluebird@npm:2.11.0"
+  checksum: f1c6cbec64100bca65c88e5de0d9ee9bbb435f7c74c68a16a9466a8b40daf64346805c2fe04af821564ce6d4199085e7855d2e272282a065eb723344815cc354
+  languageName: node
+  linkType: hard
+
 "blueimp-md5@npm:^2.16.0":
   version: 2.19.0
   resolution: "blueimp-md5@npm:2.19.0"
@@ -16613,6 +16629,16 @@ __metadata:
   dependencies:
     lodash.isequal: ^4.5.0
   checksum: 629d23f83f1dc1c12012471c9cde3ea491c7401dc081e6c56b43f67e9f92875f0ecfa8d2bf43c6c7653958c6ed9880fefbcee04e1ac6c2679301e4b49bc2aa9f
+  languageName: node
+  linkType: hard
+
+"deasync@npm:^0.1.28":
+  version: 0.1.28
+  resolution: "deasync@npm:0.1.28"
+  dependencies:
+    bindings: ^1.5.0
+    node-addon-api: ^1.7.1
+  checksum: e0c1ef427875c897e0d903a08410df1d0a3dfd0d2a0a1e43fb6c2824dfbc504b810bd08a0d30653117259316e1aa65409c96dbed40101c934f75bac7499e1265
   languageName: node
   linkType: hard
 
@@ -26865,6 +26891,15 @@ __metadata:
   version: 3.1.1
   resolution: "node-abort-controller@npm:3.1.1"
   checksum: 2c340916af9710328b11c0828223fc65ba320e0d082214a211311bf64c2891028e42ef276b9799188c4ada9e6e1c54cf7a0b7c05dd9d59fcdc8cd633304c8047
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^1.7.1":
+  version: 1.7.2
+  resolution: "node-addon-api@npm:1.7.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 938922b3d7cb34ee137c5ec39df6289a3965e8cab9061c6848863324c21a778a81ae3bc955554c56b6b86962f6ccab2043dd5fa3f33deab633636bd28039333f
   languageName: node
   linkType: hard
 
