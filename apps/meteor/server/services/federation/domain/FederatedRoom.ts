@@ -88,6 +88,10 @@ export abstract class AbstractFederatedRoom {
 		this.internalReference.fname = displayName;
 	}
 
+	public shouldUpdateRoomName(aRoomName: string): boolean {
+		return this.internalReference?.name !== aRoomName && !this.isDirectMessage();
+	}
+
 	public changeRoomName(name: string): void {
 		if (this.isDirectMessage()) {
 			throw new Error('Its not possible to change a direct message name');

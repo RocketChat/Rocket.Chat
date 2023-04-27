@@ -75,7 +75,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				});
 			} else {
 				await Meteor.callAsync('addUsersToRoom', {
-					rid: targetChannel?._id ?? '',
+					rid: targetChannel?._id,
 					users,
 				});
 			}

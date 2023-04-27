@@ -880,6 +880,37 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.col.countDocuments(query);
 	}
 
+	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
+		const asc = false;
+
+		return this.findFederatedRoomByAmountOfUsers(options, asc);
+	}
+
+	async findFederatedRoomByAmountOfUsers(options?: FindOptions<IRoom>, asc = true): Promise<IRoom | undefined> {
+		const query = {
+			federated: true,
+		};
+
+		const room = await (
+			await this.find(query, options)
+				.sort({ usersCount: asc ? 1 : -1 })
+				.limit(1)
+				.toArray()
+		).shift();
+
+		return room;
+	}
+
+	async findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
+		const asc = true;
+
+		return this.findFederatedRoomByAmountOfUsers(options, asc);
+	}
+
+	async countFederatedRooms(): Promise<number> {
+		return this.col.countDocuments({ federated: true });
+	}
+
 	incMsgCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

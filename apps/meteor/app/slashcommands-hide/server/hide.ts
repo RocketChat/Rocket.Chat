@@ -1,9 +1,8 @@
 import { api } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
