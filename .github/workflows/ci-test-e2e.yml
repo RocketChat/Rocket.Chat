@@ -200,6 +200,12 @@ jobs:
           detach: true
           name: httpbin
 
+      - name: Verify httpbin is running
+        run: |
+          curl -s -o /dev/null http://localhost:10000 || exit 1
+        retries: 10
+        timeout-minutes: 5
+
       - name: Test with httpbin
         run: |
           curl http://localhost:10000/get
