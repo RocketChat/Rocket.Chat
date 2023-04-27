@@ -74,14 +74,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
+		await callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
 
 		await Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
 		await Message.saveSystemMessage('user-unmuted', data.rid, unmutedUser.username, fromUser);
 
-		Meteor.defer(function () {
-			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
+		setImmediate(function () {
+			void callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
 		});
 
 		return true;

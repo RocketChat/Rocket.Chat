@@ -44,7 +44,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const logger = new Logger('Livechat');
 
@@ -55,7 +54,6 @@ export const Livechat = {
 	historyMonitorType: 'url',
 
 	logger,
-	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -182,7 +180,7 @@ export const Livechat = {
 		}
 
 		if (room == null) {
-			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+			const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
 				const department = await this.getRequiredDepartment();
@@ -434,7 +432,7 @@ export const Livechat = {
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
@@ -580,7 +578,7 @@ export const Livechat = {
 			return false;
 		}
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
@@ -775,29 +773,6 @@ export const Livechat = {
 		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
-	},
-
-	async sendRequest(postData, callback, attempts = 10) {
-		if (!attempts) {
-			return;
-		}
-		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			method: 'POST',
-			data: JSON.stringify(postData),
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-		};
-		try {
-			return (await fetch(settings.get('Livechat_webhookUrl'), options)).json();
-		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 10 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(async function () {
-				await Livechat.sendRequest(postData, callback, attempts - 1);
-			}, 10000);
-		}
 	},
 
 	async getLivechatRoomGuestInfo(room) {
@@ -1061,7 +1036,7 @@ export const Livechat = {
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
@@ -1227,7 +1202,7 @@ export const Livechat = {
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
 		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
 		});
 

@@ -9,9 +9,12 @@ import { Logger } from '../../logger/server';
 
 const logger = new Logger('CORS');
 
-settings.watch('Enable_CSP', (enabled) => {
-	WebAppInternals.setInlineScriptsAllowed(!enabled);
-});
+settings.watch(
+	'Enable_CSP',
+	Meteor.bindEnvironment((enabled) => {
+		WebAppInternals.setInlineScriptsAllowed(!enabled);
+	}),
+);
 
 WebApp.rawConnectHandlers.use(function (req, res, next) {
 	// XSS Protection for old browsers (IE)

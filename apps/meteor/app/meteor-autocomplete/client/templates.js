@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import $ from 'jquery';
 
 import { omit } from '../../../lib/utils/omit';
 import AutoComplete from './autocomplete-client';

@@ -24,6 +24,6 @@ export const saveRoomTopic = async function (
 	if (update && sendMessage) {
 		await Message.saveSystemMessage('room_changed_topic', rid, roomTopic || '', user);
 	}
-	callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
+	await callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
 	return update;
 };

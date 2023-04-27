@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	get lastUserMessageNotThread(): Locator {
+		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
+	}
+
 	get lastUserMessageBody(): Locator {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
@@ -110,6 +114,14 @@ export class HomeContent {
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+	}
+
+	get lastThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+	}
+
+	get lastThreadMessagePreviewText(): Locator {
+		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -233,6 +245,10 @@ export class HomeContent {
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.click();
+	}
+
+	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
+		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get takeOmnichannelChatButton(): Locator {
