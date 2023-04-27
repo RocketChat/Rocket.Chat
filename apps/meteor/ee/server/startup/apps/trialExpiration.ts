@@ -5,6 +5,6 @@ import { onInvalidateLicense } from '../../../app/license/server/license';
 
 Meteor.startup(() => {
 	onInvalidateLicense(() => {
-		Apps.disableApps();
+		void Apps.disableApps();
 	});
 });
