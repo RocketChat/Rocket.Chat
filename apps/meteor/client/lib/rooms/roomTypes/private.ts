@@ -7,7 +7,7 @@ import { hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
-import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
+import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';

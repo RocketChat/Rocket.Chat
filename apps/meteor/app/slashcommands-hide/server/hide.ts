@@ -3,6 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
@@ -14,9 +15,8 @@ import { slashCommands } from '../../utils/server';
 
 slashCommands.add({
 	command: 'hide',
-	callback: async (_command: 'hide', param, item): Promise<void> => {
-		const room = param.trim();
-		const userId = Meteor.userId();
+	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'hide'>): Promise<void> => {
+		const room = params.trim();
 		if (!userId) {
 			return;
 		}
@@ -30,7 +30,7 @@ slashCommands.add({
 		const lng = user.language || settings.get('Language') || 'en';
 
 		// if there is not a param, hide the current room
-		let { rid } = item;
+		let { rid } = message;
 		if (room !== '') {
 			const [strippedRoom] = room.replace(/#|@/, '').split(' ');
 
@@ -44,7 +44,7 @@ slashCommands.add({
 							usernames: { $all: [user.username, strippedRoom] },
 					  });
 			if (!roomObject) {
-				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: TAPi18n.__('Channel_doesnt_exist', {
 						postProcess: 'sprintf',
 						sprintf: [room],
@@ -52,8 +52,8 @@ slashCommands.add({
 					}),
 				});
 			}
-			if (roomObject && !(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
-				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
+				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
 						sprintf: [room],
@@ -62,12 +62,12 @@ slashCommands.add({
 				});
 				return;
 			}
-			rid = roomObject?._id || item.rid;
+			rid = roomObject?._id || message.rid;
 		}
 		try {
 			await Meteor.callAsync('hideRoom', rid);
 		} catch (error: any) {
-			await api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+			await api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 				msg: TAPi18n.__(error, { lng }),
 			});
 		}
