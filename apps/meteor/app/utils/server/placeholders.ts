@@ -4,7 +4,7 @@ import { settings } from '../../settings/server';
 export const placeholders = {
 	replace: (
 		str: string,
-		data: { name: string; email: string; password: string; reason: string; user: string; room: string; unsubscribe?: string },
+		data: { name?: string; email?: string; password?: string; reason?: string; user?: string; room?: string; unsubscribe?: string },
 	) => {
 		if (!str) {
 			return '';
