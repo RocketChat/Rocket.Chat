@@ -6370,6 +6370,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
   dependencies:
+    "@rocket.chat/api-client": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/jest": ^29.5.0
     "@types/ws": ^8
     eslint: ^8.12.0

@@ -58,22 +58,28 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		const self = this;
 		return {
 			all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields });
+				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields) });
 			},
 			allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: { name: 1 } });
+				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ name: 1 }) });
 			},
 			allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: { _id: 1 } });
+				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ _id: 1 }) });
 			},
 			online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields, query: { status: { $ne: 'offline' } } });
+				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields), query: JSON.stringify({ status: { $ne: 'offline' } }) });
 			},
 			onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: { name: 1 }, query: { status: { $ne: 'offline' } } });
+				return self.rest.get('/v1/users.list', {
+					fields: JSON.stringify({ name: 1 }),
+					query: JSON.stringify({ status: { $ne: 'offline' } }),
+				});
 			},
 			onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: { _id: 1 }, query: { status: { $ne: 'offline' } } });
+				return self.rest.get('/v1/users.list', {
+					fields: JSON.stringify({ _id: 1 }),
+					query: JSON.stringify({ status: { $ne: 'offline' } }),
+				});
 			},
 			info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>> {
 				return self.rest.get('/v1/users.info', { username });
@@ -84,31 +90,39 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get rooms() {
 		const self = this;
 		return {
-			info: (args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/rooms.info'>>> => {
-				return self.rest.post('/v1/rooms.info', args);
+			info: (
+				args:
+					| {
+							roomId: string;
+					  }
+					| {
+							roomName: string;
+					  },
+			): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>> => {
+				return self.rest.get('/v1/rooms.info', args);
 			},
 			join: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> => {
-				return self.rest.post('/v1/channels.join', { rid });
+				return self.rest.post('/v1/channels.join', { roomId: rid });
 			},
-			load: (rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/channels.history'>>> => {
-				return self.rest.get('/v1/channels.history', { rid, lastUpdate });
+			load: (rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> => {
+				return self.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() });
 			},
 			leave: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> => {
-				return self.rest.post('/v1/channels.leave', { rid });
+				return self.rest.post('/v1/channels.leave', { roomId: rid });
 			},
 		};
 	}
 
 	joinRoom(args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> {
-		return this.rest.post('/v1/channels.join', args);
+		return this.rest.post('/v1/channels.join', { roomId: args.rid });
 	}
 
-	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/channels.history'>>> {
-		return this.rest.get('/v1/channels.history', { rid, lastUpdate });
+	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> {
+		return this.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() });
 	}
 
 	leaveRoom(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> {
-		return this.rest.post('/v1/channels.leave', { rid });
+		return this.rest.post('/v1/channels.leave', { roomId: rid });
 	}
 
 	get dm() {
@@ -141,7 +155,18 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.sendMessage'>>> {
-		return this.rest.post('/v1/chat.sendMessage', { message, rid });
+		return this.rest.post('/v1/chat.sendMessage', {
+			message:
+				typeof message === 'string'
+					? {
+							msg: message,
+							rid,
+					  }
+					: {
+							...message,
+							rid,
+					  },
+		});
 	}
 
 	resume({ token }: { token: string }): Promise<unknown> {

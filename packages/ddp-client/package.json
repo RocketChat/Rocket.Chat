@@ -30,5 +30,10 @@
 	],
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"dependencies": {
+		"@rocket.chat/api-client": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^"
 	}
 }

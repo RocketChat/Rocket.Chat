@@ -4,24 +4,24 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 
 export interface APILegacy {
 	users: {
-		all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		allNames(): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		allIDs(): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		onlineNames(): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		onlineIds(): Promise<Serialized<OperationResult<'POST', '/v1/users.list'>>>;
-		info(username: string): Promise<Serialized<OperationResult<'POST', '/v1/users.info'>>>;
+		all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>>;
 	};
 
 	rooms: {
-		info(args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/rooms.info'>>>;
+		info(args: { roomName: string } | { roomId: string }): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>>;
 		join(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>>;
-		load(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/channels.history'>>>;
+		load(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>>;
 		leave(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
 	};
 
 	joinRoom(args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>>;
-	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/channels.history'>>>;
+	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>>;
 	leaveRoom(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
 
 	dm: {

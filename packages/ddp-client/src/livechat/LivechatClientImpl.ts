@@ -1,11 +1,10 @@
 import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-
 import { Emitter } from '@rocket.chat/emitter';
 
+import type { DDPDispatchOptions } from '../types/DDPClient';
+import type { LivechatClient, LivechatRoomEvents } from './types/LivechatSDK';
 import { DDPSDK } from '../DDPSDK';
-import { LivechatClient, LivechatRoomEvents } from './types/LivechatSDK';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -49,6 +48,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 	onMessage(cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void): () => void {
 		return this.ev.on('message', (args) => cb(...args));
 	}
+
 	onTyping(cb: (username: string, activities: string) => void): () => void {
 		return this.ev.on('typing', (args) => cb(...args));
 	}
@@ -72,6 +72,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 			}
 		});
 	}
+
 	onAgentStatusChange(rid: string, cb: (data: LivechatRoomEvents<'agentStatus'>) => void): () => void {
 		return this.stream('livechat-room', rid, (data) => {
 			if (data.type === 'agentStatus') {
