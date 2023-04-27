@@ -37,6 +37,7 @@ import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { usernameValidation } from '../../../lib/server/functions/usernameValidation';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
@@ -553,6 +554,10 @@ API.v1.addRoute(
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
+			}
+
+			if (!usernameValidation(this.bodyParams.username)) {
+				return API.v1.failure('Invalid username');
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;

@@ -12,19 +12,15 @@ import { setUserAvatar } from '.';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { usernameValidation } from './usernameValidation';
 
 export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
 	const username = u.trim();
 	if (!userId || !username) {
 		return false;
 	}
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-	if (!nameValidation.test(username)) {
+
+	if (!usernameValidation(username)) {
 		return false;
 	}
 	const user = fullUser || (await Users.findOneById(userId));
