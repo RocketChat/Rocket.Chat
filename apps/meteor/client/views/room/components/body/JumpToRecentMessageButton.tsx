@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { ReactElement, UIEvent, useState } from 'react';
-import React from 'react';
+import type { ReactElement, UIEvent } from 'react';
+import React, { useState } from 'react';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 
