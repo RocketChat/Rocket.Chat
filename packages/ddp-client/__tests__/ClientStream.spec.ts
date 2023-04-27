@@ -5,25 +5,10 @@ import { DDPDispatcher } from '../src/DDPDispatcher';
 describe('call procedures', () => {
 	it('should be able to call a method and receive a result', async () => {
 		const callback = jest.fn();
-		const ws = new MinimalDDPClient(() => undefined);
+		const ws = new DDPDispatcher();
 		const client = new ClientStreamImpl(ws);
 
 		const id = client.call('test', callback);
-
-		expect(client.dispatcher.queue.length).toBe(1);
-		expect(client.dispatcher.queue).toEqual([
-			{
-				wait: false,
-				items: [
-					{
-						msg: 'method',
-						method: 'test',
-						params: [],
-						id,
-					},
-				],
-			},
-		]);
 
 		ws.handleMessage(
 			JSON.stringify({

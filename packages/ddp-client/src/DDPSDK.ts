@@ -38,7 +38,7 @@ interface PublicationPayloads {
 	msg: 'added' | 'changed' | 'removed';
 	fields: {
 		eventName: string;
-		args: ['added' | 'changed' | 'removed', unknown];
+		args: [unknown];
 	};
 }
 
@@ -57,7 +57,7 @@ export class DDPSDK implements SDK {
 		readonly timeoutControl: TimeoutControl,
 	) {}
 
-	stream(name: string, key: unknown, cb: (data: PublicationPayloads) => void): () => void {
+	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): () => void {
 		const { id } = this.client.subscribe(`stream-${name}`, key);
 
 		const cancel = [
@@ -74,7 +74,7 @@ export class DDPSDK implements SDK {
 					return;
 				}
 				if (data.fields.eventName === key) {
-					cb(data);
+					cb(...data.fields.args);
 				}
 			}),
 		];
