@@ -92,6 +92,9 @@ export interface IUserServices {
 		refreshToken: string;
 		serverURL: string;
 	};
+	dolphin?: {
+		NickName?: string;
+	};
 }
 
 export interface IUserEmail {

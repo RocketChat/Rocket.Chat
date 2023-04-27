@@ -341,7 +341,7 @@ export class CustomOAuth {
 					return;
 				}
 
-				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
+				await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
 
 				// User already created or merged and has identical name as before
 				if (
@@ -437,7 +437,7 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
 
-	callbacks.run('afterValidateNewOAuthUser', {
+	await callbacks.run('afterValidateNewOAuthUser', {
 		identity: serviceData,
 		serviceName,
 		user: await Users.findOneById(user.userId),

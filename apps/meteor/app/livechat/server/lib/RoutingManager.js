@@ -226,7 +226,7 @@ export const RoutingManager = {
 
 	async delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${inquiry._id}`);
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
 			department: inquiry?.department,
 		});
 
