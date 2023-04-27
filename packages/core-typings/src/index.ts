@@ -130,3 +130,4 @@ export * from './ILivechatUnitMonitor';
 export * from './ICronHistoryItem';
 
 export * from './migrations/IControl';
+export * from './ICustomOAuthConfig';

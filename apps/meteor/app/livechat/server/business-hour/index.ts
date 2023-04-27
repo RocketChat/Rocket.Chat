@@ -9,8 +9,8 @@ import { DefaultBusinessHour } from './Default';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);
 
-Meteor.startup(() => {
-	const { BusinessHourBehaviorClass } = callbacks.run('on-business-hour-start', {
+Meteor.startup(async () => {
+	const { BusinessHourBehaviorClass } = await callbacks.run('on-business-hour-start', {
 		BusinessHourBehaviorClass: SingleBusinessHourBehavior,
 	});
 	businessHourManager.registerBusinessHourBehavior(new BusinessHourBehaviorClass());
