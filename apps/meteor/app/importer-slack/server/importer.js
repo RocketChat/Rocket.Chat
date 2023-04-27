@@ -4,7 +4,7 @@ import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 export class SlackImporter extends Base {
 	parseData(data) {

@@ -21,7 +21,7 @@ export const findAllDepartmentsAvailable = async (
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset });
