@@ -1,5 +1,5 @@
 import React from 'react';
-import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import { Box, OptionColumn } from '@rocket.chat/fuselage';
 
 type ComposerBoxPopupCannedResponseProps = {
 	_id: string;
@@ -13,7 +13,9 @@ const ComposerPopupCannedResponse = ({ shortcut, text }: ComposerBoxPopupCannedR
 			<OptionColumn>
 				<strong>{shortcut}</strong>
 			</OptionColumn>
-			<OptionContent>{text}</OptionContent>
+			<Box withTruncatedText flexGrow={1} width={0}>
+				{text}
+			</Box>
 		</>
 	);
 };
