@@ -25,8 +25,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 
-		Meteor.setTimeout(() => {
-			Meteor.setTimeout(() => {
+		setTimeout(() => {
+			setTimeout(() => {
 				console.warn('Call to process.exit() timed out, aborting.');
 				process.abort();
 			}, 1000);

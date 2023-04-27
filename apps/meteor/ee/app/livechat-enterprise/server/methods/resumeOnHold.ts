@@ -88,6 +88,6 @@ Meteor.methods<ServerMethods>({
 			comment,
 		});
 
-		Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
+		setImmediate(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
 	},
 });

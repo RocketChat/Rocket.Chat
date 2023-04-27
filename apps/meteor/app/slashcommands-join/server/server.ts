@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'join',
-	callback: async (_command: 'join', params, item): Promise<void> => {
+	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'join'>): Promise<void> => {
 		let channel = params.trim();
 		if (channel === '') {
 			return;
@@ -16,7 +17,6 @@ slashCommands.add({
 
 		channel = channel.replace('#', '');
 
-		const userId = Meteor.userId() as string;
 		const user = await Users.findOne(userId);
 		const room = await Rooms.findOneByNameAndType(channel, 'c');
 
@@ -25,7 +25,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],

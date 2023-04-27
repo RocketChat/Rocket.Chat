@@ -1,6 +1,6 @@
-import { HTTP } from 'meteor/http';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
@@ -18,17 +18,20 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 	const cloudUrl = settings.get('Cloud_Url');
 
 	try {
-		HTTP.post(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
-			data: regInfo,
+		const request = await fetch(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
+			body: regInfo,
 			timeout: 10 * 1000,
+			method: 'POST',
 		});
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
 
 		return true;
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to register workspace pre-intent with Rocket.Chat Cloud',
 			url: '/api/v2/register/workspace/pre-intent',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

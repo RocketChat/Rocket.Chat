@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { FederationEE } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { executeSlashCommand } from './action';
 import { slashCommands } from '../../../../../../../app/utils/server';
@@ -9,8 +9,8 @@ const EE_FEDERATION_COMMANDS = {
 		FederationEE.createDirectMessageRoom(currentUserId, invitees),
 };
 
-function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): Promise<void> {
-	return executeSlashCommand(providedCommand, stringParams, item, EE_FEDERATION_COMMANDS, Meteor.userId());
+function federation({ command, params, message, userId }: SlashCommandCallbackParams<'federation'>): Promise<void> {
+	return executeSlashCommand(command, params, message, EE_FEDERATION_COMMANDS, userId);
 }
 
 slashCommands.add({
