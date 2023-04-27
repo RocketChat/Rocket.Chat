@@ -83,7 +83,7 @@ export class DDPSDK implements SDK {
 		};
 	}
 
-	static async create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
+	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): DDPSDK {
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
@@ -102,7 +102,14 @@ export class DDPSDK implements SDK {
 			});
 		});
 
-		await connection.connect();
+		return sdk;
+	}
+
+	static async createAndConnect(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
+		const sdk = DDPSDK.create(url, retryOptions);
+
+		await sdk.connection.connect();
+
 		return sdk;
 	}
 }

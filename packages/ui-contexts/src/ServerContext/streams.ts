@@ -20,6 +20,7 @@ export interface StreamerEvents {
 
 	'notify-room': [
 		{ key: `${string}/user-activity`; args: [username: string, activities: string] },
+		{ key: `${string}/typing`; args: [username: string, activities: string] },
 		{
 			key: `${string}/deleteMessageBulk`;
 			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
@@ -112,6 +113,30 @@ export interface StreamerEvents {
 	// 		| 'actions/changed',
 	// ) => [unknown];
 	// 'user-presence': () => [void];
+
+	'livechat-room': [
+		{
+			key: string;
+			args: [
+				| {
+						type: 'agentData';
+						data: unknown;
+				  }
+				| {
+						type: 'agentStatus';
+						status: unknown;
+				  }
+				| {
+						type: 'queueData';
+						data: unknown;
+				  }
+				| {
+						type: 'visitorData';
+						visitor: unknown;
+				  },
+			];
+		},
+	];
 }
 
 export type StreamNames = keyof StreamerEvents;
