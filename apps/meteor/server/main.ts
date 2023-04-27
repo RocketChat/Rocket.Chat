@@ -3,7 +3,7 @@ import './settings/index';
 import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
-import '../lib/oauthRedirectUri';
+import '../lib/oauthRedirectUriServer';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
