@@ -2,22 +2,12 @@ import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
 import type { IMessage, IRoom, SlashCommandPreviews } from '@rocket.chat/core-typings';
+import type { Meteor } from 'meteor/meteor';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
 		interface Template<D = any, T = Blaze.TemplateInstance<D>> {
-			events(
-				eventsMap: Record<
-					string,
-					(
-						this: any,
-						event: {
-							[K in keyof JQuery.TriggeredEvent | keyof JQuery.KeyboardEventBase]: any;
-						},
-						instance: T,
-					) => void
-				>,
-			): void;
+			events(eventsMap: Record<string, (this: any, event: Meteor.Event, instance: T) => void>): void;
 		}
 	}
 }
@@ -57,8 +47,8 @@ declare module 'meteor/templating' {
 				enterKeyAction: () => void;
 				selectionLogic: () => void;
 				verifySelection: () => void;
-				onInputKeyup: (event: JQuery.TriggeredEvent) => void;
-				onInputKeydown: (event: JQuery.TriggeredEvent) => void;
+				onInputKeyup: (event: Meteor.Event) => void;
+				onInputKeydown: (event: Meteor.Event) => void;
 				inputBox: HTMLTextAreaElement | null;
 				up(): void;
 				down(): void;

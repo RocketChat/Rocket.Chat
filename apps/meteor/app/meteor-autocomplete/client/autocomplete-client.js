@@ -2,6 +2,7 @@ import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
 import getCaretCoordinates from 'textarea-caret';
+import $ from 'jquery';
 
 import AutoCompleteRecords from './collection';
 import { APIClient } from '../../utils/client';

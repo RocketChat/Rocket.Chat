@@ -8,7 +8,7 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 		return false;
 	}
 
-	const { toAll, toHere, mentionIds } = getMentions(message);
+	const { toAll, toHere, mentionIds } = await getMentions(message);
 
 	const addToReplies = [
 		...new Set([

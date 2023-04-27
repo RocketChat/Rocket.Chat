@@ -35,7 +35,7 @@ const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum
 
 const setStatus = (status: (typeof userStatus.list)['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
-	callbacks.run('userStatusManuallySet', status);
+	void callbacks.run('userStatusManuallySet', status);
 };
 
 const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (typeof userStatus.list)['']): string => {

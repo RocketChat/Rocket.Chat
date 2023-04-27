@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -8,18 +7,18 @@ import { SlackBridge } from './slackbridge';
 import { msgStream } from '../../lib/server';
 import { slashCommands } from '../../utils/server';
 
-async function SlackBridgeImport(command, params, item) {
+async function SlackBridgeImport({ command, params, message, userId }) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
 
-	const room = await Rooms.findOneById(item.rid);
+	const room = await Rooms.findOneById(message.rid);
 	const channel = room.name;
-	const user = await Users.findOneById(Meteor.userId());
+	const user = await Users.findOneById(userId);
 
-	msgStream.emit(item.rid, {
+	msgStream.emit(message.rid, {
 		_id: Random.id(),
-		rid: item.rid,
+		rid: message.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
 		msg: TAPi18n.__(
@@ -34,11 +33,11 @@ async function SlackBridgeImport(command, params, item) {
 
 	try {
 		for await (const slack of SlackBridge.slackAdapters) {
-			await slack.importMessages(item.rid, (error) => {
+			await slack.importMessages(message.rid, (error) => {
 				if (error) {
-					msgStream.emit(item.rid, {
+					msgStream.emit(message.rid, {
 						_id: Random.id(),
-						rid: item.rid,
+						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
 						msg: TAPi18n.__(
@@ -51,9 +50,9 @@ async function SlackBridgeImport(command, params, item) {
 						),
 					});
 				} else {
-					msgStream.emit(item.rid, {
+					msgStream.emit(message.rid, {
 						_id: Random.id(),
-						rid: item.rid,
+						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
 						msg: TAPi18n.__(
@@ -69,9 +68,9 @@ async function SlackBridgeImport(command, params, item) {
 			});
 		}
 	} catch (error) {
-		msgStream.emit(item.rid, {
+		msgStream.emit(message.rid, {
 			_id: Random.id(),
-			rid: item.rid,
+			rid: message.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
 			msg: TAPi18n.__(

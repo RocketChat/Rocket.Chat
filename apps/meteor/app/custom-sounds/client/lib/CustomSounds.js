@@ -58,31 +58,41 @@ class CustomSoundsClass {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
-		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append($('<source />', { src: sound.src }));
+
+		const source = document.createElement('source');
+		source.src = sound.src;
+
+		const audio = document.createElement('audio');
+		audio.id = getCustomSoundId(sound);
+		audio.preload = 'auto';
+		audio.appendChild(source);
+
+		document.body.appendChild(audio);
+
 		const list = this.list.get();
 		list[sound._id] = sound;
 		this.list.set(list);
-		$('body').append(audio);
 	}
 
 	remove(sound) {
 		const list = this.list.get();
 		delete list[sound._id];
 		this.list.set(list);
-		$(`#${sound._id}`).remove();
+		const audio = document.getElementById(sound._id);
+		audio?.remove();
 	}
 
 	update(sound) {
-		const audio = $(`#${sound._id}`);
-		if (audio && audio[0]) {
+		const audio = document.getElementById(sound._id);
+		if (audio) {
 			const list = this.list.get();
 			if (!sound.src) {
 				sound.src = this.getURL(sound);
 			}
 			list[sound._id] = sound;
 			this.list.set(list);
-			$('source', audio).attr('src', sound.src);
-			audio[0].load();
+			audio.querySelector('source').src = sound.src;
+			audio.load();
 		} else {
 			this.add(sound);
 		}

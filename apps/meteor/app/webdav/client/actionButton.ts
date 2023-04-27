@@ -29,7 +29,7 @@ Meteor.startup(function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const [attachment] = message.attachments || [];
-			const url = getURL(attachment.title_link, { full: true });
+			const url = getURL(attachment.title_link as string, { full: true });
 			imperativeModal.open({
 				component: SaveToWebdav,
 				props: {

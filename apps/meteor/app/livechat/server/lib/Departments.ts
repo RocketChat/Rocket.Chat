@@ -46,7 +46,7 @@ class DepartmentHelperClass {
 		this.logger.debug(`Post-department-removal actions completed: ${_id}. Notifying callbacks with department and agentsIds`);
 
 		setImmediate(() => {
-			callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 		});
 
 		return ret;
