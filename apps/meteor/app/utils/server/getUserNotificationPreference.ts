@@ -1,13 +1,18 @@
 import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
-export const getUserNotificationPreference = async (user, pref) => {
+export const getUserNotificationPreference = async (user: IUser | string, pref: string) => {
 	if (typeof user === 'string') {
-		user = await Users.findOneById(user);
+		const u = await Users.findOneById(user);
+		if (!u) {
+			return null;
+		}
+		user = u;
 	}
 
-	let preferenceKey;
+	let preferenceKey: 'desktopNotifications' | 'pushNotifications' | 'emailNotificationMode' | undefined;
 	switch (pref) {
 		case 'desktop':
 			preferenceKey = 'desktopNotifications';
@@ -18,6 +23,10 @@ export const getUserNotificationPreference = async (user, pref) => {
 		case 'email':
 			preferenceKey = 'emailNotificationMode';
 			break;
+	}
+
+	if (!preferenceKey) {
+		return null;
 	}
 
 	if (
