@@ -81,8 +81,13 @@ class CustomSoundsClass {
 		const list = this.list.get();
 		delete list[sound._id];
 		this.list.set(list);
-		const audio = document.getElementById(sound._id);
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(sound._id)}`);
 		audio?.remove();
+	}
+
+	getSound(soundId: ICustomSound['_id']) {
+		const list = this.list.get();
+		return list[soundId];
 	}
 
 	update(sound: ICustomSound) {
