@@ -14,7 +14,7 @@ const ListItem = ({ icon, text, input, children, ...props }: ListItemProps): Rea
 	<Option {...props}>
 		{icon && <OptionIcon name={icon} />}
 		<OptionContent>{text}</OptionContent>
-		{input && <OptionInput justifyContent='flex-end'>{input}</OptionInput>}
+		{input && <OptionInput>{input}</OptionInput>}
 		{children && <OptionColumn>{children}</OptionColumn>}
 	</Option>
 );
