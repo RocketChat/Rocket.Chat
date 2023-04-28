@@ -22,6 +22,8 @@ import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToD
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -840,10 +842,19 @@ export class ImportDataConverter {
 		// Create the channel
 		try {
 			await Meteor.runAsUser(creatorId, async () => {
-				const roomInfo =
-					roomData.t === 'd'
-						? await Meteor.callAsync('createDirectMessage', ...members)
-						: await Meteor.callAsync(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+				let roomInfo;
+				if (roomData.t === 'd') {
+					roomInfo = await Meteor.callAsync('createDirectMessage', ...members);
+				} else {
+					if (!roomData.name) {
+						return;
+					}
+					if (roomData.t === 'p') {
+						roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members);
+					} else {
+						roomInfo = await createChannelMethod(startedByUserId, roomData.name, members);
+					}
+				}
 
 				roomData._id = roomInfo.rid;
 			});
