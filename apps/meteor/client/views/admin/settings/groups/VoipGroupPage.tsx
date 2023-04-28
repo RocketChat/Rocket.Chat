@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 
-import NoResults from '../../../../components/GenericTable/NoResults';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import Page from '../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
@@ -40,7 +40,7 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 			voipEnabled ? (
 				<VoipExtensionsPage />
 			) : (
-				<NoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></NoResults>
+				<GenericNoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></GenericNoResults>
 			),
 		[t, voipEnabled],
 	);
