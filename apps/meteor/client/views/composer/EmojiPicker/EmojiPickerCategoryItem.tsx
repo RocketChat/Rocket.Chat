@@ -3,8 +3,10 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import type { EmojiCategory } from '../../../../app/emoji/client';
+
 type EmojiPickerCategoryItemProps = {
-	category: unknown;
+	category: EmojiCategory;
 	index: number;
 	active: boolean;
 	handleGoToCategory: (categoryIndex: number) => void;
@@ -35,17 +37,10 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory }
 			borderBlockEndStyle='solid'
 			borderBlockEndWidth={1}
 			key={category.key}
-			className={['border-secondary-background-color', active && 'active', category.key, style].filter(Boolean)}
+			className={[active && 'active', category.key, style].filter(Boolean)}
 			title={t(category.i18n)}
 		>
-			<Box
-				tabIndex={-1}
-				onClick={() => handleGoToCategory(index)}
-				// is='a'
-				href={`#${category.key}`}
-				className='category-link'
-				color='secondary-info'
-			>
+			<Box tabIndex={-1} onClick={() => handleGoToCategory(index)} href={`#${category.key}`} color='secondary-info'>
 				<i
 					style={{ fontSize: '20px', ...(active && { color: Palette.statusColor['status-font-on-info'].toString() }) }}
 					className={`category-icon icon-${category.key}`}

@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import React, { memo, useCallback, useRef, useState } from 'react';
 
 import { Backdrop } from '../../../../../../client/components/Backdrop';
-import { useEmojiPicker } from '../../../../../../client/hooks/useEmojiPicker';
+import { useEmojiPicker } from '../../../../../../client/contexts/EmojiPickerContext';
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 

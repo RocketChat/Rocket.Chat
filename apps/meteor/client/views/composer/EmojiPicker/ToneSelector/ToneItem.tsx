@@ -2,14 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-// LIST OF TONES
-// TONE-0 -> #ffcf11
-// TONE-1 -> #fae3c3
-// TONE-2 -> #e2cfa1
-// TONE-3 -> #dba373
-// TONE-4 -> #a88054
-// TONE-5 -> #5f4e43
-
 const ToneItem = ({ tone }: { tone: number }) => {
 	let toneColor;
 	switch (tone) {

@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import type { EmojiCategories, EmojiItem } from '.';
+import type { EmojiCategory, EmojiItem } from '.';
 import { emoji } from '../lib/rocketchat';
 
 export const CUSTOM_CATEGORY = 'rocket';
@@ -61,7 +61,7 @@ export const createEmojiList = (
 };
 
 export const getCategoriesList = () => {
-	let categoriesList: EmojiCategories[] = [];
+	let categoriesList: EmojiCategory[] = [];
 
 	for (const emojiPackage in emoji.packages) {
 		if (emoji.packages.hasOwnProperty(emojiPackage)) {

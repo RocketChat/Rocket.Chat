@@ -2,7 +2,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
-import { useEmojiPicker } from '../../../../hooks/useEmojiPicker';
+import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { useInstance } from './useInstance';
 import { useUserCard } from './useUserCard';

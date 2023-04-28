@@ -1,34 +1,31 @@
-import { Box } from '@rocket.chat/fuselage';
+import { EmojiPickerNotFound } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import React, { useRef } from 'react';
 import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
+import type { EmojiItem } from '../../../../app/emoji/client';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import EmojiElement from './EmojiElement';
-import type { EmojiElementType } from './EmojiElementType';
 import SearchingResultWrapper from './SearchingResultWrapper';
 
-// TODO: handleLoadMore for searching
+/**
+ * the `SearchingResults` is missing the previous loadMore function that was implemented before on the latest version of EmojiPicker using the Blaze Template. It can't be implemented because of the issue with react-virtuoso and the custom scrollbars, since its using virtual list its not gonna be an issue rendering bigger results for search
+ *
+ */
 
 type SearchingResultProps = {
-	searchResults: EmojiElementType[];
-	_searchItemsLimit: number;
-	_handleLoadMore: () => void;
+	searchResults: EmojiItem[];
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
 };
 
-const SearchingResult = ({ searchResults, _searchItemsLimit, _handleLoadMore, handleSelectEmoji }: SearchingResultProps) => {
+const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultProps) => {
 	const t = useTranslation();
 	const ref = useRef<VirtuosoGridHandle>(null);
 
 	if (searchResults.length === 0) {
-		return (
-			<Box display='flex' flexDirection='column' alignItems='center' fontScale='c1' mb='x8'>
-				{t('No_emojis_found')}
-			</Box>
-		);
+		return <EmojiPickerNotFound>{t('No_emojis_found')}</EmojiPickerNotFound>;
 	}
 
 	return (
@@ -42,33 +39,9 @@ const SearchingResult = ({ searchResults, _searchItemsLimit, _handleLoadMore, ha
 			itemContent={(index) => {
 				const { emoji, image } = searchResults[index] || {};
 				return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
-				// return index < searchItemsLimit && <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
 			}}
 		/>
 	);
 };
-
-// {
-// 	searching && searchResults.length > 0 && (
-// 		<Box is='ul' mb='x4' display='flex' flexWrap='wrap'>
-// 			{searchResults?.map(
-// 				({ emoji, image }, index = 1) =>
-// 					index < searchItemsLimit && <EmojiElement key={emoji} emoji={emoji} image={image} onClick={handleSelectEmoji} />,
-// 			)}
-// 		</Box>
-// 	);
-// }
-// {searching && searchResults?.length > searchItemsLimit && (
-//   <Box display='flex' flexDirection='column' alignItems='center' mbe='x8'>
-//     <Box is='a' fontScale='c1' onClick={handleLoadMore}>
-//       {t('Load_more')}
-//     </Box>
-//   </Box>
-// )}
-// {searching && searchResults.length === 0 && (
-//   <Box fontScale='c1' mb='x8'>
-//     {t('No_emojis_found')}
-//   </Box>
-// )}
 
 export default SearchingResult;

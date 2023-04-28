@@ -5,13 +5,27 @@ export type EmojiItem = {
 	image: string;
 };
 
-export type EmojiCategories = {
+export type EmojiCategory = {
 	key: string;
 	i18n: TranslationKey;
 };
 
+export type EmojiByCategory = {
+	key: string;
+	i18n: TranslationKey;
+	emojis: {
+		list: EmojiItem[];
+		limit: number | null;
+	};
+};
+
+export type EmojiCategoryPosition = {
+	el: Element;
+	top: number;
+};
+
 type EmojiPackage = {
-	emojiCategories: EmojiCategories[];
+	emojiCategories: EmojiCategory[];
 	categoryIndex: number;
 	emojisByCategory: {
 		[key: string]: string[];

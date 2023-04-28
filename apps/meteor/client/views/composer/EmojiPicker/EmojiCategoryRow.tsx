@@ -1,59 +1,65 @@
 import { Box } from '@rocket.chat/fuselage';
+import { EmojiPickerCategoryWrapper, EmojiPickerLoadMore, EmojiPickerNotFound } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, MutableRefObject } from 'react';
 import React from 'react';
 
 import { CUSTOM_CATEGORY } from '../../../../app/emoji/client';
+import type { EmojiByCategory, EmojiCategoryPosition } from '../../../../app/emoji/client';
 import EmojiElement from './EmojiElement';
-import type { EmojiByCategory } from './EmojiPicker';
 
 type EmojiCategoryRowProps = EmojiByCategory & {
+	categoryKey: EmojiByCategory['key'];
+	categoriesPosition: MutableRefObject<EmojiCategoryPosition[]>;
+	customItemsLimit: number;
+	handleLoadMore: () => void;
 	handleSelectEmoji: (e: MouseEvent<HTMLElement>) => void;
 };
 
-const EmojiCategoryRow = ({ catKey, catPositions, i18n, emojis, customItemsLimit, handleLoadMore, handleSelectEmoji }: EmojiCategoryRowProps) => {
+const EmojiCategoryRow = ({
+	categoryKey,
+	categoriesPosition,
+	i18n,
+	emojis,
+	customItemsLimit,
+	handleLoadMore,
+	handleSelectEmoji,
+}: EmojiCategoryRowProps) => {
 	const t = useTranslation();
 
 	return (
 		<>
 			<Box
 				is='h4'
+				id={`emoji-list-category-${categoryKey}`}
 				ref={(element) => {
-					catPositions.current.push({ el: element, top: element?.offsetTop });
+					categoriesPosition.current.push({ el: element, top: element?.offsetTop });
 					return element;
 				}}
-				className='emoji-list-category'
-				id={`emoji-list-category-${catKey}`}
 			>
 				{t(i18n)}
 			</Box>
 			{emojis.list.length > 0 && (
-				<Box is='ul' mb='x8' display='flex' flexWrap='wrap' className={`emoji-list emoji-category-${catKey}`}>
+				<EmojiPickerCategoryWrapper className={`emoji-category-${categoryKey}`}>
 					<>
-						{catKey === CUSTOM_CATEGORY &&
+						{categoryKey === CUSTOM_CATEGORY &&
 							emojis.list.map(
 								({ emoji, image }, index = 1) =>
-									index < customItemsLimit && <EmojiElement key={emoji + catKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />,
+									index < customItemsLimit && (
+										<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
+									),
 							)}
-						{!(catKey === CUSTOM_CATEGORY) &&
+						{!(categoryKey === CUSTOM_CATEGORY) &&
 							emojis.list.map(({ emoji, image }) => (
-								<EmojiElement key={emoji + catKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
+								<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
 							))}
 					</>
-				</Box>
+				</EmojiPickerCategoryWrapper>
 			)}
-			{emojis.limit && emojis.limit > 0 && emojis.list.length > emojis.limit && (
-				<Box display='flex' flexDirection='column' alignItems='center' mbe='x8'>
-					<Box is='a' fontScale='c1' onClick={handleLoadMore}>
-						{t('Load_more')}
-					</Box>
-				</Box>
+			{emojis.limit && emojis?.limit > 0 && emojis.list.length > emojis.limit && (
+				<EmojiPickerLoadMore onClick={handleLoadMore}>{t('Load_more')}</EmojiPickerLoadMore>
 			)}
-			{emojis.list.length === 0 && (
-				<Box fontScale='c1' mb='x8'>
-					{t('No_emojis_found')}
-				</Box>
-			)}
+			{emojis.list.length === 0 && <EmojiPickerNotFound>{t('No_emojis_found')}</EmojiPickerNotFound>}
 		</>
 	);
 };
