@@ -135,12 +135,12 @@ describe('LIVECHAT - Integrations', function () {
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 				expect(response.body).to.have.property('success', false);
 			});
-			it.skip('should return true if webhook test went good', async () => {
+			it('should return true if webhook test went good', async () => {
 				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/200`);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
 				expect(response.body.success).to.be.true;
 			});
-			it.skip('should fail if webhook test went bad', async () => {
+			it('should fail if webhook test went bad', async () => {
 				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/400`);
 				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 			});
