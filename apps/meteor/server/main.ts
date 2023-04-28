@@ -4,7 +4,6 @@ import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
 import '../lib/oauthRedirectUriServer';
-import './overrides/http';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
