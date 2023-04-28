@@ -94,6 +94,18 @@ export const palette = [
 		],
 	},
 	{
+		category: 'Status Bullet',
+		description: 'Used to show user status',
+		list: [
+			{ name: 'status-bullet-online', token: '', color: '#2DE0A5' },
+			{ name: 'status-bullet-away', token: '', color: '#F3BE08' },
+			{ name: 'status-bullet-busy', token: '', color: '#F5455C' },
+			{ name: 'status-bullet-disabled', token: '', color: '#F38C39' },
+			{ name: 'status-bullet-offline', token: '', color: '#6c727a' },
+			{ name: 'status-bullet-loading', token: '', color: '#9ea2a8' },
+		],
+	},
+	{
 		category: 'Elevation',
 		description: 'Elevation border and shadow levels',
 		list: [
