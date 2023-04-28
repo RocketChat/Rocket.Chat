@@ -97,13 +97,14 @@ jobs:
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Start httpbin container
-        uses: docker://kennethreitz/httpbin
-        with:
-          ports: '10000:80'
-          detach: true
-          name: httpbin
-        env:
-          DOCKER_TLS_CERTDIR: ''
+        run: |
+          docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
+          for i in $(seq 1 10); do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' httpbin-container)" == "healthy" ]; then
+              break
+            fi
+            sleep 1
+          done
 
       - name: Verify httpbin is running
         run: |
