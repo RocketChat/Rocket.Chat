@@ -96,21 +96,13 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Start httpbin container
+      - name: Start httpbin container and wait for it to be ready
         run: |
           docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
-          for i in $(seq 1 10); do
-            if [ "$(docker inspect -f '{{.State.Health.Status}}' httpbin-container)" == "healthy" ]; then
-              break
-            fi
-            sleep 1
-          done
-
-      - name: Verify httpbin is running
-        run: |
           i=0
           while [ $i -lt 10 ]; do
             if curl -s -o /dev/null http://localhost:10000; then
+              echo "httpbin is running"
               break
             fi
             i=$((i + 1))
@@ -120,10 +112,6 @@ jobs:
             echo "Failed to verify httpbin is running"
             exit 1
           fi
-
-      - name: Test with httpbin
-        run: |
-          curl http://localhost:10000/get
 
       - name: yarn build
         run: yarn build
