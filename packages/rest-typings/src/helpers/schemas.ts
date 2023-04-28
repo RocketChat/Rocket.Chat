@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { JSONSchemaType } from 'ajv';
 import type { Static, TSchema } from '@sinclair/typebox';
 import { Type } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
@@ -45,12 +45,11 @@ export const type = {
 	// /** `[Standard]` Creates an Any type */
 	// Any(options?: SchemaOptions): TAny;
 	// /** `[Standard]` Creates an Array type */
-	// Array<T extends TSchema>(items: T, options?: ArrayOptions): TArray<T>;
+	array: Type.Array,
 	boolean: Type.Boolean,
 	// /** `[Standard]` Creates a Composite object type. */
 	// Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T>;
-	// /** `[Standard]` Creates a Enum type */
-	// Enum<T extends Record<string, string | number>>(item: T, options?: SchemaOptions): TEnum<T>;
+	enum: Type.Enum,
 	// /** `[Standard]` A conditional type expression that will return the true type if the left type extends the right */
 	// Extends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema>(left: L, right: R, trueType: T, falseType: U, options?: SchemaOptions): TExtends<L, R, T, U>;
 	// /** `[Standard]` Excludes from the left type any type that is not assignable to the right */
@@ -77,9 +76,7 @@ export const type = {
 	// Not<N extends TSchema, T extends TSchema>(not: N, schema: T, options?: SchemaOptions): TNot<N, T>;
 	// /** `[Standard]` Creates a Null type */
 	// Null(options?: SchemaOptions): TNull;
-	// /** `[Standard]` Creates a Number type */
-	// Number(options?: NumericOptions<number>): TNumber;
-	// /** `[Standard]` Creates an Object type */
+	number: Type.Number,
 	object: Type.Object,
 	// /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
 	// Omit<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: readonly [...K], options?: SchemaOptions): TOmit<T, K[number]>;
@@ -103,18 +100,8 @@ export const type = {
 	// Pick<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TPick<T, TTemplateLiteralKeyRest<K>[number]>;
 	// /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
 	// Pick<T extends TSchema, K extends TNever>(schema: T, key: K, options?: SchemaOptions): TPick<T, never>;
-	// /** `[Standard]` Creates a Record type */
-	// Record<K extends TUnion, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordUnionLiteralType<K, T>;
-	// /** `[Standard]` Creates a Record type */
-	// Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordLiteralType<K, T>;
-	// /** `[Standard]` Creates a Record type */
-	// Record<K extends TTemplateLiteral, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordTemplateLiteralType<K, T>;
-	// /** `[Standard]` Creates a Record type */
-	// Record<K extends TInteger | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordNumberType<K, T>;
-	// /** `[Standard]` Creates a Record type */
-	// Record<K extends TString, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordStringType<K, T>;
-	// /** `[Standard]` Creates a Recursive type */
-	// Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options?: SchemaOptions): TRecursive<T>;
+	record: Type.Record,
+	recursive: Type.Recursive,
 	// /** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
 	// Ref<T extends TSchema>(schema: T, options?: SchemaOptions): TRef<T>;
 	// /** `[Standard]` Creates a mapped type where all properties are Required */
@@ -128,8 +115,7 @@ export const type = {
 	// /** `[Standard]` Creates a Tuple type */
 	// Tuple<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TTuple<T>;
 	union: Type.Union,
-	// /** `[Standard]` Creates an Unknown type */
-	// Unknown(options?: SchemaOptions): TUnknown;
+	unknown: Type.Unknown,
 	// /** `[Standard]` Creates a Unsafe type that infers for the generic argument */
 	// Unsafe<T>(options?: UnsafeOptions): TUnsafe<T>;
 } as const;
@@ -143,3 +129,17 @@ export const createTypeGuard = <T extends TSchema>(schema: T) => {
 
 	return ajv.compile<Static<T>>(strict);
 };
+
+export type SchemasForEndpoints = {
+	[key: `${'GET' | 'POST' | 'PUT' | 'DELETE'} ${string}`]:
+		| {
+				request?: TSchema;
+				response: TSchema;
+		  }
+		| ReadonlyArray<{
+				request?: TSchema;
+				response: TSchema;
+		  }>;
+};
+
+export { JSONSchemaType as SchemaType };
