@@ -26,7 +26,7 @@ import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
@@ -173,7 +173,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type)) {
+		if (!fileUploadIsValidContentType(file.type as string, '')) {
 			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -290,7 +290,7 @@ export const FileUpload = {
 	},
 
 	async extractMetadata(file: IUpload) {
-		return sharp(FileUpload.getBufferSync(file)).metadata();
+		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
 	async createImageThumbnail(fileParam: IUpload) {
@@ -508,25 +508,29 @@ export const FileUpload = {
 		res.end();
 	},
 
-	getBuffer(file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) {
+	async getBuffer(file: IUpload): Promise<Buffer> {
 		const store = this.getStoreByName(file.store);
 
 		if (!store?.get) {
-			cb(new Error('Store is invalid'), undefined);
+			throw new Error('Store is invalid');
 		}
 
 		const buffer = new streamBuffers.WritableStreamBuffer({
 			initialSize: file.size,
 		});
 
-		buffer.on('finish', () => {
-			cb(undefined, buffer.getContents());
+		return new Promise((resolve, reject) => {
+			buffer.on('finish', () => {
+				const contents = buffer.getContents();
+				if (contents === false) {
+					return reject();
+				}
+				resolve(contents);
+			});
+
+			void store.copy?.(file, buffer);
 		});
-
-		void store.copy?.(file, buffer);
 	},
-
-	getBufferSync: Meteor.wrapAsync((file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) => FileUpload.getBuffer(file, cb)),
 
 	async copy(file: IUpload, targetFile: string) {
 		const store = this.getStoreByName(file.store);
