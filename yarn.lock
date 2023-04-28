@@ -13741,6 +13741,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bluebird@npm:^2.10.0":
+  version: 2.11.0
+  resolution: "bluebird@npm:2.11.0"
+  checksum: f1c6cbec64100bca65c88e5de0d9ee9bbb435f7c74c68a16a9466a8b40daf64346805c2fe04af821564ce6d4199085e7855d2e272282a065eb723344815cc354
+  languageName: node
+  linkType: hard
+
 "blueimp-md5@npm:^2.16.0":
   version: 2.19.0
   resolution: "blueimp-md5@npm:2.19.0"
