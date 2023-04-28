@@ -1,13 +1,14 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { MessageTypes } from './MessageTypes';
-import { settings } from '../../settings';
+import { MessageTypes } from '../lib/MessageTypes';
+import { settings } from '../../settings/server';
 import { trim } from '../../../lib/utils/stringUtils';
 
 export const Message = {
-	parse(msg, language) {
+	parse(msg: IMessage, language: string) {
 		const messageType = MessageTypes.getType(msg);
 		if (messageType) {
 			if (messageType.render) {
@@ -19,7 +20,7 @@ export const Message = {
 			}
 			if (messageType.message) {
 				if (!language) {
-					language = Meteor._localStorage.getItem('userLanguage');
+					language = Meteor._localStorage.getItem('userLanguage') || 'en';
 				}
 				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
 				return TAPi18n.__(messageType.message, data, language);
