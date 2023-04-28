@@ -124,7 +124,7 @@ const RoomMembers = ({
 						</Box>
 
 						<Box is='span' color='hint' fontScale='p2' mis='x8'>
-							{t('Total')}: {total}
+							{type==='all' ? t('Members') : t('Online')}: {total}
 						</Box>
 					</Box>
 				)}
