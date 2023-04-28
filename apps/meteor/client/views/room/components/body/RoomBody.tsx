@@ -291,7 +291,7 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		count && setUnreadCount(count);
+		setUnreadCount(count);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
