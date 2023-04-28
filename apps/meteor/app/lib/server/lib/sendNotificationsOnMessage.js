@@ -73,7 +73,7 @@ export const sendNotification = async ({
 
 	const isThread = !!message.tmid && !message.tshow;
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+	notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
@@ -221,7 +221,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return message;
 	}
 
-	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = getMentions(message);
+	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = await getMentions(message);
 
 	const mentionIdsWithoutGroups = [...mentionIds];
 
@@ -236,7 +236,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// add users in thread to mentions array because they follow the same rules
 	mentionIds.push(...usersInThread);
 
-	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
