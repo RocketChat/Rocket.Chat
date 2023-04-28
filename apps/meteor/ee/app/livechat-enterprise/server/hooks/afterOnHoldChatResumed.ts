@@ -22,7 +22,7 @@ const handleAfterOnHoldChatResumed = async (room: IRoom): Promise<IRoom> => {
 
 callbacks.add(
 	'livechat:afterOnHoldChatResumed',
-	(room: IRoom) => handleAfterOnHoldChatResumed(room),
+	handleAfterOnHoldChatResumed,
 	callbacks.priority.HIGH,
 	'livechat-after-on-hold-chat-resumed',
 );

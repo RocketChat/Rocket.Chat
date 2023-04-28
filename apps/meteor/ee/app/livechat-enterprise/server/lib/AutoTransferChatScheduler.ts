@@ -105,11 +105,10 @@ class AutoTransferChatSchedulerClass {
 
 		try {
 			await this.transferRoom(roomId);
-			await LivechatRooms.setAutoTransferredAtById(roomId);
+
+			await Promise.all([LivechatRooms.setAutoTransferredAtById(roomId), this.unscheduleRoom(roomId)]);
 		} catch (error) {
 			logger.error(`Error while executing job ${SCHEDULER_NAME} for room ${roomId}:`, error);
-		} finally {
-			await this.unscheduleRoom(roomId);
 		}
 	}
 }

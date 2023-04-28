@@ -65,9 +65,4 @@ const handleAfterSaveMessage = async (message: IMessage, room: IRoom) => {
 	return message;
 };
 
-callbacks.add(
-	'afterSaveMessage',
-	(message: IMessage, room: IRoom) => handleAfterSaveMessage(message, room),
-	callbacks.priority.HIGH,
-	'livechat-resume-on-hold',
-);
+callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-resume-on-hold');
