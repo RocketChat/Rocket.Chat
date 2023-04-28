@@ -109,7 +109,14 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findPaginatedByTypeAndIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
+
+	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
+	findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
+	countFederatedRooms(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;

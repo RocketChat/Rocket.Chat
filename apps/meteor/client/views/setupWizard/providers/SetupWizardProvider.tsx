@@ -73,7 +73,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const registerAdminUser = useCallback(
 		async ({ fullname, username, email, password }): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
-			callbacks.run('userRegistered', {});
+			void callbacks.run('userRegistered', {});
 
 			try {
 				await loginWithPassword(email, password);
@@ -92,7 +92,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			await defineUsername(username);
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
-			callbacks.run('usernameSet', {});
+			void callbacks.run('usernameSet', {});
 		},
 		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);

@@ -2,6 +2,7 @@
 // Please add new methods to LivechatTyped.ts
 
 import dns from 'dns';
+import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
@@ -47,7 +48,7 @@ import { Livechat as LivechatTyped } from './LivechatTyped';
 
 const logger = new Logger('Livechat');
 
-const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+const dnsResolveMx = util.promisify(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
@@ -180,7 +181,7 @@ export const Livechat = {
 		}
 
 		if (room == null) {
-			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+			const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
 				const department = await this.getRequiredDepartment();
@@ -432,7 +433,7 @@ export const Livechat = {
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
@@ -578,7 +579,7 @@ export const Livechat = {
 			return false;
 		}
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
@@ -1036,7 +1037,7 @@ export const Livechat = {
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
-			Meteor.defer(() => {
+			setImmediate(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
@@ -1183,7 +1184,7 @@ export const Livechat = {
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
-				dnsResolveMx(emailDomain);
+				await dnsResolveMx(emailDomain);
 			} catch (e) {
 				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', {
 					method: 'livechat:sendOfflineMessage',
@@ -1202,7 +1203,7 @@ export const Livechat = {
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
 		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
 		});
 
