@@ -7022,7 +7022,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.7
     "@xmldom/xmldom": ^0.8.7
     adm-zip: 0.5.9
-    ajv: ^8.11.0
+    ajv: ^8.12.0
     apn: 2.2.0
     archiver: ^3.1.1
     asterisk-manager: ^0.2.0
@@ -7515,7 +7515,7 @@ __metadata:
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": next
     "@types/jest": ~29.5.0
-    ajv: ^8.11.0
+    ajv: ^8.12.0
     eslint: ^8.29.0
     jest: ~29.5.0
     jest-environment-jsdom: ~29.5.0
@@ -12252,7 +12252,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.1, ajv@npm:^8.11.0":
+"ajv@npm:^8.0.1":
   version: 8.11.0
   resolution: "ajv@npm:8.11.0"
   dependencies:
@@ -12261,6 +12261,18 @@ __metadata:
     require-from-string: ^2.0.2
     uri-js: ^4.2.2
   checksum: 5e0ff226806763be73e93dd7805b634f6f5921e3e90ca04acdf8db81eed9d8d3f0d4c5f1213047f45ebbf8047ffe0c840fa1ef2ec42c3a644899f69aa72b5bef
+  languageName: node
+  linkType: hard
+
+"ajv@npm:^8.12.0":
+  version: 8.12.0
+  resolution: "ajv@npm:8.12.0"
+  dependencies:
+    fast-deep-equal: ^3.1.1
+    json-schema-traverse: ^1.0.0
+    require-from-string: ^2.0.2
+    uri-js: ^4.2.2
+  checksum: 4dc13714e316e67537c8b31bc063f99a1d9d9a497eb4bbd55191ac0dcd5e4985bbb71570352ad6f1e76684fb6d790928f96ba3b2d4fd6e10024be9612fe3f001
   languageName: node
   linkType: hard
 
@@ -31987,7 +31999,7 @@ __metadata:
     "@types/fibers": ^3.1.1
     "@types/node": ^14.18.21
     "@types/ws": ^8.5.3
-    ajv: ^8.11.0
+    ajv: ^8.12.0
     bcrypt: ^5.0.1
     body-parser: ^1.20.0
     colorette: ^2.0.19

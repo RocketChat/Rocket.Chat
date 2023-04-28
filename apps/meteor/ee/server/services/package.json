@@ -28,7 +28,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@rocket.chat/ui-kit": "next",
-		"ajv": "^8.11.0",
+		"ajv": "^8.12.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.0",
 		"colorette": "^2.0.19",
