@@ -1611,7 +1611,6 @@ export class UsersRaw extends BaseRaw {
 
 		const options = {
 			projection: {
-				_id: 1,
 				name: 1,
 				username: 1,
 				phone: 1,

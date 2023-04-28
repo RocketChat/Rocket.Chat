@@ -30,7 +30,7 @@ API.v1.addRoute('livechat/visitor', {
 		});
 
 		const { token, customFields } = this.bodyParams.visitor;
-		const guest: Parameters<typeof LivechatTyped.registerGuest>[0] = {
+		const guest = {
 			...this.bodyParams.visitor,
 			phone: this.bodyParams.visitor.phone ? { number: this.bodyParams.visitor.phone as string } : undefined,
 			connectionData: normalizeHttpHeaderData(this.request.headers),
