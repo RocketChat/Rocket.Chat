@@ -91,7 +91,8 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 		await page.goto(`${constants.RC_SERVER_1.url}/account/profile`);
 		await poFederationAccountProfileServer1.inputName.fill(newName);
 		await poFederationAccountProfileServer1.btnSubmit.click();
-		await poFederationAccountProfileServer1.btnClose.click();
+
+		await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);
@@ -114,7 +115,8 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/account/profile`);
 		await poFederationAccountProfileServer2.inputName.fill(newName);
 		await poFederationAccountProfileServer2.btnSubmit.click();
-		await poFederationAccountProfileServer2.btnClose.click();
+
+		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);

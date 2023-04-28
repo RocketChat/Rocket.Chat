@@ -1,14 +1,17 @@
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 export const placeholders = {
-	replace: (str, data) => {
+	replace: (
+		str: string,
+		data: { name?: string; email?: string; password?: string; reason?: string; user?: string; room?: string; unsubscribe?: string },
+	) => {
 		if (!str) {
 			return '';
 		}
 
-		str = str.replace(/\[Site_Name\]/g, settings.get('Site_Name') || '');
-		str = str.replace(/\[Site_URL\]/g, settings.get('Site_Url') || '');
+		str = str.replace(/\[Site_Name\]/g, settings.get<string>('Site_Name') || '');
+		str = str.replace(/\[Site_URL\]/g, settings.get<string>('Site_Url') || '');
 
 		if (data) {
 			str = str.replace(/\[name\]/g, data.name || '');
