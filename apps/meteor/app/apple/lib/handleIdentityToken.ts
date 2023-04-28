@@ -5,7 +5,7 @@ import { fetch } from '../../../server/lib/http/fetch';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
 	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
-	const applePublicKeys = (await request.json()).data.keys;
+	const applePublicKeys = (await request.json()).keys;
 	const { kid } = header;
 
 	const key = applePublicKeys.find((k: any) => k.kid === kid);
