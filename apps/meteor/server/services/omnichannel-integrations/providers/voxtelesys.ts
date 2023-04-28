@@ -6,7 +6,7 @@ import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.cha
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { mime } from '../../../../app/utils/lib/mimeTypes';
 import { SystemLogger } from '../../../lib/logger/system';
 
@@ -119,7 +119,7 @@ export class Voxtelesys implements ISMSProvider {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
+			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
@@ -151,7 +151,7 @@ export class Voxtelesys implements ISMSProvider {
 		}
 	}
 
-	fileUploadMediaTypeWhiteList() {
+	fileUploadMediaTypeWhiteList(): any {
 		throw new Error('Method not implemented.');
 	}
 

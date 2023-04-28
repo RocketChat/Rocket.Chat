@@ -18,6 +18,27 @@ settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
 	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
+export const checkUsernameAvailabilityWithValidation = async function (userId: string, username: string): Promise<boolean> {
+	if (!username) {
+		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
+	}
+
+	const user = await Users.findOneById(userId, { projection: { username: 1 } });
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+	}
+
+	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
+	}
+
+	if (user.username === username) {
+		return true;
+	}
+	return checkUsernameAvailability(username);
+};
+
 export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
