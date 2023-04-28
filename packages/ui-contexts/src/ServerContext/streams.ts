@@ -34,7 +34,9 @@ export interface StreamerEvents {
 	'notify-all': [
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 	];
 
 	'notify-user': [
@@ -50,11 +52,16 @@ export interface StreamerEvents {
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
+		{ key: `${string}/uiInteraction`; args: [unknown] },
+
+		{ key: `${string}/otr`; args: [unknown] },
+		{ key: `${string}/webrtc`; args: [unknown] },
 	];
 
 	'importers': [{ key: 'progress'; args: [{ rate: number; count: { completed: number; total: number } }] }];
 
 	'notify-logged': [
+		// { key: 'roles-change'; args: [IRole] },
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
 		{
 			key: 'roles-change';
@@ -68,6 +75,15 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{
+			key: 'Users:Deleted';
+			args: [
+				{
+					userId: IUser['_id'];
+				},
+			];
+		},
+		{ key: 'updateAvatar'; args: [{ username: IUser['username']; avatarETag: IUser['avatarETag'] }] },
 		{ key: 'voip.statuschanged'; args: [boolean] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
 	];
