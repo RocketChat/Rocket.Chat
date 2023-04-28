@@ -1,24 +1,10 @@
-import Ajv from 'ajv';
+import type { Static } from '../../helpers/schemas';
+import { createTypeGuard, type } from '../../helpers/schemas';
 
-const ajv = new Ajv({
-	coerceTypes: true,
+const AutotranslateGetSupportedLanguagesParamsGETSchema = type.object({
+	targetLanguage: type.string(),
 });
 
-export type AutotranslateGetSupportedLanguagesParamsGET = {
-	targetLanguage: string;
-};
+export type AutotranslateGetSupportedLanguagesParamsGET = Static<typeof AutotranslateGetSupportedLanguagesParamsGETSchema>;
 
-const AutotranslateGetSupportedLanguagesParamsGETSchema = {
-	type: 'object',
-	properties: {
-		targetLanguage: {
-			type: 'string',
-		},
-	},
-	required: ['targetLanguage'],
-	additionalProperties: false,
-};
-
-export const isAutotranslateGetSupportedLanguagesParamsGET = ajv.compile<AutotranslateGetSupportedLanguagesParamsGET>(
-	AutotranslateGetSupportedLanguagesParamsGETSchema,
-);
+export const isAutotranslateGetSupportedLanguagesParamsGET = createTypeGuard(AutotranslateGetSupportedLanguagesParamsGETSchema);

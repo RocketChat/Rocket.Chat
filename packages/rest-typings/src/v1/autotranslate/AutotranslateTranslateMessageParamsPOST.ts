@@ -1,29 +1,11 @@
-import Ajv from 'ajv';
+import type { Static } from '../../helpers/schemas';
+import { createTypeGuard, type } from '../../helpers/schemas';
 
-const ajv = new Ajv({
-	coerceTypes: true,
+const AutotranslateTranslateMessageParamsPostSchema = type.object({
+	messageId: type.string(),
+	targetLanguage: type.optional(type.string()),
 });
 
-export type AutotranslateTranslateMessageParamsPOST = {
-	messageId: string;
-	targetLanguage?: string;
-};
+export type AutotranslateTranslateMessageParamsPOST = Static<typeof AutotranslateTranslateMessageParamsPostSchema>;
 
-const AutotranslateTranslateMessageParamsPostSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-		targetLanguage: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isAutotranslateTranslateMessageParamsPOST = ajv.compile<AutotranslateTranslateMessageParamsPOST>(
-	AutotranslateTranslateMessageParamsPostSchema,
-);
+export const isAutotranslateTranslateMessageParamsPOST = createTypeGuard(AutotranslateTranslateMessageParamsPostSchema);

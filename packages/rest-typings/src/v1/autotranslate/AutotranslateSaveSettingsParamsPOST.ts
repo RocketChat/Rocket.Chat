@@ -1,38 +1,13 @@
-import Ajv from 'ajv';
+import type { Static } from '../../helpers/schemas';
+import { createTypeGuard, type } from '../../helpers/schemas';
 
-const ajv = new Ajv({
-	coerceTypes: true,
+const AutotranslateSaveSettingsParamsPostSchema = type.object({
+	roomId: type.string(),
+	field: type.union([type.literal('autoTranslate'), type.literal('autoTranslateLanguage')]),
+	value: type.union([type.boolean(), type.string()]),
+	defaultLanguage: type.optional(type.string()),
 });
 
-export type AutotranslateSaveSettingsParamsPOST = {
-	roomId: string;
-	field: 'autoTranslate' | 'autoTranslateLanguage';
-	value: boolean | string;
-	defaultLanguage?: string;
-};
+export type AutotranslateSaveSettingsParamsPOST = Static<typeof AutotranslateSaveSettingsParamsPostSchema>;
 
-const AutotranslateSaveSettingsParamsPostSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		field: {
-			type: 'string',
-			enum: ['autoTranslate', 'autoTranslateLanguage'],
-		},
-		value: {
-			anyOf: [{ type: 'boolean' }, { type: 'string' }],
-		},
-		defaultLanguage: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['roomId', 'field', 'value'],
-	additionalProperties: false,
-};
-
-export const isAutotranslateSaveSettingsParamsPOST = ajv.compile<AutotranslateSaveSettingsParamsPOST>(
-	AutotranslateSaveSettingsParamsPostSchema,
-);
+export const isAutotranslateSaveSettingsParamsPOST = createTypeGuard(AutotranslateSaveSettingsParamsPostSchema);

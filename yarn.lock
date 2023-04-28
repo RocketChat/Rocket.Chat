@@ -7514,6 +7514,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": next
+    "@sinclair/typebox": ~0.28.8
     "@types/jest": ~29.5.0
     ajv: ^8.12.0
     eslint: ^8.29.0
@@ -7911,6 +7912,13 @@ __metadata:
   version: 0.25.24
   resolution: "@sinclair/typebox@npm:0.25.24"
   checksum: 10219c58f40b8414c50b483b0550445e9710d4fe7b2c4dccb9b66533dd90ba8e024acc776026cebe81e87f06fa24b07fdd7bc30dd277eb9cc386ec50151a3026
+  languageName: node
+  linkType: hard
+
+"@sinclair/typebox@npm:~0.28.8":
+  version: 0.28.8
+  resolution: "@sinclair/typebox@npm:0.28.8"
+  checksum: 10afce98e33c181c8b69f69e4f581d0de2ca31ca75b6363259397ee5c40e3de8027a820c11d59a0f455fcc3d891764df321a65264e42d98325d7975ebfd12bda
   languageName: node
   linkType: hard
 
