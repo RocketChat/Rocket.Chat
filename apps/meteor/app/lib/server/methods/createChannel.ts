@@ -24,9 +24,9 @@ export const createChannelMethod = async (
 	userId: string,
 	name: string,
 	members: string[],
-	readOnly?: boolean,
-	customFields?: Record<string, any>,
-	extraData?: Record<string, any>,
+	readOnly = false,
+	customFields: Record<string, any> = {},
+	extraData: Record<string, any> = {},
 ) => {
 	check(name, String);
 	check(members, Match.Optional([String]));
