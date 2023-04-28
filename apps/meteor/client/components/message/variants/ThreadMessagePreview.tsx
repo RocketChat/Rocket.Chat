@@ -56,7 +56,13 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const goToThread = useGoToThread();
 
 	return (
-		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
+		<ThreadMessage
+			{...props}
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			data-qa-selected={isSelected}
+			role='link'
+		>
 			{!sequential && (
 				<ThreadMessageRow
 					role='link'

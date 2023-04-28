@@ -45,8 +45,8 @@ class DepartmentHelperClass {
 
 		this.logger.debug(`Post-department-removal actions completed: ${_id}. Notifying callbacks with department and agentsIds`);
 
-		Meteor.defer(() => {
-			callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+		setImmediate(() => {
+			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 		});
 
 		return ret;

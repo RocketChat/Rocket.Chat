@@ -45,8 +45,8 @@ const logout = (): Promise<void> =>
 			return resolve();
 		}
 
-		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
+		Meteor.logout(async () => {
+			await callbacks.run('afterLogoutCleanUp', user);
 			call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});

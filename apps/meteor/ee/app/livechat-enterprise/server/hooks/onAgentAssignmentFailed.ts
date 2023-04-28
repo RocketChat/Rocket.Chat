@@ -31,7 +31,7 @@ const handleOnAgentAssignmentFailed = async ({
 		await LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId);
 		await LivechatRooms.removeAgentByRoomId(roomId);
 		await Subscriptions.removeByRoomId(roomId);
-		dispatchAgentDelegated(roomId, null);
+		await dispatchAgentDelegated(roomId, null);
 
 		const newInquiry = await LivechatInquiry.findOneById(inquiryId);
 

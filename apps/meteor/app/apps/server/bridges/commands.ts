@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
-import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
@@ -162,21 +162,16 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 	}
 
-	private async _appCommandExecutor(
-		command: string,
-		parameters: any,
-		message: RequiredField<Partial<IMessage>, 'rid'>,
-		triggerId?: string,
-	): Promise<void> {
-		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+	private async _appCommandExecutor({ command, message, params, triggerId, userId }: SlashCommandCallbackParams<string>): Promise<void> {
+		const user = await this.orch.getConverters()?.get('users').convertById(userId);
 		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parseParameters(parameters);
+		const parameters = parseParameters(params);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
 			Object.freeze(room),
-			Object.freeze(params) as string[],
+			Object.freeze(parameters) as string[],
 			threadId,
 			triggerId,
 		);

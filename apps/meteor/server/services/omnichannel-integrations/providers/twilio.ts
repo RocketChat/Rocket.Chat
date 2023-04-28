@@ -6,7 +6,7 @@ import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { SystemLogger } from '../../../lib/logger/system';
 
 type TwilioData = {
@@ -148,7 +148,7 @@ export class Twilio implements ISMSProvider {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
+			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
@@ -181,7 +181,7 @@ export class Twilio implements ISMSProvider {
 		};
 	}
 
-	fileUploadMediaTypeWhiteList() {
+	fileUploadMediaTypeWhiteList(): any {
 		throw new Error('Method not implemented.');
 	}
 
