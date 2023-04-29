@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import moment from 'moment';
-import deasync from 'deasync';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -17,18 +16,8 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
 import { httpCall } from '../../../../server/lib/http/call';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 
-deasync.promise = function (promise) {
-	return deasync((cb) => {
-		promise
-			.then((r) => {
-				cb(null, r);
-			})
-			.catch((e) => {
-				cb(e);
-			});
-	})();
-};
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
@@ -265,8 +254,10 @@ class RocketChatIntegrationHandler {
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {
-				return deasync.promise(httpAsync(method, url, options));
+				// TODO: deprecate, track and alert
+				return deasyncPromise(httpAsync(method, url, options));
 			},
+			// TODO: Export fetch as the non deprecated method
 		};
 
 		Object.keys(Models)
@@ -369,20 +360,24 @@ class RocketChatIntegrationHandler {
 				sandbox,
 			});
 
-			const result = await new Promise((resolve) => {
+			const result = await new Promise((resolve, reject) => {
 				process.nextTick(async () => {
-					const scriptResult = await vm.run(`
-						new Promise((resolve, reject) => {
-							scriptTimeout(reject);
-							try {
-								resolve(script[method](params))
-							} catch(e) {
-								reject(e);
-							}
-						}).catch((error) => { throw new Error(error); });
-					`);
+					try {
+						const scriptResult = await vm.run(`
+							new Promise((resolve, reject) => {
+								scriptTimeout(reject);
+								try {
+									resolve(script[method](params))
+								} catch(e) {
+									reject(e);
+								}
+							}).catch((error) => { throw new Error(error); });
+						`);
 
-					resolve(scriptResult);
+						resolve(scriptResult);
+					} catch (e) {
+						reject(e);
+					}
 				});
 			});
 
