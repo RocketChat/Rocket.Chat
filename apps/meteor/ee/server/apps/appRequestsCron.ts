@@ -17,13 +17,13 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 		const token = await getWorkspaceAccessToken();
 
 		if (!token) {
-			Apps.rocketChatLoggerDebug(`could not load workspace token to send app requests notifications`);
+			await Apps.rocketChatLoggerDebug(`could not load workspace token to send app requests notifications`);
 			return;
 		}
 
 		const baseUrl = await Apps.getMarketplaceUrl();
 		if (!baseUrl) {
-			Apps.rocketChatLoggerDebug(`could not load marketplace base url to send app requests notifications`);
+			await Apps.rocketChatLoggerDebug(`could not load marketplace base url to send app requests notifications`);
 			return;
 		}
 
@@ -50,18 +50,18 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 					await fetch(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})
-				.catch((err) => {
-					Apps.rocketChatLoggerDebug(`could not send app request notifications for app ${appId}. Error: ${err}`);
+				.catch(async (err) => {
+					await Apps.rocketChatLoggerDebug(`could not send app request notifications for app ${appId}. Error: ${err}`);
 					return err;
 				});
 
 			const errors = (usersNotified as (string | Error)[]).filter((batch) => batch instanceof Error);
 			if (errors.length > 0) {
-				Apps.rocketChatLoggerDebug(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
+				await Apps.rocketChatLoggerDebug(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
 			}
 		}
 	} catch (err) {
-		Apps.rocketChatLoggerDebug(err);
+		await Apps.rocketChatLoggerDebug(err);
 	}
 };
 
