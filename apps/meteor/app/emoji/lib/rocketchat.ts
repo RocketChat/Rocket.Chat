@@ -1,21 +1,29 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
-import type { EmojiType } from '../client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export const emoji: EmojiType = {
+export type EmojiPackage = {
+	emojiCategories: Array<{ key: string; i18n: TranslationKey }>;
+	categoryIndex?: number;
+	emojisByCategory: Record<string, string[]>;
+	toneList: Record<string, unknown>;
+	render: (message: string) => string;
+	renderPicker: (emojiToRender: string) => string | undefined;
+	ascii?: boolean;
+	sprites?: unknown;
+};
+
+export type EmojiPackages = {
 	packages: {
-		base: {
-			emojiCategories: [{ key: 'recent', i18n: 'Frequently_Used' }],
-			categoryIndex: 0,
-			emojisByCategory: {
-				recent: [],
-			},
-			toneList: {},
-			render: emojioneRender,
-			renderPicker(emojiToRender) {
-				const correctPackage = emoji.list[emojiToRender].emojiPackage;
-				return emoji.packages[correctPackage].renderPicker(emojiToRender);
-			},
-		},
-	},
-	list: {},
+		[key: string]: EmojiPackage;
+	};
+	list: {
+		[key: keyof NonNullable<EmojiPackages['packages']>]: {
+			category: string;
+			emojiPackage: string;
+			shortnames: string[];
+			uc_base: string;
+			uc_greedy: string;
+			uc_match: string;
+			uc_output: string;
+		};
+	};
 };

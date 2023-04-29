@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import type { EmojiCategory, EmojiItem } from '.';
-import { emoji } from '../lib/rocketchat';
+import { emoji } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
 
@@ -24,7 +24,7 @@ export const createPickerEmojis = (
 
 	return mappedCategories;
 };
-
+console.log(emoji);
 export const createEmojiList = (
 	category: string,
 	actualTone: number | null,
@@ -63,14 +63,12 @@ export const createEmojiList = (
 export const getCategoriesList = () => {
 	let categoriesList: EmojiCategory[] = [];
 
-	for (const emojiPackage in emoji.packages) {
-		if (emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (emoji.packages[emojiPackage].emojiCategories) {
-				if (typeof emoji.packages[emojiPackage].categoryIndex !== 'undefined') {
-					categoriesList.splice(emoji.packages[emojiPackage].categoryIndex, 0, ...emoji.packages[emojiPackage].emojiCategories);
-				} else {
-					categoriesList = categoriesList.concat(emoji.packages[emojiPackage].emojiCategories);
-				}
+	for (const emojiPackage of Object.values(emoji.packages)) {
+		if (emojiPackage.emojiCategories) {
+			if (typeof emojiPackage.categoryIndex !== 'undefined') {
+				categoriesList.splice(emojiPackage.categoryIndex, 0, ...emojiPackage.emojiCategories);
+			} else {
+				categoriesList = categoriesList.concat(emojiPackage.emojiCategories);
 			}
 		}
 	}

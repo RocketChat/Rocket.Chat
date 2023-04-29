@@ -2,7 +2,7 @@ import '../ee/definition';
 import '../ee/client/ecdh';
 import './polyfills';
 
-import '../lib/oauthRedirectUri';
+import '../lib/oauthRedirectUriClient';
 import './lib/meteorCallWrapper';
 import './importPackages';
 

@@ -61,9 +61,8 @@ export class FederationSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').focus();
 		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).first().waitFor();
-		await this.page.waitForTimeout(2000);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).first().click();
+		await this.page.locator(`role=search >> role=listbox >> role=link`).first().waitFor();
+		await this.page.locator(`role=search >> role=listbox >> role=link`).first().click();
 	}
 
 	async countFilteredChannelsOnDirectory(name: string): Promise<number> {

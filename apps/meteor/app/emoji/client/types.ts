@@ -23,35 +23,3 @@ export type EmojiCategoryPosition = {
 	el: Element;
 	top: number;
 };
-
-type EmojiPackage = {
-	emojiCategories: EmojiCategory[];
-	categoryIndex: number;
-	emojisByCategory: {
-		[key: string]: string[];
-	};
-	toneList: {
-		[key: string]: number;
-	};
-	render: (message: any) => string;
-	renderPicker(emojiToRender: string): string;
-};
-
-export type EmojiPackages = {
-	[packageName: string]: EmojiPackage;
-};
-
-export type EmojiType = {
-	packages: EmojiPackages;
-	list: {
-		[key: string]: {
-			category: string;
-			emojiPackage: string;
-			shortnames: string[];
-			uc_base: string;
-			uc_greedy: string;
-			uc_match: string;
-			uc_output: string;
-		};
-	};
-};

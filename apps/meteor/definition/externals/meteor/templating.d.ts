@@ -20,9 +20,6 @@ declare module 'meteor/templating' {
 
 	type BlazeTemplates = {
 		ExternalFrameContainer: BlazeTemplate;
-		inputAutocomplete: BlazeTemplate;
-		_autocompleteContainer: BlazeTemplate;
-		_noMatch: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<
