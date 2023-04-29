@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { ITeamMemberParams } from './ITeamMemberParams';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & {
 	members: ITeamMemberParams[];

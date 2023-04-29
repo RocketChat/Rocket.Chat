@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../../helpers/schemas';
 
 export type UpdateOAuthAppParams = {
 	appId: string;

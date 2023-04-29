@@ -1,11 +1,8 @@
-import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type VideoConfStartProps = { roomId: string; title?: string; allowRinging?: boolean };
 
-const videoConfStartPropsSchema: JSONSchemaType<VideoConfStartProps> = {
+const videoConfStartPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -25,4 +22,4 @@ const videoConfStartPropsSchema: JSONSchemaType<VideoConfStartProps> = {
 	additionalProperties: false,
 };
 
-export const isVideoConfStartProps = ajv.compile(videoConfStartPropsSchema);
+export const isVideoConfStartProps = ajv.compile<VideoConfStartProps>(videoConfStartPropsSchema);

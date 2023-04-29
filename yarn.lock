@@ -6919,7 +6919,7 @@ __metadata:
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/random": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": next
@@ -6932,6 +6932,7 @@ __metadata:
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
+    "@sinclair/typebox": ~0.28.8
     "@slack/rtm-api": ^6.0.0
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addon-interactions": ~6.5.15
@@ -7505,7 +7506,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings":
+"@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings, @rocket.chat/rest-typings@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:

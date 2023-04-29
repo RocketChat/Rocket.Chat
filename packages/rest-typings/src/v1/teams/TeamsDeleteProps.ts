@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & {
 	roomsToRemove?: string[];

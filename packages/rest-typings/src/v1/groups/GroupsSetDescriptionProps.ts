@@ -1,11 +1,6 @@
-import Ajv from 'ajv';
-
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../helpers/schemas';
 
 export type GroupsSetDescriptionProps = GroupsBaseProps & { description: string };
 const groupsSetDescriptionPropsSchema = withGroupBaseProperties(

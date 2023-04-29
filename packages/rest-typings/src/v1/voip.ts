@@ -11,15 +11,10 @@ import type {
 	IVoipConnectorResult,
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
-import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../helpers/schemas';
 
 /** *************************************************/
 type CustomSoundsList = PaginatedRequest<{ query: string }>;
@@ -52,7 +47,7 @@ export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSound
 
 type ConnectorExtensionGetRegistrationInfoByUserId = { id: string };
 
-const ConnectorExtensionGetRegistrationInfoByUserIdSchema: JSONSchemaType<ConnectorExtensionGetRegistrationInfoByUserId> = {
+const ConnectorExtensionGetRegistrationInfoByUserIdSchema = {
 	type: 'object',
 	properties: {
 		id: {
@@ -69,7 +64,7 @@ export const isConnectorExtensionGetRegistrationInfoByUserIdProps = ajv.compile<
 
 type VoipQueuesGetQueuedCallsForThisExtension = { extension: string };
 
-const VoipQueuesGetQueuedCallsForThisExtensionSchema: JSONSchemaType<VoipQueuesGetQueuedCallsForThisExtension> = {
+const VoipQueuesGetQueuedCallsForThisExtensionSchema = {
 	type: 'object',
 	properties: {
 		extension: {
@@ -86,7 +81,7 @@ export const isVoipQueuesGetQueuedCallsForThisExtensionProps = ajv.compile<VoipQ
 
 type VoipQueuesGetMembershipSubscription = { extension: string };
 
-const VoipQueuesGetMembershipSubscriptionSchema: JSONSchemaType<VoipQueuesGetMembershipSubscription> = {
+const VoipQueuesGetMembershipSubscriptionSchema = {
 	type: 'object',
 	properties: {
 		extension: {
@@ -108,7 +103,7 @@ type OmnichannelExtensions = PaginatedRequest<{
 	extension?: string;
 }>;
 
-const OmnichannelExtensionsSchema: JSONSchemaType<OmnichannelExtensions> = {
+const OmnichannelExtensionsSchema = {
 	type: 'object',
 	properties: {
 		status: {
@@ -163,7 +158,7 @@ type OmnichannelExtension =
 			type: 'free' | 'allocated' | 'available';
 	  };
 
-const OmnichannelExtensionSchema: JSONSchemaType<OmnichannelExtension> = {
+const OmnichannelExtensionSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -200,7 +195,7 @@ export const isOmnichannelExtensionProps = ajv.compile<OmnichannelExtension>(Omn
 
 type OmnichannelAgentExtensionGET = { username: string };
 
-const OmnichannelAgentExtensionGETSchema: JSONSchemaType<OmnichannelAgentExtensionGET> = {
+const OmnichannelAgentExtensionGETSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -215,7 +210,7 @@ export const isOmnichannelAgentExtensionGETProps = ajv.compile<OmnichannelAgentE
 
 type OmnichannelAgentExtensionPOST = { userId: string; extension: string } | { username: string; extension: string };
 
-const OmnichannelAgentExtensionPOSTSchema: JSONSchemaType<OmnichannelAgentExtensionPOST> = {
+const OmnichannelAgentExtensionPOSTSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -250,7 +245,7 @@ export const isOmnichannelAgentExtensionPOSTProps = ajv.compile<OmnichannelAgent
 
 type OmnichannelAgentExtensionDELETE = { username: string };
 
-const OmnichannelAgentExtensionDELETESchema: JSONSchemaType<OmnichannelAgentExtensionDELETE> = {
+const OmnichannelAgentExtensionDELETESchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -265,7 +260,7 @@ export const isOmnichannelAgentExtensionDELETEProps = ajv.compile<OmnichannelAge
 
 type OmnichannelAgentsAvailable = PaginatedRequest<{ text?: string; includeExtension?: string }>;
 
-const OmnichannelAgentsAvailableSchema: JSONSchemaType<OmnichannelAgentsAvailable> = {
+const OmnichannelAgentsAvailableSchema = {
 	type: 'object',
 	properties: {
 		count: {
@@ -301,7 +296,7 @@ export const isOmnichannelAgentsAvailableProps = ajv.compile<OmnichannelAgentsAv
 
 type VoipEvents = { event: VoipClientEvents; rid: string; comment?: string };
 
-const VoipEventsSchema: JSONSchemaType<VoipEvents> = {
+const VoipEventsSchema = {
 	type: 'object',
 	properties: {
 		event: {
@@ -324,7 +319,7 @@ export const isVoipEventsProps = ajv.compile<VoipEvents>(VoipEventsSchema);
 
 type VoipRoom = { token: string; agentId: ILivechatAgent['_id']; direction: IVoipRoom['direction'] } | { rid: string; token: string };
 
-const VoipRoomSchema: JSONSchemaType<VoipRoom> = {
+const VoipRoomSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -363,7 +358,7 @@ export const isVoipRoomProps = ajv.compile<VoipRoom>(VoipRoomSchema);
 
 type VoipManagementServerCheckConnection = { host: string; port: string; username: string; password: string };
 
-const VoipManagementServerCheckConnectionSchema: JSONSchemaType<VoipManagementServerCheckConnection> = {
+const VoipManagementServerCheckConnectionSchema = {
 	type: 'object',
 	properties: {
 		host: {
@@ -389,7 +384,7 @@ export const isVoipManagementServerCheckConnectionProps = ajv.compile<VoipManage
 
 type VoipCallServerCheckConnection = { websocketUrl: string; host: string; port: string; path: string };
 
-const VoipCallServerCheckConnectionSchema: JSONSchemaType<VoipCallServerCheckConnection> = {
+const VoipCallServerCheckConnectionSchema = {
 	type: 'object',
 	properties: {
 		websocketUrl: {
@@ -423,7 +418,7 @@ type VoipRooms = PaginatedRequest<{
 	direction?: IVoipRoom['direction'];
 }>;
 
-const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
+const VoipRoomsSchema = {
 	type: 'object',
 	properties: {
 		agents: {
@@ -495,7 +490,7 @@ export const isVoipRoomsProps = ajv.compile<VoipRooms>(VoipRoomsSchema);
 
 type VoipRoomClose = { rid: string; token: string; options: { comment?: string; tags?: string[] } };
 
-const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
+const VoipRoomCloseSchema = {
 	type: 'object',
 	properties: {
 		rid: {

@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
+import { ajv } from '../../helpers/schemas';
 import type { FederationPaginatedRequest } from '.';
-
-const ajv = new Ajv();
 
 export type FederationSearchPublicRoomsProps = FederationPaginatedRequest<{
 	serverName?: string;

@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import { ajv } from '../helpers/schemas';
 
 export type LoginProps = { user: Record<string, any> | string; username: string; email: string; password: string; code: string };
 
@@ -16,8 +16,6 @@ export type AuthEndpoints = {
 		GET: () => LogoutResponse;
 	};
 };
-
-const ajv = new Ajv();
 
 const loginPropsSchema = {
 	type: 'object',

@@ -1,5 +1,6 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+
+import { ajv } from '../helpers/schemas';
 
 type SubscriptionsGet = { updatedSince?: string };
 
@@ -8,10 +9,6 @@ type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 const SubscriptionsGetSchema = {
 	type: 'object',

@@ -1,8 +1,4 @@
-import Ajv from 'ajv/dist/2019';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../helpers/schemas';
 
 export type GroupsCreateProps = {
 	name: string;
@@ -57,9 +53,7 @@ const GroupsCreatePropsSchema = {
 					nullable: true,
 				},
 			},
-			dependentSchemas: {
-				extraData: { required: ['broadcast', 'encrypted'] },
-			},
+			required: ['broadcast', 'encrypted'],
 			additionalProperties: false,
 			nullable: true,
 		},

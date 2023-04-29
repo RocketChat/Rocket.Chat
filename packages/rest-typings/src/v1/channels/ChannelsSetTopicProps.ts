@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type ChannelsSetTopicProps = { roomId: string; topic: string } | { roomName: string; topic: string };
 

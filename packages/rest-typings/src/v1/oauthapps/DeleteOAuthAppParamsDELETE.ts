@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../../helpers/schemas';
 
 export type DeleteOAuthAppParams = {
 	appId: string;

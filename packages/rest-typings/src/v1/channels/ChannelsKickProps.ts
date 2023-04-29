@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type ChannelsKickProps = { roomId: string; userId: string } | { roomName: string; userId: string };
 

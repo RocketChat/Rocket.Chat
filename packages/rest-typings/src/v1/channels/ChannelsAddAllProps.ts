@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type ChannelsAddAllProps = ({ roomId: string } | { roomName: string }) & {
 	activeUsersOnly?: 'true' | 'false' | 1 | 0;

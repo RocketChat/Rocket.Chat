@@ -1,11 +1,7 @@
-import Ajv from 'ajv';
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../helpers/schemas';
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 

@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../helpers/schemas';
 
 export type ChannelsOnlineProps = { query?: Record<string, any> };
 const channelsOnlyPropsSchema = {

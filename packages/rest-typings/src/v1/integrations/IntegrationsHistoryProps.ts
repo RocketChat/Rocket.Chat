@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
+import { ajv } from '../../helpers/schemas';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({ coerceTypes: true });
 
 export type IntegrationsHistoryProps = PaginatedRequest<{ id: string }>;
 

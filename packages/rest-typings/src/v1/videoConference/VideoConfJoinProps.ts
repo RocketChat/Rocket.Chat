@@ -1,7 +1,4 @@
-import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../helpers/schemas';
 
 export type VideoConfJoinProps = {
 	callId: string;
@@ -11,7 +8,7 @@ export type VideoConfJoinProps = {
 	};
 };
 
-const videoConfJoinPropsSchema: JSONSchemaType<VideoConfJoinProps> = {
+const videoConfJoinPropsSchema = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -38,4 +35,4 @@ const videoConfJoinPropsSchema: JSONSchemaType<VideoConfJoinProps> = {
 	additionalProperties: false,
 };
 
-export const isVideoConfJoinProps = ajv.compile(videoConfJoinPropsSchema);
+export const isVideoConfJoinProps = ajv.compile<VideoConfJoinProps>(videoConfJoinPropsSchema);

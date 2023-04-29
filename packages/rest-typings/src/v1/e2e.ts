@@ -1,9 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../helpers/schemas';
 
 type E2eSetUserPublicAndPrivateKeysProps = {
 	public_key: string;
