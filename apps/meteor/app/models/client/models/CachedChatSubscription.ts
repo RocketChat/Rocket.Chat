@@ -4,7 +4,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedCollection } from '../../../ui-cached-collection/client';
 import { ChatRoom } from './ChatRoom';
-import { CachedChatRoom } from './CachedChatRoom';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -22,15 +21,8 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 		return this.mergeWithRoom(record);
 	}
 
-	protected handleReceived(record: ISubscription, action: 'changed' | 'removed') {
-		const newRecord = this.mergeWithRoom(record);
-
-		if (action === 'removed') {
-			ChatRoom.remove(newRecord.rid);
-			void CachedChatRoom.save();
-		}
-
-		return newRecord;
+	protected handleReceived(record: ISubscription) {
+		return this.mergeWithRoom(record);
 	}
 
 	protected handleSync(record: ISubscription) {

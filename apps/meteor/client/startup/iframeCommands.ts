@@ -69,7 +69,7 @@ const commands = {
 	async 'logout'() {
 		const user = Meteor.user();
 		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
+			void callbacks.run('afterLogoutCleanUp', user);
 			Meteor.call('logoutCleanUp', user);
 			return FlowRouter.go('home');
 		});
