@@ -61,7 +61,7 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 	async update(
 		appPackage: Buffer,
 		permissionsGranted: IPermission[],
-		updateOptions = { loadApp: true },
+		updateOptions: { loadApp: boolean },
 	): Promise<AppFabricationFulfillment | undefined> {
 		return this.apps.getManager()?.update(appPackage, permissionsGranted, updateOptions);
 	}
@@ -114,7 +114,7 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 		return this.apps.getManager()?.getLogStorage().find(query, options);
 	}
 
-	async getStorageItemById(id: string): Promise<IAppStorageItem | null> {
+	async getAppStorageItemById(id: string): Promise<IAppStorageItem | null> {
 		return this.apps.getManager()?.getStorage().retrieveOne(id) ?? null;
 	}
 }

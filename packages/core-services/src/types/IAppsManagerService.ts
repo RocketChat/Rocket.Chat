@@ -20,7 +20,11 @@ export interface IAppsManagerService {
 	add(appPackage: Buffer, installationParameters: IAppInstallParameters): Promise<AppFabricationFulfillment | undefined>;
 	remove(id: string, uninstallationParameters: IAppUninstallParameters): Promise<ProxiedApp | undefined>;
 	removeLocal(id: string): Promise<void>;
-	update(appPackage: Buffer, permissionsGranted: Array<IPermission>, updateOptions?: any): Promise<AppFabricationFulfillment | undefined>;
+	update(
+		appPackage: Buffer,
+		permissionsGranted: Array<IPermission>,
+		updateOptions?: { loadApp: boolean },
+	): Promise<AppFabricationFulfillment | undefined>;
 	updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer): Promise<void>;
 	enable(appId: string): Promise<boolean | undefined>;
 	disable(appId: string, status?: AppStatus, silent?: boolean): Promise<boolean | undefined>;
