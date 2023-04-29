@@ -28,7 +28,7 @@ Meteor.startup(async function () {
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
-	return Meteor.setTimeout(async function () {
+	return setTimeout(async function () {
 		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
 
 		let msg = [

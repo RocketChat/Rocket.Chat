@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
+import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 import { Message, api } from '@rocket.chat/core-services';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
@@ -10,6 +10,8 @@ import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomI
 import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { settings } from '../../../../../../app/settings/server';
+import { getValidRoomName } from '../../../../../../app/utils/server';
+import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 	[Property in Key]-?: Type[Property];
@@ -48,9 +50,19 @@ export class RocketChatRoomAdapter {
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
 		}
-		const { rid, _id } = await createRoom(federatedRoom.getRoomType(), federatedRoom.getDisplayName(), usernameOrId);
+		const roomName = await getValidRoomName(
+			(federatedRoom.getDisplayName() || '')
+				.replace(/[^a-zA-Z0-9 ]/g, '')
+				.trim()
+				.replace(/ /g, '-'),
+		);
+		const { rid, _id } = await createRoom(federatedRoom.getRoomType(), roomName, usernameOrId);
 		const roomId = rid || _id;
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(
+			roomId,
+			federatedRoom.getExternalId(),
+			extractServerNameFromExternalIdentifier(federatedRoom.getExternalId()),
+		);
 		await Rooms.setAsFederated(roomId);
 
 		return roomId;
@@ -85,7 +97,11 @@ export class RocketChatRoomAdapter {
 			{ creator: creatorId },
 		);
 		const roomId = rid || _id;
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(
+			roomId,
+			federatedRoom.getExternalId(),
+			extractServerNameFromExternalIdentifier(federatedRoom.getExternalId()),
+		);
 		await Rooms.setAsFederated(roomId);
 
 		return roomId;
@@ -108,6 +124,30 @@ export class RocketChatRoomAdapter {
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
 		await addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
+	}
+
+	public async addUsersToRoomWhenJoinExternalPublicRoom(federatedUsers: FederatedUser[], federatedRoom: FederatedRoom): Promise<void> {
+		const room = await Rooms.findOneById(federatedRoom.getInternalId());
+		if (!room) {
+			throw new Error('Room not found - addUsersToRoomWhenJoinExternalPublicRoom');
+		}
+		await Promise.all(
+			federatedUsers
+				.map(async (federatedUser) => {
+					const internalUser = await Users.findOneById(federatedUser.getInternalId());
+					if (!internalUser) {
+						return;
+					}
+					const subscription = await Subscriptions.findOneByRoomIdAndUserId(federatedRoom.getInternalId(), internalUser._id);
+					if (subscription) {
+						return;
+					}
+					return Subscriptions.createWithRoomAndUser(room, federatedUser.getInternalReference(), {
+						ts: new Date(),
+					});
+				})
+				.filter(Boolean),
+		);
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
@@ -172,7 +212,11 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, externalRoomId: string): Promise<void> {
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, externalRoomId);
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(
+			internalRoomId,
+			externalRoomId,
+			extractServerNameFromExternalIdentifier(externalRoomId),
+		);
 		await Rooms.setAsFederated(internalRoomId);
 	}
 

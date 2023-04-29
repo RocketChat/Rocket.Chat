@@ -3,7 +3,6 @@
  */
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type {
 	IMessage,
@@ -13,11 +12,11 @@ import type {
 	IGoogleTranslation,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 /**
  * Represents google translate class
@@ -85,29 +84,27 @@ class GoogleAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target];
 		}
 
-		let result;
+		let result: { data?: { languages: ISupportedLanguage[] } } = {};
 		const params = {
 			key: this.apiKey,
 			...(target && { target }),
 		};
 
 		try {
-			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
-			result = await request.json();
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+			if (!request.ok && request.status === 400 && request.statusText === 'INVALID_ARGUMENT') {
+				throw new Error('Failed to fetch supported languages');
+			}
+
+			result = (await request.json()) as typeof result;
 		} catch (e: any) {
 			// Fallback: Get the English names of the target languages
-			if (
-				e.response &&
-				e.response.statusCode === 400 &&
-				e.response.data &&
-				e.response.data.error &&
-				e.response.data.error.status === 'INVALID_ARGUMENT'
-			) {
+			if (e.message === 'Failed to fetch supported languages') {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages?${new URLSearchParams(params)}`);
-					result = await request.json();
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+					result = (await request.json()) as typeof result;
 				}
 			}
 		}
@@ -115,7 +112,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		this.supportedLanguages[target || 'en'] = result?.data?.data?.languages;
+		this.supportedLanguages[target || 'en'] = result?.data?.languages || [];
 		return this.supportedLanguages[target || 'en'];
 	}
 
@@ -132,39 +129,41 @@ class GoogleAutoTranslate extends AutoTranslate {
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
-		const query = `q=${msgs.join('&q=')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
+						q: msgs,
 					},
-					query,
 				});
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
 
 				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.data &&
-					result.data.data.translations &&
-					Array.isArray(result.data.data.translations) &&
-					result.data.data.translations.length > 0
+					result.status === 200 &&
+					body.data &&
+					body.data.translations &&
+					Array.isArray(body.data.translations) &&
+					body.data.translations.length > 0
 				) {
-					const txt = result.data.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
+					const txt = body.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 
@@ -177,40 +176,40 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		const query = `q=${encodeURIComponent(attachment.description || attachment.text || '')}`;
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		targetLanguages.forEach((language) => {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
+						q: encodeURIComponent(attachment.description || attachment.text || ''),
 					},
-					query,
 				});
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
 
 				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.data &&
-					result.data.data.translations &&
-					Array.isArray(result.data.data.translations) &&
-					result.data.data.translations.length > 0
+					result.status === 200 &&
+					body.data &&
+					body.data.translations &&
+					Array.isArray(body.data.translations) &&
+					body.data.translations.length > 0
 				) {
-					translations[language] = result.data.data.translations
-						.map((translation: IGoogleTranslation) => translation.translatedText)
-						.join('\n');
+					translations[language] = body.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 }
