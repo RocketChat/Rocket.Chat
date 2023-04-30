@@ -1,5 +1,4 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -7,6 +6,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { i18n } from '../../../server/lib/i18n';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
@@ -27,7 +27,7 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
-			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
+			msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(rocketCatMessage, adminUser.language)}`,
 		}),
 		banners: async ({ adminUser }) => {
 			await Users.removeBannerById(adminUser._id, { id });
@@ -64,7 +64,7 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
 	await sendMessagesToAdmins({
-		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+		msgs: async ({ adminUser }) => ({ msg: `${i18n.t(rocketCatMessage, adminUser.language)}` }),
 	});
 };
 

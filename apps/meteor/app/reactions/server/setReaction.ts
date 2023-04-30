@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { Messages, EmojiCustom, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -12,6 +11,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
+import { i18n } from '../../../server/lib/i18n';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -42,7 +42,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username as string) !== -1) {
-		throw new Meteor.Error('error-not-allowed', TAPi18n.__('You_have_been_muted', {}, user.language), {
+		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
 			rid: room._id,
 		});
 	}

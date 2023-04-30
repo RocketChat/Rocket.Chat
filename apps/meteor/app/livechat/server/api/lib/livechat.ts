@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
@@ -14,6 +13,7 @@ import type {
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
+import { i18n } from '../../../../../server/lib/i18n';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
@@ -173,12 +173,12 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 					{
 						actionLinksAlignment: 'flex-start',
 						i18nLabel: 'Join_call',
-						label: TAPi18n.__('Join_call'),
+						label: i18n.t('Join_call'),
 						method_id: 'joinLivechatWebRTCCall',
 					},
 					{
 						i18nLabel: 'End_call',
-						label: TAPi18n.__('End_call'),
+						label: i18n.t('End_call'),
 						method_id: 'endLivechatWebRTCCall',
 						danger: true,
 					},

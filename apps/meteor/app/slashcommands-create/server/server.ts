@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
 	command: 'create',
@@ -39,7 +39,7 @@ slashCommands.add({
 		const room = await Rooms.findOneByName(channelStr);
 		if (room != null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_already_exist', {
+				msg: i18n.t('Channel_already_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channelStr],
 					lng: settings.get('Language') || 'en',
