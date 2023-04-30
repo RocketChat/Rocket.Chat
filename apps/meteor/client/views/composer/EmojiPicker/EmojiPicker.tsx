@@ -178,7 +178,11 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setSearching(e.target.value !== '');
 
 		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
-		setSearchResults(emojisResult);
+
+		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
+			setCurrentCategory('no-results');
+		}
+		setSearchResults(emojisResult as EmojiItem[]);
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
