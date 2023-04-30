@@ -128,14 +128,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if no inviter was provided', () => {
-			get.returns(true);
-			const stub = sinon.stub();
-			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user' }, { federated: true });
-			expect(stub.called).to.be.false;
-		});
-
 		it('should NOT execute the callback if federation module was disabled', () => {
 			get.returns(false);
 			const stub = sinon.stub();
@@ -150,6 +142,14 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
 			expect(stub.calledWith({ federated: true }, ['user'], 'inviter')).to.be.true;
+		});
+
+		it('should execute the callback even if there is no inviter (when auto-joining)', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user' }, { federated: true });
+			expect(stub.calledWith({ federated: true }, ['user'])).to.be.true;
 		});
 	});
 	describe('#onUsersAddedToARoom() - federation.onAddUsersToARoom', () => {

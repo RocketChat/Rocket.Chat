@@ -3,9 +3,9 @@
  */
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
@@ -87,10 +87,14 @@ class MsAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		const languages = HTTP.get(this.apiGetLanguages);
-		this.supportedLanguages[target] = Object.keys(languages.data.translation).map((language) => ({
+		const request = await fetch(this.apiEndPointUrl);
+		if (!request.ok) {
+			throw new Error(request.statusText);
+		}
+		const languages = await request.json();
+		this.supportedLanguages[target] = Object.keys(languages.translation).map((language) => ({
 			language,
-			name: languages.data.translation[language].name,
+			name: languages.translation[language].name,
 		}));
 		return this.supportedLanguages[target || 'en'];
 	}
@@ -117,21 +121,28 @@ class MsAutoTranslate extends AutoTranslate {
 			}
 			return language;
 		});
-		const url = `${this.apiEndPointUrl}&to=${targetLanguages.join('&to=')}`;
-		const result = HTTP.post(url, {
+		const request = await fetch(this.apiEndPointUrl, {
+			method: 'POST',
 			headers: {
 				'Ocp-Apim-Subscription-Key': this.apiKey,
 				'Content-Type': 'application/json; charset=UTF-8',
 			},
-			data,
+			body: data,
+			params: {
+				to: targetLanguages,
+			},
 		});
+		if (!request.ok) {
+			throw new Error(request.statusText);
+		}
+		const result = await request.json();
 
-		if (result.statusCode === 200 && result.data && result.data.length > 0) {
+		if (request.status === 200 && result.length > 0) {
 			// store translation only when the source and target language are different.
 			translations = Object.assign(
 				{},
 				...targetLanguages.map((language) => ({
-					[language]: result.data
+					[language]: result
 						.map(
 							(line: { translations: { to: string; text: string }[] }) =>
 								line.translations.find((translation) => translation.to === language)?.text,

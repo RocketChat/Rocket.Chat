@@ -5,7 +5,7 @@ import { api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { getURL } from '../../../utils/lib/getURL';
+import { getURL } from '../../../utils/server/getURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -14,11 +14,15 @@ function getInviteUrl(invite) {
 
 	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
 
-	return getURL(`invite/${_id}`, {
-		full: useDirectLink,
-		cloud: !useDirectLink,
-		cloud_route: 'invite',
-	});
+	return getURL(
+		`invite/${_id}`,
+		{
+			full: useDirectLink,
+			cloud: !useDirectLink,
+			cloud_route: 'invite',
+		},
+		settings.get('DeepLink_Url'),
+	);
 }
 
 const possibleDays = [0, 1, 7, 15, 30];
