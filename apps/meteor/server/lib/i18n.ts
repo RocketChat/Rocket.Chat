@@ -3,6 +3,7 @@ import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import i18nDict from '@rocket.chat/i18n';
 
 void i18next.init({
+	compatibilityJSON: 'v1',
 	lng: 'en',
 	debug: true,
 	resources: Object.fromEntries(Object.entries(i18nDict).map(([key, value]) => [key, { translation: value }])),
