@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 					field: 'Alias_Set',
 				});
 			}
-			aliases = _.without(emojiData.aliases.split(/[,]/).filter(Boolean), emojiData.name);
+			aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean), emojiData.name);
 		}
 
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
