@@ -53,7 +53,11 @@ export const createEmojiList = (
 				return;
 			}
 
-			emojiList.push({ emoji: current, image: emojiPackage.renderPicker(emojiToRender) });
+			const image = emojiPackage.renderPicker(emojiToRender);
+			if (!image) {
+				continue;
+			}
+			emojiList.push({ emoji: current, image });
 		}
 	});
 
