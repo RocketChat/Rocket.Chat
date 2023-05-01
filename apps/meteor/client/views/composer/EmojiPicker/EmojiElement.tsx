@@ -13,7 +13,7 @@ const EmojiElement = ({ emoji, image, onClick }: EmojiElementProps) => {
 
 	const emojiElement = <Box dangerouslySetInnerHTML={{ __html: image }} />;
 
-	return <IconButton onClick={onClick} data-emoji={emoji} icon={emojiElement} />;
+	return <IconButton onClick={onClick} data-emoji={emoji} aria-label={emoji} icon={emojiElement} />;
 };
 
 export default EmojiElement;

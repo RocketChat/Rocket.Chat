@@ -217,9 +217,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	return (
-		<PositionAnimated tabIndex={0} is='dialog' visible={AnimatedVisibility.UNHIDING} anchor={ref} placement='top-start'>
+		<PositionAnimated tabIndex={0} visible={AnimatedVisibility.UNHIDING} anchor={ref} placement='top-start'>
 			<div>
-				<EmojiPickerContainer ref={emojiContainerRef} onKeyDown={handleKeyDown}>
+				<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} ref={emojiContainerRef} onKeyDown={handleKeyDown}>
 					<EmojiPickerHeader>
 						<Field flexGrow={1} flexShrink={1}>
 							<Field.Row>
@@ -236,7 +236,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						</Field>
 						<ToneSelector tone={actualTone} setTone={setActualTone} />
 					</EmojiPickerHeader>
-					<EmojiPickerCategoryHeader>
+					<EmojiPickerCategoryHeader role='tablist'>
 						{emojiCategories.map((category, index) => (
 							<EmojiPickerCategoryItem
 								key={category.key}
@@ -247,7 +247,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 							/>
 						))}
 					</EmojiPickerCategoryHeader>
-					<EmojiPickerListArea>
+					<EmojiPickerListArea role='tabpanel'>
 						{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 						{!searching && (
 							<CategoriesResult

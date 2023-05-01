@@ -29,6 +29,7 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory }
 	return (
 		<Box
 			tabIndex={0}
+			role='tab'
 			is='li'
 			display='flex'
 			justifyContent='center'
@@ -39,13 +40,13 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory }
 			key={category.key}
 			className={[active && 'active', category.key, style].filter(Boolean)}
 			title={t(category.i18n)}
+			aria-label={t(category.i18n)}
+			onClick={() => handleGoToCategory(index)}
 		>
-			<Box tabIndex={-1} onClick={() => handleGoToCategory(index)} href={`#${category.key}`} color='secondary-info'>
-				<i
-					style={{ fontSize: '20px', ...(active && { color: Palette.statusColor['status-font-on-info'].toString() }) }}
-					className={`category-icon icon-${category.key}`}
-				></i>
-			</Box>
+			<i
+				style={{ fontSize: '20px', ...(active && { color: Palette.statusColor['status-font-on-info'].toString() }) }}
+				className={`category-icon icon-${category.key}`}
+			></i>
 		</Box>
 	);
 };
