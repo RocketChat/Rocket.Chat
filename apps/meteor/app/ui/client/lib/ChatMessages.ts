@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { UIEvent } from 'react';
 
 import {
@@ -25,6 +25,8 @@ type DeepWritable<T> = T extends (...args: any) => any
 	  };
 
 export class ChatMessages implements ChatAPI {
+	public uid: string | null;
+
 	public composer: ComposerAPI | undefined;
 
 	public setComposerAPI = (composer: ComposerAPI): void => {
@@ -114,9 +116,11 @@ export class ChatMessages implements ChatAPI {
 		private params: {
 			rid: IRoom['_id'];
 			tmid?: IMessage['_id'];
+			uid: IUser['_id'] | null;
 		},
 	) {
 		const { rid, tmid } = params;
+		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
 

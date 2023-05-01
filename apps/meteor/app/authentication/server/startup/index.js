@@ -18,6 +18,8 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
+import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -156,7 +158,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	callbacks.run('beforeCreateUser', options, user);
+	await callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -216,7 +218,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await Mailer.send(email);
 	}
 
-	callbacks.run('onCreateUser', options, user);
+	await callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
 	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
@@ -269,9 +271,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
-			});
+			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
 		}
 
 		if (user.type !== 'visitor') {
@@ -281,17 +281,13 @@ const insertUserDocAsync = async function (options, user) {
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			Object.keys(avatarSuggestions).some((service) => {
+			for await (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function () {
-						return Promise.await(Meteor.callAsync('setAvatarFromService', avatarData.blob, '', service));
-					});
-					return true;
+					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
+					break;
 				}
-
-				return false;
-			});
+			}
 		}
 	}
 
@@ -321,7 +317,7 @@ Accounts.insertUserDoc = function (...args) {
 };
 
 const validateLoginAttemptAsync = async function (login) {
-	login = callbacks.run('beforeValidateLogin', login);
+	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
@@ -368,7 +364,7 @@ const validateLoginAttemptAsync = async function (login) {
 		}
 	}
 
-	login = callbacks.run('onValidateLogin', login);
+	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
 	setImmediate(function () {

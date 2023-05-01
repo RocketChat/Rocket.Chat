@@ -85,17 +85,17 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (active && !user.active) {
-		callbacks.run('beforeActivateUser', user);
+		await callbacks.run('beforeActivateUser', user);
 	}
 
 	await Users.setUserActive(userId, active);
 
 	if (active && !user.active) {
-		callbacks.run('afterActivateUser', user);
+		await callbacks.run('afterActivateUser', user);
 	}
 
 	if (!active && user.active) {
-		callbacks.run('afterDeactivateUser', user);
+		await callbacks.run('afterDeactivateUser', user);
 	}
 
 	if (user.username) {
