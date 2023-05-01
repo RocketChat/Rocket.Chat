@@ -4,8 +4,8 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 import React from 'react';
 
+import GenericNoResults from '../../../../client/components/GenericNoResults';
 import GenericTable from '../../../../client/components/GenericTable';
-import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
 
 type CannedResponsesPageProps = {
@@ -50,13 +50,13 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 			</Page.Header>
 			<Page.Content>
 				{totalCannedResponses < 1 ? (
-					<NoResults
+					<GenericNoResults
 						icon='baloon-exclamation'
 						title={t('No_Canned_Responses_Yet')}
 						description={t('No_Canned_Responses_Yet-description')}
 						buttonTitle={t('Create_your_First_Canned_Response')}
 						buttonAction={handleClick}
-					></NoResults>
+					></GenericNoResults>
 				) : (
 					<GenericTable
 						renderFilter={renderFilter}
