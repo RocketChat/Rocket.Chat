@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import {
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
@@ -33,6 +33,9 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
+import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -222,8 +225,11 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params });
 
 			const user = await getUserFromParams(this.bodyParams);
+			if (!user?.username) {
+				return API.v1.failure('Invalid user');
+			}
 
-			await Meteor.callAsync('removeUserFromRoom', { rid: findResult._id, username: user.username });
+			await removeUserFromRoomMethod(this.userId, { rid: findResult._id, username: user.username });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -243,7 +249,11 @@ API.v1.addRoute(
 			const { ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.callAsync('leaveRoom', findResult._id);
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.failure('Invalid user');
+			}
+			await leaveRoomMethod(user, findResult._id);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -346,7 +356,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			await saveRoomSettings(this.userId, findResult._id, 'readOnly', this.bodyParams.readOnly);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -367,7 +377,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
+			await saveRoomSettings(this.userId, findResult._id, 'roomAnnouncement', announcement);
 
 			return API.v1.success({
 				announcement: this.bodyParams.announcement,
@@ -1127,7 +1137,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel name is the same as what it would be renamed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
+			await saveRoomSettings(this.userId, findResult._id, 'roomName', this.bodyParams.name);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({
@@ -1150,7 +1160,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+			await saveRoomSettings(this.userId, findResult._id, 'roomCustomFields', this.bodyParams.customFields);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -1177,8 +1187,8 @@ API.v1.addRoute(
 				);
 			}
 
-			await Meteor.callAsync(
-				'saveRoomSettings',
+			await saveRoomSettings(
+				this.userId,
 				findResult._id,
 				'default',
 				['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()),
@@ -1196,7 +1206,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('description')) {
+			if (!this.bodyParams.hasOwnProperty('description') || !this.bodyParams.description?.trim()) {
 				return API.v1.failure('The bodyParam "description" is required');
 			}
 
@@ -1206,7 +1216,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel description is the same as what it would be changed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
+			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.description);
 
 			return API.v1.success({
 				description: this.bodyParams.description || '',
@@ -1220,7 +1230,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('purpose')) {
+			if (!this.bodyParams.hasOwnProperty('purpose') || !this.bodyParams.purpose?.trim()) {
 				return API.v1.failure('The bodyParam "purpose" is required');
 			}
 
@@ -1230,7 +1240,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
+			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.purpose);
 
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
@@ -1244,7 +1254,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('topic')) {
+			if (!this.bodyParams.hasOwnProperty('topic') || !this.bodyParams.topic?.trim()) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
@@ -1254,7 +1264,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel topic is the same as what it would be changed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
+			await saveRoomSettings(this.userId, findResult._id, 'roomTopic', this.bodyParams.topic);
 
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
@@ -1278,7 +1288,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel type is the same as what it would be changed to.');
 			}
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			await saveRoomSettings(this.userId, findResult._id, 'roomType', this.bodyParams.type as RoomType);
 
 			const room = await Rooms.findOneById(findResult._id, { projection: API.v1.defaultFieldsToExclude });
 
@@ -1336,7 +1346,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.callAsync('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
+			await saveRoomSettings(this.userId, findResult._id, 'joinCode', this.bodyParams.joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),

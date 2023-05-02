@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
@@ -6,6 +5,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { unmuteUserInRoom } from '../../../server/methods/unmuteUserInRoom';
 
 /*
  * Unmute is a named function that will replace /unmute commands
@@ -30,7 +30,7 @@ slashCommands.add({
 			return;
 		}
 
-		await Meteor.callAsync('unmuteUserInRoom', {
+		await unmuteUserInRoom(userId, {
 			rid: message.rid,
 			username,
 		});

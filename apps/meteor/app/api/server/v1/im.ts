@@ -24,6 +24,7 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -542,7 +543,7 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
-			await Meteor.callAsync('saveRoomSettings', room._id, 'roomTopic', topic);
+			await saveRoomSettings(this.userId, room._id, 'roomTopic', topic);
 
 			return API.v1.success({
 				topic,

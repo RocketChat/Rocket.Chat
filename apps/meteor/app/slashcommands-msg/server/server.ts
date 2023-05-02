@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
@@ -8,6 +7,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { createDirectMessage } from '../../../server/methods/createDirectMessage';
 
 /*
  * Msg is a named function that will replace /msg commands
@@ -39,7 +39,7 @@ slashCommands.add({
 			});
 			return;
 		}
-		const { rid } = await Meteor.callAsync('createDirectMessage', targetUsername);
+		const { rid } = await createDirectMessage([targetUsername], userId);
 		const msgObject = {
 			_id: Random.id(),
 			rid,

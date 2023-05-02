@@ -22,6 +22,7 @@ import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToD
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -651,9 +652,7 @@ export class ImportDataConverter {
 
 		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
-			await Meteor.runAsUser(startedByUserId, async () => {
-				await Meteor.callAsync('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
-			});
+			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
 
 		await this.updateRoomId(room._id, roomData);
