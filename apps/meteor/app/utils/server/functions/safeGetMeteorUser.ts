@@ -16,7 +16,8 @@ const invalidEnvironmentErrorMessage = 'Meteor.userId can only be invoked in met
  */
 export async function safeGetMeteorUser(): Promise<Meteor.User | null> {
 	try {
-		return Meteor.userAsync();
+		// Explicitly await here otherwise the try...catch wouldn't work.
+		return await Meteor.userAsync();
 	} catch (error: any) {
 		// This is the only type of error we want to capture and supress,
 		// so if the error thrown is different from what we expect, we let it go

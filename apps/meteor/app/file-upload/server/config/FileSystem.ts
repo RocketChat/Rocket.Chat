@@ -1,13 +1,9 @@
-import fs from 'fs';
-
-import { Meteor } from 'meteor/meteor';
+import fsp from 'fs/promises';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-
-const statSync = Meteor.wrapAsync(fs.stat);
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
@@ -22,7 +18,7 @@ const FileSystemUploads = new FileUploadClass({
 		const options: { start?: number; end?: number } = {};
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 			if (!stat?.isFile()) {
 				res.writeHead(404);
 				res.end();
@@ -65,7 +61,7 @@ const FileSystemUploads = new FileUploadClass({
 		}
 		const filePath = await this.store.getFilePath(file._id, file);
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -89,7 +85,7 @@ const FileSystemAvatars = new FileUploadClass({
 		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -113,7 +109,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
