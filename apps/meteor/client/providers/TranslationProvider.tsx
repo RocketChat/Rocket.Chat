@@ -146,21 +146,21 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 	const i18nextInstance = useI18next(language);
 	const languages = useMemo(
 		() =>
-			i18nextInstance.languages.map((key) => ({
+			i18nextInstance.languages?.map((key) => ({
 				en: key,
 				name: key,
 				key,
-			})),
+			})) ?? [],
 		[i18nextInstance],
 	);
 
 	const value: TranslationContextValue = useMemo(
 		() => ({
-			languages,
 			language,
+			languages,
 			loadLanguage,
 			translate: Object.assign(
-				((key, options) => i18nextInstance.t(key, options as any) as string) as TranslationContextValue['translate'],
+				((key, ...options) => i18nextInstance.t(key, ...options) as string) as TranslationContextValue['translate'],
 				{
 					has: ((key, options) => i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
 				},

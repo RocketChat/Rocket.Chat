@@ -6984,6 +6984,7 @@ __metadata:
     "@types/google-libphonenumber": ^7.4.23
     "@types/gravatar": ^1
     "@types/he": ^1.1.2
+    "@types/i18next-sprintf-postprocessor": ^0
     "@types/imap": ^0.8.35
     "@types/jsdom": ^16.2.14
     "@types/jsdom-global": ^3.0.2
@@ -7113,6 +7114,7 @@ __metadata:
     human-interval: ^2.0.0
     i18next: ^20.6.1
     i18next-http-backend: ^1.4.1
+    i18next-sprintf-postprocessor: ^0.2.2
     iconv-lite: ^0.6.3
     image-size: ^1.0.1
     imap: ^0.8.19
@@ -10461,6 +10463,15 @@ __metadata:
   version: 6.1.0
   resolution: "@types/html-minifier-terser@npm:6.1.0"
   checksum: eb843f6a8d662d44fb18ec61041117734c6aae77aa38df1be3b4712e8e50ffaa35f1e1c92fdd0fde14a5675fecf457abcd0d15a01fae7506c91926176967f452
+  languageName: node
+  linkType: hard
+
+"@types/i18next-sprintf-postprocessor@npm:^0":
+  version: 0.2.0
+  resolution: "@types/i18next-sprintf-postprocessor@npm:0.2.0"
+  dependencies:
+    i18next: ">=17.0.11"
+  checksum: be1203358724c253a402f08043ba5900661849ee0ae103c5a9928f07b17e0ff1558fe22219a10d1a28a915af5564337135ee91572c6ae7f2a427bb67291e6800
   languageName: node
   linkType: hard
 
@@ -21706,6 +21717,22 @@ __metadata:
   dependencies:
     cross-fetch: 3.1.5
   checksum: 1ed4c68c458cc5e7c60af3b641223b9f1b49b6e7ded0fb908cf034ddf62de401db9bb8bb0f6be0634c53ceeee0fec7e03e7171b0dea2cbebca5bbcee6da46e2f
+  languageName: node
+  linkType: hard
+
+"i18next-sprintf-postprocessor@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "i18next-sprintf-postprocessor@npm:0.2.2"
+  checksum: e1bd8ae9a591705822446b728cf8ad5b2e74b93dc6589fed29afcadf60ddc853a7ac797869bf2a60c72b480b95a5fc053330b7953d405c32821a2010e8775305
+  languageName: node
+  linkType: hard
+
+"i18next@npm:>=17.0.11":
+  version: 22.4.15
+  resolution: "i18next@npm:22.4.15"
+  dependencies:
+    "@babel/runtime": ^7.20.6
+  checksum: fced898227983e439c59e7aa6e7b87e53ad1b8a1c85f0613a968881418266e5336e9443831125590559796075d516fe3dbf8118679c894094a0a404be78b02a2
   languageName: node
   linkType: hard
 

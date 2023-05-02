@@ -18,6 +18,7 @@ export type TranslationContextValue = {
 	loadLanguage: (language: TranslationLanguage['key']) => Promise<void>;
 	translate: {
 		(key: TranslationKey, options?: unknown): string;
+		(key: TranslationKey, ...options: unknown[]): string;
 		has: (
 			key: string,
 			options?: {
