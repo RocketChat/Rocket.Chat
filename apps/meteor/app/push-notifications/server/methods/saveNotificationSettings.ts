@@ -44,7 +44,14 @@ Meteor.methods<ServerMethods>({
 
 		const getNotificationPrefValue = async (field: string, value: unknown) => {
 			if (value === 'default') {
-				const userPref = await getUserNotificationPreference(Meteor.userId(), field);
+				const userId = Meteor.userId();
+				if (!userId) {
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+						method: 'saveNotificationSettings',
+					});
+				}
+
+				const userPref = await getUserNotificationPreference(userId, field);
 				return userPref?.origin === 'server' ? null : userPref;
 			}
 			return { value, origin: 'subscription' };

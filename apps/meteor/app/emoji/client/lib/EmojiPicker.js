@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import { emoji } from '../../lib/rocketchat';
+import { emoji } from '../lib';
 import { updateRecentEmoji } from '../emojiPicker';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
