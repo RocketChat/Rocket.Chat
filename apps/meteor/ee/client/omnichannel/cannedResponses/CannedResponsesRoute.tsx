@@ -214,6 +214,7 @@ const CannedResponsesRoute: FC = () => {
 			renderRow={renderRow}
 			title={t('Canned_Responses')}
 			totalCannedResponses={totalData?.total || 0}
+			ariaBusy={text !== debouncedText}
 		></CannedResponsesPage>
 	);
 };
