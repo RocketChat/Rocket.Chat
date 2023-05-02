@@ -19,6 +19,8 @@ import {
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findOneIntegration } from '../lib/integrations';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { deleteIncomingIntegration } from '../../../integrations/server/methods/incoming/deleteIncomingIntegration';
 
 API.v1.addRoute(
 	'integrations.create',
@@ -155,9 +157,7 @@ API.v1.addRoute(
 
 					const outgoingId = integration._id;
 
-					await Meteor.runAsUser(this.userId, async () => {
-						await Meteor.callAsync('deleteOutgoingIntegration', outgoingId);
-					});
+					await deleteOutgoingIntegration(outgoingId, this.userId);
 
 					return API.v1.success({
 						integration,
@@ -177,9 +177,7 @@ API.v1.addRoute(
 					}
 
 					const incomingId = integration._id;
-					await Meteor.runAsUser(this.userId, async () => {
-						await Meteor.callAsync('deleteIncomingIntegration', incomingId);
-					});
+					await deleteIncomingIntegration(incomingId, this.userId);
 
 					return API.v1.success({
 						integration,
