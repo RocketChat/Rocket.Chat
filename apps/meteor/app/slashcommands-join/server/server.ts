@@ -6,6 +6,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { joinRoomMethod } from '../../lib/server/methods/joinRoom';
 
 slashCommands.add({
 	command: 'join',
@@ -45,7 +46,7 @@ slashCommands.add({
 			});
 		}
 
-		await Meteor.callAsync('joinRoom', room._id);
+		await joinRoomMethod(user, room._id);
 	},
 	options: {
 		description: 'Join_the_given_channel',
