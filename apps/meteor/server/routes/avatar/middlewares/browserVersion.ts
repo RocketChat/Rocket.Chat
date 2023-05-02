@@ -1,17 +1,24 @@
+import type http from 'http';
+
+import type { NextFunction } from 'connect';
 import { WebApp } from 'meteor/webapp';
 import parser from 'ua-parser-js';
 
-import { getURL } from '../../../../app/utils/lib/getURL';
+import { getURL } from '../../../../app/utils/server/getURL';
 
-WebApp.connectHandlers.use(function (req, res, next) {
-	if (req.cookies.browser_version_check === 'bypass') {
+WebApp.connectHandlers.use(function (
+	req: http.IncomingMessage & { cookies?: Record<string, string> },
+	res: http.ServerResponse,
+	next: NextFunction,
+) {
+	if (req.cookies?.browser_version_check === 'bypass') {
 		return next();
 	}
 
 	const result = parser(req.headers['user-agent']);
 	if (
-		req.cookies.browser_version_check !== 'force' &&
-		(!result || result.browser.name !== 'IE' || parseInt(result.browser.version) >= 11)
+		req.cookies?.browser_version_check !== 'force' &&
+		(!result || result.browser.name !== 'IE' || parseInt(result.browser.version || '') >= 11)
 	) {
 		return next();
 	}

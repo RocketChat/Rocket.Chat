@@ -499,7 +499,7 @@ export const FileUpload = {
 		return this.handlers[handlerName];
 	},
 
-	get(file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+	get(file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next?: NextFunction) {
 		const store = this.getStoreByName(file.store);
 		if (store?.get) {
 			return store.get(file, req, res, next);
@@ -611,7 +611,7 @@ type FileUploadClassOptions = {
 	name: string;
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
-	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
+	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next?: NextFunction) => Promise<void>;
 	insert?: () => Promise<IUpload>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;

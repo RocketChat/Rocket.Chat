@@ -1,12 +1,15 @@
+import type http from 'http';
+
 import { Cookies } from 'meteor/ostrio:cookies';
 import { Avatars, Rooms } from '@rocket.chat/models';
+import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const cookie = new Cookies();
-const getRoomAvatar = async (roomId) => {
+const getRoomAvatar = async (roomId: string): Promise<{ room?: IRoom; file?: IUpload | null }> => {
 	const room = await Rooms.findOneById(roomId, { projection: { t: 1, prid: 1, name: 1, fname: 1, federated: 1 } });
 	if (!room) {
 		return {};
@@ -22,8 +25,11 @@ const getRoomAvatar = async (roomId) => {
 	return { room, file };
 };
 
-export const roomAvatar = async function (req, res /* , next*/) {
-	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
+export const roomAvatar = async function (
+	req: http.IncomingMessage & { query?: Record<string, string> },
+	res: http.ServerResponse /* , next*/,
+) {
+	const roomId = decodeURIComponent(req.url?.substr(1).replace(/\?.*$/, '') || '');
 
 	const { room, file } = await getRoomAvatar(roomId);
 	if (!room) {
@@ -48,8 +54,8 @@ export const roomAvatar = async function (req, res /* , next*/) {
 		if (file.uploadedAt) {
 			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		}
-		res.setHeader('Content-Type', file.type);
-		res.setHeader('Content-Length', file.size);
+		res.setHeader('Content-Type', file.type || 'image/png');
+		res.setHeader('Content-Length', file.size || 0);
 
 		return FileUpload.get(file, req, res);
 	}
@@ -58,13 +64,13 @@ export const roomAvatar = async function (req, res /* , next*/) {
 
 	setCacheAndDispositionHeaders(req, res);
 
-	if (!wasFallbackModified(reqModifiedHeader, res)) {
+	if (!wasFallbackModified(reqModifiedHeader)) {
 		res.writeHead(304);
 		res.end();
 		return;
 	}
 
-	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
+	const svg = renderSVGLetters(roomName, req.query?.size ? parseInt(req.query.size || '') : undefined);
 
-	return serveAvatar(svg, req.query.format, res);
+	return serveAvatar(svg, req.query?.format || '', res);
 };
