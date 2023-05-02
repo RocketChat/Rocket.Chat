@@ -2,7 +2,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -44,6 +44,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	} = useForm<LoginRegisterPayload>();
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
+		console.log(errors.email);
 		registerUser.mutate(
 			{ pass: password, ...formData },
 			{
@@ -69,6 +70,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	if (errors.email?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
+	}
+
+	const [inputEmail, setInputEmail] = useState('example@example.com');
+
+	const handleEmailInput = (event: any) => {
+		setInputEmail(event.target.value);
+		console.log('value is:', event.target.value);
+	};
+
+	if (RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, 'gm').test(inputEmail) === false) {
+		console.log('INVALID EMAIL!!!!');
+		// return <Field.Error>{t('registration.component.form.invalidEmail')}</Field.Error>;
+		// <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />
 	}
 
 	return (
@@ -106,6 +120,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								name='email'
 								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'
+								value={inputEmail}
+								onChange={handleEmailInput}
 							/>
 						</Field.Row>
 						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
