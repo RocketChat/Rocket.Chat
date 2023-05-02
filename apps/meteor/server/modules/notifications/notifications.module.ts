@@ -2,46 +2,47 @@ import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocke
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
+import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 
 export class NotificationsModule {
-	public readonly streamLogged: IStreamer;
+	public readonly streamLogged: IStreamer<'notify-logged'>;
 
-	public readonly streamAll: IStreamer;
+	public readonly streamAll: IStreamer<'notify-all'>;
 
-	public readonly streamRoom: IStreamer;
+	public readonly streamRoom: IStreamer<'notify-room'>;
 
-	public readonly streamRoomUsers: IStreamer;
+	public readonly streamRoomUsers: IStreamer<'notify-room-users'>;
 
-	public readonly streamUser: IStreamer;
+	public readonly streamUser: IStreamer<'notify-user'>;
 
-	public readonly streamRoomMessage: IStreamer;
+	public readonly streamRoomMessage: IStreamer<'room-messages'>;
 
-	public readonly streamImporters: IStreamer;
+	public readonly streamImporters: IStreamer<'importers'>;
 
-	public readonly streamRoles: IStreamer;
+	public readonly streamRoles: IStreamer<'roles'>;
 
-	public readonly streamApps: IStreamer;
+	public readonly streamApps: IStreamer<'apps'>;
 
-	public readonly streamAppsEngine: IStreamer;
+	public readonly streamAppsEngine: IStreamer<'apps-engine'>;
 
-	public readonly streamCannedResponses: IStreamer;
+	public readonly streamCannedResponses: IStreamer<'canned-responses'>;
 
-	public readonly streamIntegrationHistory: IStreamer;
+	public readonly streamIntegrationHistory: IStreamer<'integrationHistory'>;
 
-	public readonly streamLivechatRoom: IStreamer;
+	public readonly streamLivechatRoom: IStreamer<'livechat-room'>;
 
-	public readonly streamLivechatQueueData: IStreamer;
+	public readonly streamLivechatQueueData: IStreamer<'livechat-inquiry-queue-observer'>;
 
-	public readonly streamStdout: IStreamer;
+	public readonly streamStdout: IStreamer<'stdout'>;
 
-	public readonly streamRoomData: IStreamer;
+	public readonly streamRoomData: IStreamer<'room-data'>;
 
-	public readonly streamLocal: IStreamer;
+	public readonly streamLocal: IStreamer<'local'>;
 
-	public readonly streamPresence: IStreamer;
+	public readonly streamPresence: IStreamer<'user-presence'>;
 
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
@@ -61,7 +62,7 @@ export class NotificationsModule {
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
-		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamRoomMessage.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -277,7 +278,7 @@ export class NotificationsModule {
 			return false;
 		});
 
-		this.streamUser.allowWrite(async function (eventName: string, data: unknown) {
+		this.streamUser.allowWrite(async function (eventName, data: unknown) {
 			const [, e] = eventName.split('/');
 			if (e === 'otr' && (data === 'handshake' || data === 'acknowledge')) {
 				const isEnable = await Settings.getValueById('OTR_Enable');
@@ -413,7 +414,7 @@ export class NotificationsModule {
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
 
-		this.streamUser.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamUser.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -477,35 +478,51 @@ export class NotificationsModule {
 		this.streamPresence.allowWrite('none');
 	}
 
-	notifyAll(eventName: string, ...args: any[]): void {
+	notifyAll<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
 		return this.streamAll.emit(eventName, ...args);
 	}
 
-	notifyLogged(eventName: string, ...args: any[]): void {
+	notifyLogged<E extends StreamKeys<'notify-logged'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-logged', E>): void {
 		return this.streamLogged.emit(eventName, ...args);
 	}
 
-	notifyRoom(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
+	notifyRoom<P extends string, E extends string>(
+		room: P,
+		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
+		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
+	): void {
+		return this.streamRoom.emit(`${room}/${eventName}`, args);
 	}
 
-	notifyUser(userId: string, eventName: string, ...args: any[]): void {
-		return this.streamUser.emit(`${userId}/${eventName}`, ...args);
+	notifyUser<P extends string, E extends string>(
+		userId: P,
+		eventName: E extends ExtractNotifyUserEventName<'notify-user', P> ? E : never,
+		...args: E extends ExtractNotifyUserEventName<'notify-user', P> ? StreamerCallbackArgs<'notify-user', `${P}/${E}`> : never
+	): void {
+		return this.streamUser.emit(`${userId}/${eventName}`, args);
 	}
 
-	notifyAllInThisInstance(eventName: string, ...args: any[]): void {
+	notifyAllInThisInstance<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
 		return this.streamAll.emitWithoutBroadcast(eventName, ...args);
 	}
 
-	notifyLoggedInThisInstance(eventName: string, ...args: any[]): void {
+	notifyLoggedInThisInstance<E extends StreamKeys<'notify-logged'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-logged', E>): void {
 		return this.streamLogged.emitWithoutBroadcast(eventName, ...args);
 	}
 
-	notifyRoomInThisInstance(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, ...args);
+	notifyRoomInThisInstance<P extends string, E extends string>(
+		room: P,
+		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
+		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
+	): void {
+		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, args);
 	}
 
-	notifyUserInThisInstance(userId: string, eventName: string, ...args: any[]): void {
+	notifyUserInThisInstance<P extends string, E extends string>(
+		userId: P,
+		eventName: E extends ExtractNotifyUserEventName<'notify-user', P> ? E : never,
+		...args: any[]
+	): void {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
@@ -521,3 +538,9 @@ export class NotificationsModule {
 		this.streamImporters.emit('progress', progress);
 	}
 }
+
+type ExtractNotifyUserEventName<
+	T extends StreamNames,
+	P extends string,
+	E extends StreamKeys<T> = StreamKeys<T>,
+> = E extends `${infer X}/${infer I}` ? (P extends X ? I : never) : never;

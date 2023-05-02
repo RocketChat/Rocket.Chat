@@ -1,3 +1,4 @@
+import { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type {
 	IMessage,
 	IRoom,
@@ -26,14 +27,17 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/videoconf`; args: [id: string] },
+		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 	];
 
-	'room-messages': [{ key: string; args: [IMessage] }];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
 	'notify-all': [
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 	];
 
 	'notify-user': [
@@ -49,11 +53,21 @@ export interface StreamerEvents {
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
+		{ key: `${string}/uiInteraction`; args: [unknown] },
+		{
+			key: `${string}/video-conference`;
+			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
+		},
+		{ key: `${string}/userData`; args: [unknown] },
+		{ key: `${string}/updateInvites`; args: [unknown] },
+		{ key: `${string}/departmentAgentData`; args: [unknown] },
 	];
 
 	'importers': [{ key: 'progress'; args: [{ rate: number; count: { completed: number; total: number } }] }];
 
 	'notify-logged': [
+		/* @deprecated */
+		{ key: 'new-banner'; args: [{ bannerId: string }] },
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
 		{
 			key: 'roles-change';
@@ -67,8 +81,12 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{ key: 'Users:Deleted'; args: [Pick<IUser, '_id'>] },
 		{ key: 'voip.statuschanged'; args: [boolean] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
+		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
+		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], string, string, IUser['name'], IUser['roles']]] },
 	];
 
 	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
@@ -98,20 +116,46 @@ export interface StreamerEvents {
 	// 		| 'Users:Deleted',
 	// ) => [void];
 
-	// 'apps': (
-	// 	e:
-	// 		| 'app/added'
-	// 		| 'app/removed'
-	// 		| 'app/updated'
-	// 		| 'app/statusUpdate'
-	// 		| 'app/settingUpdate'
-	// 		| 'command/added'
-	// 		| 'command/disabled'
-	// 		| 'command/updated'
-	// 		| 'command/removed'
-	// 		| 'actions/changed',
-	// ) => [unknown];
-	// 'user-presence': () => [void];
+	'apps': [
+		{ key: 'app/added'; args: [string] },
+		{ key: 'app/removed'; args: [string] },
+		{ key: 'app/updated'; args: [string] },
+		{
+			key: 'app/statusUpdate'; args: [{
+				appId: string;
+				status: 'auto_enabled' | 'auto_disabled' | 'manually_enabled' | 'manually_disabled';
+		}] },
+		{
+			key: 'app/settingUpdate'; args: [{
+				appId: string;
+				setting: AppsSetting;
+		}] },
+		{ key: 'command/added'; args: [IAppCommand] },
+		{ key: 'command/disabled'; args: [IAppCommand] },
+		{ key: 'command/updated'; args: [IAppCommand] },
+		{ key: 'command/removed'; args: [IAppCommand] },
+		{ key: 'actions/changed'; args: [IAppAction] },
+	]
+
+	'livechat-room': [
+		{
+			key: string;
+			args: [
+				| {
+						type: 'agentStatus';
+						status: string;
+				  }
+				| {
+						type: 'queueData' | 'agentData';
+						data: {
+							[k: string]: unknown;
+						};
+				  },
+			];
+		},
+	];
+
+	'user-presence': [{ key: string; args: [unknown] }];
 }
 
 export type StreamNames = keyof StreamerEvents;
