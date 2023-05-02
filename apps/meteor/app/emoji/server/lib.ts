@@ -1,6 +1,6 @@
-import type { EmojiPackage } from '../lib/rocketchat';
+import type { EmojiPackages } from '../lib/rocketchat';
 
-export const emoji: EmojiPackage = {
+export const emoji: EmojiPackages = {
 	packages: {
 		base: {
 			emojiCategories: [{ key: 'recent', i18n: 'Frequently_Used' }],

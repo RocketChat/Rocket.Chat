@@ -1793,6 +1793,7 @@
   "Email_verified": "Email verified",
   "Email_sent": "Email sent",
   "Emoji": "Emoji",
+  "Emoji_picker": "Emoji picker",
   "Emoji_provided_by_JoyPixels": "Emoji provided by <strong>JoyPixels</strong>",
   "EmojiCustomFilesystem": "Custom Emoji Filesystem",
   "EmojiCustomFilesystem_Description": "Specify how emojis are stored.",
