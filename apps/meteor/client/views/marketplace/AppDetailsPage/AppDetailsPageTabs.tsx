@@ -6,21 +6,21 @@ import React from 'react';
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
 
 type AppDetailsPageTabsProps = {
+	context: string;
 	installed: boolean | undefined;
 	isSecurityVisible: boolean;
 	marketplace: unknown;
 	settings: ISettings | undefined;
 	tab: string | undefined;
-	context: string;
 };
 
 const AppDetailsPageTabs = ({
+	context,
 	installed,
 	isSecurityVisible,
 	marketplace,
 	settings,
 	tab,
-	context,
 }: AppDetailsPageTabsProps): ReactElement => {
 	const t = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
@@ -51,7 +51,7 @@ const AppDetailsPageTabs = ({
 					{t('Security')}
 				</Tabs.Item>
 			)}
-			{marketplace !== false && (
+			{marketplace !== false && context !== 'private' && (
 				<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 					{t('Releases')}
 				</Tabs.Item>
