@@ -1,3 +1,21 @@
+# 5.3.8
+
+`2023-05-02  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Livechat Triggers not working ([#29073](https://github.com/RocketChat/Rocket.Chat/pull/29073))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+
 
 # 5.3.7
 `2023-04-17  ·  2 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
