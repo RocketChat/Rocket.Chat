@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import type { ICustomSound } from '@rocket.chat/core-typings';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 
-const getCustomSoundId = (sound) => `custom-sound-${sound}`;
+const getCustomSoundId = (soundId: ICustomSound['_id']) => `custom-sound-${soundId}`;
 
 class CustomSoundsClass {
+	list: ReactiveVar<Record<string, ICustomSound>>;
+
 	constructor() {
 		this.list = new ReactiveVar({});
 		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
@@ -54,7 +57,7 @@ class CustomSoundsClass {
 		this.add({ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') });
 	}
 
-	add(sound) {
+	add(sound: ICustomSound) {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
@@ -63,7 +66,7 @@ class CustomSoundsClass {
 		source.src = sound.src;
 
 		const audio = document.createElement('audio');
-		audio.id = getCustomSoundId(sound);
+		audio.id = getCustomSoundId(sound._id);
 		audio.preload = 'auto';
 		audio.appendChild(source);
 
@@ -74,16 +77,21 @@ class CustomSoundsClass {
 		this.list.set(list);
 	}
 
-	remove(sound) {
+	remove(sound: ICustomSound) {
 		const list = this.list.get();
 		delete list[sound._id];
 		this.list.set(list);
-		const audio = document.getElementById(sound._id);
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(sound._id)}`);
 		audio?.remove();
 	}
 
-	update(sound) {
-		const audio = document.getElementById(sound._id);
+	getSound(soundId: ICustomSound['_id']) {
+		const list = this.list.get();
+		return list[soundId];
+	}
+
+	update(sound: ICustomSound) {
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(sound._id)}`);
 		if (audio) {
 			const list = this.list.get();
 			if (!sound.src) {
@@ -91,14 +99,17 @@ class CustomSoundsClass {
 			}
 			list[sound._id] = sound;
 			this.list.set(list);
-			audio.querySelector('source').src = sound.src;
+			const sourceEl = audio.querySelector('source');
+			if (sourceEl) {
+				sourceEl.src = sound.src;
+			}
 			audio.load();
 		} else {
 			this.add(sound);
 		}
 	}
 
-	getURL(sound) {
+	getURL(sound: ICustomSound) {
 		return getURL(`/custom-sounds/${sound._id}.${sound.extension}?_dc=${sound.random || 0}`);
 	}
 
@@ -107,30 +118,30 @@ class CustomSoundsClass {
 		return list.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 	}
 
-	play = (sound, { volume = 1, loop = false } = {}) => {
-		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
-		if (!audio || !audio.play) {
+	play = async (soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(soundId)}`);
+		if (!audio?.play) {
 			return;
 		}
 
 		audio.volume = volume;
 		audio.loop = loop;
-		audio.play();
+		await audio.play();
 
 		return audio;
 	};
 
-	pause = (sound) => {
-		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
-		if (!audio || !audio.pause) {
+	pause = (soundId: ICustomSound['_id']) => {
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(soundId)}`);
+		if (!audio?.pause) {
 			return;
 		}
 
 		audio.pause();
 	};
 
-	isPlaying = (sound) => {
-		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
+	isPlaying = (soundId: ICustomSound['_id']) => {
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(soundId)}`);
 
 		return audio && audio.duration > 0 && !audio.paused;
 	};
@@ -140,7 +151,7 @@ export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('listCustomSounds', (error, result) => {
+		Meteor.call('listCustomSounds', (_error: Error, result: ICustomSound[]) => {
 			for (const sound of result) {
 				CustomSounds.add(sound);
 			}

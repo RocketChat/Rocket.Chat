@@ -6,7 +6,7 @@ class UsersCollection extends Mongo.Collection<IUser> {
 		super(null);
 	}
 
-	findOneById(uid: IUser['_id'], options: Omit<Mongo.Options<IUser>, 'limit'> = {}) {
+	findOneById<TOptions extends Omit<Mongo.Options<IUser>, 'limit'>>(uid: IUser['_id'], options?: TOptions) {
 		const query: Mongo.Selector<IUser> = {
 			_id: uid,
 		};
