@@ -72,7 +72,7 @@ declare module 'meteor/rocketchat:streamer' {
 
 		_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean;
 
-		emitWithoutBroadcast<K extends StreamKeys<N>>(event: K, ...data: any[]): void;
+		emitWithoutBroadcast<K extends StreamKeys<N>>(event: K, ...data: StreamerCallbackArgs<N, K>): void;
 
 		changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 

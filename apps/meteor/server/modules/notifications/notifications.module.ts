@@ -252,8 +252,8 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomUsers.allowRead('none');
-		this.streamRoomUsers.allowWrite(async function (eventName, ...args) {
-			const [roomId, e] = eventName.split('/');
+		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
+			const [roomId, e] = eventName.split('/') as typeof eventName extends `${infer K}/${infer E}` ? [K, E] : never;
 			if (!this.userId) {
 				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, {
 					projection: { 't': 1, 'servedBy._id': 1 },
@@ -273,6 +273,7 @@ export class NotificationsModule {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
+
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
@@ -491,7 +492,7 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
 	): void {
-		return this.streamRoom.emit(`${room}/${eventName}`, args);
+		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUser<P extends string, E extends string>(
@@ -499,7 +500,7 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-user', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-user', P> ? StreamerCallbackArgs<'notify-user', `${P}/${E}`> : never
 	): void {
-		return this.streamUser.emit(`${userId}/${eventName}`, args);
+		return this.streamUser.emit(`${userId}/${eventName}`, ...args);
 	}
 
 	notifyAllInThisInstance<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {

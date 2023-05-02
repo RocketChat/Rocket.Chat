@@ -1,4 +1,4 @@
-import { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type {
 	IMessage,
 	IRoom,
@@ -13,6 +13,9 @@ import type {
 	IUser,
 	IOmnichannelRoom,
 	VideoConference,
+	IOmnichannelCannedResponse,
+	IIntegrationHistory,
+	IInquiry,
 } from '@rocket.chat/core-typings';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -26,8 +29,10 @@ export interface StreamerEvents {
 			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
-		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
+		/* @deprecated over videoconf*/
+		{ key: `${string}/${string}`; args: [id: string] },
+		{ key: `${string}/videoconf`; args: [id: string] },
 	];
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
@@ -61,9 +66,11 @@ export interface StreamerEvents {
 		{ key: `${string}/userData`; args: [unknown] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
+		{ key: `${string}/webrtc`; args: [unknown] },
+		{ key: `${string}/otr`; args: [unknown] },
 	];
 
-	'importers': [{ key: 'progress'; args: [{ rate: number; count: { completed: number; total: number } }] }];
+	'importers': [{ key: 'progress'; args: [{ rate: number /* count: { completed: number; total: number } */ }] }];
 
 	'notify-logged': [
 		/* @deprecated */
@@ -103,39 +110,34 @@ export interface StreamerEvents {
 		{ key: `${string}/userData`; args: unknown[] },
 	];
 
-	// 'notify-logged': (
-	// 	e:
-	// 		| 'private-settings-changed'
-	// 		| 'permissions-changed'
-	// 		| 'roles-change'
-	// 		| 'deleteCustomUserStatus'
-	// 		| 'updateCustomUserStatus'
-	// 		| 'deleteEmojiCustom'
-	// 		| 'updateEmojiCustom'
-	// 		| 'updateAvatar'
-	// 		| 'Users:Deleted',
-	// ) => [void];
-
 	'apps': [
 		{ key: 'app/added'; args: [string] },
 		{ key: 'app/removed'; args: [string] },
 		{ key: 'app/updated'; args: [string] },
 		{
-			key: 'app/statusUpdate'; args: [{
-				appId: string;
-				status: 'auto_enabled' | 'auto_disabled' | 'manually_enabled' | 'manually_disabled';
-		}] },
+			key: 'app/statusUpdate';
+			args: [
+				{
+					appId: string;
+					status: 'auto_enabled' | 'auto_disabled' | 'manually_enabled' | 'manually_disabled';
+				},
+			];
+		},
 		{
-			key: 'app/settingUpdate'; args: [{
-				appId: string;
-				setting: AppsSetting;
-		}] },
-		{ key: 'command/added'; args: [IAppCommand] },
-		{ key: 'command/disabled'; args: [IAppCommand] },
-		{ key: 'command/updated'; args: [IAppCommand] },
-		{ key: 'command/removed'; args: [IAppCommand] },
-		{ key: 'actions/changed'; args: [IAppAction] },
-	]
+			key: 'app/settingUpdated';
+			args: [
+				{
+					appId: string;
+					setting: AppsSetting;
+				},
+			];
+		},
+		{ key: 'command/added'; args: [string] },
+		{ key: 'command/disabled'; args: [string] },
+		{ key: 'command/updated'; args: [string] },
+		{ key: 'command/removed'; args: [string] },
+		{ key: 'actions/changed'; args: [] },
+	];
 
 	'livechat-room': [
 		{
@@ -156,6 +158,69 @@ export interface StreamerEvents {
 	];
 
 	'user-presence': [{ key: string; args: [unknown] }];
+
+	'integrationHistory': [
+		{
+			key: string;
+			args: [
+				| { type: 'removed'; id: string }
+				| {
+						id: string;
+						diff: unknown;
+						type: 'updated';
+				  }
+				| {
+						type: 'inserted';
+						data: Partial<IIntegrationHistory>;
+				  },
+			];
+		},
+	];
+
+	'canned-responses': [
+		{
+			key: 'canned-responses';
+			args:
+				| [{ type: 'removed'; _id: string }, { agentsId: string }]
+				| [{ type: 'removed'; _id: string }]
+				| [
+						{ type: 'changed' } & Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & {
+								_createdAt?: Date | undefined;
+							},
+				  ]
+				| [{ type: 'changed' } & IOmnichannelCannedResponse];
+		},
+	];
+
+	'livechat-inquiry-queue-observer': [
+		{
+			key: 'public';
+			args: [
+				{
+					type: string;
+				} & IInquiry,
+			];
+		},
+		{
+			key: `department/${string}`;
+			args: [
+				{
+					type: string;
+				} & IInquiry,
+			];
+		},
+		{
+			key: `${string}`;
+			args: [
+				{
+					_id: string;
+					clientAction: string;
+				},
+			];
+		},
+	];
+	'apps-engine': [];
+	'local': [];
 }
 
 export type StreamNames = keyof StreamerEvents;
