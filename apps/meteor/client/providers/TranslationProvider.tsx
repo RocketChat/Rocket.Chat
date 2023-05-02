@@ -3,11 +3,11 @@ import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-co
 import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
+import sprintf from 'i18next-sprintf-postprocessor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import sprintf from 'i18next-sprintf-postprocessor';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
