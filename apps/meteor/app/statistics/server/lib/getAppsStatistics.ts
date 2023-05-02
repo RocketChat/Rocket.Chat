@@ -6,12 +6,13 @@ import { Info } from '../../../utils/server';
 export function getAppsStatistics() {
 	return {
 		engineVersion: Info.marketplaceApiVersion,
-		totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
-		totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
+		totalInstalled: Apps.isInitialized() && Apps.getManager()?.get().length,
+		totalActive: Apps.isInitialized() && Apps.getManager()?.get({ enabled: true }).length,
 		totalFailed:
 			Apps.isInitialized() &&
 			Apps.getManager()
-				.get({ disabled: true })
+				?.get({ disabled: true })
+				// @ts-expect-error - accessing private property `app`
 				.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
 	};
 }

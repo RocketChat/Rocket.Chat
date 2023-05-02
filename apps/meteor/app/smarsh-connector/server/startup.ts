@@ -13,7 +13,8 @@ settings.watchMultiple(['Smarsh_Enabled', 'Smarsh_Email', 'From_Email', 'Smarsh_
 	if (settings.get('Smarsh_Enabled') && settings.get('Smarsh_Email') !== '' && settings.get('From_Email') !== '') {
 		SyncedCron.add({
 			name: smarshJobName,
-			schedule: (parser) => parser.text(settings.get('Smarsh_Interval').replace(/_/g, ' ')),
+			schedule: (parser) => parser.text(settings.get<string>('Smarsh_Interval').replace(/_/g, ' ')),
+			// @ts-expect-error - wut
 			job: smarsh.generateEml,
 		});
 	}
