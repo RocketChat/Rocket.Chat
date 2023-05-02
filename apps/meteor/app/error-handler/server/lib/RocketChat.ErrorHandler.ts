@@ -5,6 +5,12 @@ import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
 
 class ErrorHandler {
+	reporting: boolean;
+
+	rid: string | null;
+
+	lastError: string | null;
+
 	constructor() {
 		this.reporting = false;
 		this.rid = null;
@@ -13,11 +19,14 @@ class ErrorHandler {
 		Meteor.startup(async () => {
 			await this.registerHandlers();
 
-			settings.watch('Log_Exceptions_to_Channel', async (value) => {
+			settings.watch<string>('Log_Exceptions_to_Channel', async (value) => {
 				this.rid = null;
 				const roomName = value.trim();
 				if (roomName) {
-					this.rid = await this.getRoomId(roomName);
+					const rid = await this.getRoomId(roomName);
+					if (rid) {
+						this.rid = rid;
+					}
 				}
 
 				if (this.rid) {
@@ -38,19 +47,20 @@ class ErrorHandler {
 			await this.trackError(error.message, error.stack);
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
 		Meteor._debug = function (message, stack, ...args) {
 			if (!self.reporting) {
 				return originalMeteorDebug.call(this, message, stack);
 			}
-			self.trackError(message, stack);
+			void self.trackError(message, stack);
 			return originalMeteorDebug.apply(this, [message, stack, ...args]);
 		};
 	}
 
-	async getRoomId(roomName) {
-		roomName = roomName.replace('#');
+	async getRoomId(roomName: string): Promise<string | undefined> {
+		roomName = roomName.replace('#', '');
 		const room = await Rooms.findOneByName(roomName, { projection: { _id: 1, t: 1 } });
 		if (!room || (room.t !== 'c' && room.t !== 'p')) {
 			return;
@@ -58,7 +68,7 @@ class ErrorHandler {
 		return room._id;
 	}
 
-	async trackError(message, stack) {
+	async trackError(message: string, stack?: string): Promise<void> {
 		if (!this.reporting || !this.rid || this.lastError === message) {
 			return;
 		}
