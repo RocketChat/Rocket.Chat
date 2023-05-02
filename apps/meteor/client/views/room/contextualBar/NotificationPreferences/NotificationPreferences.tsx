@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import React, { ReactElement, useState } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import type { NotificationFormValues } from './NotificationPreferencesWithData';
@@ -34,6 +33,12 @@ const NotificationPreferences = ({
 }: NotificationPreferencesProps): ReactElement => {
 	const t = useTranslation();
 
+	const [tmpGroupMentions, setTmpGroupMentions] = useState(false);
+
+	const toggleTmpGroupMentions = () => {
+		setTmpGroupMentions(!tmpGroupMentions);
+	}
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -48,11 +53,19 @@ const NotificationPreferences = ({
 					onChange={formHandlers?.handleTurnOn}
 					defaultChecked={formValues?.turnOn}
 				/>
-				<NotificationToogle
-					label={t('Mute_Group_Mentions')}
-					onChange={formHandlers?.handleMuteGroupMentions}
-					defaultChecked={formValues?.muteGroupMentions}
-				/>
+				{formValues?.muteGroupMentions === undefined ?
+					<NotificationToogle
+						label={t('Mute_Group_Mentions')}
+						onChange={toggleTmpGroupMentions}
+						defaultChecked={tmpGroupMentions}
+					/>
+					:
+					<NotificationToogle
+						label={t('Mute_Group_Mentions')}
+						onChange={formHandlers?.handleMuteGroupMentions}
+						defaultChecked={formValues?.muteGroupMentions}
+					/>
+				}
 				<NotificationToogle
 					label={t('Show_counter')}
 					description={t('Display_unread_counter')}
@@ -109,9 +122,20 @@ const NotificationPreferences = ({
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
 					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
-					<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>
-						{t('Save')}
-					</Button>
+					{formValues?.muteGroupMentions === undefined ?
+						<Button primary disabled={!tmpGroupMentions && !formHasUnsavedChanges} onClick={async () => {
+							if (tmpGroupMentions) {
+								await formHandlers?.handleMuteGroupMentions(true);
+							}
+							handleSaveButton();
+						}}>
+							{t('Save')}
+						</Button>
+						:
+						<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>
+							{t('Save')}
+						</Button>
+					}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
