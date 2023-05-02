@@ -194,14 +194,14 @@ class KonchatNotification {
 
 		try {
 			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				CustomSounds.play(sub.audioNotificationValue, {
+				void CustomSounds.play(sub.audioNotificationValue, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 				return;
 			}
 
-			if (newMessageNotification !== 'none') {
-				CustomSounds.play(newMessageNotification, {
+			if (newMessageNotification && newMessageNotification !== 'none') {
+				void CustomSounds.play(newMessageNotification, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 			}

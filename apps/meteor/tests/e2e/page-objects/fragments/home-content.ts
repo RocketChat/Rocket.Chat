@@ -192,10 +192,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
-	async pickEmoji(emoji: string, section = 'icon-people') {
+	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tablist >> role=tab[name="${section}"]`).click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
 	async dragAndDropFile(): Promise<void> {
