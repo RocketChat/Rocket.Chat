@@ -4,6 +4,7 @@ declare module 'meteor/ddp' {
 	namespace DDP {
 		const _CurrentInvocation: {
 			withValue(invocation: DDPCommon.MethodInvocation, func: () => Promise<any>): Promise<any>;
+			get(): { twoFactorChecked: boolean } | undefined;
 		};
 	}
 }

@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import url from 'url';
+import type http from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
-import fiber from 'fibers';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
+import type { NextFunction } from 'connect';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
@@ -16,13 +18,13 @@ import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
 
-const closePopup = function (res) {
+const closePopup = function (res: http.ServerResponse) {
 	res.writeHead(200, { 'Content-Type': 'text/html' });
 	const content = '<html><head><script>window.close()</script></head></html>';
 	res.end(content, 'utf-8');
 };
 
-const casTicket = function (req, token, callback) {
+const casTicket = function (req: http.IncomingMessage, token: string, callback: Function) {
 	// get configuration
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
@@ -30,10 +32,10 @@ const casTicket = function (req, token, callback) {
 	}
 
 	// get ticket and validate.
-	const parsedUrl = url.parse(req.url, true);
+	const parsedUrl = url.parse(req.url || '', true);
 	const ticketId = parsedUrl.query.ticket;
 	const baseUrl = settings.get('CAS_base_url');
-	const cas_version = parseFloat(settings.get('CAS_version'));
+	const cas_version = parseFloat(settings.get<string>('CAS_version'));
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${baseUrl}`);
 
@@ -66,12 +68,17 @@ const casTicket = function (req, token, callback) {
 	);
 };
 
-const middleware = function (req, res, next) {
+const middleware = function (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
-		const barePath = req.url.substring(0, req.url.indexOf('?'));
-		const splitPath = barePath.split('/');
+		const barePath = req.url?.substring(0, req.url.indexOf('?'));
+		const splitPath = barePath?.split('/');
+
+		if (!splitPath || splitPath.length < 3) {
+			next();
+			return;
+		}
 
 		// Any non-cas request will continue down the default
 		// middlewares.
@@ -98,12 +105,10 @@ const middleware = function (req, res, next) {
 };
 
 // Listen to incoming OAuth http requests
-WebApp.connectHandlers.use(function (req, res, next) {
+WebApp.connectHandlers.use(async function (req, res, next) {
 	// Need to create a fiber since we're using synchronous http calls and nothing
 	// else is wrapping this in a fiber automatically
-	fiber(function () {
-		middleware(req, res, next);
-	}).run();
+	middleware(req, res, next);
 });
 
 /*
@@ -118,17 +123,17 @@ Accounts.registerLoginHandler('cas', async function (options) {
 
 	// TODO: Sync wrapper due to the chain conversion to async models
 	const credentials = await CredentialTokens.findOneNotExpiredById(options.cas.credentialToken);
-	if (credentials === undefined) {
+	if (!credentials) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
 
 	const result = credentials.userInfo;
-	const syncUserDataFieldMap = settings.get('CAS_Sync_User_Data_FieldMap').trim();
+	const syncUserDataFieldMap = settings.get<string>('CAS_Sync_User_Data_FieldMap').trim();
 	const cas_version = parseFloat(settings.get('CAS_version'));
-	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
-	const trustUsername = settings.get('CAS_trust_username');
-	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
-	const userCreationEnabled = settings.get('CAS_Creation_User_Enabled');
+	const sync_enabled = settings.get<boolean>('CAS_Sync_User_Data_Enabled');
+	const trustUsername = settings.get<string>('CAS_trust_username');
+	const verified = settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts');
+	const userCreationEnabled = settings.get<boolean>('CAS_Creation_User_Enabled');
 
 	// We have these
 	const ext_attrs = {
@@ -136,7 +141,12 @@ Accounts.registerLoginHandler('cas', async function (options) {
 	};
 
 	// We need these
-	const int_attrs = {
+	const int_attrs: {
+		email: string | undefined;
+		name: string | undefined;
+		username: string | undefined;
+		rooms: string | undefined;
+	} = {
 		email: undefined,
 		name: undefined,
 		username: undefined,
@@ -146,7 +156,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 	// Import response attributes
 	if (cas_version >= 2.0) {
 		// Clean & import external attributes
-		_.each(result.attributes, function (value, ext_name) {
+		_.each(result.attributes, function (value: string, ext_name: keyof typeof ext_attrs) {
 			if (value) {
 				ext_attrs[ext_name] = value[0];
 			}
@@ -159,12 +169,13 @@ Accounts.registerLoginHandler('cas', async function (options) {
 		// Spoken: Source this internal attribute from these external attributes
 		const attr_map = JSON.parse(syncUserDataFieldMap);
 
-		_.each(attr_map, function (source, int_name) {
+		_.each(attr_map, function (source, int_name: keyof typeof int_attrs) {
 			// Source is our String to interpolate
 			if (source && typeof source.valueOf() === 'string') {
 				let replacedValue = source;
-				_.each(ext_attrs, function (value, ext_name) {
-					replacedValue = replacedValue.replace(`%${ext_name}%`, ext_attrs[ext_name]);
+				// @ts-expect-error - TS doesn't know that ext_attrs is a string indexed object
+				_.each(ext_attrs, function (_value: string, ext_name: string) {
+					replacedValue = replacedValue.replace(`%${ext_name}%`, ext_attrs[ext_name as keyof typeof ext_attrs]);
 				});
 
 				if (source !== replacedValue) {
@@ -252,6 +263,9 @@ Accounts.registerLoginHandler('cas', async function (options) {
 
 		// Fetch and use it
 		user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Meteor.Error('CAS-login-error', 'Failed to create new user, aborting');
+		}
 		logger.debug(`Created new user for '${result.username}' with id: ${user._id}`);
 		// logger.debug(JSON.stringify(user, undefined, 4));
 

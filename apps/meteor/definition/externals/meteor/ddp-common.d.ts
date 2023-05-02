@@ -11,7 +11,7 @@ declare module 'meteor/ddp-common' {
 				};
 				isSimulation?: boolean;
 				userId?: string;
-			});
+			}): MethodInvocation;
 		}
 	}
 }
