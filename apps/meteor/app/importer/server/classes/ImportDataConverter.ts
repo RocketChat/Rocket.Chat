@@ -24,6 +24,7 @@ import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -841,23 +842,21 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			await Meteor.runAsUser(creatorId, async () => {
-				let roomInfo;
-				if (roomData.t === 'd') {
-					roomInfo = await Meteor.callAsync('createDirectMessage', ...members);
-				} else {
-					if (!roomData.name) {
-						return;
-					}
-					if (roomData.t === 'p') {
-						roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members);
-					} else {
-						roomInfo = await createChannelMethod(startedByUserId, roomData.name, members);
-					}
+			let roomInfo;
+			if (roomData.t === 'd') {
+				roomInfo = await createDirectMessage(members, startedByUserId);
+			} else {
+				if (!roomData.name) {
+					return;
 				}
+				if (roomData.t === 'p') {
+					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members);
+				} else {
+					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members);
+				}
+			}
 
-				roomData._id = roomInfo.rid;
-			});
+			roomData._id = roomInfo.rid;
 		} catch (e) {
 			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);
