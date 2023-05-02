@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms } from '@rocket.chat/models';
@@ -12,6 +11,7 @@ import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);
@@ -165,7 +165,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	let discussionMsg;
 	if (message) {
 		if (parentRoom.encrypted) {
-			message.msg = TAPi18n.__('Encrypted_message');
+			message.msg = i18n.t('Encrypted_message');
 		}
 		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 

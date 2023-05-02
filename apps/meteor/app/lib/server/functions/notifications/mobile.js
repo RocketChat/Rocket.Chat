@@ -1,8 +1,8 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -36,9 +36,9 @@ export async function getPushData({
 
 	let messageText;
 	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
-		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+		messageText = i18n.t('You_have_a_new_message', { lng });
 	} else if (!settings.get('Push_show_message')) {
-		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+		messageText = i18n.t('You_have_a_new_message', { lng });
 	} else {
 		messageText = notificationMessage;
 	}

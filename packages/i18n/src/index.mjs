@@ -27,10 +27,11 @@ const cjs = `module.exports = {${files
 
 const keys = Object.keys(JSON.parse(fs.readFileSync(`./src/locales/en.i18n.json`, 'utf8')));
 
-const tds = `
-export interface RocketchatI18n {
+const tds = `export interface RocketchatI18n {
 	${keys.map((key) => `${JSON.stringify(key)}: string;`).join('\n\t')}
 }
+
+export declare const dict: Record<string, RocketchatI18nKeys>;
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 `;
@@ -40,4 +41,4 @@ fs.rmdirSync(`./dist`, { recursive: true });
 fs.mkdirSync(`./dist`, { recursive: true });
 fs.writeFileSync(`./dist/index.mjs`, esm);
 fs.writeFileSync(`./dist/index.js`, cjs);
-fs.writeFileSync(`./dist/types.d.ts`, tds);
+fs.writeFileSync(`./dist/index.d.ts`, tds);

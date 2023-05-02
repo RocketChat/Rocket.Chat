@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 
@@ -7,6 +6,7 @@ import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
+import { i18n } from '../../../../server/lib/i18n';
 
 const start =
 	'<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
@@ -79,7 +79,7 @@ smarsh.generateEml = () => {
 				if (message.t) {
 					const messageType = MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
+						rows.push(i18n.t(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
 						rows.push(`${message.msg} (${message.t})`);
 					}
