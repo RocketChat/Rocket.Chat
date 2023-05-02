@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Invites, Rooms } from '@rocket.chat/models';
 
-export const validateInviteToken = async (token) => {
+export const validateInviteToken = async (token: string) => {
 	if (!token || typeof token !== 'string') {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
 			method: 'validateInviteToken',
@@ -25,7 +25,7 @@ export const validateInviteToken = async (token) => {
 		});
 	}
 
-	if (inviteData.expires && inviteData.expires <= Date.now()) {
+	if (inviteData.expires && new Date(inviteData.expires).getTime() <= Date.now()) {
 		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', {
 			method: 'validateInviteToken',
 			field: 'expires',
