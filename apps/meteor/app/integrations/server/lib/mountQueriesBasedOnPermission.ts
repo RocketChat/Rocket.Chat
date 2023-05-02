@@ -1,17 +1,19 @@
 import { Meteor } from 'meteor/meteor';
+import type { DeepWritable } from '@rocket.chat/core-typings';
+import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export const mountIntegrationQueryBasedOnPermissions = async (userId) => {
+export const mountIntegrationQueryBasedOnPermissions = async (userId: string) => {
 	if (!userId) {
-		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" fucntion.');
+		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" function.');
 	}
 	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
 	const canViewAllIncomingIntegrations = await hasPermissionAsync(userId, 'manage-incoming-integrations');
 	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
 	const canViewOnlyOwnIncomingIntegrations = await hasPermissionAsync(userId, 'manage-own-incoming-integrations');
 
-	const query = {};
+	const query: DeepWritable<Filter<any>> = {};
 
 	if (canViewAllOutgoingIntegrations && canViewAllIncomingIntegrations) {
 		return query;
@@ -36,7 +38,7 @@ export const mountIntegrationQueryBasedOnPermissions = async (userId) => {
 	return query;
 };
 
-export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId, integrationId) => {
+export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId: string, integrationId: string) => {
 	if (!userId) {
 		throw new Meteor.Error('You must provide the userId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
@@ -45,7 +47,7 @@ export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId, int
 	}
 
 	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
-	const canViewAllOutgoingIntegrations = await (userId, 'manage-outgoing-integrations');
+	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
 	if (!canViewAllOutgoingIntegrations && canViewOnlyOwnOutgoingIntegrations) {
 		return { 'integration._id': integrationId, 'integration._createdBy._id': userId };
 	}
