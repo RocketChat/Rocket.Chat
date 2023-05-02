@@ -1,10 +1,12 @@
 import { Messages, Subscriptions } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export async function reply({ tmid }, message, parentMessage, followers) {
-	const { rid, ts, u, editedAt } = message;
-	if (!tmid || editedAt) {
+export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
+	const { rid, ts, u } = message;
+	if (!tmid || isEditedMessage(message)) {
 		return false;
 	}
 
@@ -22,14 +24,14 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 
-	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
+	const repliesFiltered = (replies || []).filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
 	if (toAll || toHere) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {
 			groupMention: true,
 		});
 	} else {
-		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid);
+		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {});
 	}
 
 	for await (const userId of mentionIds) {
@@ -37,7 +39,7 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 	}
 }
 
-export async function follow({ tmid, uid }) {
+export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
 	if (!tmid || !uid) {
 		return false;
 	}
@@ -45,7 +47,7 @@ export async function follow({ tmid, uid }) {
 	await Messages.addThreadFollowerByThreadId(tmid, uid);
 }
 
-export async function unfollow({ tmid, rid, uid }) {
+export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; uid: string }) {
 	if (!tmid || !uid) {
 		return false;
 	}
@@ -55,14 +57,18 @@ export async function unfollow({ tmid, rid, uid }) {
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
 }
 
-export const readThread = async ({ userId, rid, tmid }) => {
+export const readThread = async ({ userId, rid, tmid }: { userId?: string; rid: string; tmid: string }) => {
 	const projection = { tunread: 1 };
+	if (!userId) {
+		return;
+	}
+
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection });
 	if (!sub) {
 		return;
 	}
 	// if the thread being marked as read is the last one unread also clear the unread subscription flag
-	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
+	const clearAlert = sub.tunread && sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
 };

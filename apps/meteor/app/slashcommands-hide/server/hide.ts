@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -6,6 +5,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
+import { hideRoomMethod } from '../../../server/methods/hideRoom';
 
 /*
  * Hide is a named function that will replace /hide commands
@@ -64,7 +64,7 @@ slashCommands.add({
 			rid = roomObject._id;
 		}
 		try {
-			await Meteor.callAsync('hideRoom', rid);
+			await hideRoomMethod(userId, rid);
 		} catch (error: any) {
 			await api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 				msg: TAPi18n.__(error, { lng }),
