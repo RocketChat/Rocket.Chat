@@ -1,7 +1,7 @@
 import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/comment-fold.js';
 import 'codemirror/addon/fold/foldcode.js';
-import 'codemirror/addon/fold/foldgutter.css';
+// import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/foldgutter.js';
 import 'codemirror/addon/fold/indent-fold.js';
 import 'codemirror/addon/fold/markdown-fold.js';
@@ -26,7 +26,7 @@ import 'codemirror/addon/selection/active-line.js';
 import 'codemirror/addon/search/search.js';
 import 'codemirror/addon/search/searchcursor.js';
 import 'codemirror/addon/dialog/dialog.js';
-import 'codemirror/addon/dialog/dialog.css';
+// import 'codemirror/addon/dialog/dialog.css';
 
 // overlay: required by `gfm.js`
 import 'codemirror/addon/mode/overlay.js';

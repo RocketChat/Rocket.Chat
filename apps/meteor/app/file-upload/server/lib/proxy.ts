@@ -13,92 +13,99 @@ import { isDocker } from '../../../utils/server';
 
 const logger = new Logger('UploadProxy');
 
-WebApp.connectHandlers.stack.unshift({
-	route: '',
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
-	async handle(req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
-		// Quick check to see if request should be catch
-		if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
-			return next();
-		}
+// @ts-expect-error - l
+const dummyRouter = WebApp.connectHandlers._router;
 
-		logger.debug({ msg: 'Upload URL:', url: req.url });
+// Create a dummy route
+dummyRouter.route('*');
+// fetch the newly created "layer"
+const stackedRoute = dummyRouter.stack.pop();
+stackedRoute.handle = async (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+	// Quick check to see if request should be catch
+	if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
+		return next();
+	}
 
-		if (req.method !== 'POST') {
-			return next();
-		}
+	logger.debug({ msg: 'Upload URL:', url: req.url });
 
-		// Remove store path
-		const parsedUrl = URL.parse(req.url);
-		const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1) || '';
+	if (req.method !== 'POST') {
+		return next();
+	}
 
-		// Get store
-		const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
-		const match = regExp.exec(path);
+	// Remove store path
+	const parsedUrl = URL.parse(req.url);
+	const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1) || '';
 
-		// Request is not valid
-		if (match === null) {
-			res.writeHead(400);
-			res.end();
-			return;
-		}
+	// Get store
+	const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
+	const match = regExp.exec(path);
 
-		// Get store
-		const store = UploadFS.getStore(match[1]);
-		if (!store) {
-			res.writeHead(404);
-			res.end();
-			return;
-		}
+	// Request is not valid
+	if (match === null) {
+		res.writeHead(400);
+		res.end();
+		return;
+	}
 
-		// Get file
-		const fileId = match[2];
-		const file = await store.getCollection().findOne({ _id: fileId });
-		if (!file) {
-			res.writeHead(404);
-			res.end();
-			return;
-		}
+	// Get store
+	const store = UploadFS.getStore(match[1]);
+	if (!store) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
 
-		if (!file.instanceId || file.instanceId === InstanceStatus.id()) {
-			logger.debug('Correct instance');
-			return next();
-		}
+	// Get file
+	const fileId = match[2];
+	const file = await store.getCollection().findOne({ _id: fileId });
+	if (!file) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
 
-		// Proxy to other instance
-		const instance = await InstanceStatusModel.findOneById(file.instanceId);
+	if (!file.instanceId || file.instanceId === InstanceStatus.id()) {
+		logger.debug('Correct instance');
+		return next();
+	}
 
-		if (instance == null) {
-			res.writeHead(404);
-			res.end();
-			return;
-		}
+	// Proxy to other instance
+	const instance = await InstanceStatusModel.findOneById(file.instanceId);
 
-		if (instance.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-			instance.extraInformation.host = 'localhost';
-		}
+	if (instance == null) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
 
-		logger.debug(`Wrong instance, proxing to ${instance.extraInformation.host}:${instance.extraInformation.port}`);
+	if (instance.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+		instance.extraInformation.host = 'localhost';
+	}
 
-		const options = {
-			hostname: instance.extraInformation.host,
-			port: instance.extraInformation.port,
-			path: req.originalUrl,
-			method: 'POST',
-		};
+	logger.debug(`Wrong instance, proxing to ${instance.extraInformation.host}:${instance.extraInformation.port}`);
 
-		logger.warn(
-			'UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload',
-		);
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		const proxy = http.request(options, function (proxy_res) {
-			proxy_res.pipe(res, {
-				end: true,
-			});
-		});
+	const options = {
+		hostname: instance.extraInformation.host,
+		port: instance.extraInformation.port,
+		path: req.originalUrl,
+		method: 'POST',
+	};
 
-		req.pipe(proxy, {
+	logger.warn(
+		'UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload',
+	);
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const proxy = http.request(options, function (proxy_res) {
+		proxy_res.pipe(res, {
 			end: true,
 		});
-	},
-});
+	});
+
+	req.pipe(proxy, {
+		end: true,
+	});
+};
+
+// Move the layer to the top :)
+// @ts-expect-error - l
+WebApp.connectHandlers._router.stack.unshift(stackedRoute);

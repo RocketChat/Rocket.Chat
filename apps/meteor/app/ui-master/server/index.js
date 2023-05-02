@@ -136,14 +136,14 @@ const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
 			return `--${_id.replace('theme-color-', '')}: ${value};`;
 		})
 		.join('\n');
-	injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
+	await injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
 });
 
 renderDynamicCssList();
 
 settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 
-injectIntoBody(
+await injectIntoBody(
 	'react-root',
 	`
 <noscript style="color: white; text-align:center">
@@ -161,4 +161,4 @@ injectIntoBody(
 `,
 );
 
-injectIntoBody('icons', Assets.getText('public/icons.svg'));
+await injectIntoBody('icons', await Assets.getText('public/icons.svg'));

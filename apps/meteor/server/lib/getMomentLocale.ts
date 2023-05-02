@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-export function getMomentLocale(locale: string): string | undefined {
+export async function getMomentLocale(locale: string): Promise<string | undefined> {
 	const localeLower = locale.toLowerCase();
 
 	try {

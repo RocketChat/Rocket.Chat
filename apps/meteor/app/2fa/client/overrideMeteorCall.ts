@@ -39,7 +39,7 @@ const callAsyncWithTotp =
 	(methodName: string, args: unknown[]) =>
 	async (twoFactorCode: string, twoFactorMethod: string): Promise<unknown> => {
 		try {
-			const result = await callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod });
+			const result = await callAsync(methodName, { returnServerPromise: true }, ...args, { twoFactorCode, twoFactorMethod });
 
 			return result;
 		} catch (error: unknown) {
@@ -59,7 +59,7 @@ Meteor.call = function (methodName: string, ...args: unknown[]): unknown {
 };
 
 Meteor.callAsync = async function _callAsyncWithTotp(methodName: string, ...args: unknown[]): Promise<unknown> {
-	const promise = callAsync(methodName, ...args);
+	const promise = callAsync(methodName, { returnServerPromise: true }, ...args);
 
 	return process2faAsyncReturn({
 		promise,

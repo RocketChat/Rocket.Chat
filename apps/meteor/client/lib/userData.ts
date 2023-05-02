@@ -34,11 +34,11 @@ type RawUserData = Serialized<
 	> & { statusLivechat?: ILivechatAgent['statusLivechat'] }
 >;
 
-const updateUser = (userData: IUser): void => {
+const updateUser = async (userData: IUser): Promise<void> => {
 	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
 
 	if (!user?._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
-		Users.upsert({ _id: userData._id }, userData);
+		await Users.upsertAsync({ _id: userData._id }, userData);
 		return;
 	}
 
@@ -46,7 +46,7 @@ const updateUser = (userData: IUser): void => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	Users.update({ _id: user._id }, { $set: userData });
+	await Users.updateAsync({ _id: user._id }, { $set: userData });
 };
 
 let cancel: undefined | (() => void);
@@ -56,24 +56,24 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	}
 
 	// Remove data from any other user that we may have retained
-	Users.remove({ _id: { $ne: uid } });
+	await Users.removeAsync({ _id: { $ne: uid } });
 
 	cancel?.();
 
-	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
+	cancel = await Notifications.onUser('userData', async (data: IUserDataEvent) => {
 		switch (data.type) {
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
-				Users.insert(user as IUser);
+				await Users.insertAsync(user as IUser);
 				break;
 
 			case 'updated':
-				Users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset });
+				await Users.upsertAsync({ _id: uid }, { $set: data.diff, $unset: data.unset });
 				break;
 
 			case 'removed':
-				Users.remove({ _id: uid });
+				await Users.removeAsync({ _id: uid });
 				break;
 		}
 	});
@@ -92,7 +92,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	if (userData) {
 		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
 
-		updateUser({
+		await updateUser({
 			...userData,
 			...(rawServices && {
 				services: {

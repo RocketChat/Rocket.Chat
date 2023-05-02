@@ -71,3 +71,4 @@ rocketchat:oauth2-server
 rocketchat:i18n
 facts-base@1.0.1
 standard-minifier-css@1.9.0
+jquery
