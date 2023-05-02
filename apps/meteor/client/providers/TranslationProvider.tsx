@@ -1,10 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
-import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
-import { Tracker } from 'meteor/tracker';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
@@ -79,7 +78,8 @@ const useI18next = (lng: string): typeof i18next => {
 			ns: namespacesDefault,
 			nsSeparator: '.',
 			partialBundledLanguages: true,
-			debug: false,
+			defaultNS: 'core',
+			compatibilityJSON: 'v1',
 			backend: {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse,
@@ -131,61 +131,6 @@ const useI18next = (lng: string): typeof i18next => {
 	return i18n;
 };
 
-const createTranslateFunction = (
-	language: string,
-): {
-	(key: TranslationKey, ...replaces: unknown[]): string;
-	has: (key: string | undefined, options?: { lng?: string }) => key is TranslationKey;
-} =>
-	Tracker.nonreactive(() => {
-		const translate = (key: TranslationKey, ...replaces: unknown[]): string => {
-			if (typeof replaces[0] === 'object') {
-				const [options, lng = language] = replaces;
-				return TAPi18next.t(key, {
-					ns: 'project',
-					lng: String(lng),
-					...options,
-				});
-			}
-
-			if (replaces.length === 0) {
-				return TAPi18next.t(key, { ns: 'project', lng: language });
-			}
-
-			return TAPi18next.t(key, {
-				postProcess: 'sprintf',
-				sprintf: replaces,
-				ns: 'project',
-				lng: language,
-			});
-		};
-
-		translate.has = (
-			key: string | undefined,
-			{
-				lng = language,
-			}: {
-				lng?: string;
-			} = {},
-		): key is TranslationKey => !!key && TAPi18next.exists(key, { ns: 'project', lng });
-
-		return translate;
-	});
-
-const getLanguages = (): { name: string; en: string; key: string }[] => {
-	const result = Object.entries(TAPi18n.getLanguages())
-		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
-		.sort((a, b) => a.key.localeCompare(b.key));
-
-	result.unshift({
-		name: 'Default',
-		en: 'Default',
-		key: '',
-	});
-
-	return result;
-};
-
 const getLanguage = (): string => TAPi18n.getLanguage();
 
 const loadLanguage = async (language: string): Promise<void> => {
@@ -197,19 +142,31 @@ type TranslationProviderProps = {
 };
 
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
-	const languages = useReactiveValue(getLanguages);
 	const language = useReactiveValue(getLanguage);
-
 	const i18nextInstance = useI18next(language);
+	const languages = useMemo(
+		() =>
+			i18nextInstance.languages.map((key) => ({
+				en: key,
+				name: key,
+				key,
+			})),
+		[i18nextInstance],
+	);
 
-	const value = useMemo(
+	const value: TranslationContextValue = useMemo(
 		() => ({
 			languages,
 			language,
 			loadLanguage,
-			translate: createTranslateFunction(language),
+			translate: Object.assign(
+				((key, options) => i18nextInstance.t(key, options as any) as string) as TranslationContextValue['translate'],
+				{
+					has: ((key, options) => i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
+				},
+			),
 		}),
-		[languages, language],
+		[languages, language, i18nextInstance],
 	);
 
 	return (
