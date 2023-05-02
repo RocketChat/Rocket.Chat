@@ -306,14 +306,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
-						<TextInput placeholder={t('Channel_name')} disabled={!canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
+						<TextInput disabled={!canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
 					</Field.Row>
 				</Field>
 				{canViewDescription && (
 					<Field>
 						<Field.Label>{t('Description')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput placeholder={t('Channel_description_placeholder')} disabled={isFederated} rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
+							<TextAreaInput disabled={isFederated} rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
 						</Field.Row>
 						<Field.Hint>{t('Channel_description_hint')}</Field.Hint>
 					</Field>
@@ -322,7 +322,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Field>
 						<Field.Label>{t('Announcement')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput placeholder={t('Channel_announcement_placeholder')} disabled={isFederated} rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
+							<TextAreaInput disabled={isFederated} rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 						</Field.Row>
 							<Field.Hint>{t('Channel_announcement_hint')}</Field.Hint>
 					</Field>
@@ -331,7 +331,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Field>
 						<Field.Label>{t('Topic')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput placeholder={t('Channel_topic_placeholder')} rows={4} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
+							<TextAreaInput rows={4} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
 						</Field.Row>
 							<Field.Hint>{t('Channel_topic_hint')}</Field.Hint>
 					</Field>
