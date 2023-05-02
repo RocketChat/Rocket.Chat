@@ -7416,7 +7416,6 @@ __metadata:
   dependencies:
     "@babel/core": ^7.21.8
     "@babel/preset-env": ^7.21.5
-    "@babel/preset-modules": ^0.1.5
     "@babel/preset-typescript": ^7.21.5
     "@types/babel__core": ^7
     "@types/babel__preset-env": ^7
