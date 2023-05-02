@@ -683,7 +683,6 @@ export class FileUploadClass {
 	async deleteById(fileId: string) {
 		const file = await this.model.findOneById(fileId);
 
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		if (!file) {
 			return;
 		}
