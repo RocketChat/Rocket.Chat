@@ -393,12 +393,12 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (!file.userId) {
+		if (!file.uid) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		// update file record to match user's username
-		const user = await Users.findOneById(file.userId);
+		const user = await Users.findOneById(file.uid);
 		if (!user?.username) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
