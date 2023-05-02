@@ -21,6 +21,9 @@ Mongo.Collection.prototype.update = function () {
 	console.error('Calling _update from collection', this._name);
 };
 
+// Temporal since still being used in some places
+Promise.await = Promise.await || ((promise) => promise);
+
 const shouldDisableOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 if (!shouldDisableOplog) {
 	Package['disable-oplog'] = {};
