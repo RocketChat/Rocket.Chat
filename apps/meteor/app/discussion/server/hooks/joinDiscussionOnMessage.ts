@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
 
 callbacks.add(
 	'beforeSaveMessage',
@@ -20,8 +20,11 @@ callbacks.add(
 			return message;
 		}
 
-		// if no subscription, call join
-		await Meteor.runAsUser(message.u._id, () => Meteor.callAsync('joinRoom', room._id));
+		const user = await Users.findOneById(message.u._id);
+		if (!user) {
+			return message;
+		}
+		await joinRoomMethod(user, room._id);
 
 		return message;
 	},
