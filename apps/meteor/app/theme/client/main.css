@@ -16,7 +16,7 @@
 @import 'imports/components/message-box.css';
 @import 'imports/components/modal.css';
 @import 'imports/components/messages.css';
-@import 'imports/components/emojiPicker.css';
+@import 'imports/components/emoji.css';
 
 /* Legacy theming */
 @import 'imports/general/theme_old.css';
