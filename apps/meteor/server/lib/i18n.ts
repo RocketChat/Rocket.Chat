@@ -6,11 +6,12 @@ import sprintf from 'i18next-sprintf-postprocessor';
 void i18next.use(sprintf).init({
 	compatibilityJSON: 'v1',
 	lng: 'en',
+	defaultNS: 'core',
 	interpolation: {
 		prefix: '__',
 		suffix: '__',
 	},
-	resources: Object.fromEntries(Object.entries(i18nDict).map(([key, value]) => [key, { translation: value }])),
+	resources: Object.fromEntries(Object.entries(i18nDict).map(([key, value]) => [key, { core: value }])),
 	initImmediate: true,
 });
 

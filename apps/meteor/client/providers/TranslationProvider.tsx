@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
+import sprintf from 'i18next-sprintf-postprocessor';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
@@ -72,7 +73,7 @@ const useI18next = (lng: string): typeof i18next => {
 	const [i18n] = useState(() => {
 		const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next);
 
-		i18n.init({
+		i18n.use(sprintf).init({
 			lng,
 			fallbackLng: 'en',
 			ns: namespacesDefault,
