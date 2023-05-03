@@ -7,6 +7,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useAnalytics } from '../../../app/analytics/client/loadScript';
 
 const AppLayout = (): ReactElement => {
 	useEffect(() => {
@@ -19,6 +20,7 @@ const AppLayout = (): ReactElement => {
 
 	useMessageLinkClicks();
 	useGoogleTagManager();
+	useAnalytics();
 	useEscapeKeyStroke();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
