@@ -2,6 +2,7 @@ import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../settings/server';
 import { generateEml } from './functions/generateEml';
+import { smarshIntervalValuesToCronMap } from '../../../server/settings/smarsh';
 
 const smarshJobName = 'Smarsh EML Connector';
 
@@ -13,8 +14,8 @@ settings.watchMultiple(
 		}
 
 		if (settings.get('Smarsh_Enabled') && settings.get('Smarsh_Email') !== '' && settings.get('From_Email') !== '') {
-			// TODO parse text to cron format
-			await cronJobs.add(smarshJobName, settings.get<string>('Smarsh_Interval').replace(/_/g, ' '), async () => generateEml());
+			const cronInterval = smarshIntervalValuesToCronMap[settings.get<string>('Smarsh_Interval')];
+			await cronJobs.add(smarshJobName, cronInterval, async () => generateEml());
 		}
 	},
 );

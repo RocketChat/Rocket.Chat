@@ -10,6 +10,7 @@ import { settings } from '../../settings/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { logger } from './logger';
+import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
 
@@ -352,8 +353,9 @@ Meteor.startup(() => {
 			}
 
 			logger.info('Enabling CROWD Background Sync');
-			// TODO parse text to cron format
-			await cronJobs.add(jobName, String(interval), () => crowd.sync());
+			const cronInterval = crowdIntervalValuesToCronMap[String(interval)];
+
+			await cronJobs.add(jobName, cronInterval, () => crowd.sync());
 		}
 	});
 });

@@ -3,7 +3,7 @@ import { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-export const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
+const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
 		_id: Random.id(),
 		intendedAt: new Date(),

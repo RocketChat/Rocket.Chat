@@ -9,7 +9,7 @@ import { logger } from '../../../server/lib/ldap/Logger';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../lib/callbacks';
 import { onLicense } from '../../app/license/server';
-import { addSettings } from '../settings/ldap';
+import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
 Meteor.startup(async () => {
 	await onLicense('ldap-enterprise', async () => {
@@ -27,7 +27,7 @@ Meteor.startup(async () => {
 					return;
 				}
 
-				const schedule = settings.get<string>(intervalSetting);
+				const schedule = ldapIntervalValuesToCronMap[settings.get<string>(intervalSetting)];
 				if (schedule) {
 					if (schedule !== lastSchedule && (await cronJobs.has(jobName))) {
 						await cronJobs.remove(jobName);
