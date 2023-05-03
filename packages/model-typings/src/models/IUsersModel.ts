@@ -207,6 +207,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 
 	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
+
+	countFederatedExternalUsers(): Promise<number>;
 	findOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): FindCursor<IUser>;
 	getUnavailableAgents(
 		departmentId?: string,

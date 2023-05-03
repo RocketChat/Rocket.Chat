@@ -107,7 +107,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = LegacyRoomManager.openedRooms[subscription.t + subscription.name];
+		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
 		if (!room) {
 			return;
 		}

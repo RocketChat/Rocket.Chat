@@ -103,10 +103,24 @@ export class ConnectionImpl
 
 		let stop: () => void | undefined;
 		return new Promise<boolean>((resolve, reject) => {
+			const queue = new Set<string>();
+
+			stop = this.client.onDispatchMessage((message: string) => {
+				queue.add(message);
+			});
+
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
 				};
+
+				stop?.();
+
+				queue.forEach((message) => {
+					ws.send(message);
+				});
+
+				queue.clear();
 
 				stop = this.client.onDispatchMessage((message: string) => {
 					ws.send(message);
