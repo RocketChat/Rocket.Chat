@@ -23,7 +23,7 @@ Meteor.startup(async function () {
 			});
 		}
 
-		await Settings.updateValueById('Initial_Channel_Created', true);
+		void Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
 	if (!(await Users.findOneById('rocket.cat'))) {
@@ -159,7 +159,7 @@ Meteor.startup(async function () {
 	if ((await (await getUsersInRole('admin')).count()) !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
-			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			void Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
@@ -205,7 +205,7 @@ Meteor.startup(async function () {
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			void Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 
 		return addUserToDefaultChannels(adminUser as IUser, true);
