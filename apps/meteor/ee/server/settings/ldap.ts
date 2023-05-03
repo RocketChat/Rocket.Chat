@@ -28,7 +28,7 @@ export function addSettings(): Promise<void> {
 
 					const backgroundSyncQuery = [enableQuery, { _id: 'LDAP_Background_Sync', value: true }];
 
-					await this.add('LDAP_Background_Sync_Interval', 'every_12_hours', {
+					await this.add('LDAP_Background_Sync_Interval', 'every_24_hours', {
 						type: 'select',
 						values: [
 							{

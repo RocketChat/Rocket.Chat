@@ -33,7 +33,7 @@ export const createCrowdSettings = () =>
 			enableQuery,
 			i18nLabel: 'Sync_Users',
 		});
-		await this.add('CROWD_Sync_Interval', 'every_12_hours', {
+		await this.add('CROWD_Sync_Interval', 'every_1_hour', {
 			type: 'select',
 			values: [
 				{
@@ -45,7 +45,7 @@ export const createCrowdSettings = () =>
 					i18nLabel: 'every_30_minutes',
 				},
 				{
-					key: 'every_1_hours',
+					key: 'every_1_hour',
 					i18nLabel: 'every_hour',
 				},
 				{
