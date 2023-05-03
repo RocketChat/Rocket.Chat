@@ -1,45 +1,39 @@
 import { Settings } from '@rocket.chat/models';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import { addMigration } from '../../lib/migrations';
-import { settings } from '../../../app/settings/server';
+import { SystemLogger } from '../../lib/logger/system';
 
 addMigration({
 	version: 293,
 	name: 'Change old "LDAP_Background_Sync_Interval" and "CROWD_Sync_Interval" to a pre-defined values instead of accept any input from the user',
 	async up() {
-		const ldapDefaultValue = 'every_24_hours';
-		const crowdDefaultValue = 'every_1_hours';
-		const ldapSyncInterval = settings.get<string>('LDAP_Background_Sync_Interval');
-		const crowdSyncInterval = settings.get<string>('CROWD_Sync_Interval');
+		const oldLdapDefault = 'Every 24 hours';
+		const oldCrowdDefault = 'Every 60 mins';
 
-		if (ldapSyncInterval !== ldapDefaultValue) {
-			await Settings.updateOne(
-				{
-					_id: 'LDAP_Background_Sync_Interval',
-				},
-				{
-					$set: {
-						value: ldapDefaultValue,
-					},
-				},
-			);
-			console.warn(
-				`The default value for the LDAP background synchronization interval has changed from "${ldapSyncInterval}" to "${ldapDefaultValue}". Please review your settings.`,
+		const newLdapDefault = 'every_24_hours';
+		const newCrowdDefault = 'every_1_hours';
+
+		const ldapSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('LDAP_Background_Sync_Interval', {
+			projection: { value: 1 },
+		});
+		const crowdSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('CROWD_Sync_Interval', { projection: { value: 1 } });
+
+		// update setting values
+		await Settings.updateOne({ _id: 'LDAP_Background_Sync_Interval' }, { $set: { value: newLdapDefault } });
+		await Settings.updateOne({ _id: 'CROWD_Sync_Interval' }, { $set: { value: newCrowdDefault } });
+
+		// notify user about the changes if the value was different from the default
+
+		if (ldapSyncInterval && ldapSyncInterval.value !== oldLdapDefault) {
+			SystemLogger.warn(
+				`The value of the setting 'LDAP background synchronization interval' has changed from "${ldapSyncInterval.value}" to "${newLdapDefault}". Please review your settings.`,
 			);
 		}
-		if (crowdSyncInterval !== crowdDefaultValue) {
-			await Settings.updateOne(
-				{
-					_id: 'CROWD_Sync_Interval',
-				},
-				{
-					$set: {
-						value: crowdDefaultValue,
-					},
-				},
-			);
-			console.warn(
-				`The default value for the CROWD background synchronization interval has changed from "${crowdSyncInterval}" to "${crowdDefaultValue}". Please review your settings.`,
+
+		if (crowdSyncInterval && crowdSyncInterval.value !== oldCrowdDefault) {
+			SystemLogger.warn(
+				`The value of the setting 'CROWD background synchronization interval' has changed from "${crowdSyncInterval.value}" to "${newCrowdDefault}". Please review your settings.`,
 			);
 		}
 	},
