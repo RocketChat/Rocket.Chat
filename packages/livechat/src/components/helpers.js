@@ -135,7 +135,7 @@ export const setCookies = (rid, token) => {
 	document.cookie = `rc_room_type=l; path=/; ${getSecureCookieSettings()}`;
 };
 
-export const getAvatarUrl = (username) => (username ? `${Livechat.client.host}/avatar/${username}` : null);
+export const getAvatarUrl = (username) => (username ? `//${Livechat.connection.url}/avatar/${username}` : null);
 
 export const msgTypesNotRendered = [
 	MESSAGE_VIDEO_CALL,
@@ -152,7 +152,7 @@ export const msgTypesNotRendered = [
 
 export const canRenderMessage = ({ t }) => !msgTypesNotRendered.includes(t);
 
-export const getAttachmentUrl = (url) => new URL(url, Livechat.client.host).toString();
+export const getAttachmentUrl = (url) => new URL(url, Livechat.connection.url).toString();
 
 export const sortArrayByColumn = (array, column, inverted) =>
 	array.sort((a, b) => {

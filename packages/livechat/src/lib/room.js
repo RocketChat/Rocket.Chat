@@ -17,7 +17,7 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
-	Livechat.unsubscribeAll();
+	// Livechat.unsubscribeAll();
 
 	if (!transcriptRequested) {
 		await handleTranscript();
@@ -124,7 +124,7 @@ export const initRoom = async () => {
 		return;
 	}
 
-	Livechat.unsubscribeAll();
+	// Livechat.unsubscribeAll();
 
 	const {
 		token,
@@ -137,7 +137,7 @@ export const initRoom = async () => {
 	let roomAgent = agent;
 	if (!roomAgent) {
 		if (servedBy) {
-			roomAgent = await Livechat.agent({ rid });
+			roomAgent = await Livechat.agent(rid);
 			await store.setState({ agent: roomAgent, queueInfo: null });
 			parentCall('callback', ['assign-agent', normalizeAgent(roomAgent)]);
 		}
@@ -205,6 +205,8 @@ Livechat.onTyping((username, isTyping) => {
 Livechat.onMessage(async (message) => {
 	if (message.ts instanceof Date) {
 		message.ts = message.ts.toISOString();
+	} else {
+		message.ts = new Date(message.ts).toISOString();
 	}
 
 	message = await normalizeMessage(message);

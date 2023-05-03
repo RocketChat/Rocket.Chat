@@ -32,7 +32,7 @@ declare module '../DDPSDK' {
 	interface DDPSDK {
 		stream<N extends StreamNames, K extends StreamKeys<N>>(
 			streamName: N,
-			key: K,
+			data: K | [K, unknown],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
 		): () => void;
 	}
@@ -66,15 +66,15 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onRoomMessage(rid: string, cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void) {
-		return this.stream('room-messages', rid, cb);
+		return this.stream('room-messages', [rid, { token: this.token, visitorToken: this.token }], cb);
 	}
 
 	onRoomTyping(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/typing`>) => void) {
-		return this.stream('notify-room', `${rid}/typing`, cb);
+		return this.stream('notify-room', [`${rid}/typing`, { token: this.token, visitorToken: this.token }], cb);
 	}
 
 	onRoomDeleteMessage(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>) => void) {
-		return this.stream('notify-room', `${rid}/deleteMessage`, cb);
+		return this.stream('notify-room', [`${rid}/deleteMessage`, { token: this.token, visitorToken: this.token }], cb);
 	}
 
 	onAgentChange(rid: string, cb: (data: LivechatRoomEvents<'agentData'>) => void): () => void {
@@ -212,7 +212,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	async grantVisitor(guest: OperationParams<'POST', '/v1/livechat/visitor'>): Promise<void> {
 		const { visitor } = await this.rest.post('/v1/livechat/visitor', guest);
-
+		console.log('visitor', visitor);
 		this.token = visitor.token;
 	}
 
