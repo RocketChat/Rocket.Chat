@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
@@ -90,6 +91,9 @@ export interface IUserServices {
 		accessToken: string;
 		refreshToken: string;
 		serverURL: string;
+	};
+	dolphin?: {
+		NickName?: string;
 	};
 }
 

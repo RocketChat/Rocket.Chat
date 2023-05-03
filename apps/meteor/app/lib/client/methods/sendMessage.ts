@@ -28,7 +28,7 @@ Meteor.methods<ServerMethods>({
 		message.u = {
 			_id: uid,
 			username: user.username,
-			...(settings.get('UI_Use_Real_Name') && user.name && { name: user.name }),
+			name: user.name || '',
 		};
 		message.temp = true;
 		if (settings.get('Message_Read_Receipt_Enabled')) {
@@ -41,7 +41,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		message = callbacks.run('beforeSaveMessage', message);
+		message = await callbacks.run('beforeSaveMessage', message);
 		await onClientMessageReceived(message as IMessage).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);

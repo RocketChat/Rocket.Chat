@@ -13,11 +13,10 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -150,17 +149,13 @@ const MessageBox = ({
 			return;
 		}
 
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
-			return;
-		}
-
-		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+		const ref = messageComposerRef.current as HTMLElement;
+		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
-		const text = chat?.composer?.text ?? '';
-		chat?.composer?.clear();
+		const text = chat.composer?.text ?? '';
+		chat.composer?.clear();
 
 		onSend?.({
 			value: text,
@@ -181,14 +176,14 @@ const MessageBox = ({
 
 			event.preventDefault();
 			if (!isSending) {
-				chat?.composer?.insertNewLine();
+				chat.composer?.insertNewLine();
 				return false;
 			}
 			handleSendMessage();
 			return false;
 		}
 
-		if (chat?.composer && handleFormattingShortcut(event, [...formattingButtons], chat?.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
 			return;
 		}
 
@@ -198,13 +193,13 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				if (chat?.currentEditing) {
+				if (chat.currentEditing) {
 					event.preventDefault();
 					event.stopPropagation();
 
-					chat?.currentEditing.reset().then((reset) => {
+					chat.currentEditing.reset().then((reset) => {
 						if (!reset) {
-							chat?.currentEditing?.cancel();
+							chat.currentEditing?.cancel();
 						}
 					});
 
@@ -343,7 +338,7 @@ const MessageBox = ({
 
 	return (
 		<>
-			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
+			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
 			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
 
@@ -370,7 +365,7 @@ const MessageBox = ({
 			)}
 
 			{readOnly && (
-				<Box mbe='x4'>
+				<Box mbe='x4' display='flex'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}

@@ -34,17 +34,11 @@ export class RocketChatFileAdapter {
 	}
 
 	public async getBufferFromFileRecord(fileRecord: IUpload): Promise<Buffer> {
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(fileRecord, (err?: Error, buffer?: Buffer | false) => {
-				if (err) {
-					return reject(err);
-				}
-				if (!(buffer instanceof Buffer)) {
-					return reject(new Error('Unknown error'));
-				}
-				resolve(buffer);
-			});
-		});
+		const buffer = await FileUpload.getBuffer(fileRecord);
+		if (!(buffer instanceof Buffer)) {
+			throw new Error('Unknown error');
+		}
+		return buffer;
 	}
 
 	public async getFileRecordById(fileId: string): Promise<IUpload | undefined | null> {
@@ -71,11 +65,11 @@ export class RocketChatFileAdapter {
 	}
 
 	public async getBufferForAvatarFile(username: string): Promise<any> {
-		const file = (await Avatars.findOneByName(username)) as Record<string, any>;
+		const file = await Avatars.findOneByName(username);
 		if (!file?._id) {
 			return;
 		}
-		return FileUpload.getBufferSync(file);
+		return FileUpload.getBuffer(file);
 	}
 
 	public async getFileMetadataForAvatarFile(username: string): Promise<IAvatarMetadataFile> {

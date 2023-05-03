@@ -29,6 +29,7 @@ import {
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import { settings } from '../../settings/client';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
@@ -38,7 +39,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
-import { APIClient } from '../../utils/client';
+import { APIClient, getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 
@@ -499,7 +500,13 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(
+					decryptedQuoteMessage,
+					url,
+					useRealName,
+					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
+				);
 
 				message.attachments.push(quoteAttachment);
 			}),

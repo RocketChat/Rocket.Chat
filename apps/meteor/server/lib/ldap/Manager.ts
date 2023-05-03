@@ -150,7 +150,7 @@ export class LDAPManager {
 	}
 
 	private static onMapUserData(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		callbacks.run('mapLDAPUserData', userData, ldapUser);
+		void callbacks.run('mapLDAPUserData', userData, ldapUser);
 	}
 
 	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
@@ -234,11 +234,11 @@ export class LDAPManager {
 	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-			Accounts.setPassword(user._id, password, { logout: false });
+			await Accounts.setPasswordAsync(user._id, password, { logout: false });
 		}
 
 		await this.syncUserAvatar(user, ldapUser);
-		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
+		await callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
 	}
 
 	private static async loginExistingUser(
