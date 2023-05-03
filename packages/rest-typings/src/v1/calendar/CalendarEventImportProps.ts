@@ -3,16 +3,17 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type CalendarEventCreateProps = {
+export type CalendarEventImportProps = {
 	startTime: string;
-	externalId?: string;
+	externalId: string;
 	subject: string;
 	description: string;
 	meetingUrl?: string;
 	reminderMinutesBeforeStart?: number;
+	reminderDueBy?: string;
 };
 
-const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> = {
+const calendarEventImportPropsSchema: JSONSchemaType<CalendarEventImportProps> = {
 	type: 'object',
 	properties: {
 		startTime: {
@@ -21,7 +22,7 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 		},
 		externalId: {
 			type: 'string',
-			nullable: true,
+			nullable: false,
 		},
 		subject: {
 			type: 'string',
@@ -39,9 +40,13 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 			type: 'number',
 			nullable: true,
 		},
+		reminderDueBy: {
+			type: 'string',
+			nullable: true,
+		},
 	},
-	required: ['startTime', 'subject', 'description'],
+	required: ['startTime', 'externalId', 'subject', 'description'],
 	additionalProperties: false,
 };
 
-export const isCalendarEventCreateProps = ajv.compile(calendarEventCreatePropsSchema);
+export const isCalendarEventImportProps = ajv.compile(calendarEventImportPropsSchema);

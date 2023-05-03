@@ -10,6 +10,7 @@ import ScrollableContentWrapper from '../../../components/ScrollableContentWrapp
 import VerticalBar from '../../../components/VerticalBar';
 import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
+import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
 import type { CalendarAuthPayload } from '../../calendarIntegration/CalendarAuthModal';
 import CalendarAuthModal from '../../calendarIntegration/CalendarAuthModal';
 import OutlookEventItem from './OutlookEventItem';
@@ -27,7 +28,10 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
 	const [outlookToken, setOutlookToken] = useSessionStorage('outlookToken', '');
 
+	const desktopApp = getDesktopApp();
+
 	const syncOutlookEvents = useSyncOutlookEvents();
+	const canSync = !!desktopApp?.getOutlookEvents;
 
 	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
@@ -55,7 +59,6 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 				dispatchToastMessage({ type: 'success', message: 'Sync Success' });
 				refetch();
 			} catch (error) {
-				console.log('deu error', error);
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
@@ -128,11 +131,13 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 						</Button>
 					)}
 				</ButtonGroup>
-				<ButtonGroup stretch>
-					<Button primary disabled={isSyncing} onClick={handleSync}>
-						{isSyncing ? t('Sync_in_progress') : t('Sync')}
-					</Button>
-				</ButtonGroup>
+				{canSync && (
+					<ButtonGroup stretch>
+						<Button primary disabled={isSyncing} onClick={handleSync}>
+							{isSyncing ? t('Sync_in_progress') : t('Sync')}
+						</Button>
+					</ButtonGroup>
+				)}
 			</VerticalBar.Footer>
 		</>
 	);

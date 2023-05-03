@@ -1,6 +1,7 @@
 import {
 	isCalendarEventListProps,
 	isCalendarEventCreateProps,
+	isCalendarEventImportProps,
 	isCalendarEventUpdateProps,
 	isCalendarEventDeleteProps,
 } from '@rocket.chat/rest-typings';
@@ -29,7 +30,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject, description } = this.bodyParams;
+			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
 			await Calendar.create({
 				uid,
@@ -37,6 +38,32 @@ API.v1.addRoute(
 				externalId,
 				subject,
 				description,
+				meetingUrl,
+				reminderMinutesBeforeStart,
+			});
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'calendar-events.import',
+	{ authRequired: true, validateParams: isCalendarEventImportProps },
+	{
+		async post() {
+			const { userId: uid } = this;
+			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, reminderDueBy } = this.bodyParams;
+
+			await Calendar.import({
+				uid,
+				startTime: new Date(startTime),
+				externalId,
+				subject,
+				description,
+				meetingUrl,
+				reminderMinutesBeforeStart,
+				reminderDueBy: reminderDueBy ? new Date(reminderDueBy) : undefined,
 			});
 
 			return API.v1.success();
@@ -50,7 +77,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId } = this;
-			const { eventId, startTime, subject, description } = this.bodyParams;
+			const { eventId, startTime, subject, description, meetingUrl, reminderMinutesBeforeStart, reminderDueBy } = this.bodyParams;
 
 			const event = await Calendar.get(eventId);
 
@@ -62,6 +89,9 @@ API.v1.addRoute(
 				startTime: new Date(startTime),
 				subject,
 				description,
+				meetingUrl,
+				reminderMinutesBeforeStart,
+				reminderDueBy: reminderDueBy ? new Date(reminderDueBy) : undefined,
 			});
 
 			return API.v1.success();

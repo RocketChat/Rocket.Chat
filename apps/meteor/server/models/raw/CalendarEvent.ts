@@ -13,6 +13,16 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		return [{ key: { startTime: -1, uid: 1 }, unique: false }];
 	}
 
+	public async findOneByExternalIdAndUserId(
+		externalId: Required<ICalendarEvent>['externalId'],
+		uid: ICalendarEvent['uid'],
+	): Promise<ICalendarEvent | null> {
+		return this.findOne({
+			externalId,
+			uid,
+		});
+	}
+
 	public findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent> {
 		const startTime = new Date(date.toISOString());
 		startTime.setHours(0, 0, 0, 0);
@@ -33,7 +43,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime }: Partial<ICalendarEvent>,
+		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderDueBy }: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -42,6 +52,9 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(subject !== undefined ? { subject } : {}),
 					...(description !== undefined ? { description } : {}),
 					...(startTime ? { startTime } : {}),
+					...(meetingUrl !== undefined ? { meetingUrl } : {}),
+					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
+					...(reminderDueBy ? { reminderDueBy } : {}),
 				},
 			},
 		);

@@ -9,6 +9,9 @@ export type CalendarEventUpdateProps = {
 	startTime: string;
 	subject: string;
 	description: string;
+	meetingUrl?: string;
+	reminderMinutesBeforeStart?: number;
+	reminderDueBy?: string;
 };
 
 const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> = {
@@ -29,7 +32,19 @@ const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> =
 		description: {
 			type: 'string',
 			nullable: false,
-		}
+		},
+		meetingUrl: {
+			type: 'string',
+			nullable: true,
+		},
+		reminderMinutesBeforeStart: {
+			type: 'number',
+			nullable: true,
+		},
+		reminderDueBy: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['eventId', 'startTime', 'subject', 'description'],
 	additionalProperties: false,

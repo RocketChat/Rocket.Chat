@@ -9,4 +9,5 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	findNextNotificationDate(): Promise<Date | null>;
 	findEventsToNotify(notificationTime: Date, minutes: number): FindCursor<ICalendarEvent>;
 	flagNotificationSent(eventId: ICalendarEvent['_id']): Promise<UpdateResult>;
+	findOneByExternalIdAndUserId(externalId: Required<ICalendarEvent>['externalId'], uid: ICalendarEvent['uid']): Promise<ICalendarEvent | null>;
 }
