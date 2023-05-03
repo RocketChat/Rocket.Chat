@@ -4,8 +4,8 @@ export const ldapIntervalValuesToCronMap: Record<string, string> = {
 	every_1_hour: '0 * * * *',
 	every_6_hours: '0 */6 * * *',
 	every_12_hours: '0 */12 * * *',
-	every_24_hours: '0 */24 * * *',
-	every_48_hours: '0 */48 * * *',
+	every_24_hours: '0 0 * * *',
+	every_48_hours: '0 0 */2 * *',
 };
 
 export function addSettings(): Promise<void> {
