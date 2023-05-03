@@ -4,7 +4,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
-import { t } from '../../utils/lib/tapi18n';
+import { t } from '../../utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',

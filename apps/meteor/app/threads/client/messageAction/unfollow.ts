@@ -6,7 +6,7 @@ import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { t } from '../../../utils/lib/tapi18n';
+import { t } from '../../../utils/lib/i18n';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {

@@ -14,7 +14,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { t } from '../../../utils/lib/tapi18n';
+import { t } from '../../../utils/lib/i18n';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };

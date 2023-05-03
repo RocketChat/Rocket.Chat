@@ -1,4 +1,4 @@
-import { i18n } from '../../../app/utils/lib/tapi18n';
+import { i18n } from '../../../app/utils/lib/i18n';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from './communication';
 import { Apps } from './orchestrator';

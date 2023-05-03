@@ -10,7 +10,7 @@ import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/serv
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
 import { getUserPreference } from '../../../../app/utils/server';
-import { t } from '../../../../app/utils/lib/tapi18n';
+import { t } from '../../../../app/utils/lib/i18n';
 
 let mailTemplates: string;
 

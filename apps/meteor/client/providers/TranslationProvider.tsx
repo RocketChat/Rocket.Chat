@@ -1,17 +1,20 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
+import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { i18n } from '../../app/utils/lib/tapi18n';
-import { useReactiveValue } from '../hooks/useReactiveValue';
+import { i18n } from '../../app/utils/lib/i18n';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
+import { filterLanguage } from '../lib/utils/filterLanguage';
+import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 
@@ -136,8 +139,6 @@ const useI18next = (lng: string): typeof i18next => {
 	return i18n;
 };
 
-const getLanguage = (): string => i18n.language;
-
 const loadLanguage = async (language: string): Promise<void> => {
 	i18n.changeLanguage(language).then(() => applyCustomTranslations());
 };
@@ -146,23 +147,60 @@ type TranslationProviderProps = {
 	children: ReactNode;
 };
 
+const useAutoLanguage = (): string => {
+	const defaultUserLanguage =
+		useSetting<string>('Language') || filterLanguage(window.navigator.userLanguage ?? window.navigator.language) || 'en';
+
+	const suggestedLanguage = languages.find((lng) => lng === defaultUserLanguage)
+		? defaultUserLanguage
+		: defaultUserLanguage.split('-').shift() ?? 'en';
+
+	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
+
+	document.documentElement.classList[isRTLScriptLanguage(language) ? 'add' : 'remove']('rtl');
+	document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
+	document.documentElement.lang = language;
+
+	return language;
+};
+
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
-	const language = useReactiveValue(getLanguage);
+	const loadLocale = useMethod('loadLocale');
+
+	const language = useAutoLanguage();
 	const i18nextInstance = useI18next(language);
-	const languages = useMemo(
+	const availableLanguages = useMemo(
 		() =>
-			i18nextInstance.languages?.map((key) => ({
+			[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
 				en: key,
 				name: key,
 				key,
-			})) ?? [],
+			})),
 		[i18nextInstance],
 	);
+
+	useEffect(() => {
+		if (moment.locales().includes(language.toLowerCase())) {
+			return;
+		}
+
+		const locale = !availableLanguages.find((lng) => lng.key === language) ? language.split('-').shift() : language;
+
+		loadLocale(locale ?? language)
+			.then((localeSrc) => {
+				localeSrc && Function(localeSrc).call({ moment });
+				moment.locale(language);
+			})
+			.catch((error) => {
+				moment.locale('en');
+				console.error('Error loading moment locale:', error);
+			});
+	}, [language, loadLocale, availableLanguages]);
 
 	const value: TranslationContextValue = useMemo(
 		() => ({
 			language,
-			languages,
+			languages: availableLanguages,
 			loadLanguage,
 			translate: Object.assign(
 				((key, ...options) => {
@@ -176,7 +214,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				},
 			),
 		}),
-		[languages, language, i18nextInstance],
+		[language, availableLanguages, i18nextInstance],
 	);
 
 	return (

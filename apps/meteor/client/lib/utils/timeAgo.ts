@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { settings } from '../../../app/settings/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { t } from '../../../app/utils/lib/tapi18n';
+import { t } from '../../../app/utils/lib/i18n';
 
 const dayFormat = ['h:mm A', 'H:mm'];
 

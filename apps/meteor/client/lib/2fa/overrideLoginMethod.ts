@@ -1,4 +1,4 @@
-import { t } from '../../../app/utils/lib/tapi18n';
+import { t } from '../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../toast';
 import { process2faReturn } from './process2faReturn';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';

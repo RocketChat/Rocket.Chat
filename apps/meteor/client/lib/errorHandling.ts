@@ -1,4 +1,4 @@
-import { t } from '../../app/utils/lib/tapi18n';
+import { t } from '../../app/utils/lib/i18n';
 
 const isObject = (obj: unknown): obj is object => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
 
