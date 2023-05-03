@@ -5,7 +5,7 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import React from 'react';
 
-import { getURL } from '../../../../../app/utils/lib/getURL';
+import { getURL } from '../../../../../app/utils/client/getURL';
 import VerticalBar from '../../../../components/VerticalBar';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 

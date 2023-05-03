@@ -1,6 +1,5 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
@@ -15,6 +14,8 @@ import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
+import { httpCall } from '../../../../server/lib/http/call';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
@@ -42,8 +43,9 @@ function buildSandbox(store = {}) {
 		},
 		HTTP(method, url, options) {
 			try {
+				// Need to review how we will handle this, possible breaking change on removing fibers
 				return {
-					result: HTTP.call(method, url, options),
+					result: Promise.await(httpCall(method, url, options)),
 				};
 			} catch (error) {
 				return {
@@ -148,7 +150,7 @@ async function removeIntegration(options, user) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	await Meteor.runAsUser(user._id, () => Meteor.callAsync('deleteOutgoingIntegration', integrationToRemove._id));
+	await deleteOutgoingIntegration(integrationToRemove._id, user._id);
 
 	return API.v1.success();
 }
