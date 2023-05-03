@@ -1,5 +1,5 @@
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { t } from '../../../../app/utils/lib/tapi18n';
+import { t } from '../../../../app/utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'livechat_transfer_history_fallback',

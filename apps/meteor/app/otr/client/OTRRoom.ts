@@ -27,7 +27,7 @@ import {
 	joinEncryptedData,
 } from '../lib/functions';
 import { OtrRoomState } from '../lib/OtrRoomState';
-import { t } from '../../utils/lib/tapi18n';
+import { t } from '../../utils/lib/i18n';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;

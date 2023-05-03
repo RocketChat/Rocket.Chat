@@ -1,5 +1,5 @@
 import { settings } from '../../../app/settings/client';
-import { i18n } from '../../../app/utils/lib/tapi18n';
+import { i18n } from '../../../app/utils/lib/i18n';
 
 const parseToJSON = (customTranslations: string) => {
 	try {

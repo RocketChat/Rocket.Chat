@@ -11,7 +11,7 @@ import { WEB_RTC_EVENTS } from '../lib/constants';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { t } from '../../utils/lib/tapi18n';
+import { t } from '../../utils/lib/i18n';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {

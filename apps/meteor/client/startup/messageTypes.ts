@@ -3,7 +3,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../app/ui-utils/client';
-import { t } from '../../app/utils/lib/tapi18n';
+import { t } from '../../app/utils/lib/i18n';
 
 Meteor.startup(() => {
 	MessageTypes.registerType({

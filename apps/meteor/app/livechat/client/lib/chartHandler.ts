@@ -1,6 +1,6 @@
 import type { ChartItem, Chart as ChartType, ChartConfiguration } from 'chart.js';
 
-import { t } from '../../../utils/lib/tapi18n';
+import { t } from '../../../utils/lib/i18n';
 
 type LineChartConfigOptions = Partial<{
 	legends: boolean;

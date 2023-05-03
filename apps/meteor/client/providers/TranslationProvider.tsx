@@ -11,7 +11,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { i18n } from '../../app/utils/lib/tapi18n';
+import { i18n } from '../../app/utils/lib/i18n';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';

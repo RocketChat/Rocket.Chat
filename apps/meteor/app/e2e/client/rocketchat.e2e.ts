@@ -41,7 +41,7 @@ import { call } from '../../../client/lib/utils/call';
 import { APIClient, getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { t } from '../../utils/lib/tapi18n';
+import { t } from '../../utils/lib/i18n';
 
 let failedToDecodeKey = false;
 

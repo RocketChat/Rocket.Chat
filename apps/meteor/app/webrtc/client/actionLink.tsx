@@ -5,7 +5,7 @@ import { APIClient } from '../../utils/client';
 import { ChatRoom } from '../../models/client';
 import { Notifications } from '../../notifications/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { t } from '../../utils/lib/tapi18n';
+import { t } from '../../utils/lib/i18n';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 	const room = ChatRoom.findOne({ _id: message.rid });

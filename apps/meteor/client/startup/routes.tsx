@@ -7,7 +7,7 @@ import React, { lazy } from 'react';
 
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
-import { t } from '../../app/utils/lib/tapi18n';
+import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
 import MainLayout from '../views/root/MainLayout';

@@ -7,7 +7,7 @@ import moment from 'moment';
 import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/lib/tapi18n';
+import { t } from '../../app/utils/lib/i18n';
 import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
 
