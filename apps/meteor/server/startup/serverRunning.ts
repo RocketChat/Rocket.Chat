@@ -102,7 +102,7 @@ Meteor.startup(async function () {
 			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
 			if (!(await Users.bannerExistsByBannerId(id))) {
-				await sendMessagesToAdmins({
+				void sendMessagesToAdmins({
 					msgs: async ({ adminUser }: { adminUser: IUser }) => [
 						{
 							msg: `*${TAPi18n.__(title, { lng: adminUser.language || 'en' })}*\n${TAPi18n.__(text, {
