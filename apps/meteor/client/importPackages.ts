@@ -24,7 +24,6 @@ import '../app/importer-hipchat-enterprise/client';
 import '../app/importer-slack/client';
 import '../app/importer-slack-users/client';
 import '../app/lib/client';
-import '../app/logger/client';
 import '../app/message-mark-as-unread/client';
 import '../app/nextcloud/client';
 import '../app/otr/client';
