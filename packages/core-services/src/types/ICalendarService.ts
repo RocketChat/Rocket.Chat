@@ -3,7 +3,7 @@ import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 
 export interface ICalendarService {
-	create(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']>;
+	create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderDueBy'>): Promise<ICalendarEvent['_id']>;
 	import(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']>;
 	get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null>;
 	list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]>;

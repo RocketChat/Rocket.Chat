@@ -7,37 +7,62 @@ import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../app/settings/server';
 
+const defaultMinutesForNotifications = 5;
+
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']> {
-		return (await CalendarEvent.insertOne(data)).insertedId;
+	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderDueBy'>): Promise<ICalendarEvent['_id']> {
+		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
+
+		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
+		const reminderDueBy = minutes ? this.getShiftedTime(startTime, -minutes) : undefined;
+
+		const insertData: InsertionModel<ICalendarEvent> = {
+			uid,
+			startTime,
+			subject,
+			description,
+			meetingUrl,
+			reminderMinutesBeforeStart: minutes,
+			reminderDueBy,
+		};
+
+		return (await CalendarEvent.insertOne(insertData)).insertedId;
 	}
 
 	public async import(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']> {
-		const { externalId, startTime, uid, subject, description, meetingUrl, reminderMinutesBeforeStart, reminderDueBy } = data;
-
-		if (externalId) {
-			const event = await this.findImportedEvent(externalId, uid);
-
-			if (event) {
-				await this.update(event._id, {
-					startTime,
-					subject,
-					description,
-					meetingUrl,
-					reminderMinutesBeforeStart,
-					reminderDueBy,
-				});
-				return event._id;
-			}
+		const { externalId } = data;
+		if (!externalId) {
+			return this.create(data);
 		}
 
-		if (!data.meetingUrl && data.description) {
-			data.meetingUrl = await this.parseDescriptionForMeetingUrl(data.description);
+		const { uid, startTime, subject, description, reminderMinutesBeforeStart, reminderDueBy } = data;
+		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
+
+		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid'> = {
+			startTime,
+			subject,
+			description,
+			meetingUrl,
+			reminderMinutesBeforeStart,
+			reminderDueBy,
+		};
+
+		const event = await this.findImportedEvent(externalId, uid);
+
+		if (!event) {
+			return (
+				await CalendarEvent.insertOne({
+					uid,
+					...updateData,
+				})
+			).insertedId;
 		}
 
-		return this.create(data);
+		await CalendarEvent.updateEvent(event._id, updateData);
+
+		return event._id;
 	}
 
 	public async get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null> {
@@ -49,11 +74,19 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
-		if (!data.meetingUrl && data.description) {
-			data.meetingUrl = await this.parseDescriptionForMeetingUrl(data.description);
-		}
+		const { startTime, subject, description, reminderMinutesBeforeStart, reminderDueBy } = data;
+		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description || '');
 
-		return CalendarEvent.updateEvent(eventId, data);
+		const updateData: Partial<ICalendarEvent> = {
+			startTime,
+			subject,
+			description,
+			meetingUrl,
+			reminderMinutesBeforeStart,
+			reminderDueBy,
+		};
+
+		return CalendarEvent.updateEvent(eventId, updateData);
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
@@ -129,5 +162,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		return undefined;
+	}
+
+	private getShiftedTime(time: Date, minutes: number): Date {
+		const newTime = new Date(time.valueOf());
+		newTime.setMinutes(newTime.getMinutes() + minutes);
+		return newTime;
 	}
 }
