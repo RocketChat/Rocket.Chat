@@ -31,19 +31,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error?: Error, result?: Buffer | false) => {
-				if (error) {
-					return reject(error);
-				}
+		const result = await FileUpload.getBuffer(rocketChatUpload);
 
-				if (!(result instanceof Buffer)) {
-					return reject(new Error('Unknown error'));
-				}
+		if (!(result instanceof Buffer)) {
+			throw new Error('Unknown error');
+		}
 
-				resolve(result);
-			});
-		});
+		return result;
 	}
 
 	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
