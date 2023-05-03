@@ -1,26 +1,26 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	void settingsRegistry.addGroup('Outlook_Calendar', function () {
-		this.with(
+	void settingsRegistry.addGroup('Outlook_Calendar', async function () {
+		await this.with(
 			{
 				enterprise: true,
 				modules: ['outlook-calendar'],
 			},
-			function () {
-				this.add('Outlook_Calendar_Enabled', false, {
+			async function () {
+				await this.add('Outlook_Calendar_Enabled', false, {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
 				});
 
-				this.add('Outlook_Calendar_Exchange_Url', '', {
+				await this.add('Outlook_Calendar_Exchange_Url', '', {
 					type: 'string',
 					public: true,
 					invalidValue: '',
 				});
 
-				this.add('Outlook_Calendar_Outlook_Url', '', {
+				await this.add('Outlook_Calendar_Outlook_Url', '', {
 					type: 'string',
 					public: true,
 					invalidValue: '',

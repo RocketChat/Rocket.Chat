@@ -19,15 +19,15 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 
 	const calendarSettings = [
 		{
-			title: 'Event notifications',
-			subTitle: 'By disabling this setting you’ll prevent the app to notify you of upcoming events.',
+			title: t('Event_notifications'),
+			subTitle: t('Event_notifications_description'),
 			link: '#',
 			enabled: notificationsEnabled,
 			handleEnable: setEnableNotifications,
 		},
 		{
-			title: 'Authentication',
-			subTitle: 'This allows for the app to work properly. You’ll have to authenticate again if you disable this.',
+			title: t('Outlook_authentication'),
+			subTitle: t('Outlook_authentication_description'),
 			link: '#',
 			enabled: authEnabled,
 			handleEnable: setEnableAuth,

@@ -30,5 +30,6 @@ export const preferences = {
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
 		idleTimeLimit: 3600,
+		notifyCalendarEvents: false,
 	},
 };
