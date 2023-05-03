@@ -1,12 +1,15 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import i18next from 'i18next';
+import sprintf from 'i18next-sprintf-postprocessor';
 
 import { isObject } from '../../../lib/utils/isObject';
 
+export const i18n = i18next.use(sprintf);
+
 export const t = function (key: string, ...replaces: any): string {
 	if (isObject(replaces[0])) {
-		return TAPi18n.__(key, ...replaces);
+		return i18n.t(key, ...replaces);
 	}
-	return TAPi18n.__(key, {
+	return i18n.t(key, {
 		postProcess: 'sprintf',
 		sprintf: replaces,
 	});

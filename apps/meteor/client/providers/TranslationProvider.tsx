@@ -1,15 +1,19 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
+import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import i18next from 'i18next';
+import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
-import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
-import { Tracker } from 'meteor/tracker';
+import sprintf from 'i18next-sprintf-postprocessor';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
+import { i18n } from '../../app/utils/lib/tapi18n';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
+
+i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 
 type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> extends `${infer T}.${string}`
 	? T extends Lowercase<T>
@@ -70,28 +74,29 @@ const useI18next = (lng: string): typeof i18next => {
 		return result;
 	});
 
-	const [i18n] = useState(() => {
-		const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next);
-
+	useState(() => {
 		i18n.init({
 			lng,
 			fallbackLng: 'en',
 			ns: namespacesDefault,
 			nsSeparator: '.',
+			resources: {
+				en: {
+					core: en,
+				},
+			},
 			partialBundledLanguages: true,
-			debug: false,
+			defaultNS: 'core',
 			backend: {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse,
 			},
 		});
-
-		return i18n;
 	});
 
 	useEffect(() => {
 		i18n.changeLanguage(lng);
-	}, [i18n, lng]);
+	}, [lng]);
 
 	useEffect(() => {
 		if (!customTranslations || typeof customTranslations !== 'string') {
@@ -126,70 +131,15 @@ const useI18next = (lng: string): typeof i18next => {
 				i18n.addResourceBundle(ln, namespace, translations);
 			}
 		}
-	}, [customTranslations, i18n]);
+	}, [customTranslations]);
 
 	return i18n;
 };
 
-const createTranslateFunction = (
-	language: string,
-): {
-	(key: TranslationKey, ...replaces: unknown[]): string;
-	has: (key: string | undefined, options?: { lng?: string }) => key is TranslationKey;
-} =>
-	Tracker.nonreactive(() => {
-		const translate = (key: TranslationKey, ...replaces: unknown[]): string => {
-			if (typeof replaces[0] === 'object') {
-				const [options, lng = language] = replaces;
-				return TAPi18next.t(key, {
-					ns: 'project',
-					lng: String(lng),
-					...options,
-				});
-			}
-
-			if (replaces.length === 0) {
-				return TAPi18next.t(key, { ns: 'project', lng: language });
-			}
-
-			return TAPi18next.t(key, {
-				postProcess: 'sprintf',
-				sprintf: replaces,
-				ns: 'project',
-				lng: language,
-			});
-		};
-
-		translate.has = (
-			key: string | undefined,
-			{
-				lng = language,
-			}: {
-				lng?: string;
-			} = {},
-		): key is TranslationKey => !!key && TAPi18next.exists(key, { ns: 'project', lng });
-
-		return translate;
-	});
-
-const getLanguages = (): { name: string; en: string; key: string }[] => {
-	const result = Object.entries(TAPi18n.getLanguages())
-		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
-		.sort((a, b) => a.key.localeCompare(b.key));
-
-	result.unshift({
-		name: 'Default',
-		en: 'Default',
-		key: '',
-	});
-
-	return result;
-};
-
-const getLanguage = (): string => TAPi18n.getLanguage();
+const getLanguage = (): string => i18n.language;
 
 const loadLanguage = async (language: string): Promise<void> => {
-	TAPi18n.setLanguage(language);
+	i18n.changeLanguage(language).then(() => applyCustomTranslations());
 };
 
 type TranslationProviderProps = {
@@ -197,19 +147,36 @@ type TranslationProviderProps = {
 };
 
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
-	const languages = useReactiveValue(getLanguages);
 	const language = useReactiveValue(getLanguage);
-
 	const i18nextInstance = useI18next(language);
+	const languages = useMemo(
+		() =>
+			i18nextInstance.languages?.map((key) => ({
+				en: key,
+				name: key,
+				key,
+			})) ?? [],
+		[i18nextInstance],
+	);
 
-	const value = useMemo(
+	const value: TranslationContextValue = useMemo(
 		() => ({
-			languages,
 			language,
+			languages,
 			loadLanguage,
-			translate: createTranslateFunction(language),
+			translate: Object.assign(
+				((key, ...options) => {
+					if (options.length > 1 || typeof options[0] !== 'object') {
+						return i18nextInstance.t(key, { postProcess: 'sprintf', sprintf: options });
+					}
+					return i18nextInstance.t(key, ...options);
+				}) as TranslationContextValue['translate'],
+				{
+					has: ((key, options) => key && i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
+				},
+			),
 		}),
-		[languages, language],
+		[languages, language, i18nextInstance],
 	);
 
 	return (
