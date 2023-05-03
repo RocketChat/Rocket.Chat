@@ -211,7 +211,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 						</MainLayout>,
 					);
 				},
-				triggersExit: [roomExit],
 			});
 		}
 	}
