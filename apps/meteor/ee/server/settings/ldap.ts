@@ -53,6 +53,7 @@ export function addSettings(): Promise<void> {
 							},
 						],
 						enableQuery: backgroundSyncQuery,
+						invalidValue: 'every_24_hours',
 					});
 
 					await this.add('LDAP_Background_Sync_Import_New_Users', true, {
