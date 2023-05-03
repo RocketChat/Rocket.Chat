@@ -25,6 +25,16 @@ export function addSettings(): void {
 					public: true,
 					invalidValue: '',
 				});
+
+				await this.add(
+					'Outlook_Calendar_MeetingUrl_Regex',
+					'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
+					{
+						type: 'string',
+						public: true,
+						invalidValue: '',
+					},
+				);
 			},
 		);
 	});

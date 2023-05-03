@@ -5,6 +5,8 @@ import { CalendarEvent } from '@rocket.chat/models';
 import type { ICalendarService } from '@rocket.chat/core-services';
 import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 
+import { settings } from '../../../app/settings/server';
+
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
@@ -96,7 +98,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const regex = /(?:[\?\&]callUrl=([^\n\&\<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n\&\<](?!%26)))+[^\n\&\<]?)/im;
+		const defaultPattern = '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
+		const pattern = settings.get<string>('Outlook_Calendar_MeetingUrl_Regex') || defaultPattern;
+
+		const regex = new RegExp(pattern, 'im');
 		const results = description.match(regex);
 		if (!results) {
 			return;
