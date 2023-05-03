@@ -2,12 +2,12 @@ import type { ReactElement } from 'react';
 import React, { useEffect, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { appLayout } from '../../lib/appLayout';
 import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
-import { useAnalytics } from '../../../app/analytics/client/loadScript';
 
 const AppLayout = (): ReactElement => {
 	useEffect(() => {
