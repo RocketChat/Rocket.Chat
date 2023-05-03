@@ -3,7 +3,7 @@ import { Invites } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export const listInvites = async (userId) => {
+export const listInvites = async (userId: string) => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'listInvites' });
 	}

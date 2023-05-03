@@ -23,6 +23,8 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findPrivateGroupByIdOrName({
@@ -217,7 +219,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The private group, ${findResult.name}, is already closed to the sender`);
 			}
 
-			await Meteor.callAsync('hideRoom', findResult.rid);
+			await hideRoomMethod(this.userId, findResult.rid);
 
 			return API.v1.success();
 		},
@@ -321,8 +323,8 @@ API.v1.addRoute(
 
 			const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
-			const result = await Meteor.callAsync(
-				'createPrivateGroup',
+			const result = await createPrivateGroupMethod(
+				this.userId,
 				this.bodyParams.name,
 				this.bodyParams.members ? this.bodyParams.members : [],
 				readOnly,
