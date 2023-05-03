@@ -19,7 +19,7 @@ Meteor.startup(async function () {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
 			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				default: 'true',
+				default: true,
 			});
 		}
 
