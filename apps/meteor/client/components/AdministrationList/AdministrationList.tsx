@@ -15,21 +15,30 @@ type AdministrationListProps = {
 	onDismiss: () => void;
 };
 
-const ADMIN_PERMISSIONS = [
-	'view-logs',
-	'manage-emoji',
-	'manage-sounds',
+export const ADMIN_PERMISSIONS = [
 	'view-statistics',
-	'manage-oauth-apps',
-	'view-privileged-setting',
-	'manage-selected-settings',
-	'view-room-administration',
+	'run-import',
 	'view-user-administration',
-	'access-setting-permissions',
+	'view-room-administration',
+	'create-invite-links',
+	'manage-cloud',
+	'view-logs',
+	'manage-sounds',
+	'view-federation-data',
+	'manage-email-inbox',
+	'manage-emoji',
 	'manage-outgoing-integrations',
-	'manage-incoming-integrations',
 	'manage-own-outgoing-integrations',
+	'manage-incoming-integrations',
 	'manage-own-incoming-integrations',
+	'manage-oauth-apps',
+	'access-mailer',
+	'manage-user-status',
+	'access-permissions',
+	'access-setting-permissions',
+	'view-privileged-setting',
+	'edit-privileged-setting',
+	'manage-selected-settings',
 	'view-engagement-dashboard',
 ];
 
