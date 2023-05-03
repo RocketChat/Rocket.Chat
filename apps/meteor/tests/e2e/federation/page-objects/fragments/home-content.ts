@@ -198,12 +198,6 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-id="reply-directly"]');
 	}
 
-	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
-	}
-
 	async sendFileMessage(fileName: string): Promise<void> {
 		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/federation/files/${fileName}`);
 	}

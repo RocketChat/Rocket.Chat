@@ -11,6 +11,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { createChannelMethod } from '../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
+import { isTruthy } from '../../../lib/isTruthy';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -62,10 +66,10 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					method: 'addAllToRoom',
 				});
 			}
-			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username);
+			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
+				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(userId, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
@@ -74,8 +78,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					}),
 				});
 			} else {
-				await Meteor.callAsync('addUsersToRoom', {
-					rid: targetChannel?._id,
+				await addUsersToRoomMethod(userId, {
+					rid: targetChannel?._id ?? '',
 					users,
 				});
 			}
