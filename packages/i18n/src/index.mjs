@@ -151,11 +151,11 @@ const contents = generateJSONContents(files);
 
 const esm = `export default {
 	${contents}
-`;
+}`;
 
 const cjs = `module.exports = {
 	${contents}
-`;
+}`;
 
 const keys = Object.keys(JSON.parse(fs.readFileSync(`./src/locales/en.i18n.json`, 'utf8')));
 
@@ -175,3 +175,10 @@ fs.writeFileSync(`./dist/index.mjs`, esm);
 fs.writeFileSync(`./dist/index.js`, cjs);
 fs.writeFileSync(`./dist/index.d.ts`, tds);
 fs.writeFileSync(`./dist/stats.txt`, interpolationReplacementsStats());
+
+// files.forEach((file) => {
+// 	fs.writeFileSync(
+// 		`./src/locales/${file}`,
+// 		JSON.stringify(normalizeI18nInterpolations(JSON.parse(fs.readFileSync(`./src/locales/${file}`, 'utf8'))), null, 2),
+// 	);
+// });
