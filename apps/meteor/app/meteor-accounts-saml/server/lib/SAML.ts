@@ -16,6 +16,7 @@ import type { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { i18n } from '../../../utils/lib/tapi18n';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -153,7 +154,7 @@ export class SAML {
 			}
 
 			if (userObject.language) {
-				if (i18n.languages.includes(userObject.language)) {
+				if (i18n.languages?.includes(userObject.language)) {
 					newUser.language = userObject.language;
 				}
 			}
