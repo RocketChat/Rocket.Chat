@@ -25,7 +25,7 @@ export const palette = [
 			{ name: 'status-bullet-busy', token: '', color: '#C14454' },
 			{ name: 'status-bullet-disabled', token: '', color: '#F38C39' },
 			{ name: 'status-bullet-offline', token: '', color: '#6C727A' },
-			{ name: 'status-bullet-loading', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-loading', token: '', color: '#9ea2a8' },
 		],
 	},
 	{
