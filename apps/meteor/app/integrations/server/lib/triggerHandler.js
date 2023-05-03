@@ -1,7 +1,6 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import moment from 'moment';
 import Fiber from 'fibers';
@@ -18,6 +17,7 @@ import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
+import { httpCall } from '../../../../server/lib/http/call';
 
 class RocketChatIntegrationHandler {
 	constructor() {
@@ -247,8 +247,9 @@ class RocketChatIntegrationHandler {
 			},
 			HTTP: (method, url, options) => {
 				try {
+					// Need to review how we will handle this, possible breaking change on removing fibers
 					return {
-						result: HTTP.call(method, url, options),
+						result: Promise.await(httpCall(method, url, options)),
 					};
 				} catch (error) {
 					return { error };

@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React, { useRef } from 'react';
@@ -21,12 +20,9 @@ const ToolboxDropdown = <TReferenceElement extends HTMLElement>({
 	const Dropdown = isMobile ? MobileToolboxDropdown : DesktopToolboxDropdown;
 
 	return (
-		<>
-			<Box position='fixed' inset={0} />
-			<Dropdown ref={target} reference={reference}>
-				{children}
-			</Dropdown>
-		</>
+		<Dropdown ref={target} reference={reference}>
+			{children}
+		</Dropdown>
 	);
 };
 

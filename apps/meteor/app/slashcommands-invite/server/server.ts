@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
@@ -6,6 +5,7 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 
 /*
  * Invite is a named function that will replace /invite commands
@@ -60,9 +60,9 @@ slashCommands.add({
 		await Promise.all(
 			usersFiltered.map(async (user) => {
 				try {
-					return await Meteor.callAsync('addUserToRoom', {
+					return await addUsersToRoomMethod(userId, {
 						rid: message.rid,
-						username: user.username,
+						users: [user.username || ''],
 					});
 				} catch ({ error }: any) {
 					if (typeof error !== 'string') {

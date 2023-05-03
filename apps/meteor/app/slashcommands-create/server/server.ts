@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
@@ -6,6 +5,8 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
+import { createChannelMethod } from '../../lib/server/methods/createChannel';
 
 slashCommands.add({
 	command: 'create',
@@ -49,10 +50,11 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			return Meteor.callAsync('createPrivateGroup', channelStr, []);
+			await createPrivateGroupMethod(userId, channelStr, []);
+			return;
 		}
 
-		await Meteor.callAsync('createChannel', channelStr, []);
+		await createChannelMethod(userId, channelStr, []);
 	},
 	options: {
 		description: 'Create_A_New_Channel',
