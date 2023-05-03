@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -20,11 +19,29 @@ const mapCategoryIcon = (category: string) => {
 		case 'people':
 			icon = 'emoji';
 			break;
+		case 'nature':
+			icon = 'leaf';
+			break;
+		case 'food':
+			icon = 'burger';
+			break;
 		case 'activity':
 			icon = 'ball';
 			break;
+		case 'travel':
+			icon = 'airplane';
+			break;
+		case 'objects':
+			icon = 'percentage';
+			break;
+		case 'symbols':
+			icon = 'lamp-bulb';
+			break;
 		case 'flags':
 			icon = 'flag';
+			break;
+		case 'rocket':
+			icon = 'rocket';
 			break;
 		default:
 			icon = 'clock';
@@ -37,17 +54,6 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, 
 	const t = useTranslation();
 
 	const icon = mapCategoryIcon(category.key as TranslationKey);
-
-	// const style = css`
-	// 	cursor: pointer;
-	// 	&:hover {
-	// 		border-block-end-color: ${Palette.stroke['stroke-light']};
-	// 	}
-	// 	&:focus {
-	// 		border: 1px solid ${Palette.stroke['stroke-dark']};
-	// 		border-radius: 0.5rem;
-	// 	}
-	// `;
 
 	return (
 		<IconButton

@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { EmojiPickerCategoryWrapper, EmojiPickerLoadMore, EmojiPickerNotFound } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, MutableRefObject } from 'react';
@@ -32,6 +32,9 @@ const EmojiCategoryRow = ({
 		button {
 			margin-right: 0.25rem;
 			margin-bottom: 0.25rem;
+			&:nth-child(9n) {
+				margin-right: 0;
+			}
 		}
 	`;
 
