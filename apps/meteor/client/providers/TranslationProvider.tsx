@@ -80,7 +80,6 @@ const useI18next = (lng: string): typeof i18next => {
 			nsSeparator: '.',
 			partialBundledLanguages: true,
 			defaultNS: 'core',
-			compatibilityJSON: 'v1',
 			backend: {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse,
@@ -161,9 +160,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			languages,
 			loadLanguage,
 			translate: Object.assign(
-				((key, ...options) => i18nextInstance.t(key, ...options) as string) as TranslationContextValue['translate'],
+				((key, ...options) => {
+					if (options.length > 1 || typeof options[0] !== 'object') {
+						return i18nextInstance.t(key, { postProcess: 'sprintf', sprintf: options });
+					}
+					return i18nextInstance.t(key, ...options);
+				}) as TranslationContextValue['translate'],
 				{
-					has: ((key, options) => i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
+					has: ((key, options) => key && i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
 				},
 			),
 		}),
