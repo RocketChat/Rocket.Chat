@@ -1,9 +1,9 @@
-import i18next from 'i18next';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import i18nDict from '@rocket.chat/i18n';
-import sprintf from 'i18next-sprintf-postprocessor';
 
-void i18next.use(sprintf).init({
+import { i18n } from '../../app/utils/lib/tapi18n';
+
+void i18n.init({
 	lng: 'en',
 	defaultNS: 'core',
 	resources: Object.fromEntries(Object.entries(i18nDict).map(([key, value]) => [key, { core: value }])),
@@ -19,4 +19,4 @@ declare module 'i18next' {
 	}
 }
 
-export { i18next as i18n };
+export { i18n };

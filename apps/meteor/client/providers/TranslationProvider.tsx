@@ -11,6 +11,8 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
+const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
+
 type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> extends `${infer T}.${string}`
 	? T extends Lowercase<T>
 		? T
@@ -70,10 +72,8 @@ const useI18next = (lng: string): typeof i18next => {
 		return result;
 	});
 
-	const [i18n] = useState(() => {
-		const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next);
-
-		i18n.use(sprintf).init({
+	useState(() => {
+		i18n.init({
 			lng,
 			fallbackLng: 'en',
 			ns: namespacesDefault,
@@ -85,13 +85,11 @@ const useI18next = (lng: string): typeof i18next => {
 				parse,
 			},
 		});
-
-		return i18n;
 	});
 
 	useEffect(() => {
 		i18n.changeLanguage(lng);
-	}, [i18n, lng]);
+	}, [lng]);
 
 	useEffect(() => {
 		if (!customTranslations || typeof customTranslations !== 'string') {
@@ -126,7 +124,7 @@ const useI18next = (lng: string): typeof i18next => {
 				i18n.addResourceBundle(ln, namespace, translations);
 			}
 		}
-	}, [customTranslations, i18n]);
+	}, [customTranslations]);
 
 	return i18n;
 };

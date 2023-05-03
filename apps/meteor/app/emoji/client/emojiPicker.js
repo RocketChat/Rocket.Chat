@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import $ from 'jquery';
 
-import { t } from '../../utils/client';
+import { t } from '../../utils/lib/tapi18n';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from './lib';
 import { withThrottling } from '../../../lib/utils/highOrderFunctions';
