@@ -1,22 +1,21 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
+import { i18n } from '../../server/lib/i18n';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
 Meteor.startup(() => {
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
-	const availableLanguages = TAPi18n.getLanguages();
+	const availableLanguages = i18n.languages;
 
 	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
@@ -41,7 +40,7 @@ Meteor.startup(() => {
 	const applyLanguage = (language: string | undefined = 'en'): void => {
 		language = filterLanguage(language);
 
-		if (!availableLanguages[language]) {
+		if (!availableLanguages.includes(language)) {
 			language = language.split('-').shift();
 		}
 
@@ -52,7 +51,7 @@ Meteor.startup(() => {
 		document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
 		document.documentElement.lang = language;
 
-		TAPi18n.setLanguage(language);
+		i18n.changeLanguage(language);
 		loadMomentLocale(language)
 			.then((locale) => moment.locale(locale))
 			.catch((error) => {

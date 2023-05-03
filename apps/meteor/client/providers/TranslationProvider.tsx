@@ -4,12 +4,12 @@ import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 
 const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 
@@ -129,10 +129,10 @@ const useI18next = (lng: string): typeof i18next => {
 	return i18n;
 };
 
-const getLanguage = (): string => TAPi18n.getLanguage();
+const getLanguage = (): string => i18n.language;
 
 const loadLanguage = async (language: string): Promise<void> => {
-	TAPi18n.setLanguage(language);
+	i18n.changeLanguage(language).then(() => applyCustomTranslations());
 };
 
 type TranslationProviderProps = {
