@@ -1,6 +1,83 @@
 import fs from 'fs';
 import path from 'path';
 
+const replacements = {
+	__: {
+		regex: /__(.*?)__/g,
+		replacement: '{{$1}}',
+	},
+	sprintf: {
+		regex: /%[0-9]*[.]?[0-9]*[a-z]/g,
+		replacement: undefined,
+	},
+	i18nextComponentsArray: {
+		regex: /<(\d+?)>(.+?)<\/\1>/g,
+		replacement: undefined,
+	},
+};
+
+const replaceI18nInterpolation = (translation) => {
+	if (!translation) {
+		return [undefined, false];
+	}
+	const exist = translation?.match(replacements.__.regex);
+	return [translation?.replace(replacements.__.regex, replacements.__.replacement), Boolean(exist)];
+};
+
+const replaceSprintfInterpolation = (translation) => {
+	const exist = translation?.match(replacements.sprintf.regex);
+
+	return [undefined, Boolean(exist)];
+};
+
+const replaceI18nextComponentsArrayInterpolation = (translation) => {
+	const exist = translation?.match(replacements.i18nextComponentsArray.regex);
+	return [undefined, Boolean(exist)];
+};
+
+const replaceNullValuesInterpolation = (translation) => {
+	return [undefined, translation === null];
+};
+
+const generator = (fn, id) => (dictionary, language, cb) => {
+	return Object.entries(dictionary).reduce((dic, [key, value]) => {
+		const [replacement, exist] = fn(value);
+		if (exist) {
+			cb?.(id, { language, key });
+		}
+		if (replacement) {
+			dic[key] = replacement;
+		}
+		return dic;
+	}, dictionary);
+};
+
+const replaceI18nInterpolations = generator(replaceI18nInterpolation, '__');
+
+const replaceSprintfInterpolations = generator(replaceSprintfInterpolation, 'sprintf');
+
+const replaceI18nextComponentsArrayInterpolations = generator(replaceI18nextComponentsArrayInterpolation, 'i18nextComponentsArray');
+
+const replaceNullValues = generator(replaceNullValuesInterpolation, 'nullValues');
+
+const pipe =
+	(...fns) =>
+	(y, ...x) =>
+		fns.reduce((v, f) => {
+			return f(v, ...x);
+		}, y);
+
+export const normalizeI18nInterpolations = (dictionary, language, cb) => {
+	const result = pipe(
+		replaceNullValues,
+		replaceI18nInterpolations,
+		replaceI18nextComponentsArrayInterpolations,
+		replaceSprintfInterpolations,
+	)(dictionary, language, cb);
+
+	return result;
+};
+
 // read all files in the current directory
 
 const files = fs.readdirSync(`./src/locales`);
@@ -23,24 +100,6 @@ const stats = {
 		keys: [],
 	},
 };
-const replacements = {
-	__: {
-		regex: /__(.*?)__/g,
-		replacement: '{{$1}}',
-	},
-	sprintf: {
-		regex: /%[0-9]*[.]?[0-9]*[a-z]/g,
-		replacement: undefined,
-	},
-	i18nextComponentsArray: {
-		regex: /<(\d+?)>(.+?)<\/\1>/g,
-		replacement: undefined,
-	},
-};
-
-const extractLanguageNameFromFileName = (fileName) => {
-	return fileName.split('.')?.[0] || '';
-};
 
 const recordStatIfNotAlready = (statKey, row) => {
 	if (stats.alreadyGenerated) {
@@ -50,52 +109,28 @@ const recordStatIfNotAlready = (statKey, row) => {
 	stats[statKey].keys.push(row);
 };
 
-export const normalizeI18nInterpolations = (fileContents, language) => {
-	const allLangs = files.map((filename) => extractLanguageNameFromFileName(filename));
-	if (!allLangs.includes(language)) {
-		throw new Error('Language not supported');
-	}
-
-	const result = Object.keys(fileContents).reduce((acc, key) => {
-		const value = fileContents[key];
-		if (!value) {
-			recordStatIfNotAlready('nullValues', { language, key });
-			return acc;
-		}
-		Object.keys(replacements).forEach((replacementKey) => {
-			const { regex, replacement } = replacements[replacementKey];
-			const exist = value.match(regex);
-			if (!replacement) {
-				if (exist) {
-					recordStatIfNotAlready(replacementKey, { language, key });
-				}
-				return acc;
-			}
-			if (exist) {
-				recordStatIfNotAlready(replacementKey, { language, key });
-				acc[key] = value.replace(regex, replacement);
-			} else {
-				acc[key] = value;
-			}
-		});
-		return acc;
-	}, {});
-
-	stats.alreadyGenerated = true;
-
-	return result;
-};
-
 const interpolationReplacementsStats = () =>
 	`Number of keys using __ and replaced by native i18next interpolation('{{' '}}') key: ${stats.__.total} keys
-		Number of keys with (explicit) null values: ${stats.nullValues.total} keys
-		Number of keys using sprintf: ${stats.sprintf.total} keys
-		Number of keys using i18next components array (<number></number>): ${stats.i18nextComponentsArray.total} keys
+Number of keys with (explicit) null values: ${stats.nullValues.total} keys
+Number of keys using sprintf: ${stats.sprintf.total} keys
+Number of keys using i18next components array (<number></number>): ${stats.i18nextComponentsArray.total} keys
 
-		(explicit) null values: ${JSON.stringify(stats.nullValues.keys, null, 2)}
-		==================================================
-		__ : ${JSON.stringify(stats.__.keys, null, 2)}
-		`;
+(explicit) null values: ${JSON.stringify(stats.nullValues.keys, null, 2)}
+==================================================
+__ : ${JSON.stringify(stats.__.keys, null, 2)}
+
+==================================================
+sprintf : ${JSON.stringify(stats.sprintf.keys, null, 2)}
+
+==================================================
+
+i18nextComponentsArray : ${JSON.stringify(stats.i18nextComponentsArray.keys, null, 2)}
+`;
+
+export const normalizeI18nInterpolationsTask = pipe(normalizeI18nInterpolations, (result, _, cb) => {
+	stats.alreadyGenerated = Boolean(cb);
+	return result;
+});
 
 const generateJSONContents = (files) =>
 	files
@@ -104,17 +139,22 @@ const generateJSONContents = (files) =>
 
 			const key = path.basename(file, '.i18n.json');
 			const parsedJson = JSON.parse(fs.readFileSync(`./src/locales/${file}`, 'utf8'));
-			return `\n"${key}":${JSON.stringify(normalizeI18nInterpolations(parsedJson, key), null, 2)}`;
+			return `\n"${key}":${JSON.stringify(
+				normalizeI18nInterpolationsTask(parsedJson, key, key === 'en' ? recordStatIfNotAlready : undefined),
+				null,
+				2,
+			)}`;
 		})
 		.join(',');
 
+const contents = generateJSONContents(files);
+
 const esm = `export default {
-	${generateJSONContents(files)},
-	normalizeI18nInterpolations: ${normalizeI18nInterpolations.toString()}}`;
+	${contents}
+`;
 
 const cjs = `module.exports = {
-	${generateJSONContents(files)},
-	normalizeI18nInterpolations: ${normalizeI18nInterpolations.toString()}}
+	${contents}
 `;
 
 const keys = Object.keys(JSON.parse(fs.readFileSync(`./src/locales/en.i18n.json`, 'utf8')));
@@ -124,8 +164,6 @@ const tds = `export interface RocketchatI18n {
 }
 
 export declare const dict: Record<string, RocketchatI18nKeys>;
-
-export function normalizeI18nInterpolations(fileContents: Record<string, string>, language: string): Record<string, string>;
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 `;

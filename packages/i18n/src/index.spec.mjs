@@ -3,7 +3,7 @@ import fs from 'fs';
 import { jest } from '@jest/globals';
 
 describe('i18n', () => {
-	let normalizeI18nInterpolations;
+	let normalizeI18nInterpolationsTask;
 
 	beforeEach(async () => {
 		jest.spyOn(fs, 'readdirSync').mockReturnValue(['en.i18n.json']);
@@ -15,30 +15,23 @@ describe('i18n', () => {
 		jest.resetModules();
 	});
 
-	describe('normalizeI18nInterpolations', () => {
-		it('should throw an error if the language is not supported', async () => {
-			const i18n = await import('./index.mjs');
-			normalizeI18nInterpolations = i18n.normalizeI18nInterpolations;
-			jest.spyOn(fs, 'readdirSync').mockReturnValue(['en.i18n.json']);
-			expect(() => normalizeI18nInterpolations({}, 'fr')).toThrow('Language not supported');
-		});
-
+	describe('normalizeI18nInterpolationsTask', () => {
 		it('should return the same object if there are no interpolations', async () => {
 			const i18n = await import('./index.mjs');
-			normalizeI18nInterpolations = i18n.normalizeI18nInterpolations;
+			normalizeI18nInterpolationsTask = i18n.normalizeI18nInterpolationsTask;
 			const fileContents = { test: 'test' };
-			expect(normalizeI18nInterpolations(fileContents, 'en')).toEqual(fileContents);
+			expect(normalizeI18nInterpolationsTask(fileContents, 'en')).toEqual(fileContents);
 		});
 
 		it('should return the replace the interpolation(__) keys to the desired one ({{}})', async () => {
 			const i18n = await import('./index.mjs');
-			normalizeI18nInterpolations = i18n.normalizeI18nInterpolations;
+			normalizeI18nInterpolationsTask = i18n.normalizeI18nInterpolationsTask;
 			const fileContents = {
 				shouldChange: 'this is the __key__',
 				shouldNotChange: 'normal one',
 				multipleKeys: 'sentence __with__ multiple __keys__',
 			};
-			expect(normalizeI18nInterpolations(fileContents, 'en')).toEqual({
+			expect(normalizeI18nInterpolationsTask(fileContents, 'en')).toEqual({
 				shouldChange: 'this is the {{key}}',
 				shouldNotChange: 'normal one',
 				multipleKeys: 'sentence {{with}} multiple {{keys}}',
@@ -63,7 +56,7 @@ describe('i18n', () => {
 						Number of keys with (explicit) null values: 1 keys
 						Number of keys using sprintf: 1 keys
 						Number of keys using i18next components array (<number></number>): 1 keys
-			
+
 						(explicit) null values: [
 							{
 							"language": "en",
@@ -80,7 +73,16 @@ describe('i18n', () => {
 							"language": "en",
 							"key": "multipleKeys"
 							}
-						]`.replace(/\s/g, ''),
+						]
+						==================================================
+						sprintf : [
+							{\"language\":\"en\",\"key\":\"withSprintf\"}
+						]
+						==================================================
+						i18nextComponentsArray : [
+							{\"language\":\"en\",\"key\":\"withI18NextComponentsArray\"}
+						]
+`.replace(/\s/g, ''),
 					);
 				}
 			});
