@@ -6,7 +6,7 @@ import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
-export const useInviteToken = async (userId, token) => {
+export const useInviteToken = async (userId: string, token: string) => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'The user is invalid', {
 			method: 'useInviteToken',
@@ -31,13 +31,19 @@ export const useInviteToken = async (userId, token) => {
 	}
 
 	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'The user is invalid', {
+			method: 'useInviteToken',
+			field: 'userId',
+		});
+	}
 	await Users.updateInviteToken(user._id, token);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1 },
 	});
 	if (!subscription) {
-		await Invites.increaseUsageById(inviteData._id);
+		await Invites.increaseUsageById(inviteData._id, 1);
 	}
 
 	// If the user already has an username, then join the invite room,
