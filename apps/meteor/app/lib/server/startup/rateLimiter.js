@@ -50,10 +50,6 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-export const sleep = (ms) => {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 const callback = (msg, name) => async (reply, input) => {
 	if (reply.allowed === false) {
 		rateLimiterLog({ msg, reply, input });
