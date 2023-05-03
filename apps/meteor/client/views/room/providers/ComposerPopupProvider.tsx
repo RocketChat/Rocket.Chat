@@ -1,12 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useMethod, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { emoji, EmojiPicker } from '../../../../app/emoji/client';
+import { emoji } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
 import ComposerPopupCannedResponse from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupEmoji';
@@ -28,6 +29,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
 	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
+	const [recentEmojis] = useLocalStorage('emoji.recent', []);
 	const isOmnichannel = isOmnichannelRoom(room);
 
 	const t = useTranslation();
@@ -180,7 +182,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
 					const key = `:${filter}`;
 
-					const recents = EmojiPicker.getRecent().map((item) => `:${item}:`);
+					const recents = recentEmojis.map((item) => `:${item}:`);
 
 					const collection = emoji.list;
 
@@ -237,7 +239,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
 					const key = `:${filter}`;
 
-					const recents = EmojiPicker.getRecent().map((item) => `:${item}:`);
+					const recents = recentEmojis.map((item) => `:${item}:`);
 
 					const collection = emoji.list;
 
@@ -346,7 +348,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid, call]);
+	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };
