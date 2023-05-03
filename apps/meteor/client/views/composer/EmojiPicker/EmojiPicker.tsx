@@ -1,4 +1,5 @@
-import { Box, PositionAnimated, AnimatedVisibility, Field, TextInput, Icon } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, PositionAnimated, AnimatedVisibility, ButtonGroup, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -22,6 +23,7 @@ import {
 	createPickerEmojis,
 	CUSTOM_CATEGORY,
 } from '../../../../app/emoji/client';
+import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 import CategoriesResult from './CategoriesResult';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
@@ -61,6 +63,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchResults, setSearchResults] = useState<EmojiItem[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
+
+	const { emojiToPreview } = usePreviewEmoji();
 
 	useOutsideClick([emojiContainerRef], onClose);
 
@@ -196,8 +200,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	const handleScroll = (event: any) => {
-		// console.log(container);
-		// const scrollTop = container?.scrollTop + container.clientHeight;
 		const scrollTop = event?.scrollTop;
 		const last = categoriesPosition.current?.filter((pos) => pos.top <= scrollTop).pop();
 
@@ -216,27 +218,35 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		virtuosoRef.current?.scrollToIndex({ index: categoryIndex });
 	};
 
+	const previewEmojiClass = css`
+		span {
+			width: 40px;
+			height: 40px;
+		}
+	`;
+
+	const handleGoToAddCustom = () => {
+		customEmojiRoute.push();
+		onClose();
+	};
+
 	return (
 		<PositionAnimated tabIndex={0} visible={AnimatedVisibility.UNHIDING} anchor={ref} placement='top-start'>
 			<div>
 				<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} ref={emojiContainerRef} onKeyDown={handleKeyDown}>
 					<EmojiPickerHeader>
-						<Field flexGrow={1} flexShrink={1}>
-							<Field.Row>
-								<TextInput
-									autoFocus
-									ref={textInputRef}
-									value={searchTerm}
-									onChange={handleSearch}
-									addon={<Icon name='magnifier' size='x20' />}
-									placeholder={t('Search')}
-									aria-label={t('Search')}
-								/>
-							</Field.Row>
-						</Field>
-						<ToneSelector tone={actualTone} setTone={setActualTone} />
+						<TextInput
+							autoFocus
+							ref={textInputRef}
+							value={searchTerm}
+							onChange={handleSearch}
+							addon={<Icon name='magnifier' size='x20' />}
+							placeholder={t('Search')}
+							aria-label={t('Search')}
+						/>
 					</EmojiPickerHeader>
-					<EmojiPickerCategoryHeader role='tablist'>
+					{/* <EmojiPickerCategoryHeader role='tablist'> */}
+					<ButtonGroup small mbs='x12' mi='x12' stretch>
 						{emojiCategories.map((category, index) => (
 							<EmojiPickerCategoryItem
 								key={category.key}
@@ -246,7 +256,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 								handleGoToCategory={handleGoToCategory}
 							/>
 						))}
-					</EmojiPickerCategoryHeader>
+					</ButtonGroup>
+					{/* </EmojiPickerCategoryHeader> */}
+					<Divider pbe='x12' />
 					<EmojiPickerListArea role='tabpanel'>
 						{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 						{!searching && (
@@ -261,16 +273,32 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 							/>
 						)}
 					</EmojiPickerListArea>
-					<EmojiPickerFooter>
+					<Box p='x12' bg='tint' color='secondary-info' display='flex' alignItems='center' justifyContent='space-between' minHeight='x64'>
 						<>
-							{canManageEmoji && (
-								<Box is='a' onClick={() => customEmojiRoute.push()}>
-									{t('Add_custom_emoji')}
+							{emojiToPreview && (
+								<Box display='flex' alignItems='center'>
+									<Box className={previewEmojiClass} dangerouslySetInnerHTML={{ __html: emojiToPreview.emoji }}></Box>
+									<Box mis='x4' display='flex' flexDirection='column'>
+										<Box fontScale='c2'>{emojiToPreview.name}</Box>
+										<Box fontScale='c1'>{`:${emojiToPreview.name}:`}</Box>
+									</Box>
 								</Box>
 							)}
-							<Box dangerouslySetInnerHTML={{ __html: t('Emoji_provided_by_JoyPixels') }} />
+							{canManageEmoji && emojiToPreview === null && (
+								<Button small onClick={handleGoToAddCustom}>
+									{t('Add_custom_emoji')}
+								</Button>
+							)}
 						</>
-					</EmojiPickerFooter>
+						<Box display='flex' alignItems='center'>
+							<Box fontScale='c2'>Skin Tone</Box>
+							<ToneSelector tone={actualTone} setTone={setActualTone} />
+						</Box>
+					</Box>
+					<Box bg='neutral' display='flex' flexDirection='column' alignItems='center' fontScale='micro' pb='x8'>
+						<Box dangerouslySetInnerHTML={{ __html: t('Emoji_provided_by_JoyPixels') }} />
+					</Box>
+					{/* <EmojiPickerFooter></EmojiPickerFooter> */}
 				</EmojiPickerContainer>
 			</div>
 		</PositionAnimated>

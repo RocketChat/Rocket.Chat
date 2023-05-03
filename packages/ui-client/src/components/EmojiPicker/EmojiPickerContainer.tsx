@@ -10,11 +10,11 @@ const EmojiPickerContainer = forwardRef<HTMLElement, Omit<AllHTMLAttributes<HTML
 		<Box
 			{...props}
 			color='default'
-			width='x365'
+			width='x344'
 			ref={ref}
-			height='x300'
+			height='x480'
 			bg='light'
-			padding='x8'
+			// padding='x8'
 			pbe='none'
 			borderRadius={4}
 			elevation='2'

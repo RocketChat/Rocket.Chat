@@ -1,4 +1,5 @@
-import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { EmojiPickerCategoryWrapper, EmojiPickerLoadMore, EmojiPickerNotFound } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, MutableRefObject } from 'react';
@@ -27,10 +28,18 @@ const EmojiCategoryRow = ({
 }: EmojiCategoryRowProps) => {
 	const t = useTranslation();
 
+	const categoryStyle = css`
+		button {
+			margin-right: 0.25rem;
+			margin-bottom: 0.25rem;
+		}
+	`;
+
 	return (
 		<>
 			<Box
 				is='h4'
+				fontScale='c1'
 				id={`emoji-list-category-${categoryKey}`}
 				ref={(element) => {
 					categoriesPosition.current.push({ el: element, top: element?.offsetTop });
@@ -40,7 +49,8 @@ const EmojiCategoryRow = ({
 				{t(i18n)}
 			</Box>
 			{emojis.list.length > 0 && (
-				<EmojiPickerCategoryWrapper className={`emoji-category-${categoryKey}`}>
+				// <EmojiPickerCategoryWrapper className={`emoji-category-${categoryKey}`}>
+				<Box display='flex' flexWrap='wrap' className={[categoryStyle, `emoji-category-${categoryKey}`]}>
 					<>
 						{categoryKey === CUSTOM_CATEGORY &&
 							emojis.list.map(
@@ -54,7 +64,8 @@ const EmojiCategoryRow = ({
 								<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
 							))}
 					</>
-				</EmojiPickerCategoryWrapper>
+					{/* </EmojiPickerCategoryWrapper> */}
+				</Box>
 			)}
 			{emojis.limit && emojis?.limit > 0 && emojis.list.length > emojis.limit && (
 				<EmojiPickerLoadMore onClick={handleLoadMore}>{t('Load_more')}</EmojiPickerLoadMore>
