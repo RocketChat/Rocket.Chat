@@ -482,9 +482,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = await LivechatDepartment.findOneById(departmentId);
-		if (!department?.fallbackForwardDepartment) {
+		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
-			return false;
+			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
