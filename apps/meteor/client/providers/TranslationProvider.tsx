@@ -1,17 +1,19 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import i18next from 'i18next';
+import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
+import { i18n } from '../../app/utils/lib/tapi18n';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 
-const i18n = i18next.createInstance().use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
+i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 
 type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> extends `${infer T}.${string}`
 	? T extends Lowercase<T>
@@ -78,6 +80,11 @@ const useI18next = (lng: string): typeof i18next => {
 			fallbackLng: 'en',
 			ns: namespacesDefault,
 			nsSeparator: '.',
+			resources: {
+				en: {
+					core: en,
+				},
+			},
 			partialBundledLanguages: true,
 			defaultNS: 'core',
 			backend: {

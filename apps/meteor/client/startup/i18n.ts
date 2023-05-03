@@ -6,16 +6,18 @@ import moment from 'moment';
 
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { i18n } from '../../server/lib/i18n';
+import { i18n } from '../../app/utils/lib/tapi18n';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
+// TODO: migrate to translation provider
+
 Meteor.startup(() => {
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
-	const availableLanguages = i18n.languages;
+	const availableLanguages = i18n.languages ?? [];
 
 	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
@@ -51,7 +53,7 @@ Meteor.startup(() => {
 		document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
 		document.documentElement.lang = language;
 
-		i18n.changeLanguage(language);
+		// i18n.changeLanguage(language);
 		loadMomentLocale(language)
 			.then((locale) => moment.locale(locale))
 			.catch((error) => {
