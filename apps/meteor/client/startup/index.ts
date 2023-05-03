@@ -10,7 +10,6 @@ import './contextualBar';
 import './customOAuth';
 import './e2e';
 import './forceLogout';
-import './i18n';
 import './iframeCommands';
 import './incomingMessages';
 import './ldap';

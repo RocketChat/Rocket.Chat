@@ -93,9 +93,20 @@ export declare const dict: Record<string, RocketchatI18nKeys>;
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 `;
 
+const languages = files.map((file) => path.basename(file, '.i18n.json'));
+
 // write the files
 fs.rmdirSync(`./dist`, { recursive: true });
 fs.mkdirSync(`./dist`, { recursive: true });
+
+fs.writeFileSync(`./dist/languages.js`, `module.exports = ${JSON.stringify(languages, null, 2)}`);
+fs.writeFileSync(`./dist/languages.mjs`, `export default ${JSON.stringify(languages, null, 2)}`);
+fs.writeFileSync(
+	`./dist/languages.d.ts`,
+	`const languages: string[];
+export default languages;`,
+);
+
 fs.writeFileSync(`./dist/index.mjs`, esm);
 fs.writeFileSync(`./dist/index.js`, cjs);
 fs.writeFileSync(`./dist/index.d.ts`, tds);
