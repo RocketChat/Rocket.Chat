@@ -6370,6 +6370,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/css-supports@npm:~0.31.23-dev.98":
+  version: 0.31.23-dev.98
+  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.98"
+  dependencies:
+    "@rocket.chat/memo": ~0.31.23-dev.98
+  checksum: d00ef22810221b98fd835c868477d790c2393230d6a91115772eb47774d30cb4ddfc17a3aa7509c11c3d2b7cd5eef464da467acb0b3c63938222dbfcb63c3f04
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/ddp-rate-limit@workspace:^, @rocket.chat/ddp-rate-limit@workspace:packages/ddp-rate-limit":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-rate-limit@workspace:packages/ddp-rate-limit"
@@ -6382,15 +6391,6 @@ __metadata:
     typescript: ~5.0.2
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/css-supports@npm:~0.31.23-dev.98":
-  version: 0.31.23-dev.98
-  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.98"
-  dependencies:
-    "@rocket.chat/memo": ~0.31.23-dev.98
-  checksum: d00ef22810221b98fd835c868477d790c2393230d6a91115772eb47774d30cb4ddfc17a3aa7509c11c3d2b7cd5eef464da467acb0b3c63938222dbfcb63c3f04
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
