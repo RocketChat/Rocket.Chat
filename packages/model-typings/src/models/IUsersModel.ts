@@ -353,6 +353,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setReason(userId: string, reason: string): Promise<UpdateResult>;
 	unsetReason(userId: string): Promise<UpdateResult>;
 	bannerExistsById(userId: string, bannerId: string): Promise<boolean>;
+	bannerExistsByBannerId(bannerId: string): Promise<boolean>;
 	setBannerReadById(userId: string, bannerId: string): Promise<UpdateResult>;
 	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;

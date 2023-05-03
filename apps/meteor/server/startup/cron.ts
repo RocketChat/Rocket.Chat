@@ -12,7 +12,7 @@ import { userDataDownloadsCron } from '../cron/userDataDownloads';
 const logger = new Logger('SyncedCron');
 
 SyncedCron.config({
-	logger(opts) {
+	logger(opts: { level: 'info' | 'warn' | 'debug' | 'error'; message: string }) {
 		return logger[opts.level].call(logger, opts.message);
 	},
 	collectionName: 'rocketchat_cron_history',

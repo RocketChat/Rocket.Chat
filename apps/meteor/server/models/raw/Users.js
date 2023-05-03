@@ -2661,6 +2661,16 @@ export class UsersRaw extends BaseRaw {
 		return (await this.col.countDocuments(query)) !== 0;
 	}
 
+	async bannerExistsByBannerId(bannerId) {
+		const query = {
+			[`banners.${bannerId}`]: {
+				$exists: true,
+			},
+		};
+
+		return (await this.col.countDocuments(query)) !== 0;
+	}
+
 	setBannerReadById(_id, bannerId) {
 		const update = {
 			$set: {

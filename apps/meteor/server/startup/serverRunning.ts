@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import fs from 'fs';
 import path from 'path';
 
@@ -5,6 +6,7 @@ import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
 import { Info, getMongoInfo } from '../../app/utils/server';
@@ -12,7 +14,7 @@ import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
 import { isRunningMs } from '../lib/isRunningMs';
 
-const exitIfNotBypassed = (ignore, errorCode = 1) => {
+const exitIfNotBypassed = (ignore?: string, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
 		return;
 	}
@@ -26,12 +28,12 @@ Meteor.startup(async function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
-	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
+	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion)?.major);
 
 	return setTimeout(async function () {
 		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
 
-		let msg = [
+		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
 			`    MongoDB Version: ${mongoVersion}`,
@@ -42,11 +44,11 @@ Meteor.startup(async function () {
 			`   ReplicaSet OpLog: ${replicaSet}`,
 		];
 
-		if (Info.commit && Info.commit.hash) {
+		if (Info.commit?.hash) {
 			msg.push(`        Commit Hash: ${Info.commit.hash.substr(0, 10)}`);
 		}
 
-		if (Info.commit && Info.commit.branch) {
+		if (Info.commit?.branch) {
 			msg.push(`      Commit Branch: ${Info.commit.branch}`);
 		}
 
@@ -76,7 +78,7 @@ Meteor.startup(async function () {
 			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
+		if (!semver.satisfies(semver.coerce(mongoVersion)!, '>=4.4.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 4.4 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
@@ -86,7 +88,7 @@ Meteor.startup(async function () {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion), '>=5.0.0')) {
+		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion)!, '>=5.0.0')) {
 			msg = [
 				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
 				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 7.0.0 AND GREATER,',
@@ -99,11 +101,13 @@ Meteor.startup(async function () {
 			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
 			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
-			if (!(await Users.bannerExistsById(id))) {
-				sendMessagesToAdmins({
-					msgs: async ({ adminUser }) => [
+			if (!(await Users.bannerExistsByBannerId(id))) {
+				await sendMessagesToAdmins({
+					msgs: async ({ adminUser }: { adminUser: IUser }) => [
 						{
-							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
+							msg: `*${TAPi18n.__(title, { lng: adminUser.language || 'en' })}*\n${TAPi18n.__(text, {
+								lng: adminUser.language || 'en',
+							})}\n${link}`,
 						},
 					],
 					banners: [

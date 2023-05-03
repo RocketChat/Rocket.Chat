@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Settings, Rooms, Users } from '@rocket.chat/models';
 import colors from 'colors/safe';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 
 import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
@@ -17,11 +19,11 @@ Meteor.startup(async function () {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
 			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				default: true,
+				default: 'true',
 			});
 		}
 
-		Settings.updateValueById('Initial_Channel_Created', true);
+		await Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
 	if (!(await Users.findOneById('rocket.cat'))) {
@@ -29,8 +31,8 @@ Meteor.startup(async function () {
 			_id: 'rocket.cat',
 			name: 'Rocket.Cat',
 			username: 'rocket.cat',
-			status: 'online',
-			statusDefault: 'online',
+			status: UserStatus.ONLINE,
+			statusDefault: UserStatus.ONLINE,
 			utcOffset: 0,
 			active: true,
 			type: 'bot',
@@ -38,9 +40,9 @@ Meteor.startup(async function () {
 
 		await addUserRolesAsync('rocket.cat', ['bot']);
 
-		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png') as unknown as Uint8Array);
 
-		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
+		const rs = RocketChatFile.bufferToStream(buffer);
 		const fileStore = FileUpload.getStore('Avatars');
 		await fileStore.deleteByName('rocket.cat');
 
@@ -52,18 +54,18 @@ Meteor.startup(async function () {
 
 		await Meteor.runAsUser('rocket.cat', async () => {
 			await fileStore.insert(file, rs);
-			Users.setAvatarData('rocket.cat', 'local', null);
+			await Users.setAvatarData('rocket.cat', 'local', null);
 		});
 	}
 
 	if (process.env.ADMIN_PASS) {
 		if ((await (await getUsersInRole('admin')).count()) === 0) {
 			console.log(colors.green('Inserting admin user:'));
-			const adminUser = {
+			const adminUser: Partial<IUser> = {
 				name: 'Administrator',
 				username: 'admin',
-				status: 'offline',
-				statusDefault: 'online',
+				status: UserStatus.OFFLINE,
+				statusDefault: UserStatus.OFFLINE,
 				utcOffset: 0,
 				active: true,
 			};
@@ -117,7 +119,7 @@ Meteor.startup(async function () {
 
 			adminUser.type = 'user';
 
-			const id = await Users.create(adminUser);
+			const id = (await Users.create(adminUser)).insertedId;
 
 			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
 
@@ -157,7 +159,7 @@ Meteor.startup(async function () {
 	if ((await (await getUsersInRole('admin')).count()) !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
@@ -176,8 +178,8 @@ Meteor.startup(async function () {
 					verified: false,
 				},
 			],
-			status: 'offline',
-			statusDefault: 'online',
+			status: UserStatus.OFFLINE,
+			statusDefault: UserStatus.OFFLINE,
 			utcOffset: 0,
 			active: true,
 			type: 'user',
@@ -203,9 +205,9 @@ Meteor.startup(async function () {
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 
-		return addUserToDefaultChannels(adminUser, true);
+		return addUserToDefaultChannels(adminUser as IUser, true);
 	}
 });
