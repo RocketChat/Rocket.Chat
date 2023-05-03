@@ -35,7 +35,7 @@ Meteor.startup(async () => {
 
 					lastSchedule = schedule;
 					logger.info({ msg: 'Enabling LDAP Background Sync', jobName });
-					// TODO parse text to cron format
+
 					await cronJobs.add(jobName, schedule, cb);
 				}
 			};
