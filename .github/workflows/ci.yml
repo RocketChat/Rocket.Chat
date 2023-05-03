@@ -38,6 +38,7 @@ jobs:
       - uses: Bhacaz/checkout-files@v2
         with:
           files: package.json
+          branch: ${{ github.ref }}
 
       - id: var
         run: |

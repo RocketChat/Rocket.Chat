@@ -8,6 +8,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 /*
   A valid user will have exactly one of the following identification fields: id, username, or email
@@ -67,7 +68,7 @@ export class Auth {
 
 		// Retrieve the user from the database
 		const authenticatingUserSelector = getUserQuerySelector(user);
-		const authenticatingUser = await Meteor.users.findOneAsync(authenticatingUserSelector);
+		const authenticatingUser = await Users.findOne(authenticatingUserSelector);
 
 		if (!authenticatingUser) {
 			throw new Meteor.Error(401, 'Unauthorized');

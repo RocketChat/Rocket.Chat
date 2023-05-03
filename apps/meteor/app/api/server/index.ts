@@ -1,4 +1,3 @@
-import './settings';
 import './helpers/composeRoomWithLastMessage';
 import './helpers/deprecationWarning';
 import './helpers/getLoggedInUser';

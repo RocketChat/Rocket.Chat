@@ -161,8 +161,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 			readonly token?: string;
 	  }
 	: {
-			user?: null;
-			userId?: undefined;
+			user?: IUser | null;
+			userId?: string | undefined;
 			readonly token?: string;
 	  });
 

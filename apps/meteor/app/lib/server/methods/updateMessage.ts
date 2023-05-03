@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -88,7 +88,10 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const user = Meteor.users.findOne(uid) as IUser;
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
+		}
 		await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist

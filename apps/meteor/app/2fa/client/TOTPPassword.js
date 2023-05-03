@@ -40,8 +40,8 @@ Meteor.loginWithPasswordAndTOTP = function (selector, password, code, callback) 
 const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function (email, password, cb) {
-	loginWithPassword(email, password, (error) => {
-		process2faReturn({
+	loginWithPassword(email, password, async (error) => {
+		await process2faReturn({
 			error,
 			originalCallback: cb,
 			emailOrUsername: email,

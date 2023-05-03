@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
@@ -22,7 +22,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
-import { getURL } from '../../../utils/lib/getURL';
+import { getURL } from '../../../utils/server/getURL';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { passwordPolicy } from '../../../lib/server';
@@ -626,6 +626,18 @@ API.v1.addRoute(
 				}
 				return API.v1.success(mountResult({ id, error: err }));
 			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'smtp.check',
+	{ authRequired: true },
+	{
+		async get() {
+			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
+			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
+			return API.v1.success({ isSMTPConfigured });
 		},
 	},
 );
