@@ -79,11 +79,11 @@ const Connection = {
 
 	addListeners() {
 		if (!connectedListener) {
-			connectedListener = Livechat.onStreamData('connected', this.handleConnected);
+			connectedListener = Livechat.connection.on('connected', this.handleConnected);
 		}
 
 		if (!disconnectedListener) {
-			disconnectedListener = Livechat.onStreamData('close', this.handleDisconnected);
+			disconnectedListener = Livechat.connection.on('close', this.handleDisconnected);
 		}
 	},
 

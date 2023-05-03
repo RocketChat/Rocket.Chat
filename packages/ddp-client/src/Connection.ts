@@ -34,6 +34,7 @@ export interface Connection
 		close: void;
 	}> {
 	url: string;
+	ssl: boolean;
 
 	session?: string;
 
@@ -61,6 +62,10 @@ export class ConnectionImpl
 	}>
 	implements Connection
 {
+	ssl: boolean;
+
+	url: string;
+
 	session?: string;
 
 	status: ConnectionStatus = 'idle';
@@ -70,12 +75,14 @@ export class ConnectionImpl
 	retryCount = 0;
 
 	constructor(
-		readonly url: string,
+		url: string,
 		private WS: WebSocketConstructor,
 		private client: DDPClient,
 		readonly retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
 	) {
 		super();
+		this.ssl = url.startsWith('https') || url.startsWith('wss');
+		this.url = url.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
 	}
 
 	private emitStatus() {
@@ -99,7 +106,7 @@ export class ConnectionImpl
 		this.emit('connecting');
 		this.emitStatus();
 
-		const ws = new this.WS(this.url);
+		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
 
 		let stop: () => void | undefined;
 		return new Promise<boolean>((resolve, reject) => {

@@ -17,7 +17,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 
 	const callInNewTab = async () => {
 		const { token } = store.state;
-		const url = `${Livechat.client.host}/meet/${rid}?token=${token}`;
+		const url = `${Livechat.connection.url}/meet/${rid}?token=${token}`;
 		await dispatch({
 			ongoingCall: {
 				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
