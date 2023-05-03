@@ -34,7 +34,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		if (!data.meetingUrl && data.description) {
 			data.meetingUrl = await this.parseDescriptionForMeetingUrl(data.description);
 		}
-		console.log(data);
 
 		return this.create(data);
 	}
@@ -97,8 +96,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		console.log('parsing ', description);
-
 		const regex = /(?:[\?\&]callUrl=([^\n\&\<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n\&\<](?!%26)))+[^\n\&\<]?)/im;
 		const results = description.match(regex);
 		if (!results) {
@@ -113,7 +110,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 			let url = encodedUrl;
 			while (!url.includes('://')) {
-				console.log('decoding ', encodedUrl);
 				const decodedUrl = decodeURIComponent(url);
 				if (decodedUrl === url) {
 					break;
@@ -123,10 +119,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			}
 
 			if (url.includes('://')) {
-				console.log('found ', url);
 				return url;
 			}
-			console.log('skipping this one');
 		}
 
 		return undefined;
