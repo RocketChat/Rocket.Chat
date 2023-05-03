@@ -971,7 +971,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('description') || !this.bodyParams.description?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('description')) {
 				return API.v1.failure('The bodyParam "description" is required');
 			}
 
@@ -980,7 +980,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.description);
+			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.description || '');
 
 			return API.v1.success({
 				description: this.bodyParams.description || '',
@@ -994,7 +994,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('purpose') || !this.bodyParams.purpose?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('purpose')) {
 				return API.v1.failure('The bodyParam "purpose" is required');
 			}
 
@@ -1003,7 +1003,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.purpose);
+			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.purpose || '');
 
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
@@ -1050,7 +1050,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('topic') || !this.bodyParams.topic?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('topic')) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
@@ -1059,7 +1059,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomTopic', this.bodyParams.topic);
+			await saveRoomSettings(this.userId, findResult.rid, 'roomTopic', this.bodyParams.topic || '');
 
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
@@ -1106,7 +1106,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('announcement') || !this.bodyParams.announcement?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('announcement')) {
 				return API.v1.failure('The bodyParam "announcement" is required');
 			}
 
@@ -1115,7 +1115,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomAnnouncement', this.bodyParams.announcement);
+			await saveRoomSettings(this.userId, findResult.rid, 'roomAnnouncement', this.bodyParams.announcement || '');
 
 			return API.v1.success({
 				announcement: this.bodyParams.announcement || '',

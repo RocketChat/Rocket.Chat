@@ -1215,7 +1215,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('description') || !this.bodyParams.description?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('description')) {
 				return API.v1.failure('The bodyParam "description" is required');
 			}
 
@@ -1225,7 +1225,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel description is the same as what it would be changed to.');
 			}
 
-			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.description);
+			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.description || '');
 
 			return API.v1.success({
 				description: this.bodyParams.description || '',
@@ -1239,7 +1239,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('purpose') || !this.bodyParams.purpose?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('purpose')) {
 				return API.v1.failure('The bodyParam "purpose" is required');
 			}
 
@@ -1249,7 +1249,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 			}
 
-			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.purpose);
+			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.purpose || '');
 
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
@@ -1263,7 +1263,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.hasOwnProperty('topic') || !this.bodyParams.topic?.trim()) {
+			if (!this.bodyParams.hasOwnProperty('topic')) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
@@ -1273,7 +1273,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel topic is the same as what it would be changed to.');
 			}
 
-			await saveRoomSettings(this.userId, findResult._id, 'roomTopic', this.bodyParams.topic);
+			await saveRoomSettings(this.userId, findResult._id, 'roomTopic', this.bodyParams.topic || '');
 
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
