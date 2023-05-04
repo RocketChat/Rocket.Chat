@@ -9,7 +9,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { updatePermission } from '../permissions.helper';
-import { adminUsername } from '../user';
+import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import type { DummyResponse } from './utils';
 
@@ -61,7 +61,7 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, agentCredentials?: object): Promise<IOmnichannelRoom> => {
+export const takeInquiry = (roomId: string, agentCredentials?: IUserCredentialsHeader): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
@@ -277,7 +277,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 	});
 };
 
-export const closeOmnichanelRoom = async (roomId: string): Promise<void> => {
+export const closeOmnichannelRoom = async (roomId: string): Promise<void> => {
 	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200);
 };
 
@@ -300,12 +300,18 @@ export const bulkCreateLivechatRooms = async (
 	return rooms;
 };
 
-export const startANewLivechatRoomAndTakeIt = async (): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
-	const visitor = await createVisitor();
+export const startANewLivechatRoomAndTakeIt = async ({
+    departmentId,
+    agent
+}: {
+    departmentId?: string;
+    agent?: IUserCredentialsHeader;
+} = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+	const visitor = await createVisitor(departmentId);
 	const room = await createLivechatRoom(visitor.token);
 	const { _id: roomId } = room;
 	const inq = await fetchInquiry(roomId);
-	await takeInquiry(inq._id);
+	await takeInquiry(inq._id, agent);
 	await sendMessage(roomId, 'test message', visitor.token);
 
 	return { room, visitor };
