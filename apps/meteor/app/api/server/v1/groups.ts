@@ -1,28 +1,28 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { IIntegration, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
+import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
-	hasPermissionAsync,
 	hasAllPermissionAsync,
 	hasAtLeastOnePermissionAsync,
+	hasPermissionAsync,
 } from '../../../authorization/server/functions/hasPermission';
-import { API } from '../api';
-import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { API } from '../api';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 
@@ -68,7 +68,7 @@ async function findPrivateGroupByIdOrName({
 			broadcast: 1,
 		},
 	};
-	let room;
+	let room: IRoom | null = null;
 	if ('roomId' in params) {
 		room = await Rooms.findOneById(params.roomId || '', roomOptions);
 	} else if ('roomName' in params) {
@@ -97,10 +97,10 @@ async function findPrivateGroupByIdOrName({
 	return {
 		rid: room._id,
 		open: Boolean(sub?.open),
-		ro: room.ro,
+		ro: Boolean(room.ro),
 		t: room.t,
-		name: roomName,
-		broadcast: room.broadcast,
+		name: roomName ?? '',
+		broadcast: Boolean(room.broadcast),
 	};
 }
 
