@@ -54,7 +54,6 @@ inter-process-messaging@0.1.1
 jquery@3.0.0
 kadira:flow-router@2.12.1
 launch-screen@1.3.0
-littledata:synced-cron@1.5.1
 localstorage@1.2.0
 logging@1.3.2
 mdg:validation-error@0.5.1
