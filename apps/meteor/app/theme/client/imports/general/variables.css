@@ -205,6 +205,8 @@
 	* Sidebar
 	*/
 	--sidebar-width: 280px;
+	--sidebar-md-width: 320px;
+	--sidebar-lg-width: 336px;
 	--sidebar-small-width: 90%;
 	--sidebar-background: var(--rc-color-primary-background);
 	--sidebar-background-hover: var(--rc-color-primary-dark);
