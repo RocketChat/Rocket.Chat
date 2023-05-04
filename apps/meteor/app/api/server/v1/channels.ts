@@ -33,6 +33,11 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
+import { isTruthy } from '../../../../lib/isTruthy';
+import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -200,8 +205,12 @@ API.v1.addRoute(
 		async post() {
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.failure('Invalid user');
+			}
 
-			await Meteor.callAsync('joinRoom', findResult._id, joinCode);
+			await joinRoomMethod(user, findResult._id, joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -565,7 +574,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
 			}
 
-			await Meteor.callAsync('hideRoom', findResult._id);
+			await hideRoomMethod(this.userId, findResult._id);
 
 			return API.v1.success();
 		},
@@ -659,9 +668,9 @@ async function createChannel(
 	params: { name?: string; members?: string[]; customFields?: Record<string, any>; extraData?: Record<string, any>; readOnly?: boolean },
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
-	const id = await Meteor.callAsync(
-		'createChannel',
-		params.name,
+	const id = await createChannelMethod(
+		userId,
+		params.name || '',
 		params.members ? params.members : [],
 		readOnly,
 		params.customFields,
@@ -871,7 +880,7 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
 			}
 
-			await Meteor.callAsync('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
+			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users: users.map((u) => u.username).filter(isTruthy) });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),

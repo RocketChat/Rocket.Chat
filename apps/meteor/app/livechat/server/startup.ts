@@ -53,12 +53,12 @@ Meteor.startup(async () => {
 
 	const monitor = new LivechatAgentActivityMonitor();
 
-	settings.watch<boolean>('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
+	settings.watch<boolean>('Troubleshoot_Disable_Livechat_Activity_Monitor', async (value) => {
 		if (value) {
 			return monitor.stop();
 		}
 
-		monitor.start();
+		await monitor.start();
 	});
 	await createDefaultBusinessHourIfNotExists();
 
