@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
@@ -19,6 +19,8 @@ export class VisitorInactivityMonitor {
 
 	user: IUser;
 
+	private scheduler = cronJobs;
+
 	constructor() {
 		this._started = false;
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
@@ -26,7 +28,7 @@ export class VisitorInactivityMonitor {
 	}
 
 	async start() {
-		this._startMonitoring();
+		await this._startMonitoring();
 		this._initializeMessageCache();
 		const cat = await Users.findOneById('rocket.cat');
 		if (cat) {
@@ -34,27 +36,20 @@ export class VisitorInactivityMonitor {
 		}
 	}
 
-	_startMonitoring() {
+	private async _startMonitoring() {
 		if (this.isRunning()) {
 			return;
 		}
 		const everyMinute = '* * * * *';
-		SyncedCron.add({
-			name: this._name,
-			schedule: (parser) => parser.cron(everyMinute),
-			job: async () => {
-				return this.handleAbandonedRooms();
-			},
-		});
+		await this.scheduler.add(this._name, everyMinute, async () => this.handleAbandonedRooms());
 		this._started = true;
 	}
 
-	stop() {
+	async stop() {
 		if (!this.isRunning()) {
 			return;
 		}
-
-		SyncedCron.remove(this._name);
+		await this.scheduler.remove(this._name);
 
 		this._started = false;
 	}
