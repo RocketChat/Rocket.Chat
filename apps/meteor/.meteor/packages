@@ -55,7 +55,6 @@ ostrio:cookies
 pauli:accounts-linkedin
 
 rocketchat:tap-i18n@3.0.0
-littledata:synced-cron
 
 autoupdate@1.8.0
 babel-compiler@7.10.3
