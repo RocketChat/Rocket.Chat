@@ -1,13 +1,13 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch, useRole } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -24,7 +24,6 @@ type CreateChannelModalPayload = {
 	broadcast: boolean;
 	federated: boolean;
 };
-
 const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
 	if (licenseModule === 'loading' || !licenseModule) {
 		return 'error-this-is-an-ee-feature';
@@ -39,6 +38,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const canSetReadOnly = usePermission('set-readonly');
+	const isUser = useRole('user');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
@@ -247,7 +247,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								control={control}
 								name='readOnly'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={!canSetReadOnly || broadcast || federated} onChange={onChange} />
+									<ToggleSwitch ref={ref} checked={value} disabled={broadcast || federated} onChange={onChange} />
 								)}
 							/>
 						</Box>
