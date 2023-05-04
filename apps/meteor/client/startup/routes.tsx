@@ -2,12 +2,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
+import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
 import MainLayout from '../views/root/MainLayout';
@@ -87,7 +87,7 @@ FlowRouter.route('/meet/:rid', {
 				return;
 			}
 
-			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Visitor_does_not_exist') });
+			dispatchToastMessage({ type: 'error', message: t('Visitor_does_not_exist') });
 			return;
 		}
 

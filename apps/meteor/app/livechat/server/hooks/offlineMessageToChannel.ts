@@ -1,9 +1,9 @@
+import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartment, Rooms, Users } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { sendMessage } from '../../../lib/server';
+import { i18n } from '../../../../server/lib/i18n';
 import { settings } from '../../../settings/server';
 
 callbacks.add(
@@ -42,16 +42,16 @@ callbacks.add(
 
 		const lng = settings.get<string>('Language') || 'en';
 
-		let msg = `${TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng })}: \n`;
+		let msg = `${i18n.t('New_Livechat_offline_message_has_been_sent', { lng })}: \n`;
 		if (host && host !== '') {
-			msg = msg.concat(`${TAPi18n.__('Sent_from', { lng })}: ${host} \n`);
+			msg = msg.concat(`${i18n.t('Sent_from', { lng })}: ${host} \n`);
 		}
-		msg = msg.concat(`${TAPi18n.__('Visitor_Name', { lng })}: ${name} \n`);
-		msg = msg.concat(`${TAPi18n.__('Visitor_Email', { lng })}: ${email} \n`);
+		msg = msg.concat(`${i18n.t('Visitor_Name', { lng })}: ${name} \n`);
+		msg = msg.concat(`${i18n.t('Visitor_Email', { lng })}: ${email} \n`);
 		if (departmentName) {
-			msg = msg.concat(`${TAPi18n.__('Department', { lng })}: ${departmentName} \n`);
+			msg = msg.concat(`${i18n.t('Department', { lng })}: ${departmentName} \n`);
 		}
-		msg = msg.concat(`${TAPi18n.__('Message', { lng })}: ${text} \n`);
+		msg = msg.concat(`${i18n.t('Message', { lng })}: ${text} \n`);
 
 		const message = {
 			rid: room._id,

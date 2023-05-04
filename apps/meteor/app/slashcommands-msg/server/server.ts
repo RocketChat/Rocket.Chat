@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
@@ -8,6 +7,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { i18n } from '../../../server/lib/i18n';
 
 /*
  * Msg is a named function that will replace /msg commands
@@ -20,7 +20,7 @@ slashCommands.add({
 		const separator = trimmedParams.indexOf(' ');
 		if (separator === -1) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_and_message_must_not_be_empty', { lng: settings.get('Language') || 'en' }),
+				msg: i18n.t('Username_and_message_must_not_be_empty', { lng: settings.get('Language') || 'en' }),
 			});
 			return;
 		}
@@ -31,7 +31,7 @@ slashCommands.add({
 		if (targetUser == null) {
 			const user = await Users.findOneById(userId, { projection: { language: 1 } });
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
+				msg: i18n.t('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [targetUsernameOrig],
 					lng: user?.language || settings.get('Language') || 'en',
