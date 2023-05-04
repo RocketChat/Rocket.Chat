@@ -45,8 +45,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	} = useForm<LoginRegisterPayload>();
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
-		console.log(errors.email);
-
 		registerUser.mutate(
 			{ pass: password, ...formData },
 			{
@@ -120,7 +118,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 										invalidEmailInput = false;
 									}
 
-									console.log(`invalidEmailInput: ${invalidEmailInput}`);
 								}}
 								aria-invalid={errors.email || invalidEmailInput ? 'true' : undefined}
 								defaultValue={inputEmail}
