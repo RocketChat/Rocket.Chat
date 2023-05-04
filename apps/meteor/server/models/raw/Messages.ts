@@ -83,7 +83,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
-			rid,
+			rid: 'GENERAL',
 		};
 
 		return this.find(query, options);
