@@ -3,14 +3,14 @@
  * @param {Object} message - The message object
  */
 
-import { Meteor } from 'meteor/meteor';
-import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { i18n } from '../../../server/lib/i18n';
+import { slashCommands } from '../../utils/lib/slashCommand';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -79,7 +79,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				});
 			} else {
 				await addUsersToRoomMethod(userId, {
-					rid: targetChannel._id,
+					rid: targetChannel?._id ?? '',
 					users,
 				});
 			}
