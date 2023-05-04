@@ -1207,32 +1207,41 @@ export class RoomsRaw extends BaseRaw {
 			t: {
 				$in: types,
 			},
-			$or: [
+			$and: [
 				{
-					teamId: {
-						$exists: false,
-					},
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$exists: true,
+							},
+							_id: {
+								$in: ids,
+							},
+						},
+						{
+							// Also return the main room of public teams
+							// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+							teamMain: true,
+							t: 'c',
+						},
+					],
 				},
 				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-				{
-					// Also return the main room of public teams
-					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
-					teamMain: true,
-					t: 'c',
+					...(includeFederatedRooms
+						? {
+								$or: [
+									{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] },
+									{ federated: true, fname: name },
+								],
+						  }
+						: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 				},
 			],
-			...(includeFederatedRooms
-				? {
-						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-				  }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
