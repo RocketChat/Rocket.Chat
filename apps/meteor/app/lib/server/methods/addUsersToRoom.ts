@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
@@ -11,6 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
+import { i18n } from '../../../../server/lib/i18n';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -98,7 +98,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 					return;
 				}
 				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: TAPi18n.__(
+					msg: i18n.t(
 						'Username_is_already_in_here',
 						{
 							postProcess: 'sprintf',

@@ -141,5 +141,5 @@ table {
 }
 
 a {
-	color: var(--rc-color-button-primary);
+	color: var(--rcx-color-font-info, #095ad2);
 }
