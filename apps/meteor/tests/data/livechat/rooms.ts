@@ -277,8 +277,8 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 	});
 };
 
-export const closeOmnichannelRoom = async (roomId: string): Promise<void> => {
-	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200);
+export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Promise<void> => {
+	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags } }).expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (

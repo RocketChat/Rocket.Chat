@@ -39,6 +39,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
+import { saveTags } from '../../../data/livechat/tags';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -362,6 +363,20 @@ describe('LIVECHAT - rooms', function () {
 
 			const { body } = await request
 				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
+			const tag = await saveTags();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt();
+			await closeOmnichannelRoom(expectedRoom._id, [tag.name]);
+
+			const { body } = await request
+				.get(api(`livechat/rooms?tags[]=${tag.name}`))
 				.set(credentials)
 				.expect(200);
 
