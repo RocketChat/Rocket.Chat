@@ -110,13 +110,14 @@ smarsh.generateEml = () => {
 			if (rows.length !== 0) {
 				const result = start + rows.join('') + end;
 
-				SmarshHistory.upsert(
+				await SmarshHistory.updateOne(
 					{ _id: room._id },
 					{
 						_id: room._id,
 						lastRan: date,
 						lastResult: result,
 					},
+					{ upsert: true },
 				);
 
 				smarsh.sendEmail({
