@@ -1,31 +1,29 @@
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+
 export type EmojiPackage = {
+	emojiCategories: Array<{ key: string; i18n: TranslationKey }>;
+	categoryIndex?: number;
+	emojisByCategory: Record<string, string[]>;
+	toneList: Record<string, unknown>;
+	render: (message: string) => string;
+	renderPicker: (emojiToRender: string) => string | undefined;
+	ascii?: boolean;
+	sprites?: unknown;
+};
+
+export type EmojiPackages = {
 	packages: {
-		base: {
-			emojiCategories: Array<{ key: string; i18n: string }>;
-			categoryIndex: number;
-			emojisByCategory: Record<string, unknown>;
-			toneList: Record<string, unknown>;
-			render: (message: string) => string;
-			renderPicker: (emojiToRender: string) => void;
-			ascii?: boolean;
-		};
-		emojione?: {
-			sprites: boolean;
-			emojisByCategory: Record<string, unknown>;
-			emojiCategories: Array<{ key: string; i18n: string }>;
-			toneList: Record<string, unknown>;
-			render: (message: string) => string;
-			renderPicker: (emojiToRender: string) => void;
-			ascii?: boolean;
+		[key: string]: EmojiPackage;
+	};
+	list: {
+		[key: keyof NonNullable<EmojiPackages['packages']>]: {
+			category: string;
+			emojiPackage: string;
+			shortnames: string[];
+			uc_base: string;
+			uc_greedy: string;
+			uc_match: string;
+			uc_output: string;
 		};
 	};
-	list: Record<
-		string,
-		{ emojiPackage?: keyof NonNullable<EmojiPackage['packages']> } & {
-			unicode: string[];
-			fname: string;
-			uc: string;
-			isCanonical: boolean;
-		}
-	>;
 };

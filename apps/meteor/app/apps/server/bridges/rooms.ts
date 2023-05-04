@@ -4,12 +4,15 @@ import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
-import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -21,39 +24,39 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
 		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-		let method: string;
 
 		switch (room.type) {
 			case RoomType.CHANNEL:
-				method = 'createChannel';
-				break;
+				return this.createChannel(room.creator.id, rcRoom, members);
 			case RoomType.PRIVATE_GROUP:
-				method = 'createPrivateGroup';
-				break;
+				return this.createPrivateGroup(room.creator.id, rcRoom, members);
 			case RoomType.DIRECT_MESSAGE:
-				method = 'createDirectMessage';
-				break;
+				return this.createDirectMessage(room.creator.id, members);
 			default:
 				throw new Error('Only channels, private groups and direct messages can be created.');
 		}
+	}
 
-		let rid = '';
-		await Meteor.runAsUser(room.creator.id, async () => {
-			const extraData = Object.assign({}, rcRoom);
-			delete extraData.name;
-			delete extraData.t;
-			delete extraData.ro;
-			delete extraData.customFields;
-			let info;
-			if (room.type === RoomType.DIRECT_MESSAGE) {
-				info = await Meteor.callAsync(method, ...members);
-			} else {
-				info = await Meteor.callAsync(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
-			}
-			rid = info.rid;
-		});
+	private prepareExtraData(room: Record<string, any>): Record<string, unknown> {
+		const extraData = Object.assign({}, room);
+		delete extraData.name;
+		delete extraData.t;
+		delete extraData.ro;
+		delete extraData.customFields;
 
-		return rid;
+		return extraData;
+	}
+
+	private async createChannel(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
+		return (await createChannelMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
+	}
+
+	private async createDirectMessage(userId: string, members: string[]): Promise<string> {
+		return (await createDirectMessage(members, userId)).rid;
+	}
+
+	private async createPrivateGroup(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
+		return (await createPrivateGroupMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {

@@ -19,7 +19,6 @@ declare module 'meteor/templating' {
 	>;
 
 	type BlazeTemplates = {
-		emojiPicker: BlazeTemplate;
 		ExternalFrameContainer: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		loading: BlazeTemplate;
