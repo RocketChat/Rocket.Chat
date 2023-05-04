@@ -5,6 +5,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 import EmojiCategoryRow from './EmojiCategoryRow';
 
 type CategoriesResultProps = {
@@ -20,6 +21,8 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 	{ emojiListByCategory, categoriesPosition, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
 	ref,
 ) {
+	const { handleScrolling } = usePreviewEmoji();
+
 	return (
 		<Virtuoso
 			ref={ref}
@@ -27,6 +30,7 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			data={emojiListByCategory}
 			components={{ Scroller: ScrollableContentWrapper }}
 			onScroll={handleScroll}
+			isScrolling={(isScrolling) => handleScrolling(isScrolling)}
 			itemContent={(_, data) => (
 				<EmojiCategoryRow
 					categoryKey={data.key}

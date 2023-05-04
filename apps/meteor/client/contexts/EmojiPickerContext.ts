@@ -7,6 +7,8 @@ type EmojiPickerContextValue = {
 	emojiToPreview: { emoji: string; name: string } | null;
 	handlePreview: (emoji: string, name: string) => void;
 	handleUnpreview: () => void;
+	isScrolling: boolean;
+	handleScrolling: (isScrolling: boolean) => void;
 };
 
 export const EmojiPickerContext = createContext<EmojiPickerContextValue | undefined>(undefined);
@@ -29,4 +31,6 @@ export const usePreviewEmoji = () => ({
 	emojiToPreview: useEmojiPickerContext().emojiToPreview,
 	handlePreview: useEmojiPickerContext().handlePreview,
 	handleUnpreview: useEmojiPickerContext().handleUnpreview,
+	isScrolling: useEmojiPickerContext().isScrolling,
+	handleScrolling: useEmojiPickerContext().handleScrolling,
 });
