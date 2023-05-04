@@ -61,26 +61,10 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, agentCredentials?: IUserCredentialsHeader): Promise<IOmnichannelRoom> => {
-	return new Promise((resolve, reject) => {
-		request
-			.post(methodCall(`livechat:takeInquiry`))
-			.set(agentCredentials || credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:takeInquiry',
-					params: [roomId, { clientAction: true }],
-					id: '101',
-					msg: 'method',
-				}),
-			})
-			.end((err: Error, res: DummyResponse<IOmnichannelRoom, 'unwrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body);
-			});
-	});
+export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
+    const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
+
+    await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
 };
 
 export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
