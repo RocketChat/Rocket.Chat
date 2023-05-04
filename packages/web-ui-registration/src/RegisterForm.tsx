@@ -21,6 +21,7 @@ type LoginRegisterPayload = {
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
+	const [inputEmail, setInputEmail] = useState('');
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -45,6 +46,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		console.log(errors.email);
+
 		registerUser.mutate(
 			{ pass: password, ...formData },
 			{
@@ -72,18 +74,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
 
-	const [inputEmail, setInputEmail] = useState('example@example.com');
-
-	const handleEmailInput = (event: any) => {
-		setInputEmail(event.target.value);
-		console.log('value is:', event.target.value);
-	};
-
-	if (RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, 'gm').test(inputEmail) === false) {
-		console.log('INVALID EMAIL!!!!');
-		// return <Field.Error>{t('registration.component.form.invalidEmail')}</Field.Error>;
-		// <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />
-	}
+	let invalidEmailInput;
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
@@ -116,12 +107,23 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									required: true,
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.requiredField')}
+								error={errors.email || invalidEmailInput ? 'Error' : undefined}
 								name='email'
-								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'
-								value={inputEmail}
-								onChange={handleEmailInput}
+								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+									setInputEmail(String(event.target.value));
+
+									if (RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'gm').test(inputEmail) === false) {
+										console.log('INVALID EMAIL!!!!');
+										invalidEmailInput = true;
+									} else {
+										invalidEmailInput = false;
+									}
+
+									console.log(`invalidEmailInput: ${invalidEmailInput}`);
+								}}
+								aria-invalid={errors.email || invalidEmailInput ? 'true' : undefined}
+								defaultValue={inputEmail}
 							/>
 						</Field.Row>
 						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
