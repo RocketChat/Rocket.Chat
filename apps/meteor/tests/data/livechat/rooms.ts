@@ -8,7 +8,7 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { updatePermission } from '../permissions.helper';
+import { getSettingValueById, updatePermission, updateSetting } from '../permissions.helper';
 import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import type { DummyResponse } from './utils';
@@ -291,12 +291,25 @@ export const startANewLivechatRoomAndTakeIt = async ({
     departmentId?: string;
     agent?: IUserCredentialsHeader;
 } = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+
+    const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
+    let routingMethodChanged = false;
+    if (currentRoutingMethod !== 'Manual_Selection') {
+        await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+    }
+
+
 	const visitor = await createVisitor(departmentId);
 	const room = await createLivechatRoom(visitor.token);
 	const { _id: roomId } = room;
 	const inq = await fetchInquiry(roomId);
 	await takeInquiry(inq._id, agent);
 	await sendMessage(roomId, 'test message', visitor.token);
+
+
+    if (routingMethodChanged) {
+        await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
+    }
 
 	return { room, visitor };
 };
