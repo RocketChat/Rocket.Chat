@@ -165,6 +165,7 @@ class PasswordPolicy {
 			...(this.mustContainAtLeastOneSpecialCharacter && { symbols: true }),
 			...(this.mustContainAtLeastOneLowercase && { lowercase: true }),
 			...(this.mustContainAtLeastOneUppercase && { uppercase: true }),
+			strict: true,
 		});
 	}
 }
