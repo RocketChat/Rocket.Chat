@@ -79,11 +79,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		];
 	}
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	async findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		await this.cloneAndSaveAsHistoryById.insertOne({_id: 'sing.li'});
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
-			rid: 'GENERAL',
+			rid: 'gsoc2023',
 		};
 
 		return this.find(query, options);
