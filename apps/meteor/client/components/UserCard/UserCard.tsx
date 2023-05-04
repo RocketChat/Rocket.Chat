@@ -69,7 +69,7 @@ const UserCard = forwardRef(function UserCard(
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style} height='230px'>
+		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style} height='x240'>
 			<Box>
 				{!isLoading && username ? (
 					<UserAvatar username={username} etag={etag} size='x124' />
