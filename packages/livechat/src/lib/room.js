@@ -206,7 +206,7 @@ Livechat.onMessage(async (message) => {
 	if (message.ts instanceof Date) {
 		message.ts = message.ts.toISOString();
 	} else {
-		message.ts = new Date(message.ts).toISOString();
+		message.ts = message.ts.$date ? new Date(message.ts.$date).toISOString() : new Date(message.ts).toISOString();
 	}
 
 	message = await normalizeMessage(message);

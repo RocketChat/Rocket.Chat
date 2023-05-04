@@ -143,7 +143,7 @@ class ChatContainer extends Component {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
-			await Livechat.uploadFile({ rid, file });
+			await Livechat.uploadFile(rid, file);
 		} catch (error) {
 			const {
 				data: { reason, sizeAllowed },

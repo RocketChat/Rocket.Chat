@@ -78,7 +78,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onAgentChange(rid: string, cb: (data: LivechatRoomEvents<'agentData'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
 			if (data.type === 'agentData') {
 				cb(data.data);
 			}
@@ -86,7 +86,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onAgentStatusChange(rid: string, cb: (data: LivechatRoomEvents<'agentStatus'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
 			if (data.type === 'agentStatus') {
 				cb(data.status);
 			}
@@ -94,7 +94,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onQueuePositionChange(rid: string, cb: (data: LivechatRoomEvents<'queueData'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
 			if (data.type === 'queueData') {
 				cb(data.data);
 			}
@@ -102,7 +102,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onVisitorChange(rid: string, cb: (data: LivechatRoomEvents<'visitorData'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
 			if (data.type === 'visitorData') {
 				cb(data.visitor);
 			}
@@ -295,13 +295,27 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return status;
 	}
 
-	// uploadFile(params: OperationParams<'POST', '/v1/livechat/upload/:rid'>): Promise<Serialized<OperationResult<'POST', '/v1/livechat/upload/:rid'>>> {
-	// 	if (!this.token) {
-	// 		throw new Error('Invalid token');
-	// 	}
+	uploadFile(rid: string, file: File): Promise<Serialized<OperationResult<'POST', '/v1/livechat/upload/:rid'>>> {
+		if (!this.token) {
+			throw new Error('Invalid token');
+		}
 
-	// 	return this.rest.post(`/v1/livechat/upload/${params.rid}`, { ...params, token: this.token });
-	// }
+		if (!file) {
+			throw new Error('Invalid file');
+		}
+
+		return new Promise((resolve, reject) => {
+			return this.rest.upload(
+				`/v1/livechat/upload/${rid}`,
+				{ file },
+				{
+					load: resolve,
+					error: reject,
+				},
+				{ headers: { 'x-visitor-token': this.token } },
+			);
+		});
+	}
 
 	// API DELETE
 
@@ -329,6 +343,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): LivechatClientImpl {
+		// TODO: Decide what to do with the EJSON objects
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
