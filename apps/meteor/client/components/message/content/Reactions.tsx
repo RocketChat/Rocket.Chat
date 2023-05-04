@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -12,17 +11,12 @@ type ReactionsProps = {
 	message: IMessage;
 };
 
-const Reactions = ({ message }: ReactionsProps): ReactElement | null => {
+const Reactions = ({ message }: ReactionsProps): ReactElement => {
 	const hasReacted = useUserHasReacted(message);
 	const filterReactions = useReactionsFilter(message);
 	const openEmojiPicker = useOpenEmojiPicker(message);
-	const useEmoji = useUserPreference('useEmoji');
 
 	const toggleReactionMutation = useToggleReactionMutation();
-
-	if (!useEmoji) {
-		return null;
-	}
 
 	return (
 		<MessageReactions>

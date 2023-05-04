@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { getUserPreference } from '../../utils/client';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -21,10 +20,6 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			if (!user) {
-				return false;
-			}
-
 			if (!subscription) {
 				return false;
 			}
@@ -38,12 +33,6 @@ Meteor.startup(function () {
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
-				return false;
-			}
-
-			const useEmoji = getUserPreference(user._id, 'useEmoji');
-
-			if (!useEmoji) {
 				return false;
 			}
 
