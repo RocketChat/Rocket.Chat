@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { i18n } from '../../../server/lib/i18n';
 
 /*
  * Leave is a named function that will replace /leave commands
@@ -20,7 +20,7 @@ const Leave = async function Leave({ message, userId }: SlashCommandCallbackPara
 		}
 		const user = await Users.findOneById(userId);
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-			msg: TAPi18n.__(error, { lng: user?.language || settings.get('Language') || 'en' }),
+			msg: i18n.t(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
 	}
 };

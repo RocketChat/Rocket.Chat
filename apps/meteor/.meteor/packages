@@ -9,8 +9,6 @@
 rocketchat:ddp
 rocketchat:mongo-config
 rocketchat:oauth2-server
-rocketchat:i18n
-rocketchat:tap-i18n@3.0.0
 rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
@@ -73,3 +71,7 @@ ecmascript@0.16.6
 typescript@4.9.4
 
 autoupdate@1.8.0
+
+# photoswipe
+
+jquery
