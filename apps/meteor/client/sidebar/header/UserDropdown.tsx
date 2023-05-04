@@ -8,6 +8,7 @@ import {
 	OptionContent,
 	OptionDivider,
 	OptionIcon,
+	OptionInput,
 	OptionTitle,
 	RadioButton,
 } from '@rocket.chat/fuselage';
@@ -154,23 +155,23 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<Option is='label' role='listitem'>
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
 			<Option is='label' role='listitem'>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
 			<Option is='label' role='listitem'>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
 			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
