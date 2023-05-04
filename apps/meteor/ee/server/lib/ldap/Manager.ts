@@ -579,7 +579,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static updateExistingUser(ldapUser: ILDAPEntry, user: IUser, converter: LDAPDataConverter): void {
 		const userData = this.mapUserData(ldapUser, user.username);
-		converter.addUser(userData);
+		converter.addUserSync(userData);
 	}
 
 	private static async removeDeletedUser(user: IUser): Promise<void> {
