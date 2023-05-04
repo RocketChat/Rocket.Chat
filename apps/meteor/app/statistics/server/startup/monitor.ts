@@ -6,8 +6,8 @@ import { settings } from '../../../settings/server';
 const SAUMonitor = new SAUMonitorClass();
 
 Meteor.startup(() => {
-	let TroubleshootDisableSessionsMonitor;
-	settings.watch('Troubleshoot_Disable_Sessions_Monitor', (value) => {
+	let TroubleshootDisableSessionsMonitor: boolean;
+	settings.watch<boolean>('Troubleshoot_Disable_Sessions_Monitor', async (value) => {
 		if (TroubleshootDisableSessionsMonitor === value) {
 			return;
 		}
@@ -17,6 +17,6 @@ Meteor.startup(() => {
 			return SAUMonitor.stop();
 		}
 
-		SAUMonitor.start();
+		await SAUMonitor.start();
 	});
 });

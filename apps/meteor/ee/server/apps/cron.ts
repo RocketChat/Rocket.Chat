@@ -1,14 +1,15 @@
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
+import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import { cronJobs } from '@rocket.chat/cron';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 
-const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps) {
+const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -27,10 +28,12 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
-			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
+			msg: `*${TAPi18n.__(title, { lng: adminUser.language || 'en' })}*\n${TAPi18n.__(rocketCatMessage, {
+				lng: adminUser.language || 'en',
+			})}`,
 		}),
 		banners: async ({ adminUser }) => {
-			await Users.removeBannerById(adminUser._id, { id });
+			await Users.removeBannerById(adminUser._id, id);
 
 			return [
 				{
@@ -48,7 +51,7 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 	return apps;
 };
 
-const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps) {
+const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApps(apps?: ProxiedApp[]) {
 	if (!apps) {
 		return;
 	}
@@ -64,7 +67,7 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
 	await sendMessagesToAdmins({
-		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+		msgs: async ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, { lng: adminUser.language || 'en' })}` }),
 	});
 };
 
@@ -102,10 +105,4 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
 };
 
-SyncedCron.add({
-	name: 'Apps-Engine:check',
-	schedule: (parser) => parser.text('at 4:00 am'),
-	async job() {
-		await appsUpdateMarketplaceInfo();
-	},
-});
+await cronJobs.add('Apps-Engine:check', '0 4 * * *', async () => appsUpdateMarketplaceInfo());

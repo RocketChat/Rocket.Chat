@@ -1,5 +1,13 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
+export const ldapIntervalValuesToCronMap: Record<string, string> = {
+	every_1_hour: '0 * * * *',
+	every_6_hours: '0 */6 * * *',
+	every_12_hours: '0 */12 * * *',
+	every_24_hours: '0 0 * * *',
+	every_48_hours: '0 0 */2 * *',
+};
+
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('LDAP', async function () {
 		const enableQuery = { _id: 'LDAP_Enable', value: true };
@@ -20,10 +28,32 @@ export function addSettings(): Promise<void> {
 
 					const backgroundSyncQuery = [enableQuery, { _id: 'LDAP_Background_Sync', value: true }];
 
-					await this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', {
-						type: 'string',
+					await this.add('LDAP_Background_Sync_Interval', 'every_24_hours', {
+						type: 'select',
+						values: [
+							{
+								key: 'every_1_hour',
+								i18nLabel: 'every_hour',
+							},
+							{
+								key: 'every_6_hours',
+								i18nLabel: 'every_six_hours',
+							},
+							{
+								key: 'every_12_hours',
+								i18nLabel: 'every_12_hours',
+							},
+							{
+								key: 'every_24_hours',
+								i18nLabel: 'every_24_hours',
+							},
+							{
+								key: 'every_48_hours',
+								i18nLabel: 'every_48_hours',
+							},
+						],
 						enableQuery: backgroundSyncQuery,
-						invalidValue: 'Every 24 hours',
+						invalidValue: 'every_24_hours',
 					});
 
 					await this.add('LDAP_Background_Sync_Import_New_Users', true, {

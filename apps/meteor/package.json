@@ -222,6 +222,7 @@
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/favicon": "workspace:^",
