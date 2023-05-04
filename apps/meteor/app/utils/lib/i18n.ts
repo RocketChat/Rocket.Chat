@@ -5,12 +5,18 @@ import { isObject } from '../../../lib/utils/isObject';
 
 export const i18n = i18next.use(sprintf);
 
-export const t = function (key: string, ...replaces: any): string {
-	if (isObject(replaces[0])) {
-		return i18n.t(key, ...replaces);
-	}
-	return i18n.t(key, {
-		postProcess: 'sprintf',
-		sprintf: replaces,
-	});
+export const addSprinfToI18n = function (t: (typeof i18n)['t']): typeof t & {
+	(key: string, ...replaces: any): string;
+} {
+	return function (key: string, ...replaces: any): string {
+		if (isObject(replaces[0])) {
+			return t(key, ...replaces);
+		}
+		return t(key, {
+			postProcess: 'sprintf',
+			sprintf: replaces,
+		});
+	};
 };
+
+export const t = addSprinfToI18n(i18n.t.bind(i18n));

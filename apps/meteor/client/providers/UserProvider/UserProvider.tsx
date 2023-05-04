@@ -161,7 +161,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	);
 
 	useEffect(() => {
-		if (user?.language && user.language !== language) {
+		if (user?.language !== undefined && user.language !== language) {
 			setLanguage(user.language);
 		}
 	}, [user?.language, language, setLanguage]);

@@ -8,10 +8,10 @@ import I18NextHttpBackend from 'i18next-http-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
 import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
+import React, { useEffect, useMemo } from 'react';
+import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { i18n } from '../../app/utils/lib/i18n';
+import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
@@ -77,28 +77,35 @@ const useI18next = (lng: string): typeof i18next => {
 		return result;
 	});
 
-	useState(() => {
-		i18n.init({
-			lng,
-			fallbackLng: 'en',
-			ns: namespacesDefault,
-			nsSeparator: '.',
-			resources: {
-				en: {
-					core: en,
+	const instance = useMemo(
+		() =>
+			i18n.init({
+				lng,
+				fallbackLng: 'en',
+				ns: namespacesDefault,
+				nsSeparator: '.',
+				resources: {
+					en: {
+						core: en,
+					},
 				},
-			},
-			partialBundledLanguages: true,
-			defaultNS: 'core',
-			backend: {
-				loadPath: `${basePath}/{{lng}}.json`,
-				parse,
-			},
-		});
-	});
+				partialBundledLanguages: true,
+				defaultNS: 'core',
+				backend: {
+					loadPath: `${basePath}/{{lng}}.json`,
+					parse,
+				},
+				react: {
+					useSuspense: true,
+				},
+			}),
+		[lng, basePath, parse],
+	);
 
 	useEffect(() => {
-		i18n.changeLanguage(lng);
+		if (i18n.language !== lng) {
+			i18n.changeLanguage(lng);
+		}
 	}, [lng]);
 
 	useEffect(() => {
@@ -134,34 +141,41 @@ const useI18next = (lng: string): typeof i18next => {
 				i18n.addResourceBundle(ln, namespace, translations);
 			}
 		}
-	}, [customTranslations]);
+	}, [customTranslations, instance]);
 
 	return i18n;
-};
-
-const loadLanguage = async (language: string): Promise<void> => {
-	i18n.changeLanguage(language).then(() => applyCustomTranslations());
 };
 
 type TranslationProviderProps = {
 	children: ReactNode;
 };
 
-const useAutoLanguage = (): string => {
-	const defaultUserLanguage =
-		useSetting<string>('Language') || filterLanguage(window.navigator.userLanguage ?? window.navigator.language) || 'en';
+const useAutoLanguage = () => {
+	const serverLanguage = useSetting<string>('Language');
+	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
+	const defaultUserLanguage = serverLanguage || browserLanguage || 'en';
 
-	const suggestedLanguage = languages.find((lng) => lng === defaultUserLanguage)
-		? defaultUserLanguage
-		: defaultUserLanguage.split('-').shift() ?? 'en';
+	// if the language is supported, if not remove the region
+	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
 
+	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
 
 	document.documentElement.classList[isRTLScriptLanguage(language) ? 'add' : 'remove']('rtl');
 	document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
 	document.documentElement.lang = language;
 
-	return language;
+	// if user has no language set, we should set it to the default language
+	return language || suggestedLanguage;
+};
+
+const getLanguageName = (code: string, lng: string): string => {
+	try {
+		const lang = new Intl.DisplayNames([lng], { type: 'language' });
+		return lang.of(code) ?? code;
+	} catch (e) {
+		return code;
+	}
 };
 
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
@@ -170,13 +184,19 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 	const language = useAutoLanguage();
 	const i18nextInstance = useI18next(language);
 	const availableLanguages = useMemo(
-		() =>
-			[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
+		() => [
+			{
+				en: 'Default',
+				name: i18nextInstance.t('Default'),
+				key: '',
+			},
+			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
 				en: key,
-				name: key,
+				name: getLanguageName(key, language),
 				key,
 			})),
-		[i18nextInstance],
+		],
+		[language, i18nextInstance],
 	);
 
 	useEffect(() => {
@@ -197,31 +217,49 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			});
 	}, [language, loadLocale, availableLanguages]);
 
-	const value: TranslationContextValue = useMemo(
-		() => ({
-			language,
-			languages: availableLanguages,
-			loadLanguage,
-			translate: Object.assign(
-				((key, ...options) => {
-					if (options.length > 1 || typeof options[0] !== 'object') {
-						return i18nextInstance.t(key, { postProcess: 'sprintf', sprintf: options });
-					}
-					return i18nextInstance.t(key, ...options);
-				}) as TranslationContextValue['translate'],
-				{
-					has: ((key, options) => key && i18nextInstance.exists(key, options)) as TranslationContextValue['translate']['has'],
-				},
-			),
-		}),
-		[language, availableLanguages, i18nextInstance],
-	);
-
 	return (
 		<I18nextProvider i18n={i18nextInstance}>
-			<TranslationContext.Provider children={children} value={value} />
+			<TranslationProviderInner children={children} availableLanguages={availableLanguages} />
 		</I18nextProvider>
 	);
+};
+
+/**
+ * I was forced to create this component to keep the api useTranslation from rocketchat
+ * rocketchat useTranslation invalidates the provider content, triggering all the places that use it
+ * i18next triggers a re-render inside useTranslation, since now we are using 100% of the i18next
+ * the only way to invalidate after changing the language in a safe way is using the useTranslation from i8next
+ * and invalidating the provider content
+ */
+// eslint-disable-next-line react/no-multi-comp
+const TranslationProviderInner = ({
+	children,
+	availableLanguages,
+}: {
+	children: ReactNode;
+	availableLanguages: {
+		en: string;
+		name: string;
+		key: string;
+	}[];
+}): ReactElement => {
+	const { t, i18n } = useTranslation();
+
+	const value: TranslationContextValue = useMemo(
+		() => ({
+			language: i18n.language,
+			languages: availableLanguages,
+			loadLanguage: async (language: string): Promise<void> => {
+				i18n.changeLanguage(language).then(() => applyCustomTranslations());
+			},
+			translate: Object.assign(addSprinfToI18n(t), {
+				has: ((key, options) => key && i18n.exists(key, options)) as TranslationContextValue['translate']['has'],
+			}),
+		}),
+		[availableLanguages, i18n, t],
+	);
+
+	return <TranslationContext.Provider children={children} value={value} />;
 };
 
 export default TranslationProvider;
