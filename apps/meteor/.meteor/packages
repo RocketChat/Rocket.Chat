@@ -50,7 +50,6 @@ shell-server@0.5.0
 
 dispatch:run-as-user
 ostrio:cookies
-littledata:synced-cron
 
 kadira:flow-router
 
