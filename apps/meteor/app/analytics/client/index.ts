@@ -1,2 +1,1 @@
-import './loadScript';
 import './trackEvents';
