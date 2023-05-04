@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Invites, Subscriptions, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { IInvite } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -9,10 +10,10 @@ import { getURL } from '../../../utils/server/getURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
-function getInviteUrl(invite) {
+function getInviteUrl(invite: Omit<IInvite, '_updatedAt'>) {
 	const { _id } = invite;
 
-	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
+	const useDirectLink = settings.get<string>('Accounts_Registration_InviteUrlType') === 'direct';
 
 	return getURL(
 		`invite/${_id}`,
@@ -21,14 +22,14 @@ function getInviteUrl(invite) {
 			cloud: !useDirectLink,
 			cloud_route: 'invite',
 		},
-		settings.get('DeepLink_Url'),
+		settings.get<string>('DeepLink_Url'),
 	);
 }
 
 const possibleDays = [0, 1, 7, 15, 30];
 const possibleUses = [0, 1, 5, 10, 25, 50, 100];
 
-export const findOrCreateInvite = async (userId, invite) => {
+export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, 'rid' | 'days' | 'maxUses'>) => {
 	if (!userId || !invite) {
 		return false;
 	}
@@ -97,7 +98,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 		expires.setDate(expires.getDate() + days);
 	}
 
-	const createInvite = {
+	const createInvite: Omit<IInvite, '_updatedAt'> = {
 		_id,
 		days,
 		maxUses,
@@ -105,6 +106,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 		userId,
 		createdAt,
 		expires,
+		url: '',
 		uses: 0,
 	};
 
