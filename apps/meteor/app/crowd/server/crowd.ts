@@ -1,16 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { SHA256 } from '@rocket.chat/sha256';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { _setRealName } from '../../lib/server';
 import { settings } from '../../settings/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { logger } from './logger';
+import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 
-function fallbackDefaultAccountSystem(bind, username, password) {
+type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
+
+function fallbackDefaultAccountSystem(bind: typeof Accounts, username: string | Record<string, any>, password: string) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
 			username = { username };
@@ -33,9 +37,23 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 }
 
 export class CROWD {
+	private crowdClient: any;
+
+	private options: {
+		crowd: {
+			base: string;
+		};
+		application: {
+			name: string;
+			password: string;
+		};
+		rejectUnauthorized: boolean;
+	};
+
 	constructor() {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const AtlassianCrowd = require('atlassian-crowd-patched');
-		let url = settings.get('CROWD_URL');
+		let url = settings.get<string>('CROWD_URL');
 
 		this.options = {
 			crowd: {
@@ -55,75 +73,75 @@ export class CROWD {
 		await this.crowdClient.ping();
 	}
 
-	async fetchCrowdUser(crowd_username) {
-		const userResponse = await this.crowdClient.user.find(crowd_username);
+	async fetchCrowdUser(crowdUsername: string) {
+		const userResponse = await this.crowdClient.user.find(crowdUsername);
 
 		return {
 			displayname: userResponse['display-name'],
 			username: userResponse.name,
 			email: userResponse.email,
 			active: userResponse.active,
-			crowd_username,
+			crowd_username: crowdUsername,
 		};
 	}
 
-	async authenticate(username, password) {
+	async authenticate(username: string, password: string) {
 		if (!username || !password) {
 			logger.error('No username or password');
 			return;
 		}
-
+		const projection = { username: 1, crowd_username: 1, crowd: 1 };
 		logger.info('Extracting crowd_username');
 		let user = null;
-		let crowd_username = username;
+		let crowdUsername = username;
 
 		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			user = await Users.findOne({ 'emails.address': email }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne<CrowdUser>({ 'emails.address': email }, { projection });
 			if (user) {
-				crowd_username = user.crowd_username;
+				crowdUsername = user.crowd_username;
 			} else {
 				logger.debug('Could not find a user by email', username);
 			}
 		}
 
 		if (user == null) {
-			user = await Users.findOne({ username }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne<CrowdUser>({ username }, { projection });
 			if (user) {
-				crowd_username = user.crowd_username;
+				crowdUsername = user.crowd_username;
 			} else {
 				logger.debug('Could not find a user by username');
 			}
 		}
 
 		if (user == null) {
-			user = await Users.findOne({ crowd_username: username }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne<CrowdUser>({ crowd_username: username }, { projection });
 			if (user) {
-				crowd_username = user.crowd_username;
+				crowdUsername = user.crowd_username;
 			} else {
 				logger.debug('Could not find a user with by crowd_username', username);
 			}
 		}
 
-		if (user && !crowd_username) {
+		if (user && !crowdUsername) {
 			logger.debug('Local user found, redirecting to fallback login');
 			return {
 				crowd: false,
 			};
 		}
 
-		if (!user && crowd_username) {
+		if (!user && crowdUsername) {
 			logger.debug('New user. User is not synced yet.');
 		}
-		logger.debug('Going to crowd:', crowd_username);
-		const auth = await this.crowdClient.user.authenticate(crowd_username, password);
+		logger.debug('Going to crowd:', crowdUsername);
+		const auth = await this.crowdClient.user.authenticate(crowdUsername, password);
 
 		if (!auth) {
 			return;
 		}
 
-		const crowdUser = await this.fetchCrowdUser(crowd_username);
+		const crowdUser: Record<string, any> = await this.fetchCrowdUser(crowdUsername);
 
 		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
 			crowdUser.username = user.username;
@@ -137,15 +155,14 @@ export class CROWD {
 		return crowdUser;
 	}
 
-	async syncDataToUser(crowdUser, id) {
-		const self = this;
+	async syncDataToUser(crowdUser: Record<string, any>, id: string) {
 		const user = {
-			username: self.cleanUsername(crowdUser.username),
+			username: this.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
 			emails: [
 				{
 					address: crowdUser.email,
-					verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+					verified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts'),
 				},
 			],
 			crowd: true,
@@ -179,60 +196,68 @@ export class CROWD {
 			return;
 		}
 
-		const self = this;
-		const users = (await Users.findCrowdUsers()) || [];
+		const users =
+			((await Users.findCrowdUsers().toArray()) as unknown as (IUser & { crowd: Record<string, any>; crowd_username: string })[]) || [];
 
 		logger.info('Sync started...');
 
 		for await (const user of users) {
-			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
-			logger.info('Syncing user', crowd_username);
+			let crowdUsername = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
+			logger.info('Syncing user', crowdUsername);
+			if (!crowdUsername) {
+				logger.warn('User has no crowd_username', user.username);
+				continue;
+			}
 
 			let crowdUser = null;
 
 			try {
-				crowdUser = await self.fetchCrowdUser(crowd_username);
+				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			} catch (err) {
 				logger.debug({ err });
-				logger.error({ msg: 'Could not sync user with username', crowd_username });
+				logger.error({ msg: 'Could not sync user with username', crowd_username: crowdUsername });
 
-				const email = user.emails[0].address;
+				const email = user.emails?.[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
+				const response = this.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
-					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
+					logger.warn('Could not find user in CROWD with username or email:', crowdUsername, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
-						logger.info('Removing user:', crowd_username);
+						logger.info('Removing user:', crowdUsername);
 						setImmediate(async function () {
 							await deleteUser(user._id);
-							logger.info('User removed:', crowd_username);
+							logger.info('User removed:', crowdUsername);
 						});
 					}
 					return;
 				}
-				crowd_username = response.users[0].name;
-				logger.info('User found by email. Syncing user', crowd_username);
+				crowdUsername = response.users[0].name;
+				logger.info('User found by email. Syncing user', crowdUsername);
+				if (!crowdUsername) {
+					logger.warn('User has no crowd_username', user.username);
+					continue;
+				}
 
-				crowdUser = await self.fetchCrowdUser(crowd_username);
+				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			}
 
 			if (settings.get('CROWD_Allow_Custom_Username') === true) {
 				crowdUser.username = user.username;
 			}
 
-			await self.syncDataToUser(crowdUser, user._id);
+			await this.syncDataToUser(crowdUser, user._id);
 		}
 	}
 
-	cleanUsername(username) {
+	cleanUsername(username: string) {
 		if (settings.get('CROWD_Clean_Usernames') === true) {
 			return username.split('@')[0];
 		}
 		return username;
 	}
 
-	async updateUserCollection(crowdUser) {
+	async updateUserCollection(crowdUser: Record<string, any>) {
 		const userQuery = {
 			_id: crowdUser._id,
 		};
@@ -276,7 +301,7 @@ export class CROWD {
 	}
 }
 
-Accounts.registerLoginHandler('crowd', async function (loginRequest) {
+Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, loginRequest) {
 	if (!loginRequest.crowd) {
 		return undefined;
 	}
@@ -313,24 +338,24 @@ Accounts.registerLoginHandler('crowd', async function (loginRequest) {
 const jobName = 'CROWD_Sync';
 
 Meteor.startup(() => {
-	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], function addCronJobDebounced([data, interval]) {
+	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], async function addCronJobDebounced([data, interval]) {
 		if (data !== true) {
 			logger.info('Disabling CROWD Background Sync');
-			if (SyncedCron.nextScheduledAtDate(jobName)) {
-				SyncedCron.remove(jobName);
+			if (await cronJobs.has(jobName)) {
+				await cronJobs.remove(jobName);
 			}
 			return;
 		}
 		const crowd = new CROWD();
 		if (interval) {
+			if (await cronJobs.has(jobName)) {
+				await cronJobs.remove(jobName);
+			}
+
 			logger.info('Enabling CROWD Background Sync');
-			SyncedCron.add({
-				name: jobName,
-				schedule: (parser) => parser.text(interval),
-				async job() {
-					await crowd.sync();
-				},
-			});
+			const cronInterval = crowdIntervalValuesToCronMap[String(interval)];
+
+			await cronJobs.add(jobName, cronInterval, () => crowd.sync());
 		}
 	});
 });

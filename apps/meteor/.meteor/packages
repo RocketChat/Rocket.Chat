@@ -54,8 +54,6 @@ rocketchat:restivus
 ostrio:cookies
 pauli:accounts-linkedin
 
-littledata:synced-cron
-
 autoupdate@1.8.0
 babel-compiler@7.10.3
 google-oauth@1.4.3
