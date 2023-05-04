@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useMethod, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
@@ -31,7 +31,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
 	const isOmnichannel = isOmnichannelRoom(room);
-
+	const useEmoji = useUserPreference('useEmojis');
+	console.log({useEmoji})
 	const t = useTranslation();
 
 	const call = useMethod('getSlashCommandPreviews');
@@ -150,7 +151,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				getValue: (item) => `${item.name || item.fname}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
 			}) as any,
-			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
+			useEmoji && createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				trigger: ':',
 				title: t('Emoji'),
 				getItemsFromLocal: async (filter: string) => {
@@ -348,7 +349,11 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
+<<<<<<< Updated upstream
 	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call]);
+=======
+	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid, call, useEmoji]);
+>>>>>>> Stashed changes
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };
