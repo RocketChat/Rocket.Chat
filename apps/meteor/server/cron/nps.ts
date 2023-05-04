@@ -1,8 +1,9 @@
 import { NPS } from '@rocket.chat/core-services';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../app/settings/server';
 
-async function runNPS() {
+async function runNPS(): Promise<void> {
 	// if NPS is disabled close any pending scheduled survey
 	const enabled = settings.get('NPS_survey_enabled');
 	if (!enabled) {
@@ -12,12 +13,6 @@ async function runNPS() {
 	await NPS.sendResults();
 }
 
-export function npsCron(SyncedCron) {
-	SyncedCron.add({
-		name: 'NPS',
-		schedule(parser) {
-			return parser.cron('21 15 * * *');
-		},
-		job: runNPS,
-	});
+export async function npsCron(): Promise<void> {
+	await cronJobs.add('NPS', '21 15 * * *', async () => runNPS());
 }

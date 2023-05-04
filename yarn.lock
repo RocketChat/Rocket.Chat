@@ -6322,6 +6322,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/cron@workspace:^, @rocket.chat/cron@workspace:packages/cron":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/cron@workspace:packages/cron"
+  dependencies:
+    "@rocket.chat/agenda": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ~29.5.0
+    mongodb: ^4.12.1
+    ts-jest: ~29.0.5
+    typescript: ~5.0.2
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/css-in-js@npm:next":
   version: 0.31.23-dev.85
   resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.85"
@@ -6918,6 +6935,7 @@ __metadata:
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/cron": "workspace:^"
     "@rocket.chat/css-in-js": next
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
