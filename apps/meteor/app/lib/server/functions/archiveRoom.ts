@@ -9,5 +9,5 @@ export const archiveRoom = async function (rid: string, user: IMessage['u']): Pr
 	await Subscriptions.archiveByRoomId(rid);
 	await Message.saveSystemMessage('room-archived', rid, '', user);
 
-	callbacks.run('afterRoomArchived', await Rooms.findOneById(rid), user);
+	await callbacks.run('afterRoomArchived', await Rooms.findOneById(rid), user);
 };

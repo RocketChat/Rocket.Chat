@@ -6,6 +6,8 @@ const ajv = new Ajv({
 
 export type FederationJoinExternalPublicRoomProps = {
 	externalRoomId: `!${string}:${string}`;
+	roomName?: string;
+	pageToken?: string;
 };
 ajv.addFormat('matrix-room-id', (externalRoomId) => Boolean(externalRoomId?.charAt(0) === '!' && externalRoomId?.includes(':')));
 
@@ -15,6 +17,14 @@ const FederationJoinExternalPublicRoomPropsSchema = {
 		externalRoomId: {
 			type: 'string',
 			format: 'matrix-room-id',
+		},
+		roomName: {
+			type: 'string',
+			nullable: true,
+		},
+		pageToken: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	additionalProperties: false,
