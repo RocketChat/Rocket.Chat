@@ -7,9 +7,9 @@ import { api } from '@rocket.chat/core-services';
 import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings/server';
+import { i18n } from '../../../server/lib/i18n';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
@@ -44,7 +44,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 
 		if (!baseChannel) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng,
@@ -71,7 +71,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(userId, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-					msg: TAPi18n.__('Channel_created', {
+					msg: i18n.t('Channel_created', {
 						postProcess: 'sprintf',
 						sprintf: [channel],
 						lng,
@@ -84,13 +84,13 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				});
 			}
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Users_added', { lng }),
+				msg: i18n.t('Users_added', { lng }),
 			});
 			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__(msg, { lng }),
+				msg: i18n.t(msg, { lng }),
 			});
 		}
 	};

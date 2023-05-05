@@ -1,10 +1,10 @@
 import { api } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
+import { i18n } from '../../../server/lib/i18n';
 import { hideRoomMethod } from '../../../server/methods/hideRoom';
 
 /*
@@ -44,7 +44,7 @@ slashCommands.add({
 					  });
 			if (!roomObject) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-					msg: TAPi18n.__('Channel_doesnt_exist', {
+					msg: i18n.t('Channel_doesnt_exist', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
@@ -53,7 +53,7 @@ slashCommands.add({
 			}
 			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-					msg: TAPi18n.__('error-logged-user-not-in-room', {
+					msg: i18n.t('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
@@ -67,7 +67,7 @@ slashCommands.add({
 			await hideRoomMethod(userId, rid);
 		} catch (error: any) {
 			await api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-				msg: TAPi18n.__(error, { lng }),
+				msg: i18n.t(error, { lng }),
 			});
 		}
 	},
