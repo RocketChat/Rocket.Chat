@@ -23,6 +23,8 @@ import {
 import * as dataExport from '../../../../server/lib/dataExport';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
@@ -303,7 +305,11 @@ API.v1.addRoute(
 	{
 		async post() {
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			await Meteor.callAsync('leaveRoom', room._id);
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.failure('Invalid user');
+			}
+			await leaveRoomMethod(user, room._id);
 
 			return API.v1.success();
 		},
@@ -519,7 +525,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, ...params } = this.bodyParams;
 
-			const result = await Meteor.callAsync('saveRoomSettings', rid, params);
+			const result = await saveRoomSettings(this.userId, rid, params);
 
 			return API.v1.success({ rid: result.rid });
 		},
