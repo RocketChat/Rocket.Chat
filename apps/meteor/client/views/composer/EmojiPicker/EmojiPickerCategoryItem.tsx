@@ -1,7 +1,6 @@
-import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { AllHTMLAttributes } from 'react';
+import type { AllHTMLAttributes, ComponentProps } from 'react';
 import React from 'react';
 
 import type { EmojiCategory } from '../../../../app/emoji/client';
@@ -14,7 +13,8 @@ type EmojiPickerCategoryItemProps = {
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 const mapCategoryIcon = (category: string) => {
-	let icon: TranslationKey;
+	let icon: ComponentProps<typeof IconButton>['icon'];
+
 	switch (category) {
 		case 'people':
 			icon = 'emoji';
@@ -53,7 +53,7 @@ const mapCategoryIcon = (category: string) => {
 const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, ...props }: EmojiPickerCategoryItemProps) => {
 	const t = useTranslation();
 
-	const icon = mapCategoryIcon(category.key as TranslationKey);
+	const icon = mapCategoryIcon(category.key);
 
 	return (
 		<IconButton
@@ -66,15 +66,6 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, 
 			icon={icon}
 			{...props}
 		/>
-	);
-
-	return (
-		<Box tabIndex={0} role='tab'>
-			<i
-				style={{ fontSize: '20px', ...(active && { color: Palette.statusColor['status-font-on-info'].toString() }) }}
-				className={`category-icon icon-${category.key}`}
-			></i>
-		</Box>
 	);
 };
 

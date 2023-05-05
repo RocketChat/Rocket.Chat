@@ -28,7 +28,7 @@ const EmojiCategoryRow = ({
 }: EmojiCategoryRowProps) => {
 	const t = useTranslation();
 
-	const categoryStyle = css`
+	const categoryRowStyle = css`
 		button {
 			margin-right: 0.25rem;
 			margin-bottom: 0.25rem;
@@ -39,10 +39,11 @@ const EmojiCategoryRow = ({
 	`;
 
 	return (
-		<>
+		<Box mbe='x12'>
 			<Box
 				is='h4'
 				fontScale='c1'
+				mbe='x12'
 				id={`emoji-list-category-${categoryKey}`}
 				ref={(element) => {
 					categoriesPosition.current.push({ el: element, top: element?.offsetTop });
@@ -52,8 +53,7 @@ const EmojiCategoryRow = ({
 				{t(i18n)}
 			</Box>
 			{emojis.list.length > 0 && (
-				// <EmojiPickerCategoryWrapper className={`emoji-category-${categoryKey}`}>
-				<Box display='flex' flexWrap='wrap' className={[categoryStyle, `emoji-category-${categoryKey}`]}>
+				<EmojiPickerCategoryWrapper className={[categoryRowStyle, `emoji-category-${categoryKey}`].filter(Boolean).join(' ')}>
 					<>
 						{categoryKey === CUSTOM_CATEGORY &&
 							emojis.list.map(
@@ -67,14 +67,13 @@ const EmojiCategoryRow = ({
 								<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
 							))}
 					</>
-					{/* </EmojiPickerCategoryWrapper> */}
-				</Box>
+				</EmojiPickerCategoryWrapper>
 			)}
 			{emojis.limit && emojis?.limit > 0 && emojis.list.length > emojis.limit && (
 				<EmojiPickerLoadMore onClick={handleLoadMore}>{t('Load_more')}</EmojiPickerLoadMore>
 			)}
 			{emojis.list.length === 0 && <EmojiPickerNotFound>{t('No_emojis_found')}</EmojiPickerNotFound>}
-		</>
+		</Box>
 	);
 };
 

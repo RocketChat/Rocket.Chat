@@ -1,12 +1,13 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, PositionAnimated, AnimatedVisibility, ButtonGroup, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
 	EmojiPickerFooter,
+	EmojiPickerPreviewArea,
 	EmojiPickerHeader,
 	EmojiPickerListArea,
+	EmojiPickerPreview,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, MutableRefObject } from 'react';
@@ -29,6 +30,7 @@ import CategoriesResult from './CategoriesResult';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
+import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 
 type EmojiPickerProps = {
 	reference: Element;
@@ -199,6 +201,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCustomItemsLimit((prevState) => prevState + 90);
 	};
 
+	// FIXME: not able to type the event scroll yet due the virtuoso version
 	const handleScroll = (event: any) => {
 		const scrollTop = event?.scrollTop;
 		const last = categoriesPosition.current?.filter((pos) => pos.top <= scrollTop).pop();
@@ -217,13 +220,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setSearching(false);
 		virtuosoRef.current?.scrollToIndex({ index: categoryIndex });
 	};
-
-	const previewEmojiClass = css`
-		span {
-			width: 40px;
-			height: 40px;
-		}
-	`;
 
 	const handleGoToAddCustom = () => {
 		customEmojiRoute.push();
@@ -245,8 +241,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 							aria-label={t('Search')}
 						/>
 					</EmojiPickerHeader>
-					{/* <EmojiPickerCategoryHeader role='tablist'> */}
-					<ButtonGroup small mbs='x12' mi='x12' stretch>
+					<EmojiPickerCategoryHeader role='tablist'>
 						{emojiCategories.map((category, index) => (
 							<EmojiPickerCategoryItem
 								key={category.key}
@@ -256,9 +251,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 								handleGoToCategory={handleGoToCategory}
 							/>
 						))}
-					</ButtonGroup>
-					{/* </EmojiPickerCategoryHeader> */}
-					<Divider pbe='x12' />
+					</EmojiPickerCategoryHeader>
+					<Divider mb='x12' />
 					<EmojiPickerListArea role='tabpanel'>
 						{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 						{!searching && (
@@ -273,32 +267,20 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 							/>
 						)}
 					</EmojiPickerListArea>
-					<Box p='x12' bg='tint' color='secondary-info' display='flex' alignItems='center' justifyContent='space-between' minHeight='x64'>
+					<EmojiPickerPreviewArea>
 						<>
-							{emojiToPreview && (
-								<Box display='flex' alignItems='center'>
-									<Box className={previewEmojiClass} dangerouslySetInnerHTML={{ __html: emojiToPreview.emoji }}></Box>
-									<Box mis='x4' display='flex' flexDirection='column'>
-										<Box fontScale='c2'>{emojiToPreview.name}</Box>
-										<Box fontScale='c1'>{`:${emojiToPreview.name}:`}</Box>
-									</Box>
-								</Box>
-							)}
+							{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
 							{canManageEmoji && emojiToPreview === null && (
 								<Button small onClick={handleGoToAddCustom}>
-									{t('Add_custom_emoji')}
+									{t('Add_emoji')}
 								</Button>
 							)}
 						</>
-						<Box display='flex' alignItems='center'>
-							<Box fontScale='c2'>Skin Tone</Box>
+						<ToneSelectorWrapper caption={t('Skin_tone')}>
 							<ToneSelector tone={actualTone} setTone={setActualTone} />
-						</Box>
-					</Box>
-					<Box bg='neutral' display='flex' flexDirection='column' alignItems='center' fontScale='micro' pb='x8'>
-						<Box dangerouslySetInnerHTML={{ __html: t('Emoji_provided_by_JoyPixels') }} />
-					</Box>
-					{/* <EmojiPickerFooter></EmojiPickerFooter> */}
+						</ToneSelectorWrapper>
+					</EmojiPickerPreviewArea>
+					<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 				</EmojiPickerContainer>
 			</div>
 		</PositionAnimated>
