@@ -15,7 +15,7 @@ const CreateChannelsCard = (): ReactElement => {
 	return (
 		<Card data-qa-id='homepage-create-channels-card'>
 			<Card.Title>{t('Create_channels')}</Card.Title>
-			<Card.Body>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</Card.Body>
+			{/* <Card.Body>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</Card.Body> */}
 			<Card.FooterWrapper>
 				<Card.Footer>
 					<Button onClick={openCreateChannelModal}>{t('Create_channel')}</Button>
