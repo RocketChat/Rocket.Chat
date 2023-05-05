@@ -1,4 +1,4 @@
-import { LivechatClientImpl } from '@rocket.chat/ddp-client/src/livechat/LivechatClientImpl';
+import { LivechatClientImpl } from '@rocket.chat/ddp-client';
 import { parse } from 'query-string';
 
 const host =

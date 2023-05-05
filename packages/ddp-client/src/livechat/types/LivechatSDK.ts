@@ -82,7 +82,7 @@ export interface LivechatEndpoints {
 	sendCustomFields(
 		params: OperationParams<'POST', '/v1/livechat/custom.fields'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/custom.fields'>>>;
-	uploadFile(rid: string, args: OperationParams<'POST', '/v1/livechat/upload/:rid'>): Promise<void>;
+	uploadFile(rid: string, file: File): Promise<ProgressEvent<EventTarget>>;
 
 	// DELETE
 	deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>>;

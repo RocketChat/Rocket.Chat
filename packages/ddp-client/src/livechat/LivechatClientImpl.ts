@@ -295,7 +295,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return status;
 	}
 
-	uploadFile(rid: string, file: File): Promise<Serialized<OperationResult<'POST', '/v1/livechat/upload/:rid'>>> {
+	uploadFile(rid: string, file: File): Promise<ProgressEvent<EventTarget>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
@@ -305,6 +305,10 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		}
 
 		return new Promise((resolve, reject) => {
+			if (!this.token) {
+				return reject(new Error('Invalid token'));
+			}
+
 			return this.rest.upload(
 				`/v1/livechat/upload/${rid}`,
 				{ file },
