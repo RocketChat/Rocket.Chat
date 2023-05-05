@@ -354,7 +354,7 @@
 .rcx-sidebar--main {
 	--sidebar-background: var(--rcx-color-surface-tint, #262931);
 	--sidebar-item-text-color: var(--rcx-color-font-default, #9ea2a8);
-	--sidebar-border-color: var(--rcx-color-stroke-extra-light, #2F343D);
+	--sidebar-border-color: var(--rcx-color-stroke-extra-light, #2f343d);
 }
 
 /* #endregion */
