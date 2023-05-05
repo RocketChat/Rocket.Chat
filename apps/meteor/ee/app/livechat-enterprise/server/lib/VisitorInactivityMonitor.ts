@@ -1,5 +1,4 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { cronJobs } from '@rocket.chat/cron';
 
@@ -7,6 +6,7 @@ import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -60,7 +60,7 @@ export class VisitorInactivityMonitor {
 
 	_initializeMessageCache() {
 		this.messageCache.clear();
-		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
+		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || i18n.t('Closed_automatically'));
 	}
 
 	async _getDepartmentAbandonedCustomMessage(departmentId: string) {
@@ -101,7 +101,7 @@ export class VisitorInactivityMonitor {
 		}
 
 		const guest = visitor.name || visitor.username;
-		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
+		const comment = i18n.t('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
 		const result = await Promise.allSettled([
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
