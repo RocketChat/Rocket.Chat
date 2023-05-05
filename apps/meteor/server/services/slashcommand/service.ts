@@ -36,22 +36,28 @@ export class SlashCommandService extends ServiceClassInternal implements ISlashC
 		delete slashCommands.commands[command];
 	}
 
-	private async _appCommandExecutor(
-		command: string,
-		parameters: any,
-		message: RequiredField<Partial<IMessage>, 'rid'>,
-		triggerId?: string,
-		userId?: string,
-	): Promise<void> {
+	private async _appCommandExecutor({
+		command,
+		params,
+		message,
+		triggerId,
+		userId,
+	}: {
+		command: string;
+		params: any;
+		message: RequiredField<Partial<IMessage>, 'rid'>;
+		triggerId?: string;
+		userId?: string;
+	}): Promise<void> {
 		const user = await AppsConverter.convertUserById(userId as string);
 		const room = await AppsConverter.convertRoomById(message.rid);
 		const threadId = message.tmid;
-		const params = parseParameters(parameters);
+		const parsedParams = parseParameters(params);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
 			Object.freeze(room),
-			Object.freeze(params) as string[],
+			Object.freeze(parsedParams) as string[],
 			threadId,
 			triggerId,
 		);
@@ -61,16 +67,16 @@ export class SlashCommandService extends ServiceClassInternal implements ISlashC
 
 	private async _appCommandPreviewer(
 		command: string,
-		parameters: string,
-		message: IMessage,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
 		userId?: string,
 	): Promise<SlashCommandPreviews> {
 		const user = await AppsConverter.convertUserById(userId as string);
 		const room = await AppsConverter.convertRoomById(message.rid);
 		const threadId = message.tmid;
-		const params = parseParameters(parameters);
+		const parsedParams = parseParameters(params);
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params) as string[], threadId);
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(parsedParams) as string[], threadId);
 		const preview = await AppsManager.getCommandPreviews(command, context);
 
 		return preview as SlashCommandPreviews;
