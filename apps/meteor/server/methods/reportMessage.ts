@@ -64,8 +64,6 @@ Meteor.methods<ServerMethods>({
 			_id: user._id,
 			username: user.username,
 			name: user.name,
-			active: user.active,
-			avatarETag: user.avatarETag,
 			createdAt: user.createdAt,
 		};
 

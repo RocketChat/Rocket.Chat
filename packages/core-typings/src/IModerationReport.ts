@@ -15,7 +15,7 @@ export interface IModerationReport extends IRocketChatRecord {
 	description: string;
 	ts: Date | string;
 	room: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated' | 'prid'>;
-	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
+	reportedBy: Pick<IUser, '_id' | 'username' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
 }
