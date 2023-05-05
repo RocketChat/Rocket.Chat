@@ -26,7 +26,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 			{...props}
 		>
 			<Box
-				marginBlock='x8'
+				height='100%'
 				marginInline='x24'
 				display='flex'
 				flexDirection='row'

@@ -9,6 +9,7 @@ export interface IFederationPublicRooms {
 	joinedMembers: number;
 	canJoin: boolean;
 	topic?: string;
+	pageToken?: string;
 }
 
 export type FederationEndpoints = {
