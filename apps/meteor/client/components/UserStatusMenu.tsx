@@ -1,6 +1,5 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
-import type { Placements } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
@@ -12,7 +11,7 @@ type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
 	optionWidth?: ComponentProps<typeof Box>['width'];
-	placement?: Placements;
+	placement?: ComponentProps<typeof PositionAnimated>['placement'];
 };
 
 const UserStatusMenu = ({
