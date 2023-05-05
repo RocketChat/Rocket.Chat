@@ -3448,6 +3448,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kaciras/deasync@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@kaciras/deasync@npm:1.0.3"
+  dependencies:
+    follow-redirects: ^1.15.2
+    tar-fs: ^2.1.1
+  checksum: 6986db099e8676ae2c21d1122db9f60dd5b74dd4ec06eb164c7ded0f512d037146f82cd3dee189d2863b1c6064f17d33b273edf67b25d3bb71050c5a6fe1aa6b
+  languageName: node
+  linkType: hard
+
 "@kossnocorp/desvg@npm:^0.1.1":
   version: 0.1.2
   resolution: "@kossnocorp/desvg@npm:0.1.2"
@@ -6919,6 +6929,7 @@ __metadata:
     "@bugsnag/plugin-react": ^7.17.0
     "@faker-js/faker": ^6.3.1
     "@google-cloud/storage": ^5.20.5
+    "@kaciras/deasync": ^1.0.3
     "@nivo/bar": 0.79.1
     "@nivo/core": 0.79.0
     "@nivo/heatmap": 0.79.1
@@ -7009,7 +7020,6 @@ __metadata:
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.12
     "@types/cssom": ^0.4.1
-    "@types/deasync": ^0
     "@types/dompurify": ^2.3.3
     "@types/ejson": ^2.2.0
     "@types/emojione": ^2.2.6
@@ -7109,7 +7119,6 @@ __metadata:
     csv-parse: ^5.2.0
     date-fns: ^2.28.0
     date.js: ~0.3.3
-    deasync: ^0.1.28
     debug: ~4.1.1
     dompurify: ^2.3.8
     ejson: ^2.2.2
@@ -10349,13 +10358,6 @@ __metadata:
   version: 0.4.1
   resolution: "@types/cssom@npm:0.4.1"
   checksum: 0f44f5ff27f5dfadfb89c8bd00f8d588dc1aaa77ec05ffa3ab732929683aef842f55a6c52c9a75586a28987f009b45f6ea5f63dbc34660f6bb98650eea7f59e9
-  languageName: node
-  linkType: hard
-
-"@types/deasync@npm:^0":
-  version: 0.1.2
-  resolution: "@types/deasync@npm:0.1.2"
-  checksum: 28a49e42c0d459afabdab02f0464a0231e24ef79bf800f15f779897d9564fb2b95d887e6f338a9bc5fa67186594dc1977dd5565fea3c7e0c9b282032c7b20c51
   languageName: node
   linkType: hard
 
@@ -16699,16 +16701,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deasync@npm:^0.1.28":
-  version: 0.1.28
-  resolution: "deasync@npm:0.1.28"
-  dependencies:
-    bindings: ^1.5.0
-    node-addon-api: ^1.7.1
-  checksum: e0c1ef427875c897e0d903a08410df1d0a3dfd0d2a0a1e43fb6c2824dfbc504b810bd08a0d30653117259316e1aa65409c96dbed40101c934f75bac7499e1265
-  languageName: node
-  linkType: hard
-
 "debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.0, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -19664,6 +19656,16 @@ __metadata:
     debug:
       optional: true
   checksum: 6aa4e3e3cdfa3b9314801a1cd192ba756a53479d9d8cca65bf4db3a3e8834e62139245cd2f9566147c8dfe2efff1700d3e6aefd103de4004a7b99985e71dd533
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -26958,15 +26960,6 @@ __metadata:
   version: 3.1.1
   resolution: "node-abort-controller@npm:3.1.1"
   checksum: 2c340916af9710328b11c0828223fc65ba320e0d082214a211311bf64c2891028e42ef276b9799188c4ada9e6e1c54cf7a0b7c05dd9d59fcdc8cd633304c8047
-  languageName: node
-  linkType: hard
-
-"node-addon-api@npm:^1.7.1":
-  version: 1.7.2
-  resolution: "node-addon-api@npm:1.7.2"
-  dependencies:
-    node-gyp: latest
-  checksum: 938922b3d7cb34ee137c5ec39df6289a3965e8cab9061c6848863324c21a778a81ae3bc955554c56b6b86962f6ccab2043dd5fa3f33deab633636bd28039333f
   languageName: node
   linkType: hard
 
