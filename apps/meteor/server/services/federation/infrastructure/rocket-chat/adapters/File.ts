@@ -1,5 +1,4 @@
 import { Avatars, Uploads } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../../../../app/file-upload/server';
@@ -19,17 +18,15 @@ export class RocketChatFileAdapter {
 	): Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }> {
 		return new Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }>(async (resolve, reject) => {
 			const fileStore = FileUpload.getStore('Uploads');
-			// this needs to be here due to a high coupling in the third party lib that rely on the logged in user
-			await Meteor.runAsUser(internalUser._id, async () => {
-				const uploadedFile = await fileStore.insert(fileRecord, readableStream);
-				try {
-					const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
 
-					resolve({ files, attachments });
-				} catch (error) {
-					reject(error);
-				}
-			});
+			const uploadedFile = await fileStore.insert(fileRecord, readableStream);
+			try {
+				const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
+
+				resolve({ files, attachments });
+			} catch (error) {
+				reject(error);
+			}
 		});
 	}
 
