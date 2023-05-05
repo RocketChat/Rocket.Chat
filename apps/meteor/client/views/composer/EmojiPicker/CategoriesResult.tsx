@@ -1,5 +1,8 @@
+import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { MouseEvent, UIEventHandler, MutableRefObject } from 'react';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -21,27 +24,45 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 	{ emojiListByCategory, categoriesPosition, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
 	ref,
 ) {
-	const { handleScrolling } = usePreviewEmoji();
-
+	const wrapper = useRef<HTMLDivElement>(null);
 	return (
-		<Virtuoso
-			ref={ref}
-			totalCount={emojiListByCategory.length}
-			data={emojiListByCategory}
-			components={{ Scroller: ScrollableContentWrapper }}
-			onScroll={handleScroll}
-			isScrolling={(isScrolling) => handleScrolling(isScrolling)}
-			itemContent={(_, data) => (
-				<EmojiCategoryRow
-					categoryKey={data.key}
-					categoriesPosition={categoriesPosition}
-					customItemsLimit={customItemsLimit}
-					handleLoadMore={handleLoadMore}
-					handleSelectEmoji={handleSelectEmoji}
-					{...data}
-				/>
-			)}
-		/>
+		<Box
+			ref={wrapper}
+			className={css`
+				&.pointer-none .rcx-emoji-picker__element {
+					pointer-events: none;
+				}
+			`}
+			height='full'
+		>
+			<Virtuoso
+				ref={ref}
+				totalCount={emojiListByCategory.length}
+				data={emojiListByCategory}
+				onScroll={handleScroll}
+				isScrolling={(isScrolling: boolean) => {
+					if (!wrapper.current) {
+						return;
+					}
+
+					if (isScrolling) {
+						wrapper.current.classList.add('pointer-none');
+					} else {
+						wrapper.current.classList.remove('pointer-none');
+					}
+				}}
+				itemContent={(_, data) => (
+					<EmojiCategoryRow
+						categoryKey={data.key}
+						categoriesPosition={categoriesPosition}
+						customItemsLimit={customItemsLimit}
+						handleLoadMore={handleLoadMore}
+						handleSelectEmoji={handleSelectEmoji}
+						{...data}
+					/>
+				)}
+			/>
+		</Box>
 	);
 });
 

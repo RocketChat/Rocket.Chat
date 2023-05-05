@@ -1,12 +1,11 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ReactElement } from 'react';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import { EmojiPickerContext } from '../contexts/EmojiPickerContext';
 import EmojiPicker from '../views/composer/EmojiPicker/EmojiPicker';
 
 const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const [isScrolling, setIsScrolling] = useState(false);
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 
@@ -14,22 +13,17 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
 	}, []);
 
-	const contextValue = {
-		isScrolling,
-		handleScrolling: (isScrolling: boolean) => setIsScrolling(isScrolling),
-		isOpen: emojiPicker !== null,
-		close: () => setEmojiPicker(null),
-		open,
-		emojiToPreview,
-		handlePreview: (emoji: string, name: string) => setEmojiToPreview({ emoji, name }),
-		handleUnpreview: () => setEmojiToPreview(null),
-	};
-
-	useEffect(() => {
-		return () => {
-			setEmojiToPreview(null);
-		};
-	}, []);
+	const contextValue = useMemo(
+		() => ({
+			isOpen: emojiPicker !== null,
+			close: () => setEmojiPicker(null),
+			open,
+			emojiToPreview,
+			handlePreview: (emoji: string, name: string) => setEmojiToPreview({ emoji, name }),
+			handleRemovePreview: () => setEmojiToPreview(null),
+		}),
+		[emojiPicker, open, emojiToPreview, setEmojiToPreview],
+	);
 
 	return (
 		<EmojiPickerContext.Provider value={contextValue}>
