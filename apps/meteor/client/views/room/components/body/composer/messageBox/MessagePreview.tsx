@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody, Palette } from '@rocket.chat/fuselage';
+import { Markup } from '@rocket.chat/gazzodown';
 import React from 'react';
 import type { ReactElement } from 'react';
 
@@ -59,9 +60,9 @@ export const MessagePreview = ({ md, channels, mentions, shadowPreviewRef, shado
 			<article>
 				<MessageBody data-qa-type='message-body'>
 					<Box className={messageBodyAdditionalStyles}>
-						<div style={{ padding: '12px' }}>
-							<GazzodownText tokens={md} channels={channels} mentions={mentions} />
-						</div>
+						<GazzodownText channels={channels} mentions={mentions}>
+							<Markup tokens={md} />
+						</GazzodownText>
 					</Box>
 				</MessageBody>
 			</article>

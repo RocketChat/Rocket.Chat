@@ -1,26 +1,23 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
-	MessageComposer,
 	MessageComposerAction,
-	MessageComposerActionsDivider,
+	MessageComposerToolbarActions,
+	MessageComposer,
 	MessageComposerInput,
 	MessageComposerToolbar,
-	MessageComposerToolbarActions,
+	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useLayout, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
-import type { ClipboardEventHandler, FormEvent, KeyboardEvent, KeyboardEventHandler, MouseEventHandler, ReactElement, Ref } from 'react';
-import React, { memo, useCallback, useReducer, useRef, useState } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { EmojiPicker } from '../../../../../../../app/emoji/client';
-import { settings } from '../../../../../../../app/settings/client';
+// import { settings } from '../../../../../../../app/settings/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -47,7 +44,8 @@ import { MessagePreview } from './MessagePreview';
 import { useMarkdownPreview } from './hooks/useMarkdownPreview';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 
-const previewAllowed = settings.get('Message_AllowPreviewing');
+// const previewAllowed = settings.get('Message_AllowPreviewing');
+const previewAllowed = true;
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
