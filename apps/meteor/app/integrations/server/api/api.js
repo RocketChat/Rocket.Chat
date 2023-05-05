@@ -1,6 +1,5 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
@@ -15,6 +14,8 @@ import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
+import { httpCall } from '../../../../server/lib/http/call';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
@@ -42,8 +43,9 @@ function buildSandbox(store = {}) {
 		},
 		HTTP(method, url, options) {
 			try {
+				// Need to review how we will handle this, possible breaking change on removing fibers
 				return {
-					result: HTTP.call(method, url, options),
+					result: Promise.await(httpCall(method, url, options)),
 				};
 			} catch (error) {
 				return {
@@ -102,11 +104,11 @@ function getIntegrationScript(integration) {
 	throw API.v1.failure('class-script-not-found');
 }
 
-function createIntegration(options, user) {
+async function createIntegration(options, user) {
 	incomingLogger.info({ msg: 'Add integration', integration: options.name });
 	incomingLogger.debug({ options });
 
-	Meteor.runAsUser(user._id, function () {
+	await Meteor.runAsUser(user._id, async function () {
 		switch (options.event) {
 			case 'newMessageOnChannel':
 				if (options.data == null) {
@@ -115,7 +117,7 @@ function createIntegration(options, user) {
 				if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
 					options.data.channel_name = `#${options.data.channel_name}`;
 				}
-				return Meteor.call('addOutgoingIntegration', {
+				return Meteor.callAsync('addOutgoingIntegration', {
 					username: 'rocket.cat',
 					urls: [options.target_url],
 					name: options.name,
@@ -126,7 +128,7 @@ function createIntegration(options, user) {
 				if (options.data.username.indexOf('@') === -1) {
 					options.data.username = `@${options.data.username}`;
 				}
-				return Meteor.call('addOutgoingIntegration', {
+				return Meteor.callAsync('addOutgoingIntegration', {
 					username: 'rocket.cat',
 					urls: [options.target_url],
 					name: options.name,
@@ -148,7 +150,7 @@ async function removeIntegration(options, user) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
+	await deleteOutgoingIntegration(integrationToRemove._id, user._id);
 
 	return API.v1.success();
 }

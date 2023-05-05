@@ -1,7 +1,7 @@
 import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent, FormEventHandler } from 'react';
+import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
 import React, { memo, useState, useEffect } from 'react';
 
 import FilePreview from './FilePreview';
@@ -71,8 +71,8 @@ const FileUploadModal = ({
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
 	return (
-		<Modal>
-			<Box is='form' display='flex' flexDirection='column' height='100%' onSubmit={handleSubmit}>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit} {...props} />}>
+			<Box display='flex' flexDirection='column' height='100%'>
 				<Modal.Header>
 					<Modal.Title>{t('FileUpload')}</Modal.Title>
 					<Modal.Close onClick={onClose} />

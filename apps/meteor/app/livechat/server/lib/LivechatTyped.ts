@@ -10,7 +10,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -19,6 +19,9 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
+import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { metrics } from '../../../metrics/server';
+import { i18n } from '../../../../server/lib/i18n';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -41,7 +44,7 @@ type GenericCloseRoomParams = {
 };
 
 export type CloseRoomParamsByUser = {
-	user: IUser;
+	user: IUser | null;
 } & GenericCloseRoomParams;
 
 export type CloseRoomParamsByVisitor = {
@@ -53,8 +56,11 @@ export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 class LivechatClass {
 	logger: Logger;
 
+	webhookLogger: MainLogger;
+
 	constructor() {
 		this.logger = new Logger('Livechat');
+		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
@@ -90,11 +96,11 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
-			this.logger.debug(`Closing by user ${user._id}`);
+			this.logger.debug(`Closing by user ${user?._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
+				_id: user?._id || '',
+				username: user?.username,
 			};
 			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
@@ -216,8 +222,8 @@ class LivechatClass {
 		};
 	}
 
-	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
-		Mailer.send({
+	private async sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): Promise<void> {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -290,9 +296,9 @@ class LivechatClass {
 		await messages.forEach((message) => {
 			let author;
 			if (message.u._id === visitor._id) {
-				author = TAPi18n.__('You', { lng: userLanguage });
+				author = i18n.t('You', { lng: userLanguage });
 			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
+				author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 			}
 
 			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
@@ -313,12 +319,12 @@ class LivechatClass {
 			emailFromRegexp = settings.get<string>('From_Email');
 		}
 
-		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+		const mailSubject = subject || i18n.t('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
-		this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
+		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
-		Meteor.defer(() => {
-			callbacks.run('livechat.sendTranscript', messages, email);
+		setImmediate(() => {
+			void callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
 		const requestData: IOmnichannelSystemMessage['requestData'] = {
@@ -345,6 +351,44 @@ class LivechatClass {
 		});
 
 		return true;
+	}
+
+	async sendRequest(
+		postData: {
+			type: string;
+			[key: string]: any;
+		},
+		attempts = 10,
+	) {
+		if (!attempts) {
+			return;
+		}
+		const timeout = settings.get<number>('Livechat_http_timeout');
+		const secretToken = settings.get<string>('Livechat_secret_token');
+		try {
+			const result = await fetch(settings.get('Livechat_webhookUrl'), {
+				method: 'POST',
+				headers: {
+					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
+				},
+				body: postData,
+				timeout,
+			});
+
+			if (result.status === 200) {
+				metrics.totalLivechatWebhooksSuccess.inc();
+			} else {
+				metrics.totalLivechatWebhooksFailures.inc();
+			}
+			return result;
+		} catch (err) {
+			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
+			// try 10 times after 20 seconds each
+			attempts - 1 && Livechat.webhookLogger.warn(`Will try again in ${(timeout / 1000) * 4} seconds ...`);
+			setTimeout(async () => {
+				await Livechat.sendRequest(postData, attempts - 1);
+			}, timeout * 4);
+		}
 	}
 }
 

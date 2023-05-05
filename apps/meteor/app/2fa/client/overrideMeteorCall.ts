@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../utils/client';
+import { t } from '../../utils/lib/i18n';
 import { process2faReturn, process2faAsyncReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';
@@ -25,8 +25,8 @@ const callWithTotp =
 		});
 
 const callWithoutTotp = (methodName: string, args: unknown[], callback: Callback) => (): unknown =>
-	call(methodName, ...args, (error: unknown, result: unknown): void => {
-		process2faReturn({
+	call(methodName, ...args, async (error: unknown, result: unknown): Promise<void> => {
+		await process2faReturn({
 			error,
 			result,
 			onCode: callWithTotp(methodName, args, callback),

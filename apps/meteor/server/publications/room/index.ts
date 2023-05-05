@@ -1,28 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
-import { roomFields } from '../../modules/watchers/publishFields';
+import { roomFields } from '../../../lib/publishFields';
+
+type PublicRoomField = keyof typeof roomFields;
+type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rooms/get'(updatedAt?: Date): IRoom[] | { update: IRoom[]; remove: IRoom[] };
-		'getRoomByTypeAndName': (type: RoomType, name: string) => Partial<IRoom>;
+		'getRoomByTypeAndName': (type: RoomType, name: string) => PublicRoom;
 	}
 }
 
-const roomMap = (record: IRoom) => {
-	if (record) {
-		return _.pick(record, ...Object.keys(roomFields));
-	}
-	return {};
+const roomMap = (record: IRoom | IOmnichannelRoom) => {
+	return _.pick(record, ...Object.keys(roomFields)) as PublicRoom;
 };
 
 Meteor.methods<ServerMethods>({
@@ -32,19 +32,19 @@ Meteor.methods<ServerMethods>({
 
 		if (!user) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return RoomsRaw.findByDefaultAndTypes(true, ['c'], options).toArray();
+				return Rooms.findByDefaultAndTypes(true, ['c'], options).toArray();
 			}
 			return [];
 		}
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: await (await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
-				remove: await RoomsRaw.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
+				update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
+				remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
-		return (await RoomsRaw.findBySubscriptionUserId(user, options)).toArray();
+		return (await Rooms.findBySubscriptionUserId(user, options)).toArray();
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
@@ -58,7 +58,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? await roomFind.call(this, name) : await RoomsRaw.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : await Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

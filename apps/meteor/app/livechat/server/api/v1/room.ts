@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
@@ -31,19 +30,20 @@ import { deprecationWarning } from '../../../../api/server/helpers/deprecationWa
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
 API.v1.addRoute('livechat/room', {
 	async get() {
 		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-		const extraCheckParams = onCheckRoomParams({
+		const extraCheckParams = await onCheckRoomParams({
 			token: String,
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
 		});
 
-		check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams as any);
 
 		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
@@ -114,7 +114,7 @@ API.v1.addRoute(
 			}
 
 			const language = rcSettings.get<string>('Language') || 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+			const comment = i18n.t('Closed_by_visitor', { lng: language });
 
 			const options: CloseRoomParams['options'] = {};
 			if (room.servedBy) {
@@ -147,7 +147,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => TAPi18n.__(s, { lng: language });
+					const t = (s: string): string => i18n.t(s, { lng: language });
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {
@@ -447,7 +447,7 @@ API.v1.addRoute(
 
 			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
 
-			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
+			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,
 				oldRoom: room,
 			});

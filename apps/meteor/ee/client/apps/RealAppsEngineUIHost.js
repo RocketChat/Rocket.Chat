@@ -1,9 +1,9 @@
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../app/models/client';
+import { ChatRoom } from '../../../app/models/client';
 import { APIClient } from '../../../app/utils/client';
-import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../app/utils/client/getUserAvatarURL';
 import { RoomManager } from '../../../client/lib/RoomManager';
 import { baseURI } from '../../../client/lib/baseURI';
 
@@ -25,7 +25,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo() {
-		const { name: slugifiedName, _id: id } = Rooms.findOne(RoomManager.opened);
+		const { name: slugifiedName, _id: id } = ChatRoom.findOne(RoomManager.opened);
 
 		let cachedMembers = [];
 		try {
@@ -48,12 +48,12 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientUserInfo() {
-		const { username, _id } = await Meteor.userAsync();
+		const { username, _id } = Meteor.user();
 
 		return {
 			id: _id,
 			username,
-			avatarUrl: this.getUserAvatarUrl(username),
+			avatarUrl: this.getUserAvatarUrl(username) || '',
 		};
 	}
 }
