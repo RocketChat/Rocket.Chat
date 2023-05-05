@@ -364,7 +364,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			room.teamId = teamId;
 		}
 
-		Rooms.setTeamByIds(rids, teamId);
+		await Rooms.setTeamByIds(rids, teamId);
 		return validRooms;
 	}
 
@@ -406,7 +406,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		delete room.teamId;
 		delete room.teamDefault;
-		Rooms.unsetTeamById(room._id);
+		await Rooms.unsetTeamById(room._id);
 
 		if (room.t === 'c') {
 			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);
@@ -470,7 +470,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 		room.teamDefault = isDefault;
-		Rooms.setTeamDefaultById(rid, isDefault);
+		await Rooms.setTeamDefaultById(rid, isDefault);
 
 		if (room.teamDefault) {
 			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
