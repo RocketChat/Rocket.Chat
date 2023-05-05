@@ -23,6 +23,9 @@ import {
 import * as dataExport from '../../../../server/lib/dataExport';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
+import { isTruthy } from '../../../../lib/isTruthy';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 async function findRoomByIdOrName({
 	params,
@@ -175,7 +178,7 @@ API.v1.addRoute(
 
 			delete fields.description;
 
-			await Meteor.callAsync('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
+			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
 
@@ -328,12 +331,12 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
 			}
 
-			const discussion = await Meteor.callAsync('createDiscussion', {
+			const discussion = await createDiscussion(this.userId, {
 				prid,
 				pmid,
 				t_name,
 				reply,
-				users: users || [],
+				users: users?.filter(isTruthy) || [],
 				encrypted,
 			});
 

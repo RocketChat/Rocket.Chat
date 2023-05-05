@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
@@ -17,11 +17,9 @@ slashCommands.add({
 		}
 
 		channel = channel.replace('#', '');
-
-		const user = await Users.findOne(userId);
 		const room = await Rooms.findOneByNameAndType(channel, 'c');
 
-		if (!user) {
+		if (!userId) {
 			return;
 		}
 
@@ -36,7 +34,7 @@ slashCommands.add({
 			return;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, {
 			projection: { _id: 1 },
 		});
 
@@ -46,7 +44,7 @@ slashCommands.add({
 			});
 		}
 
-		await joinRoomMethod(user, room._id);
+		await joinRoomMethod(userId, room._id);
 	},
 	options: {
 		description: 'Join_the_given_channel',
