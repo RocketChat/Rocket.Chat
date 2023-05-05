@@ -24,7 +24,7 @@ export const createPickerEmojis = (
 
 	return mappedCategories;
 };
-console.log(emoji);
+
 export const createEmojiList = (
 	category: string,
 	actualTone: number | null,
