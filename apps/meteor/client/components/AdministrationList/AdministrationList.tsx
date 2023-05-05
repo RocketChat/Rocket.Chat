@@ -15,7 +15,7 @@ type AdministrationListProps = {
 	onDismiss: () => void;
 };
 
-export const ADMIN_PERMISSIONS = [
+const ADMIN_PERMISSIONS = [
 	'view-statistics',
 	'run-import',
 	'view-user-administration',

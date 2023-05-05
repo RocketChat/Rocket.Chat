@@ -2,7 +2,6 @@ import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
-import { ADMIN_PERMISSIONS } from '../../components/AdministrationList/AdministrationList';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useDefaultRoute } from '../../hooks/useDefaultRoute';
 import SettingsProvider from '../../providers/SettingsProvider';
@@ -36,7 +35,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 	const settings = useRoute('admin-settings');
 	const engagementDashboard = useRoute('engagement-dashboard');
 
-	const ADMIN_ROUTES: Record<string, ReturnType<typeof useRoute>> = {
+	const adminPermissionRoutes: Record<string, ReturnType<typeof useRoute>> = {
 		'view-statistics': info,
 		'run-import': runImport,
 		'view-user-administration': users,
@@ -63,7 +62,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 		'view-engagement-dashboard': engagementDashboard,
 	};
 
-	const defaultRoute = useDefaultRoute(ADMIN_ROUTES, ADMIN_PERMISSIONS, info);
+	const defaultRoute = useDefaultRoute(adminPermissionRoutes, info);
 	const upgradeRoute = useRoute('upgrade');
 
 	useEffect(() => {
