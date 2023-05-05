@@ -3,7 +3,6 @@ import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
@@ -28,6 +27,7 @@ import {
 	joinEncryptedData,
 } from '../lib/functions';
 import { OtrRoomState } from '../lib/OtrRoomState';
+import { t } from '../../utils/lib/i18n';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -296,12 +296,12 @@ export class OTRRoom implements IOTRRoom {
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', {
+								title: t('OTR'),
+								children: t('Username_wants_to_start_otr_Do_you_want_to_accept', {
 									username: obj.username,
 								}),
-								confirmText: TAPi18n.__('Yes'),
-								cancelText: TAPi18n.__('No'),
+								confirmText: t('Yes'),
+								cancelText: t('No'),
 								onClose: (): void => closeOrCancelModal(),
 								onCancel: (): void => closeOrCancelModal(),
 								onConfirm: async (): Promise<void> => {
@@ -360,9 +360,9 @@ export class OTRRoom implements IOTRRoom {
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_ended_the_OTR_session', { username: obj.username }),
-								confirmText: TAPi18n.__('Ok'),
+								title: t('OTR'),
+								children: t('Username_ended_the_OTR_session', { username: obj.username }),
+								confirmText: t('Ok'),
 								onClose: imperativeModal.close,
 								onConfirm: imperativeModal.close,
 							},

@@ -1293,6 +1293,12 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
+
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		const username = {
@@ -2665,10 +2671,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 
