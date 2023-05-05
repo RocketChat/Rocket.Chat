@@ -5,7 +5,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
 
-// import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
