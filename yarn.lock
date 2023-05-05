@@ -6931,11 +6931,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-<<<<<<< HEAD
-    "@rocket.chat/apps-engine": 1.38.2
-=======
     "@rocket.chat/apps-engine": 1.39.0-alpha.197
->>>>>>> b5aea1d211 (Update Apps-Engine version)
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
