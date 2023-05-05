@@ -1,14 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { MouseEvent, UIEventHandler, MutableRefObject } from 'react';
 import React, { forwardRef, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 import EmojiCategoryRow from './EmojiCategoryRow';
 
 type CategoriesResultProps = {
