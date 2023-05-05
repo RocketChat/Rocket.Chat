@@ -130,6 +130,7 @@ export {
 	ISettingsService,
 	IOmnichannelIntegrationService,
 	IRequestWithPrivateHash,
+	ISlashCommandService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
