@@ -210,10 +210,12 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.rest.post('/v1/livechat/room.transfer', { rid, token: this.token, department });
 	}
 
-	async grantVisitor(guest: OperationParams<'POST', '/v1/livechat/visitor'>): Promise<void> {
-		const { visitor } = await this.rest.post('/v1/livechat/visitor', guest);
-		console.log('visitor', visitor);
-		this.token = visitor.token;
+	async grantVisitor(
+		guest: OperationParams<'POST', '/v1/livechat/visitor'>,
+	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>> {
+		const result = await this.rest.post('/v1/livechat/visitor', guest);
+		this.token = result?.visitor.token;
+		return result;
 	}
 
 	login(guest: OperationParams<'POST', '/v1/livechat/visitor'>) {
