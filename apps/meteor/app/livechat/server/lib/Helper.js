@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
@@ -27,6 +26,7 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('LivechatHelper');
 
@@ -331,8 +331,8 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
 	}
