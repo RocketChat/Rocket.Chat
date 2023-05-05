@@ -1,13 +1,13 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
@@ -15,9 +15,9 @@ import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { fetch } from '../../../../server/lib/http/fetch';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
+import { httpCall } from '../../../../server/lib/http/call';
 
 class RocketChatIntegrationHandler {
 	constructor() {
@@ -247,8 +247,9 @@ class RocketChatIntegrationHandler {
 			},
 			HTTP: (method, url, options) => {
 				try {
+					// Need to review how we will handle this, possible breaking change on removing fibers
 					return {
-						result: HTTP.call(method, url, options),
+						result: Promise.await(httpCall(method, url, options)),
 					};
 				} catch (error) {
 					return { error };
@@ -773,7 +774,7 @@ class RocketChatIntegrationHandler {
 			{
 				method: opts.method,
 				headers: opts.headers,
-				...(opts.data && { body: JSON.stringify(opts.data) }),
+				...(opts.data && { body: opts.data }),
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
@@ -897,7 +898,7 @@ class RocketChatIntegrationHandler {
 							}
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
-							Meteor.setTimeout(() => {
+							setTimeout(() => {
 								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 							}, waitTime);
 						} else {

@@ -7,8 +7,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
-
-import './settings';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 
 /**
  * BotHelpers helps bots
@@ -76,9 +75,13 @@ class BotHelpers {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		await Meteor.callAsync('addUserToRoom', {
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUserToRoom' });
+		}
+		await addUsersToRoomMethod(userId, {
 			rid: foundRoom._id,
-			username: userName,
+			users: [userName],
 		});
 	}
 

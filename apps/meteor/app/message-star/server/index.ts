@@ -1,2 +1,1 @@
-import './settings';
 import './starMessage';
