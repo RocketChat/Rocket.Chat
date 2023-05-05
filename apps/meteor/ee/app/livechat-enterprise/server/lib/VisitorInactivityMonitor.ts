@@ -1,12 +1,12 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -19,6 +19,8 @@ export class VisitorInactivityMonitor {
 
 	user: IUser;
 
+	private scheduler = cronJobs;
+
 	constructor() {
 		this._started = false;
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
@@ -26,7 +28,7 @@ export class VisitorInactivityMonitor {
 	}
 
 	async start() {
-		this._startMonitoring();
+		await this._startMonitoring();
 		this._initializeMessageCache();
 		const cat = await Users.findOneById('rocket.cat');
 		if (cat) {
@@ -34,27 +36,20 @@ export class VisitorInactivityMonitor {
 		}
 	}
 
-	_startMonitoring() {
+	private async _startMonitoring() {
 		if (this.isRunning()) {
 			return;
 		}
 		const everyMinute = '* * * * *';
-		SyncedCron.add({
-			name: this._name,
-			schedule: (parser) => parser.cron(everyMinute),
-			job: () => {
-				return Promise.await(this.handleAbandonedRooms());
-			},
-		});
+		await this.scheduler.add(this._name, everyMinute, async () => this.handleAbandonedRooms());
 		this._started = true;
 	}
 
-	stop() {
+	async stop() {
 		if (!this.isRunning()) {
 			return;
 		}
-
-		SyncedCron.remove(this._name);
+		await this.scheduler.remove(this._name);
 
 		this._started = false;
 	}
@@ -65,7 +60,7 @@ export class VisitorInactivityMonitor {
 
 	_initializeMessageCache() {
 		this.messageCache.clear();
-		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
+		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || i18n.t('Closed_automatically'));
 	}
 
 	async _getDepartmentAbandonedCustomMessage(departmentId: string) {
@@ -106,7 +101,7 @@ export class VisitorInactivityMonitor {
 		}
 
 		const guest = visitor.name || visitor.username;
-		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
+		const comment = i18n.t('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
 		const result = await Promise.allSettled([
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),

@@ -31,15 +31,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error: Error, result: Buffer) => {
-				if (error) {
-					return reject(error);
-				}
+		const result = await FileUpload.getBuffer(rocketChatUpload);
 
-				resolve(result);
-			});
-		});
+		if (!(result instanceof Buffer)) {
+			throw new Error('Unknown error');
+		}
+
+		return result;
 	}
 
 	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
@@ -53,23 +51,15 @@ export class AppUploadBridge extends UploadBridge {
 
 		details.type = determineFileType(buffer, details.name);
 
-		return new Promise(
-			Meteor.bindEnvironment((resolve, reject) => {
-				try {
-					Meteor.runAsUser(details.userId, () => {
-						const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
-						this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-						if (details.visitorToken) {
-							Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-						} else {
-							Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
-						}
-						resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
-					});
-				} catch (err) {
-					reject(err);
-				}
-			}),
-		);
+		return Meteor.runAsUser(details.userId, async () => {
+			const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
+			this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
+			if (details.visitorToken) {
+				await Meteor.callAsync('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
+			} else {
+				await Meteor.callAsync('sendFileMessage', details.rid, null, uploadedFile);
+			}
+			return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
+		});
 	}
 }

@@ -1,9 +1,10 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { LivechatInquiry, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users, LivechatInquiry } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -21,7 +22,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneById(inquiryId);
+		const inquiry = await LivechatInquiry.findOneById(inquiryId);
 
 		if (!inquiry) {
 			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
@@ -35,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneOnlineAgentById(uid);
+		const user = await Users.findOneOnlineAgentById(uid, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 				method: 'livechat:takeInquiry',

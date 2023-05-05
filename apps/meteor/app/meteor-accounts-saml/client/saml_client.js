@@ -23,8 +23,8 @@ const logoutBehaviour = {
 	ONLY_RC: 'Local',
 };
 
-Meteor.logout = function (...args) {
-	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
+Meteor.logout = async function (...args) {
+	const samlService = await ServiceConfiguration.configurations.findOneAsync({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {

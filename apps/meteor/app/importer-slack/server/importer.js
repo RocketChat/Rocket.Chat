@@ -1,11 +1,10 @@
 import _ from 'underscore';
-import { Settings, ImportData } from '@rocket.chat/models';
+import { Messages, Settings, ImportData } from '@rocket.chat/models';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Messages } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -194,7 +193,7 @@ export class SlackImporter extends Base {
 			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
-						channelCount += Promise.await(this.prepareChannelsFile(entry));
+						channelCount += await this.prepareChannelsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
 						increaseProgress();
 						continue;
@@ -237,7 +236,7 @@ export class SlackImporter extends Base {
 
 			const missedTypes = {};
 			// If we have no slack message yet, then we can insert them instead of upserting
-			this._useUpsert = !Messages.findOne({ _id: /slack\-.*/ });
+			this._useUpsert = !(await Messages.findOne({ _id: /slack\-.*/ }));
 
 			for await (const entry of zip.getEntries()) {
 				try {
@@ -268,7 +267,7 @@ export class SlackImporter extends Base {
 							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							await this.addCountToTotal(tempMessages.length);
 
-							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
+							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
 
 							if (slackChannelId) {
 								for await (const message of tempMessages) {

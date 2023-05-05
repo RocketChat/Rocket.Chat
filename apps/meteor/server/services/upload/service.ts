@@ -9,30 +9,28 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	protected name = 'upload';
 
 	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
-		return Meteor.runAsUser(userId, () => {
+		return Meteor.runAsUser(userId, async () => {
 			const fileStore = FileUpload.getStore('Uploads');
 			return fileStore.insert(details, buffer);
 		});
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<IMessage | undefined> {
-		return Meteor.runAsUser(userId, () => Meteor.call('sendFileMessage', roomId, null, file, message));
+		return Meteor.runAsUser(userId, () => Meteor.callAsync('sendFileMessage', roomId, null, file, message));
 	}
 
 	async sendFileLivechatMessage({ roomId, visitorToken, file, message }: ISendFileLivechatMessageParams): Promise<IMessage> {
-		return Meteor.call('sendFileLivechatMessage', roomId, visitorToken, file, message);
+		return Meteor.callAsync('sendFileLivechatMessage', roomId, visitorToken, file, message);
 	}
 
 	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
-		return Meteor.runAsUser(userId, () => {
-			return new Promise((resolve, reject) => {
-				FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
-					if (err) {
-						return reject(err);
-					}
-					return resolve(buffer);
-				});
-			});
+		return Meteor.runAsUser(userId, async () => {
+			const buffer = await FileUpload.getBuffer(file);
+
+			if (!(buffer instanceof Buffer)) {
+				throw new Error('Unknown error');
+			}
+			return buffer;
 		});
 	}
 }

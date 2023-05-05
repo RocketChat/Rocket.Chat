@@ -14,7 +14,7 @@ type UserAutoCompleteMultipleFederatedProps = {
 	placeholder?: string;
 };
 
-export type UserAutoCompleteOptionType = {
+type UserAutoCompleteOptionType = {
 	name: string;
 	username: string;
 	_federated?: boolean;
