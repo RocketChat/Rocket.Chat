@@ -205,12 +205,8 @@ API.v1.addRoute(
 		async post() {
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
 
-			await joinRoomMethod(user, findResult._id, joinCode);
+			await joinRoomMethod(this.userId, findResult._id, joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
