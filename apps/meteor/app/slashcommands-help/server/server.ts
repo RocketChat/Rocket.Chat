@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { i18n } from '../../../server/lib/i18n';
 
 /*
  * Help is a named function that will replace /help commands
@@ -57,7 +57,7 @@ slashCommands.add({
 		];
 		let msg = '';
 		keys.forEach((key) => {
-			msg = `${msg}\n${TAPi18n.__(key.key, {
+			msg = `${msg}\n${i18n.t(key.key, {
 				postProcess: 'sprintf',
 				sprintf: [key.command],
 				lng: user?.language || settings.get('language') || 'en',
