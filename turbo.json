@@ -39,6 +39,10 @@
 			"dependsOn": ["^build"],
 			"cache": false
 		},
+		"@rocket.chat/i18n#build": {
+			"dependsOn": ["^build"],
+			"cache": false
+		},
 		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
 			"cache": false
