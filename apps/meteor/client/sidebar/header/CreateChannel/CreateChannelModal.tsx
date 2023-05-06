@@ -1,13 +1,12 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch, useRole } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
-
 
 type CreateChannelModalProps = {
 	teamId?: string;
