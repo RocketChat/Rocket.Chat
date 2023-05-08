@@ -22,7 +22,13 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 			return;
 		}
 
-		const appointments = await desktopApp.getOutlookEvents(date);
+		const response = await desktopApp.getOutlookEvents(date);
+		if (response.status === 'canceled') {
+			throw new Error('abort');
+		}
+
+		const { data: appointments } = response;
+
 		const appointmentsFound = appointments.map((appointment) => appointment.id);
 
 		const externalEvents = serverEvents?.data.filter(({ externalId }) => externalId);

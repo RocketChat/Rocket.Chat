@@ -47,11 +47,13 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 			try {
 				await syncOutlookEvents();
 
-				dispatchToastMessage({ type: 'success', message: 'Sync Success' });
+				dispatchToastMessage({ type: 'success', message: t('Outlook_Sync_Success') });
 				refetch();
-			} catch (error) {
-				console.log(error);
-				dispatchToastMessage({ type: 'error', message: error });
+			} catch (error: any) {
+				if (error && typeof error === 'object' && error.message === 'abort') {
+					return;
+				}
+				dispatchToastMessage({ type: 'error', message: t('Outlook_Sync_Failed') });
 			} finally {
 				setIsSyncing(false);
 			}

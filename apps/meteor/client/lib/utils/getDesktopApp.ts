@@ -13,10 +13,19 @@ type AppointmentData = {
 	reminderDueBy?: Date;
 };
 
+type OutlookEventsResponse =
+	| {
+			status: 'success';
+			data: AppointmentData[];
+	  }
+	| {
+			status: 'canceled';
+	  };
+
 type WindowMaybeDesktop = typeof window & {
 	RocketChatDesktop?: {
 		openInternalVideoChatWindow?: (url: string, options: undefined) => void;
-		getOutlookEvents: (date: Date) => Promise<AppointmentData[]>;
+		getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
 		setOutlookExchangeUrl: (url: string, userId: string) => Promise<void>;
 	};
 };
