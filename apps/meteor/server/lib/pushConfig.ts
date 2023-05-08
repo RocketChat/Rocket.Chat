@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { AppsTokens } from '@rocket.chat/models';
 
@@ -7,6 +6,7 @@ import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { Push } from '../../app/push/server';
+import { i18n } from './i18n';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -70,9 +70,9 @@ Meteor.methods<ServerMethods>({
 		await Push.send({
 			from: 'push',
 			title: `@${user.username}`,
-			text: TAPi18n.__('This_is_a_push_test_messsage'),
+			text: i18n.t('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`,
+				text: `@${user.username}:\n${i18n.t('This_is_a_push_test_messsage')}`,
 			},
 			sound: 'default',
 			userId: user._id,

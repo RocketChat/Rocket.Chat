@@ -28,14 +28,14 @@ function SortModeList(): ReactElement {
 					role='listitem'
 					icon='clock'
 					text={t('Activity')}
-					input={<RadioButton pis='x24' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
+					input={<RadioButton mi='x16' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='sort-az'
 					text={t('Name')}
-					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
+					input={<RadioButton mi='x16' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
 			{isOmnichannelEnabled && <OmnichannelSortingDisclaimer id='sortByList' />}

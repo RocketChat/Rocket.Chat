@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker';
-import type { ChannelsCreateProps } from '@rocket.chat/rest-typings';
+import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
 
@@ -10,6 +10,13 @@ import type { BaseTest } from './test';
 export async function createTargetChannel(api: BaseTest['api'], options?: Omit<ChannelsCreateProps, 'name'>): Promise<string> {
 	const name = faker.datatype.uuid();
 	await api.post('/channels.create', { name, ...options });
+
+	return name;
+}
+
+export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
+	const name = faker.datatype.uuid();
+	await api.post('/groups.create', { name, ...options });
 
 	return name;
 }
