@@ -117,7 +117,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									} else {
 										invalidEmailInput = false;
 									}
-
 								}}
 								aria-invalid={errors.email || invalidEmailInput ? 'true' : undefined}
 								defaultValue={inputEmail}
