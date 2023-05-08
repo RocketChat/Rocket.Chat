@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { unmuteUserInRoom } from '../../../server/methods/unmuteUserInRoom';
 import { i18n } from '../../../server/lib/i18n';
 
 /*
@@ -30,7 +30,7 @@ slashCommands.add({
 			return;
 		}
 
-		await Meteor.callAsync('unmuteUserInRoom', {
+		await unmuteUserInRoom(userId, {
 			rid: message.rid,
 			username,
 		});

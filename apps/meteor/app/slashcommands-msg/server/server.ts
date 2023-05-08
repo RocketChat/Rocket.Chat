@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
@@ -7,6 +6,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { createDirectMessage } from '../../../server/methods/createDirectMessage';
 import { i18n } from '../../../server/lib/i18n';
 
 /*
@@ -39,7 +39,7 @@ slashCommands.add({
 			});
 			return;
 		}
-		const { rid } = await Meteor.callAsync('createDirectMessage', targetUsername);
+		const { rid } = await createDirectMessage([targetUsername], userId);
 		const msgObject = {
 			_id: Random.id(),
 			rid,
