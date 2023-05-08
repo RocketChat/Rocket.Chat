@@ -9,12 +9,13 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { text } = this.queryParams;
+			const { text, department } = this.queryParams;
 
 			return API.v1.success(
 				await findTags({
 					userId: this.userId,
 					text,
+					department,
 					pagination: {
 						offset,
 						count,

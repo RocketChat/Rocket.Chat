@@ -13,11 +13,13 @@ const Tags = ({
 	handler,
 	error,
 	tagRequired,
+	department,
 }: {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
+	department?: string;
 }): ReactElement => {
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
@@ -28,9 +30,19 @@ const Tags = ({
 	const EETagsComponent = useCurrentChatTags?.();
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
-		enabled: Boolean(EETagsComponent),
-	});
+	const { data: tagsResult, isInitialLoading } = useQuery(
+		['/v1/livechat/tags'],
+		() =>
+			getTags({
+				text: '',
+				...(department && {
+					department,
+				}),
+			}),
+		{
+			enabled: Boolean(EETagsComponent),
+		},
+	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -81,6 +93,7 @@ const Tags = ({
 							handler(tags.map((tag) => tag.label));
 							handlePaginatedTagValue(tags);
 						}}
+						department={department}
 					/>
 				</Field.Row>
 			) : (

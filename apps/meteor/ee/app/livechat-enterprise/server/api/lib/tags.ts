@@ -11,6 +11,7 @@ type FindTagsParams = {
 		count: number;
 		sort: FindOptions<ILivechatTag>['sort'];
 	};
+	department?: string;
 };
 
 type FindTagsResult = {
@@ -27,9 +28,10 @@ type FindTagsByIdParams = {
 
 type FindTagsByIdResult = ILivechatTag | null;
 
-export async function findTags({ text, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
+export async function findTags({ text, department, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
+		...(department && { $or: [{ departments: department }, { departments: { $exists: false } }, { departments: { $size: 0 } }] }),
 	};
 
 	const { cursor, totalCount } = LivechatTag.findPaginated(query, {

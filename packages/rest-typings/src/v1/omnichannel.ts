@@ -445,13 +445,17 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
-type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
+type LivechatTagsListProps = PaginatedRequest<{ text: string; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+		},
+		department: {
+			type: 'string',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
