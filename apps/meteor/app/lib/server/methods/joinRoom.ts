@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IRoom, IRoomWithJoinCode, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -17,8 +17,10 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-export const joinRoomMethod = async (user: IUser, rid: IRoom['_id'], code?: unknown): Promise<boolean | undefined> => {
+export const joinRoomMethod = async (userId: IUser['_id'], rid: IRoom['_id'], code?: unknown): Promise<boolean | undefined> => {
 	check(rid, String);
+
+	const user = await Users.findOneById(userId);
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
@@ -50,12 +52,12 @@ Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
 		check(rid, String);
 
-		const user = await Meteor.userAsync();
+		const userId = await Meteor.userId();
 
-		if (!user) {
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
-		return joinRoomMethod(user as IUser, rid, code);
+		return joinRoomMethod(userId, rid, code);
 	},
 });
