@@ -87,6 +87,22 @@ export class DDPSDK implements SDK {
 		};
 	}
 
+	/**
+	 * Compounds the Objects responsible for the SDK and returns it through
+	 * SDK interface
+	 *
+	 * @param url - The URL of the server to connect to
+	 * @param retryOptions - The options for the retry strategy of the connection
+	 * @param retryOptions.retryCount - The number of times to retry the connection
+	 * @param retryOptions.retryTime - The time to wait between retries
+	 * @returns The SDK interface
+	 *
+	 * @example
+	 * ```ts
+	 * const sdk = DDPSDK.create('wss://open.rocket.chat/websocket');
+	 * sdk.connection.connect();
+	 * ```
+	 */
 	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): DDPSDK {
 		const ddp = new DDPDispatcher();
 
@@ -120,6 +136,19 @@ export class DDPSDK implements SDK {
 
 		return sdk;
 	}
+
+	/**
+	 * Same as `DDPSDK.create`, but also connects to the server and waits for the connection to be established
+	 * @param url - The URL of the server to connect to
+	 * @param retryOptions - The options for the retry strategy of the connection
+	 * @param retryOptions.retryCount - The number of times to retry the connection
+	 * @param retryOptions.retryTime - The time to wait between retries
+	 * @returns A promise that resolves to the SDK interface
+	 * @example
+	 * ```ts
+	 * const sdk = await DDPSDK.createAndConnect('wss://open.rocket.chat/websocket');
+	 * ```
+	 */
 
 	static async createAndConnect(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
 		const sdk = DDPSDK.create(url, retryOptions);

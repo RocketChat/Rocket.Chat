@@ -56,10 +56,12 @@ interface MinimalDDPClientEvents {
  * ```ts
  * const socket = new WebSocket('ws://localhost:3000/websocket');
  * const ddp = new MinimalDDPClient(socket.send.bind(socket));
- * socket.onmessage = (event) => {
- * 	ddp.handleMessage(event.data);
+ * ddp.on('message', (data) => {
+ *  console.log('Received message', data);
+ * });
+ * socket.onmessage = ({ data }) => {
+ * ddp.handleMessage(data);
  * };
- * ddp.sendSerialized({ msg: 'connect', version: '1', support: ['pre1'] });
  * ```
  */
 export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements DDPClient {
@@ -71,10 +73,12 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 	}
 
 	/**
-	 * @param payload - The incoming message.
+	 * @remarks
+	 * if the received message is a valid DDP message, it will be emitted as an event.
+	 *
+	 * @param payload - The incoming message as a string.
 	 * @throws {Error} - If the message is not a string.
 	 * @throws {Error} - If the message is not a valid JSON.
-	 * @throws {Error} - If the message is not a valid DDP message.
 	 */
 	handleMessage(payload: string): void {
 		const data = this.decode(payload) as IncomingPayload;
