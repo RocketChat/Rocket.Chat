@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
@@ -7,6 +6,7 @@ import { API } from '../../../../../app/api/server';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
+import { i18n } from '../../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
@@ -46,7 +46,7 @@ API.v1.addRoute(
 			}
 
 			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
-			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
+			const comment = i18n.t('Omnichannel_On_Hold_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 

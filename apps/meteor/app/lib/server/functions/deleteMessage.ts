@@ -1,12 +1,31 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Uploads } from '@rocket.chat/models';
+import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Uploads, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
+
+export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
+	if (!message?._id) {
+		throw new Meteor.Error('error-invalid-message', 'Invalid message');
+	}
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
+	const user = await Users.findOneById(userId);
+	const originalMessage = await Messages.findOneById(message._id);
+
+	if (!originalMessage || !user || !(await canDeleteMessageAsync(userId, originalMessage))) {
+		throw new Meteor.Error('error-action-not-allowed', 'Not allowed');
+	}
+
+	return deleteMessage(originalMessage, user);
+};
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = await Messages.findOneById(message._id);

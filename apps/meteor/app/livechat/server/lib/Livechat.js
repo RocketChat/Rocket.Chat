@@ -2,10 +2,10 @@
 // Please add new methods to LivechatTyped.ts
 
 import dns from 'dns';
+import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import UAParser from 'ua-parser-js';
 import {
 	LivechatVisitors,
@@ -42,10 +42,11 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('Livechat');
 
-const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+const dnsResolveMx = util.promisify(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
@@ -137,7 +138,7 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
 					}
 				}
 				customFields[field._id] = value;
@@ -170,7 +171,7 @@ export const Livechat = {
 		if (customField.regexp !== undefined && customField.regexp !== '') {
 			const regexp = new RegExp(customField.regexp);
 			if (!regexp.test(value)) {
-				throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: key }));
+				throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: key }));
 			}
 		}
 
@@ -248,7 +249,7 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
 					}
 				}
 				customFields[field._id] = value;
@@ -867,7 +868,7 @@ export const Livechat = {
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
-				dnsResolveMx(emailDomain);
+				await dnsResolveMx(emailDomain);
 			} catch (e) {
 				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', {
 					method: 'livechat:sendOfflineMessage',
