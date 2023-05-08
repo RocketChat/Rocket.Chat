@@ -1,4 +1,4 @@
-import { PositionAnimated, AnimatedVisibility, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility, TextInput, Icon, Button, Divider, Box } from '@rocket.chat/fuselage';
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -268,14 +268,14 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						)}
 					</EmojiPickerListArea>
 					<EmojiPickerPreviewArea>
-						<>
+						<div>
 							{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
 							{canManageEmoji && emojiToPreview === null && (
 								<Button small onClick={handleGoToAddCustom}>
 									{t('Add_emoji')}
 								</Button>
 							)}
-						</>
+						</div>
 						<ToneSelectorWrapper caption={t('Skin_tone')}>
 							<ToneSelector tone={actualTone} setTone={setActualTone} />
 						</ToneSelectorWrapper>
