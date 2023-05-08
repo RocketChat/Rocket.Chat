@@ -24,6 +24,7 @@ export interface StreamerEvents {
 
 	'notify-room': [
 		{ key: `${string}/user-activity`; args: [username: string, activities: string] },
+		{ key: `${string}/typing`; args: [username: string, activities: string] },
 		{
 			key: `${string}/deleteMessageBulk`;
 			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
@@ -41,8 +42,10 @@ export interface StreamerEvents {
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
-		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 	];
 
 	'notify-user': [
@@ -75,6 +78,10 @@ export interface StreamerEvents {
 	'notify-logged': [
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
+
+		{ key: `${string}/otr`; args: [unknown] },
+		{ key: `${string}/webrtc`; args: [unknown] },
+
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
 		{
 			key: 'roles-change';
@@ -94,6 +101,17 @@ export interface StreamerEvents {
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
 		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], string, string, IUser['name'], IUser['roles']]] },
+		{
+			key: 'Users:Deleted';
+			args: [
+				{
+					userId: IUser['_id'];
+				},
+			];
+		},
+		{ key: 'updateAvatar'; args: [{ username: IUser['username']; avatarETag: IUser['avatarETag'] }] },
+		{ key: 'voip.statuschanged'; args: [boolean] },
+		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
 	];
 
 	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
@@ -152,6 +170,14 @@ export interface StreamerEvents {
 						data: {
 							[k: string]: unknown;
 						};
+				  }
+				| {
+						type: 'agentData';
+						data: unknown;
+				  }
+				| {
+						type: 'visitorData';
+						visitor: unknown;
 				  },
 			];
 		},
