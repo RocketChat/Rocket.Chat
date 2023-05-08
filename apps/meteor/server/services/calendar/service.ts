@@ -47,6 +47,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			meetingUrl,
 			reminderMinutesBeforeStart,
 			reminderDueBy,
+			externalId,
 		};
 
 		const event = await this.findImportedEvent(externalId, uid);
