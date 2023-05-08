@@ -17,6 +17,31 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 		teams: false,
 	});
 
+	// TODO: add all missing translations!
+	const [roomTypeFilterStructure, setRoomTypeFilterStructure] = useState({
+		label: t('Filter_By_Room'),
+		items: [
+			{ id: 'all', label: t('All_Rooms'), checked: true },
+			{ id: 'channels', label: t('Channels'), checked: false },
+			{ id: 'directMessage', label: t('Direct_Message'), checked: false },
+			{ id: 'discussions', label: t('Discussions'), checked: false },
+			{ id: 'omnichannel', label: t('Omnichannel'), checked: false },
+			{ id: 'teams', label: t('Teams'), checked: false },
+		],
+	});
+	// Is this necessary?
+	//	const roomTypeFilterOnSelected = useRadioToggle(setroomTypeFilterStructure);
+
+	// TODO: add all missing translations!
+	const [visibilityFilterStructure, setVisibilityFilterStructure] = useState({
+		label: t('Filter_By_Visibility'),
+		items: [
+			{ id: 'all', label: t('All_Visibilities'), checked: true },
+			{ id: 'private', label: t('Private'), checked: false },
+			{ id: 'public', label: t('Public'), checked: false },
+		],
+	});
+
 	const t = useTranslation();
 
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
