@@ -1,11 +1,11 @@
 import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
 	const {
@@ -22,7 +22,7 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 
 	const guest = visitor.name || visitor.username;
 
-	const resumeChatComment = TAPi18n.__('Omnichannel_on_hold_chat_automatically', { guest });
+	const resumeChatComment = i18n.t('Omnichannel_on_hold_chat_automatically', { guest });
 
 	const resumedBy = await Users.findOneById('rocket.cat');
 	if (!resumedBy) {

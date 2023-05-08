@@ -1,9 +1,10 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
@@ -63,6 +64,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
+	const [language, setLanguage] = useLocalStorage('userLanguage', user?.language ?? 'en');
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -157,6 +159,12 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		}),
 		[userId, user, loginMethod],
 	);
+
+	useEffect(() => {
+		if (user?.language !== undefined && user.language !== language) {
+			setLanguage(user.language);
+		}
+	}, [user?.language, language, setLanguage]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

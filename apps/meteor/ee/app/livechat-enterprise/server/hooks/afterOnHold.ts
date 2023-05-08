@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
+import { i18n } from '../../../../../server/lib/i18n';
 
 let autoCloseOnHoldChatTimeout = 0;
 
@@ -23,7 +23,7 @@ const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<a
 	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
 	const closeComment =
 		settings.get<string>('Livechat_auto_close_on_hold_chats_custom_message') ||
-		TAPi18n.__('Closed_automatically_because_chat_was_onhold_for_seconds', {
+		i18n.t('Closed_automatically_because_chat_was_onhold_for_seconds', {
 			onHoldTime: autoCloseOnHoldChatTimeout,
 		});
 	await AutoCloseOnHoldScheduler.scheduleRoom(rid, autoCloseOnHoldChatTimeout, closeComment);
