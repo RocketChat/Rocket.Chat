@@ -17,6 +17,7 @@ type WindowMaybeDesktop = typeof window & {
 	RocketChatDesktop?: {
 		openInternalVideoChatWindow?: (url: string, options: undefined) => void;
 		getOutlookEvents: (date: Date) => Promise<AppointmentData[]>;
+		setOutlookExchangeUrl: (url: string, userId: string) => Promise<void>;
 	};
 };
 

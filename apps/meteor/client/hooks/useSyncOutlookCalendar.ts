@@ -22,10 +22,10 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 			return;
 		}
 
-		const externalEvents = serverEvents?.data.filter(({ externalId }) => externalId);
-
 		const appointments = await desktopApp.getOutlookEvents(date);
 		const appointmentsFound = appointments.map((appointment) => appointment.id);
+
+		const externalEvents = serverEvents?.data.filter(({ externalId }) => externalId);
 
 		for await (const appointment of appointments) {
 			try {

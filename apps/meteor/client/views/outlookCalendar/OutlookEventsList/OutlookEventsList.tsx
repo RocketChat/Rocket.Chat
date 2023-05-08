@@ -1,6 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import { useResizeObserver, useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint, useSetModal, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
@@ -11,8 +11,6 @@ import VerticalBar from '../../../components/VerticalBar';
 import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
-import type { CalendarAuthPayload } from '../../calendarIntegration/CalendarAuthModal';
-import CalendarAuthModal from '../../calendarIntegration/CalendarAuthModal';
 import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
@@ -22,11 +20,9 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const setModal = useSetModal();
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
-	const [outlookToken, setOutlookToken] = useSessionStorage('outlookToken', '');
 
 	const desktopApp = getDesktopApp();
 
@@ -47,32 +43,22 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const total = calendarEvents?.length || 0;
 
 	const handleSync = () => {
-		const fetchCalendarData = async ({ login, password, rememberCredentials }: CalendarAuthPayload) => {
-			const token = window.btoa(`${login}:${password}`);
-
+		const fetchCalendarData = async () => {
 			try {
 				await syncOutlookEvents();
 
-				if (rememberCredentials) {
-					setOutlookToken(token);
-				}
 				dispatchToastMessage({ type: 'success', message: 'Sync Success' });
 				refetch();
 			} catch (error) {
+				console.log(error);
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
-				setModal(null);
 				setIsSyncing(false);
 			}
 		};
 
-		if (outlookToken) {
-			setIsSyncing(true);
-			const token = window.atob(outlookToken).split(':');
-			return fetchCalendarData({ login: token[0], password: token[1] });
-		}
-
-		setModal(<CalendarAuthModal onCancel={() => setModal(null)} onConfirm={fetchCalendarData} />);
+		setIsSyncing(true);
+		return fetchCalendarData();
 	};
 
 	if (isLoading) {
