@@ -567,10 +567,10 @@ export class LDAPEEManager extends LDAPManager {
 		const { updateExistingUsers, removeDeletedUsers } = settings;
 
 		for await (const user of users) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
+			const ldapUser = await this.findLDAPMultipleUsers(ldap, user);
 
-			if (updateExistingUsers && ldapUser) {
-				this.updateExistingUser(ldapUser, user, converter);
+			if (updateExistingUsers && ldapUser && ldapUser.length === 1) {
+				this.updateExistingUser(ldapUser[0], user, converter);
 			} else if (removeDeletedUsers && !ldapUser) {
 				await this.removeDeletedUser(user);
 			}
@@ -605,6 +605,23 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (user.username) {
 			return ldap.findOneByUsername(user.username);
+		}
+
+		searchLogger.debug({
+			msg: 'existing LDAP user not found during Sync',
+			ldapId: user.services?.ldap?.id,
+			ldapAttribute: user.services?.ldap?.idAttribute,
+			username: user.username,
+		});
+	}
+
+	private static async findLDAPMultipleUsers(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry[] | undefined> {
+		if (user.services?.ldap?.id) {
+			return ldap.searchById(user.services.ldap.id, user.services.ldap.idAttribute);
+		}
+
+		if (user.username) {
+			return ldap.searchByUsername(user.username);
 		}
 
 		searchLogger.debug({
