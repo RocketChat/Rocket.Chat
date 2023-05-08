@@ -23,6 +23,10 @@ Meteor.startup(() => {
 		const newRoomNotification = getUserPreference<string>(user, 'newRoomNotification');
 		const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100);
 
+		if (!newRoomNotification) {
+			return;
+		}
+
 		if ((Session.get('newRoomSound') || []).length > 0) {
 			setTimeout(() => {
 				if (newRoomNotification !== 'none') {

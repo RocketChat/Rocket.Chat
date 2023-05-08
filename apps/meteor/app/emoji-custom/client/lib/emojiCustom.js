@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 
 import { isSetNotNull } from './function-isSet';
 import { LegacyRoomManager } from '../../../ui-utils/client';
-import { emoji, EmojiPicker } from '../../../emoji/client';
+import { emoji, updateRecent } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { APIClient, getURL } from '../../../utils/client';
 
@@ -39,7 +40,7 @@ export const deleteEmojiCustom = function (emojiData) {
 			}
 		}
 	}
-	EmojiPicker.updateRecent('rocket');
+	updateRecent('rocket');
 };
 
 export const updateEmojiCustom = function (emojiData) {
@@ -127,7 +128,7 @@ export const updateEmojiCustom = function (emojiData) {
 		}
 	}
 
-	EmojiPicker.updateRecent('rocket');
+	updateRecent('rocket');
 };
 
 const customRender = (html) => {

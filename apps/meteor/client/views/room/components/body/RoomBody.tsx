@@ -39,10 +39,9 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/Ro
 import { useToolboxContext } from '../../contexts/ToolboxContext';
 import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
@@ -325,7 +324,7 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		count && setUnreadCount(count);
+		setUnreadCount(count);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
@@ -598,8 +597,12 @@ const RoomBody = (): ReactElement => {
 								))}
 							</div>
 							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
-								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
-								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
+								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
+								<JumpToRecentMessageButton
+									visible={hasMoreNextMessages}
+									onClick={handleJumpToRecentButtonClick}
+									text={t('Jump_to_recent_messages')}
+								/>
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
