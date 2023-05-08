@@ -19,6 +19,71 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const removeUserFromRoomMethod = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
+	if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'removeUserFromRoom',
+		});
+	}
+
+	const room = await Rooms.findOneById(data.rid);
+
+	if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'removeUserFromRoom',
+		});
+	}
+
+	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+
+	const fromUser = await Users.findOneById(fromId);
+	if (!fromUser) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'removeUserFromRoom',
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
+		projection: { _id: 1 },
+	});
+	if (!subscription) {
+		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+			method: 'removeUserFromRoom',
+		});
+	}
+
+	if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {
+		const numOwners = await (await getUsersInRole('owner', room._id)).count();
+
+		if (numOwners === 1) {
+			throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
+				method: 'removeUserFromRoom',
+			});
+		}
+	}
+
+	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+
+	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+
+	if (['c', 'p'].includes(room.t) === true) {
+		await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
+	}
+
+	await Message.saveSystemMessage('ru', data.rid, removedUser.username || '', fromUser);
+
+	if (room.teamId && room.teamMain) {
+		// if a user is kicked from the main team room, delete the team membership
+		await Team.removeMember(room.teamId, removedUser._id);
+	}
+
+	setImmediate(function () {
+		void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+	});
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async removeUserFromRoom(data) {
 		check(
@@ -37,67 +102,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'removeUserFromRoom',
-			});
-		}
-
-		const room = await Rooms.findOneById(data.rid);
-
-		if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'removeUserFromRoom',
-			});
-		}
-
-		const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
-
-		const fromUser = await Users.findOneById(fromId);
-		if (!fromUser) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'removeUserFromRoom',
-			});
-		}
-
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
-			projection: { _id: 1 },
-		});
-		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'removeUserFromRoom',
-			});
-		}
-
-		if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {
-			const numOwners = await (await getUsersInRole('owner', room._id)).count();
-
-			if (numOwners === 1) {
-				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
-					method: 'removeUserFromRoom',
-				});
-			}
-		}
-
-		await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
-
-		await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
-
-		if (['c', 'p'].includes(room.t) === true) {
-			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
-		}
-
-		await Message.saveSystemMessage('ru', data.rid, removedUser.username || '', fromUser);
-
-		if (room.teamId && room.teamMain) {
-			// if a user is kicked from the main team room, delete the team membership
-			await Team.removeMember(room.teamId, removedUser._id);
-		}
-
-		setImmediate(function () {
-			void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
-		});
-
-		return true;
+		return removeUserFromRoomMethod(fromId, data);
 	},
 });
