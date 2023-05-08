@@ -632,5 +632,5 @@ jobs:
           token: ${{ secrets.DISTRIBUTION_TOKEN }}
           event-type: new_release
           repository: RocketChat/Release.Distributions
-          client-payload: ${{ format('{"tag":"{0}"}', github.ref_name) }}
+          client-payload: '{"tag": "${{ github.ref_name }}"}'
 
