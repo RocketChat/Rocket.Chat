@@ -1,4 +1,4 @@
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
@@ -20,11 +20,7 @@ callbacks.add(
 			return message;
 		}
 
-		const user = await Users.findOneById(message.u._id);
-		if (!user) {
-			return message;
-		}
-		await joinRoomMethod(user, room._id);
+		await joinRoomMethod(message.u._id, room._id);
 
 		return message;
 	},

@@ -2,7 +2,6 @@ import crypto from 'crypto';
 
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import EJSON from 'ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -30,6 +29,7 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getUserInfo } from '../helpers/getUserInfo';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
+import { i18n } from '../../../../server/lib/i18n';
 
 /**
  * @openapi
@@ -244,7 +244,7 @@ API.v1.addRoute(
 						onlineCacheDate = Date.now();
 					}
 
-					text = `${onlineCache} ${TAPi18n.__('Online')}`;
+					text = `${onlineCache} ${i18n.t('Online')}`;
 					break;
 				case 'channel':
 					if (!channel) {
@@ -281,7 +281,7 @@ API.v1.addRoute(
 					}
 					break;
 				default:
-					text = TAPi18n.__('Join_Chat').toUpperCase();
+					text = i18n.t('Join_Chat').toUpperCase();
 			}
 
 			const iconSize = hideIcon ? 7 : 24;
