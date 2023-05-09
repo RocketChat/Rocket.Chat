@@ -1220,28 +1220,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}) {
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
-			$or: [],
+			...(agents && {
+				$or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }],
+			}),
+			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
+			...(served !== undefined && { servedBy: { $exists: served } }),
+			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
 		};
 
-		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-		}
-		if (roomName) {
-			query.fname = new RegExp(escapeRegExp(roomName), 'i');
-		}
-		if (departmentId && departmentId !== 'undefined') {
-			query.departmentId = departmentId;
-		}
-		if (open !== undefined) {
-			query.open = { $exists: open };
-			query.onHold = { $ne: true };
-		}
-		if (served !== undefined) {
-			query.servedBy = { $exists: served };
-		}
-		if (visitorId && visitorId !== 'undefined') {
-			query['v._id'] = visitorId;
-		}
 		if (createdAt) {
 			query.ts = {};
 			if (createdAt.start) {
