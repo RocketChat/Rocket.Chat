@@ -1525,7 +1525,7 @@ describe('[Rooms]', function () {
 
 		it('should update the room settings', (done) => {
 			request
-				.post(api(`/rooms.saveRoomSettings`))
+				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({
 					rid: testChannel._id,
