@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
@@ -63,15 +63,23 @@ const MonitorsTable = () => {
 		}),
 	);
 
-	const handleAdd = async () => {
-		try {
+	const addMutation = useMutation({
+		mutationFn: async (username: string) => {
 			await addMonitor(username);
+
+			await queryClient.invalidateQueries(['omnichannel', 'monitors']);
+		},
+		onSuccess: () => {
 			setUsername('');
 			dispatchToastMessage({ type: 'success', message: t('Monitor_added') });
-		} catch (error) {
+		},
+		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
-		}
-		queryClient.invalidateQueries(['omnichannel', 'monitors']);
+		},
+	});
+
+	const handleAdd = () => {
+		addMutation.mutate(username);
 	};
 
 	const handleRemove = (username: string) => {
@@ -112,7 +120,7 @@ const MonitorsTable = () => {
 					<Field.Label>{t('Username')}</Field.Label>
 					<Field.Row>
 						<UserAutoComplete value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} onClick={() => handleAdd()} mis='x8'>
+						<Button primary disabled={!username || addMutation.isLoading} onClick={() => handleAdd()} mis='x8'>
 							{t('Add')}
 						</Button>
 					</Field.Row>
