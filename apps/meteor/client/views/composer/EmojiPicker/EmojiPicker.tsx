@@ -1,4 +1,4 @@
-import { PositionAnimated, AnimatedVisibility, TextInput, Icon, Button, Divider, Box } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useLocalStorage, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
