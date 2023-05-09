@@ -4,7 +4,8 @@ import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { Upload } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
+import { sendFileLivechatMessage } from '../../../livechat/server/methods/sendFileLivechatMessage';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -42,25 +43,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		details.type = determineFileType(buffer, details.name);
 
-		const uploadDetails = getUploadDetails(details);
-		const uploadedFile = await Upload.uploadFile({ buffer, details: uploadDetails, userId: details.userId });
-
-		if (details.visitorToken) {
-			await Upload.sendFileLivechatMessage({
-				file: uploadedFile,
-				roomId: details.rid,
-				visitorToken: details.visitorToken,
-			});
-		} else {
-			await Upload.sendFileMessage({
-				roomId: details.rid,
-				file: uploadedFile,
-				userId: details.userId,
-			});
-		}
-
+		const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
 		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-
+		if (details.visitorToken) {
+			await sendFileLivechatMessage({ roomId: details.rid, visitorToken: details.visitorToken, file: uploadedFile });
+		} else {
+			await sendFileMessage(details.userId, { roomId: details.rid, file: uploadedFile });
+		}
 		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}
 }

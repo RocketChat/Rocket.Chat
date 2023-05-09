@@ -1,5 +1,4 @@
 import { VM, VMScript } from 'vm2';
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
@@ -16,6 +15,7 @@ import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
 import { httpCall } from '../../../../server/lib/http/call';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
+import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
@@ -108,35 +108,33 @@ async function createIntegration(options, user) {
 	incomingLogger.info({ msg: 'Add integration', integration: options.name });
 	incomingLogger.debug({ options });
 
-	await Meteor.runAsUser(user._id, async function () {
-		switch (options.event) {
-			case 'newMessageOnChannel':
-				if (options.data == null) {
-					options.data = {};
-				}
-				if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
-					options.data.channel_name = `#${options.data.channel_name}`;
-				}
-				return Meteor.callAsync('addOutgoingIntegration', {
-					username: 'rocket.cat',
-					urls: [options.target_url],
-					name: options.name,
-					channel: options.data.channel_name,
-					triggerWords: options.data.trigger_words,
-				});
-			case 'newMessageToUser':
-				if (options.data.username.indexOf('@') === -1) {
-					options.data.username = `@${options.data.username}`;
-				}
-				return Meteor.callAsync('addOutgoingIntegration', {
-					username: 'rocket.cat',
-					urls: [options.target_url],
-					name: options.name,
-					channel: options.data.username,
-					triggerWords: options.data.trigger_words,
-				});
-		}
-	});
+	switch (options.event) {
+		case 'newMessageOnChannel':
+			if (options.data == null) {
+				options.data = {};
+			}
+			if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
+				options.data.channel_name = `#${options.data.channel_name}`;
+			}
+			return addOutgoingIntegration(user._id, {
+				username: 'rocket.cat',
+				urls: [options.target_url],
+				name: options.name,
+				channel: options.data.channel_name,
+				triggerWords: options.data.trigger_words,
+			});
+		case 'newMessageToUser':
+			if (options.data.username.indexOf('@') === -1) {
+				options.data.username = `@${options.data.username}`;
+			}
+			return addOutgoingIntegration(user._id, {
+				username: 'rocket.cat',
+				urls: [options.target_url],
+				name: options.name,
+				channel: options.data.username,
+				triggerWords: options.data.trigger_words,
+			});
+	}
 
 	return API.v1.success();
 }
