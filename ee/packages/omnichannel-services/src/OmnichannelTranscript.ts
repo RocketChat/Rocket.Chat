@@ -1,6 +1,5 @@
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
-import type { Templates } from '@rocket.chat/pdf-worker';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
@@ -139,7 +138,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Make the whole process sync when running on test mode
 		// This will prevent the usage of timeouts on the tests of this functionality :)
 		if (process.env.TEST_MODE) {
-			await this.workOnPdf({ details: { ...details, from: this.name }, template: 'omnichannel-transcript' });
+			await this.workOnPdf({ details: { ...details, from: this.name } });
 			return;
 		}
 
@@ -147,7 +146,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
-			template: 'omnichannel-transcript',
 			details: { ...details, from: this.name },
 		});
 	}
@@ -286,7 +284,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
+	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		if (!this.shouldWork) {
 			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
 			return;
@@ -330,7 +328,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				translations,
 			};
 
-			await this.doRender({ template, data, details });
+			await this.doRender({ data, details });
 		} catch (error) {
 			await this.pdfFailed({ details, e: error as Error });
 		} finally {
@@ -338,12 +336,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
+	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
-		const stream = await this.worker.renderToStream({ template, data });
+		const stream = await this.worker.renderToStream({ data });
 		stream.on('data', (chunk) => {
 			buf.push(chunk);
 		});
