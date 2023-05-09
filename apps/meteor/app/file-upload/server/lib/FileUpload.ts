@@ -34,6 +34,11 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
+<<<<<<< Updated upstream
+=======
+import { i18n } from '../../../../server/lib/i18n';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+>>>>>>> Stashed changes
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -392,13 +397,25 @@ export const FileUpload = {
 		);
 	},
 
+	async avatarRoomOnFinishUpload(file: IUpload) {
+		const userId = file.uid;
+
+		if (userId && !(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
+	},
+
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (!file.uid) {
+		if (file.rid) {
+			return FileUpload.avatarRoomOnFinishUpload(file);
+		}
+
+		if (!file.userId) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		// update file record to match user's username
-		const user = await Users.findOneById(file.uid);
+		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
