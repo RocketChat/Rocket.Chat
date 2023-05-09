@@ -373,20 +373,3 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return sdk;
 	}
 }
-
-// credentials: ILivechatRoomCredentialAPI = {} as any
-// login (guest: INewLivechatGuestAPI | any) { return this.grantVisitor(guest) }
-// const { visitor } = await this.post('livechat/visitor', guest, false)
-// this.credentials = {
-// 	token: visitor.token
-// }
-// return visitor
-// }
-// uploadFile (params: ILivechatUploadAPI) {
-// const formData = new FormData()
-// const headersNeededForUpload = {
-// 	'x-visitor-token': this.credentials.token
-// }
-// formData.append('file', params.file)
-// return this.post(`livechat/upload/${params.rid}`, formData, false, undefined, { customHeaders: headersNeededForUpload })
-// }
