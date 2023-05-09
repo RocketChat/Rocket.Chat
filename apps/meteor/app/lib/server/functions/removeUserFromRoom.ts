@@ -29,7 +29,7 @@ export const removeUserFromRoom = async function (
 		throw error;
 	}
 
-	callbacks.run('beforeLeaveRoom', user, room);
+	await callbacks.run('beforeLeaveRoom', user, room);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
 		projection: { _id: 1 },
@@ -65,7 +65,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	// TODO: CACHE: maybe a queue?
-	callbacks.run('afterLeaveRoom', user, room);
+	await callbacks.run('afterLeaveRoom', user, room);
 
 	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };

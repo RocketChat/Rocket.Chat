@@ -2,13 +2,15 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 export type CustomSoundContextValue = {
-	play: (sound: string, options?: { volume?: number; loop?: boolean }) => void;
-	pause: (sound: string) => void;
+	play: (sound: ICustomSound['_id'], options?: { volume?: number; loop?: boolean }) => void;
+	pause: (sound: ICustomSound['_id']) => void;
 	getList: () => ICustomSound[] | undefined;
+	isPlaying: (sound: ICustomSound['_id']) => boolean | null;
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	play: () => undefined,
 	pause: () => undefined,
 	getList: () => undefined,
+	isPlaying: () => false,
 });

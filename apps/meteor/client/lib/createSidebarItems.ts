@@ -5,7 +5,7 @@ type Item = {
 	i18nLabel: string;
 	href?: string;
 	icon?: IconProps['name'];
-	tag?: 'Alpha';
+	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: boolean | (() => boolean);
 	pathSection?: string;
 	pathGroup?: string;
