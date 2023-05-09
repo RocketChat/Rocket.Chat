@@ -1,7 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
@@ -15,6 +14,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { t } from '../../../utils/lib/i18n';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -124,7 +124,7 @@ Meteor.startup(async function () {
 				const { message = messageArgs(this).msg } = props;
 				const permalink = await MessageAction.getPermaLink(message._id);
 				await navigator.clipboard.writeText(permalink);
-				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+				dispatchToastMessage({ type: 'success', message: t('Copied') });
 			} catch (e) {
 				dispatchToastMessage({ type: 'error', message: e });
 			}
@@ -146,7 +146,7 @@ Meteor.startup(async function () {
 			const { message = messageArgs(this).msg } = props;
 			const msgText = getMainMessageText(message).msg;
 			await navigator.clipboard.writeText(msgText);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			dispatchToastMessage({ type: 'success', message: t('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;
