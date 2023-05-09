@@ -77,7 +77,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 	setImmediate(async function () {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
-			callbacks.run('afterSaveMessage', msg, room, user._id);
+			await callbacks.run('afterSaveMessage', msg, room, user._id);
 		}
 	});
 };

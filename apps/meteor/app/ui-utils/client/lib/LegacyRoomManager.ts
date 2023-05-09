@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
@@ -56,7 +55,6 @@ const openedRooms: Record<
 		ready: boolean;
 		active: boolean;
 		dom?: Node;
-		template?: Blaze.View;
 		streamActive?: boolean;
 		unreadSince: ReactiveVar<Date | undefined>;
 		lastSeen: Date;
@@ -79,16 +77,7 @@ function close(typeName: string) {
 		openedRooms[typeName].ready = false;
 		openedRooms[typeName].active = false;
 
-		const { template } = openedRooms[typeName];
-		if (template) {
-			try {
-				Blaze.remove(template);
-			} catch (e) {
-				console.error('Error removing template from DOM', e);
-			}
-		}
 		delete openedRooms[typeName].dom;
-		delete openedRooms[typeName].template;
 
 		const { rid } = openedRooms[typeName];
 		delete openedRooms[typeName];
