@@ -122,8 +122,6 @@ export const initRoom = async () => {
 		return;
 	}
 
-	// Livechat.unsubscribeAll();
-
 	const {
 		token,
 		agent,
