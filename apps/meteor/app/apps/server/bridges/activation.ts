@@ -11,16 +11,19 @@ export class AppActivationBridge extends ActivationBridge {
 		super();
 	}
 
-	protected async appAdded(app: ProxiedApp): Promise<void> {
-		const hasBeenCalledByFramework = true;
+	protected async appAdded(_app: ProxiedApp): Promise<void> {
+		// await this.orch.getNotifier().appAdded(app.getID());
 
-		await this.orch.getNotifier().appAdded(app.getID(), hasBeenCalledByFramework);
+		// Calls made via AppActivationBridge should NOT go through
+		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
+		return undefined;
 	}
 
-	protected async appUpdated(app: ProxiedApp): Promise<void> {
-		const hasBeenCalledByFramework = true;
-
-		await this.orch.getNotifier().appUpdated(app.getID(), hasBeenCalledByFramework);
+	protected async appUpdated(_app: ProxiedApp): Promise<void> {
+		// Calls made via AppActivationBridge should NOT go through
+		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
+		// await this.orch.getNotifier().appUpdated(app.getID());
+		return undefined;
 	}
 
 	protected async appRemoved(app: ProxiedApp): Promise<void> {

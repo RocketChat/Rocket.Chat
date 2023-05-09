@@ -142,11 +142,7 @@ export class AppServerNotifier {
 		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
 	}
 
-	async appAdded(appId: string, hasBeenCalledByFramework: boolean): Promise<void> {
-		if (hasBeenCalledByFramework) {
-			return;
-		}
-
+	async appAdded(appId: string): Promise<void> {
 		void api.broadcast('apps.added', appId);
 	}
 
@@ -154,11 +150,7 @@ export class AppServerNotifier {
 		void api.broadcast('apps.removed', appId);
 	}
 
-	async appUpdated(appId: string, hasBeenCalledByFramework: boolean): Promise<void> {
-		if (hasBeenCalledByFramework) {
-			return;
-		}
-
+	async appUpdated(appId: string): Promise<void> {
 		if (this.received.has(`${AppEvents.APP_UPDATED}_${appId}`)) {
 			this.received.delete(`${AppEvents.APP_UPDATED}_${appId}`);
 			return;
