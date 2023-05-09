@@ -3,7 +3,7 @@ import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/a
 import type { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
-import { t } from '../../../app/utils/client';
+import { t } from '../../../app/utils/lib/i18n';
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { dispatchToastMessage } from '../../lib/toast';
 

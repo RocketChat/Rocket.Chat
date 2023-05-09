@@ -17,7 +17,6 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
@@ -45,6 +44,7 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { i18n } from '../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -342,7 +342,10 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
+			if (
+				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
+				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			) {
 				return API.v1.unauthorized();
 			}
 
@@ -590,7 +593,10 @@ API.v1.addRoute(
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 				await Meteor.callAsync('resetAvatar');
-			} else if (await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) {
+			} else if (
+				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
+				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			) {
 				await Meteor.callAsync('resetAvatar', user._id);
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
@@ -629,7 +635,7 @@ API.v1.addRoute(
 					preferences,
 				});
 			}
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
+			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
 	},
 );

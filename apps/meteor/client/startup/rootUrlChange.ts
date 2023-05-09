@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
+import { t } from '../../app/utils/lib/i18n';
 import UrlChangeModal from '../components/UrlChangeModal';
 import { imperativeModal } from '../lib/imperativeModal';
 import { dispatchToastMessage } from '../lib/toast';
