@@ -78,3 +78,4 @@ export * from './models/IAppsTokensModel';
 export * from './models/IAuditLogModel';
 export * from './models/ICronHistoryModel';
 export * from './models/IMigrationsModel';
+export * from './models/IModerationReportsModel';
