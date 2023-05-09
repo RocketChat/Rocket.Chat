@@ -53,7 +53,7 @@ export class AppCommandsBridge extends CommandBridge {
 
 		const cmd = command.toLowerCase();
 		if (this.disabledCommands.has(cmd)) {
-			// The command is already disabled, no need to disable it yet again
+			// The command is already disabled, no need to disable it yet again.
 			return;
 		}
 
