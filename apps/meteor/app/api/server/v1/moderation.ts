@@ -6,7 +6,7 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users, Messages } from '@rocket.chat/models';
+import { ModerationReports, Users } from '@rocket.chat/models';
 import type { IModerationReport } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
@@ -162,13 +162,6 @@ API.v1.addRoute(
 				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 				if (!user) {
 					return API.v1.failure('user-not-found');
-				}
-			}
-
-			if (msgId) {
-				const message = await Messages.findOneById(msgId, { projection: { _id: 1 } });
-				if (!message) {
-					return API.v1.failure('error-message-not-found');
 				}
 			}
 
