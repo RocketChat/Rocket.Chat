@@ -24,7 +24,7 @@ Package.onUse(function (api) {
 
 	fs.readdirSync(i18nDir).forEach(function (filename) {
 		if (filename.indexOf('.json') > -1 && filename.indexOf('livechat.') === -1 && fs.statSync(`${i18nDir}/${filename}`).size > 16) {
-			api.addFiles(`i18n/${filename}`, ['client', 'server']);
+			api.addFiles(`i18n/${filename}`);
 		}
 	});
 

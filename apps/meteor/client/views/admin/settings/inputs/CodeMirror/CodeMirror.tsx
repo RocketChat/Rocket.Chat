@@ -63,7 +63,7 @@ function CodeMirror({
 				import('codemirror/addon/edit/matchtags'),
 				import('codemirror/addon/edit/trailingspace'),
 				import('codemirror/addon/search/match-highlighter'),
-				// import('codemirror/lib/codemirror.css'),
+				import('codemirror/lib/codemirror.css'),
 			]);
 
 			if (!textAreaRef.current) {
