@@ -18,7 +18,6 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 /**
  * @extends BaseRaw<ILivechatRoom>
  */
-// @ts-expect-error - getting extra props from EE model augmentation :(
 export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, 'room', trash);
