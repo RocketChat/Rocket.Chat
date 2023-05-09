@@ -27,7 +27,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom & { isLastOwner?: boolean }>>;
 
-	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string): Promise<Document>;
+	getMostRecentAverageChatDurationTime(
+		numberMostRecentChats: number,
+		department?: string,
+	): Promise<{ _id: IRoom['_id']; avgChatDuration: number }>;
 
 	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,

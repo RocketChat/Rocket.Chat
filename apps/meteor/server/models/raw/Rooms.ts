@@ -131,8 +131,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async getMostRecentAverageChatDurationTime(
 		numberMostRecentChats: number,
-		department: string,
-	): Promise<{ props: { _id: IRoom['_id']; avgChatDuration: number } }> {
+		department?: string,
+	): Promise<{ _id: IRoom['_id']; avgChatDuration: number }> {
 		const aggregate = [
 			{
 				$match: {
@@ -154,7 +154,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		];
 
 		const [statistic] = await this.col
-			.aggregate<{ props: { _id: IRoom['_id']; avgChatDuration: number } }>(aggregate, { readPreference: readSecondaryPreferred() })
+			.aggregate<{ _id: IRoom['_id']; avgChatDuration: number }>(aggregate, { readPreference: readSecondaryPreferred() })
 			.toArray();
 		return statistic;
 	}

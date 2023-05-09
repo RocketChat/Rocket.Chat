@@ -22,7 +22,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
-		department: string;
+		department?: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 	removeByRoomId(rid: string): Promise<DeleteResult>;
