@@ -203,7 +203,7 @@ export const MessageAction = new (class {
 		}
 
 		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomCoordinator.getURL(roomData.t, subData || roomData);
+		const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
 		return `${roomURL}?msg=${msgId}`;
 	}
 })();

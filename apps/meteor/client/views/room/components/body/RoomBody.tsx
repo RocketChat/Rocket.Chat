@@ -1,5 +1,5 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
@@ -529,14 +529,6 @@ const RoomBody = (): ReactElement => {
 	);
 
 	useReadMessageWindowEvents();
-
-	useEffect(() => {
-		const room = roomRef.current;
-		const tabBar = tabBarRef.current;
-		if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
-			setTimeout(() => tabBar.openRoomInfo(), 0);
-		}
-	}, [room._id]);
 
 	return (
 		<>
