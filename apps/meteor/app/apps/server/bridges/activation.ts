@@ -12,11 +12,15 @@ export class AppActivationBridge extends ActivationBridge {
 	}
 
 	protected async appAdded(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appAdded(app.getID());
+		const hasBeenCalledByFramework = true;
+
+		await this.orch.getNotifier().appAdded(app.getID(), hasBeenCalledByFramework);
 	}
 
 	protected async appUpdated(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appUpdated(app.getID());
+		const hasBeenCalledByFramework = true;
+
+		await this.orch.getNotifier().appUpdated(app.getID(), hasBeenCalledByFramework);
 	}
 
 	protected async appRemoved(app: ProxiedApp): Promise<void> {
