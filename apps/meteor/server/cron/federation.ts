@@ -1,6 +1,7 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { Users, Settings } from '@rocket.chat/models';
 import { eventTypes } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { settings, settingsRegistry } from '../../app/settings/server';
@@ -76,17 +77,14 @@ async function runFederation(): Promise<void> {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function federationCron(SyncedCron: any): void {
-	settings.watch('FEDERATION_Enabled', (value) => {
+export async function federationCron(): Promise<void> {
+	const name = 'Federation';
+
+	settings.watch('FEDERATION_Enabled', async (value) => {
 		if (!value) {
-			return SyncedCron.remove('Federation');
+			return cronJobs.remove(name);
 		}
-		SyncedCron.add({
-			name: 'Federation',
-			schedule(parser: any) {
-				return parser.cron('* * * * *');
-			},
-			job: runFederation,
-		});
+
+		await cronJobs.add(name, '* * * * *', async () => runFederation());
 	});
 }

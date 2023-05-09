@@ -17,6 +17,63 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const muteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; username: string }): Promise<boolean> => {
+	if (!fromId || !(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'muteUserInRoom',
+		});
+	}
+
+	const room = await Rooms.findOneById(data.rid);
+
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'muteUserInRoom',
+		});
+	}
+
+	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, fromId))) {
+		throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
+			method: 'muteUserInRoom',
+			type: room.t,
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+		projection: { _id: 1 },
+	});
+	if (!subscription) {
+		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+			method: 'muteUserInRoom',
+		});
+	}
+
+	const mutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+
+	if (!mutedUser?.username) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user to mute', {
+			method: 'muteUserInRoom',
+		});
+	}
+
+	const fromUser = await Users.findOneById(fromId);
+	if (!fromUser) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'muteUserInRoom',
+		});
+	}
+
+	await callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
+
+	await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+
+	await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
+
+	await callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async muteUserInRoom(data) {
 		check(
@@ -27,67 +84,14 @@ Meteor.methods<ServerMethods>({
 			}),
 		);
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'muteUserInRoom',
-			});
-		}
-
 		const fromId = Meteor.userId();
 
-		if (!fromId || !(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'muteUserInRoom',
-			});
-		}
-
-		const room = await Rooms.findOneById(data.rid);
-
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'muteUserInRoom',
-			});
-		}
-
-		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, fromId))) {
-			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
-				method: 'muteUserInRoom',
-				type: room.t,
-			});
-		}
-
-		const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
-			projection: { _id: 1 },
-		});
-		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'muteUserInRoom',
-			});
-		}
-
-		const mutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
-
-		if (!mutedUser?.username) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user to mute', {
-				method: 'muteUserInRoom',
-			});
-		}
-
-		const fromUser = await Users.findOneById(fromId);
-		if (!fromUser) {
+		if (!fromId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'muteUserInRoom',
 			});
 		}
 
-		await callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
-
-		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
-
-		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
-
-		await callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
-
-		return true;
+		return muteUserInRoom(fromId, data);
 	},
 });
