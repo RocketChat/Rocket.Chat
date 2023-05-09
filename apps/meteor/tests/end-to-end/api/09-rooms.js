@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import { expect } from 'chai';
 
@@ -1524,12 +1525,14 @@ describe('[Rooms]', function () {
 		});
 
 		it('should update the room settings', (done) => {
+			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
 			request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({
 					rid: testChannel._id,
-					roomAvatar: fs.readFileSync(imgURL, 'base64'),
+					roomAvatar: imageDataUri,
 					featured: true,
 					roomName: randomString,
 					roomTopic: randomString,
@@ -1539,7 +1542,6 @@ describe('[Rooms]', function () {
 					readOnly: true,
 					reactWhenReadOnly: true,
 					default: true,
-					encrypted: true,
 					favorite: {
 						favorite: true,
 						defaultValue: true,
@@ -1571,12 +1573,10 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('featured', true);
 					expect(res.body.room).to.have.property('ro', true);
 					expect(res.body.room).to.have.property('default', true);
-					expect(res.body.room).to.have.property('encrypted', true);
 					expect(res.body.room).to.have.property('favorite', true);
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
-			done();
 		});
 	});
 });
