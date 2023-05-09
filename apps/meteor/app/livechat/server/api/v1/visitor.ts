@@ -29,10 +29,16 @@ API.v1.addRoute('livechat/visitor', {
 			}),
 		});
 
-		const { token, customFields } = this.bodyParams.visitor;
+		const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 		const guest = {
-			...this.bodyParams.visitor,
-			phone: this.bodyParams.visitor.phone ? { number: this.bodyParams.visitor.phone as string } : undefined,
+			token,
+			...(id && { id }),
+			...(name && { name }),
+			...(email && { email }),
+			...(department && { department }),
+			...(username && { username }),
+			...(connectionData && { connectionData }),
+			...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
 			connectionData: normalizeHttpHeaderData(this.request.headers),
 		};
 
