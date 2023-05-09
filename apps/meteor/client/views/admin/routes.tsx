@@ -116,3 +116,8 @@ registerAdminRoute('/upgrade/:type?', {
 	name: 'upgrade',
 	component: lazy(() => import('./upgrade/UpgradePage')),
 });
+
+registerAdminRoute('/moderation-console/:context?/:id?', {
+	name: 'moderation-console',
+	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
+});

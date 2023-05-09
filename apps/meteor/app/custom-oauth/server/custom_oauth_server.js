@@ -108,39 +108,39 @@ export class CustomOAuth {
 
 		let response = undefined;
 
-		const allOptions = {
-			headers: {
-				'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
-				'Accept': 'application/json',
-			},
-			params: {
-				code: query.code,
-				redirect_uri: OAuth._redirectUri(this.name, config),
-				grant_type: 'authorization_code',
-				state: query.state,
-			},
+		const headers = {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+			'Accept': 'application/json',
 		};
+		const params = new URLSearchParams({
+			code: query.code,
+			redirect_uri: OAuth._redirectUri(this.name, config),
+			grant_type: 'authorization_code',
+			state: query.state,
+		});
 
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
 			const b64 = Buffer.from(`${config.clientId}:${OAuth.openSecret(config.secret)}`).toString('base64');
-			allOptions.headers.Authorization = `Basic ${b64}`;
+			headers.Authorization = `Basic ${b64}`;
 		} else {
-			allOptions.params.client_secret = OAuth.openSecret(config.secret);
-			allOptions.params.client_id = config.clientId;
+			params.append('client_secret', config.secret);
+			params.append('client_id', config.clientId);
 		}
 
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
-				...allOptions,
+				headers,
+				params,
 			});
 
-			try {
-				response = await request.json();
-			} catch (e) {
-				response = await request.text();
+			if (!request.ok) {
+				throw new Error(request.statusText);
 			}
+
+			response = await request.json();
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -169,13 +169,12 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
-			let response;
 
-			try {
-				response = await request.json();
-			} catch (e) {
-				response = await request.text();
+			if (!request.ok) {
+				throw new Error(request.statusText);
 			}
+
+			const response = await request.json();
 
 			logger.debug({ msg: 'Identity response', response });
 

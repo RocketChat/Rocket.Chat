@@ -275,7 +275,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 							return {
 								_id: command,
 								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',
-								description: t.has(item.description) ? t(item.description) : item.description,
+								description: item.description && t.has(item.description) ? t(item.description) : item.description,
 								permission: item.permission,
 							};
 						})
