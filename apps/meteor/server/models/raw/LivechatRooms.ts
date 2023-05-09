@@ -1,4 +1,15 @@
-import type { Db, Collection, IndexDescription, Document, Filter, FindOptions, UpdateFilter, SortDirection } from 'mongodb';
+import type {
+	Db,
+	Collection,
+	IndexDescription,
+	Document,
+	Filter,
+	FindOptions,
+	UpdateFilter,
+	SortDirection,
+	FindCursor,
+	UpdateResult,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Settings } from '@rocket.chat/models';
 import type {
@@ -8,6 +19,8 @@ import type {
 	DeepWritable,
 	ISetting,
 	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
 } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
@@ -2414,5 +2427,76 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	setOnHoldByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unsetOnHoldByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	setSlaForRoomById(
+		_roomId: string,
+		_sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+	): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	removeSlaFromRoomById(_roomId: string): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	bulkRemoveSlaFromRoomsById(_slaId: string): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	findOpenBySlaId(_slaId: string, _options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	async setPriorityByRoomId(_roomId: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	async unsetPriorityByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	findOpenRoomsByPriorityId(_priorityId: string): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	setPredictedVisitorAbandonmentByRoomId(_rid: string, _willBeAbandonedAt: Date): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	findAbandonedOpenRooms(_date: Date): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	async unsetPredictedVisitorAbandonmentByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	async associateRoomsWithDepartmentToUnit(_departments: string[], _unitId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async removeUnitAssociationFromRooms(_unitId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
 	}
 }
