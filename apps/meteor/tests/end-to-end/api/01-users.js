@@ -19,7 +19,7 @@ import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
@@ -34,11 +34,14 @@ async function joinChannel(userCredentials, roomId) {
 		roomId,
 	});
 }
-
 describe('[Users]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+	after(async () => {
+		await deleteUser(credentials);
+		await deleteUser(targetUser);
+	});
 
 	it('enabling E2E in server and generating keys to user...', async () => {
 		await updateSetting('E2E_Enable', true);
@@ -67,8 +70,12 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.create]', () => {
+		let customFieldUser;
 		before((done) => clearCustomFields(done));
-		after((done) => clearCustomFields(done));
+		after(async () => {
+			clearCustomFields();
+			await deleteUser(customFieldUser);
+		});
 
 		it('should create a new user', async () => {
 			await request
@@ -144,6 +151,8 @@ describe('[Users]', function () {
 						expect(res.body).to.have.nested.property('user.name', username);
 						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
 						expect(res.body).to.not.have.nested.property('user.e2e');
+
+						customFieldUser = res.body.user;
 					})
 					.end(done);
 			});
@@ -222,12 +231,16 @@ describe('[Users]', function () {
 		});
 
 		describe('users default roles configuration', () => {
+			const rolesUsers = [];
 			before(async () => {
 				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user,admin');
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user');
+				for await (const user of rolesUsers) {
+					await deleteUser(user);
+				}
 			});
 
 			it('should create a new user with default roles', (done) => {
@@ -252,6 +265,8 @@ describe('[Users]', function () {
 						expect(res.body).to.have.nested.property('user.active', true);
 						expect(res.body).to.have.nested.property('user.name', username);
 						expect(res.body.user.roles).to.have.members(['user', 'admin']);
+
+						rolesUsers.push(res.body.user);
 					})
 					.end(done);
 			});
@@ -279,6 +294,8 @@ describe('[Users]', function () {
 						expect(res.body).to.have.nested.property('user.active', true);
 						expect(res.body).to.have.nested.property('user.name', username);
 						expect(res.body.user.roles).to.have.members(['guest']);
+
+						rolesUsers.push(res.body.user);
 					})
 					.end(done);
 			});
@@ -288,6 +305,12 @@ describe('[Users]', function () {
 	describe('[/users.register]', () => {
 		const email = `email@email${Date.now()}.com`;
 		const username = `myusername${Date.now()}`;
+		let user;
+
+		after(async () => {
+			await deleteUser(user);
+		});
+
 		it('should register new user', (done) => {
 			request
 				.post(api('users.register'))
@@ -304,6 +327,8 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
+
+					user = res.body.user;
 				})
 				.end(done);
 		});
@@ -327,9 +352,11 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.info]', () => {
-		after(() => {
+		let userRedirected;
+		after(async () => {
 			updatePermission('view-other-user-channels', ['admin']);
 			updatePermission('view-full-other-user-info', ['admin']);
+			await deleteUser(userRedirected);
 		});
 
 		it('should return an error when the user does not exist', (done) => {
@@ -485,6 +512,7 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					userRedirected = res.body.user;
 				});
 
 			await request
@@ -504,6 +532,7 @@ describe('[Users]', function () {
 				});
 		});
 	});
+
 	describe('[/users.getPresence]', () => {
 		it("should query a user's presence by userId", (done) => {
 			request
@@ -664,8 +693,9 @@ describe('[Users]', function () {
 		});
 
 		after(async () => {
+			await deleteUser(user);
 			await deleteUser(user2);
-			user2 = undefined;
+			await deleteUser(deactivatedUser);
 
 			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
 			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
@@ -808,7 +838,6 @@ describe('[Users]', function () {
 		after(async () => {
 			await updateSetting('Accounts_AllowUserAvatarChange', true);
 			await deleteUser(user);
-			user = undefined;
 			await updatePermission('edit-other-user-avatar', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
@@ -2802,7 +2831,6 @@ describe('[Users]', function () {
 			});
 		});
 	});
-
 	describe('[/users.setActiveStatus]', () => {
 		let user;
 		before((done) => {
@@ -2837,15 +2865,9 @@ describe('[Users]', function () {
 		before((done) => {
 			updatePermission('edit-other-user-active-status', ['admin', 'user']).then(done);
 		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
-			user = undefined;
+		after(async () => {
+			await deleteUser(user);
+			await updatePermission('edit-other-user-active-status', ['admin']);
 		});
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request
@@ -3200,6 +3222,10 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		after(async () => {
+			await deleteUser(testUser);
+		});
+
 		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
 			updatePermission('edit-other-user-active-status', []).then(() => {
 				request
@@ -3247,7 +3273,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 2);
+						expect(res.body).to.have.property('count', 1);
 					})
 					.end(done);
 			});
@@ -3331,14 +3357,13 @@ describe('[Users]', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
 		});
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3393,6 +3418,12 @@ describe('[Users]', function () {
 				await updatePermission('view-outside-room', []);
 
 				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'c', roomId });
+				await deleteUser(user);
+				await deleteUser(user2);
 			});
 
 			it('should return an empty list when the user does not have any subscription', (done) => {
@@ -3547,7 +3578,6 @@ describe('[Users]', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
 		});
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
@@ -3690,14 +3720,13 @@ describe('[Users]', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
 		});
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3810,6 +3839,17 @@ describe('[Users]', function () {
 				.then(() => done());
 		});
 
+		after(async () => {
+			await deleteUser(testUser);
+
+			await request.post(api('teams.delete')).set(credentials).send({
+				teamName: teamName1,
+			});
+			await request.post(api('teams.delete')).set(credentials).send({
+				teamName: teamName2,
+			});
+		});
+
 		it('should list both channels', (done) => {
 			request
 				.get(api('users.listTeams'))
@@ -3842,7 +3882,6 @@ describe('[Users]', function () {
 		after(async () => {
 			await deleteUser(user);
 			await deleteUser(otherUser);
-			user = undefined;
 		});
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {

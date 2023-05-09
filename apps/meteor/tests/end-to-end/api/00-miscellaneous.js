@@ -2,7 +2,8 @@ import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import { createUser, login as doLogin } from '../../data/users.helper';
+import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
+import { deleteRoom } from '../../data/rooms.helper.js';
 import { updateSetting } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -191,27 +192,15 @@ describe('miscellaneous', function () {
 	describe('/directory', () => {
 		let user;
 		let testChannel;
-		before((done) => {
+		before(async () => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+
+			user = await createUser({ email, name: username, username, password });
 		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
-			user = undefined;
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await deleteUser(user._id);
 		});
 		it('create an channel', (done) => {
 			request
@@ -454,17 +443,10 @@ describe('miscellaneous', function () {
 	});
 	describe('[/spotlight]', () => {
 		let user;
-		before((done) => {
+		before(async () => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+			user = await createUser({ email, name: username, username, password });
 		});
 
 		let userCredentials;
@@ -485,15 +467,9 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
-			user = undefined;
+		after(async () => {
+			await deleteUser(user._id);
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 		it('create an channel', (done) => {
 			request
@@ -562,9 +538,14 @@ describe('miscellaneous', function () {
 
 	describe('[/instances.get]', () => {
 		let unauthorizedUserCredentials;
+		let createdUser;
 		before(async () => {
-			const createdUser = await createUser();
+			createdUser = await createUser();
 			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(createdUser._id);
 		});
 
 		it('should fail if user is logged in but is unauthorized', (done) => {

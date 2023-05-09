@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 
 describe('AutoTranslate', function () {
 	this.retries(0);
@@ -247,6 +247,10 @@ describe('AutoTranslate', function () {
 					messageSent = res.body.message;
 					done();
 				});
+			});
+
+			after((done) => {
+				deleteMessage({ roomId: 'GENERAL', msgId: messageSent._id }).end(done);
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
