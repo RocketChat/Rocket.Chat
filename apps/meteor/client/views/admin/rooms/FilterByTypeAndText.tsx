@@ -71,8 +71,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 		typeFilter: string;
 		visibilityFilter: string;
 	}): IRoom[] | undefined => {
-		// fazer outro filtro pra visibilidade e concatenar a intersecção dos dois arrays num resultado final
-		// otimizar com useMemo ou useCallback
+		// improve this code with useMemo ou useCallback
 
 		let filteredRoomsByType: IRoom[] = [];
 		let filteredRoomsByVisibility: IRoom[] = [];
