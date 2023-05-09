@@ -40,6 +40,7 @@ const ADMIN_PERMISSIONS = [
 	'edit-privileged-setting',
 	'manage-selected-settings',
 	'view-engagement-dashboard',
+	'view-moderation-console',
 ];
 
 const AdministrationList = ({ accountBoxItems, onDismiss }: AdministrationListProps): ReactElement => {

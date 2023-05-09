@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { password } from '../user';
+import { IUserCredentialsHeader, password } from '../user';
 import { createUser, login } from '../users.helper';
 import { createAgent, makeAgentAvailable } from './rooms';
 import type { DummyResponse } from './utils';
@@ -58,7 +58,7 @@ new Promise((resolve, reject) => {
 });
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
-	credentials: { 'X-Auth-Token': string; 'X-User-Id': string; };
+	credentials: IUserCredentialsHeader;
 	user: IUser;
 }}> => {
 	const agent: IUser = await createUser();
