@@ -2026,9 +2026,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const update: DeepWritable<UpdateFilter<IOmnichannelRoom>> = {
 			$set: {
 				...(analyticsData && {
-					'metrics.response': {
-						avg: analyticsData.avgResponseTime,
-					},
+					'metrics.response.avg': analyticsData.avgResponseTime,
 				}),
 				...(analyticsData?.firstResponseTime && {
 					'metrics.reaction.fd': analyticsData.firstReactionDate,
