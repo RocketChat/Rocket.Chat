@@ -268,14 +268,14 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						)}
 					</EmojiPickerListArea>
 					<EmojiPickerPreviewArea>
-						<>
+						<div>
 							{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
 							{canManageEmoji && emojiToPreview === null && (
 								<Button small onClick={handleGoToAddCustom}>
 									{t('Add_emoji')}
 								</Button>
 							)}
-						</>
+						</div>
 						<ToneSelectorWrapper caption={t('Skin_tone')}>
 							<ToneSelector tone={actualTone} setTone={setActualTone} />
 						</ToneSelectorWrapper>
