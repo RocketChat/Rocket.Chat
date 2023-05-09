@@ -567,9 +567,9 @@ export class LDAPEEManager extends LDAPManager {
 		const { updateExistingUsers, removeDeletedUsers } = settings;
 
 		for await (const user of users) {
-            const ldapUsers = await this.findLDAPMultipleUsers(ldap, user);
-            const ldapUser = ldapUsers?.[0];
-            const isUniqueLdapUser = ldapUser && ldapUsers.length === 1;
+			const ldapUsers = await this.findLDAPMultipleUsers(ldap, user);
+			const ldapUser = ldapUsers?.[0];
+			const isUniqueLdapUser = ldapUser && ldapUsers.length === 1;
 
 			if (updateExistingUsers && isUniqueLdapUser) {
 				this.updateExistingUser(ldapUser, user, converter);
