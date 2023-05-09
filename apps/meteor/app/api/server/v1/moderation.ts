@@ -165,6 +165,13 @@ API.v1.addRoute(
 				}
 			}
 
+			if (msgId) {
+				const message = await ModerationReports.findOne({ 'message._id': msgId });
+				if (!message) {
+					return API.v1.failure('error-message-not-found');
+				}
+			}
+
 			const sanitizedReason: string = reason?.trim() ? reason : 'No reason provided';
 			const action: string = actionParam ?? 'None';
 
