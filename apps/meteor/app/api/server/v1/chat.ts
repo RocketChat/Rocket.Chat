@@ -4,6 +4,7 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isChatReportMessageProps } from '@rocket.chat/rest-typings';
 
 import { roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -18,6 +19,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
+import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -365,7 +367,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.reportMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatReportMessageProps },
 	{
 		async post() {
 			const { messageId, description } = this.bodyParams;
@@ -377,7 +379,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "description" param is missing.');
 			}
 
-			await Meteor.callAsync('reportMessage', messageId, description);
+			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
 		},
