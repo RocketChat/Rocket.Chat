@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../utils/client';
+import { t } from '../../utils/lib/i18n';
 import { process2faReturn, process2faAsyncReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';

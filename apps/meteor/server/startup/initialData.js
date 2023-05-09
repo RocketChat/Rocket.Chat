@@ -50,10 +50,8 @@ Meteor.startup(async function () {
 			size: buffer.length,
 		};
 
-		await Meteor.runAsUser('rocket.cat', async () => {
-			await fileStore.insert(file, rs);
-			Users.setAvatarData('rocket.cat', 'local', null);
-		});
+		const upload = await fileStore.insert(file, rs);
+		await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 	}
 
 	if (process.env.ADMIN_PASS) {
