@@ -67,11 +67,11 @@ test.describe.parallel('Federation - Admin Panel - Rooms', () => {
 		await expect(poFederationAdmin.roomsInputTopic).not.toBeDisabled();
 		await expect(poFederationAdmin.roomsInputFavorite).not.toBeDisabled();
 
-		await expect(poFederationAdmin.roomsInputDescription).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputAnnouncement).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputPrivate).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputReadOnly).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputArchived).toBeDisabled();
+		await expect(poFederationAdmin.roomsInputDescription).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputAnnouncement).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputPrivate).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputReadOnly).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputArchived).not.toBeVisible();
 		await expect(poFederationAdmin.roomsInputDefault).toBeDisabled();
 		await expect(poFederationAdmin.roomsInputFeatured).toBeDisabled();
 		await expect(poFederationAdmin.roomsBtnDelete).toBeDisabled();

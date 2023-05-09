@@ -53,15 +53,18 @@ export type ComposerAPI = {
 	setRecordingVideo(recording: boolean): void;
 	readonly recordingVideo: Subscribable<boolean>;
 
+	setIsMicrophoneDenied(isMicrophoneDenied: boolean): void;
+	readonly isMicrophoneDenied: Subscribable<boolean>;
+
 	readonly formatters: Subscribable<FormattingButton[]>;
 };
 
 export type DataAPI = {
 	composeMessage(
 		text: string,
-		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
+		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage | null },
 	): Promise<IMessage>;
-	findMessageByID(mid: IMessage['_id']): Promise<IMessage | undefined>;
+	findMessageByID(mid: IMessage['_id']): Promise<IMessage | null>;
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
@@ -101,6 +104,8 @@ export type UploadsAPI = {
 };
 
 export type ChatAPI = {
+	readonly uid: string | null;
+
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
@@ -125,6 +130,11 @@ export type ChatAPI = {
 		close(): void;
 	};
 
+	readonly emojiPicker: {
+		open(el: Element, cb: (emoji: string) => void): void;
+		close(): void;
+	};
+
 	readonly action: {
 		start(action: 'typing'): void;
 		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
@@ -134,7 +144,7 @@ export type ChatAPI = {
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<boolean>;
-		readonly processSlashCommand: (message: IMessage) => Promise<boolean>;
+		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;

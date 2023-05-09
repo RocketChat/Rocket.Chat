@@ -1,7 +1,10 @@
 import { appStatusSpanProps } from '../helpers';
 import type { App } from '../types';
 
-export const filterAppsByDisabled = (app: App): boolean =>
-	appStatusSpanProps(app)?.label === 'Disabled' ||
-	appStatusSpanProps(app)?.label === 'Config Needed' ||
-	appStatusSpanProps(app)?.label === 'Failed';
+export const filterAppsByDisabled = (app: App): boolean => {
+	const appStatus = appStatusSpanProps(app)?.label;
+
+	const uiDisabledStatus = ['Disabled', 'Disabled*', 'Config Needed', 'Failed'];
+
+	return uiDisabledStatus.includes(appStatus || '');
+};

@@ -28,6 +28,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(edit) not be visible', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
+
 			await poHomeChannel.content.sendMessage('expect option(edit) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(edit) not be visible' })).not.toHaveAttribute(

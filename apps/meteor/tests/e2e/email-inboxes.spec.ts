@@ -43,7 +43,7 @@ test.describe.serial('email-inboxes', () => {
 	});
 
 	test('expect delete an email inbox', async () => {
-		await poAdminEmailInboxes.findEmailInbox(email).click();
+		await poAdminEmailInboxes.itemRow(email).click();
 		await poAdminEmailInboxes.btnDelete.click();
 		await poUtils.btnModalConfirmDelete.click();
 		await expect(poUtils.toastBarSuccess).toBeVisible();

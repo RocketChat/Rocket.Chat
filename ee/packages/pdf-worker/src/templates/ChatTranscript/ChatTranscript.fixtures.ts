@@ -91,7 +91,7 @@ export const exampleData = {
 		{ key: 'Date', value: 'Date' },
 		{ key: 'Customer', value: 'Customer' },
 		{ key: 'Time', value: 'Time' },
-		{ key: 'This_attachment_is_not_supported', value: 'This attachment is not supported' },
+		{ key: 'This_attachment_is_not_supported', value: 'Attachment format not supported' },
 	],
 	messages: [
 		{
@@ -163,6 +163,23 @@ export const exampleData = {
 				name: 'Juanito De Ponce',
 				username: 'juanito.ponce',
 			},
+			quotes: [
+				{
+					name: 'Christian Castro',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.',
+								},
+							],
+						},
+					],
+				},
+			],
 			md: [
 				{
 					type: 'PARAGRAPH',
@@ -192,8 +209,55 @@ export const exampleData = {
 			],
 		},
 		{
+			msg: 'Consectetur adipiscing eli.',
+			ts: '2022-11-21T16:00:00.000Z',
+			u: {
+				_id: '321',
+				name: 'Christian Castro',
+				username: 'cristiano.castro',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [{ type: 'PLAIN_TEXT', value: 'I am having trouble with my password. ' }],
+				},
+			],
+			quotes: [
+				{
+					name: 'Juanito De Ponce',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.',
+								},
+							],
+						},
+					],
+				},
+				{
+					name: 'Juanito De Ponce',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'Adipiscing elit, sed do eiusmod tempor incididunt ut labore.',
+								},
+							],
+						},
+					],
+				},
+			],
+		},
+		{
 			msg: 'You are welcome. Have a great day!',
-			ts: '2022-11-22T16:00:00.000Z',
+			ts: '2022-11-21T16:00:00.000Z',
 			u: {
 				_id: '123',
 				name: 'Juanito De Ponce',
@@ -230,13 +294,143 @@ export const exampleData = {
 			},
 		},
 		{
-			msg: 'No, I am good. Thanks!',
 			ts: '2022-11-22T16:00:00.000Z',
 			u: {
 				_id: '321',
 				name: 'Christian Castro',
 				username: 'cristiano.castro',
 			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value:
+								'Ac aliquet odio mattis. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat ',
+						},
+						{
+							type: 'BOLD',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'bold ',
+								},
+							],
+						},
+						{
+							type: 'STRIKE',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'strike ',
+								},
+							],
+						},
+						{
+							type: 'ITALIC',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value: 'italic ',
+								},
+							],
+						},
+						{
+							type: 'BOLD',
+							value: [
+								{
+									type: 'STRIKE',
+									value: [
+										{
+											type: 'ITALIC',
+											value: [
+												{
+													type: 'PLAIN_TEXT',
+													value: 'all together',
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			],
+		},
+		{
+			ts: '2022-11-21T16:00:00.000Z',
+			u: {
+				_id: '321',
+				name: 'Christian Castro',
+				username: 'cristiano.castro',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'LINK',
+							value: {
+								label: [{ type: 'PLAIN_TEXT', value: ' ' }],
+								src: { type: 'PLAIN_TEXT', value: 'linktoquote' },
+							},
+						},
+						{ type: 'PLAIN_TEXT', value: 'Consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.' },
+					],
+				},
+			],
+			quotes: [
+				{
+					name: 'Juanito De Ponce',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value:
+										'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+								},
+							],
+						},
+					],
+				},
+				{
+					name: 'Christian Castro',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value:
+										'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+								},
+							],
+						},
+					],
+				},
+				{
+					name: 'Juanito De Ponce',
+					time: '2022-11-21T16:00:00.000Z',
+					md: [
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'PLAIN_TEXT',
+									value:
+										'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+								},
+							],
+						},
+					],
+				},
+			],
 		},
 	],
 };

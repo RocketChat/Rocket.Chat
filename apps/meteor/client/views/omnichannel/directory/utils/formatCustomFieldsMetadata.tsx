@@ -1,34 +1,23 @@
 import type { ILivechatCustomField, Serialized } from '@rocket.chat/core-typings';
 
-type CustomFieldsMetadata = Record<
-	string,
-	{
-		label: string;
-		type: 'select' | 'text';
-		required?: boolean;
-		defaultValue?: unknown;
-		options?: string[];
-	}
->;
+import type { CustomFieldMetadata } from '../../../../components/CustomFieldsFormV2';
 
 export const formatCustomFieldsMetadata = (
 	customFields: Serialized<ILivechatCustomField>[],
 	scope: 'visitor' | 'room',
-): CustomFieldsMetadata => {
+): CustomFieldMetadata[] => {
 	if (!customFields) {
-		return {};
+		return [];
 	}
 
 	return customFields
 		.filter((field) => field.visibility === 'visible' && field.scope === scope)
-		.reduce((obj, { _id, label, options, defaultValue, required }) => {
-			obj[_id] = {
-				label,
-				type: options ? 'select' : 'text',
-				required,
-				defaultValue,
-				options: options?.split(',').map((item) => item.trim()),
-			};
-			return obj;
-		}, {} as CustomFieldsMetadata);
+		.map(({ _id, label, options, defaultValue, required }) => ({
+			name: _id,
+			label,
+			type: options ? 'select' : 'text',
+			required,
+			defaultValue,
+			options: options?.split(',').map((item) => [item.trim(), item.trim()]),
+		}));
 };

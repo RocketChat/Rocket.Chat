@@ -1,4 +1,3 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -17,23 +16,12 @@ type DepartmentsListOptions = {
 	showArchived?: boolean;
 };
 
-type DepartmentListItem =
-	| (ILivechatDepartment & {
-			label: string;
-			value: { value: string; label: string };
-	  })
-	| {
-			_id: '';
-			label: string;
-			value: { value: 'all'; label: string };
-			_updatedAt: Date;
-	  }
-	| {
-			_id: '';
-			label: string;
-			value: { value: ''; label: string };
-			_updatedAt: Date;
-	  };
+type DepartmentListItem = {
+	_id: string;
+	label: string;
+	value: string;
+	_updatedAt: Date;
+};
 
 export const useDepartmentsList = (
 	options: DepartmentsListOptions,
@@ -75,12 +63,10 @@ export const useDepartmentsList = (
 				})
 				.map(({ _id, name, _updatedAt, ...department }): DepartmentListItem => {
 					return {
-						...department,
 						_id,
-						name: department.archived ? `${name} [${t('Archived')}]` : name,
 						label: department.archived ? `${name} [${t('Archived')}]` : name,
-						value: { value: _id, label: name },
-						...(_updatedAt && { _updatedAt: new Date(_updatedAt) }),
+						value: _id,
+						_updatedAt: new Date(_updatedAt || ''),
 					};
 				});
 
@@ -88,7 +74,7 @@ export const useDepartmentsList = (
 				items.unshift({
 					_id: '',
 					label: t('All'),
-					value: { value: 'all', label: t('All') },
+					value: 'all',
 					_updatedAt: new Date(),
 				});
 
@@ -96,7 +82,7 @@ export const useDepartmentsList = (
 				items.unshift({
 					_id: '',
 					label: t('None'),
-					value: { value: '', label: t('None') },
+					value: '',
 					_updatedAt: new Date(),
 				});
 

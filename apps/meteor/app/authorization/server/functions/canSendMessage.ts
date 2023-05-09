@@ -13,7 +13,7 @@ const subscriptionOptions = {
 	},
 };
 
-async function validateRoomMessagePermissionsAsync(
+export async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData?: Record<string, any>,
@@ -26,7 +26,7 @@ async function validateRoomMessagePermissionsAsync(
 		throw new Error('error-not-allowed');
 	}
 
-	if (roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK, uid)) {
+	if (await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, uid)) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, subscriptionOptions);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			throw new Error('room_is_blocked');
@@ -57,19 +57,4 @@ export async function canSendMessageAsync(
 
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
-}
-
-export function canSendMessage(
-	rid: IRoom['_id'],
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData?: Record<string, any>,
-): IRoom {
-	return Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
-}
-export function validateRoomMessagePermissions(
-	room: IRoom,
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData?: Record<string, any>,
-): void {
-	return Promise.await(validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData));
 }

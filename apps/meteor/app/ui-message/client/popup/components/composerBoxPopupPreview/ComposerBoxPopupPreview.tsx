@@ -25,45 +25,44 @@ const ComposerBoxPopupPreview = forwardRef<
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
 	useImperativeHandle(
 		ref,
-		() =>
-			suspended
-				? {}
-				: {
-						getFilter: () => {
-							const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-							if (!value) {
-								throw new Error('No value');
-							}
-							const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
+		() => ({
+			getFilter: () => {
+				const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+				if (!value) {
+					throw new Error('No value');
+				}
+				const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
 
-							if (!matches) {
-								throw new Error('No matches');
-							}
+				if (!matches) {
+					throw new Error('No matches');
+				}
 
-							const cmd = matches[1].replace('/', '').trim().toLowerCase();
+				const cmd = matches[1].replace('/', '').trim().toLowerCase();
 
-							const params = matches[2];
-							return { cmd, params, msg: { rid, tmid } };
-						},
-						select: (item) => {
-							const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-							if (!value) {
-								throw new Error('No value');
-							}
-							const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
+				const params = matches[2];
+				return { cmd, params, msg: { rid, tmid } };
+			},
+			...(!suspended && {
+				select: (item) => {
+					const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+					if (!value) {
+						throw new Error('No value');
+					}
+					const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
 
-							if (!matches) {
-								throw new Error('No matches');
-							}
+					if (!matches) {
+						throw new Error('No matches');
+					}
 
-							const cmd = matches[1].replace('/', '').trim().toLowerCase();
+					const cmd = matches[1].replace('/', '').trim().toLowerCase();
 
-							const params = matches[2];
-							// TODO: Fix this solve the typing issue
-							executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
-							chat?.composer?.setText('');
-						},
-				  },
+					const params = matches[2];
+					// TODO: Fix this solve the typing issue
+					void executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
+					chat?.composer?.setText('');
+				},
+			}),
+		}),
 		[chat?.composer, executeSlashCommandPreviewMethod, rid, tmid, suspended],
 	);
 
@@ -93,11 +92,8 @@ const ComposerBoxPopupPreview = forwardRef<
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' padding='x8' role='menu' mbe='x2' aria-labelledby={id}>
-				{/* <Box bg='tint' pi='x16' pb='x8' id={id}>
-						{isLoading ? <Skeleton /> : data?.i18nTitle}
-					</Box> */}
-				<Box role='listbox' display='flex' overflow='auto' fontSize={0} aria-busy={isLoading}>
+			<Tile className='message-popup' display='flex' padding='x8' role='menu' mbe='x8' aria-labelledby={id}>
+				<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
 					{isLoading &&
 						Array(5)
 							.fill(5)

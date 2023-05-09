@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Settings } from '@rocket.chat/models';
 
 import { getRedirectUri } from './getRedirectUri';

@@ -1,18 +1,22 @@
-import { StyleSheet, View, Text } from '@react-pdf/renderer';
+import { StyleSheet, Text } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 
 export const codeStyles = StyleSheet.create({
 	wrapper: {
-		backgroundColor: colors.n250,
-		borderColor: colors.n100,
+		backgroundColor: colors.n100,
+		borderColor: colors.n250,
 		borderWidth: 1,
 		borderRadius: 4,
 		paddingHorizontal: 3,
 		paddingVertical: 1,
 	},
+	space: {
+		backgroundColor: colors.n100,
+	},
 	code: {
-		fontSize: 13,
+		backgroundColor: colors.n100,
 		color: colors.n800,
+		fontSize: 13,
 		fontWeight: 700,
 		fontFamily: 'FiraCode',
 	},
@@ -23,9 +27,11 @@ type CodeSpanProps = {
 };
 
 const CodeSpan = ({ code }: CodeSpanProps) => (
-	<View style={codeStyles.wrapper}>
+	<Text style={codeStyles.wrapper}>
+		<Text style={codeStyles.space}> </Text>
 		<Text style={codeStyles.code}>{code}</Text>
-	</View>
+		<Text style={codeStyles.space}> </Text>
+	</Text>
 );
 
 export default CodeSpan;

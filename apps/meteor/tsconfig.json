@@ -34,7 +34,6 @@
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",
-		"./packages/**",
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**"

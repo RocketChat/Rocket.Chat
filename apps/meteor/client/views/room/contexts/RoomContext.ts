@@ -6,7 +6,7 @@ export interface IRoomWithFederationOriginalName extends IRoom {
 	federationOriginalName?: string;
 }
 
-export type RoomContextValue = {
+type RoomContextValue = {
 	rid: IRoom['_id'];
 	room: IRoomWithFederationOriginalName;
 	subscription?: ISubscription;

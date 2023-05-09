@@ -25,9 +25,6 @@ const Sidebar = () => {
 		z-index: 2;
 		display: flex;
 		flex-direction: column;
-		flex: 0 0 var(--sidebar-width);
-		width: var(--sidebar-width);
-		max-width: var(--sidebar-width);
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
@@ -37,7 +34,7 @@ const Sidebar = () => {
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		@media (width < 768px) {
+		@media (max-width: 767px) {
 			position: absolute;
 			user-select: none;
 			transform: translate3d(-100%, 0, 0);
@@ -56,12 +53,17 @@ const Sidebar = () => {
 			}
 		}
 
-		@media (min-width: 1372px) {
-			/* 1440px -68px (eletron menu) */
-			flex: 0 0 20%;
-
-			width: 20%;
-			max-width: 20%;
+		@media (min-width: 768px) and (max-width: 1599px) {
+			width: var(--sidebar-width);
+			min-width: var(--sidebar-width);
+		}
+		@media (min-width: 1600px) and (max-width: 1919px) {
+			width: var(--sidebar-md-width);
+			min-width: var(--sidebar-md-width);
+		}
+		@media (min-width: 1920px) {
+			width: var(--sidebar-lg-width);
+			min-width: var(--sidebar-lg-width);
 		}
 	`;
 

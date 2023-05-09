@@ -1,18 +1,26 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { TOTP } from '../lib/totp';
 
-Meteor.methods({
-	'2fa:enable'() {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'2fa:enable': () => Promise<{ secret: string; url: string }>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async '2fa:enable'() {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: '2fa:enable',
 			});
@@ -28,7 +36,7 @@ Meteor.methods({
 
 		const secret = TOTP.generateSecret();
 
-		Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
+		await Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
 
 		return {
 			secret: secret.base32,

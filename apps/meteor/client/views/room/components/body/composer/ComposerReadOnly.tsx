@@ -8,7 +8,7 @@ import React from 'react';
 import { dispatchToastMessage } from '../../../../../lib/toast';
 import { useRoom, useUserIsSubscribed } from '../../../contexts/RoomContext';
 
-export const ComposerReadOnly = (): ReactElement => {
+const ComposerReadOnly = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
@@ -33,3 +33,5 @@ export const ComposerReadOnly = (): ReactElement => {
 		</footer>
 	);
 };
+
+export default ComposerReadOnly;

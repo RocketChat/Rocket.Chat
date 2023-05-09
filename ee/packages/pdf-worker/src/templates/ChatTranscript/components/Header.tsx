@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
 		padding: 32,
 		borderRadius: 4,
 		backgroundColor: colors.n100,
-		color: colors.n900,
 		marginBottom: 16,
 	},
 	headerText: {
@@ -18,6 +17,7 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 2,
 		marginBottom: 16,
 		paddingBottom: 16,
+		color: colors.n900,
 	},
 	pagination: {
 		fontSize: fontScales.c1.fontSize,
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
 	subtitle: {
 		fontSize: fontScales.p2m.fontSize,
 		fontWeight: fontScales.p2m.fontWeight,
+		color: colors.n900,
 	},
 	container: {
 		fontSize: fontScales.c1.fontSize,

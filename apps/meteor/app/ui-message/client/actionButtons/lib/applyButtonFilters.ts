@@ -17,7 +17,7 @@ import {
 
 import { hasAtLeastOnePermission, hasPermission, hasRole, hasAnyRole } from '../../../../authorization/client';
 
-export const applyAuthFilter = (button: IUIActionButton, room?: IRoom, ignoreSubscriptions = false): boolean => {
+const applyAuthFilter = (button: IUIActionButton, room?: IRoom, ignoreSubscriptions = false): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
 	const userId = Meteor.userId();
@@ -44,7 +44,7 @@ const enumToFilter: { [k in RoomTypeFilter]: (room: IRoom) => boolean } = {
 	[RoomTypeFilter.LIVE_CHAT]: isOmnichannelRoom,
 };
 
-export const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
+const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
 	const { roomTypes } = button.when || {};
 	return !roomTypes || roomTypes.some((filter): boolean => enumToFilter[filter]?.(room));
 };

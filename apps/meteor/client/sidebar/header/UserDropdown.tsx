@@ -8,6 +8,7 @@ import {
 	OptionContent,
 	OptionDivider,
 	OptionIcon,
+	OptionInput,
 	OptionTitle,
 	RadioButton,
 } from '@rocket.chat/fuselage';
@@ -33,12 +34,12 @@ const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) 
 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
-const setStatus = (status: typeof userStatus.list['']): void => {
+const setStatus = (status: (typeof userStatus.list)['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
-	callbacks.run('userStatusManuallySet', status);
+	void callbacks.run('userStatusManuallySet', status);
 };
 
-const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (typeof userStatus.list)['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
 		return t(status.name as TranslationKey);
 	}
@@ -66,7 +67,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const displayName = useUserDisplayName(user);
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (status: ValueOf<typeof userStatus['list']>): boolean => status.name !== 'invisible'
+		? (status: ValueOf<(typeof userStatus)['list']>): boolean => status.name !== 'invisible'
 		: (): boolean => true;
 
 	const handleCustomStatus = useMutableCallback((e) => {
@@ -118,7 +119,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			{presenceDisabled && (
 				<Box fontScale='p2' mi='x12' mb='x4'>
 					<Box mbe='x4'>{t('User_status_disabled')}</Box>
-					<Box is='a' color='status-font-on-info' onClick={handleStatusDisabledModal}>
+					<Box is='a' color='info' onClick={handleStatusDisabledModal}>
 						{t('Learn_more')}
 					</Box>
 				</Box>
@@ -151,26 +152,26 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<OptionDivider />
 
 			<OptionTitle>{t('Theme')}</OptionTitle>
-			<Option>
+			<Option is='label' role='listitem'>
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
-			<Option>
+			<Option is='label' role='listitem'>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
-			<Option>
+			<Option is='label' role='listitem'>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
-				<OptionColumn>
+				<OptionInput>
 					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
-				</OptionColumn>
+				</OptionInput>
 			</Option>
 			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>

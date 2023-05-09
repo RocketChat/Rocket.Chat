@@ -4,7 +4,7 @@ import { Apps } from '../../../../ee/client/apps/orchestrator';
 import { handleAPIError, warnAppInstall } from '../helpers';
 
 type installAppProps = App & {
-	permissionsGranted: AppPermission[];
+	permissionsGranted?: AppPermission[];
 };
 
 export const installApp = async ({ id, name, marketplaceVersion, permissionsGranted }: installAppProps): Promise<void> => {

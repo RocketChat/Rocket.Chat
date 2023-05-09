@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
 import BoldSpan from './BoldSpan';
@@ -12,14 +12,8 @@ type InlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 
-const styles = StyleSheet.create({
-	inline: {
-		flexDirection: 'row',
-	},
-});
-
 const InlineElements = ({ children }: InlineElementsProps) => (
-	<View style={styles.inline}>
+	<Text>
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
@@ -51,7 +45,7 @@ const InlineElements = ({ children }: InlineElementsProps) => (
 					return null;
 			}
 		})}
-	</View>
+	</Text>
 );
 
 export default InlineElements;

@@ -6,13 +6,6 @@ import React from 'react';
 
 import { ReactiveUserStatus } from '../components/UserStatus';
 
-export const colors = {
-	busy: 'on-danger',
-	away: 'on-warning',
-	online: 'on-success',
-	offline: 'annotation',
-};
-
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
 ): ReactElement | ComponentProps<typeof Icon> | null => {
