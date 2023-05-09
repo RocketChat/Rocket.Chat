@@ -136,12 +136,19 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
 
+		// Make the whole process sync when running on test mode
+		// This will prevent the usage of timeouts on the tests of this functionality :)
+		if (process.env.TEST_MODE) {
+			await this.workOnPdf({ details: { ...details, from: this.name }, template: 'omnichannel-transcript' });
+			return;
+		}
+
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
 			template: 'omnichannel-transcript',
-			details: { userId: details.userId, rid: details.rid, from: this.name },
+			details: { ...details, from: this.name },
 		});
 	}
 
@@ -174,7 +181,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			if (!message.attachments || !message.attachments.length) {
+			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
 					_id: message._id,
