@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
+import { i18n } from '../../../../server/lib/i18n';
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -34,7 +34,7 @@ export async function cleanRoomHistory({
 
 	const ts = { [gt]: oldest, [lt]: latest };
 
-	const text = `_${TAPi18n.__('File_removed_by_prune')}_`;
+	const text = `_${i18n.t('File_removed_by_prune')}_`;
 
 	let fileCount = 0;
 

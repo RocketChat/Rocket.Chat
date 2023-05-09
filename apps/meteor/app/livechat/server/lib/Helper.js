@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
@@ -27,6 +26,7 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('LivechatHelper');
 
@@ -54,7 +54,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		}),
 	);
 
-	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
@@ -96,7 +96,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
@@ -122,7 +122,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 		}),
 	);
 
-	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
@@ -331,8 +331,8 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
 	}
@@ -398,7 +398,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent._id}`);
-	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
+	await callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
 
@@ -429,7 +429,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	logger.debug(`Attempting to forward room ${room._id} to department ${transferData.departmentId}`);
 
-	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
+	await callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
@@ -482,9 +482,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = await LivechatDepartment.findOneById(departmentId);
-		if (!department?.fallbackForwardDepartment) {
+		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
-			return false;
+			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });

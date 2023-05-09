@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
