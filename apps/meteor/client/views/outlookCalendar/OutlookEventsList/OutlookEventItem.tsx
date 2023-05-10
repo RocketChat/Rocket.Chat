@@ -1,4 +1,4 @@
-import type { ICalendarEvent } from '@rocket.chat/core-typings';
+import type { ICalendarEvent, Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,9 +9,7 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useVideoConfOpenCall } from '../../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import OutlookEventItemContent from './OutlookEventItemContent';
 
-type OutlookEventItemProps = Omit<Partial<ICalendarEvent>, 'startTime' | '_updatedAt'> & { startTime: string };
-
-const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
+const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Serialized<ICalendarEvent>) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();

@@ -103,7 +103,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 							totalCount={total}
 							overscan={25}
 							data={calendarEvents}
-							components={{ Scroller: ScrollableContentWrapper as any }}
+							components={{ Scroller: ScrollableContentWrapper }}
 							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
 						/>
 					</Box>
