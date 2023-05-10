@@ -247,7 +247,7 @@ describe('Settings', () => {
 		});
 	});
 
-	it.only('should respect override via environment as multiselect', async () => {
+	it('should respect override via environment as multiselect', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_multiselect = '["a","b"]';
 
 		const settings = new CachedSettings();
