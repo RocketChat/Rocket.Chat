@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
@@ -7,10 +6,11 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return TAPi18n.__('Omnichannel_on_hold_chat_manually', {
+		return i18n.t('Omnichannel_on_hold_chat_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}
@@ -26,7 +26,7 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 
 	const guest = visitor.name || visitor.username;
 
-	return TAPi18n.__('Omnichannel_on_hold_chat_automatically', { guest });
+	return i18n.t('Omnichannel_on_hold_chat_automatically', { guest });
 }
 
 declare module '@rocket.chat/ui-contexts' {

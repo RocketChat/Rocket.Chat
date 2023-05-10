@@ -5,7 +5,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { ChatMessage, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
-import { t } from '../../../utils/client';
+import { t } from '../../../utils/lib/i18n';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -41,7 +41,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		message = callbacks.run('beforeSaveMessage', message);
+		message = await callbacks.run('beforeSaveMessage', message);
 		await onClientMessageReceived(message as IMessage).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
