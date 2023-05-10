@@ -19,7 +19,7 @@ const OutlookEventItemContent = ({ html, options }: SanitizeProps) => {
 		__html: DOMPurify.sanitize(dirtyHTML, { ...defaultOptions, ...options }).toString(),
 	});
 
-	return <Box color='default' dangerouslySetInnerHTML={sanitize(html, options)} />;
+	return <Box wordBreak='break-word' color='default' dangerouslySetInnerHTML={sanitize(html, options)} />;
 };
 
 export default OutlookEventItemContent;
