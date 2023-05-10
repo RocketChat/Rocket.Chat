@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
+
+import { i18n } from '../../../../server/lib/i18n';
 
 const WARNING_BANNER_ID = 'closeToSeatsLimit';
 const DANGER_BANNER_ID = 'reachedSeatsLimit';
@@ -24,7 +25,7 @@ const makeWarningBanner = (seats: number): IBanner => ({
 				blockId: 'attention',
 				text: {
 					type: TextObjectType.MARKDOWN,
-					text: TAPi18n.__('Close_to_seat_limit_banner_warning', {
+					text: i18n.t('Close_to_seat_limit_banner_warning', {
 						seats,
 						url: Meteor.absoluteUrl('/requestSeats'),
 					}),
@@ -59,7 +60,7 @@ const makeDangerBanner = (): IBanner => ({
 				blockId: 'attention',
 				text: {
 					type: TextObjectType.MARKDOWN,
-					text: TAPi18n.__('Reached_seat_limit_banner_warning', {
+					text: i18n.t('Reached_seat_limit_banner_warning', {
 						url: Meteor.absoluteUrl('/requestSeats'),
 					}),
 					emoji: false,

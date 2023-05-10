@@ -3,7 +3,6 @@ import path from 'path';
 
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
@@ -11,6 +10,7 @@ import { Info, getMongoInfo } from '../../app/utils/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
 import { isRunningMs } from '../lib/isRunningMs';
+import { i18n } from '../lib/i18n';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -103,7 +103,7 @@ Meteor.startup(async function () {
 				sendMessagesToAdmins({
 					msgs: async ({ adminUser }) => [
 						{
-							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
+							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, mongoVersion, adminUser.language)}\n${link}`,
 						},
 					],
 					banners: [
