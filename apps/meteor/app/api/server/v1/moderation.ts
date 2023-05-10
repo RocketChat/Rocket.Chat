@@ -159,14 +159,14 @@ API.v1.addRoute(
 			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
-				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+				const user = await ModerationReports.findOne({ 'message.u._id': userId }, { projection: { _id: 1 } });
 				if (!user) {
 					return API.v1.failure('user-not-found');
 				}
 			}
 
 			if (msgId) {
-				const message = await ModerationReports.findOne({ 'message._id': msgId });
+				const message = await ModerationReports.findOne({ 'message._id': msgId }, { projection: { _id: 1 } });
 				if (!message) {
 					return API.v1.failure('error-message-not-found');
 				}
