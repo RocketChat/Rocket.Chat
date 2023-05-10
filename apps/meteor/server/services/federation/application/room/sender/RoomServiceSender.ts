@@ -10,7 +10,7 @@ import type { RocketChatNotificationAdapter } from '../../../infrastructure/rock
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import { getExternalMessageSender } from '../message/sender/message-sender-helper';
 import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
@@ -128,12 +128,19 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
 		await this.bridge.leaveRoom(federatedRoom.getExternalId(), federatedUser.getExternalId());
 	}
 
 	public async onUserRemovedFromRoom(afterLeaveRoomInput: FederationAfterRemoveUserFromRoomDto): Promise<void> {
 		const { internalRoomId, internalUserId, actionDoneByInternalId } = afterLeaveRoomInput;
-
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -146,6 +153,14 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 
 		const byWhom = await this.internalUserAdapter.getFederatedUserByInternalId(actionDoneByInternalId);
 		if (!byWhom) {
+			return;
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(byWhom.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 

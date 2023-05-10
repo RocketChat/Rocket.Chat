@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatCustomField } from '@rocket.chat/models';
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -22,7 +23,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async 'livechat:saveCustomField'(_id, customFieldData) {
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {

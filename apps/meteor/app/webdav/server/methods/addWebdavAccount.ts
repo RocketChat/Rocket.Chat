@@ -16,6 +16,67 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const addWebdavAccountByToken = async (userId: string, data: IWebdavAccountPayload): Promise<boolean> => {
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
+	}
+
+	if (!settings.get('Webdav_Integration_Enabled')) {
+		throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+			method: 'addWebdavAccount',
+		});
+	}
+
+	check(
+		data,
+		Match.ObjectIncluding({
+			serverURL: String,
+			token: Match.ObjectIncluding({
+				access_token: String,
+				token_type: String,
+				refresh_token: Match.Optional(String),
+			}),
+			name: Match.Maybe(String),
+		}),
+	);
+
+	try {
+		const client = new WebdavClientAdapter(data.serverURL, { token: data.token });
+
+		const accountData = {
+			userId,
+			serverURL: data.serverURL,
+			token: data.token,
+			name: data.name ?? '',
+		};
+
+		await client.stat('/');
+		await WebdavAccounts.updateOne(
+			{
+				userId,
+				serverURL: data.serverURL,
+				name: data.name ?? '',
+			},
+			{
+				$set: accountData,
+			},
+			{
+				upsert: true,
+			},
+		);
+		void api.broadcast('notify.webdav', userId, {
+			type: 'changed',
+			account: accountData,
+		});
+	} catch (error) {
+		throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', {
+			method: 'addWebdavAccount',
+		});
+	}
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async addWebdavAccount(formData) {
 		const userId = Meteor.userId();
@@ -87,59 +148,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
 		}
 
-		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
-				method: 'addWebdavAccount',
-			});
-		}
-
-		check(
-			data,
-			Match.ObjectIncluding({
-				serverURL: String,
-				token: Match.ObjectIncluding({
-					access_token: String,
-					token_type: String,
-					refresh_token: Match.Optional(String),
-				}),
-				name: Match.Maybe(String),
-			}),
-		);
-
-		try {
-			const client = new WebdavClientAdapter(data.serverURL, { token: data.token });
-
-			const accountData = {
-				userId,
-				serverURL: data.serverURL,
-				token: data.token,
-				name: data.name ?? '',
-			};
-
-			await client.stat('/');
-			await WebdavAccounts.updateOne(
-				{
-					userId,
-					serverURL: data.serverURL,
-					name: data.name ?? '',
-				},
-				{
-					$set: accountData,
-				},
-				{
-					upsert: true,
-				},
-			);
-			void api.broadcast('notify.webdav', userId, {
-				type: 'changed',
-				account: accountData,
-			});
-		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', {
-				method: 'addWebdavAccount',
-			});
-		}
-
-		return true;
+		return addWebdavAccountByToken(userId, data);
 	},
 });

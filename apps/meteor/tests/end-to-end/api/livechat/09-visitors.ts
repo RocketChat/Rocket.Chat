@@ -6,7 +6,13 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, takeInquiry } from '../../../data/livechat/rooms';
+import {
+	makeAgentAvailable,
+	createAgent,
+	createLivechatRoom,
+	createVisitor,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 
 describe('LIVECHAT - visitors', function () {
@@ -460,16 +466,16 @@ describe('LIVECHAT - visitors', function () {
 		});
 
 		it('should return a list of chats when the query params is all valid', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
-			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-
+			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
 			await createAgent();
-			await takeInquiry(room._id);
+
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId },
+			} = await startANewLivechatRoomAndTakeIt();
 
 			await request
-				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=false&servedChatsOnly=true`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -485,16 +491,13 @@ describe('LIVECHAT - visitors', function () {
 		});
 
 		it('should return a list of chats when filtered by ', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
-			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-
-			await createAgent();
-			await takeInquiry(room._id);
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId },
+			} = await startANewLivechatRoomAndTakeIt();
 
 			await request
-				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?source=api`))
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?source=api&servedChatsOnly=true`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

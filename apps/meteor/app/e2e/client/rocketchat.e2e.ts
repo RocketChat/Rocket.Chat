@@ -5,8 +5,7 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import { EJSON } from 'meteor/ejson';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import EJSON from 'ejson';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
@@ -29,7 +28,8 @@ import {
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
@@ -38,9 +38,10 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
-import { APIClient } from '../../utils/client';
+import { APIClient, getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { t } from '../../utils/lib/i18n';
 
 let failedToDecodeKey = false;
 
@@ -62,7 +63,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	private privateKey: CryptoKey | undefined;
+	public privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -98,7 +99,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -179,7 +180,7 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: TAPi18n.__("Wasn't possible to decode your encryption key to be imported."),
+					title: t("Wasn't possible to decode your encryption key to be imported."),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
 					modifiers: ['large', 'danger'],
 					closable: true,
@@ -205,14 +206,14 @@ class E2E extends Emitter {
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
-			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
+			const passwordRevealText = t('E2E_password_reveal_text', {
 				postProcess: 'sprintf',
 				sprintf: [randomPassword],
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_Your_Encryption_Password'),
-				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
+				title: t('Save_Your_Encryption_Password'),
+				html: t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -379,8 +380,8 @@ class E2E extends Emitter {
 
 			const showAlert = () => {
 				this.openAlert({
-					title: TAPi18n.__('Enter_your_E2E_password'),
-					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
+					title: t('Enter_your_E2E_password'),
+					html: t('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
@@ -443,7 +444,7 @@ class E2E extends Emitter {
 
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
+			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
 		});
 	}
 
@@ -499,7 +500,13 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(
+					decryptedQuoteMessage,
+					url,
+					useRealName,
+					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
+				);
 
 				message.attachments.push(quoteAttachment);
 			}),

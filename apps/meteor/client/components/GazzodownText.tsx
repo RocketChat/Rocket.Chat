@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
-import { Markup, MarkupInteractionContext } from '@rocket.chat/gazzodown';
-import type * as MessageParser from '@rocket.chat/message-parser';
+import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RouterContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
@@ -14,7 +13,7 @@ import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 import { useMessageListHighlights } from './message/list/MessageListContext';
 
 type GazzodownTextProps = {
-	tokens: MessageParser.Root;
+	children: JSX.Element;
 	mentions?: {
 		type: 'user' | 'team';
 		_id: string;
@@ -25,7 +24,7 @@ type GazzodownTextProps = {
 	searchText?: string;
 };
 
-const GazzodownText = ({ tokens, mentions, channels, searchText }: GazzodownTextProps) => {
+const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -114,7 +113,7 @@ const GazzodownText = ({ tokens, mentions, channels, searchText }: GazzodownText
 				onChannelMentionClick,
 			}}
 		>
-			<Markup tokens={tokens} />
+			{children}
 		</MarkupInteractionContext.Provider>
 	);
 };

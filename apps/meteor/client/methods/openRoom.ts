@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { ChatSubscription } from '../../app/models/client';
 
 Meteor.methods<ServerMethods>({
-	openRoom(rid) {
+	async openRoom(rid) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'openRoom',

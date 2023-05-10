@@ -182,6 +182,7 @@ class Chat extends Component {
 							lastReadMessageId={lastReadMessageId}
 							onScrollTo={this.handleScrollTo}
 							handleEmojiClick={this.handleEmojiClick}
+							dispatch={dispatch}
 						/>
 						{this.state.emojiPickerActive && (
 							<Picker

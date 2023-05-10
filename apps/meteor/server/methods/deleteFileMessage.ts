@@ -1,14 +1,16 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
+import type { DeleteResult } from 'mongodb';
 
 import { FileUpload } from '../../app/file-upload/server';
-import { Messages } from '../../app/models/server';
+import { deleteMessageValidatingPermission } from '../../app/lib/server/functions/deleteMessage';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		deleteFileMessage(fileID: string): Promise<void>;
+		deleteFileMessage(fileID: string): Promise<void | DeleteResult>;
 	}
 }
 
@@ -16,10 +18,10 @@ Meteor.methods<ServerMethods>({
 	async deleteFileMessage(fileID) {
 		check(fileID, String);
 
-		const msg = Messages.getMessageByFileId(fileID);
-
-		if (msg) {
-			return Meteor.call('deleteMessage', msg);
+		const msg = await Messages.getMessageByFileId(fileID);
+		const userId = Meteor.userId();
+		if (msg && userId) {
+			return deleteMessageValidatingPermission(msg, userId);
 		}
 
 		return FileUpload.getStore('Uploads').deleteById(fileID);
