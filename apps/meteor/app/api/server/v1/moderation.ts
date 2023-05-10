@@ -159,9 +159,9 @@ API.v1.addRoute(
 			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
-				const user = await ModerationReports.findOne({ 'message.u._id': userId }, { projection: { _id: 1 } });
-				if (!user) {
-					return API.v1.failure('user-not-found');
+				const report = await ModerationReports.findOne({ 'message.u._id': userId, _hidden: { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
