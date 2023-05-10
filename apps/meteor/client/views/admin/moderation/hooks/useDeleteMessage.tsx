@@ -16,11 +16,10 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 		mutationFn: deleteMessage,
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
+			setModal();
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			dispatchToastMessage({ type: 'success', message: t('Deleted') });
-		},
-		onSettled: async () => {
 			await handleDismissMessage.mutateAsync({ msgId: mid });
 		},
 	});
