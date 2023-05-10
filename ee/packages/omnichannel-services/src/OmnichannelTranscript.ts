@@ -336,37 +336,50 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
+	async promisifyStream(stream: NodeJS.ReadableStream, buffer: Uint8Array[]) {
+		return new Promise<void>((resolve, reject) => {
+			stream.on('data', (chunk) => {
+				buffer.push(chunk);
+			});
+			stream.on('end', () => {
+				resolve();
+			});
+			stream.on('error', (error) => {
+				reject(error);
+			});
+		});
+	}
+
 	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
 		const stream = await this.worker.renderToStream({ data });
-		stream.on('data', (chunk) => {
-			buf.push(chunk);
-		});
-		stream.on('end', () => {
-			outBuff = Buffer.concat(buf);
+		await this.promisifyStream(stream, buf);
 
-			return uploadService
-				.uploadFile({
-					userId: details.userId,
-					buffer: outBuff,
-					details: {
-						// transcript_{company-name)_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
-							data.visitor?.name || data.visitor?.username || 'Visitor'
-						}.pdf`,
-						type: 'application/pdf',
-						rid: details.rid,
-						// Rocket.cat is the goat
-						userId: 'rocket.cat',
-						size: outBuff.length,
-					},
-				})
-				.then((file) => this.pdfComplete({ details, file }))
-				.catch((e) => this.pdfFailed({ details, e }));
-		});
+		outBuff = Buffer.concat(buf);
+
+		try {
+			const file = await uploadService.uploadFile({
+				userId: details.userId,
+				buffer: outBuff,
+				details: {
+					// transcript_{company-name)_{date}_{hour}.pdf
+					name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						data.visitor?.name || data.visitor?.username || 'Visitor'
+					}.pdf`,
+					type: 'application/pdf',
+					rid: details.rid,
+					// Rocket.cat is the goat
+					userId: 'rocket.cat',
+					size: outBuff.length,
+				},
+			});
+			await this.pdfComplete({ details, file });
+		} catch (e: any) {
+			this.pdfFailed({ details, e });
+		}
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
