@@ -166,9 +166,9 @@ API.v1.addRoute(
 			}
 
 			if (msgId) {
-				const message = await ModerationReports.findOne({ 'message._id': msgId }, { projection: { _id: 1 } });
-				if (!message) {
-					return API.v1.failure('error-message-not-found');
+				const report = await ModerationReports.findOne({ 'message._id': msgId, _hidden: { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
