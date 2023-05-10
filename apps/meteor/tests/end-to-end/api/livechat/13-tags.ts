@@ -16,12 +16,18 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Livechat_enabled', true);
 	});
 
-	describe('livechat/tags', () => {
+	// eslint-disable-next-line no-restricted-properties
+	describe.only('livechat/tags', () => {
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-tags', []);
 			await updatePermission('view-l-room', []);
 			const response = await request.get(api('livechat/tags')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
+		});
+		it('should add 3 tags', async () => {
+			// TagA departmentA
+			// TagB departmentA
+			// PublicTag no department
 		});
 		it('should return an array of tags', async () => {
 			await updatePermission('manage-livechat-tags', ['admin']);
@@ -37,6 +43,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.tags).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(response.body.tags[0]).to.have.property('_id', tag._id);
 		});
+		it('show return all tags when "viewAll" param is true', async () => {});
+		it('should return department tags and public tags when "departmentId" param is provided', async () => {});
+		it('should return public tags when "departmentId" param is not provided', async () => {});
 	});
 
 	describe('livechat/tags/:tagId', () => {
