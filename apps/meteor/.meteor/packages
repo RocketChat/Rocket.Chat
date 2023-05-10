@@ -33,7 +33,6 @@ check
 ddp-rate-limiter
 rate-limit
 email
-http
 
 meteor-base
 ddp-common
