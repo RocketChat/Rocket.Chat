@@ -13,7 +13,8 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 const logger = new Logger('LoginProtection');
 
 const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
-	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+	const channelToNotify = settings.get<string>('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;

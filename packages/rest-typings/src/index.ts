@@ -45,6 +45,7 @@ import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
 import type { CalendarEndpoints } from './v1/calendar';
 import type { FederationEndpoints } from './v1/federation';
+import type { ModerationEndpoints } from './v1/moderation';
 import type { AuthEndpoints } from './v1/auth';
 import type { DefaultEndpoints } from './default';
 
@@ -52,6 +53,7 @@ import type { DefaultEndpoints } from './default';
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,
+		ModerationEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
 		CommandsEndpoints,
@@ -246,6 +248,7 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/moderation';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';

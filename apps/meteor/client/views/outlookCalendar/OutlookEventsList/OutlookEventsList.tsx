@@ -110,7 +110,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 				)}
 			</VerticalBar.Content>
 			<VerticalBar.Footer>
-				<ButtonGroup mbe='x8' stretch>
+				<ButtonGroup stretch>
 					<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
 					{outlookUrl && (
 						<Button onClick={() => window.open(outlookUrl, '_blank')}>
@@ -120,7 +120,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 					)}
 				</ButtonGroup>
 				{canSync && (
-					<ButtonGroup stretch>
+					<ButtonGroup mbs='x8' stretch>
 						<Button primary disabled={isSyncing} onClick={handleSync}>
 							{isSyncing ? t('Sync_in_progress') : t('Sync')}
 						</Button>

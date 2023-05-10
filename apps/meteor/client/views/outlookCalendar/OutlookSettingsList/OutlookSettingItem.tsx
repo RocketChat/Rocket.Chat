@@ -25,7 +25,7 @@ const OutlookSettingItem = ({ title, subTitle, enabled, handleEnable }: OutlookS
 
 	return (
 		<Box
-			borderBlockEndWidth={2}
+			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={hovered}
