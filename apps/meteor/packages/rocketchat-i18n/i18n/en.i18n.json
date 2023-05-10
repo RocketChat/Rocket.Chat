@@ -1507,7 +1507,6 @@
   "Delete_File_Warning": "Deleting a file will delete it forever. This cannot be undone.",
   "Delete_message": "Delete message",
   "Moderation_Delete_all_messages": "Delete all messages",
-  "Moderation_Message_already_deleted": "Message is already deleted",
   "Delete_my_account": "Delete my account",
   "Delete_Role_Warning": "This cannot be undone",
   "Delete_Role_Warning_Community_Edition": "This cannot be undone. Note that it's not possible to create new custom roles in Community Edition",
