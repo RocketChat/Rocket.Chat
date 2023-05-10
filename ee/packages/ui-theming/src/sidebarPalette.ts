@@ -17,13 +17,15 @@ export const palette = [
 		],
 	},
 	{
-		category: 'User Presence',
+		category: 'Status Bullet',
 		description: 'Used to show user status',
 		list: [
-			{ name: 'user-presence-online', token: '', color: '#1CBF89' },
-			{ name: 'user-presence-busy', token: '', color: '#C14454' },
-			{ name: 'user-presence-away', token: '', color: '#AC892F' },
-			{ name: 'user-presence-offline', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-online', token: '', color: '#1CBF89' },
+			{ name: 'status-bullet-away', token: '', color: '#AC892F' },
+			{ name: 'status-bullet-busy', token: '', color: '#C14454' },
+			{ name: 'status-bullet-disabled', token: '', color: '#955828' },
+			{ name: 'status-bullet-offline', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-loading', token: '', color: '#9ea2a8' },
 		],
 	},
 	{

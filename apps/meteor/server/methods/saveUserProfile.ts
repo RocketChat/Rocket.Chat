@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { UserStatus } from '@rocket.chat/core-typings';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -12,6 +13,7 @@ import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentit
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
+import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 
 async function saveUserProfile(
 	this: Meteor.MethodThisType,
@@ -66,11 +68,11 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		await Meteor.callAsync('setUserStatus', null, settings.statusText);
+		await setUserStatusMethod(this.userId, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		await Meteor.callAsync('setUserStatus', settings.statusType, null);
+		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
 	}
 
 	if (user && settings.bio) {
