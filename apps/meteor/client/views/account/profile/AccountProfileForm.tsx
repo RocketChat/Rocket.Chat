@@ -14,14 +14,15 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
@@ -43,6 +44,8 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
+
+	const customFieldsMetadata = useAccountsCustomFields();
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
@@ -80,9 +83,18 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		handleStatusText,
 		handleStatusType,
 		handleBio,
-		handleCustomFields,
 		handleNickname,
+		handleCustomFields,
 	} = handlers;
+
+	const {
+		control,
+		watch,
+		formState: { errors: customFieldsErrors },
+	} = useForm({
+		defaultValues: { customFields: { ...customFields } },
+		mode: 'onBlur',
+	});
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 
@@ -133,6 +145,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	);
 
 	useEffect(() => {
+		const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
+		return () => subscription.unsubscribe();
+	}, [watch, handleCustomFields]);
+
+	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
 			const { suggestions } = await getAvatarSuggestions();
 			setAvatarSuggestions(suggestions);
@@ -175,9 +192,25 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		return undefined;
 	}, [bio, t]);
 
+	const customFieldsError = useMemo(() => {
+		if (customFieldsErrors) {
+			return customFieldsErrors;
+		}
+
+		return undefined;
+	}, [customFieldsErrors]);
+
 	const verified = user?.emails?.[0]?.verified ?? false;
 
-	const canSave = !(!!passwordError || !!emailError || !!usernameError || !!nameError || !!statusTextError || !!bioError);
+	const canSave = !(
+		!!passwordError ||
+		!!emailError ||
+		!!usernameError ||
+		!!nameError ||
+		!!statusTextError ||
+		!!bioError ||
+		!customFieldsError
+	);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
@@ -342,7 +375,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 										<Field.Label>{t('New_password')}</Field.Label>
 										<Field.Row>
 											<PasswordInput
-												autoComplete='off'
+												autoComplete='new-password'
 												disabled={!allowPasswordChange}
 												error={showPasswordError ? passwordError : undefined}
 												flexGrow={1}
@@ -381,7 +414,10 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					</Grid.Item>
 				</Grid>
 			</Field>
-			<CustomFieldsForm jsonCustomFields={undefined} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
+			{useMemo(
+				() => customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />,
+				[customFieldsMetadata, control],
+			)}
 		</FieldGroup>
 	);
 };

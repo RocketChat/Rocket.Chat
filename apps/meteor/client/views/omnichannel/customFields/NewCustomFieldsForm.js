@@ -2,7 +2,7 @@ import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fusela
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
+const NewCustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 	const t = useTranslation();
 
 	const { id, field, label, scope, visibility, searchable, regexp } = values;
@@ -63,4 +63,4 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 	);
 };
 
-export default CustomFieldsForm;
+export default NewCustomFieldsForm;

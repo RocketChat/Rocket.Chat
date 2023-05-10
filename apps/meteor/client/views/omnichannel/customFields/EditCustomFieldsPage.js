@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react';
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
-import CustomFieldsForm from './CustomFieldsForm';
+import NewCustomFieldsForm from './NewCustomFieldsForm';
 
 const getInitialValues = (cf) => ({
 	id: cf._id,
@@ -79,7 +79,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<FieldGroup>
-						<CustomFieldsForm values={values} handlers={handlers} />
+						<NewCustomFieldsForm values={values} handlers={handlers} />
 						{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values} data={customField} />}
 					</FieldGroup>
 				</Box>
