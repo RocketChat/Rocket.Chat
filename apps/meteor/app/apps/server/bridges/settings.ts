@@ -14,7 +14,8 @@ export class AppSettingBridge extends ServerSettingBridge {
 		this.orch.debugLog(`The App ${appId} is getting all the settings.`);
 
 		const settings = await Settings.find({ secret: false }).toArray();
-		return settings.map((s) => this.orch.getConverters()?.get('settings').convertToApp(s));
+		const promisedSettings = settings.map(async (s) => this.orch.getConverters()?.get('settings').convertToApp(s));
+		return Promise.all(promisedSettings);
 	}
 
 	protected async getOneById(id: string, appId: string): Promise<ISetting> {
