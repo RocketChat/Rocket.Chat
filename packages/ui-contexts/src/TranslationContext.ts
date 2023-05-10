@@ -17,9 +17,10 @@ export type TranslationContextValue = {
 	language: TranslationLanguage['key'];
 	loadLanguage: (language: TranslationLanguage['key']) => Promise<void>;
 	translate: {
-		(key: TranslationKey, ...replaces: unknown[]): string;
+		(key: TranslationKey, options?: unknown): string;
+		(key: TranslationKey, ...options: unknown[]): string;
 		has: (
-			key: string | undefined,
+			key: string,
 			options?: {
 				lng?: string;
 			},
@@ -38,6 +39,6 @@ export const TranslationContext = createContext<TranslationContextValue>({
 	language: '',
 	loadLanguage: async () => console.warn('TranslationContext: loadLanguage not implemented'),
 	translate: Object.assign((key: string) => key, {
-		has: (key: string | undefined): key is TranslationKey => Boolean(key),
+		has: (key: string): key is TranslationKey => Boolean(key),
 	}),
 });
