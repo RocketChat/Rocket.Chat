@@ -43,7 +43,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderDueBy }: Partial<ICalendarEvent>,
+		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime }: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -54,41 +54,41 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(startTime ? { startTime } : {}),
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
-					...(reminderDueBy ? { reminderDueBy } : {}),
+					...(reminderTime ? { reminderTime } : {}),
 				},
 			},
 		);
 	}
 
 	public async findNextNotificationDate(): Promise<Date | null> {
-		const nextEvent = await this.findOne<Pick<ICalendarEvent, 'startTime'>>(
+		const nextEvent = await this.findOne<Pick<ICalendarEvent, 'reminderTime'>>(
 			{
-				startTime: {
+				reminderTime: {
 					$gt: new Date(),
 				},
 				$or: [{ notificationSent: false }, { notificationSent: { $exists: false } }],
 			},
 			{
 				sort: {
-					startTime: 1,
+					reminderTime: 1,
 				},
 				projection: {
-					startTime: 1,
+					reminderTime: 1,
 				},
 			},
 		);
 
-		return nextEvent?.startTime || null;
+		return nextEvent?.reminderTime || null;
 	}
 
 	public findEventsToNotify(notificationTime: Date, minutes: number): FindCursor<ICalendarEvent> {
-		// Find all the events between now and +minutes that have not been notified yet
+		// Find all the events between notificationTime and +minutes that have not been notified yet
 		const maxDate = new Date(notificationTime.toISOString());
 		maxDate.setMinutes(maxDate.getMinutes() + minutes);
 
 		return this.find(
 			{
-				startTime: {
+				reminderTime: {
 					$gte: notificationTime,
 					$lt: maxDate,
 				},
@@ -96,7 +96,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			},
 			{
 				sort: {
-					startTime: 1,
+					reminderTime: 1,
 				},
 			},
 		);

@@ -53,7 +53,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, reminderDueBy } = this.bodyParams;
+			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
 			await Calendar.import({
 				uid,
@@ -63,7 +63,6 @@ API.v1.addRoute(
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
-				reminderDueBy: reminderDueBy ? new Date(reminderDueBy) : undefined,
 			});
 
 			return API.v1.success();
@@ -77,7 +76,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId } = this;
-			const { eventId, startTime, subject, description, meetingUrl, reminderMinutesBeforeStart, reminderDueBy } = this.bodyParams;
+			const { eventId, startTime, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
 			const event = await Calendar.get(eventId);
 
@@ -91,7 +90,6 @@ API.v1.addRoute(
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
-				reminderDueBy: reminderDueBy ? new Date(reminderDueBy) : undefined,
 			});
 
 			return API.v1.success();
@@ -119,6 +117,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-setTimeout(() => Calendar.sendTestNotification(), 5000);
-setInterval(() => Calendar.sendTestNotification(), 60000);

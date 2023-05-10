@@ -37,16 +37,8 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 			try {
 				const existingEvent = externalEvents?.find(({ externalId }) => externalId === appointment.id);
 
-				const {
-					id: externalId,
-					subject,
-					startTime: startTimeObj,
-					description,
-					reminderMinutesBeforeStart,
-					reminderDueBy: reminderDueByObj,
-				} = appointment;
+				const { id: externalId, subject, startTime: startTimeObj, description, reminderMinutesBeforeStart } = appointment;
 				const startTime = startTimeObj.toISOString();
-				const reminderDueBy = reminderDueByObj ? reminderDueByObj.toISOString() : undefined;
 
 				// If the appointment is not in the rocket.chat calendar for today, add it.
 				if (!existingEvent) {
@@ -56,7 +48,6 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 						startTime,
 						description,
 						reminderMinutesBeforeStart,
-						reminderDueBy,
 					});
 					continue;
 				}
@@ -66,7 +57,6 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 					existingEvent.subject === subject &&
 					existingEvent.startTime === startTime &&
 					existingEvent.description === description &&
-					existingEvent.reminderDueBy === reminderDueBy &&
 					existingEvent.reminderMinutesBeforeStart === reminderMinutesBeforeStart
 				) {
 					continue;
@@ -79,7 +69,6 @@ export const useSyncOutlookEvents = (): (() => Promise<void>) => {
 					subject,
 					description,
 					reminderMinutesBeforeStart,
-					reminderDueBy,
 				});
 			} catch (e) {
 				console.error(e);

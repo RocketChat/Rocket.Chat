@@ -1,5 +1,5 @@
 import type { UpdateResult, DeleteResult } from 'mongodb';
-import type { IUser, ICalendarEvent, AtLeast } from '@rocket.chat/core-typings';
+import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { ICalendarService } from '@rocket.chat/core-services';
@@ -12,11 +12,11 @@ const defaultMinutesForNotifications = 5;
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderDueBy'>): Promise<ICalendarEvent['_id']> {
+	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime'>): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
 
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
-		const reminderDueBy = minutes ? this.getShiftedTime(startTime, -minutes) : undefined;
+		const reminderTime = minutes ? this.getShiftedTime(startTime, -minutes) : undefined;
 
 		const insertData: InsertionModel<ICalendarEvent> = {
 			uid,
@@ -25,10 +25,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart: minutes,
-			reminderDueBy,
+			reminderTime,
 		};
 
-		return (await CalendarEvent.insertOne(insertData)).insertedId;
+		const insertResult = await CalendarEvent.insertOne(insertData);
+		await this.setupNextNotification();
+
+		return insertResult.insertedId;
 	}
 
 	public async import(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']> {
@@ -37,8 +40,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return this.create(data);
 		}
 
-		const { uid, startTime, subject, description, reminderMinutesBeforeStart, reminderDueBy } = data;
+		const { uid, startTime, subject, description, reminderMinutesBeforeStart } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
+		const reminderTime = reminderMinutesBeforeStart ? this.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid'> = {
 			startTime,
@@ -46,22 +50,26 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart,
-			reminderDueBy,
+			reminderTime,
 			externalId,
 		};
 
 		const event = await this.findImportedEvent(externalId, uid);
 
 		if (!event) {
-			return (
-				await CalendarEvent.insertOne({
-					uid,
-					...updateData,
-				})
-			).insertedId;
+			const insertResult = await CalendarEvent.insertOne({
+				uid,
+				...updateData,
+			});
+
+			await this.setupNextNotification();
+			return insertResult.insertedId;
 		}
 
-		await CalendarEvent.updateEvent(event._id, updateData);
+		const updateResult = await CalendarEvent.updateEvent(event._id, updateData);
+		if (updateResult.modifiedCount > 0) {
+			await this.setupNextNotification();
+		}
 
 		return event._id;
 	}
@@ -75,8 +83,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
-		const { startTime, subject, description, reminderMinutesBeforeStart, reminderDueBy } = data;
+		const { startTime, subject, description, reminderMinutesBeforeStart } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description || '');
+		const reminderTime = reminderMinutesBeforeStart && startTime ? this.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
@@ -84,10 +93,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart,
-			reminderDueBy,
+			reminderTime,
 		};
 
-		return CalendarEvent.updateEvent(eventId, updateData);
+		const updateResult = await CalendarEvent.updateEvent(eventId, updateData);
+
+		if (updateResult.modifiedCount > 0) {
+			await this.setupNextNotification();
+		}
+
+		return updateResult;
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
@@ -96,31 +111,52 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		});
 	}
 
-	public async sendTestNotification(): Promise<void> {
-		console.log('sendTestNotification');
-		return this.sendCurrentNotifications();
-	}
-
 	public async setupNextNotification(): Promise<void> {
-		//
+		return this.doSetupNextNotification(false);
 	}
 
-	public async sendCurrentNotifications(): Promise<void> {
-		const events = await CalendarEvent.findEventsToNotify(new Date(), 1440).toArray();
+	private async doSetupNextNotification(isRecursive: boolean): Promise<void> {
+		const date = await CalendarEvent.findNextNotificationDate();
+		if (!date) {
+			console.log('There are no more notifications to send.');
+			return;
+		}
+
+		date.setSeconds(0);
+		if (!isRecursive && date.valueOf() < Date.now()) {
+			console.log('Sending notifications right now');
+			await this.sendCurrentNotifications(date);
+
+			return this.doSetupNextNotification(true);
+		}
+
+		console.log('Next notification should be at ', date);
+		// await this.sendCurrentNotifications(date);
+	}
+
+	public async sendCurrentNotifications(date: Date): Promise<void> {
+		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
 
 		// eslint-disable-next-line no-unreachable-loop
 		for await (const event of events) {
 			await this.sendEventNotification(event);
 
-			break;
-			// await CalendarEvent.flagNotificationSent(event._id);
+			await CalendarEvent.flagNotificationSent(event._id);
 		}
+
+		await this.setupNextNotification();
 	}
 
-	public async sendEventNotification(event: AtLeast<ICalendarEvent, 'uid' | 'subject' | '_id'>): Promise<void> {
+	public async sendEventNotification(event: ICalendarEvent): Promise<void> {
+		console.log(
+			'sendingEventNotification',
+			event.subject,
+			event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
+		);
+
 		return api.broadcast('notify.calendar', event.uid, {
-			title: 'New Event',
-			text: event.subject,
+			title: event.subject,
+			text: event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
 			payload: {
 				_id: event._id,
 			},

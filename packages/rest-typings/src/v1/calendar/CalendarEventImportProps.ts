@@ -10,7 +10,6 @@ export type CalendarEventImportProps = {
 	description: string;
 	meetingUrl?: string;
 	reminderMinutesBeforeStart?: number;
-	reminderDueBy?: string;
 };
 
 const calendarEventImportPropsSchema: JSONSchemaType<CalendarEventImportProps> = {
@@ -38,10 +37,6 @@ const calendarEventImportPropsSchema: JSONSchemaType<CalendarEventImportProps> =
 		},
 		reminderMinutesBeforeStart: {
 			type: 'number',
-			nullable: true,
-		},
-		reminderDueBy: {
-			type: 'string',
 			nullable: true,
 		},
 	},
