@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { getDesktopApp } from '../../../../../lib/utils/getDesktopApp';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
-export const useVideoOpenCall = () => {
+export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
 
 	const handleOpenCall = useCallback(

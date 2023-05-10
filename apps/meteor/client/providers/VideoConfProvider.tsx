@@ -8,11 +8,11 @@ import { VideoConfContext } from '../contexts/VideoConfContext';
 import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
-import { useVideoOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
-	const handleOpenCall = useVideoOpenCall();
+	const handleOpenCall = useVideoConfOpenCall();
 
 	useEffect(
 		() =>
