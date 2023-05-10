@@ -12,6 +12,7 @@ type FindTagsParams = {
 		sort: FindOptions<ILivechatTag>['sort'];
 	};
 	department?: string;
+	viewAll?: boolean;
 };
 
 type FindTagsResult = {
@@ -28,10 +29,22 @@ type FindTagsByIdParams = {
 
 type FindTagsByIdResult = ILivechatTag | null;
 
-export async function findTags({ text, department, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
+// If viewAll is true, then all tags will be returned, regardless of department
+// If viewAll is false, then all public tags will be returned, and
+//  if department is specified, then all department tags will be returned
+export async function findTags({
+	text,
+	department,
+	viewAll,
+	pagination: { offset, count, sort },
+}: FindTagsParams): Promise<FindTagsResult> {
 	const query = {
-		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
-		...(department && { $or: [{ departments: department }, { departments: { $exists: false } }, { departments: { $size: 0 } }] }),
+		...((text || !viewAll) && {
+			$and: [
+				...(text ? [{ $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }] : []),
+				...(!viewAll ? [{ $or: [{ departments: { $size: 0 } }, ...(department ? [{ departments: department }] : [])] }] : []),
+			],
+		}),
 	};
 
 	const { cursor, totalCount } = LivechatTag.findPaginated(query, {

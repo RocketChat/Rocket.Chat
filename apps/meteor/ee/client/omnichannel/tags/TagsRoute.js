@@ -16,6 +16,7 @@ const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
 		() => ({
+			viewAll: 'true',
 			fields: JSON.stringify({ name: 1 }),
 			text,
 			sort: JSON.stringify({
