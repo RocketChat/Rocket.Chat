@@ -19,6 +19,7 @@ const AppsRoute = (): ReactElement => {
 	const page = useRouteParameter('page');
 
 	const isAdminUser = usePermission('manage-apps');
+	const hasAccessMarketplacePermission = usePermission('access-marketplace');
 
 	if (!page) marketplaceRoute.push({ context, page: 'list' });
 
@@ -39,6 +40,10 @@ const AppsRoute = (): ReactElement => {
 			mounted = false;
 		};
 	}, [marketplaceRoute, context]);
+
+	if (!hasAccessMarketplacePermission) {
+		return <NotAuthorizedPage />;
+	}
 
 	if ((context === 'requested' || page === 'install') && !isAdminUser) return <NotAuthorizedPage />;
 
