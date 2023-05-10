@@ -177,7 +177,7 @@ export abstract class BaseRaw<
 		return this.col.find(query, optionsDef);
 	}
 
-	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<T>>>;
+	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 
 	findPaginated(query: Filter<T> = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);

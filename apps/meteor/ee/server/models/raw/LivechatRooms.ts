@@ -5,8 +5,8 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel, FindPaginated } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, UpdateOptions, Filter, UpdateFilter, WithId } from 'mongodb';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, UpdateOptions, Filter, UpdateFilter } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -273,7 +273,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.find<IOmnichannelRoom>(restrictedQuery, ...restArgs);
 	}
 
-	findPaginated(...args: Parameters<LivechatRoomsRaw['findPaginated']>): FindPaginated<FindCursor<WithId<IOmnichannelRoom>>> {
+	findPaginated(...args: Parameters<LivechatRoomsRaw['findPaginated']>): any {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.findPaginated', query: restrictedQuery });
