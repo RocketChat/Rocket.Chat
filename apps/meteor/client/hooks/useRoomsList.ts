@@ -10,7 +10,7 @@ type RoomListOptions = {
 	text: string;
 };
 
-type IRoomClient = IRoom & {
+type IRoomClient = Pick<IRoom, '_updatedAt' | '_id'> & {
 	label: string;
 	value: string;
 };
@@ -42,7 +42,7 @@ export const useRoomsList = (
 			});
 
 			const items = rooms.map((room: any) => ({
-				...room,
+				_id: room._id,
 				_updatedAt: new Date(room._updatedAt),
 				label: room.name ?? '',
 				value: room.name ?? '',
