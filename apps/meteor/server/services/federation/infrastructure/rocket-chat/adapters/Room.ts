@@ -1,15 +1,15 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { api, Message } from '@rocket.chat/core-services';
+import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
-import { Message, api } from '@rocket.chat/core-services';
 
+import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
+import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
+import { settings } from '../../../../../../app/settings/server';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
-import { getFederatedUserByInternalUsername } from './User';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
-import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
-import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
-import { settings } from '../../../../../../app/settings/server';
+import { getFederatedUserByInternalUsername } from './User';
 import { getValidRoomName } from '../../../../../../app/utils/server';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
@@ -200,7 +200,7 @@ export class RocketChatRoomAdapter {
 		);
 	}
 
-	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
+	private async createFederatedRoomInstance<T extends IRoom | IDirectMessageRoom>(externalRoomId: string, room: T): Promise<FederatedRoom> {
 		if (isDirectMessageRoom(room)) {
 			const members = (await Promise.all(
 				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)).filter(Boolean),
