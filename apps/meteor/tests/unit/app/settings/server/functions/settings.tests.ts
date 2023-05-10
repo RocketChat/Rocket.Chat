@@ -247,6 +247,33 @@ describe('Settings', () => {
 		});
 	});
 
+	it.only('should respect override via environment as multiselect', async () => {
+		process.env.OVERWRITE_SETTING_my_setting_multiselect = '["a","b"]';
+
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('my_setting_multiselect', ['a'], {
+					type: 'multiselect',
+					sorter: 0,
+					values: [
+						{ key: 'a', i18nLabel: 'a' },
+						{ key: 'b', i18nLabel: 'b' },
+						{ key: 'c', i18nLabel: 'c' },
+					],
+				});
+			});
+		});
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).value).to.be.deep.equal(['a', 'b']);
+	});
+
 	it('should respect initial value via environment', async () => {
 		process.env.my_setting = '1';
 		const settings = new CachedSettings();

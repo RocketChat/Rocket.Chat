@@ -10,5 +10,8 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 	if (type === 'int') {
 		return parseInt(value);
 	}
+	if (type === 'multiselect') {
+		return JSON.parse(value);
+	}
 	return value;
 };
