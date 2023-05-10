@@ -8054,6 +8054,7 @@ __metadata:
     postcss-nested: ~5.0.6
     postcss-url: ~10.1.3
     react: ~17.0.2
+    react-hook-form: ^7.30.0
     ts-jest: ~29.0.5
     typescript: ~5.0.2
   peerDependencies:
