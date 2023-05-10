@@ -1,4 +1,5 @@
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
+
 import type { CalendarEventCreateProps } from './CalendarEventCreateProps';
 import type { CalendarEventListProps } from './CalendarEventListProps';
 import type { CalendarEventImportProps } from './CalendarEventImportProps';
@@ -17,7 +18,7 @@ export type CalendarEndpoints = {
 	};
 
 	'/v1/calendar-events.list': {
-		GET: (params: CalendarEventListProps ) => { data: ICalendarEvent[] };
+		GET: (params: CalendarEventListProps) => { data: ICalendarEvent[] };
 	};
 
 	'/v1/calendar-events.import': {
@@ -32,6 +33,3 @@ export type CalendarEndpoints = {
 		POST: (params: CalendarEventDeleteProps) => void;
 	};
 };
-
-
-
