@@ -70,11 +70,6 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
-
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, selector, { offset, count, sort });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -155,7 +150,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// TODO change complicated camelcases to simple verbs/nouns
 			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
