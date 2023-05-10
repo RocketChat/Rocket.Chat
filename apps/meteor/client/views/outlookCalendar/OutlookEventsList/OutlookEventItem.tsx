@@ -6,14 +6,16 @@ import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useVideoConfOpenCall } from '../../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import OutlookEventItemContent from './OutlookEventItemContent';
 
 type OutlookEventItemProps = Omit<Partial<ICalendarEvent>, 'startTime' | '_updatedAt'> & { startTime: string };
 
-const OutlookEventItem = ({ subject, description, startTime }: OutlookEventItemProps) => {
+const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
+	const handleOpenCall = useVideoConfOpenCall();
 
 	const hovered = css`
 		&:hover {
@@ -44,7 +46,7 @@ const OutlookEventItem = ({ subject, description, startTime }: OutlookEventItemP
 	return (
 		<Box
 			className={hovered}
-			borderBlockEndWidth={2}
+			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			pi='x24'
@@ -58,9 +60,11 @@ const OutlookEventItem = ({ subject, description, startTime }: OutlookEventItemP
 				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
 			</Box>
 			<Box>
-				<Button onClick={() => console.log('join')} small>
-					{t('Join')}
-				</Button>
+				{meetingUrl && (
+					<Button onClick={() => handleOpenCall(meetingUrl)} small>
+						{t('Join')}
+					</Button>
+				)}
 			</Box>
 		</Box>
 	);
