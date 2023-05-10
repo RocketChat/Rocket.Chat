@@ -83,6 +83,13 @@ const compareSettings = compareSettingsIgnoringKeys([
 	'_updatedAt',
 ]);
 
+const compareSettingsValue = (a: ISetting['value'], b: ISetting['value']): boolean => {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		return a.length === b.length && a.every((value, index) => compareSettingsValue(value, b[index]));
+	}
+	return a === b;
+};
+
 export class SettingsRegistry {
 	private model: ISettingsModel;
 
@@ -147,7 +154,9 @@ export class SettingsRegistry {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
 
-		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
+		const isOverwritten =
+			!compareSettingsValue(settingFromCode, settingFromCodeOverwritten) ||
+			(settingStored && !compareSettingsValue(settingStored, settingFromCodeOverwritten));
 
 		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
