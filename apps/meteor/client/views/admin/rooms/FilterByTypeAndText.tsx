@@ -2,11 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Field, CheckBox, Margins, MultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction, ContextType } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState, useEffect } from 'react';
-
-import { AsyncState } from '../../../lib/asyncState';
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
@@ -56,49 +54,52 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 	}, [setFilter, text, types]);
 
 	// TODO: improve the code and separate functions into smaller files!
-	const handleOnChangeAllRooms = useCallback(() => {}, []);
 
 	/* 
 		This function should receive all the available rooms in an array roomsData: IRoom[], and returns an array with the filtered results.
 		For each category selected, this function should update the list by adding the rooms that correspond to that prop
 	*/
-	const useFilteredRooms = ({
-		roomsData,
-		typeFilter,
-		visibilityFilter,
-	}: {
-		roomsData: IRoom[];
-		typeFilter: string;
-		visibilityFilter: string;
-	}): IRoom[] | undefined => {
-		// improve this code with useMemo ou useCallback
+	const useFilteredRooms = useCallback(
+		({
+			roomsData,
+			typeFilter,
+			visibilityFilter,
+		}: {
+			roomsData: IRoom[];
+			typeFilter: string;
+			visibilityFilter: string;
+		}): IRoom[] | undefined => {
+			// improve this code with useMemo ou useCallback
 
-		let filteredRoomsByType: IRoom[] = [];
-		let filteredRoomsByVisibility: IRoom[] = [];
+			let filteredRoomsByType: IRoom[] = [];
+			let filteredRoomsByVisibility: IRoom[] = [];
 
-		const typeFilteredResults: Record<string, () => IRoom[]> = {
-			private: () => roomsData.filter(filterRoomsByPrivate),
-			public: () => roomsData.filter(filterRoomsByPublic),
-		};
+			const typeFilteredResults: Record<string, () => IRoom[]> = {
+				private: () => roomsData.filter(filterRoomsByPrivate),
+				public: () => roomsData.filter(filterRoomsByPublic),
+			};
 
-		if (typeFilter && typeFilter !== 'all') {
-			filteredRoomsByType = typeFilteredResults[typeFilter]();
-		}
+			if (typeFilter && typeFilter !== 'all') {
+				filteredRoomsByType = typeFilteredResults[typeFilter]();
+			}
 
-		const visibilityFilteredResults: Record<string, () => IRoom[]> = {
-			channels: () => roomsData.filter(filterRoomsByChannels),
-			directMessage: () => roomsData.filter(filterRoomsByDirectMessages),
-			discussions: () => roomsData.filter(filterRoomsByDiscussions),
-			omnichannel: () => roomsData.filter(filterRoomsByOmnichannel),
-			teams: () => roomsData.filter(filterRoomsByTeams),
-		};
+			const visibilityFilteredResults: Record<string, () => IRoom[]> = {
+				channels: () => roomsData.filter(filterRoomsByChannels),
+				directMessage: () => roomsData.filter(filterRoomsByDirectMessages),
+				discussions: () => roomsData.filter(filterRoomsByDiscussions),
+				omnichannel: () => roomsData.filter(filterRoomsByOmnichannel),
+				teams: () => roomsData.filter(filterRoomsByTeams),
+			};
 
-		if (visibilityFilter && visibilityFilter !== 'all') {
-			filteredRoomsByVisibility = visibilityFilteredResults[visibilityFilter]();
-		}
+			if (visibilityFilter && visibilityFilter !== 'all') {
+				filteredRoomsByVisibility = visibilityFilteredResults[visibilityFilter]();
+			}
 
-		return filteredRoomsByType.concat(filteredRoomsByVisibility);
-	};
+			return filteredRoomsByType.concat(filteredRoomsByVisibility);
+		},
+		[], // which prop informs the selected options on the multiselect?
+
+	);
 
 	// TODO: check if this is the correct prop for the rooms type!!!
 	const filterRoomsByPrivate = ({ t }: Partial<IRoom>): boolean => t === 'p';
@@ -115,7 +116,11 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 			<Field>
 				<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20' />} onChange={handleChange} value={text} />
 
-				<MultiSelectFiltered onChange={handleOnChangeAllRooms} options={roomTypeFilterStructure} placeholder={t('All_rooms')} />
+				<MultiSelectFiltered
+					onChange={setRoomTypeFilterStructure(event?.target.value)}
+					options={roomTypeFilterStructure}
+					placeholder={t('All_rooms')}
+				/>
 
 				<MultiSelectFiltered
 					onChange={() => {
