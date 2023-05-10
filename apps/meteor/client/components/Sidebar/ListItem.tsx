@@ -1,4 +1,4 @@
-import { Option, OptionColumn, OptionContent, OptionIcon } from '@rocket.chat/fuselage';
+import { Option, OptionColumn, OptionContent, OptionIcon, OptionInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -26,7 +26,7 @@ const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps)
 		{icon && <OptionIcon name={icon} />}
 		{gap && <OptionColumn />}
 		<OptionContent>{text}</OptionContent>
-		{input && <OptionColumn>{input}</OptionColumn>}
+		{input && <OptionInput>{input}</OptionInput>}
 		{children && <OptionColumn>{children}</OptionColumn>}
 	</Option>
 );

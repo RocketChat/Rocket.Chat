@@ -399,6 +399,12 @@ export class Agenda extends EventEmitter {
 		}
 	}
 
+	public async has(query: Record<string, any>): Promise<boolean> {
+		debug('checking whether Agenda has any jobs matching query', query);
+		const record = await this._collection.findOne(query, { projection: { _id: 1 } });
+		return record !== null;
+	}
+
 	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
 		debug('processDbResult() called with success, checking whether to process job immediately or not');
 
