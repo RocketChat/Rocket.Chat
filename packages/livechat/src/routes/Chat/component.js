@@ -241,11 +241,7 @@ class Chat extends Component {
 							handleRecording={this.handleRecording}
 							pre={
 								<ComposerActions>
-									<ComposerAction
-										isDisabled={this.state.isRecording !== false}
-										className={createClassName(styles, 'emoji-picker-icon')}
-										onClick={this.toggleEmojiPickerState}
-									>
+									<ComposerAction isDisabled={this.state.isRecording !== false} onClick={this.toggleEmojiPickerState}>
 										<EmojiIcon width={20} height={20} />
 									</ComposerAction>
 								</ComposerActions>
