@@ -9,7 +9,7 @@ import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
