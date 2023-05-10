@@ -11,4 +11,5 @@ export interface ICalendarService {
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
 	findImportedEvent(externalId: Required<ICalendarEvent>['externalId'], uid: ICalendarEvent['uid']): Promise<ICalendarEvent | null>;
 	parseDescriptionForMeetingUrl(description: string): Promise<string | undefined>;
+	sendTestNotification(): Promise<void>;
 }

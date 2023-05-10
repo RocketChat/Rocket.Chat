@@ -119,3 +119,6 @@ API.v1.addRoute(
 		},
 	},
 );
+
+setTimeout(() => Calendar.sendTestNotification(), 5000);
+setInterval(() => Calendar.sendTestNotification(), 60000);

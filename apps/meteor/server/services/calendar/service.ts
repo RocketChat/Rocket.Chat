@@ -1,5 +1,5 @@
 import type { UpdateResult, DeleteResult } from 'mongodb';
-import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
+import type { IUser, ICalendarEvent, AtLeast } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { ICalendarService } from '@rocket.chat/core-services';
@@ -96,21 +96,28 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		});
 	}
 
+	public async sendTestNotification(): Promise<void> {
+		console.log('sendTestNotification');
+		return this.sendCurrentNotifications();
+	}
+
 	public async setupNextNotification(): Promise<void> {
 		//
 	}
 
 	public async sendCurrentNotifications(): Promise<void> {
-		const events = await CalendarEvent.findEventsToNotify(new Date(), 5).toArray();
+		const events = await CalendarEvent.findEventsToNotify(new Date(), 1440).toArray();
 
+		// eslint-disable-next-line no-unreachable-loop
 		for await (const event of events) {
 			await this.sendEventNotification(event);
 
-			await CalendarEvent.flagNotificationSent(event._id);
+			break;
+			// await CalendarEvent.flagNotificationSent(event._id);
 		}
 	}
 
-	public async sendEventNotification(event: ICalendarEvent): Promise<void> {
+	public async sendEventNotification(event: AtLeast<ICalendarEvent, 'uid' | 'subject' | '_id'>): Promise<void> {
 		return api.broadcast('notify.calendar', event.uid, {
 			title: 'New Event',
 			text: event.subject,
