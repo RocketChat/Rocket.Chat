@@ -12,7 +12,13 @@ import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
-import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
+import {
+	createAgent,
+	createVisitor,
+	createLivechatRoom,
+	bulkCreateLivechatRooms,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -245,15 +251,15 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if inquiry is not queued', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await takeInquiry(room._id);
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
 
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
-					roomId: room._id,
+					roomId,
 					sla: '123',
 				})
 				.expect('Content-Type', 'application/json')
