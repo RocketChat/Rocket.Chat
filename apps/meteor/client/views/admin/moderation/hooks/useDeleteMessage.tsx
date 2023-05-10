@@ -37,7 +37,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			onChange();
 			queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
 			setModal();
-		}
+		},
 	});
 
 	const onDeleteAll = async () => {
