@@ -32,7 +32,6 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
-	console.log({useEmoji})
 	const t = useTranslation();
 
 	const call = useMethod('getSlashCommandPreviews');
@@ -349,11 +348,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-<<<<<<< Updated upstream
-	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call]);
-=======
-	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid, call, useEmoji]);
->>>>>>> Stashed changes
+	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };
