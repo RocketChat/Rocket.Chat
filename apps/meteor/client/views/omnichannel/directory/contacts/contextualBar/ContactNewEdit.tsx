@@ -166,7 +166,15 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	};
 
 	if (isLoadingCustomFields) {
+<<<<<<< HEAD
 		return <FormSkeleton />;
+=======
+		return (
+			<div style={{ padding: '15px' }}>
+				<FormSkeleton />
+			</div>
+		);
+>>>>>>> 54c17c856a (Omnichannel new contact padding changed)
 	}
 
 	return (
