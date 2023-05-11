@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { Notifications } from '../../../app/notifications/client';
 import { getUserPreference } from '../../../app/utils/client';
 
-const onUserCalendar = async function(notification: ICalendarNotification): Promise<void> {
+const onUserCalendar = async function (notification: ICalendarNotification): Promise<void> {
 	if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
 		return;
 	}
