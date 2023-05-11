@@ -1,35 +1,30 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 const ToneItem = ({ tone }: { tone: number }) => {
-	let toneColor;
+	let toneEmoji;
+
 	switch (tone) {
 		case 1:
-			toneColor = '#fae3c3';
+			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fb">✋🏻</span>';
 			break;
 		case 2:
-			toneColor = '#e2cfa1';
+			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fc">✋🏼</span>';
 			break;
 		case 3:
-			toneColor = '#dba373';
+			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fd">✋🏽</span>';
 			break;
 		case 4:
-			toneColor = '#a88054';
+			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fe">✋🏾</span>';
 			break;
 		case 5:
-			toneColor = '#5f4e43';
+			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3ff">✋🏿</span>';
 			break;
 		default:
-			toneColor = '#ffcf11';
-			break;
+			toneEmoji = '<span class="emojione emojione-people _270b">✋</span>';
 	}
 
-	const style = css`
-		background-color: ${toneColor};
-	`;
-
-	return <Box width='20px' height='20px' borderRadius='full' className={style} />;
+	return <Box dangerouslySetInnerHTML={{ __html: toneEmoji }} />;
 };
 
 export default ToneItem;

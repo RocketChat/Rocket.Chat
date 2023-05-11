@@ -3,7 +3,6 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { Meteor } from 'meteor/meteor';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
@@ -13,6 +12,7 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -167,11 +167,7 @@ export class AppRoomBridge extends RoomBridge {
 			users: members.length > 0 ? members : [],
 		};
 
-		let rid = '';
-		await Meteor.runAsUser(room.creator.id, async () => {
-			const info = await Meteor.callAsync('createDiscussion', discussion);
-			rid = info.rid;
-		});
+		const { rid } = await createDiscussion(room.creator.id, discussion);
 
 		return rid;
 	}

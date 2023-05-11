@@ -44,7 +44,7 @@ import './PbxEvents';
 import './PushToken';
 import './Permissions';
 import './MessageReads';
-import './Reports';
+import './ModerationReports';
 import './Roles';
 import './Rooms';
 import './ServerEvents';
