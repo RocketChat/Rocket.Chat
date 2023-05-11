@@ -14,9 +14,11 @@ import type {
 	VideoConference,
 } from '@rocket.chat/core-typings';
 
+type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
-	'roles': [{ key: 'roles'; args: [IRole] }];
+	'roles': [{ key: 'roles'; args: [IRole & { type: ClientAction }] }];
 
 	'notify-room': [
 		{ key: `${string}/user-activity`; args: [username: string, activities: string] },
@@ -32,9 +34,7 @@ export interface StreamerEvents {
 	'room-messages': [{ key: string; args: [IMessage] }];
 
 	'notify-all': [
-		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
-		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 	];
@@ -62,6 +62,9 @@ export interface StreamerEvents {
 
 	'notify-logged': [
 		// { key: 'roles-change'; args: [IRole] },
+		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
+
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
 		{
 			key: 'roles-change';
@@ -174,3 +177,5 @@ export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>>
 }
 	? StreamerConfig<N, K>['args']
 	: never;
+
+export type StreamerCallback<N extends StreamNames, K extends StreamKeys<N>> = (...args: StreamerCallbackArgs<N, K>) => void;

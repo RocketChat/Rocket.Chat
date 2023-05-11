@@ -24,8 +24,8 @@ import { AccountImpl } from './types/Account';
 
 * In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
 */
-interface SDK {
-	stream(name: string, params: unknown[], cb: (data: unknown) => void): () => void;
+export interface SDK {
+	stream(name: string, params: unknown[], cb: (...data: unknown[]) => void): () => void;
 
 	connection: Connection;
 	account: Account;

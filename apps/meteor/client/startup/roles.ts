@@ -2,10 +2,9 @@ import type { IRole } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { rolesStreamer } from '../../app/authorization/client/lib/streamer';
 import { Roles } from '../../app/models/client';
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
-import { APIClient } from '../../app/utils/client/lib/RestApiClient';
+import { APIClient, sdk } from '../../app/utils/client/lib/RestApiClient';
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
@@ -33,9 +32,10 @@ Meteor.startup(() => {
 		if (!Meteor.userId()) {
 			return;
 		}
-		rolesStreamer.on('roles', (role: IRole & { type: ClientAction }) => {
+		sdk.stream('roles', ['roles'], (role) => {
 			events[role.type]?.(role);
 		});
+
 		c.stop();
 	});
 });

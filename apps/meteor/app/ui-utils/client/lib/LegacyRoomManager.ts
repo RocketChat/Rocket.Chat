@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -13,10 +12,11 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
-const onDeleteMessageStream = (msg: IMessage) => {
+const onDeleteMessageStream = (msg: { _id: IMessage['_id'] }) => {
 	ChatMessage.remove({ _id: msg._id });
 
 	// remove thread refenrece from deleted message
@@ -62,14 +62,12 @@ const openedRooms: Record<
 	}
 > = {};
 
-const roomMessagesStream = new Meteor.Streamer('room-messages');
-
 const openedRoomsDependency = new Tracker.Dependency();
 
 function close(typeName: string) {
 	if (openedRooms[typeName]) {
 		if (openedRooms[typeName].rid) {
-			roomMessagesStream.removeAllListeners(openedRooms[typeName].rid);
+			sdk.stop('room-messages', openedRooms[typeName].rid);
 			Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream);
 			Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream);
 		}
@@ -165,7 +163,7 @@ const computation = Tracker.autorun(() => {
 			if (room) {
 				if (record.streamActive !== true) {
 					void (
-						roomMessagesStream.on(record.rid, async (msg) => {
+						sdk.stream('room-messages', [record.rid], async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
 							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 							// 	return;

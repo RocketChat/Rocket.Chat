@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
+import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import Page from '../../../../components/Page';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -121,10 +121,8 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 
 	useEffect(() => {
 		if (mounted) {
-			integrationHistoryStreamer.on(id, handleDataChange);
+			return sdk.stream('integrations-history', [id], handleDataChange);
 		}
-
-		return () => integrationHistoryStreamer.removeListener(id, handleDataChange);
 	}, [handleDataChange, id, mounted]);
 
 	return (

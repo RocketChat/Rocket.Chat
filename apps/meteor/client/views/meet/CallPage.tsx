@@ -71,16 +71,12 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				return false;
 			};
-			Notifications.onUser(
-				WEB_RTC_EVENTS.WEB_RTC,
-				(type: any, data: any) => {
-					if (data.room == null) {
-						return;
-					}
-					webrtcInstance.onUserStream(type, data);
-				},
-				visitorId,
-			);
+			Notifications.onVisitor(WEB_RTC_EVENTS.WEB_RTC, visitorId, (type: any, data: any) => {
+				if (data.room == null) {
+					return;
+				}
+				webrtcInstance.onUserStream(type, data);
+			});
 			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();

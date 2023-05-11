@@ -200,8 +200,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	subscribeNotifyAll(): Promise<any> {
 		return Promise.all([
 			// this.stream('notify-all', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
-			this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
-			this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
+			// this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
+			// this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
 			// this.stream('notify-all', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
 			this.stream('notify-all', 'public-settings-changed', (...args) => this.ev.emit('public-settings-changed', args)),
 			this.stream('notify-all', 'permissions-changed', (...args) => this.ev.emit('permissions-changed', args)),
@@ -213,8 +213,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 			this.stream('notify-logged', 'Users:NameChanged', (...args) => this.ev.emit('Users:NameChanged', args)),
 			this.stream('notify-logged', 'Users:Deleted', (...args) => this.ev.emit('Users:Deleted', args)),
 			this.stream('notify-logged', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
-			// this.stream('notify-logged', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
-			// this.stream('notify-logged', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
+			this.stream('notify-logged', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
+			this.stream('notify-logged', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
 			this.stream('notify-logged', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 		]);
 	}
