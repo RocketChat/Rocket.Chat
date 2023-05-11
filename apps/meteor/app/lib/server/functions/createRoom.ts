@@ -151,7 +151,7 @@ export const createRoom = async <T extends RoomType>(
 
 			try {
 				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
-        await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
+				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 			} catch (error) {
 				continue;
 			}
