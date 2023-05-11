@@ -247,7 +247,7 @@ describe('Settings', () => {
 		});
 	});
 
-	it.only('should work with a setting type multiSelect with a default value', async () => {
+	it('should work with a setting type multiSelect with a default value', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
