@@ -67,7 +67,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByUsernameIgnoringCase<T = IUser>(username: any, options?: any): Promise<T>;
 
-	findOneWithoutLDAPByUsernameIgnoringCase<T = IUser>(username: string, options: any): Promise<T>;
+	findOneWithoutLDAPByUsernameIgnoringCase<T = IUser>(username: string, options?: any): Promise<T>;
 
 	findOneByLDAPId<T = IUser>(id: any, attribute?: any): Promise<T>;
 

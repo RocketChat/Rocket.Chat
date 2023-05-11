@@ -39,7 +39,7 @@ export class LDAPDataConverter extends VirtualDataConverter {
 		}
 
 		if (data.username) {
-			return Users.findOneWithoutLDAPByUsernameIgnoringCase(data.username, {});
+			return Users.findOneWithoutLDAPByUsernameIgnoringCase(data.username);
 		}
 	}
 
