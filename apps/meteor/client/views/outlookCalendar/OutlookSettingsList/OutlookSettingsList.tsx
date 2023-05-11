@@ -1,10 +1,10 @@
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
+import { useOutlookAuthentication } from '../useOutlookAuthentication';
 import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {
@@ -14,14 +14,10 @@ type OutlookSettingsListProps = {
 
 const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProps): ReactElement => {
 	const t = useTranslation();
-	const [authEnabled, setEnableAuth] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const notifyCalendarEvents = useUserPreference('notifyCalendarEvents') as boolean;
-	const desktopApp = getDesktopApp();
-
-	desktopApp?.hasOutlookCredentials().then((res) => setEnableAuth(res));
+	const { authEnabled, handleDisableAuth } = useOutlookAuthentication({ onChangeRoute });
 
 	const handleNotifyCalendarEvents = useCallback(
 		(value: boolean) => {
@@ -37,19 +33,18 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 
 	const calendarSettings = [
 		{
+			id: 'notification',
 			title: t('Event_notifications'),
 			subTitle: t('Event_notifications_description'),
 			enabled: notifyCalendarEvents,
 			handleEnable: handleNotifyCalendarEvents,
 		},
 		{
+			id: 'authentication',
 			title: t('Outlook_authentication'),
 			subTitle: t('Outlook_authentication_description'),
 			enabled: authEnabled,
-			handleEnable: () => {
-				desktopApp?.clearOutlookCredentials();
-				desktopApp?.hasOutlookCredentials().then((res) => setEnableAuth(res));
-			},
+			handleEnable: handleDisableAuth,
 		},
 	];
 
@@ -61,9 +56,13 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 			<VerticalBar.Content paddingInline={0} color='default'>
-				{calendarSettings.map((setting, index) => (
-					<OutlookSettingItem key={index} {...setting} />
-				))}
+				{calendarSettings.map((setting, index) => {
+					if (setting.id === 'authentication' && !setting.enabled) {
+						return;
+					}
+
+					return <OutlookSettingItem key={index} {...setting} />;
+				})}
 			</VerticalBar.Content>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
