@@ -8,6 +8,7 @@ export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () 
 	const [authEnabled, setEnableAuth] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const desktopApp = getDesktopApp();
+	const canSync = !!desktopApp?.getOutlookEvents;
 
 	const handleCheckCredentials = useCallback(async () => {
 		try {
@@ -28,5 +29,5 @@ export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () 
 		dispatchToastMessage({ type: 'success', message: t('Outlook_authentication_disabled') });
 	};
 
-	return { authEnabled, handleDisableAuth };
+	return { authEnabled, canSync, handleDisableAuth };
 };

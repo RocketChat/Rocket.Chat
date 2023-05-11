@@ -3130,6 +3130,7 @@
   "Logged_Out_Banner_Text": "Your workspace admin ended your session on this device. Please log in again to continue.",
   "Logged_out_of_other_clients_successfully": "Logged out of other clients successfully",
   "Login": "Login",
+  "Log_in_to_sync": "Log in to sync",
   "Login_Attempts": "Failed Login Attempts",
   "Login_Detected": "Login detected",
   "Logged_In_Via": "Logged in via",

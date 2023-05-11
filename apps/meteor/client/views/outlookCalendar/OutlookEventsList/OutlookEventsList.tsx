@@ -10,7 +10,7 @@ import ScrollableContentWrapper from '../../../components/ScrollableContentWrapp
 import VerticalBar from '../../../components/VerticalBar';
 import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
-import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
+import { useOutlookAuthentication } from '../useOutlookAuthentication';
 import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
@@ -23,11 +23,9 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
-
-	const desktopApp = getDesktopApp();
+	const { authEnabled, canSync } = useOutlookAuthentication({ onChangeRoute });
 
 	const syncOutlookEvents = useSyncOutlookEvents();
-	const canSync = !!desktopApp?.getOutlookEvents;
 
 	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
@@ -45,6 +43,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const handleSync = () => {
 		const fetchCalendarData = async () => {
 			try {
+				setIsSyncing(true);
 				await syncOutlookEvents();
 
 				dispatchToastMessage({ type: 'success', message: t('Outlook_Sync_Success') });
@@ -59,8 +58,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 			}
 		};
 
-		setIsSyncing(true);
-		return fetchCalendarData();
+		fetchCalendarData();
 	};
 
 	if (isLoading) {
@@ -75,58 +73,82 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 
-			<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
-				{(total === 0 || isError) && (
-					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
-						{isError && (
+			{canSync && !authEnabled && total === 0 && (
+				<>
+					<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
+						<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
 							<States>
-								<StatesIcon name='circle-exclamation' variation='danger' />
-								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
+								<StatesIcon name='user' />
+								<StatesTitle>{t('Log_in_to_sync')}</StatesTitle>
 							</States>
+						</Box>
+					</VerticalBar.Content>
+					<VerticalBar.Footer>
+						<ButtonGroup mbs='x8' stretch>
+							<Button primary onClick={handleSync}>
+								{t('Login')}
+							</Button>
+						</ButtonGroup>
+					</VerticalBar.Footer>
+				</>
+			)}
+
+			{(authEnabled || (!authEnabled && total > 0)) && (
+				<>
+					<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
+						{(total === 0 || isError) && (
+							<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
+								{isError && (
+									<States>
+										<StatesIcon name='circle-exclamation' variation='danger' />
+										<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+										<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
+									</States>
+								)}
+								{!isError && total === 0 && (
+									<States>
+										<StatesIcon name='calendar' />
+										<StatesTitle>{t('No_history')}</StatesTitle>
+									</States>
+								)}
+							</Box>
 						)}
-						{!isError && total === 0 && (
-							<States>
-								<StatesIcon name='calendar' />
-								<StatesTitle>{t('No_history')}</StatesTitle>
-							</States>
+						{calendarEvents && calendarEvents.length > 0 && (
+							<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+								<Virtuoso
+									style={{
+										height: blockSize,
+										width: inlineSize,
+									}}
+									totalCount={total}
+									overscan={25}
+									data={calendarEvents}
+									components={{ Scroller: ScrollableContentWrapper }}
+									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+								/>
+							</Box>
 						)}
-					</Box>
-				)}
-				{calendarEvents && calendarEvents.length > 0 && (
-					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							totalCount={total}
-							overscan={25}
-							data={calendarEvents}
-							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
-						/>
-					</Box>
-				)}
-			</VerticalBar.Content>
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
-					{outlookUrl && (
-						<Button onClick={() => window.open(outlookUrl, '_blank')}>
-							<Icon mie='x4' name='new-window' />
-							<Box is='span'>{t('Open_Outlook')}</Box>
-						</Button>
-					)}
-				</ButtonGroup>
-				{canSync && (
-					<ButtonGroup mbs='x8' stretch>
-						<Button primary disabled={isSyncing} onClick={handleSync}>
-							{isSyncing ? t('Sync_in_progress') : t('Sync')}
-						</Button>
-					</ButtonGroup>
-				)}
-			</VerticalBar.Footer>
+					</VerticalBar.Content>
+					<VerticalBar.Footer>
+						<ButtonGroup stretch>
+							<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
+							{outlookUrl && (
+								<Button onClick={() => window.open(outlookUrl, '_blank')}>
+									<Icon mie='x4' name='new-window' />
+									<Box is='span'>{t('Open_Outlook')}</Box>
+								</Button>
+							)}
+						</ButtonGroup>
+						{canSync && (
+							<ButtonGroup mbs='x8' stretch>
+								<Button primary disabled={isSyncing} onClick={handleSync}>
+									{isSyncing ? t('Sync_in_progress') : t('Sync')}
+								</Button>
+							</ButtonGroup>
+						)}
+					</VerticalBar.Footer>
+				</>
+			)}
 		</>
 	);
 };
