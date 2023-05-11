@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../settings/server';
+import { joinRoomMethod } from '../../methods/joinRoom';
 import { i18n } from '../../../../../server/lib/i18n';
 
 /**
@@ -67,15 +67,6 @@ export function messageContainsHighlight(message: IMessage, highlights: string[]
 	});
 }
 
-export function callJoinRoom(userId: string, rid: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(userId, () =>
-			Meteor.call('joinRoom', rid, (error: unknown, result: any) => {
-				if (error) {
-					return reject(error);
-				}
-				return resolve(result);
-			}),
-		);
-	});
+export async function callJoinRoom(userId: string, rid: string): Promise<void> {
+	await joinRoomMethod(userId, rid);
 }

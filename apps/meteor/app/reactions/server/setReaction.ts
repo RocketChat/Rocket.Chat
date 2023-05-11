@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { Messages, EmojiCustom, Rooms } from '@rocket.chat/models';
+import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -108,8 +108,8 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 }
 
-export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
-	const user = (await Meteor.userAsync()) as IUser | null;
+export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
+	const user = await Users.findOneById(userId);
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
@@ -147,7 +147,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			await executeSetReaction(reaction, messageId, shouldReact);
+			await executeSetReaction(uid, reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {

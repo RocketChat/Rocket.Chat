@@ -17,13 +17,14 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	if (removed) {
 		return;
 	}
-	Settings.upsert(
+	void Settings.updateOne(
 		{ _id: 'IRC_Bridge_Last_Ping' },
 		{
 			$set: {
 				value: new Date(),
 			},
 		},
+		{ upsert: true },
 	);
 });
 
