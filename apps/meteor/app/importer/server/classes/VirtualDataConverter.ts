@@ -8,7 +8,6 @@ import type {
 	IImportRecordType,
 	IImportData,
 	IImportChannel,
-	IImportUser,
 } from '@rocket.chat/core-typings';
 
 import { ImportDataConverter } from './ImportDataConverter';
@@ -166,11 +165,5 @@ export class VirtualDataConverter extends ImportDataConverter {
 				}
 			}
 		}
-	}
-
-	static convertSingleUser(userData: IImportUser, options?: IConverterOptions): void {
-		const converter = new VirtualDataConverter(true, options);
-		converter.addUser(userData);
-		converter.convertUsers();
 	}
 }

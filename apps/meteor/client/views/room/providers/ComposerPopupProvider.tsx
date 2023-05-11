@@ -159,24 +159,27 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
 
 					const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
-						let idA = a._id;
-						let idB = a._id;
+						const aExact = a._id === key ? 2 : 0;
+						const bExact = b._id === key ? 2 : 0;
+						const aPartial = a._id.startsWith(key) ? 1 : 0;
+						const bPartial = b._id.startsWith(key) ? 1 : 0;
+
+						let aScore = aExact + aPartial;
+						let bScore = bExact + bPartial;
 
 						if (recents.includes(a._id)) {
-							idA = recents.indexOf(a._id) + idA;
+							aScore += recents.indexOf(a._id) + 1;
 						}
 						if (recents.includes(b._id)) {
-							idB = recents.indexOf(b._id) + idB;
+							bScore += recents.indexOf(b._id) + 1;
 						}
 
-						if (idA < idB) {
+						if (aScore > bScore) {
 							return -1;
 						}
-
-						if (idA > idB) {
+						if (aScore < bScore) {
 							return 1;
 						}
-
 						return 0;
 					};
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
