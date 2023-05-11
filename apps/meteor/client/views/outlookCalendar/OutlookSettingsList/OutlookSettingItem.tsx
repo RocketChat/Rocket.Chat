@@ -4,13 +4,14 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 type OutlookSettingItemProps = {
+	id: string;
 	title: string;
 	subTitle: string;
 	enabled: boolean;
 	handleEnable: (value: boolean) => void;
 };
 
-const OutlookSettingItem = ({ title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
+const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
 	const t = useTranslation();
 
 	const hovered = css`
@@ -34,14 +35,21 @@ const OutlookSettingItem = ({ title, subTitle, enabled, handleEnable }: OutlookS
 			display='flex'
 			justifyContent='space-between'
 		>
-			<Box>
+			<Box mie='x8'>
 				<Box fontScale='h4'>{title}</Box>
 				<Box fontScale='p2'>{subTitle}</Box>
 			</Box>
 			<Box>
-				<Button primary={!enabled} small onClick={() => handleEnable(!enabled)}>
-					{enabled ? t('Disable') : t('Enable')}
-				</Button>
+				{id === 'authentication' && (
+					<Button small onClick={() => handleEnable(!enabled)}>
+						{t('Disable')}
+					</Button>
+				)}
+				{id !== 'authentication' && (
+					<Button primary={!enabled} small onClick={() => handleEnable(!enabled)}>
+						{enabled ? t('Disable') : t('Enable')}
+					</Button>
+				)}
 			</Box>
 		</Box>
 	);

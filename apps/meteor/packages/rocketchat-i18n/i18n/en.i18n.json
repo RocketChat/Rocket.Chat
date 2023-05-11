@@ -3585,6 +3585,7 @@
   "No_Canned_Responses_Yet-description": "Use canned responses to provide quick and consistent answers to frequently asked questions.",
   "No_channels_in_team": "No Channels on this Team",
   "No_channels_yet": "You aren't part of any channels yet",
+  "No_content_was_provided": "No content was provided",
   "No_data_found": "No data found",
   "No_direct_messages_yet": "No Direct Messages.",
   "No_Discussions_found": "No discussions found",
@@ -3805,6 +3806,8 @@
   "Outgoing_WebHook": "Outgoing WebHook",
   "Outgoing_WebHook_Description": "Get data out of Rocket.Chat in real-time.",
   "Outlook_authentication": "Outlook authentication",
+  "Outlook_authentication_disabled": "Outlook authentication disabled",
+
   "Outlook_authentication_description": "Disable this to clear any outlook credentials stored in this machine.",
   "Outlook_calendar": "Outlook calendar",
   "Outlook_calendar_event": "Outlook calendar event",
