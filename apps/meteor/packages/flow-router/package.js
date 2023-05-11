@@ -29,12 +29,12 @@ Package.onUse(function (api) {
 	api.addFiles('client/route.js', 'client');
 	api.addFiles('client/_init.js', 'client');
 
-	// api.addFiles('server/router.js', 'server');
-	// api.addFiles('server/group.js', 'server');
-	// api.addFiles('server/route.js', 'server');
-	// api.addFiles('server/_init.js', 'server');
+	api.addFiles('server/router.js', 'server');
+	api.addFiles('server/group.js', 'server');
+	api.addFiles('server/route.js', 'server');
+	api.addFiles('server/_init.js', 'server');
 
-	// api.addFiles('server/plugins/fast_render.js', 'server');
+	api.addFiles('server/plugins/fast_render.js', 'server');
 
 	api.addFiles('lib/router.js', ['client', 'server']);
 	api.export('FlowRouter');

@@ -3,6 +3,12 @@ data/
 tests/e2e/test-failures/
 packages/autoupdate/
 packages/meteor-streams/
+packages/flow-router/
+packages/meteor-run-as-user/
+packages/meteor-cookies/
+packages/meteor-inject-initial/
+packages/rocketchat-streamer/
+packages/meteor-user-presence/
 app/emoji-emojione/generateEmojiIndex.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
