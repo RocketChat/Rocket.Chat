@@ -166,10 +166,4 @@ export class VirtualDataConverter extends ImportDataConverter {
 			}
 		}
 	}
-
-	static convertSingleUser(userData: IImportUser, options?: IConverterOptions): void {
-		const converter = new VirtualDataConverter(true, options);
-		converter.addUser(userData);
-		converter.convertUsers();
-	}
 }
