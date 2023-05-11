@@ -1,20 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, Select, TextInput } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey, CustomFieldMetadata } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Control, FieldValues } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-
-export type CustomFieldMetadata = {
-	name: string;
-	label?: string;
-	type: 'select' | 'text';
-	required?: boolean;
-	defaultValue?: any;
-	minLength?: number;
-	maxLength?: number;
-	options?: SelectOption[];
-};
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
