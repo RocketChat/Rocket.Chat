@@ -1,7 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { isTeamRoom, type IRoom, isPublicRoom, isDiscussion } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Field, CheckBox, Margins, MultiSelectFiltered } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { Box, Icon, TextInput, Field, MultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState, useEffect } from 'react';
@@ -33,7 +32,6 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 	// Is this necessary?
 	//	const roomTypeFilterOnSelected = useRadioToggle(setroomTypeFilterStructure);
 
-	// TODO: add all missing translations!
 	const [visibilityFilterStructure, setVisibilityFilterStructure] = useState<SelectOption[]>([
 		['all', t('All_Visibilities'), true],
 		['private', t('Private'), false],
@@ -98,18 +96,16 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 			return filteredRoomsByType.concat(filteredRoomsByVisibility);
 		},
 		[], // which prop informs the selected options on the multiselect?
-
 	);
 
-	// TODO: check if this is the correct prop for the rooms type!!!
-	const filterRoomsByPrivate = ({ t }: Partial<IRoom>): boolean => t === 'p';
-	const filterRoomsByPublic = ({ t }: Partial<IRoom>): boolean => t === 'p';
-	// TODO: check if this is the correct prop for the rooms visibility!!!
-	const filterRoomsByChannels = ({ t }: Partial<IRoom>): boolean => t === 'd';
+	const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => isPublicRoom(room) === false;
+	const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room) === true;
+
+	const filterRoomsByChannels = ({ t }: Partial<IRoom>): boolean => t === 'c';
 	const filterRoomsByDirectMessages = ({ t }: Partial<IRoom>): boolean => t === 'd';
-	const filterRoomsByDiscussions = ({ t }: Partial<IRoom>): boolean => t === 'd';
-	const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'd';
-	const filterRoomsByTeams = ({ t }: Partial<IRoom>): boolean => t === 'd';
+	const filterRoomsByDiscussions = (room: Partial<IRoom>): boolean => isDiscussion(room) === true;
+	const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'l'; // LiveChat
+	const filterRoomsByTeams = (room: Partial<IRoom>): boolean => isTeamRoom(room);
 
 	return (
 		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='row' {...props}>
@@ -117,7 +113,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 				<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20' />} onChange={handleChange} value={text} />
 
 				<MultiSelectFiltered
-					onChange={setRoomTypeFilterStructure(event?.target.value)}
+					onChange={setRoomTypeFilterStructure(event?.target.value)} // how to pass the multiselect options and change the dependencies on the useCallback for the filters?
 					options={roomTypeFilterStructure}
 					placeholder={t('All_rooms')}
 				/>
