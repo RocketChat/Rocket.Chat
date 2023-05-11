@@ -8,7 +8,6 @@ import type {
 	IImportRecordType,
 	IImportData,
 	IImportChannel,
-	IImportUser,
 } from '@rocket.chat/core-typings';
 
 import { ImportDataConverter } from './ImportDataConverter';
