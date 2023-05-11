@@ -31,7 +31,7 @@ export async function findRooms({
 	onhold?: string | boolean;
 	options: { offset: number; count: number; fields: Record<string, number>; sort: Record<string, number> };
 }): Promise<PaginatedResult<{ rooms: Array<IOmnichannelRoom> }>> {
-	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
+	const { cursor, totalCount } = await LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
 		departmentId,

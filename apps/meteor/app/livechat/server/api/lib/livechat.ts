@@ -90,8 +90,8 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 	};
 
 	const rooms = departmentId
-		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
-		: await LivechatRooms.findOpenByVisitorToken(token, options).toArray();
+		? await (await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options)).toArray()
+		: await (await LivechatRooms.findOpenByVisitorToken(token, options)).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}

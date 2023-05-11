@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 		Livechat.logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
 
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }: IOmnichannelRoom) => {
+		await (await LivechatRooms.findClosedRooms(departmentIds)).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(Livechat.removeRoom(_id));
 		});
 		await Promise.all(promises);

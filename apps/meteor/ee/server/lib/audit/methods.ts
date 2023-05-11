@@ -43,9 +43,9 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+		const rooms: IRoom[] = await (await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			projection: { _id: 1 },
-		}).toArray();
+		})).toArray();
 		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') } : undefined;
 	}
 };
@@ -86,9 +86,9 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+		const rooms: IRoom[] = await (await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			projection: { _id: 1 },
-		}).toArray();
+		})).toArray();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
 		const name = TAPi18n.__('Omnichannel');
 

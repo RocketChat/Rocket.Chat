@@ -109,8 +109,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of PDF transcript requested
 	statsPms.push(
-		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
-			.count()
+		LivechatRooms.col.countDocuments({ pdfTranscriptRequested: { $exists: true } })
 			.then((count) => {
 				statistics.omnichannelPdfTranscriptRequested = count;
 			}),
@@ -118,8 +117,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of PDF transcript that succeeded
 	statsPms.push(
-		LivechatRooms.find({ pdfTranscriptFileId: { $exists: true } })
-			.count()
+		LivechatRooms.col.countDocuments({ pdfTranscriptFileId: { $exists: true } })
 			.then((count) => {
 				statistics.omnichannelPdfTranscriptSucceeded = count;
 			}),

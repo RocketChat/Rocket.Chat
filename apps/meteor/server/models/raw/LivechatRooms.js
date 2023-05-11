@@ -574,7 +574,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
@@ -588,7 +588,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
@@ -601,7 +601,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
@@ -1141,7 +1141,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.departmentId = departmentId;
 		}
 
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {

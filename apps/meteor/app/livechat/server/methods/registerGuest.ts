@@ -57,7 +57,7 @@ Meteor.methods<ServerMethods>({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const rooms: IRoom[] = await (await LivechatRooms.findOpenByVisitorToken(token)).toArray();
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {

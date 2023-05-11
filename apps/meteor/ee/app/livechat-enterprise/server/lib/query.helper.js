@@ -2,10 +2,10 @@ import { getUnitsFromUser } from './units';
 
 // TODO: We need to add a new index in the departmentAncestors field
 
-export const addQueryRestrictionsToRoomsModel = (originalQuery = {}) => {
+export const addQueryRestrictionsToRoomsModel = async (originalQuery = {}) => {
 	const query = { ...originalQuery };
 
-	const units = getUnitsFromUser();
+	const units = await getUnitsFromUser();
 	if (!Array.isArray(units)) {
 		return query;
 	}
@@ -18,10 +18,10 @@ export const addQueryRestrictionsToRoomsModel = (originalQuery = {}) => {
 	return query;
 };
 
-export const addQueryRestrictionsToDepartmentsModel = (originalQuery = {}) => {
+export const addQueryRestrictionsToDepartmentsModel = async (originalQuery = {}) => {
 	const query = { ...originalQuery, type: { $ne: 'u' } };
 
-	const units = getUnitsFromUser();
+	const units = await getUnitsFromUser();
 	if (Array.isArray(units)) {
 		query.ancestors = { $in: units };
 	}

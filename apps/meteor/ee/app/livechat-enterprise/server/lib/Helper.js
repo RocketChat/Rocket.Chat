@@ -178,7 +178,7 @@ export const updatePredictedVisitorAbandonment = async () => {
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
-		await LivechatRooms.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
+		await (await LivechatRooms.findOpen()).forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
 
 		await Promise.all(promisesArray);
 	}
@@ -211,7 +211,7 @@ export const updateSLAInquiries = async (sla) => {
 
 	const { _id: slaId } = sla;
 	const promises = [];
-	await LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
+	await (await LivechatRooms.findOpenBySlaId(slaId)).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises);

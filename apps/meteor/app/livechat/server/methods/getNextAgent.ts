@@ -22,7 +22,7 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.warn('livechat:getNextAgent will be deprecated in future versions of Rocket.Chat');
 		check(token, String);
 
-		const room = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const room = await (await LivechatRooms.findOpenByVisitorToken(token)).toArray();
 
 		if (room && room.length > 0) {
 			return;

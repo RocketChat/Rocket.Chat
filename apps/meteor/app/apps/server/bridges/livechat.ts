@@ -138,9 +138,9 @@ export class AppLivechatBridge extends LivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
+			result = await (await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {})).toArray();
 		} else {
-			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
+			result = await (await LivechatRooms.findOpenByVisitorToken(visitor.token, {})).toArray();
 		}
 
 		return Promise.all((result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room)));

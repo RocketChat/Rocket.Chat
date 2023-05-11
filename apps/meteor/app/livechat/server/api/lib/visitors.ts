@@ -61,7 +61,7 @@ export async function findChatHistory({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(visitorId, {
+	const { cursor, totalCount } = await LivechatRooms.findPaginatedByVisitorId(visitorId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,

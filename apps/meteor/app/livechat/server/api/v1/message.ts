@@ -253,7 +253,7 @@ API.v1.addRoute(
 			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).toArray();
+				const rooms = await (await LivechatRooms.findOpenByVisitorToken(visitorToken)).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {

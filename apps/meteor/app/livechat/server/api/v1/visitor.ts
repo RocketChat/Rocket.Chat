@@ -41,7 +41,7 @@ API.v1.addRoute('livechat/visitor', {
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		if (visitor) {
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token).toArray();
+			const rooms = await (await LivechatRooms.findOpenByVisitorToken(visitor?.token)).toArray();
 			await Promise.all(rooms.map((room: IRoom) => Livechat.saveRoomInfo(room, visitor)));
 		}
 
@@ -92,7 +92,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		const rooms = await LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = await (await LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
 			projection: {
 				name: 1,
 				t: 1,
@@ -101,7 +101,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 				usernames: 1,
 				servedBy: 1,
 			},
-		}).toArray();
+		})).toArray();
 
 		// if gdpr is enabled, bypass rooms check
 		if (rooms?.length && !settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -128,7 +128,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const rooms = await LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
+			const rooms = await (await LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
 				projection: {
 					name: 1,
 					t: 1,
@@ -137,7 +137,7 @@ API.v1.addRoute(
 					usernames: 1,
 					servedBy: 1,
 				},
-			}).toArray();
+			})).toArray();
 			return API.v1.success({ rooms });
 		},
 	},

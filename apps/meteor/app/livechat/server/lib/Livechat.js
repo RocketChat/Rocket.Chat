@@ -600,7 +600,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = await Users.findOneById(userId);
 
-		const openChats = LivechatRooms.findOpenByAgent(userId);
+		const openChats = await LivechatRooms.findOpenByAgent(userId);
 		const promises = [];
 		await openChats.forEach((room) => {
 			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
@@ -611,7 +611,8 @@ export const Livechat = {
 
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
+		const cursor = await LivechatRooms.findOpenByAgent(userId)
+		for await (const room of cursor) {
 			const guest = await LivechatVisitors.findOneById(room.v._id);
 			const user = await Users.findOneById(userId);
 			const { _id, username, name } = user;
@@ -950,7 +951,7 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		const cursor = LivechatRooms.findByVisitorToken(token);
+		const cursor = await LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
 			await FileUpload.removeFilesByRoomId(room._id);
 			await Messages.removeByRoomId(room._id);
@@ -1215,7 +1216,7 @@ export const Livechat = {
 			return;
 		}
 
-		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+		await (await LivechatRooms.findOpenByAgent(userId)).forEach((room) => {
 			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,

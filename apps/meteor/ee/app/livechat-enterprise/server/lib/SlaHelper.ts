@@ -3,7 +3,7 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 export const removeSLAFromRooms = async (slaId: string) => {
-	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }).toArray();
+	const openRooms = await (await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } })).toArray();
 	if (openRooms.length) {
 		const openRoomIds: string[] = openRooms.map(({ _id }) => _id);
 		await LivechatInquiry.bulkUnsetSla(openRoomIds);
