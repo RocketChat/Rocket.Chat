@@ -611,7 +611,7 @@ export const Livechat = {
 
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		const cursor = await LivechatRooms.findOpenByAgent(userId)
+		const cursor = await LivechatRooms.findOpenByAgent(userId);
 		for await (const room of cursor) {
 			const guest = await LivechatVisitors.findOneById(room.v._id);
 			const user = await Users.findOneById(userId);
@@ -1216,7 +1216,9 @@ export const Livechat = {
 			return;
 		}
 
-		await (await LivechatRooms.findOpenByAgent(userId)).forEach((room) => {
+		await (
+			await LivechatRooms.findOpenByAgent(userId)
+		).forEach((room) => {
 			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,

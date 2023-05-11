@@ -109,18 +109,16 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of PDF transcript requested
 	statsPms.push(
-		LivechatRooms.col.countDocuments({ pdfTranscriptRequested: { $exists: true } })
-			.then((count) => {
-				statistics.omnichannelPdfTranscriptRequested = count;
-			}),
+		LivechatRooms.col.countDocuments({ pdfTranscriptRequested: { $exists: true } }).then((count) => {
+			statistics.omnichannelPdfTranscriptRequested = count;
+		}),
 	);
 
 	// Number of PDF transcript that succeeded
 	statsPms.push(
-		LivechatRooms.col.countDocuments({ pdfTranscriptFileId: { $exists: true } })
-			.then((count) => {
-				statistics.omnichannelPdfTranscriptSucceeded = count;
-			}),
+		LivechatRooms.col.countDocuments({ pdfTranscriptFileId: { $exists: true } }).then((count) => {
+			statistics.omnichannelPdfTranscriptSucceeded = count;
+		}),
 	);
 
 	await Promise.all(statsPms).catch(log);

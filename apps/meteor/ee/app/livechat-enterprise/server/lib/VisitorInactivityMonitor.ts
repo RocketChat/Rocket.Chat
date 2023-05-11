@@ -127,7 +127,9 @@ export class VisitorInactivityMonitor {
 		}
 
 		const promises: Promise<void>[] = [];
-		await (await LivechatRooms.findAbandonedOpenRooms(new Date())).forEach((room) => {
+		await (
+			await LivechatRooms.findAbandonedOpenRooms(new Date())
+		).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					promises.push(this.closeRooms(room));

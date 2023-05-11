@@ -211,7 +211,9 @@ export const updateSLAInquiries = async (sla) => {
 
 	const { _id: slaId } = sla;
 	const promises = [];
-	await (await LivechatRooms.findOpenBySlaId(slaId)).forEach((room) => {
+	await (
+		await LivechatRooms.findOpenBySlaId(slaId)
+	).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises);
