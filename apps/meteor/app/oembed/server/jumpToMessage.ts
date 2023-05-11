@@ -47,9 +47,6 @@ callbacks.add(
 		}
 
 		const currentUser = await Users.findOneById(msg.u._id);
-		if (!currentUser) {
-			return msg;
-		}
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
@@ -84,7 +81,7 @@ callbacks.add(
 				continue;
 			}
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || (await canAccessRoomAsync(room, currentUser));
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await canAccessRoomAsync(room, currentUser)));
 			if (!canAccessRoomForUser) {
 				continue;
 			}
