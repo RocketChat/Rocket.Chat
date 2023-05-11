@@ -8,42 +8,41 @@
 
 rocketchat:ddp
 rocketchat:mongo-config
-rocketchat:oauth2-server
 rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base
-accounts-facebook
-accounts-github
-accounts-google
-accounts-meteor-developer
-accounts-oauth
-accounts-password
-accounts-twitter
+accounts-base@3.0.0-alpha300.6
+accounts-facebook@2.0.0-alpha300.6
+accounts-github@2.0.0-alpha300.6
+accounts-google@2.0.0-alpha300.6
+accounts-meteor-developer@2.0.0-alpha300.6
+accounts-oauth@2.0.0-alpha300.6
+accounts-password@3.0.0-alpha300.6
+accounts-twitter@2.0.0-alpha300.6
 
 pauli:accounts-linkedin
-google-oauth
-oauth
-oauth2
+google-oauth@2.0.0-alpha300.6
+oauth@3.0.0-alpha300.6
+oauth2@2.0.0-alpha300.6
 
-check
-ddp-rate-limiter
-rate-limit
-email
+check@2.0.0-alpha300.6
+ddp-rate-limiter@2.0.0-alpha300.6
+rate-limit@2.0.0-alpha300.6
+email@3.0.0-alpha300.6
 
-meteor-base
-ddp-common
-webapp
+meteor-base@2.0.0-alpha300.6
+ddp-common@2.0.0-alpha300.6
+webapp@2.0.0-alpha300.6
 
-mongo
+mongo@2.0.0-alpha300.6
 
-reload
-service-configuration
-session
-shell-server
+reload@2.0.0-alpha300.6
+service-configuration@2.0.0-alpha300.6
+session@2.0.0-alpha300.6
+shell-server@1.0.0-alpha300.6
 
 dispatch:run-as-user
 ostrio:cookies
@@ -52,23 +51,23 @@ kadira:flow-router
 
 meteorhacks:inject-initial
 
-routepolicy
+routepolicy@2.0.0-alpha300.6
 
-webapp-hashing
-facts-base
+webapp-hashing@2.0.0-alpha300.6
+facts-base@2.0.0-alpha300.6
 
-tracker
-reactive-dict
-reactive-var
+tracker@2.0.0-alpha300.6
+reactive-dict@2.0.0-alpha300.6
+reactive-var@2.0.0-alpha300.6
 
-babel-compiler
-standard-minifier-js
-standard-minifier-css
-dynamic-import
-ecmascript
-typescript
+babel-compiler@8.0.0-alpha300.6
+standard-minifier-js@3.0.0-alpha300.6
+standard-minifier-css@2.0.0-alpha300.6
+dynamic-import@1.0.0-alpha300.6
+ecmascript@1.0.0-alpha300.6
+typescript@5.0.0-alpha300.6
 
-autoupdate
+autoupdate@2.0.0-alpha300.6
 
 # photoswipe
 
