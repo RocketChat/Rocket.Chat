@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
-import { Rooms, Uploads } from '@rocket.chat/models';
+import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -10,6 +10,7 @@ import { canAccessRoomAsync } from '../../../authorization/server/functions/canA
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
@@ -126,48 +127,70 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const sendFileMessage = async (
+	userId: string,
+	{
+		roomId,
+		file,
+		msgData,
+	}: {
+		roomId: string;
+		file: Partial<IUpload>;
+		msgData?: Record<string, any>;
+	},
+): Promise<boolean> => {
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'sendFileMessage',
+		} as any);
+	}
+
+	const room = await Rooms.findOneById(roomId);
+	if (!room) {
+		return false;
+	}
+
+	if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
+		return false;
+	}
+
+	check(msgData, {
+		avatar: Match.Optional(String),
+		emoji: Match.Optional(String),
+		alias: Match.Optional(String),
+		groupable: Match.Optional(Boolean),
+		msg: Match.Optional(String),
+		tmid: Match.Optional(String),
+	});
+
+	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+
+	const msg = await executeSendMessage(userId, {
+		rid: roomId,
+		ts: new Date(),
+		file: files[0],
+		files,
+		attachments,
+		...msgData,
+		msg: msgData.msg ?? '',
+		groupable: msgData.groupable ?? false,
+	});
+
+	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
+
+	return msg;
+};
+
 Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		const user = (await Meteor.userAsync()) as IUser | undefined;
-		if (!user) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendFileMessage',
 			} as any);
 		}
 
-		const room = await Rooms.findOneById(roomId);
-		if (!room) {
-			return false;
-		}
-
-		if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
-			return false;
-		}
-
-		check(msgData, {
-			avatar: Match.Optional(String),
-			emoji: Match.Optional(String),
-			alias: Match.Optional(String),
-			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String),
-			tmid: Match.Optional(String),
-		});
-
-		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-
-		const msg = await Meteor.callAsync('sendMessage', {
-			rid: roomId,
-			ts: new Date(),
-			file: files[0],
-			files,
-			attachments,
-			...msgData,
-			msg: msgData.msg ?? '',
-			groupable: msgData.groupable ?? false,
-		});
-
-		callbacks.runAsync('afterFileUpload', { user, room, message: msg });
-
-		return msg;
+		return sendFileMessage(userId, { roomId, file, msgData });
 	},
 });
