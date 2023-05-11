@@ -37,7 +37,7 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobNam
 };
 
 export class AgendaCronJobs {
-	private reservedJobs: { name: string; schedule: string; callback: () => any | Promise<any> }[] = [];
+	private reservedJobs: { name: string; schedule: string | Date; callback: () => any | Promise<any> }[] = [];
 
 	private scheduler: Agenda | undefined;
 
@@ -60,7 +60,7 @@ export class AgendaCronJobs {
 		this.reservedJobs = [];
 	}
 
-	public async add(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
+	public async add(name: string, schedule: string | Date, callback: () => any | Promise<any>): Promise<void> {
 		if (!this.scheduler) {
 			return this.reserve(name, schedule, callback);
 		}
@@ -68,7 +68,12 @@ export class AgendaCronJobs {
 		this.scheduler.define(name, async () => {
 			await runCronJobFunctionAndPersistResult(async () => callback(), name);
 		});
-		await this.scheduler.every(schedule, name, {}, {});
+
+		if (typeof schedule === 'string') {
+			await this.scheduler.every(schedule, name, {}, {});
+		} else {
+			await this.scheduler.schedule(schedule, name, {});
+		}
 	}
 
 	public async remove(name: string): Promise<void> {
@@ -87,7 +92,7 @@ export class AgendaCronJobs {
 		return this.scheduler.has({ name: jobName });
 	}
 
-	private async reserve(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
+	private async reserve(name: string, schedule: string | Date, callback: () => any | Promise<any>): Promise<void> {
 		this.reservedJobs = [...this.reservedJobs, { name, schedule, callback }];
 	}
 

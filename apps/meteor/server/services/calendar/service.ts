@@ -4,8 +4,10 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { ICalendarService } from '@rocket.chat/core-services';
 import { ServiceClassInternal, api } from '@rocket.chat/core-services';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../app/settings/server';
+import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 
 const defaultMinutesForNotifications = 5;
 
@@ -118,20 +120,18 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	private async doSetupNextNotification(isRecursive: boolean): Promise<void> {
 		const date = await CalendarEvent.findNextNotificationDate();
 		if (!date) {
-			console.log('There are no more notifications to send.');
+			if (await cronJobs.has('calendar-reminders')) {
+				await cronJobs.remove('calendar-reminders');
+			}
 			return;
 		}
 
 		date.setSeconds(0);
 		if (!isRecursive && date.valueOf() < Date.now()) {
-			console.log('Sending notifications right now');
-			await this.sendCurrentNotifications(date);
-
-			return this.doSetupNextNotification(true);
+			return this.sendCurrentNotifications(date);
 		}
 
-		console.log('Next notification should be at ', date);
-		// await this.sendCurrentNotifications(date);
+		await cronJobs.add('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
 	}
 
 	public async sendCurrentNotifications(date: Date): Promise<void> {
@@ -144,15 +144,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await CalendarEvent.flagNotificationSent(event._id);
 		}
 
-		await this.setupNextNotification();
+		await this.doSetupNextNotification(true);
 	}
 
 	public async sendEventNotification(event: ICalendarEvent): Promise<void> {
-		console.log(
-			'sendingEventNotification',
-			event.subject,
-			event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
-		);
+		if (!(await getUserPreference(event.uid, 'notifyCalendarEvents'))) {
+			return;
+		}
 
 		return api.broadcast('notify.calendar', event.uid, {
 			title: event.subject,
