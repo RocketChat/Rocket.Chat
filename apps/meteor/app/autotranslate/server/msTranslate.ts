@@ -2,7 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -10,6 +9,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
 import { settings } from '../../settings/server';
+import { i18n } from '../../../server/lib/i18n';
 
 /**
  * Microsoft translation service provider class representation.
@@ -55,7 +55,7 @@ class MsAutoTranslate extends AutoTranslate {
 	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_Microsoft'),
+			displayName: i18n.t('AutoTranslate_Microsoft'),
 			settings: this._getSettings(),
 		};
 	}
