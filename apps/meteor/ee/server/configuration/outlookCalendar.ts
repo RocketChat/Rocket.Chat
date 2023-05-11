@@ -5,9 +5,9 @@ import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/outlookCalendar';
 
 Meteor.startup(() =>
-	onLicense('outlook-calendar', () => {
+	onLicense('outlook-calendar', async () => {
 		addSettings();
 
-		Calendar.setupNextNotification();
+		await Calendar.setupNextNotification();
 	}),
 );
