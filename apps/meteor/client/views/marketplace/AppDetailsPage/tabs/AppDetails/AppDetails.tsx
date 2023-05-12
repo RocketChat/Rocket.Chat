@@ -23,7 +23,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-	const normalizeDocumentationUrl = documentationUrl.startsWith('http') ? documentationUrl : `https://${documentationUrl}`;
+	const normalizeDocumentationUrl = documentationUrl?.startsWith('http') ? documentationUrl : `https://${documentationUrl}`;
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
