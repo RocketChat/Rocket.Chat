@@ -7459,6 +7459,7 @@ __metadata:
     file-type: ^16.5.3
     filenamify: ^4.3.0
     filesize: 9.0.11
+    generate-password: ^1.7.0
     google-libphonenumber: ^3.2.28
     googleapis: ^104.0.0
     gravatar: ^1.8.2
@@ -20616,6 +20617,13 @@ __metadata:
   dependencies:
     is-property: ^1.0.0
   checksum: 5141ca5fd545f0aabd24fd13f9f3ecf9cfea2255db00d46e282d65141d691d560c70b6361c3c0c4982f86f600361925bfd4773e0350c66d0210e6129ae553a09
+  languageName: node
+  linkType: hard
+
+"generate-password@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "generate-password@npm:1.7.0"
+  checksum: c0d13e9a9c72d84adc4365a0c0dbd28463f2da1975b4ec83f34a126b95122551274755db641418e5aa11c8d94c1d216c8da8314f38e56e05378e1a43792f4614
   languageName: node
   linkType: hard
 
