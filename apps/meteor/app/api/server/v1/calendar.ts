@@ -2,6 +2,7 @@ import {
 	isCalendarEventListProps,
 	isCalendarEventCreateProps,
 	isCalendarEventImportProps,
+	isCalendarEventInfoProps,
 	isCalendarEventUpdateProps,
 	isCalendarEventDeleteProps,
 } from '@rocket.chat/rest-typings';
@@ -20,6 +21,25 @@ API.v1.addRoute(
 			const data = await Calendar.list(userId, new Date(date));
 
 			return API.v1.success({ data });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'calendar-events.info',
+	{ authRequired: true, validateParams: isCalendarEventInfoProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
+	{
+		async get() {
+			const { userId } = this;
+			const { id } = this.queryParams;
+
+			const event = await Calendar.get(id);
+
+			if (!event || event.uid !== userId) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({ event });
 		},
 	},
 );
