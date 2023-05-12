@@ -54,6 +54,7 @@ export type MessageActionConfig = {
 	order?: number;
 	/* @deprecated */
 	color?: string;
+	role?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (
