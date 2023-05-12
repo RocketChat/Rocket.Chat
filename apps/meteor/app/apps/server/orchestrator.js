@@ -303,7 +303,10 @@ settings.watch('Apps_Framework_enabled', (isEnabled) => {
 
 	if (isEnabled) {
 		Apps.load();
-	} else {
+	} else if (isEnabled === false) {
+		// Value can be undefined when the setting is removed
+		// If we unload on undefined, it will have side-effects
+		// on Rolling Upgrades
 		Apps.unload();
 	}
 });
