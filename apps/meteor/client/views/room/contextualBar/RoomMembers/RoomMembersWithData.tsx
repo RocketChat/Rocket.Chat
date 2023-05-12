@@ -5,8 +5,6 @@ import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSu
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
@@ -47,11 +45,9 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { membersList, loadMoreItems, reload } = useMembersList(
+	const { data, fetchNextPage, isLoading, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
-
-	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const hasPermissionToAddUsers = useAtLeastOnePermission(
 		useMemo(() => [room?.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room?.t]),
@@ -93,7 +89,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.ADD) {
-		return <AddUsers rid={rid} onClickBack={handleBack} reload={reload} />;
+		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} />;
 	}
 
 	return (
@@ -101,17 +97,17 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
-			loading={phase === AsyncStatePhase.LOADING}
+			loading={isLoading}
 			type={type}
 			text={text}
 			setText={handleTextChange}
 			setType={setType}
-			members={items}
-			total={total}
+			members={data?.pages?.flatMap((page) => page.members) ?? []}
+			total={data?.pages[data.pages.length - 1].total ?? 0}
 			onClickClose={handleClose}
 			onClickView={openUserInfo}
-			loadMoreItems={loadMoreItems}
-			reload={reload}
+			loadMoreItems={hasNextPage ? fetchNextPage : () => undefined}
+			reload={refetch}
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
 		/>

@@ -14,14 +14,7 @@ type FindUsersParam = {
 	sort?: Record<string, any>;
 };
 
-export function findUsersOfRoom({
-	rid,
-	status,
-	skip = 0,
-	limit = 0,
-	filter = '',
-	sort = {},
-}: FindUsersParam): FindPaginated<FindCursor<IUser>> {
+export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '', sort }: FindUsersParam): FindPaginated<FindCursor<IUser>> {
 	const options = {
 		projection: {
 			name: 1,
