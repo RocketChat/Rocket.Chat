@@ -41,7 +41,12 @@ declare module '../DDPSDK' {
 			streamName: N,
 			key: K,
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): () => void;
+		): {
+			stop: () => void;
+			ready: () => Promise<void>;
+			isReady: boolean;
+			onReady: (cb: () => void) => void;
+		};
 	}
 }
 

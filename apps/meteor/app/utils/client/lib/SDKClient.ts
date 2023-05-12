@@ -14,7 +14,12 @@ declare module '@rocket.chat/ddp-client/src/DDPSDK' {
 			streamName: N,
 			args: [key: K, ...args: unknown[]],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): () => void;
+		): {
+			stop: () => void;
+			ready: () => Promise<void>;
+			isReady: boolean;
+			onReady: (cb: () => void) => void;
+		};
 	}
 }
 
@@ -55,27 +60,73 @@ export const createSDK = (rest: RestClientInterface) => {
 		ev.emit(`${msg.collection}/${msg.fields.eventName}`, msg.fields.args);
 	});
 
-	const stream: SDK['stream'] = (name: string, data: [string, ...unknown[]], cb: (...args: unknown[]) => void): (() => void) => {
+	const stream: SDK['stream'] = (
+		name: string,
+		data: [string, ...unknown[]],
+		cb: (...args: unknown[]) => void,
+	): { stop: () => void; ready: () => Promise<void>; isReady: boolean; onReady: (cb: () => void) => void } => {
 		const [key, ...args] = data;
-		const streamKey = `stream-${name}/${key}`;
+		const streamName = `stream-${name}`;
+		const streamKey = `${streamName}/${key}`;
 
-		const sub = Meteor.subscribe(streamKey, key, { useCollection: false, args });
-		const removeEv = ev.on(`${streamKey}/${key}`, cb);
+		const ee = new Emitter();
+
+		const meta = {
+			ready: false,
+		};
+
+		const onReady = (cb: () => void) => {
+			if (meta.ready) {
+				cb();
+				return;
+			}
+			ee.once('ready', cb);
+		};
+
+		const ready = () => {
+			if (meta.ready) {
+				return Promise.resolve();
+			}
+			return new Promise<void>((r) => {
+				ee.once('ready', r);
+			});
+		};
+
+		const sub = Meteor.connection.subscribe(
+			streamName,
+			key,
+			{ useCollection: false, args },
+			{
+				onReady: () => {
+					meta.ready = true;
+					ee.emit('ready');
+				},
+			},
+		);
+
+		const removeEv = ev.on(`${streamKey}`, (args) => cb(...args));
 
 		const stop = () => {
-			streams.delete(`${streamKey}/${key}`);
+			streams.delete(`${streamKey}`);
 			sub.stop();
 			removeEv();
 		};
 
-		streams.set(`${streamKey}/${key}`, stop);
+		streams.set(`${streamKey}`, stop);
 
-		return stop;
+		return {
+			stop,
+			ready,
+			onReady,
+			get isReady() {
+				return meta.ready;
+			},
+		};
 	};
 
 	const stop = (name: string, key: string) => {
 		const streamKey = `stream-${name}/${key}`;
-		const stop = streams.get(`${streamKey}/${key}`);
+		const stop = streams.get(streamKey);
 		if (stop) {
 			stop();
 		}

@@ -83,6 +83,17 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+			subscribe(
+				name: string,
+				...args: [
+					...unknown,
+					callbacks?: {
+						onReady?: () => void;
+						onStop?: (error?: Error) => void;
+						onError?: (error: Error) => void;
+					},
+				]
+			): SubscriptionHandle;
 		}
 
 		const connection: IMeteorConnection;

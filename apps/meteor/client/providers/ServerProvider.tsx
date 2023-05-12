@@ -59,7 +59,7 @@ const getStream = (
 	},
 ): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	return (eventName, callback): (() => void) => {
-		return sdk.stream(streamName, [eventName], callback as (...args: any[]) => void);
+		return sdk.stream(streamName, [eventName], callback as (...args: any[]) => void).stop;
 	};
 };
 

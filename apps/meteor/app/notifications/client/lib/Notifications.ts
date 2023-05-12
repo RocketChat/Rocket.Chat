@@ -27,11 +27,11 @@ class Notifications {
 	}
 
 	onLogged<E extends StreamKeys<'notify-logged'>>(eventName: E, callback: StreamerCallback<'notify-logged', E>) {
-		return this.onLogin(() => sdk.stream('notify-logged', eventName, callback));
+		return this.onLogin(() => sdk.stream('notify-logged', [eventName], callback));
 	}
 
 	onAll<E extends StreamKeys<'notify-all'>>(eventName: E, callback: StreamerCallback<'notify-all', E>) {
-		return sdk.stream('notify-all', eventName, callback);
+		return sdk.stream('notify-all', [eventName], callback);
 	}
 
 	onRoom<E extends ExtractSecondString<StreamKeys<'notify-room'>>>(
@@ -39,14 +39,14 @@ class Notifications {
 		eventName: E,
 		callback: StreamerCallback<'notify-room', `${string}/${E}`>,
 	) {
-		return sdk.stream('notify-room', `${room}/${eventName}`, callback);
+		return sdk.stream('notify-room', [`${room}/${eventName}`], callback);
 	}
 
 	onUser<E extends ExtractSecondString<StreamKeys<'notify-user'>>>(
 		eventName: E,
 		callback: StreamerCallback<'notify-user', `${string}/${E}`>,
 	) {
-		return sdk.stream('notify-user', `${Meteor.userId()}/${eventName}`, callback);
+		return sdk.stream('notify-user', [`${Meteor.userId()}/${eventName}`], callback);
 	}
 
 	onVisitor<E extends ExtractSecondString<StreamKeys<'notify-user'>>>(
@@ -54,7 +54,7 @@ class Notifications {
 		eventName: E,
 		callback: StreamerCallback<'notify-user', `${string}/${E}`>,
 	) {
-		return sdk.stream('notify-user', `${visitor}/${eventName}`, callback);
+		return sdk.stream('notify-user', [`${visitor}/${eventName}`], callback);
 	}
 
 	unUser<E extends ExtractSecondString<StreamKeys<'notify-user'>>>(eventName: E) {
@@ -82,8 +82,8 @@ class Notifications {
 		return sdk.publish('notify-user', args);
 	}
 
-	notifyUser<E extends ExtractSecondString<StreamKeys<'notify-user'>>>(eventName: E, ...args: any[]) {
-		args.unshift(`${Meteor.userId()}/${eventName}`);
+	notifyUser<E extends ExtractSecondString<StreamKeys<'notify-user'>>>(uid: string, eventName: E, ...args: any[]) {
+		args.unshift(`${uid}/${eventName}`);
 		return sdk.publish('notify-user', args);
 	}
 
@@ -95,5 +95,8 @@ class Notifications {
 		return sdk.publish('notify-room-users', args);
 	}
 }
+
 /** @deprecated it should be used `sdk`instead both perform the same */
-export default new Notifications();
+const ns = new Notifications();
+
+export default ns;

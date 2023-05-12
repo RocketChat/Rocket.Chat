@@ -4,7 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from '../../../../client/lib/baseURI';
 import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
-import { createSDK } from './SDKClient';
 
 class RestApiClient extends RestClient {
 	getCredentials():

@@ -77,26 +77,28 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				webrtcInstance.onUserStream(type, data);
 			});
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			// TODO: I have no idea what this is doing, how this works, why it's here or how to type it
+			// since the types are all any, I'm assuming it's not that important
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
-					Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+					Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 						isMobileDevice: isMobileDevice(),
 					});
 				} else if (type === 'cameraStatus') {
 					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 				isMobileDevice: isMobileDevice(),
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'callStatus', { callStatus: 'inProgress' });
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'callStatus', { callStatus: 'inProgress' });
 		} else if (!isAgentActive) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
 			if (status === 'inProgress') {
-				Notifications.notifyRoom(roomId, 'webrtc', 'getDeviceType');
+				Notifications.notifyRoom(roomId, 'webrtc' as any, 'getDeviceType');
 				webrtcInstance.startCall({
 					audio: true,
 					video: {
@@ -105,7 +107,7 @@ const CallPage: FC<CallPageProps> = ({
 					},
 				});
 			}
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
@@ -138,7 +140,7 @@ const CallPage: FC<CallPageProps> = ({
 		}
 		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
 		setIsCameraOn(!isCameraOn);
-		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
+		Notifications.notifyRoom(roomId, 'webrtc' as any, 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
 	const closeWindow = (): void => {
