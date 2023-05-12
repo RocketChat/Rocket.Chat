@@ -85,8 +85,8 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 					</VerticalBar.Content>
 					<VerticalBar.Footer>
 						<ButtonGroup mbs='x8' stretch>
-							<Button primary onClick={handleSync}>
-								{t('Login')}
+							<Button primary disabled={isSyncing} onClick={handleSync}>
+								{isSyncing ? t('Please_wait') : t('Login')}
 							</Button>
 						</ButtonGroup>
 					</VerticalBar.Footer>
