@@ -1,3 +1,26 @@
+# 5.4.9
+
+`2023-05-12  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **APPS:** Setting listener to check if Apps are enabled  ([#29216](https://github.com/RocketChat/Rocket.Chat/pull/29216))
+
+  Make listener for setting `Apps_Framework_enabled` check strictly for `false` instead of a falsy value.
+
+  This will make rolling upgrades to version 6.x not disable apps in the process
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 
 `2023-04-20  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
