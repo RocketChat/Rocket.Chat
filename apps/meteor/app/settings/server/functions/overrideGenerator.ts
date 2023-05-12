@@ -37,16 +37,21 @@ export const overrideGenerator =
 			return setting;
 		}
 
-		const value = convertValue(overwriteValue, setting.type);
+		try {
+			const value = convertValue(overwriteValue, setting.type);
 
-		if (compareSettingsValue(value, setting.value, setting.type)) {
+			if (compareSettingsValue(value, setting.value, setting.type)) {
+				return setting;
+			}
+
+			return {
+				...setting,
+				value,
+				processEnvValue: value,
+				valueSource: 'processEnvValue',
+			};
+		} catch (error) {
+			console.error(`Error converting value for setting ${setting._id} expected "${setting.type}" type`);
 			return setting;
 		}
-
-		return {
-			...setting,
-			value,
-			processEnvValue: value,
-			valueSource: 'processEnvValue',
-		};
 	};
