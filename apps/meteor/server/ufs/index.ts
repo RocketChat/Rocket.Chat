@@ -50,7 +50,7 @@ export const UploadFS = {
 	Store,
 };
 
-await import('./ufs-methods');
-await import('./ufs-server');
-await import('./ufs-gridfs');
-await import('./ufs-local');
+void import('./ufs-methods');
+void import('./ufs-server');
+void import('./ufs-gridfs');
+void import('./ufs-local');

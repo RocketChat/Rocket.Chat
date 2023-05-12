@@ -63,4 +63,4 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	}
 };
 
-await cronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());
+void cronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());

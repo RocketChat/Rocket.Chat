@@ -292,9 +292,12 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	return true;
 }
 
-export const onFreshInstall =
-	(await getControl()).version !== 0
-		? async (): Promise<void> => {
-				/* noop */
-		  }
-		: (fn: () => unknown): unknown => fn();
+export const onFreshInstall = async (fn: () => unknown): Promise<unknown> => {
+	const control = await getControl();
+
+	if (control.version !== 0) {
+		return;
+	}
+
+	return fn();
+};
