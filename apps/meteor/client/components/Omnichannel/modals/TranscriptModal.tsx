@@ -47,12 +47,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 	const handleDiscard = useCallback(() => onDiscard(), [onDiscard]);
 
 	const submit = useCallback(
-		(data: { email: string; subject: string }) => {
+		({ email, subject }: { email: string; subject: string }) => {
 			if (roomOpen && !transcriptRequest) {
-				onRequest(data.email, data.subject);
+				onRequest(email, subject);
 			}
 			if (!roomOpen && onSend && token) {
-				onSend(data.email, data.subject, token);
+				onSend(email, subject, token);
 			}
 		},
 		[onRequest, onSend, roomOpen, token, transcriptRequest],
