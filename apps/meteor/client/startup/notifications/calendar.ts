@@ -4,6 +4,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../../app/notifications/client';
 import { getUserPreference } from '../../../app/utils/client';
+import { imperativeModal } from '../../lib/imperativeModal';
+import OutlookCalendarEventModal from '../../views/outlookCalendar/OutlookCalendarEventModal';
 
 const onUserCalendar = async function (notification: ICalendarNotification): Promise<void> {
 	if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
@@ -22,6 +24,10 @@ const onUserCalendar = async function (notification: ICalendarNotification): Pro
 	n.onclick = function () {
 		this.close();
 		window.focus();
+		imperativeModal.open({
+			component: OutlookCalendarEventModal,
+			props: { id: notification.payload._id, onClose: imperativeModal.close, onCancel: imperativeModal.close },
+		});
 	};
 };
 
