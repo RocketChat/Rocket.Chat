@@ -26,6 +26,7 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		.map(({ color, ...option }) => ({
 			...option,
 			...(color === 'alert' && { variant: 'danger' as const }),
+			...(option.id === 'reply-directly' && { role: 'link' as const }),
 		}))
 		.reduce((acc, option) => {
 			const group = option.variant ? option.variant : '';
@@ -63,7 +64,7 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 										onClick={option.action}
 										data-qa-type='message-action'
 										data-qa-id={option.id}
-										role='button'
+										role={option.role ? option.role : 'button'}
 									/>
 								))}
 								{index !== arr.length - 1 && <OptionDivider />}
