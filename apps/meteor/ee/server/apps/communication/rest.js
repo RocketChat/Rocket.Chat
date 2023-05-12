@@ -407,7 +407,7 @@ export class AppsRestApi {
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
 
-					void orchestrator.getNotifier().appAdded(info.id);
+					orchestrator.getNotifier().appAdded(info.id);
 
 					return API.v1.success({
 						app: info,
@@ -743,7 +743,7 @@ export class AppsRestApi {
 
 					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
 
-					void orchestrator.getNotifier().appUpdated(info.id);
+					orchestrator.getNotifier().appUpdated(info.id);
 
 					return API.v1.success({
 						app: info,
