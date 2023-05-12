@@ -103,18 +103,16 @@ class Chat extends Component {
 		}
 	};
 
-	handleRecording = () => {
+	handleRecording = async () => {
 		if (!this.microphoneAccess) {
-			const permissions = navigator.mediaDevices.getUserMedia({ audio: true });
-			permissions
-				.then(() => {
-					this.setState({ isRecording: !this.state.isRecording });
-					this.setState({ microphoneAccess: true });
-				})
-				.catch((err) => {
-					this.setState({ microphoneAccess: false });
-					console.log(`${err.name} : ${err.message}`);
-				});
+			try {
+				await navigator.mediaDevices.getUserMedia({ audio: true });
+				this.setState({ isRecording: !this.state.isRecording });
+				this.setState({ microphoneAccess: true });
+			} catch (err) {
+				this.setState({ microphoneAccess: false });
+				console.log(`${err.name} : ${err.message}`);
+			}
 		} else {
 			this.setState({ isRecording: !this.state.isRecording });
 		}
@@ -241,7 +239,7 @@ class Chat extends Component {
 							handleRecording={this.handleRecording}
 							pre={
 								<ComposerActions>
-									<ComposerAction isDisabled={this.state.isRecording !== false} onClick={this.toggleEmojiPickerState}>
+									<ComposerAction isDisabled={this.state.isRecording} onClick={this.toggleEmojiPickerState}>
 										<EmojiIcon width={20} height={20} />
 									</ComposerAction>
 								</ComposerActions>
@@ -250,10 +248,10 @@ class Chat extends Component {
 								<ComposerActions>
 									{text.length === 0 && uploads && (
 										<ComposerActions>
-											<ComposerAction onClick={this.handleRecording}>
+											<ComposerAction onClick={this.handleRecording} isDisabled={this.state.isRecording}>
 												<MicIcon width={20} height={20} />
 											</ComposerAction>
-											<ComposerAction onClick={this.handleUploadClick} isDisabled={this.state.isRecording !== false}>
+											<ComposerAction onClick={this.handleUploadClick} isDisabled={this.state.isRecording}>
 												<PlusIcon width={20} height={20} />
 											</ComposerAction>
 										</ComposerActions>
@@ -265,7 +263,9 @@ class Chat extends Component {
 									)}
 								</ComposerActions>
 							}
-							limitTextLength={!this.state.isRecording ? limitTextLength : null}
+							{...(!this.state.isRecording && {
+								limitTextLength,
+							})}
 						/>
 					)}
 				</Screen.Footer>
