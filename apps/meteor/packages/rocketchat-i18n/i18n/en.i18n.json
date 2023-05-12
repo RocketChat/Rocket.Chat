@@ -4119,6 +4119,7 @@
   "Moderation_Reported_message": "Reported message",
   "Reporting": "Reporting",
   "Moderation_Reports_dismissed": "Reports dismissed",
+  "Moderation_Message_already_deleted": "Message is already deleted",
   "Request": "Request",
   "Request_seats": "Request Seats",
   "Request_more_seats": "Request more seats.",
