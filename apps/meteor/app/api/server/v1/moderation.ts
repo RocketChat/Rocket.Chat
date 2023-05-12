@@ -6,7 +6,7 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users, Messages } from '@rocket.chat/models';
+import { ModerationReports, Users } from '@rocket.chat/models';
 import type { IModerationReport } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -164,20 +164,19 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// TODO change complicated camelcases to simple verbs/nouns
 			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
-				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-				if (!user) {
-					return API.v1.failure('user-not-found');
+				const report = await ModerationReports.findOne({ 'message.u._id': userId, '_hidden': { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
 			if (msgId) {
-				const message = await Messages.findOneById(msgId, { projection: { _id: 1 } });
-				if (!message) {
-					return API.v1.failure('error-message-not-found');
+				const report = await ModerationReports.findOne({ 'message._id': msgId, '_hidden': { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
