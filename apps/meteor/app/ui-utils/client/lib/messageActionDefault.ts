@@ -29,6 +29,7 @@ Meteor.startup(async function () {
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		role: 'link',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			roomCoordinator.openRouteLink(

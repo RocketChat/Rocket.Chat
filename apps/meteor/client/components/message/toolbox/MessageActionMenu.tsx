@@ -26,7 +26,6 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		.map(({ color, ...option }) => ({
 			...option,
 			...(color === 'alert' && { variant: 'danger' as const }),
-			...(option.id === 'reply-directly' && { role: 'link' as const }),
 		}))
 		.reduce((acc, option) => {
 			const group = option.variant ? option.variant : '';
