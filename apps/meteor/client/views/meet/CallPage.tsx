@@ -77,8 +77,7 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				webrtcInstance.onUserStream(type, data);
 			});
-			// TODO: I have no idea what this is doing, how this works, why it's here or how to type it
-			// since the types are all any, I'm assuming it's not that important
+
 			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
