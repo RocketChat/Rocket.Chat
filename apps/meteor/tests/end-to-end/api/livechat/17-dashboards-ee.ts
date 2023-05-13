@@ -7,7 +7,7 @@ import {
 	createVisitor,
 	createLivechatRoom,
 	takeInquiry,
-	closeOmnichanelRoom,
+	closeOmnichannelRoom,
 	makeAgentUnavailable,
 	makeAgentAvailable,
 	createAgent,
@@ -79,7 +79,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
 			await takeInquiry(inq._id);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request
 				.get(api('livechat/analytics/agents/average-service-time'))
@@ -627,7 +627,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await takeInquiry(inq._id);
 			await sendMessage(room._id, 'first message', visitor.token);
 			await sendAgentMessage(room._id);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request
 				.get(api('livechat/analytics/departments/total-abandoned-chats'))

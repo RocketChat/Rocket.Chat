@@ -14,119 +14,93 @@ import type {
 	VideoConference,
 } from '@rocket.chat/core-typings';
 
-type StreamerKeyArgs<K, T extends unknown[]> = (key: K, cb: (...args: T) => void) => () => void;
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
-	'roles': StreamerKeyArgs<'roles', [IRole]>;
+	'roles': [{ key: 'roles'; args: [IRole] }];
 
-	'notify-room': StreamerKeyArgs<`${string}/user-activity`, [username: string, activities: string]> &
-		StreamerKeyArgs<
-			`${string}/deleteMessageBulk`,
-			[args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }]
-		> &
-		StreamerKeyArgs<`${string}/deleteMessage`, [{ _id: IMessage['_id'] }]> &
-		StreamerKeyArgs<`${string}/videoconf`, [id: string]>;
+	'notify-room': [
+		{ key: `${string}/user-activity`; args: [username: string, activities: string] },
+		{ key: `${string}/typing`; args: [username: string, activities: string] },
+		{
+			key: `${string}/deleteMessageBulk`;
+			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
+		},
+		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
+		{ key: `${string}/videoconf`; args: [id: string] },
+	];
 
-	'room-messages': StreamerKeyArgs<string, [IMessage]>;
+	'room-messages': [{ key: string; args: [IMessage] }];
 
-	'notify-all': StreamerKeyArgs<
-		'deleteEmojiCustom',
-		[
-			{
-				emojiData: IEmoji;
-			},
-		]
-	> &
-		StreamerKeyArgs<
-			'updateCustomSound',
-			[
-				{
-					soundData: ICustomSound;
-				},
-			]
-		> &
-		StreamerKeyArgs<'public-settings-changed', ['inserted' | 'updated' | 'removed' | 'changed', ISetting]>;
+	'notify-all': [
+		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+	];
 
-	'notify-user': StreamerKeyArgs<`${string}/rooms-changed`, [IRoom]> &
-		StreamerKeyArgs<`${string}/subscriptions-changed`, [ISubscription]> &
-		StreamerKeyArgs<`${string}/message`, [IMessage]> &
-		StreamerKeyArgs<`${string}/force_logout`, []> &
-		StreamerKeyArgs<
-			`${string}/webdav`,
-			[
-				| {
-						type: 'changed';
-						account: Partial<IWebdavAccount>;
-				  }
-				| {
-						type: 'removed';
-						account: { _id: IWebdavAccount['_id'] };
-				  },
-			]
-		> &
-		StreamerKeyArgs<`${string}/e2ekeyRequest`, [string, string]> &
-		StreamerKeyArgs<`${string}/notification`, [INotificationDesktop]> &
-		StreamerKeyArgs<`${string}/voip.events`, [VoipEventDataSignature]> &
-		StreamerKeyArgs<
-			`${string}/call.hangup`,
-			[
-				{
-					roomId: string;
-				},
-			]
-		>;
+	'notify-user': [
+		{ key: `${string}/rooms-changed`; args: [IRoom] },
+		{ key: `${string}/subscriptions-changed`; args: [ISubscription] },
+		{ key: `${string}/message`; args: [IMessage] },
+		{ key: `${string}/force_logout`; args: [] },
+		{
+			key: `${string}/webdav`;
+			args: [{ type: 'changed'; account: Partial<IWebdavAccount> } | { type: 'removed'; account: { _id: IWebdavAccount['_id'] } }];
+		},
+		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
+		{ key: `${string}/notification`; args: [INotificationDesktop] },
+		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
+		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
+		{ key: `${string}/uiInteraction`; args: [unknown] },
 
-	'importers': StreamerKeyArgs<'progress', [{ rate: number; count: { completed: number; total: number } }]>;
+		{ key: `${string}/otr`; args: [unknown] },
+		{ key: `${string}/webrtc`; args: [unknown] },
+	];
 
-	'notify-logged': StreamerKeyArgs<'banner-changed', [{ bannerId: string }]> &
-		StreamerKeyArgs<
-			'roles-change',
-			[
+	'importers': [{ key: 'progress'; args: [{ rate: number; count: { completed: number; total: number } }] }];
+
+	'notify-logged': [
+		// { key: 'roles-change'; args: [IRole] },
+		{ key: 'banner-changed'; args: [{ bannerId: string }] },
+		{
+			key: 'roles-change';
+			args: [
 				{
 					type: 'added' | 'removed' | 'changed';
 					_id: IRole['_id'];
-					u: {
-						_id: IUser['_id'];
-						username: IUser['username'];
-						name: IUser['name'];
-					};
+					u: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
 					scope?: IRoom['_id'];
 				},
-			]
-		> &
-		StreamerKeyArgs<'Users:NameChanged', [Pick<IUser, '_id' | 'name'>]> &
-		StreamerKeyArgs<'voip.statuschanged', [boolean]> &
-		StreamerKeyArgs<'omnichannel.priority-changed', [{ id: 'added' | 'removed' | 'changed'; name: string }]>;
+			];
+		},
+		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{
+			key: 'Users:Deleted';
+			args: [
+				{
+					userId: IUser['_id'];
+				},
+			];
+		},
+		{ key: 'updateAvatar'; args: [{ username: IUser['username']; avatarETag: IUser['avatarETag'] }] },
+		{ key: 'voip.statuschanged'; args: [boolean] },
+		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
+	];
 
-	'stdout': StreamerKeyArgs<
-		'stdout',
-		[
-			{
-				id: string;
-				string: string;
-				ts: Date;
-			},
-		]
-	>;
+	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
 
-	'room-data': StreamerKeyArgs<string, [IOmnichannelRoom]>;
-	'notify-room-users': StreamerKeyArgs<
-		`${string}/video-conference`,
-		[
-			{
-				action: string;
-				params: {
-					callId: VideoConference['_id'];
-					uid: IUser['_id'];
-					rid: IRoom['_id'];
-				};
-			},
-		]
-	> &
-		StreamerKeyArgs<`${string}/webrtc`, unknown[]> &
-		StreamerKeyArgs<`${string}/otr`, unknown[]> &
-		StreamerKeyArgs<`${string}/userData`, unknown[]>;
+	'room-data': [{ key: string; args: [IOmnichannelRoom] }];
+
+	'notify-room-users': [
+		{
+			key: `${string}/video-conference`;
+			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
+		},
+		{ key: `${string}/webrtc`; args: unknown[] },
+		{ key: `${string}/otr`; args: unknown[] },
+		{ key: `${string}/userData`; args: unknown[] },
+	];
 
 	// 'notify-logged': (
 	// 	e:
@@ -155,10 +129,48 @@ export interface StreamerEvents {
 	// 		| 'actions/changed',
 	// ) => [unknown];
 	// 'user-presence': () => [void];
+
+	'livechat-room': [
+		{
+			key: string;
+			args: [
+				| {
+						type: 'agentData';
+						data: unknown;
+				  }
+				| {
+						type: 'agentStatus';
+						status: unknown;
+				  }
+				| {
+						type: 'queueData';
+						data: unknown;
+				  }
+				| {
+						type: 'visitorData';
+						visitor: unknown;
+				  },
+			];
+		},
+	];
 }
 
-export type ServerStreamerNames = keyof StreamerEvents;
+export type StreamNames = keyof StreamerEvents;
 
-export type ServerStreamerParameters<MethodName extends ServerStreamerNames> = Parameters<StreamerEvents[MethodName]>;
+export type StreamKeys<S extends StreamNames> = StreamerEvents[S][number]['key'];
 
-export type ServerStreamerReturn<MethodName extends ServerStreamerNames> = ReturnType<StreamerEvents[MethodName]>;
+export type StreamerConfigs<N extends StreamNames> = StreamerEvents[N][number];
+
+export type StreamerConfig<N extends StreamNames, K extends StreamKeys<N>> = StreamerConfigs<N> extends infer U
+	? U extends any
+		? { key: K; args: any } extends U
+			? U
+			: never
+		: never
+	: never;
+
+export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>> = StreamerConfig<N, K> extends {
+	args: any;
+}
+	? StreamerConfig<N, K>['args']
+	: never;

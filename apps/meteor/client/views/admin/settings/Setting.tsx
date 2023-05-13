@@ -100,7 +100,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
 
 	const hint = useMemo(
-		() => (t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined),
+		() =>
+			i18nDescription && t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined,
 		[i18nDescription, t],
 	);
 	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t.has(alert) ? t(alert) : alert }} />, [alert, t]);
