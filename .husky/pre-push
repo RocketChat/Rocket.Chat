@@ -1,1 +1,2 @@
-yarn lint
+yarn lint && \
+yarn testunit
