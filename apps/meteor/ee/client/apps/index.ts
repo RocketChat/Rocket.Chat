@@ -1,3 +1,3 @@
 import './gameCenter/tabBar';
 
-export { Apps } from './orchestrator';
+export { AppClientOrchestratorInstance as Apps } from './orchestrator';

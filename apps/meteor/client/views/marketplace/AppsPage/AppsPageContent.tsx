@@ -4,8 +4,9 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
+import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { useAppsReload, useAppsResult } from '../AppsContext';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import type { appsDataType } from '../hooks/useFilteredApps';

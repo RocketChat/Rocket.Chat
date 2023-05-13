@@ -4,14 +4,14 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { FC, Reducer } from 'react';
 import React, { useEffect, useReducer, useCallback } from 'react';
 
-import { AppEvents } from '../../../ee/client/apps/communication';
-import { Apps } from '../../../ee/client/apps/orchestrator';
-import type { AsyncState } from '../../lib/asyncState';
-import { AsyncStatePhase } from '../../lib/asyncState';
-import { AppsContext } from './AppsContext';
-import { handleAPIError } from './helpers';
-import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
-import type { App } from './types';
+import { AppEvents } from '../../ee/client/apps/communication';
+import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import { AppsContext } from '../contexts/AppsContext';
+import type { AsyncState } from '../lib/asyncState';
+import { AsyncStatePhase } from '../lib/asyncState';
+import { handleAPIError } from '../views/marketplace/helpers';
+import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
+import type { App } from '../views/marketplace/types';
 
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
@@ -25,11 +25,11 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 		undefined
 	>[];
 	for (const [event, callback] of entries) {
-		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
+		AppClientOrchestratorInstance.getWsListener()?.registerListener(AppEvents[event], callback);
 	}
 	return (): void => {
 		for (const [event, callback] of entries) {
-			Apps.getWsListener()?.unregisterListener(AppEvents[event], callback);
+			AppClientOrchestratorInstance.getWsListener()?.unregisterListener(AppEvents[event], callback);
 		}
 	};
 };
@@ -186,7 +186,7 @@ const AppsProvider: FC = ({ children }) => {
 		let privateAppsError = false;
 
 		try {
-			marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
+			marketplaceApps = (await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
@@ -197,7 +197,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		try {
-			allInstalledApps = await Apps.getInstalledApps().then((result: App[]) =>
+			allInstalledApps = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
@@ -316,7 +316,7 @@ const AppsProvider: FC = ({ children }) => {
 			invalidateAppsCountQuery();
 
 			try {
-				const app = await Apps.getApp(appId);
+				const app = await AppClientOrchestratorInstance.getApp(appId);
 
 				if (app.private) {
 					privateApp = app;
@@ -329,7 +329,7 @@ const AppsProvider: FC = ({ children }) => {
 			}
 
 			try {
-				marketplaceApp = await Apps.getAppFromMarketplace(appId, installedApp.version);
+				marketplaceApp = await AppClientOrchestratorInstance.getAppFromMarketplace(appId, installedApp.version);
 			} catch (error: any) {
 				handleAPIError(error);
 			}
