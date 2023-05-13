@@ -619,3 +619,18 @@ jobs:
           done
 
           echo "::endgroup::"
+
+  trigger-dependent-workflows:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+    steps:
+      - name: Send context to seperate pipeline
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DISTRIBUTION_TOKEN }}
+          event-type: new_release
+          repository: RocketChat/Release.Distributions
+          client-payload: '{"tag": "${{ github.ref_name }}"}'

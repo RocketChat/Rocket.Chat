@@ -146,10 +146,10 @@ settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, function (key, value)
 	}
 });
 
-function customOAuthServicesInit() {
+async function customOAuthServicesInit() {
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
-	Object.keys(process.env).forEach((key) => {
+	for await (const key of Object.keys(process.env)) {
 		if (/Accounts_OAuth_Custom_[a-zA-Z0-9_-]+$/.test(key)) {
 			// Most all shells actually prohibit the usage of - in environment variables
 			// So this will allow replacing - with _ and translate it back to the setting name
@@ -194,10 +194,10 @@ function customOAuthServicesInit() {
 					avatarField: process.env[`${serviceKey}_avatar_field`],
 				};
 
-				addOAuthService(name, values);
+				await addOAuthService(name, values);
 			}
 		}
-	});
+	}
 }
 
-customOAuthServicesInit();
+await customOAuthServicesInit();

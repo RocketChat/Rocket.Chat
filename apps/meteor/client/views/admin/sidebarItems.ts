@@ -14,6 +14,13 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
+		icon: 'shield-alt',
+		href: 'moderation-console',
+		i18nLabel: 'Moderation console',
+		tag: 'Beta',
+		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
+	},
+	{
 		href: 'admin-import',
 		i18nLabel: 'Import',
 		icon: 'import',

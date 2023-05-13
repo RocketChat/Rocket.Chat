@@ -21,6 +21,7 @@ import { AppSchedulerBridge } from './scheduler';
 import { AppVideoConferenceBridge } from './videoConferences';
 import { AppOAuthAppsBridge } from './oauthApps';
 import { AppInternalFederationBridge } from './internalFederation';
+import { AppModerationBridge } from './moderation';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -47,6 +48,7 @@ export class RealAppBridges extends AppBridges {
 		this._videoConfBridge = new AppVideoConferenceBridge(orch);
 		this._oAuthBridge = new AppOAuthAppsBridge(orch);
 		this._internalFedBridge = new AppInternalFederationBridge(orch);
+		this._moderationBridge = new AppModerationBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -131,5 +133,9 @@ export class RealAppBridges extends AppBridges {
 
 	getInternalFederationBridge() {
 		return this._internalFedBridge;
+	}
+
+	getModerationBridge() {
+		return this._moderationBridge;
 	}
 }

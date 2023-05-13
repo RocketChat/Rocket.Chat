@@ -1,5 +1,5 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
-import type { IFederationServiceEE } from '@rocket.chat/core-services';
+import type { IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from '@rocket.chat/core-services';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
 import type { FederationUserServiceEE } from './application/UserService';
@@ -51,6 +51,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 			this.getInternalSettingsAdapter(),
 			this.getInternalMessageAdapter(),
 			this.getInternalNotificationAdapter(),
+			FederationFactoryEE.buildInternalQueueAdapter(),
 			this.getBridge(),
 		);
 	}
@@ -181,9 +182,19 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return this.internalUserServiceEE.removeSearchedServerNameByInternalUserId(internalUserId, serverName);
 	}
 
-	public async joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
+	public async scheduleJoinExternalPublicRoom(
+		internalUserId: string,
+		externalRoomId: string,
+		roomName?: string,
+		pageToken?: string,
+	): Promise<void> {
+		await this.internalRoomServiceSenderEE.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId, roomName, pageToken);
+	}
+
+	public async joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void> {
+		const { internalUserId, externalRoomId, roomName, pageToken } = input;
 		await this.internalRoomServiceSenderEE.joinExternalPublicRoom(
-			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId),
+			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
 		);
 	}
 
