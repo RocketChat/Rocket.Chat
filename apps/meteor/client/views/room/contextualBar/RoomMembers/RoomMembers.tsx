@@ -118,7 +118,7 @@ const RoomMembers = ({
 				{!loading && members.length > 0 && (
 					<Box pi='x18' pb='x12'>
 						<Box is='span' color='hint' fontScale='p2'>
-						{t('Showing')} {members.length} {t('of')} {total}
+							{t('Showing')} {members.length} {t('of')} {total}
 						</Box>
 					</Box>
 				)}
