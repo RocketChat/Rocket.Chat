@@ -1,5 +1,5 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
@@ -166,7 +166,11 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	};
 
 	if (isLoadingCustomFields) {
-		return <FormSkeleton />;
+		return (
+			<Box p='x24'>
+				<FormSkeleton />
+			</Box>
+		);
 	}
 
 	return (
