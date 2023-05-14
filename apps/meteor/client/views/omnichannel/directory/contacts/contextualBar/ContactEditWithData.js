@@ -27,7 +27,7 @@ function ContactEditWithData({ id, close }) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
 
-	return <ContactNewEdit id={id} data={data} close={close}  />;
+	return <ContactNewEdit id={id} data={data} close={close} />;
 }
 
 export default ContactEditWithData;
