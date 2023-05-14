@@ -16,14 +16,18 @@ function ContactEditWithData({ id, close }) {
 	} = useEndpointData('/v1/omnichannel/contact', { params: useMemo(() => ({ contactId: id }), [id]) });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
+		return (
+			<Box p='x24'>
+				<FormSkeleton />
+			</Box>
+		);
 	}
 
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
 
-	return <ContactNewEdit id={id} data={data} close={close} />;
+	return <ContactNewEdit id={id} data={data} close={close}  />;
 }
 
 export default ContactEditWithData;
