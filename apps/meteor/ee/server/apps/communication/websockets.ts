@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
@@ -171,7 +172,7 @@ export class AppServerNotifier {
 		void api.broadcast('apps.statusUpdate', appId, status);
 	}
 
-	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
+	async appSettingsChange(appId: string, setting: AppsSetting): Promise<void> {
 		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`)) {
 			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`);
 			return;

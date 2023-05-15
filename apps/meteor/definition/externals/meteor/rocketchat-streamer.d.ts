@@ -60,7 +60,7 @@ declare module 'meteor/rocketchat:streamer' {
 
 		on<K extends StreamKeys<N>>(event: K, fn: (...data: any[]) => void): void;
 
-		on(event: '_afterPublish', fn: (streamer: IStreamer<N>, ...data: any[]) => void): void;
+		on(event: '_afterPublish', fn: (streamer: this, ...data: any[]) => void): void;
 
 		removeSubscription(subscription: DDPSubscription, eventName: string): void;
 

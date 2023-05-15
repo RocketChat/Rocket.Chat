@@ -16,7 +16,9 @@ export class NotificationsModule {
 
 	public readonly streamRoomUsers: IStreamer<'notify-room-users'>;
 
-	public readonly streamUser: IStreamer<'notify-user'>;
+	public readonly streamUser: IStreamer<'notify-user'> & {
+		on(event: string, fn: (...data: any[]) => void): void;
+	};
 
 	public readonly streamRoomMessage: IStreamer<'room-messages'>;
 
@@ -88,7 +90,8 @@ export class NotificationsModule {
 	}
 
 	configure(): void {
-		const notifyUser = this.notifyUser.bind(this);
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const self = this;
 
 		this.streamRoomMessage.allowWrite('none');
 		this.streamRoomMessage.allowRead(async function (eventName, extraData) {
@@ -141,7 +144,7 @@ export class NotificationsModule {
 
 		this.streamAll.allowWrite('none');
 		this.streamAll.allowRead('all');
-		this.streamAll.allowRead('private-settings-changed', async function () {
+		this.streamLogged.allowRead('private-settings-changed', async function () {
 			if (this.userId == null) {
 				return false;
 			}
@@ -259,7 +262,7 @@ export class NotificationsModule {
 					projection: { 't': 1, 'servedBy._id': 1 },
 				});
 				if (room && room.t === 'l' && e === 'webrtc' && room.servedBy) {
-					notifyUser(room.servedBy._id, e, ...args);
+					self.notifyUser(room.servedBy._id, e, ...args);
 					return false;
 				}
 			} else if ((await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
@@ -267,14 +270,14 @@ export class NotificationsModule {
 					projection: { 'v._id': 1, '_id': 0 },
 				}).toArray();
 				if (livechatSubscriptions && e === 'webrtc') {
-					livechatSubscriptions.forEach((subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args));
+					livechatSubscriptions.forEach((subscription) => subscription.v && self.notifyUser(subscription.v._id, e, ...args));
 					return false;
 				}
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
 
-				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
+				subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});
@@ -516,18 +519,18 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
 	): void {
-		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, args);
+		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUserInThisInstance<P extends string, E extends string>(
 		userId: P,
 		eventName: E extends ExtractNotifyUserEventName<'notify-user', P> ? E : never,
-		...args: any[]
+		...args: E extends ExtractNotifyUserEventName<'notify-user', P> ? StreamerCallbackArgs<'notify-user', `${P}/${E}`> : never
 	): void {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: any[]): void {
+	sendPresence(uid: string, ...args: [username: string, statusChanged: 0 | 1 | 2 | 3, statusText: string | undefined]): void {
 		// if (this.debug === true) {
 		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		// }
@@ -535,7 +538,29 @@ export class NotificationsModule {
 		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
 	}
 
-	progressUpdated(progress: { rate: number; count?: { completed: number; total: number } }): void {
+	progressUpdated(progress: {
+		rate: number;
+		count?: { completed: number; total: number };
+		step?:
+			| 'importer_new'
+			| 'importer_uploading'
+			| 'importer_downloading_file'
+			| 'importer_file_loaded'
+			| 'importer_preparing_started'
+			| 'importer_preparing_users'
+			| 'importer_preparing_channels'
+			| 'importer_preparing_messages'
+			| 'importer_user_selection'
+			| 'importer_importing_started'
+			| 'importer_importing_users'
+			| 'importer_importing_channels'
+			| 'importer_importing_messages'
+			| 'importer_importing_files'
+			| 'importer_finishing'
+			| 'importer_done'
+			| 'importer_import_failed'
+			| 'importer_import_cancelled';
+	}): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }
@@ -545,3 +570,10 @@ type ExtractNotifyUserEventName<
 	P extends string,
 	E extends StreamKeys<T> = StreamKeys<T>,
 > = E extends `${infer X}/${infer I}` ? (P extends X ? I : never) : never;
+
+// type X = ExtractNotifyUserEventName<'notify-user', 'webrtc'>;
+
+// type Y = StreamerCallbackArgs<'notify-user', `${string}/${'webrtc'}`>;
+// const a: NotificationsModule = {};
+
+// a.notifyUserInThisInstance('asda', 'webrtc', 'a', 'b', 'c');

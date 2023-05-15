@@ -1,4 +1,5 @@
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type {
 	IMessage,
 	IRoom,
@@ -19,6 +20,8 @@ import type {
 	IUserDataEvent,
 	IUserStatus,
 } from '@rocket.chat/core-typings';
+
+type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
@@ -49,11 +52,78 @@ export interface StreamerEvents {
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
-	'notify-all': [{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] }];
+	'notify-all': [
+		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+	];
 
 	'notify-user': [
 		{ key: `${string}/rooms-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', IRoom] },
-		{ key: `${string}/subscriptions-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', ISubscription] },
+		{
+			key: `${string}/subscriptions-changed`;
+			args:
+				| [
+						'removed',
+						{
+							_id: string;
+							u?: Pick<IUser, '_id' | 'username' | 'name'>;
+							rid?: string;
+						},
+				  ]
+				| [
+						'inserted' | 'updated',
+						Pick<
+							ISubscription,
+							| 't'
+							| 'ts'
+							| 'ls'
+							| 'lr'
+							| 'name'
+							| 'fname'
+							| 'rid'
+							| 'code'
+							| 'f'
+							| 'u'
+							| 'open'
+							| 'alert'
+							| 'roles'
+							| 'unread'
+							| 'prid'
+							| 'userMentions'
+							| 'groupMentions'
+							| 'archived'
+							| 'audioNotificationValue'
+							| 'desktopNotifications'
+							| 'mobilePushNotifications'
+							| 'emailNotifications'
+							| 'desktopPrefOrigin'
+							| 'mobilePrefOrigin'
+							| 'emailPrefOrigin'
+							| 'unreadAlert'
+							| '_updatedAt'
+							| 'blocked'
+							| 'blocker'
+							| 'autoTranslate'
+							| 'autoTranslateLanguage'
+							| 'disableNotifications'
+							| 'hideUnreadStatus'
+							| 'hideMentionStatus'
+							| 'muteGroupMentions'
+							| 'ignored'
+							| 'E2EKey'
+							| 'E2ESuggestedKey'
+							| 'tunread'
+							| 'tunreadGroup'
+							| 'tunreadUser'
+
+							// Omnichannel fields
+							| 'department'
+							| 'v'
+							| 'onHold'
+						>,
+				  ];
+		},
 
 		{ key: `${string}/message`; args: [IMessage] },
 		{ key: `${string}/force_logout`; args: [] },
@@ -73,7 +143,7 @@ export interface StreamerEvents {
 		{ key: `${string}/userData`; args: [IUserDataEvent] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
-		{ key: `${string}/webrtc`; args: [unknown] },
+		{ key: `${string}/webrtc`; args: unknown[] },
 		{
 			key: `${string}/otr`;
 			args: [
@@ -91,7 +161,7 @@ export interface StreamerEvents {
 			key: 'progress';
 			args: [
 				{
-					step:
+					step?:
 						| 'importer_new'
 						| 'importer_uploading'
 						| 'importer_downloading_file'
@@ -129,9 +199,7 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
-		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
@@ -155,7 +223,7 @@ export interface StreamerEvents {
 				{
 					type: 'added' | 'removed' | 'changed';
 					_id: IRole['_id'];
-					u: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
+					u?: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
 					scope?: IRoom['_id'];
 				},
 			];
@@ -163,10 +231,10 @@ export interface StreamerEvents {
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
 		{ key: 'Users:Deleted'; args: [Pick<IUser, '_id'>] },
 		{ key: 'voip.statuschanged'; args: [boolean] },
-		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
+		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
-		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, string, IUser['name'], IUser['roles']]] },
+		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, IUser['statusText'], IUser['name'], IUser['roles']]] },
 		{
 			key: 'Users:Deleted';
 			args: [
@@ -175,12 +243,15 @@ export interface StreamerEvents {
 				},
 			];
 		},
-		{ key: 'updateAvatar'; args: [{ username: IUser['username']; etag: IUser['avatarETag'] }] },
+		{
+			key: 'updateAvatar';
+			args: [{ username: IUser['username']; etag: IUser['avatarETag'] } | { rid: IRoom['_id']; etag: IRoom['avatarETag'] }];
+		},
 	];
 
 	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
 
-	'room-data': [{ key: string; args: [IOmnichannelRoom] }];
+	'room-data': [{ key: string; args: [IOmnichannelRoom | Pick<IOmnichannelRoom, '_id'>] }];
 
 	'notify-room-users': [
 		{
@@ -210,7 +281,7 @@ export interface StreamerEvents {
 			args: [
 				{
 					appId: string;
-					status: 'auto_enabled' | 'auto_disabled' | 'manually_enabled' | 'manually_disabled';
+					status: AppStatus;
 				},
 			];
 		},
@@ -256,7 +327,7 @@ export interface StreamerEvents {
 		},
 	];
 
-	'user-presence': [{ key: string; args: [unknown] }];
+	'user-presence': [{ key: string; args: [username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string] }];
 
 	// TODO: rename to 'integration-history'
 	'integrationHistory': [
