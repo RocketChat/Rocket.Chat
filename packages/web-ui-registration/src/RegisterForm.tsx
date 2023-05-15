@@ -1,5 +1,6 @@
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
+/* eslint-disable complexity */
+import { useUniqueId, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useState, type ReactElement } from 'react';
@@ -33,6 +34,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
+	const [errorOnRegister, setErrorOnRegister] = useState<string | undefined>(undefined);
+	const [invalidEmailInput, setInvalidEmailInput] = useState<boolean>(false);
+	const debouncedInvalidEmailInput = useDebouncedValue(invalidEmailInput, 5000);
 
 	const {
 		register,
@@ -63,6 +67,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
 					}
+
+					setErrorOnRegister(error.error);
 				},
 			},
 		);
@@ -71,8 +77,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	if (errors.email?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
-
-	let invalidEmailInput;
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
@@ -103,22 +107,24 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
+									onChange: () => {
+										clearErrors(['username', 'email']);
+									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email || invalidEmailInput ? 'Error' : undefined}
+								error={errors.email || debouncedInvalidEmailInput ? 'Error' : undefined}
 								name='email'
 								id='email'
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 									setInputEmail(String(event.target.value));
 
 									if (RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'gm').test(inputEmail) === false) {
-										console.log('INVALID EMAIL!!!!');
-										invalidEmailInput = true;
-									} else {
-										invalidEmailInput = false;
+										setInvalidEmailInput(true);
+										return;
 									}
+									setInvalidEmailInput(false);
 								}}
-								aria-invalid={errors.email || invalidEmailInput ? 'true' : undefined}
+								aria-invalid={errors.email || debouncedInvalidEmailInput ? 'true' : undefined}
 								defaultValue={inputEmail}
 							/>
 						</Field.Row>
@@ -194,6 +200,11 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</Field.Row>
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
+					)}
+				</FieldGroup>
+				<FieldGroup disabled={registerUser.isLoading}>
+					{errorOnRegister === 'error-user-is-not-activated' && (
+						<Callout type='warning'>{t('registration.page.registration.waitActivationWarning')}</Callout>
 					)}
 				</FieldGroup>
 			</Form.Container>
