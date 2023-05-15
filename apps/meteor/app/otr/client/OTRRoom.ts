@@ -244,6 +244,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
+		console.trace('onUserStream', data, type);
 		switch (type) {
 			case 'handshake':
 				let timeout: NodeJS.Timeout;
@@ -289,9 +290,17 @@ export class OTRRoom implements IOTRRoom {
 						this.reset();
 						await establishConnection();
 					} else {
+						/* 	We have to check if there's an in progress handshake request because
+							Notifications.notifyUser will sometimes dispatch 2 events */
+						if (this.getState() === OtrRoomState.REQUESTED) {
+							return;
+						}
+
 						if (this.getState() === OtrRoomState.ESTABLISHED) {
 							this.reset();
 						}
+
+						this.setState(OtrRoomState.REQUESTED);
 						imperativeModal.open({
 							component: GenericModal,
 							props: {
