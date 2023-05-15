@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import {
 	Integrations,
 	FederationServers,
@@ -19,6 +18,7 @@ import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { i18n } from '../../../../server/lib/i18n';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = await Users.findOneById(userId, {
@@ -57,7 +57,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				break;
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');
-				const nameAlias = TAPi18n.__('Removed_User');
+				const nameAlias = i18n.t('Removed_User');
 				if (!rocketCat?._id || !rocketCat?.username) {
 					break;
 				}

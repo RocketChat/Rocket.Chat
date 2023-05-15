@@ -31,6 +31,7 @@ const ADMIN_PERMISSIONS = [
 	'manage-own-outgoing-integrations',
 	'manage-own-incoming-integrations',
 	'view-engagement-dashboard',
+	'view-moderation-console',
 ];
 
 const AdministrationList = ({ accountBoxItems, onDismiss }: AdministrationListProps): ReactElement => {
