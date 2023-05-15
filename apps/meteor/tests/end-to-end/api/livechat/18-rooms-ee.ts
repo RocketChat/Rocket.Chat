@@ -3,7 +3,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createVisitor, createLivechatRoom, sendMessage, closeOmnichanelRoom } from '../../../data/livechat/rooms';
+import { createVisitor, createLivechatRoom, sendMessage, closeOmnichannelRoom } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -81,7 +81,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const response = await request
 				.post(api('livechat/room.onHold'))

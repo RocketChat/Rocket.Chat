@@ -32,3 +32,5 @@ export const preferences = {
 		idleTimeLimit: 3600,
 	},
 };
+
+export type IUserCredentialsHeader = { 'X-Auth-Token': string; 'X-User-Id': string; };
