@@ -1,3 +1,5 @@
+import type { Readable } from 'stream';
+
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { parse } from '@rocket.chat/message-parser';
@@ -15,7 +17,8 @@ import {
 	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools/src/timezone';
+import { streamToBuffer } from '@rocket.chat/tools/src/stream';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -336,29 +339,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async promisifyStream(stream: NodeJS.ReadableStream, buffer: Uint8Array[]) {
-		return new Promise<void>((resolve, reject) => {
-			stream.on('data', (chunk) => {
-				buffer.push(chunk);
-			});
-			stream.on('end', () => {
-				resolve();
-			});
-			stream.on('error', (error) => {
-				reject(error);
-			});
-		});
-	}
-
 	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
-		const buf: Uint8Array[] = [];
-		let outBuff = Buffer.alloc(0);
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
 		const stream = await this.worker.renderToStream({ data });
-		await this.promisifyStream(stream, buf);
-
-		outBuff = Buffer.concat(buf);
+		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
 			const file = await uploadService.uploadFile({
