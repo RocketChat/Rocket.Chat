@@ -17,8 +17,7 @@ import {
 	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools/src/timezone';
-import { streamToBuffer } from '@rocket.chat/tools/src/stream';
+import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
