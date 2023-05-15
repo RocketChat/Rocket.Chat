@@ -5,7 +5,7 @@ import { hasPermission } from '../../../../../app/authorization/client';
 import { settings } from '../../../../../app/settings/client';
 import { APIClient } from '../../../../../app/utils/client';
 import { CannedResponse } from '../collections/CannedResponse';
-import { cannedResponsesStreamer } from '../streamer';
+import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 
 const events = {
 	changed: (response) => {
@@ -27,7 +27,8 @@ Meteor.startup(() => {
 			return;
 		}
 		try {
-			cannedResponsesStreamer.on('canned-responses', (response, options) => {
+			// TODO: check options
+			sdk.stream('canned-responses', 'canned-responses', (response, options) => {
 				const { agentsId } = options || {};
 				if (Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
 					return;
