@@ -110,12 +110,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='request-button' disabled={!canSubmit} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='send-button' disabled={!canSubmit} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}
