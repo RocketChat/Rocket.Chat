@@ -13,7 +13,8 @@ import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { isTruthy } from '../../../../lib/isTruthy';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
-type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
@@ -79,7 +80,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 		});
 	}
 
-	protected get eventName() {
+	protected get eventName(): `${Name}-changed` {
 		return `${this.name}-changed`;
 	}
 
@@ -221,7 +222,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 	}
 
 	async setupListener() {
-		Notifications[this.eventType](this.eventName, async (action: 'removed' | 'changed', record: any) => {
+		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
 			const newRecord = this.handleReceived(record, action);
 
