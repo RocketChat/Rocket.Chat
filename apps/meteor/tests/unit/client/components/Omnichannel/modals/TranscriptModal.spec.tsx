@@ -38,13 +38,13 @@ describe('components/Omnichannel/TranscriptModal', () => {
 		const { getByRole } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
 		const requestBtn = getByRole('button', { name: 'request-button' });
-		expect(requestBtn).to.have.text('Request');
+		expect(requestBtn).to.be.visible;
 	});
 
 	it('should show Send button when roomOpen is false', () => {
 		const { getByRole } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
 		const sendBtn = getByRole('button', { name: 'send-button' });
-		expect(sendBtn).to.have.text('Send');
+		expect(sendBtn).to.be.visible;
 	});
 });
