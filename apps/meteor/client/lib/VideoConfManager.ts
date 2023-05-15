@@ -498,11 +498,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] connecting user ${userId}`);
 		this.userId = userId;
 
-		this.hooks.push(
-			await Notifications.onUser('video-conference', (data: { action: string; params: DirectCallParams }) =>
-				this.onVideoConfNotification(data),
-			),
-		);
+		const { stop, ready } = Notifications.onUser('video-conference', (data) => this.onVideoConfNotification(data));
+
+		await ready();
+
+		this.hooks.push(stop);
 	}
 
 	private abortIncomingCall(callId: string): void {

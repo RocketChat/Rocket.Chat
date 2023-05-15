@@ -25,19 +25,23 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
+			Apps.getRocketChatLogger().debug(`"apps.added" event received for app "${appId}"`);
 			// if the app already exists in this instance, don't load it again
 			const app = Apps.getManager()?.getOneById(appId);
 
 			if (app) {
+				Apps.getRocketChatLogger().info(`"apps.added" event received for app "${appId}", but it already exists in this instance`);
 				return;
 			}
 
-			await (Apps.getManager() as any)?.loadOne(appId);
+			await Apps.getManager()?.addLocal(appId);
 		});
 
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
+			Apps.getRocketChatLogger().debug(`"apps.removed" event received for app "${appId}"`);
 			const app = Apps.getManager()?.getOneById(appId);
 			if (!app) {
+				Apps.getRocketChatLogger().info(`"apps.removed" event received for app "${appId}", but it couldn't be found in this instance`);
 				return;
 			}
 
@@ -45,8 +49,10 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
+			Apps.getRocketChatLogger().debug(`"apps.updated" event received for app "${appId}"`);
 			const storageItem = await Apps.getStorage()?.retrieveOne(appId);
 			if (!storageItem) {
+				Apps.getRocketChatLogger().info(`"apps.updated" event received for app "${appId}", but it couldn't be found in the storage`);
 				return;
 			}
 
@@ -59,8 +65,15 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.statusUpdate', async (appId: string, status: AppStatus): Promise<void> => {
+			Apps.getRocketChatLogger().debug(`"apps.statusUpdate" event received for app "${appId}" with status "${status}"`);
 			const app = Apps.getManager()?.getOneById(appId);
-			if (!app || app.getStatus() === status) {
+			if (!app) {
+				Apps.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but it couldn't be found in this instance`);
+				return;
+			}
+
+			if (app.getStatus() === status) {
+				Apps.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but the status is the same`);
 				return;
 			}
 
@@ -72,21 +85,22 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
+			Apps.getRocketChatLogger().debug(`"apps.settingUpdated" event received for app "${appId}"`, { setting });
 			const app = Apps.getManager()?.getOneById(appId);
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
 
 			// avoid updating the setting if the value is the same,
 			// which caused an infinite loop
 			if (oldSetting === setting.value) {
+				Apps.getRocketChatLogger().info(
+					`"apps.settingUpdated" event received for setting ${setting.id} of app "${appId}", but the setting value is the same`,
+				);
 				return;
 			}
 
-			const appManager = Apps.getManager();
-			if (!appManager) {
-				return;
-			}
-
-			await appManager.getSettingsManager().updateAppSetting(appId, setting as any);
+			await Apps.getManager()
+				?.getSettingsManager()
+				.updateAppSetting(appId, setting as any);
 		});
 	}
 
