@@ -340,8 +340,6 @@ const MessageBox = ({
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
-			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
-
 			{popup && !popup.preview && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}

@@ -28,7 +28,12 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new NotAuthorizedError();
 			}
 
-			const roomData = await getRoomByTypeAndName(type, reference);
+			let roomData;
+			try {
+				roomData = await getRoomByTypeAndName(type, reference);
+			} catch (error) {
+				throw new RoomNotFoundError(undefined, { type, reference });
+			}
 
 			if (!roomData._id) {
 				throw new RoomNotFoundError(undefined, { type, reference });
@@ -74,6 +79,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			return { rid: room._id };
 		},
 		{
+			retry: 0,
 			onError: async (error) => {
 				if (type !== 'd') {
 					return;
