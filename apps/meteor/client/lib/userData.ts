@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 export const isSyncReady = new ReactiveVar(false);
 
@@ -81,7 +81,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	cancel = result.stop;
 	await result.ready();
 
-	const { ldap, lastLogin, services: rawServices, ...userData } = await APIClient.get('/v1/me');
+	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
 
 	// email?: {
 	// 	verificationTokens?: IUserEmailVerificationToken[];
