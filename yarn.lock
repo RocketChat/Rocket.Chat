@@ -6498,9 +6498,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.38.2":
-  version: 1.38.2
-  resolution: "@rocket.chat/apps-engine@npm:1.38.2"
+"@rocket.chat/apps-engine@npm:1.39.0":
+  version: 1.39.0
+  resolution: "@rocket.chat/apps-engine@npm:1.39.0"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -6512,25 +6512,7 @@ __metadata:
     vm2: ^3.9.17
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 8f51aadbe99916179a2f08dbd6bb4e13524a817017508dab9b2c7e9de5d65e57eff19b014ee4776fc2ad7b1ae2bb89e2ea4e78c0f0db2ba14b8b0592d1b426d1
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/apps-engine@npm:1.39.0-alpha.212":
-  version: 1.39.0-alpha.212
-  resolution: "@rocket.chat/apps-engine@npm:1.39.0-alpha.212"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    jose: ^4.11.1
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ^3.4.0
-    vm2: ^3.9.17
-  peerDependencies:
-    "@rocket.chat/ui-kit": "*"
-  checksum: 2f43ece57b8f31c3a395b42f3b764de557ccd1058a77c6f8bfff4b9f4fd280f1a00bb5efb78e04507a6bc9dbdd76c103e1e51253422a4f082904bcc9a8a2483a
+  checksum: 0845c3523b6d296748d49471589ee664752cba7a3787e23699531ff739eb180e888e1f464241d06b9ea7546bce2f320f6f54b8722527f16bad92b5a5ca78a15e
   languageName: node
   linkType: hard
 
@@ -6597,7 +6579,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-services@workspace:packages/core-services"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
@@ -6618,7 +6600,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/message-parser": next
@@ -6707,7 +6689,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
@@ -6899,7 +6881,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
@@ -7249,7 +7231,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.39.0-alpha.212
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -7802,7 +7784,7 @@ __metadata:
     "@babel/core": ^7.20.5
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.18.6
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -7880,7 +7862,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": next
@@ -25147,7 +25129,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 
@@ -32621,7 +32603,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
-    "@rocket.chat/apps-engine": 1.38.2
+    "@rocket.chat/apps-engine": 1.39.0
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next

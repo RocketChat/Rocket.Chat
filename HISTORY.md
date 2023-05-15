@@ -1,4 +1,55 @@
-# 6.1.5
+# 6.1.7
+
+`2023-05-12  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.3`
+
+### 🐛 Bug fixes
+
+
+- app status inconsistencies when running multiple instances in a cluster ([#29220](https://github.com/RocketChat/Rocket.Chat/pull/29220))
+
+  App status inconsistencies between multiple instances in a cluster boil down to the fact that the Apps-Engine is currently responsible for orchestrating when these events are triggered and is overly verbose in doing so.
+
+  Upon analysis, the framework itself _should not_ have the concept of "other instances"   - this is a deployment detail of the host system, and as such should be controlled by the host. The correct solution for this problem is to review this notification system, potentially removing it from the framework and leaving the responsibility solely for Rocket.Chat.
+
+  However, this is hindering the current app management experience for workspaces, so this PR cuts the control of some notifications that come from the framework (the more problematic ones) and moves the control over to RC in a short and practical way.
+
+  This is done by turning the methods of the most problematic events in the `AppActivationBridge` into no-ops, and instead triggering the `AppServerNotifier` directly in the api endpoints that are applicable.
+
+  It is _not_ the most correct solution to the problem, but due to time constraints and urgency this will be applied first so we can move with the correct solution in a future point.
+
+- Migration error when removing 'snipetted' index ([#29215](https://github.com/RocketChat/Rocket.Chat/pull/29215))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 6.1.6
+
+`2023-05-02  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.2`
+
+### 🐛 Bug fixes
+
+
+- Livechat Triggers not working ([#29073](https://github.com/RocketChat/Rocket.Chat/pull/29073))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+
+
 `2023-04-24  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
