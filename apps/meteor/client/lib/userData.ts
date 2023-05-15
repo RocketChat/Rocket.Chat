@@ -60,7 +60,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 	cancel?.();
 
-	const result = Notifications.onUser('userData', (data) => {
+	const result = Notifications.onUser('userData', async (data) => {
 		switch (data.type) {
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
