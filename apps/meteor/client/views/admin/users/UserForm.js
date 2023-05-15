@@ -166,23 +166,24 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 
 			<FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Password')}</Field.Label>
-							<Field.Row>
-								<PasswordInput
-									errors={errors && errors.password}
-									flexGrow={1}
-									value={password}
-									onChange={handlePassword}
-									addon={<Icon name='key' size='x20' />}
-									autoComplete='new-password'
-								/>
-							</Field.Row>
-							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
-						</Field>
-					),
-					[t, password, handlePassword, errors],
+					() =>
+						!setRandomPassword && (
+							<Field>
+								<Field.Label>{t('Password')}</Field.Label>
+								<Field.Row>
+									<PasswordInput
+										errors={errors && errors.password}
+										flexGrow={1}
+										value={password}
+										onChange={handlePassword}
+										addon={<Icon name='key' size='x20' />}
+										autoComplete='new-password'
+									/>
+								</Field.Row>
+								{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
+							</Field>
+						),
+					[t, password, handlePassword, errors, setRandomPassword],
 				)}
 				{useMemo(
 					() => (
