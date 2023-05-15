@@ -324,7 +324,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Row>
 							<TextAreaInput disabled={isFederated} rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 						</Field.Row>
-							<Field.Hint>{t('Channel_announcement_hint')}</Field.Hint>
+						<Field.Hint>{t('Channel_announcement_hint')}</Field.Hint>
 					</Field>
 				)}
 				{canViewTopic && (
@@ -333,7 +333,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Row>
 							<TextAreaInput rows={4} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
 						</Field.Row>
-							<Field.Hint>{t('Channel_topic_hint')}</Field.Hint>
+						<Field.Hint>{t('Channel_topic_hint')}</Field.Hint>
 					</Field>
 				)}
 				{canViewType && (
