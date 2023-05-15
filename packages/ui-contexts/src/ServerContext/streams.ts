@@ -17,6 +17,7 @@ import type {
 	IIntegrationHistory,
 	IInquiry,
 	IUserDataEvent,
+	IUserStatus,
 } from '@rocket.chat/core-typings';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -48,10 +49,7 @@ export interface StreamerEvents {
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
-	'notify-all': [
-		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-	];
+	'notify-all': [{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] }];
 
 	'notify-user': [
 		{ key: `${string}/rooms-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', IRoom] },
@@ -122,6 +120,15 @@ export interface StreamerEvents {
 	];
 
 	'notify-logged': [
+		{
+			key: 'updateCustomUserStatus';
+			args: [
+				{
+					userStatusData: IUserStatus;
+				},
+			];
+		},
+		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
@@ -159,7 +166,7 @@ export interface StreamerEvents {
 		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
-		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], string, string, IUser['name'], IUser['roles']]] },
+		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, string, IUser['name'], IUser['roles']]] },
 		{
 			key: 'Users:Deleted';
 			args: [

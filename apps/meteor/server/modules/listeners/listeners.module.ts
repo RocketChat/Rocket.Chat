@@ -402,7 +402,7 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('app/updated', appId);
 		});
 
-		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus) => {
+		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus[keyof AppStatus]) => {
 			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', { appId, status });
 		});
 
