@@ -1,13 +1,10 @@
-import type { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../app/authorization/client';
+import type { SidebarItem } from '../lib/createSidebarItems';
 
-export const useDefaultRoute = (
-	permissionRouteDictionary: Record<string, ReturnType<typeof useRoute>>,
-	fallbackRoute: ReturnType<typeof useRoute>,
-): ReturnType<typeof useRoute> => {
-	const permissions = Object.keys(permissionRouteDictionary);
-	const defaultRoute = permissions.find((permission) => hasPermission(permission));
+export const useDefaultRoute = (getSidebarItems: () => SidebarItem[], fallbackRoute: string): ReturnType<typeof useRoute> => {
+	const defaultRouteHref = getSidebarItems().find((sidebarItem) => sidebarItem.permissionGranted?.())?.href || fallbackRoute;
+	const defaultRoute = useRoute(defaultRouteHref);
 
-	return defaultRoute ? permissionRouteDictionary[defaultRoute] : fallbackRoute;
+	return defaultRoute;
 };
