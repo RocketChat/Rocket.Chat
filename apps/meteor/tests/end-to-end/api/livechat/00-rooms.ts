@@ -4,7 +4,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatPriority } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	ILivechatVisitor,
+	IUser,
+	IOmnichannelSystemMessage,
+	ILivechatPriority,
+	ILivechatDepartment,
+} from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
@@ -18,11 +25,11 @@ import {
 	getLivechatRoomInfo,
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
-	closeOmnichanelRoom,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
-import { adminUsername, password } from '../../../data/user.js';
+import { adminUsername, password } from '../../../data/user';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import type { DummyResponse } from '../../../data/livechat/utils';
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -31,6 +38,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
+import { saveTags } from '../../../data/livechat/tags';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -275,7 +283,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: false, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -285,7 +293,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: true, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
@@ -295,11 +303,126 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).set(credentials).expect(200);
 			expect(body.rooms.some((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room.open)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return only rooms with the given department', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request.get(api('livechat/rooms')).query({ departmentId: department._id }).set(credentials).expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return rooms with the given department and the given status', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ departmentId: department._id, open: true })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return no rooms with the given department and the given status (if none match the filter)', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ departmentId: department._id, open: false })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(0);
+		});
+		(IS_EE ? it : it.skip)('should return only rooms served by the given agent', async () => {
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+				agent: agent.credentials,
+			});
+
+			const { body } = await request
+				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
+			const tag = await saveTags();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt();
+			await closeOmnichannelRoom(expectedRoom._id, [tag.name]);
+
+			const { body } = await request
+				.get(api(`livechat/rooms?tags[]=${tag.name}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? describe : describe.skip)('sort', () => {
+			let openRoom: IOmnichannelRoom;
+			let closeRoom: IOmnichannelRoom;
+			let department: ILivechatDepartment;
+
+			it('prepare data for further tests', async () => {
+				const { department: localDepartment } = await createDepartmentWithAnOnlineAgent();
+				department = localDepartment;
+
+				const { room: localOpenRoom } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department._id,
+				});
+				openRoom = localOpenRoom;
+				const { room: localCloseRoom } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department._id,
+				});
+				closeRoom = localCloseRoom;
+				await closeOmnichannelRoom(closeRoom._id);
+			});
+			it('should return only rooms in the asc order', async () => {
+				const { body } = await request
+					.get(api('livechat/rooms'))
+					.query({ sort: JSON.stringify({ open: 1 }), departmentId: department._id })
+					.set(credentials)
+					.expect(200);
+
+				expect(body.rooms.length).to.be.equal(2);
+				expect(body.rooms[0]._id).to.be.equal(closeRoom._id);
+				expect(body.rooms[1]._id).to.be.equal(openRoom._id);
+			});
+			it('should return only rooms in the desc order', async () => {
+				const { body } = await request
+					.get(api('livechat/rooms'))
+					.query({ sort: JSON.stringify({ open: -1 }), departmentId: department._id })
+					.set(credentials)
+					.expect(200);
+
+				expect(body.rooms.length).to.be.equal(2);
+				expect(body.rooms[0]._id).to.be.equal(openRoom._id);
+				expect(body.rooms[1]._id).to.be.equal(closeRoom._id);
+			});
 		});
 	});
 
@@ -417,7 +540,7 @@ describe('LIVECHAT - rooms', function () {
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
 				// Wait for the pdf to be generated
-				await sleep(2000);
+				await sleep(3000);
 
 				const latestRoom = await getLivechatRoomInfo(roomId);
 				expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
@@ -1696,7 +1819,7 @@ describe('LIVECHAT - rooms', function () {
 		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(_id);
+			await closeOmnichannelRoom(_id);
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
@@ -1709,7 +1832,7 @@ describe('LIVECHAT - rooms', function () {
 			} = await startANewLivechatRoomAndTakeIt();
 
 			// close room since pdf transcript is only generated for closed rooms
-			await closeOmnichanelRoom(roomId);
+			await closeOmnichannelRoom(roomId);
 
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))

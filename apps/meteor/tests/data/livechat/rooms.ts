@@ -8,10 +8,10 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { updatePermission } from '../permissions.helper';
-import { adminUsername } from '../user';
+import { getSettingValueById, updatePermission, updateSetting } from '../permissions.helper';
+import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
-import type { DummyResponse } from './utils';
+import { DummyResponse, sleep } from './utils';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
@@ -61,26 +61,10 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, agentCredentials?: object): Promise<IOmnichannelRoom> => {
-	return new Promise((resolve, reject) => {
-		request
-			.post(methodCall(`livechat:takeInquiry`))
-			.set(agentCredentials || credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:takeInquiry',
-					params: [roomId, { clientAction: true }],
-					id: '101',
-					msg: 'method',
-				}),
-			})
-			.end((err: Error, res: DummyResponse<IOmnichannelRoom, 'unwrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body);
-			});
-	});
+export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
+    const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
+
+    await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
 };
 
 export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
@@ -277,8 +261,8 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 	});
 };
 
-export const closeOmnichanelRoom = async (roomId: string): Promise<void> => {
-	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200);
+export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Promise<void> => {
+	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags } }).expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (
@@ -300,13 +284,38 @@ export const bulkCreateLivechatRooms = async (
 	return rooms;
 };
 
-export const startANewLivechatRoomAndTakeIt = async (): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
-	const visitor = await createVisitor();
+export const startANewLivechatRoomAndTakeIt = async ({
+    departmentId,
+    agent
+}: {
+    departmentId?: string;
+    agent?: IUserCredentialsHeader;
+} = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+
+    const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
+    let routingMethodChanged = false;
+    if (currentRoutingMethod !== 'Manual_Selection') {
+        await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+
+        // wait for routing algorithm to stop
+        await sleep(1000);
+    }
+
+
+	const visitor = await createVisitor(departmentId);
 	const room = await createLivechatRoom(visitor.token);
 	const { _id: roomId } = room;
 	const inq = await fetchInquiry(roomId);
-	await takeInquiry(inq._id);
+	await takeInquiry(inq._id, agent);
 	await sendMessage(roomId, 'test message', visitor.token);
+
+
+    if (routingMethodChanged) {
+        await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
+
+        // wait for routing algorithm to start
+        await sleep(1000);
+    }
 
 	return { room, visitor };
 };
