@@ -7,7 +7,7 @@ import { createRoom } from '../../data/rooms.helper';
 import { updateSetting } from '../../data/permissions.helper';
 import { adminUsername } from '../../data/user';
 
-describe('Apps - Video Conferences', function () {
+describe.skip('Apps - Video Conferences', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));

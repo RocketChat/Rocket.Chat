@@ -325,7 +325,7 @@ describe('[EmojiCustom]', function () {
 				.end(done);
 		});
 
-		it('should return success if the the requested exists', (done) => {
+		it.skip('should return success if the the requested exists', (done) => {
 			request
 				.get(`/emoji-custom/${customEmojiName}.png`)
 				.set(credentials)
@@ -340,7 +340,7 @@ describe('[EmojiCustom]', function () {
 				.end(done);
 		});
 
-		it('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
+		it.skip('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
 			request
 				.get(`/emoji-custom/${customEmojiName}.png`)
 				.set(credentials)

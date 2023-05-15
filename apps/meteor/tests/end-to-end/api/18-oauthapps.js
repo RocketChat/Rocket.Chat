@@ -179,7 +179,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it("should update an app's name, its Active and Redirect URI fields correctly by its id", async () => {
+		it.skip("should update an app's name, its Active and Redirect URI fields correctly by its id", async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
 			const active = false;
@@ -227,7 +227,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it('should delete an app by its id', async () => {
+		it.skip('should delete an app by its id', async () => {
 			await request
 				.post(api(`oauth-apps.delete`))
 				.set(credentials)

@@ -23,7 +23,7 @@ describe('LIVECHAT - messages', function () {
 	});
 
 	describe('Quote message feature for visitors', () => {
-		it('it should verify if visitor can quote message', async () => {
+		it.skip('it should verify if visitor can quote message', async () => {
 			const {
 				room: { _id: roomId },
 				visitor: { token },

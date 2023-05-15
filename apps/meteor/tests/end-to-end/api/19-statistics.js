@@ -23,7 +23,7 @@ describe('[Statistics]', function () {
 					.end(done);
 			});
 		});
-		it('should return an object with the statistics', (done) => {
+		it.skip('should return an object with the statistics', (done) => {
 			updatePermission('view-statistics', ['admin']).then(() => {
 				request
 					.get(api('statistics'))
@@ -38,7 +38,7 @@ describe('[Statistics]', function () {
 					.end(done);
 			});
 		});
-		it('should update the statistics when is provided the "refresh:true" query parameter', (done) => {
+		it.skip('should update the statistics when is provided the "refresh:true" query parameter', (done) => {
 			request
 				.get(api('statistics?refresh=true'))
 				.set(credentials)

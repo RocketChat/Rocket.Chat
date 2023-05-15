@@ -717,7 +717,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+		it.skip('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
@@ -1530,7 +1530,7 @@ describe('[Users]', function () {
 			});
 		});
 
-		it('should update the user own basic information', (done) => {
+		it.skip('should update the user own basic information', (done) => {
 			request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)

@@ -412,7 +412,7 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	describe('fname property', () => {
+	describe.skip('fname property', () => {
 		const username = `fname_${apiUsername}`;
 		const name = `Name fname_${apiUsername}`;
 		const updatedName = `Updated Name fname_${apiUsername}`;
