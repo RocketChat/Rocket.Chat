@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import { addMigration } from '../../lib/migrations';
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
-
-addMigration({
-	version: 295,
-	async up() {
-		await upsertPermissions();
-=======
 import { Settings } from '@rocket.chat/models';
 import type { ISetting } from '@rocket.chat/core-typings';
 
@@ -45,6 +36,5 @@ addMigration({
 				`The value of the setting 'CROWD background synchronization interval' has changed from "${crowdSyncInterval.value}" to "${newCrowdDefault}". Please review your settings.`,
 			);
 		}
->>>>>>> develop
 	},
 });
