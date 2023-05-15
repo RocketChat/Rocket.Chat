@@ -7,7 +7,8 @@ import { isSetNotNull } from './function-isSet';
 import { LegacyRoomManager } from '../../../ui-utils/client';
 import { emoji, updateRecent } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
-import { APIClient, getURL } from '../../../utils/client';
+import { getURL } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 export const getEmojiUrlFromName = function (name, extension) {
 	if (name == null) {
@@ -180,7 +181,7 @@ Meteor.startup(() =>
 		try {
 			const {
 				emojis: { update: emojis },
-			} = await APIClient.get('/v1/emoji-custom.list');
+			} = await sdk.rest.get('/v1/emoji-custom.list');
 
 			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
 			for (const currentEmoji of emojis) {
