@@ -619,9 +619,10 @@ jobs:
           done
 
           echo "::endgroup::"
-          
+
   trigger-dependent-workflows:
     runs-on: ubuntu-latest
+    if: github.event_name == 'release'
     needs:
       - services-docker-image-publish
       - docker-image-publish
@@ -633,4 +634,3 @@ jobs:
           event-type: new_release
           repository: RocketChat/Release.Distributions
           client-payload: '{"tag": "${{ github.ref_name }}"}'
-

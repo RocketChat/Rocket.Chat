@@ -16,14 +16,24 @@ import type {
 	IOmnichannelCannedResponse,
 	IIntegrationHistory,
 	IInquiry,
+	IUserDataEvent,
 } from '@rocket.chat/core-typings';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
-	'roles': [{ key: 'roles'; args: [IRole] }];
+	'roles': [
+		{
+			key: 'roles';
+			args: [
+				IRole & {
+					type: 'inserted' | 'updated' | 'removed' | 'changed';
+				},
+			];
+		},
+	];
 
 	'notify-room': [
-		{ key: `${string}/user-activity`; args: [username: string, activities: string] },
+		{ key: `${string}/user-activity`; args: [username: string, activities: string[]] },
 		{ key: `${string}/typing`; args: [username: string, activities: string] },
 		{
 			key: `${string}/deleteMessageBulk`;
@@ -31,26 +41,22 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
-		/* @deprecated over videoconf*/
-		{ key: `${string}/${string}`; args: [id: string] },
 		{ key: `${string}/videoconf`; args: [id: string] },
+		/* @deprecated over videoconf*/
+		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
 	'notify-all': [
-		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
-		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
-		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
-		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 	];
 
 	'notify-user': [
-		{ key: `${string}/rooms-changed`; args: [IRoom] },
-		{ key: `${string}/subscriptions-changed`; args: [ISubscription] },
+		{ key: `${string}/rooms-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', IRoom] },
+		{ key: `${string}/subscriptions-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', ISubscription] },
+
 		{ key: `${string}/message`; args: [IMessage] },
 		{ key: `${string}/force_logout`; args: [] },
 		{
@@ -66,20 +72,73 @@ export interface StreamerEvents {
 			key: `${string}/video-conference`;
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
 		},
-		{ key: `${string}/userData`; args: [unknown] },
+		{ key: `${string}/userData`; args: [IUserDataEvent] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
 		{ key: `${string}/webrtc`; args: [unknown] },
-		{ key: `${string}/otr`; args: [unknown] },
+		{
+			key: `${string}/otr`;
+			args: [
+				'handshake' | 'acknowledge' | 'deny' | 'end',
+				{
+					roomId: IRoom['_id'];
+					userId: IUser['_id'];
+				},
+			];
+		},
 	];
 
-	'importers': [{ key: 'progress'; args: [{ rate: number /* count: { completed: number; total: number } */ }] }];
+	'importers': [
+		{
+			key: 'progress';
+			args: [
+				{
+					step:
+						| 'importer_new'
+						| 'importer_uploading'
+						| 'importer_downloading_file'
+						| 'importer_file_loaded'
+						| 'importer_preparing_started'
+						| 'importer_preparing_users'
+						| 'importer_preparing_channels'
+						| 'importer_preparing_messages'
+						| 'importer_user_selection'
+						| 'importer_importing_started'
+						| 'importer_importing_users'
+						| 'importer_importing_channels'
+						| 'importer_importing_messages'
+						| 'importer_importing_files'
+						| 'importer_finishing'
+						| 'importer_done'
+						| 'importer_import_failed'
+						| 'importer_import_cancelled';
+					rate: number;
+					key?: string;
+					name?: string;
+					count?: { completed: number; total: number };
+				},
+			];
+		},
+	];
 
 	'notify-logged': [
+		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
 
-		{ key: `${string}/otr`; args: [unknown] },
+		{
+			key: `${string}/otr`;
+			args: [
+				'handshake' | 'acknowledge' | 'deny' | 'end',
+				{
+					roomId: IRoom['_id'];
+					userId: IUser['_id'];
+				},
+			];
+		},
 		{ key: `${string}/webrtc`; args: [unknown] },
 
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
@@ -109,9 +168,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
-		{ key: 'updateAvatar'; args: [{ username: IUser['username']; avatarETag: IUser['avatarETag'] }] },
-		{ key: 'voip.statuschanged'; args: [boolean] },
-		{ key: 'omnichannel.priority-changed'; args: [{ id: 'added' | 'removed' | 'changed'; name: string }] },
+		{ key: 'updateAvatar'; args: [{ username: IUser['username']; etag: IUser['avatarETag'] }] },
 	];
 
 	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
@@ -124,7 +181,16 @@ export interface StreamerEvents {
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
 		},
 		{ key: `${string}/webrtc`; args: unknown[] },
-		{ key: `${string}/otr`; args: unknown[] },
+		{
+			key: `${string}/otr`;
+			args: [
+				'handshake' | 'acknowledge' | 'deny' | 'end',
+				{
+					roomId: IRoom['_id'];
+					userId: IUser['_id'];
+				},
+			];
+		},
 		{ key: `${string}/userData`; args: unknown[] },
 	];
 
@@ -185,6 +251,7 @@ export interface StreamerEvents {
 
 	'user-presence': [{ key: string; args: [unknown] }];
 
+	// TODO: rename to 'integration-history'
 	'integrationHistory': [
 		{
 			key: string;
@@ -268,3 +335,5 @@ export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>>
 }
 	? StreamerConfig<N, K>['args']
 	: never;
+
+export type StreamerCallback<N extends StreamNames, K extends StreamKeys<N>> = (...args: StreamerCallbackArgs<N, K>) => void;

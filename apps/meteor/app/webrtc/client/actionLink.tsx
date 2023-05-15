@@ -31,5 +31,5 @@ actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
 		return;
 	}
 	await APIClient.put(`/v1/livechat/webrtc.call/${message._id}`, { rid: _id, status: 'ended' });
-	Notifications.notifyRoom(_id, 'webrtc', 'callStatus', { callStatus: 'ended' });
+	Notifications.notifyRoom(_id, 'webrtc' as any, 'callStatus', { callStatus: 'ended' });
 });

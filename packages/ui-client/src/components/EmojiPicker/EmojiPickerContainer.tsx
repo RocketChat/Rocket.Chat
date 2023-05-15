@@ -14,7 +14,6 @@ const EmojiPickerContainer = forwardRef<HTMLElement, Omit<AllHTMLAttributes<HTML
 			ref={ref}
 			height='x480'
 			bg='light'
-			pbe='none'
 			borderRadius={4}
 			elevation='2'
 			display='flex'

@@ -47,6 +47,7 @@ export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
+export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
