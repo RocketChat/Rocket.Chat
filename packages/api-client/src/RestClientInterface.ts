@@ -83,5 +83,5 @@ export interface RestClientInterface {
 
 	use(middleware: Middleware<RestClientInterface['send']>): void;
 
-	send(endpoint: string, method: string, options: Omit<RequestInit, 'method'>): Promise<Response>;
+	send(endpoint: string, method: string, options?: Omit<RequestInit, 'method'>): Promise<Response>;
 }
