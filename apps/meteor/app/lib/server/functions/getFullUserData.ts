@@ -97,5 +97,9 @@ export async function getFullUserDataByIdOrUsername(
 
 	user.canViewAllInfo = canViewAllInfo;
 
+	if (user?.services?.password) {
+		(user.services.password as any) = true;
+	}
+
 	return user;
 }

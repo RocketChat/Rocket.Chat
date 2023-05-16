@@ -517,7 +517,7 @@ export class NotificationsModule {
 		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
 	}
 
-	progressUpdated(progress: { rate: number }): void {
+	progressUpdated(progress: { rate: number; count?: { completed: number; total: number } }): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }
