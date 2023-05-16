@@ -1,4 +1,4 @@
-import type { IRocketChatRecord, IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -20,32 +20,29 @@ Meteor.startup(() => {
 				}
 			});
 
-			Notifications.onLogged(
-				'roles-change',
-				(role: { type: 'added' | 'removed' | 'changed'; _id: IRole['_id']; u: Partial<IUser>; scope: IRole['scope'] }) => {
-					if (role.type === 'added') {
-						if (!role.scope) {
-							UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
-							ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
-						}
-
-						return;
+			Notifications.onLogged('roles-change', (role) => {
+				if (role.type === 'added') {
+					if (!role.scope) {
+						UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
+						ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 					}
 
-					if (role.type === 'removed') {
-						if (!role.scope) {
-							UserRoles.update({ _id: role.u._id }, { $pull: { roles: role._id } });
-							ChatMessage.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-						}
+					return;
+				}
 
-						return;
+				if (role.type === 'removed') {
+					if (!role.scope) {
+						UserRoles.update({ _id: role.u._id }, { $pull: { roles: role._id } });
+						ChatMessage.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 					}
 
-					if (role.type === 'changed') {
-						ChatMessage.update({ roles: role._id }, { $inc: { rerender: 1 } }, { multi: true });
-					}
-				},
-			);
+					return;
+				}
+
+				if (role.type === 'changed') {
+					ChatMessage.update({ roles: role._id }, { $inc: { rerender: 1 } }, { multi: true });
+				}
+			});
 		}
 	});
 });

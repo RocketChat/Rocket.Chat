@@ -15,7 +15,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 	<Box is='main' h='full' display='flex' flexDirection='column' bg='room' {...props}>
 		{header}
 		<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-			<Box display='flex' flexDirection='column' flexGrow={1}>
+			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
 				<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
 					{body}
 				</Box>
