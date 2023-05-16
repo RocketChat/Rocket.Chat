@@ -27,6 +27,8 @@ import type {
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
+	AtLeast,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -53,7 +55,7 @@ export type EventSignatures = {
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
 	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
-	'notify.ephemeralMessage'(uid: string, rid: string, message: IMessage): void;
+	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
 	'notify.webdav'(
 		uid: string,
 		data:
@@ -91,13 +93,12 @@ export type EventSignatures = {
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
-	'user.roleUpdate'(
-		update: {
-			type: 'added' | 'removed' | 'changed';
-		} & IRole & {
-				u?: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
-			},
-	): void;
+	'user.roleUpdate'(update: {
+		type: 'added' | 'removed' | 'changed';
+		_id: string;
+		u?: { _id: IUser['_id']; username: IUser['username']; name?: IUser['name'] };
+		scope?: string;
+	}): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'user.video-conference'(data: {
@@ -189,7 +190,7 @@ export type EventSignatures = {
 					};
 			  },
 	): void;
-	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
+	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: ILivechatInquiryRecord; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
 	'watch.users'(
 		data: {

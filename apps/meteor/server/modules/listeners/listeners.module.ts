@@ -22,7 +22,7 @@ const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
 	updated: 'changed',
 	removed: 'removed',
-};
+} as const;
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
@@ -62,10 +62,16 @@ export class ListenersModule {
 
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
-				...message,
+				u: {
+					_id: 'rocket.cat',
+					username: 'rocket.cat',
+				},
+				private: true,
 				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
+				_updatedAt: new Date(),
+				...message,
 			});
 		});
 
@@ -186,7 +192,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			const type = minimongoChangeMap[clientAction];
+			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
 					_id: inquiry._id,

@@ -16,9 +16,9 @@ import type {
 	VideoConference,
 	IOmnichannelCannedResponse,
 	IIntegrationHistory,
-	IInquiry,
 	IUserDataEvent,
 	IUserStatus,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -38,7 +38,7 @@ export interface StreamerEvents {
 
 	'notify-room': [
 		{ key: `${string}/user-activity`; args: [username: string, activities: string[]] },
-		{ key: `${string}/typing`; args: [username: string, activities: string] },
+		{ key: `${string}/typing`; args: [username: string, typing: boolean] },
 		{
 			key: `${string}/deleteMessageBulk`;
 			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
@@ -223,13 +223,12 @@ export interface StreamerEvents {
 				{
 					type: 'added' | 'removed' | 'changed';
 					_id: IRole['_id'];
-					u?: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
-					scope?: IRoom['_id'];
+					u?: { _id: IUser['_id']; username: IUser['username']; name?: IUser['name'] };
+					scope?: string;
 				},
 			];
 		},
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
-		{ key: 'Users:Deleted'; args: [Pick<IUser, '_id'>] },
 		{ key: 'voip.statuschanged'; args: [boolean] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
@@ -270,35 +269,6 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: `${string}/userData`; args: unknown[] },
-	];
-
-	'apps': [
-		{ key: 'app/added'; args: [string] },
-		{ key: 'app/removed'; args: [string] },
-		{ key: 'app/updated'; args: [string] },
-		{
-			key: 'app/statusUpdate';
-			args: [
-				{
-					appId: string;
-					status: AppStatus;
-				},
-			];
-		},
-		{
-			key: 'app/settingUpdated';
-			args: [
-				{
-					appId: string;
-					setting: AppsSetting;
-				},
-			];
-		},
-		{ key: 'command/added'; args: [string] },
-		{ key: 'command/disabled'; args: [string] },
-		{ key: 'command/updated'; args: [string] },
-		{ key: 'command/removed'; args: [string] },
-		{ key: 'actions/changed'; args: [] },
 	];
 
 	'livechat-room': [
@@ -359,7 +329,7 @@ export interface StreamerEvents {
 								_createdAt?: Date | undefined;
 							},
 				  ]
-				| [{ type: 'changed' } & IOmnichannelCannedResponse];
+				| [{ type: 'changed' } & IOmnichannelCannedResponse, { agentsId: string }];
 		},
 	];
 
@@ -368,16 +338,16 @@ export interface StreamerEvents {
 			key: 'public';
 			args: [
 				{
-					type: string;
-				} & IInquiry,
+					type: 'added' | 'removed' | 'changed';
+				} & ILivechatInquiryRecord,
 			];
 		},
 		{
 			key: `department/${string}`;
 			args: [
 				{
-					type: string;
-				} & IInquiry,
+					type: 'added' | 'removed' | 'changed';
+				} & ILivechatInquiryRecord,
 			];
 		},
 		{
@@ -390,8 +360,70 @@ export interface StreamerEvents {
 			];
 		},
 	];
-	'apps-engine': [];
-	'local': [];
+
+	'apps': [
+		{ key: 'app/added'; args: [string] },
+		{ key: 'app/removed'; args: [string] },
+		{ key: 'app/updated'; args: [string] },
+		{
+			key: 'app/statusUpdate';
+			args: [
+				{
+					appId: string;
+					status: AppStatus;
+				},
+			];
+		},
+		{
+			key: 'app/settingUpdated';
+			args: [
+				{
+					appId: string;
+					setting: AppsSetting;
+				},
+			];
+		},
+		{ key: 'command/added'; args: [string] },
+		{ key: 'command/disabled'; args: [string] },
+		{ key: 'command/updated'; args: [string] },
+		{ key: 'command/removed'; args: [string] },
+		{ key: 'actions/changed'; args: [] },
+	];
+
+	'apps-engine': [
+		{ key: 'app/added'; args: [string] },
+		{ key: 'app/removed'; args: [string] },
+		{ key: 'app/updated'; args: [string] },
+		{
+			key: 'app/statusUpdate';
+			args: [
+				{
+					appId: string;
+					status: AppStatus;
+				},
+			];
+		},
+		{
+			key: 'app/settingUpdated';
+			args: [
+				{
+					appId: string;
+					setting: AppsSetting;
+				},
+			];
+		},
+		{ key: 'command/added'; args: [string] },
+		{ key: 'command/disabled'; args: [string] },
+		{ key: 'command/updated'; args: [string] },
+		{ key: 'command/removed'; args: [string] },
+		{ key: 'actions/changed'; args: [] },
+	];
+	'local': [
+		{
+			key: 'broadcast';
+			args: any[];
+		},
+	];
 }
 
 export type StreamNames = keyof StreamerEvents;

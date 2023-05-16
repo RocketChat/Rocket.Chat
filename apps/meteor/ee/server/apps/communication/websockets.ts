@@ -2,7 +2,6 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
 import { api } from '@rocket.chat/core-services';
 
@@ -15,13 +14,18 @@ export { AppEvents };
 export class AppServerListener {
 	private orch: AppServerOrchestrator;
 
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received;
 
-	constructor(orch: AppServerOrchestrator, engineStreamer: IStreamer, clientStreamer: IStreamer, received: Map<any, any>) {
+	constructor(
+		orch: AppServerOrchestrator,
+		engineStreamer: IStreamer<'apps-engine'>,
+		clientStreamer: IStreamer<'apps'>,
+		received: Map<any, any>,
+	) {
 		this.orch = orch;
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
@@ -67,8 +71,8 @@ export class AppServerListener {
 		}
 	}
 
-	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: ISetting }): Promise<void> {
-		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`, {
+	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: AppsSetting }): Promise<void> {
+		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`, {
 			appId,
 			setting,
 			when: new Date(),
@@ -77,7 +81,7 @@ export class AppServerListener {
 			.getManager()!
 			.getSettingsManager()
 			.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
+		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId, setting });
 	}
 
 	async onAppUpdated(appId: string): Promise<void> {
@@ -125,9 +129,9 @@ export class AppServerListener {
 }
 
 export class AppServerNotifier {
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received: Map<any, any>;
 
@@ -173,8 +177,8 @@ export class AppServerNotifier {
 	}
 
 	async appSettingsChange(appId: string, setting: AppsSetting): Promise<void> {
-		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`)) {
-			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`);
+		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`)) {
+			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`);
 			return;
 		}
 
