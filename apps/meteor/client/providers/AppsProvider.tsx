@@ -156,34 +156,16 @@ const AppsProvider: FC = ({ children }) => {
 		reload: async () => undefined,
 	});
 
-	const [privateAppsState, dispatchPrivateApps] = useReducer<
-		Reducer<
-			AsyncState<{ apps: App[] }> & {
-				reload: () => Promise<void>;
-			},
-			Action
-		>
-	>(reducer, {
-		phase: AsyncStatePhase.LOADING,
-		value: undefined,
-		error: undefined,
-		reload: async () => undefined,
-	});
-
 	const isAdminUser = usePermission('manage-apps');
 
 	const fetch = useCallback(async (isAdminUser?: string): Promise<void> => {
 		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
 		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
-		dispatchPrivateApps({ type: 'request', reload: async () => undefined });
 
-		let allInstalledApps: App[] = [];
 		let installedApps: App[] = [];
 		let marketplaceApps: App[] = [];
-		let privateApps: App[] = [];
 		let marketplaceError = false;
 		let installedAppsError = false;
-		let privateAppsError = false;
 
 		try {
 			marketplaceApps = (await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
@@ -197,7 +179,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		try {
-			allInstalledApps = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
+			installedApps = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
@@ -212,32 +194,8 @@ const AppsProvider: FC = ({ children }) => {
 			installedAppsError = true;
 		}
 
-		try {
-			installedApps = allInstalledApps.filter((app: App) => !app.private);
-		} catch (e) {
-			dispatchInstalledApps({
-				type: 'failure',
-				error: e instanceof Error ? e : new Error(String(e)),
-				reload: fetch,
-			});
-			installedAppsError = true;
-		}
-
-		try {
-			privateApps = allInstalledApps.filter((app: App) => app.private);
-		} catch (e) {
-			dispatchPrivateApps({
-				type: 'failure',
-				error: e instanceof Error ? e : new Error(String(e)),
-				reload: fetch,
-			});
-
-			privateAppsError = true;
-		}
-
 		const installedAppsData: App[] = [];
 		const marketplaceAppsData: App[] = [];
-		const privateAppsData: App[] = [];
 
 		if (!marketplaceError) {
 			marketplaceApps.forEach((app) => {
@@ -287,22 +245,10 @@ const AppsProvider: FC = ({ children }) => {
 				apps: installedAppsData,
 			});
 		}
-
-		if (!privateAppsError) {
-			if (privateApps.length > 0) {
-				privateAppsData.push(...privateApps);
-			}
-
-			dispatchPrivateApps({
-				type: 'success',
-				reload: fetch,
-				apps: privateAppsData,
-			});
-		}
 	}, []);
 
 	const getCurrentData = useMutableCallback(function getCurrentData() {
-		return [marketplaceAppsState, installedAppsState, privateAppsState];
+		return [marketplaceAppsState, installedAppsState];
 	});
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
@@ -311,16 +257,11 @@ const AppsProvider: FC = ({ children }) => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
-			let privateApp: App | undefined;
 
 			invalidateAppsCountQuery();
 
 			try {
 				const app = await AppClientOrchestratorInstance.getApp(appId);
-
-				if (app.private) {
-					privateApp = app;
-				}
 
 				installedApp = app;
 			} catch (error: any) {
@@ -334,7 +275,7 @@ const AppsProvider: FC = ({ children }) => {
 				handleAPIError(error);
 			}
 
-			const [, installedApps, privateApps] = getCurrentData();
+			const [, installedApps] = getCurrentData();
 
 			if (marketplaceApp !== undefined) {
 				const { status, version, licenseValidation } = installedApp;
@@ -380,38 +321,6 @@ const AppsProvider: FC = ({ children }) => {
 				return;
 			}
 
-			if (privateApp !== undefined) {
-				const { status, version } = privateApp;
-
-				const record = {
-					...privateApp,
-					success: true,
-					installed: true,
-					status,
-					version,
-				};
-
-				if (privateApps.value) {
-					if (privateApps.value.apps.some((app) => app.id === appId)) {
-						dispatchPrivateApps({
-							type: 'update',
-							app: record,
-							reload: fetch,
-						});
-						return;
-					}
-					dispatchPrivateApps({
-						type: 'success',
-						apps: [...privateApps.value.apps, record],
-						reload: fetch,
-					});
-					return;
-				}
-
-				dispatchPrivateApps({ type: 'success', apps: [record], reload: fetch });
-				return;
-			}
-
 			// TODO: Reevaluate the necessity of this dispatch
 			dispatchInstalledApps({ type: 'update', app: installedApp, reload: fetch });
 		};
@@ -433,14 +342,6 @@ const AppsProvider: FC = ({ children }) => {
 
 					if (!app) {
 						return;
-					}
-
-					if (app.private) {
-						dispatchPrivateApps({
-							type: 'delete',
-							appId,
-							reload: fetch,
-						});
 					}
 
 					dispatchMarketplaceApps({
@@ -483,17 +384,6 @@ const AppsProvider: FC = ({ children }) => {
 						reload: fetch,
 					});
 
-					if (app.private) {
-						dispatchPrivateApps({
-							type: 'update',
-							app: {
-								...app,
-								status,
-							},
-							reload: fetch,
-						});
-					}
-
 					dispatchMarketplaceApps({
 						type: 'update',
 						app: {
@@ -509,16 +399,13 @@ const AppsProvider: FC = ({ children }) => {
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
 				dispatchInstalledApps({ type: 'invalidate', appId, reload: fetch });
 				dispatchMarketplaceApps({ type: 'invalidate', appId, reload: fetch });
-				dispatchPrivateApps({ type: 'invalidate', appId, reload: fetch });
 			},
 		};
 		const unregisterListeners = registerListeners(listeners);
-		try {
-			fetch(isAdminUser ? 'true' : 'false');
-		} finally {
-			// eslint-disable-next-line no-unsafe-finally
-			return unregisterListeners;
-		}
+
+		fetch(isAdminUser ? 'true' : 'false');
+
+		return unregisterListeners;
 	}, [fetch, getCurrentData, invalidateAppsCountQuery, isAdminUser]);
 
 	return (
@@ -527,7 +414,6 @@ const AppsProvider: FC = ({ children }) => {
 			value={{
 				installedApps: installedAppsState,
 				marketplaceApps: marketplaceAppsState,
-				privateApps: privateAppsState,
 				reload: fetch,
 			}}
 		/>

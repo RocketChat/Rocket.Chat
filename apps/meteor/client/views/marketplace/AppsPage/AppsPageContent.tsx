@@ -24,7 +24,7 @@ import PrivateEmptyState from './PrivateEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
-	const { marketplaceApps, installedApps, privateApps } = useAppsResult();
+	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
 	const reload = useAppsReload();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -40,7 +40,6 @@ const AppsPageContent = (): ReactElement => {
 	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
 	const isRequested = context === 'requested';
-	const isPrivate = context === 'private';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -81,12 +80,8 @@ const AppsPageContent = (): ReactElement => {
 			return marketplaceApps;
 		}
 
-		if (isPrivate) {
-			return privateApps;
-		}
-
 		return installedApps;
-	}, [isMarketplace, isEnterprise, isRequested, isPrivate, installedApps, marketplaceApps, privateApps]);
+	}, [isMarketplace, isEnterprise, isRequested, installedApps, marketplaceApps]);
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
@@ -173,7 +168,7 @@ const AppsPageContent = (): ReactElement => {
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}
-					appsResult={appsResult}
+					appsResult={appsResult.value}
 					itemsPerPage={itemsPerPage}
 					current={current}
 					onSetItemsPerPage={onSetItemsPerPage}

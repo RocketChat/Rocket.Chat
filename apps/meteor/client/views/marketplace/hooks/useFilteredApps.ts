@@ -114,6 +114,14 @@ export const useFilteredApps = ({
 			filtered = apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed);
 		}
 
+		if (context && context === 'private') {
+			filtered = apps.filter((app) => 'private' in app);
+		}
+
+		if (context && context === 'installed') {
+			filtered = apps.filter((app) => !('private' in app));
+		}
+
 		const total = filtered.length;
 		const offset = current > total ? 0 : current;
 		const end = current + itemsPerPage;
