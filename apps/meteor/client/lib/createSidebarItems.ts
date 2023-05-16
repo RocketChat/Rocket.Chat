@@ -1,7 +1,7 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 
-type Item = {
+export type Item = {
 	i18nLabel: string;
 	href?: string;
 	icon?: IconProps['name'];
@@ -11,10 +11,10 @@ type Item = {
 	pathGroup?: string;
 	name?: string;
 	externalUrl?: boolean;
-	divider?: boolean;
 	badge?: () => ReactElement;
 };
-export type SidebarItem = Item;
+export type SidebarDivider = { divider: boolean; i18nLabel: string };
+export type SidebarItem = Item | SidebarDivider;
 export const isSidebarItem = (item: SidebarItem): item is Item => !('divider' in item);
 
 export const createSidebarItems = (
