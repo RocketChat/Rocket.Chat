@@ -222,7 +222,7 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 };
 
 // Sends a message using sendMessage method from agent
-export const sendAgentMessage = (roomId: string): Promise<IMessage> => {
+export const sendAgentMessage = (roomId: string, msg?: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall('sendMessage'))
@@ -230,16 +230,16 @@ export const sendAgentMessage = (roomId: string): Promise<IMessage> => {
 			.send({
 				message: JSON.stringify({
 					method: 'sendMessage',
-					params: [{ rid: roomId, msg: faker.lorem.sentence() }],
+					params: [{ rid: roomId, msg: msg || faker.lorem.sentence() }],
 					id: 'id',
 					msg: 'method',
 				}),
 			})
-			.end((err: Error, res: DummyResponse<IMessage, 'wrapped'>) => {
+			.end((err: Error, res: any) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(res.body.result);
+				resolve(JSON.parse(res.body.message).result);
 			});
 	});
 };
