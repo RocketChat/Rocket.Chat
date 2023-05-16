@@ -24,6 +24,7 @@ module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
 	spec: [
+		'lib/callbacks.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',

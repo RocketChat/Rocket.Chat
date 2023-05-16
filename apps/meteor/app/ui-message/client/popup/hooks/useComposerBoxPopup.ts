@@ -73,6 +73,11 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		if (!popup) {
 			return;
 		}
+
+		if (popup?.preview && suspended) {
+			setFocused(undefined);
+			return;
+		}
 		setFocused((focused) => {
 			const sortedItems = items
 				.filter((item) => item.isSuccess)
@@ -80,7 +85,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
-	}, [items, popup]);
+	}, [items, popup, suspended]);
 
 	const select = useMutableCallback((item: T) => {
 		if (!popup) {

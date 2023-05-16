@@ -314,6 +314,19 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+
+		const query = {
+			'username': expression,
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByLDAPId(id, attribute = undefined) {
 		const query = {
 			'services.ldap.id': id,
@@ -1293,6 +1306,12 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
+
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		const username = {
@@ -1880,6 +1899,17 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByEmailAddress(emailAddress, options) {
 		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
+
+		return this.findOne(query, options);
+	}
+
+	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+		const query = {
+			'email.address': emailAddress.trim().toLowerCase(),
+			'services.ldap': {
+				$exists: false,
+			},
+		};
 
 		return this.findOne(query, options);
 	}
@@ -2665,10 +2695,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 
