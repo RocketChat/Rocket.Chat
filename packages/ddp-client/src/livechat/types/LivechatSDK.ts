@@ -24,6 +24,6 @@ export interface LivechatClient {
 
 	onAgentChange(rid: string, cb: (args: LivechatRoomEvents<'agentData'>) => void): () => void;
 	onAgentStatusChange(rid: string, cb: (args: LivechatRoomEvents<'agentStatus'>) => void): () => void;
-	onQueuePositionChange(rid: string, cb: (args: LivechatRoomEvents<'queueData'>) => void): () => void;
+	onQueuePositionChange(rid: string, cb: (args: LivechatRoomEvents<'queueData' | 'agentData'>) => void): () => void;
 	onVisitorChange(rid: string, cb: (data: LivechatRoomEvents<'visitorData'>) => void): () => void;
 }
