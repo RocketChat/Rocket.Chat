@@ -21,4 +21,4 @@ jobs:
           JIRA_PROJECT: PVUL
           JIRA_ISSUE_TYPE: Task
           JIRA_WATCHERS: igor.rincon@rocket.chat,bruno.cestari@rocket.chat,giovani.salvador@rocket.chat
-          JIRA_RESTRICTED_COMMENT_ROLE: Security
+          JIRA_RESTRICTED_COMMENT_ROLE: Writer
