@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -11,7 +12,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -76,6 +77,16 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
+const getComposerPlaceholder = (placeholder: string, room: IRoom) => {
+	const roomName = roomCoordinator.getRoomName(room?.t, room);
+
+	if (isDirectMessageRoom(room)) {
+		return `${placeholder} @${roomName}`;
+	}
+
+	return `${placeholder} #${roomName}`;
+};
+
 type MessageBoxProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
@@ -107,15 +118,17 @@ const MessageBox = ({
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
+	const t = useTranslation();
+	const room = useUserRoom(rid);
+	const chat = useChat();
+
+	const composerPlaceholder = room && getComposerPlaceholder(t('Message'), room);
+
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
-
-	const t = useTranslation();
-
-	const chat = useChat();
 
 	if (!chat) {
 		throw new Error('Chat context not found');
@@ -373,12 +386,12 @@ const MessageBox = ({
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
-					aria-label={t('Message')}
+					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
 					onChange={setTyping}
 					style={textAreaStyle}
-					placeholder={t('Message')}
+					placeholder={composerPlaceholder}
 					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
