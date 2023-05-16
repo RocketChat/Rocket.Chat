@@ -5385,9 +5385,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.36.2":
-  version: 1.36.2
-  resolution: "@rocket.chat/apps-engine@npm:1.36.2"
+"@rocket.chat/apps-engine@npm:1.36.3":
+  version: 1.36.3
+  resolution: "@rocket.chat/apps-engine@npm:1.36.3"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -5395,8 +5395,8 @@ __metadata:
     semver: ^5.7.1
     stack-trace: 0.0.10
     uuid: ^3.4.0
-    vm2: ^3.9.17
-  checksum: a7aa31ea36cd03abe345af4b8c5879d8058772dea7c546ec5c7639857baf30e15ec9ddfd48aefc59a23406ce8df1be61a31a29b8f95bea90ede1defa0fc1dec2
+    vm2: ^3.9.19
+  checksum: 375f400c746442f69daca82f3492e8110a87491f2f0c156fbeee238455386edd0b23ccab24cdbf7b6666dd12a8c9a6898bb8207da87340345cb04e0551f8b2d7
   languageName: node
   linkType: hard
 
@@ -5446,7 +5446,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": 0.31.22
     "@rocket.chat/message-parser": 0.31.22
@@ -5484,7 +5484,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
@@ -5678,7 +5678,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": 0.31.22
     "@rocket.chat/fuselage-hooks": 0.31.22
@@ -5967,7 +5967,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": 0.31.22
@@ -6383,7 +6383,7 @@ __metadata:
     "@babel/core": ^7.19.1
     "@babel/preset-env": ^7.19.1
     "@babel/preset-typescript": ^7.18.6
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -6410,7 +6410,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": 0.31.22
@@ -23520,7 +23520,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
+  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
   languageName: node
   linkType: hard
 
@@ -30853,7 +30853,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
-    "@rocket.chat/apps-engine": 1.36.2
+    "@rocket.chat/apps-engine": 1.36.3
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/icons": 0.31.22
@@ -35192,6 +35192,18 @@ __metadata:
   bin:
     vm2: bin/vm2
   checksum: 9a03740a40ab2be5e3348a95fb31512da1a3c85318febb07e5299fa103ff05bcd7b6f458211fa38a1281dc27beccd04ff90355fc1d34fe2ee6ca10d0bb8c6f35
+  languageName: node
+  linkType: hard
+
+"vm2@npm:^3.9.19":
+  version: 3.9.19
+  resolution: "vm2@npm:3.9.19"
+  dependencies:
+    acorn: ^8.7.0
+    acorn-walk: ^8.2.0
+  bin:
+    vm2: bin/vm2
+  checksum: fc6cf553134145cd7bb5246985bf242b056e3fb5ea71e2eef6710b2a5d6c6119cc6bc960435ff62480ee82efb43369be8f4db07b6690916ae7d3b2e714f395d8
   languageName: node
   linkType: hard
 
