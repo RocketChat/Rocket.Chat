@@ -539,9 +539,6 @@ describe('LIVECHAT - rooms', function () {
 
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
-				// Wait for the pdf to be generated
-				await sleep(3000);
-
 				const latestRoom = await getLivechatRoomInfo(roomId);
 				expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
 			},

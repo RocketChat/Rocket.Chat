@@ -38,10 +38,11 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
-import { APIClient, getUserAvatarURL } from '../../utils/client';
+import { getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 import { t } from '../../utils/lib/i18n';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 let failedToDecodeKey = false;
 
@@ -131,20 +132,20 @@ class E2E extends Emitter {
 			throw new Error('Failed to encode private key with provided password.');
 		}
 
-		await APIClient.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
 			private_key: encodedPrivateKey,
 		});
 	}
 
 	async acceptSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.acceptSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
 			rid,
 		});
 	}
 
 	async rejectSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
 			rid,
 		});
 	}
@@ -263,7 +264,7 @@ class E2E extends Emitter {
 
 	async loadKeysFromDB(): Promise<void> {
 		try {
-			const { public_key, private_key } = await APIClient.get('/v1/e2e.fetchMyKeys');
+			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
@@ -489,7 +490,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const getQuotedMessage = await APIClient.get('/v1/chat.getMessage', { msgId });
+				const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 				const quotedMessage = getQuotedMessage?.message;
 
 				if (!quotedMessage) {
