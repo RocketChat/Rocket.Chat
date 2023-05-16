@@ -3,7 +3,6 @@ import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
@@ -13,7 +12,6 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
-import { APIClient } from '../../utils/client';
 import { otrSystemMessages } from '../lib/constants';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
 import {
@@ -28,6 +26,8 @@ import {
 	joinEncryptedData,
 } from '../lib/functions';
 import { OtrRoomState } from '../lib/OtrRoomState';
+import { t } from '../../utils/lib/i18n';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -94,7 +94,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
-		void APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
@@ -261,7 +261,7 @@ export class OTRRoom implements IOTRRoom {
 							this.acknowledge();
 
 							if (data.refresh) {
-								await APIClient.post('/v1/chat.otr', {
+								await sdk.rest.post('/v1/chat.otr', {
 									roomId: this._roomId,
 									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 								});
@@ -296,12 +296,12 @@ export class OTRRoom implements IOTRRoom {
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', {
+								title: t('OTR'),
+								children: t('Username_wants_to_start_otr_Do_you_want_to_accept', {
 									username: obj.username,
 								}),
-								confirmText: TAPi18n.__('Yes'),
-								cancelText: TAPi18n.__('No'),
+								confirmText: t('Yes'),
+								cancelText: t('No'),
 								onClose: (): void => closeOrCancelModal(),
 								onCancel: (): void => closeOrCancelModal(),
 								onConfirm: async (): Promise<void> => {
@@ -328,7 +328,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						await APIClient.post('/v1/chat.otr', {
+						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
 						});
@@ -360,9 +360,9 @@ export class OTRRoom implements IOTRRoom {
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_ended_the_OTR_session', { username: obj.username }),
-								confirmText: TAPi18n.__('Ok'),
+								title: t('OTR'),
+								children: t('Username_ended_the_OTR_session', { username: obj.username }),
+								confirmText: t('Ok'),
 								onClose: imperativeModal.close,
 								onConfirm: imperativeModal.close,
 							},
