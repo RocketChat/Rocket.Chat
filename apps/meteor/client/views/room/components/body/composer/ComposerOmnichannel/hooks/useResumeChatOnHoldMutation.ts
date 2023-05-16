@@ -14,11 +14,7 @@ export const useResumeChatOnHoldMutation = (
 
 	return useMutation(
 		async (roomId) => {
-			try {
-				await resumeChatOnHold({ roomId });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
+			await resumeChatOnHold({ roomId });
 		},
 		{
 			...options,
@@ -27,6 +23,9 @@ export const useResumeChatOnHoldMutation = (
 				await queryClient.invalidateQueries(['rooms', rid]);
 				await queryClient.invalidateQueries(['subscriptions', { rid }]);
 				return options?.onSuccess?.(data, rid, context);
+			},
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
 			},
 		},
 	);

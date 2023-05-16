@@ -14,9 +14,6 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
-			if (roomId.trim() === '') {
-				throw new Error('error-invalid-room');
-			}
 
 			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage' | 'servedBy'>;
 
