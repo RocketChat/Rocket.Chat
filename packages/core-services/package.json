@@ -22,7 +22,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.37.4",
+		"@rocket.chat/apps-engine": "1.37.5",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/message-parser": "next",
