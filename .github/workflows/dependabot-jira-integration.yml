@@ -20,4 +20,4 @@ jobs:
           JIRA_USER: igor.rincon@rocket.chat
           JIRA_PROJECT: PVUL
           JIRA_ISSUE_TYPE: Task
-          JIRA_WATCHERS: igor.rincon@rocket.chat,bruno.cestari@rocket.chat,giovani.salvador@rocket.chat
+          JIRA_WATCHERS: igor.rincon@rocket.chat
