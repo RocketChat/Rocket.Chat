@@ -1,7 +1,6 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 import { Settings, Users } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
@@ -23,6 +22,7 @@ import { API } from '../../../../app/api/server';
 import { Info } from '../../../../app/utils/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -420,6 +420,8 @@ export class AppsRestApi {
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
 
+					void orchestrator.getNotifier().appAdded(info.id);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -757,6 +759,8 @@ export class AppsRestApi {
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
 
+					void orchestrator.getNotifier().appUpdated(info.id);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -839,7 +843,7 @@ export class AppsRestApi {
 					try {
 						const msgs: (params: { adminUser: IUser }) => Promise<Partial<IMessage>> = async ({ adminUser }) => {
 							return {
-								msg: TAPi18n.__('App_Request_Admin_Message', {
+								msg: i18n.t('App_Request_Admin_Message', {
 									admin_name: adminUser.name || '',
 									app_name: appName || '',
 									user_name: `@${this.user.username}`,
