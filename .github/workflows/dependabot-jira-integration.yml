@@ -1,0 +1,23 @@
+name: GitHub Security Alerts for Jira
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - security/jira-dependabot-integration
+
+jobs:
+  syncSecurityAlerts: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Sync security alerts to Jira issues"
+        uses: reload/github-security-jira@v1.x
+        env:
+          GH_SECURITY_TOKEN: ${{ GITHUB_TOKEN }}
+          JIRA_TOKEN: ${{ JIRA_KEY_FOR_GITHUB_INTEGRATION }}
+          JIRA_HOST: https://rocketchat.atlassian.net
+          JIRA_USER: igor.rincon@rocket.chat
+          JIRA_PROJECT: PVUL
+          JIRA_ISSUE_TYPE: Task
+          JIRA_WATCHERS: igor.rincon@rocket.chat, bruno.cestari@rocket.chat, giovani.salvador@rocket.chat
