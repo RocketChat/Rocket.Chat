@@ -131,3 +131,5 @@ export * from './ICronHistoryItem';
 
 export * from './migrations/IControl';
 export * from './ICustomOAuthConfig';
+
+export * from './IModerationReport';
