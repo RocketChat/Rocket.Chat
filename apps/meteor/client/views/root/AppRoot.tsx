@@ -28,6 +28,12 @@ const AppRoot = (): ReactElement => (
 				<meta name='msapplication-config' content='images/browserconfig.xml' />
 				<meta property='og:image' content='assets/favicon_512.png' />
 				<meta property='twitter:image' content='assets/favicon_512.png' />
+				<link rel='preconnect' href='https://fonts.googleapis.com' />
+				<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
+				<link
+					href='https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap'
+					rel='stylesheet'
+				/>
 				<link rel='manifest' href='images/manifest.json' />
 				<link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/nocfbnnmjnndkbipkabodnheejiegccf' />
 				<link rel='mask-icon' href='assets/safari_pinned.svg' color='#04436a' />
