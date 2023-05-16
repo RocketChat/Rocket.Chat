@@ -6267,7 +6267,7 @@ __metadata:
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
-    vm2: ^3.9.17
+    vm2: ^3.9.19
     webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.4
@@ -35180,18 +35180,6 @@ __metadata:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: 10a1c50aab54ff8b4c9042c15fc64aefccce8d2fb90c0640403242db0ee7fb269f9b102bdb69cfb435d7ef3180d61fd4fb004a043a12709abaf9056cfd7e039d
-  languageName: node
-  linkType: hard
-
-"vm2@npm:^3.9.17":
-  version: 3.9.17
-  resolution: "vm2@npm:3.9.17"
-  dependencies:
-    acorn: ^8.7.0
-    acorn-walk: ^8.2.0
-  bin:
-    vm2: bin/vm2
-  checksum: 9a03740a40ab2be5e3348a95fb31512da1a3c85318febb07e5299fa103ff05bcd7b6f458211fa38a1281dc27beccd04ff90355fc1d34fe2ee6ca10d0bb8c6f35
   languageName: node
   linkType: hard
 
