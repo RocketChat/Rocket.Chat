@@ -201,10 +201,9 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('validate name is required', async () => {
 			await poContacts.contactInfo.inputName.selectText();
 			await poContacts.contactInfo.inputName.type(' ');
-
-			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
-			await poContacts.contactInfo.btnSave.click();
 			await expect(poContacts.contactInfo.errorMessage(ERROR.nameRequired)).toBeVisible();
+
+			await expect(poContacts.contactInfo.btnSave).not.toBeEnabled();
 		});
 
 		await test.step('edit name', async () => {
