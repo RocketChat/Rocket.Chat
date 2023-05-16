@@ -56,13 +56,20 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showWorkspace = hasAdminPermission;
-	const showApps = hasAccessMarketplacePermission || !!appBoxItems.length;
+	const showApps = hasAccessMarketplacePermission || hasManageAppsPermission || !!appBoxItems.length;
 
 	const onDismiss = useCallback((): void => toggle(false), [toggle]);
 
 	const optionsList = [
 		showAdmin && <AdministrationModelList showWorkspace={showWorkspace} accountBoxItems={adminBoxItems} onDismiss={onDismiss} />,
-		showApps && <AppsModelList appBoxItems={appBoxItems} onDismiss={onDismiss} appsManagementAllowed={hasManageAppsPermission} />,
+		showApps && (
+			<AppsModelList
+				appBoxItems={appBoxItems}
+				onDismiss={onDismiss}
+				appsManagementAllowed={hasManageAppsPermission}
+				showMarketplace={hasAccessMarketplacePermission}
+			/>
+		),
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
 	].filter(Boolean);
 
