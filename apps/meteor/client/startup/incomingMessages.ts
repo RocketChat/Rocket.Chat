@@ -24,12 +24,12 @@ Meteor.startup(() => {
 			ChatMessage.update(
 				{
 					rid: sub.rid,
-					...('ignored' in sub ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
+					...('ignored' in sub && sub.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
 				},
 				{ $unset: { ignored: true } },
 				{ multi: true },
 			);
-			if ('ignored' in sub) {
+			if ('ignored' in sub && sub.ignored) {
 				ChatMessage.update(
 					{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
 					{ $set: { ignored: true } },
