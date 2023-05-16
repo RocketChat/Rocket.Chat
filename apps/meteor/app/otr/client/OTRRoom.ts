@@ -12,7 +12,6 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
-import { APIClient } from '../../utils/client';
 import { otrSystemMessages } from '../lib/constants';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
 import {
@@ -28,6 +27,7 @@ import {
 } from '../lib/functions';
 import { OtrRoomState } from '../lib/OtrRoomState';
 import { t } from '../../utils/lib/i18n';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -94,7 +94,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
-		void APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
@@ -261,7 +261,7 @@ export class OTRRoom implements IOTRRoom {
 							this.acknowledge();
 
 							if (data.refresh) {
-								await APIClient.post('/v1/chat.otr', {
+								await sdk.rest.post('/v1/chat.otr', {
 									roomId: this._roomId,
 									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 								});
@@ -328,7 +328,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						await APIClient.post('/v1/chat.otr', {
+						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
 						});

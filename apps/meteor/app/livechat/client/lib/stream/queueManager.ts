@@ -1,9 +1,8 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
-import { inquiryDataStream } from './inquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { sdk } from '../../../../utils/client/lib/SDKClient';
 
 const departments = new Set();
 
@@ -32,18 +31,18 @@ const updateCollection = (inquiry: ILivechatInquiryWithType) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await APIClient.get('/v1/livechat/inquiries.queuedForUser', {});
+	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {});
 	return inquiries;
 };
 
 const removeListenerOfDepartment = (departmentId: ILivechatDepartment['_id']) => {
-	inquiryDataStream.removeListener(`department/${departmentId}`, updateCollection);
+	sdk.stop('livechat-inquiry-queue-observer', `department/${departmentId}`);
 	departments.delete(departmentId);
 };
 
 const appendListenerToDepartment = (departmentId: ILivechatDepartment['_id']) => {
 	departments.add(departmentId);
-	inquiryDataStream.on(`department/${departmentId}`, updateCollection);
+	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], updateCollection);
 	return () => removeListenerOfDepartment(departmentId);
 };
 const addListenerForeachDepartment = (departments: ILivechatDepartment['_id'][] = []) => {
@@ -55,14 +54,14 @@ const updateInquiries = async (inquiries: ILivechatInquiryRecord[] = []) =>
 	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId: IOmnichannelAgent['_id']) => {
-	const { departments } = await APIClient.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: 'true' });
+	const { departments } = await sdk.rest.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: 'true' });
 	return departments;
 };
 
-const removeGlobalListener = () => inquiryDataStream.removeListener('public', updateCollection);
+const removeGlobalListener = () => sdk.stop('livechat-inquiry-queue-observer', 'public');
 
 const addGlobalListener = () => {
-	inquiryDataStream.on('public', updateCollection);
+	sdk.stream('livechat-inquiry-queue-observer', ['public'], updateCollection);
 	return removeGlobalListener;
 };
 
