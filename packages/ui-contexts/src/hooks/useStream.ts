@@ -1,34 +1,38 @@
-import type { ServerStreamerNames, StreamerEvents } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
+import type { StreamNames, StreamerEvents, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 import { useContext, useMemo } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
-export type ServerStreamFunction<StreamName extends ServerStreamerNames> = (
-	args: StreamerEvents[StreamName],
-	callback: (...args: any) => void,
+// Define a type for a function that can be used to unsubscribe from a stream
+export type ServerStreamFunction<N extends StreamNames, K extends StreamKeys<N>> = (
+	args: K,
+	callback: (...args: StreamerCallbackArgs<N, K>) => void,
 ) => () => void;
 
-export function useStream<StreamName extends string>(
-	streamName: StreamName extends ServerStreamerNames ? never : StreamName,
+// Define a type for the configuration of a stream, based on its name
+type StreamsConfigs<N extends StreamNames> = StreamerEvents[N][number];
+
+// Define a type for the callback function that will be returned by useStream/useSingleStream
+// This type will depend on the type of the stream it subscribes to
+type StreamerCallback<S extends StreamNames, N extends StreamsConfigs<S> = StreamsConfigs<S>> = <E extends N['key']>(
+	eventName: E,
+	cb: (...event: StreamerCallbackArgs<S, E>) => void,
+) => () => void;
+export function useStream<N extends StreamNames>(
+	streamName: N,
 	options?: {
 		retransmit?: boolean;
 		retransmitToSelf?: boolean;
 	},
-): (key: string, cb: (...args: unknown[]) => void) => () => void;
-export function useStream<StreamName extends ServerStreamerNames>(
-	streamName: StreamName,
+): StreamerCallback<N>;
+
+export function useStream(
+	streamName: string,
 	options?: {
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	},
-): StreamerEvents[StreamName];
-export function useStream<StreamName extends ServerStreamerNames>(
-	streamName: StreamName,
-	options?: {
-		retransmit?: boolean | undefined;
-		retransmitToSelf?: boolean | undefined;
-	},
-): StreamerEvents[StreamName] {
+): (eventName: string, callback: (...event: unknown[]) => void) => () => void {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 }
@@ -40,14 +44,20 @@ export function useStream<StreamName extends ServerStreamerNames>(
  * will only subscribe to the `stream + key` only once, but you can still add multiple callbacks
  * to the same path
  */
-
-export function useSingleStream<StreamName extends ServerStreamerNames>(
-	streamName: StreamName,
+export function useSingleStream<N extends StreamNames>(
+	streamName: N,
+	options?: {
+		retransmit?: boolean;
+		retransmitToSelf?: boolean;
+	},
+): StreamerCallback<N>;
+export function useSingleStream<N extends StreamNames>(
+	streamName: N,
 	options?: {
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	},
-): StreamerEvents[StreamName] {
+): (eventName: string, callback: (...event: unknown[]) => void) => () => void {
 	const { getSingleStream } = useContext(ServerContext);
 	return useMemo(() => getSingleStream(streamName, options), [getSingleStream, streamName, options]);
 }

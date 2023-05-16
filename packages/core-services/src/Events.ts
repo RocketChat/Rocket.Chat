@@ -52,7 +52,7 @@ export type EventSignatures = {
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
 	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
-	'notify.updateInvites'(uid: string, data: { invite: IInvite }): void;
+	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'notify.webdav'(
 		uid: string,
