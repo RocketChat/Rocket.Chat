@@ -53,7 +53,7 @@ const EmojiCategoryRow = ({
 				{t(i18n)}
 			</Box>
 			{emojis.list.length > 0 && (
-				<EmojiPickerCategoryWrapper className={[categoryRowStyle, `emoji-category-${categoryKey}`].filter(Boolean).join(' ')}>
+				<EmojiPickerCategoryWrapper className={[categoryRowStyle, `emoji-category-${categoryKey}`].filter(Boolean)}>
 					<>
 						{categoryKey === CUSTOM_CATEGORY &&
 							emojis.list.map(
