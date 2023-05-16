@@ -3008,7 +3008,21 @@ export type OmnichannelEndpoints = {
 			department: ILivechatDepartment | null;
 			agents?: ILivechatDepartmentAgents[];
 		};
-		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
+		PUT: (params: {
+			department: {
+				enabled: boolean;
+				name: string;
+				description?: string | undefined;
+				showOnRegistration: boolean;
+				email: string;
+				showOnOfflineForm: boolean;
+				requestTagBeforeClosingChat?: boolean | undefined;
+				chatClosingTags?: string[] | undefined;
+				fallbackForwardDepartment?: string | undefined;
+				departmentsAllowedToForward?: string[] | undefined;
+			};
+			agents: any[];
+		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};

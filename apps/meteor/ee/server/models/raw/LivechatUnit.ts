@@ -1,4 +1,4 @@
-import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
@@ -69,13 +69,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	async createOrUpdateUnit(
-		_id: string | undefined,
+		_id: string | null,
 		{ name, visibility }: { name: string; visibility: IOmnichannelBusinessUnit['visibility'] },
 		ancestors: string[],
-		monitors: ILivechatUnitMonitor[],
+		monitors: { monitorId: string; username: string }[],
 		departments: { departmentId: string }[],
 	): Promise<Omit<IOmnichannelBusinessUnit, '_updatedAt'>> {
-		monitors = ([] as ILivechatUnitMonitor[]).concat(monitors || []);
+		monitors = ([] as { monitorId: string; username: string }[]).concat(monitors || []);
 		ancestors = ([] as string[]).concat(ancestors || []);
 
 		const record = {

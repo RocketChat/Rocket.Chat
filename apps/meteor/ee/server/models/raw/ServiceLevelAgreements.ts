@@ -37,7 +37,7 @@ export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgre
 
 	async createOrUpdatePriority(
 		{ name, description, dueTimeInMinutes }: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
-		_id?: string,
+		_id: string | null,
 	): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'>> {
 		const record = {
 			name,
