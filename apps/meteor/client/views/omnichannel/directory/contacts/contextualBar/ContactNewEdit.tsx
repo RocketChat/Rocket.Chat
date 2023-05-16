@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
-import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -82,18 +81,15 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	const {
 		register,
-		formState: { errors, isValid: isFormValid, isDirty },
+		formState: { errors, isValid, isDirty },
 		control,
 		setValue,
 		handleSubmit,
-		trigger,
 	} = useForm<ContactFormData>({
-		mode: 'onSubmit',
-		reValidateMode: 'onSubmit',
+		mode: 'onBlur',
+		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
-
-	const isValid = isDirty && isFormValid;
 
 	useEffect(() => {
 		if (!initialUsername) {
@@ -141,9 +137,11 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		setValue('username', user.username || '', { shouldDirty: true });
 	};
 
-	const validate = (fieldName: keyof ContactFormData): (() => void) => withDebouncing({ wait: 500 })(() => trigger(fieldName));
-
 	const handleSave = async (data: ContactFormData): Promise<void> => {
+		if (!isValid) {
+			return;
+		}
+
 		const { name, phone, email, customFields, username, token } = data;
 
 		const payload = {
@@ -182,22 +180,14 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							{...register('email', { validate: isEmailValid, onChange: validate('email') })}
-							error={errors.email?.message}
-							flexGrow={1}
-						/>
+						<TextInput {...register('email', { validate: isEmailValid })} error={errors.email?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.email?.message}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							{...register('phone', { validate: isPhoneValid, onChange: validate('phone') })}
-							error={errors.phone?.message}
-							flexGrow={1}
-						/>
+						<TextInput {...register('phone', { validate: isPhoneValid })} error={errors.phone?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.phone?.message}</Field.Error>
 				</Field>
@@ -209,7 +199,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid} primary>
+					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isDirty} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
