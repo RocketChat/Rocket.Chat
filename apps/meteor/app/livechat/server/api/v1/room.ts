@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
@@ -31,6 +30,7 @@ import { deprecationWarning } from '../../../../api/server/helpers/deprecationWa
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -114,7 +114,7 @@ API.v1.addRoute(
 			}
 
 			const language = rcSettings.get<string>('Language') || 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+			const comment = i18n.t('Closed_by_visitor', { lng: language });
 
 			const options: CloseRoomParams['options'] = {};
 			if (room.servedBy) {
@@ -147,7 +147,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => TAPi18n.__(s, { lng: language });
+					const t = (s: string): string => i18n.t(s, { lng: language });
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {
@@ -351,8 +351,11 @@ API.v1.addRoute(
 			}
 
 			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+			if (!chatForwardedResult) {
+				throw new Error('error-forwarding-chat');
+			}
 
-			return chatForwardedResult ? API.v1.success() : API.v1.failure();
+			return API.v1.success();
 		},
 	},
 );

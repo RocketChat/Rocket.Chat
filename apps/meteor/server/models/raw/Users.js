@@ -314,6 +314,19 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+
+		const query = {
+			'username': expression,
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByLDAPId(id, attribute = undefined) {
 		const query = {
 			'services.ldap.id': id,
@@ -1890,6 +1903,17 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+		const query = {
+			'email.address': emailAddress.trim().toLowerCase(),
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneAdmin(userId, options) {
 		const query = { roles: { $in: ['admin'] }, _id: userId };
 
@@ -2671,10 +2695,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 

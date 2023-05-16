@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { addWebdavAccountByToken } from '../../webdav/server/methods/addWebdavAccount';
 
 Meteor.startup(() => {
 	settings.watch('Webdav_Integration_Enabled', (value) => {
@@ -26,7 +27,7 @@ Meteor.startup(() => {
 						token,
 					};
 					try {
-						await Meteor.runAsUser(user._id, () => Meteor.callAsync('addWebdavAccountByToken', data));
+						await addWebdavAccountByToken(user._id, data);
 					} catch (error) {
 						SystemLogger.error(error);
 					}
