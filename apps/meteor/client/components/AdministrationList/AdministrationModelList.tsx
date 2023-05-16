@@ -7,7 +7,9 @@ import React from 'react';
 
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
+import { useDefaultRoute } from '../../hooks/useDefaultRoute';
 import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
+import { getAdminSidebarItems } from '../../views/admin/sidebarItems';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
@@ -35,7 +37,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
 	};
 
-	const adminRoute = useRoute('admin-index');
+	const adminRoute = useDefaultRoute(getAdminSidebarItems, 'admin-info');
 	const upgradeRoute = useRoute('upgrade');
 	const cloudRoute = useRoute('cloud');
 	const showUpgradeItem = !isLoading && tabType;
@@ -80,7 +82,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 						role='listitem'
 						text={t('Workspace')}
 						onClick={() => {
-							adminRoute.push({ context: '/' });
+							adminRoute.replace();
 							onDismiss();
 						}}
 					/>

@@ -3,11 +3,9 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import { useDefaultRoute } from '../../hooks/useDefaultRoute';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
-import { getAdminSidebarItems } from './sidebarItems';
 
 type AdministrationRouterProps = {
 	children?: ReactNode;
@@ -17,21 +15,17 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const [routeName] = useCurrentRoute();
 
-	const defaultRoute = useDefaultRoute(getAdminSidebarItems, 'admin-info');
 	const upgradeRoute = useRoute('upgrade');
 
 	useEffect(() => {
-		if (isLoading || routeName !== 'admin-index') {
+		if (isLoading || routeName !== 'upgrade') {
 			return;
 		}
 
 		if (tabType) {
 			upgradeRoute.replace({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
-			return;
 		}
-
-		defaultRoute.replace();
-	}, [defaultRoute, upgradeRoute, routeName, tabType, trialEndDate, isLoading]);
+	}, [upgradeRoute, routeName, tabType, trialEndDate, isLoading]);
 
 	return (
 		<AdministrationLayout>
