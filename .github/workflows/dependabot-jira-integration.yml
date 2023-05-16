@@ -14,7 +14,7 @@ jobs:
       - name: "Sync security alerts to Jira issues"
         uses: reload/github-security-jira@v1.x
         env:
-          GH_SECURITY_TOKEN: ${{ GITHUB_TOKEN }}
+          GH_SECURITY_TOKEN: ${{ KEY_OF_GITHUB_FOR_JIRA_INTEGRATION }}
           JIRA_TOKEN: ${{ JIRA_KEY_FOR_GITHUB_INTEGRATION }}
           JIRA_HOST: https://rocketchat.atlassian.net
           JIRA_USER: igor.rincon@rocket.chat
