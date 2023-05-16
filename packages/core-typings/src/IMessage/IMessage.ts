@@ -131,7 +131,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-	groupable?: false;
+	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
 	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;
@@ -173,6 +173,11 @@ export interface IMessage extends IRocketChatRecord {
 
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
+	fileUpload?: {
+		publicFilePath: string;
+		type?: string;
+		size?: number;
+	};
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
+import ejson from 'ejson';
 
 import { isValidQuery } from '../lib/isValidQuery';
 import { clean } from '../lib/cleanQuery';
@@ -110,7 +110,7 @@ export async function parseJsonQuery(
 		warnFields('attribute query is deprecated');
 
 		try {
-			query = EJSON.parse(params.query);
+			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
 		} catch (e) {
 			logger.warn(`Invalid query parameter provided "${params.query}":`, e);

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ObjectId } from 'mongodb';
 import type {
@@ -13,6 +12,7 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
@@ -21,6 +21,10 @@ import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToD
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -281,15 +285,15 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? Accounts.createUser({
+			? await Accounts.createUserAsync({
 					email: userData.emails[0],
 					password,
 			  })
-			: Accounts.createUser({
+			: await Accounts.createUserAsync({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,
-			  });
+			  } as any);
 
 		const user = await Users.findOneById(userId, {});
 		if (!user) {
@@ -621,7 +625,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
@@ -650,9 +654,7 @@ export class ImportDataConverter {
 
 		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
-			Meteor.runAsUser(startedByUserId, () => {
-				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
-			});
+			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
 
 		await this.updateRoomId(room._id, roomData);
@@ -838,14 +840,21 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, () => {
-				const roomInfo =
-					roomData.t === 'd'
-						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+			let roomInfo;
+			if (roomData.t === 'd') {
+				roomInfo = await createDirectMessage(members, startedByUserId);
+			} else {
+				if (!roomData.name) {
+					return;
+				}
+				if (roomData.t === 'p') {
+					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members);
+				} else {
+					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members);
+				}
+			}
 
-				roomData._id = roomInfo.rid;
-			});
+			roomData._id = roomInfo.rid;
 		} catch (e) {
 			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);

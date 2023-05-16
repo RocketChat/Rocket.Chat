@@ -1,4 +1,3 @@
-import './settings';
 import './helpers/composeRoomWithLastMessage';
 import './helpers/deprecationWarning';
 import './helpers/getLoggedInUser';
@@ -9,7 +8,7 @@ import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './default/info';
 import './v1/assets';
-import './v1/channels.ts';
+import './v1/channels';
 import './v1/chat';
 import './v1/cloud';
 import './v1/commands';
@@ -47,5 +46,6 @@ import './v1/voip/extensions';
 import './v1/voip/queues';
 import './v1/voip/omnichannel';
 import './v1/voip';
+import './v1/moderation';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

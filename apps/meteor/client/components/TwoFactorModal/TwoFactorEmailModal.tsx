@@ -1,7 +1,7 @@
 import { Box, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
 
 import GenericModal from '../GenericModal';
@@ -34,7 +34,8 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 		}
 	};
 
-	const onConfirmEmailCode = (): void => {
+	const onConfirmEmailCode = (e: SyntheticEvent): void => {
+		e.preventDefault();
 		onConfirm(code, Method.EMAIL);
 	};
 
@@ -44,7 +45,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 
 	return (
 		<GenericModal
-			onConfirm={onConfirmEmailCode}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmEmailCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Two-factor_authentication_email')}

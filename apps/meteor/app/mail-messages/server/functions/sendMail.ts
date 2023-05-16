@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { Filter } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -35,8 +36,10 @@ export const sendMail = async function ({
 		userQuery = { $and: [userQuery, EJSON.parse(query)] };
 	}
 
+	const users = await Users.find(userQuery).toArray();
+
 	if (dryrun) {
-		for await (const u of Meteor.users.find(userQuery).fetch()) {
+		for await (const u of users) {
 			const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 			const email = `${user.name} <${user.emails?.[0].address}>`;
 			const html = placeholders.replace(body, {
@@ -60,7 +63,7 @@ export const sendMail = async function ({
 		}
 	}
 
-	for await (const u of Meteor.users.find(userQuery).fetch()) {
+	for await (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;

@@ -14,7 +14,7 @@ import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = await Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
 			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
@@ -42,7 +42,7 @@ Meteor.startup(async function () {
 
 		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 		const fileStore = FileUpload.getStore('Avatars');
-		fileStore.deleteByName('rocket.cat');
+		await fileStore.deleteByName('rocket.cat');
 
 		const file = {
 			userId: 'rocket.cat',
@@ -50,9 +50,8 @@ Meteor.startup(async function () {
 			size: buffer.length,
 		};
 
-		await Meteor.runAsUser('rocket.cat', async () => {
-			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
-		});
+		const upload = await fileStore.insert(file, rs);
+		await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 	}
 
 	if (process.env.ADMIN_PASS) {
@@ -118,7 +117,7 @@ Meteor.startup(async function () {
 
 			const id = await Users.create(adminUser);
 
-			Accounts.setPassword(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
 
 			await addUserRolesAsync(id, ['admin']);
 		} else {
@@ -197,7 +196,7 @@ Meteor.startup(async function () {
 
 		await Users.create(adminUser);
 
-		Accounts.setPassword(adminUser._id, adminUser._id);
+		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 

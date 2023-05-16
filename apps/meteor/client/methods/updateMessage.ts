@@ -7,7 +7,7 @@ import moment from 'moment';
 import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
+import { t } from '../../app/utils/lib/i18n';
 import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
 
@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		Tracker.nonreactive(() => {
+		Tracker.nonreactive(async () => {
 			message.editedAt = new Date(Date.now());
 
 			message.editedBy = {
@@ -74,7 +74,7 @@ Meteor.methods<ServerMethods>({
 				username: me.username,
 			};
 
-			message = callbacks.run('beforeSaveMessage', message) as IEditedMessage;
+			message = (await callbacks.run('beforeSaveMessage', message)) as IEditedMessage;
 			const messageObject: Partial<IEditedMessage> = {
 				editedAt: message.editedAt,
 				editedBy: message.editedBy,
