@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { i18n } from '../../../server/lib/i18n';
 import { joinRoomMethod } from '../../lib/server/methods/joinRoom';
 
 slashCommands.add({
@@ -17,17 +17,15 @@ slashCommands.add({
 		}
 
 		channel = channel.replace('#', '');
-
-		const user = await Users.findOne(userId);
 		const room = await Rooms.findOneByNameAndType(channel, 'c');
 
-		if (!user) {
+		if (!userId) {
 			return;
 		}
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -36,7 +34,7 @@ slashCommands.add({
 			return;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, {
 			projection: { _id: 1 },
 		});
 
@@ -46,7 +44,7 @@ slashCommands.add({
 			});
 		}
 
-		await joinRoomMethod(user, room._id);
+		await joinRoomMethod(userId, room._id);
 	},
 	options: {
 		description: 'Join_the_given_channel',

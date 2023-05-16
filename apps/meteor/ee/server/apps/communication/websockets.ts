@@ -40,7 +40,7 @@ export class AppServerListener {
 	}
 
 	async onAppAdded(appId: string): Promise<void> {
-		await (this.orch.getManager()! as any).loadOne(appId); // TO-DO: fix type
+		await (this.orch.getManager()! as any).addLocal(appId); // TO-DO: fix type
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 

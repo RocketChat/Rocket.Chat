@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes } from 'react';
+import type { ComponentProps } from 'react';
 
-const EmojiPickerCategoryWrapper = (props: Omit<AllHTMLAttributes<HTMLUListElement>, 'style'>) => {
-	return <Box {...props} is='ul' mb='x8' display='flex' flexWrap='wrap' />;
+const EmojiPickerCategoryWrapper = (props: ComponentProps<typeof Box>) => {
+	return <Box {...props} display='flex' flexWrap='wrap' />;
 };
 
 export default EmojiPickerCategoryWrapper;
