@@ -57,7 +57,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		// Login again, check the banner to save the generated password and test it
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Save Your Encryption Password"').click();
+		await page.locator('role=banner >> text="Save your encryption password"').click();
 
 		password = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
@@ -65,7 +65,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Save Your Encryption Password"')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
 
 		await poHomeChannel.sidenav.logout();
 
