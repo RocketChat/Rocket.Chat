@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -11,12 +11,11 @@ import type {
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
@@ -30,21 +29,25 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 	}));
 }
 
-export function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
+async function findDepartments(
+	businessUnit?: string,
+): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
 	// TODO: check this function usage
-	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-		_id: 1,
-		name: 1,
-		showOnRegistration: 1,
-		showOnOfflineForm: 1,
-	})
-		.fetch()
-		.map(({ _id, name, showOnRegistration, showOnOfflineForm }: ILivechatDepartment) => ({
-			_id,
-			name,
-			showOnRegistration,
-			showOnOfflineForm,
-		}));
+	return (
+		await (
+			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
+				_id: 1,
+				name: 1,
+				showOnRegistration: 1,
+				showOnOfflineForm: 1,
+			})
+		).toArray()
+	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+		_id,
+		name,
+		showOnRegistration,
+		showOnOfflineForm,
+	}));
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -59,7 +62,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
-export function findRoom(token: string, rid?: string): IOmnichannelRoom {
+export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -76,9 +79,9 @@ export function findRoom(token: string, rid?: string): IOmnichannelRoom {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token: string, departmentId?: string): IOmnichannelRoom | undefined {
+export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
 	const options = {
-		fields: {
+		projection: {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
@@ -87,8 +90,8 @@ export function findOpenRoom(token: string, departmentId?: string): IOmnichannel
 	};
 
 	const rooms = departmentId
-		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch()
-		: LivechatRooms.findOpenByVisitorToken(token, options).fetch();
+		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
+		: await LivechatRooms.findOpenByVisitorToken(token, options).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
@@ -121,7 +124,7 @@ export function getRoom({
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {
+export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 
@@ -134,9 +137,9 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
+	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
 	const triggers = await findTriggers();
-	const departments = findDepartments(businessUnit);
+	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {

@@ -60,6 +60,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();
@@ -101,9 +102,14 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 										)}
 										<li>
 											{system ? (
-												<SystemMessage message={message} />
+												<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 											) : (
-												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
+												<ThreadMessage
+													message={message}
+													sequential={shouldShowAsSequential}
+													unread={firstUnread}
+													showUserAvatar={showUserAvatar}
+												/>
 											)}
 										</li>
 									</Fragment>

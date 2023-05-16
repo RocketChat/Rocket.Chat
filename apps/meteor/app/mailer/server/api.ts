@@ -136,7 +136,7 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
 	([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
-export const sendNoWrap = ({
+export const sendNoWrap = async ({
 	to,
 	from,
 	replyTo,
@@ -152,7 +152,7 @@ export const sendNoWrap = ({
 	html?: string;
 	text?: string;
 	headers?: string;
-}): void => {
+}) => {
 	if (!checkAddressFormat(to)) {
 		throw new Meteor.Error('invalid email');
 	}
@@ -165,16 +165,16 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	Settings.incrementValueById('Triggered_Emails_Count');
+	await Settings.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
-	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', { email }));
+	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
 
-	Meteor.defer(() => Email.send(eventResult || email));
+	Meteor.defer(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
-export const send = ({
+export const send = async ({
 	to,
 	from,
 	replyTo,
@@ -192,7 +192,7 @@ export const send = ({
 	text?: string;
 	headers?: string;
 	data?: { [key: string]: unknown };
-}): void =>
+}): Promise<void> =>
 	sendNoWrap({
 		to,
 		from,

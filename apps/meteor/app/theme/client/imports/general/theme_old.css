@@ -138,14 +138,6 @@ textarea {
 	border-color: var(--error-color);
 }
 
-#login-card {
-	.input-text {
-		input:-webkit-autofill {
-			box-shadow: 0 0 0 20px var(--content-background-color) inset;
-		}
-	}
-}
-
 .upload-progress-progress {
 	background-color: var(--success-background);
 }

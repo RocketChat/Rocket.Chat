@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
 
-import { ChatPermissions } from './lib/ChatPermissions';
 import * as Models from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
@@ -16,7 +15,7 @@ const hasIsUserInRole = (
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
-		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+		const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
@@ -27,7 +26,7 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = ChatPermissions.findOne(permissionId, {
+			const permission = Models.ChatPermissions.findOne(permissionId, {
 				fields: { roles: 1 },
 			});
 			const roles = permission?.roles ?? [];

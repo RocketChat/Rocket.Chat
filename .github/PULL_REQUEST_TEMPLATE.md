@@ -1,12 +1,15 @@
 <!-- This is a pull request template, you do not need to uncomment or remove the comments, they won't show up in the PR text. -->
 
 <!-- Your Pull Request name should start with one of the following tags
-  [NEW] For new features
-  [IMPROVE] For an improvement (performance or little improvements) in existing features
-  [FIX] For bug fixes that affect the end-user
-  [BREAK] For pull requests including breaking changes
-  Chore: For small tasks
-  Doc: For documentation
+  feat: Adding a new feature
+  refactor: A code change that doesn't change behavior (it doesn't add anything and doesn't fix anything)
+  fix: For bug fixes that affect the end-user
+  chore: For small tasks
+  docs: For documentation
+  ci: For updating CI configuration
+  test: For adding tests
+  i18n: For updating any translations
+  regression: Issues created/reported/fixed during the development phase. kind of problem that never existed in production and that we don't need to list in a changelog for the end user
 -->
 
 <!-- Checklist!!! If you're unsure about any of them, don't hesitate to ask. We're here to help! This is simply a reminder of what we are going to look for before merging your code. 

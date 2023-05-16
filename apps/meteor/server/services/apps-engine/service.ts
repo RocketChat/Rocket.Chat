@@ -17,7 +17,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		super();
 
 		this.onEvent('presence.status', async ({ user, previousStatus }): Promise<void> => {
-			Apps.triggerEvent(AppEvents.IPostUserStatusChanged, {
+			await Apps.triggerEvent(AppEvents.IPostUserStatusChanged, {
 				user,
 				currentStatus: user.status,
 				previousStatus,

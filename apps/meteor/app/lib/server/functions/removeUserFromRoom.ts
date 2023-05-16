@@ -2,9 +2,9 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -13,7 +13,7 @@ export const removeUserFromRoom = async function (
 	user: IUser,
 	options?: { byUser: Pick<IUser, '_id' | 'username'> },
 ): Promise<void> {
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		return;
@@ -31,8 +31,8 @@ export const removeUserFromRoom = async function (
 
 	callbacks.run('beforeLeaveRoom', user, room);
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
-		fields: { _id: 1 },
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+		projection: { _id: 1 },
 	});
 
 	if (subscription) {
@@ -43,22 +43,22 @@ export const removeUserFromRoom = async function (
 			};
 
 			if (room.teamMain) {
-				Messages.createUserRemovedFromTeamWithRoomIdAndUser(rid, user, extraData);
+				await Message.saveSystemMessage('removed-user-from-team', rid, user.username || '', user, extraData);
 			} else {
-				Messages.createUserRemovedWithRoomIdAndUser(rid, user, extraData);
+				await Message.saveSystemMessage('ru', rid, user.username || '', user, extraData);
 			}
 		} else if (room.teamMain) {
-			Messages.createUserLeaveTeamWithRoomIdAndUser(rid, removedUser);
+			await Message.saveSystemMessage('ult', rid, removedUser.username || '', removedUser);
 		} else {
-			Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
+			await Message.saveSystemMessage('ul', rid, removedUser.username || '', removedUser);
 		}
 	}
 
 	if (room.t === 'l') {
-		Messages.createCommandWithRoomIdAndUser('survey', rid, user);
+		await Message.saveSystemMessage('command', rid, 'survey', user);
 	}
 
-	Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+	await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
 
 	if (room.teamId && room.teamMain) {
 		await Team.removeMember(room.teamId, user._id);

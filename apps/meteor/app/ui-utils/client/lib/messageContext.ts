@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { Subscriptions, Rooms, Users } from '../../../models/client';
+import { Subscriptions, ChatRoom, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
@@ -21,10 +21,10 @@ const fields = {
 
 export const createMessageContext = ({
 	uid = Meteor.userId(),
-	user = (uid ? Users.findOne({ _id: uid }, { fields }) : {}) || {},
+	user = uid ? Users.findOne({ _id: uid }, { fields }) : undefined,
 	rid = (Template.instance() as CommonRoomTemplateInstance).data.rid,
 	room = Tracker.nonreactive(() =>
-		Rooms.findOne(
+		ChatRoom.findOne(
 			{ _id: rid },
 			{
 				fields: {
@@ -72,7 +72,7 @@ export const createMessageContext = ({
 	Message_GroupingPeriod = settings.get('Message_GroupingPeriod') * 1000,
 }: {
 	uid?: IUser['_id'] | null;
-	user?: Partial<IUser>;
+	user?: Pick<IUser, '_id' | 'settings'>;
 	rid?: IRoom['_id'];
 	room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
 	subscription?: Pick<ISubscription, 'name' | 'autoTranslate' | 'rid' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;

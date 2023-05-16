@@ -1,21 +1,22 @@
-import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type {
 	IRoom,
 	RoomType,
-	IRocketChatRecord,
 	IUser,
 	IMessage,
 	ReadReceipt,
 	ValueOf,
 	AtLeast,
 	ISubscription,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import type { ComponentProps } from 'react';
+import type { Icon } from '@rocket.chat/fuselage';
 
-export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
+export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
+
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
-	action?: RouteOptions['action'];
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
@@ -49,28 +50,21 @@ export const RoomMemberActions = {
 } as const;
 
 export const UiTextContext = {
-	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
 } as const;
 
 export interface IRoomTypeConfig {
 	identifier: string;
-	order: number;
-	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
-	header?: string;
-	label?: string;
 	route?: IRoomTypeRouteConfig;
-	customTemplate?: string;
-	/** @deprecated */
-	notSubscribedTpl?: 'livechatNotSubscribed';
-	/** @deprecated */
-	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
+}
+
+export interface IRoomTypeClientConfig extends IRoomTypeConfig {
+	label?: string;
 }
 
 export interface IRoomTypeClientDirectives {
-	config: IRoomTypeConfig;
+	config: IRoomTypeClientConfig;
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (
@@ -86,8 +80,8 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
-	getUserStatus: (roomId: string) => string | undefined;
+	getIcon?: (room: Partial<IRoom>) => ComponentProps<typeof Icon>['name'];
+	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; ref: string };
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -99,22 +93,22 @@ export interface IRoomTypeServerDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
-	roomName: (room: IRoom, userId?: string) => string | undefined;
+	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => Promise<boolean>;
+	roomName: (room: IRoom, userId?: string) => Promise<string | undefined>;
 	isGroupChat: (room: IRoom) => boolean;
-	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
+	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
-	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
-	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
+	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;
 	getNotificationDetails: (
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
-	) => { title: string | undefined; text: string };
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
+	) => Promise<{ title: string | undefined; text: string }>;
+	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }

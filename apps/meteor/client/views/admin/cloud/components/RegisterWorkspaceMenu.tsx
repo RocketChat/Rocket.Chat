@@ -42,6 +42,7 @@ const RegisterWorkspaceMenu = ({
 					</Button>
 				</>
 			)}
+
 			{isWorkspaceRegistered && !isConnectedToCloud && (
 				<Button primary onClick={onClick}>
 					{t('ConnectWorkspace_Button')}

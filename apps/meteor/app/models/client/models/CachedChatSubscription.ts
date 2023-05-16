@@ -1,10 +1,16 @@
 import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedCollection } from '../../../ui-cached-collection/client';
-import type { SubscriptionWithRoom } from '../../../../client/definitions/SubscriptionWithRoom';
 import { ChatRoom } from './ChatRoom';
-import { CachedChatRoom } from './CachedChatRoom';
+
+declare module '@rocket.chat/core-typings' {
+	interface ISubscription {
+		lowerCaseName: string;
+		lowerCaseFName: string;
+	}
+}
 
 class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
@@ -15,15 +21,8 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 		return this.mergeWithRoom(record);
 	}
 
-	protected handleReceived(record: ISubscription, action: 'changed' | 'removed') {
-		const newRecord = this.mergeWithRoom(record);
-
-		if (action === 'removed') {
-			ChatRoom.remove(newRecord.rid);
-			CachedChatRoom.save();
-		}
-
-		return newRecord;
+	protected handleReceived(record: ISubscription) {
+		return this.mergeWithRoom(record);
 	}
 
 	protected handleSync(record: ISubscription) {

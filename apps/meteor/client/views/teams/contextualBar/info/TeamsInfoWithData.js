@@ -120,7 +120,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			}
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();

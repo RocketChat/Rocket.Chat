@@ -20,18 +20,11 @@ describe('LIVECHAT - Agents', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
-			.then(() => createAgent())
-			.then((createdAgent) => {
-				agent = createdAgent;
-			})
-			.then(createManager)
-			.then((createdManager) => {
-				manager = createdManager;
-				done();
-			});
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		agent = await createAgent();
+		manager = await createManager();
 	});
 
 	before(async () => {
@@ -47,296 +40,255 @@ describe('LIVECHAT - Agents', function () {
 
 	// TODO: missing test cases for POST method
 	describe('GET livechat/users/:type', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('edit-omnichannel-contact', [])
-				.then(() => updatePermission('transfer-livechat-guest', []))
-				.then(() => updatePermission('manage-livechat-agents', []))
-				.then(() => {
-					request.get(api('livechat/users/agent')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('edit-omnichannel-contact', []);
+			await updatePermission('transfer-livechat-guest', []);
+			await updatePermission('manage-livechat-agents', []);
+
+			await request.get(api('livechat/users/agent')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+		});
+		it('should throw an error when the type is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			await request
+				.get(api('livechat/users/invalid-type'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Invalid type');
 				});
 		});
-		it('should throw an error when the type is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => updatePermission('manage-livechat-agents', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/users/invalid-type'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('Invalid type');
-						})
-						.end(done);
+		it('should return an array of agents', async () => {
+			await updatePermission('edit-omnichannel-contact', ['admin']);
+			await updatePermission('transfer-livechat-guest', ['admin']);
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					const agentRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => agent._id === user._id);
+					expect(agentRecentlyCreated?._id).to.be.equal(agent._id);
 				});
 		});
-		it('should return an array of agents', (done) => {
-			updatePermission('edit-omnichannel-contact', ['admin'])
-				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
-				.then(() => updatePermission('manage-livechat-agents', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/users/agent'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.users).to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-							expect(res.body).to.have.property('count');
-							const agentRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => agent._id === user._id);
-							expect(agentRecentlyCreated?._id).to.be.equal(agent._id);
-						})
-						.end(done);
-				});
-		});
-		it('should return an array of managers', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => updatePermission('manage-livechat-agents', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/users/manager'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.users).to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-							expect(res.body).to.have.property('count');
-							const managerRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => manager._id === user._id);
-							expect(managerRecentlyCreated?._id).to.be.equal(manager._id);
-						})
-						.end(done);
+		it('should return an array of managers', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			await request
+				.get(api('livechat/users/manager'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					const managerRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => manager._id === user._id);
+					expect(managerRecentlyCreated?._id).to.be.equal(manager._id);
 				});
 		});
 	});
 
 	describe('POST livechat/users/:type', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', [])
-				.then(() => {
-					request
-						.post(api('livechat/users/agent'))
-						.set(credentials)
-						.send({
-							username: 'test-agent',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(403);
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+
+			await request
+				.post(api('livechat/users/agent'))
+				.set(credentials)
+				.send({
+					username: 'test-agent',
 				})
-				.then(() => done());
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
 
-		it('should return an error when type is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request
-						.post(api('livechat/users/invalid-type'))
-						.set(credentials)
-						.send({
-							username: 'test-agent',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400);
+		it('should return an error when type is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request
+				.post(api('livechat/users/invalid-type'))
+				.set(credentials)
+				.send({
+					username: 'test-agent',
 				})
-				.then(() => done());
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 
-		it('should return an error when username is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request
-						.post(api('livechat/users/agent'))
-						.set(credentials)
-						.send({
-							username: 'mr-not-valid',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400);
+		it('should return an error when username is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request
+				.post(api('livechat/users/agent'))
+				.set(credentials)
+				.send({
+					username: 'mr-not-valid',
 				})
-				.then(() => done());
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 
-		it('should return a valid user when all goes fine', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createUser())
-				.then((user) => {
-					request
-						.post(api('livechat/users/agent'))
-						.set(credentials)
-						.send({
-							username: user.username,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('user');
-							expect(res.body.user).to.have.property('_id');
-							expect(res.body.user).to.have.property('username');
-						});
+		it('should return a valid user when all goes fine', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const user = await createUser();
+			await request
+				.post(api('livechat/users/agent'))
+				.set(credentials)
+				.send({
+					username: user.username,
 				})
-				.then(() => done());
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('_id');
+					expect(res.body.user).to.have.property('username');
+				});
 		});
 	});
 
 	describe('GET livechat/users/:type/:_id', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', [])
-				.then(() => {
-					request
-						.get(api(`livechat/users/agent/id${agent._id}`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403);
-				})
-				.then(() => done());
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+
+			await request
+				.get(api(`livechat/users/agent/id${agent._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		}).timeout(5000);
 
-		it('should return an error when type is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request
-						.get(api(`livechat/users/invalid-type/invalid-id${agent._id}`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400);
-				})
-				.then(() => done());
+		it('should return an error when type is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request
+				.get(api(`livechat/users/invalid-type/invalid-id${agent._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		}).timeout(5000);
 
-		it('should return an error when _id is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request.get(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
-				})
-				.then(() => done());
+		it('should return an error when _id is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request.get(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		}).timeout(5000);
 
-		it('should return a valid user when all goes fine', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createAgent())
-				.then((agent) => {
-					request
-						.get(api(`livechat/users/agent/${agent._id}`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('user');
-							expect(res.body.user).to.have.property('_id');
-							expect(res.body.user).to.have.property('username');
-							expect(res.body.user).to.not.have.property('roles');
-						});
-				})
-				.then(() => done());
+		it('should return a valid user when all goes fine', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const agent = await createAgent();
+			await request
+				.get(api(`livechat/users/agent/${agent._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('_id');
+					expect(res.body.user).to.have.property('username');
+					expect(res.body.user).to.not.have.property('roles');
+				});
 		});
 
-		it('should return { user: null } when user is not an agent', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createUser())
-				.then((user) => {
-					request
-						.get(api(`livechat/users/agent/${user._id}`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('user');
-							expect(res.body.user).to.be.null;
-						});
-				})
-				.then(() => done());
+		it('should return { user: null } when user is not an agent', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const user = await createUser();
+			await request
+				.get(api(`livechat/users/agent/${user._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.be.null;
+				});
 		});
 	});
 
 	describe('DELETE livechat/users/:type/:_id', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', [])
-				.then(() => {
-					request.delete(api(`livechat/users/agent/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
-				})
-				.then(() => done());
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+
+			await request.delete(api(`livechat/users/agent/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		}).timeout(5000);
 
-		it('should return an error when type is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request.delete(api(`livechat/users/invalid-type/id`)).set(credentials).expect('Content-Type', 'application/json').expect(400);
-				})
-				.then(() => done());
+		it('should return an error when type is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request.delete(api(`livechat/users/invalid-type/id`)).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		}).timeout(5000);
 
-		it('should return an error when _id is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request.delete(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
-				})
-				.then(() => done());
+		it('should return an error when _id is invalid', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+
+			await request.delete(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		}).timeout(5000);
 
-		it('should return a valid user when all goes fine', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createAgent())
-				.then((agent) => {
-					request
-						.delete(api(`livechat/users/agent/${agent._id}`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200);
-				})
-				.then(() => done());
+		it('should return a valid user when all goes fine', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const agent = await createAgent();
+			await request
+				.delete(api(`livechat/users/agent/${agent._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 	});
 
 	describe('livechat/agents/:agentId/departments', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				request
-					.get(api(`livechat/agents/${agent._id}/departments`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
-			});
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request
+				.get(api(`livechat/agents/${agent._id}/departments`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
-		it('should return an empty array of departments when the agentId is invalid', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api('livechat/agents/invalid-id/departments'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('departments').and.to.be.an('array');
-					})
-					.end(done);
-			});
+		it('should return an empty array of departments when the agentId is invalid', async () => {
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/agents/invalid-id/departments'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments').and.to.be.an('array');
+				});
 		});
-		it('should return an array of departments when the agentId is valid', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api(`livechat/agents/${agent._id}/departments`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('departments').and.to.be.an('array');
-						(res.body.departments as ILivechatDepartment[]).forEach((department) => {
-							expect(department.agentId).to.be.equal(agent._id);
-						});
-					})
-					.end(done);
-			});
+		it('should return an array of departments when the agentId is valid', async () => {
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api(`livechat/agents/${agent._id}/departments`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments').and.to.be.an('array');
+					(res.body.departments as ILivechatDepartment[]).forEach((department) => {
+						expect(department.agentId).to.be.equal(agent._id);
+					});
+				});
+
+			await updatePermission('view-l-room', ['livechat-manager', 'livechat-agent', 'admin']);
 		});
 	});
 
@@ -358,13 +310,13 @@ describe('LIVECHAT - Agents', function () {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
-			const roomUpdate = await takeInquiry(inq._id);
+			const roomUpdate = await takeInquiry(inq._id, agent2.credentials);
 			expect(roomUpdate).to.have.property('success', true);
 
 			const { body } = await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`));
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('agent');
-			expect(body.agent).to.have.property('_id', 'rocketchat.internal.admin.test');
+			expect(body.agent).to.have.property('_id', agent2.user._id);
 		});
 	});
 

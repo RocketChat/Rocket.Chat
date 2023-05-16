@@ -5,7 +5,7 @@ import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-c
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
-import { KonchatNotification } from '../../../../app/ui/client';
+import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';
 
@@ -82,7 +82,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({
-			payload: { sender: { username: 'rocket.cat' } },
+			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' } },
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});

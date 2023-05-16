@@ -2662,6 +2662,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
+						updatedSince: 'updatedSince',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

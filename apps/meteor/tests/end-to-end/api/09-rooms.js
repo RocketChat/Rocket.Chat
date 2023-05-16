@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
@@ -142,7 +145,8 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		let fileUrl;
+		let fileNewUrl;
+		let fileOldUrl;
 		it('upload a file to room', (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -157,36 +161,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
-					fileUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
 				})
 				.end(done);
 		});
 
 		it('should be able to get the file', async () => {
-			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should be able to get the file when no access to the room', async () => {
-			await request.get(fileUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file when no access to the room if setting blocks', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
-			await request.get(fileUrl).set(userCredentials).expect(403);
+			await request.get(fileNewUrl).set(userCredentials).expect(403);
+			await request.get(fileOldUrl).set(userCredentials).expect(403);
 		});
 
 		it('should be able to get the file if member and setting blocks outside access', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
-			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file without credentials', async () => {
-			await request.get(fileUrl).attach('file', imgURL).expect(403);
+			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
+			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
 		});
 
 		it('should be able to get the file without credentials if setting allows', async () => {
 			await updateSetting('FileUpload_ProtectFiles', false);
-			await request.get(fileUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 	});
 
@@ -1499,6 +1510,71 @@ describe('[Rooms]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.saveRoomSettings', () => {
+		let testChannel;
+		const randomString = `randomString${Date.now()}`;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		it('should update the room settings', (done) => {
+			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					roomAvatar: imageDataUri,
+					featured: true,
+					roomName: randomString,
+					roomTopic: randomString,
+					roomAnnouncement: randomString,
+					roomDescription: randomString,
+					roomType: 'p',
+					readOnly: true,
+					reactWhenReadOnly: true,
+					default: true,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		it('should have reflected on rooms.info', (done) => {
+			request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('name', randomString);
+					expect(res.body.room).to.have.property('topic', randomString);
+					expect(res.body.room).to.have.property('announcement', randomString);
+					expect(res.body.room).to.have.property('description', randomString);
+					expect(res.body.room).to.have.property('t', 'p');
+					expect(res.body.room).to.have.property('featured', true);
+					expect(res.body.room).to.have.property('ro', true);
+					expect(res.body.room).to.have.property('default', true);
+					expect(res.body.room).to.have.property('favorite', true);
+					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
 		});

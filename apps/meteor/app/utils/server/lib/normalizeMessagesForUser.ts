@@ -1,9 +1,12 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
-const filterStarred = (message: IMessage, uid: string): IMessage => {
+const filterStarred = (message: IMessage, uid?: string): IMessage => {
+	// if Allow_anonymous_read is enabled, uid will be undefined
+	if (!uid) return message;
+
 	// only return starred field if user has it starred
 	if (message.starred && Array.isArray(message.starred)) {
 		message.starred = message.starred.filter((star) => star._id === uid);
@@ -17,24 +20,26 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 	return users.get(username) || username;
 }
 
-export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMessage[] => {
+export const normalizeMessagesForUser = async (messages: IMessage[], uid?: string): Promise<IMessage[]> => {
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return messages.map((message) => filterStarred(message, uid));
 	}
 
-	const usernames = new Set();
+	const usernames: Set<string> = new Set();
 
 	messages.forEach((message) => {
 		message = filterStarred(message, uid);
 
-		if (!message.u || !message.u.username) {
+		if (!message.u?.username) {
 			return;
 		}
 		usernames.add(message.u.username);
 
 		(message.mentions || []).forEach(({ username }) => {
-			usernames.add(username);
+			if (username) {
+				usernames.add(username);
+			}
 		});
 
 		Object.values(message.reactions || {}).forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
@@ -43,12 +48,12 @@ export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMe
 	const names = new Map();
 
 	(
-		Users.findUsersByUsernames([...usernames.values()], {
-			fields: {
+		await Users.findUsersByUsernames([...usernames.values()], {
+			projection: {
 				username: 1,
 				name: 1,
 			},
-		}) as Pick<IUser, 'username' | 'name'>[]
+		}).toArray()
 	).forEach((user) => {
 		names.set(user.username, user.name);
 	});

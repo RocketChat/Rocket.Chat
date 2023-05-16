@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 
 import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
@@ -15,7 +15,7 @@ import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/ge
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IValidLicense {
+interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
@@ -212,12 +212,12 @@ class LicenseClass {
 		this.showLicenses();
 	}
 
-	canAddNewUser(): boolean {
+	async canAddNewUser(): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > Users.getActiveLocalUserCount();
+		return maxActiveUsers > (await Users.getActiveLocalUserCount());
 	}
 
 	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -337,7 +337,7 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export function canAddNewUser(): boolean {
+export async function canAddNewUser(): Promise<boolean> {
 	return License.canAddNewUser();
 }
 
@@ -345,7 +345,7 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -353,7 +353,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -365,7 +365,7 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -383,28 +383,28 @@ export function onToggledFeature(
 		up,
 		down,
 	}: {
-		up?: () => void;
-		down?: () => void;
+		up?: () => Promise<void> | void;
+		down?: () => Promise<void> | void;
 	},
 ): () => void {
 	let enabled = hasLicense(feature);
 
 	const offValidFeature = onValidFeature(feature, () => {
 		if (!enabled) {
-			up?.();
+			void up?.();
 			enabled = true;
 		}
 	});
 
 	const offInvalidFeature = onInvalidFeature(feature, () => {
 		if (enabled) {
-			down?.();
+			void down?.();
 			enabled = false;
 		}
 	});
 
 	if (enabled) {
-		up?.();
+		void up?.();
 	}
 
 	return (): void => {
@@ -430,14 +430,14 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 	return modules.concat(modulesFromBundles);
 }
 
-export interface IOverrideClassProperties {
+interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
-	onLicense(license, () => {
+export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
 			original.prototype[key] = function (...args: any[]): any {

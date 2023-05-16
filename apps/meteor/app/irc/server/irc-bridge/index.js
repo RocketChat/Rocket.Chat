@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import Queue from 'queue-fifo';
 import moment from 'moment';
 import { Settings } from '@rocket.chat/models';
@@ -14,21 +13,20 @@ const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
 
 let removed = false;
-const updateLastPing = withThrottling({ wait: 10_000 })(
-	Meteor.bindEnvironment(() => {
-		if (removed) {
-			return;
-		}
-		Settings.upsert(
-			{ _id: 'IRC_Bridge_Last_Ping' },
-			{
-				$set: {
-					value: new Date(),
-				},
+const updateLastPing = withThrottling({ wait: 10_000 })(() => {
+	if (removed) {
+		return;
+	}
+	void Settings.updateOne(
+		{ _id: 'IRC_Bridge_Last_Ping' },
+		{
+			$set: {
+				value: new Date(),
 			},
-		);
-	}),
-);
+		},
+		{ upsert: true },
+	);
+});
 
 class Bridge {
 	constructor(config) {
@@ -51,12 +49,12 @@ class Bridge {
 		this.queueTimeout = 5;
 	}
 
-	init() {
+	async init() {
 		this.initTime = new Date();
 		removed = false;
 		this.loggedInUsers = [];
 
-		const lastPing = Promise.await(Settings.findOneById('IRC_Bridge_Last_Ping'));
+		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
 		if (lastPing) {
 			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
 				this.log('Not trying to connect.');

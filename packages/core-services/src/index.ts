@@ -11,7 +11,7 @@ import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IBannerService } from './types/IBannerService';
-import type { IFederationService } from './types/IFederationService';
+import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
 import type {
 	ITeamService,
@@ -41,6 +41,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -66,6 +67,7 @@ export {
 	IDeviceManagementService,
 	IEnterpriseSettings,
 	IFederationService,
+	IFederationServiceEE,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -111,6 +113,7 @@ export {
 	ITranslationService,
 	IMessageService,
 	ISettingsService,
+	IOmnichannelIntegrationService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -140,6 +143,9 @@ export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptServi
 export const Message = proxifyWithWait<IMessageService>('message');
 export const Translation = proxifyWithWait<ITranslationService>('translation');
 export const Settings = proxifyWithWait<ISettingsService>('settings');
+export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
+export const Federation = proxifyWithWait<IFederationService>('federation');
+export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

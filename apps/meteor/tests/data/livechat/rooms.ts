@@ -10,6 +10,7 @@ import type {
 import { api, credentials, methodCall, request } from '../api-data';
 import { updatePermission } from '../permissions.helper';
 import { adminUsername } from '../user';
+import { getRandomVisitorToken } from './users';
 import type { DummyResponse } from './utils';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
@@ -23,14 +24,15 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 
 	const response = await request
 		.get(api(`livechat/room?${urlParams.toString()}`))
-		.set(credentials).expect(200);
+		.set(credentials)
+		.expect(200);
 
 	return response.body.room;
 };
 
 export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
-		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		const token = getRandomVisitorToken();
 		const email = `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
 		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
@@ -59,11 +61,11 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, _agentId?: string): Promise<IOmnichannelRoom> => {
+export const takeInquiry = (roomId: string, agentCredentials?: object): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
-			.set(credentials)
+			.set(agentCredentials || credentials)
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:takeInquiry',
@@ -100,7 +102,16 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 		request
 			.post(api('livechat/department'))
 			.set(credentials)
-			.send({ department: { name: name || `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
+			.send({
+				department: {
+					name: name || `Department ${Date.now()}`,
+					enabled: true,
+					showOnOfflineForm: true,
+					showOnRegistration: true,
+					email: 'a@b.com',
+				},
+				agents,
+			})
 			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {
 					return reject(err);
@@ -108,23 +119,23 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 				resolve(res.body.department);
 			});
 	});
-}
+};
 
 export const deleteDepartment = (departmentId: string): Promise<unknown> => {
 	return new Promise((resolve, reject) => {
 		request
 			.delete(api(`livechat/department/${departmentId}`))
-				.set(credentials)
-				.send()
-				.expect(200)
-				.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
-					if (err) {
-						return reject(err);
-					}
-					resolve(res.body);
-				});
+			.set(credentials)
+			.send()
+			.expect(200)
+			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
+			});
 	});
-}
+};
 
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
@@ -160,48 +171,38 @@ export const createManager = (): Promise<ILivechatAgent> =>
 
 export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
 	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
-	await request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
-		message: '',
-		status: 'online',
-	}).expect(200);
+	await request
+		.post(api('users.setStatus'))
+		.set(overrideCredentials || credentials)
+		.send({
+			message: '',
+			status: 'online',
+		})
+		.expect(200);
 
-	await request.post(api('livechat/agent.status')).set(overrideCredentials || credentials).send({
-		status: 'available',
-	}).expect(200);
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({
+			status: 'available',
+		})
+		.expect(200);
 };
 
-export const makeAgentUnavailable = (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<unknown> =>
-	new Promise((resolve, reject) => {
-		request
-			.post(api('users.setStatus'))
-			.set(overrideCredentials || credentials)
-			.send({
-				message: '',
-				status: 'offline',
-			})
-			.end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				request
-					.post(methodCall('livechat/changeLivechatStatus'))
-					.set(overrideCredentials || credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'livechat/changeLivechatStatus',
-							params: ['not-available'],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
-						if (err) {
-							return reject(err);
-						}
-						resolve(res.body);
-					});
-			});
-	});
+export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+	await request
+		.post(api('users.setStatus'))
+		.set(overrideCredentials || credentials)
+		.send({ message: '', status: 'offline' })
+		.expect(200);
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({
+			status: 'not-available',
+		})
+		.expect(200);
+};
 
 export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve /* , reject*/) => {
@@ -277,7 +278,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 };
 
 export const closeOmnichanelRoom = async (roomId: string): Promise<void> => {
-    await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200)
+	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (

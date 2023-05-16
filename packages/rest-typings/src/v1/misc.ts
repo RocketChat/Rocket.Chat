@@ -12,6 +12,9 @@ type ShieldSvg = {
 	icon?: 'true' | 'false';
 	channel: string;
 	name: string;
+	userId?: string;
+	username?: string;
+	user?: string;
 };
 
 const ShieldSvgSchema = {

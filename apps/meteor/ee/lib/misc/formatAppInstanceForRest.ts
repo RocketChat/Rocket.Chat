@@ -6,7 +6,7 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
-export interface IAppInfoRest extends IAppInfo {
+interface IAppInfoRest extends IAppInfo {
 	status: AppStatus;
 	languages: IAppStorageItem['languageContent'];
 	licenseValidation?: AppLicenseValidationResult;

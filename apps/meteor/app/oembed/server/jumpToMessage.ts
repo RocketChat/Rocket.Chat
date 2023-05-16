@@ -2,14 +2,14 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
 
 const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -23,8 +23,8 @@ const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, qu
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
-	if (!message || !message.attachments) {
+const validateAttachmentDeepness = (message: IMessage): IMessage => {
+	if (!message?.attachments) {
 		return message;
 	}
 
@@ -40,45 +40,50 @@ const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMes
 
 callbacks.add(
 	'beforeSaveMessage',
-	(msg) => {
+	async (msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg || !msg.urls || !msg.urls.length) {
+		if (!msg?.urls?.length) {
 			return msg;
 		}
 
-		const currentUser = Users.findOneById(msg.u._id);
+		const currentUser = await Users.findOneById(msg.u._id);
 
-		msg.urls.forEach((item) => {
-			// if the URL is not internal, skip
+		for await (const item of msg.urls) {
+			// if the URL doesn't belong to the current server, skip
 			if (!item.url.includes(Meteor.absoluteUrl())) {
-				return;
+				continue;
 			}
 
 			const urlObj = URL.parse(item.url);
 
 			// if the URL doesn't have query params (doesn't reference message) skip
 			if (!urlObj.query) {
-				return;
+				continue;
 			}
 
 			const { msg: msgId } = QueryString.parse(urlObj.query);
 
 			if (typeof msgId !== 'string') {
-				return;
+				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
+			const message = await Messages.findOneById(msgId);
+
+			const jumpToMessage = message && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
-				return;
+				continue;
 			}
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
-			const room = Rooms.findOneById(jumpToMessage.rid);
+			const room = await Rooms.findOneById<IOmnichannelRoom>(jumpToMessage.rid);
+			if (!room) {
+				continue;
+			}
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await canAccessRoomAsync(room, currentUser)));
 			if (!canAccessRoomForUser) {
-				return;
+				continue;
 			}
 
 			msg.attachments = msg.attachments || [];
@@ -88,9 +93,11 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
+			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+
+			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url, useRealName));
 			item.ignoreParse = true;
-		});
+		}
 
 		return msg;
 	},
