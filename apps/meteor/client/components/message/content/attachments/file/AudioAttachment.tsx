@@ -11,7 +11,7 @@ import MessageContentBody from '../../../MessageContentBody';
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	title,
 	audio_url: url,
-	// audio_type: type,
+	audio_type: type,
 	audio_size: size,
 	description,
 	descriptionMd,
@@ -24,7 +24,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
-				<AudioPlayer src={getURL(url)} />
+				<AudioPlayer src={getURL(url)} type={type} />
 			</MessageCollapsible>
 		</>
 	);
