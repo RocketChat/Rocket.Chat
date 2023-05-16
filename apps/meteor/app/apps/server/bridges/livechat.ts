@@ -17,6 +17,7 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { callbacks } from '../../../../lib/callbacks';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -137,10 +138,12 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let result;
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+
 		if (departmentId) {
-			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}, extraQuery).toArray();
 		} else {
-			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}, extraQuery).toArray();
 		}
 
 		return Promise.all((result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room)));

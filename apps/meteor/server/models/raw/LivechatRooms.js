@@ -574,7 +574,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
@@ -588,7 +588,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
@@ -601,7 +601,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
@@ -954,18 +954,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findByVisitorId(visitorId, options) {
+	findByVisitorId(visitorId, options, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'v._id': visitorId,
+			...extraQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findPaginatedByVisitorId(visitorId, options) {
+	findPaginatedByVisitorId(visitorId, options, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'v._id': visitorId,
+			...extraQuery,
 		};
 		return this.findPaginated(query, options);
 	}
@@ -1057,9 +1059,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		roomIds,
 		onhold,
 		options = {},
+		extraQuery = {},
 	}) {
 		const query = {
 			t: 'l',
+			...extraQuery,
 		};
 		if (agents) {
 			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
@@ -1141,7 +1145,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.departmentId = departmentId;
 		}
 
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
 	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
@@ -1237,8 +1241,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
-	findOpen() {
-		return this.find({ t: 'l', open: true });
+	findOpen(extraQuery = {}) {
+		return this.find({ t: 'l', open: true, ...extraQuery });
 	}
 
 	setAutoTransferOngoingById(roomId) {
@@ -1558,7 +1562,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByIds(ids, fields) {
+	findByIds(ids, fields, extraQuery = {}) {
 		const options = {};
 
 		if (fields) {
@@ -1568,6 +1572,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const query = {
 			t: 'l',
 			_id: { $in: ids },
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1676,11 +1681,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return livechatCount.value;
 	}
 
-	findOpenByVisitorToken(visitorToken, options) {
+	findOpenByVisitorToken(visitorToken, options, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1710,31 +1716,34 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
+			...extraQuery,
 		};
 
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken) {
+	findByVisitorToken(visitorToken, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.find(query);
 	}
 
-	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+	findByVisitorIdAndAgentId(visitorId, agentId, options, extraQuery = {}) {
 		const query = {
 			t: 'l',
 			...(visitorId && { 'v._id': visitorId }),
 			...(agentId && { 'servedBy._id': agentId }),
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1751,12 +1760,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findClosedRooms(departmentIds, options) {
+	findClosedRooms(departmentIds, options, extraQuery = {}) {
 		const query = {
 			t: 'l',
 			open: { $exists: false },
 			closedAt: { $exists: true },
 			...(Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1872,7 +1882,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.countDocuments(query);
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
+	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}, extraQuery = {}) {
 		const query = {
 			t,
 			ts: {
@@ -1880,6 +1890,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				$lt: new Date(date.lt), // ISODate, ts < date.lt
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...extraQuery,
 		};
 
 		return this.find(query, {
@@ -1887,7 +1898,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		});
 	}
 
-	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery, extraMatchers = {}) {
 		return this.col.aggregate(
 			[
 				{
@@ -1898,6 +1909,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 							$lt: new Date(date.lt), // ISODate, ts < date.lt
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
+						...extraMatchers,
 					},
 				},
 				{ $addFields: { roomId: '$_id' } },
@@ -2042,11 +2054,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	findOpenByAgent(userId) {
+	findOpenByAgent(userId, extraQuery = {}) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'servedBy._id': userId,
+			...extraQuery,
 		};
 
 		return this.find(query);

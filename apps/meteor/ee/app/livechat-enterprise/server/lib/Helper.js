@@ -17,6 +17,7 @@ import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { updateInquiryQueueSla } from './SlaHelper';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -178,7 +179,8 @@ export const updatePredictedVisitorAbandonment = async () => {
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
-		await LivechatRooms.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		await LivechatRooms.findOpen(extraQuery).forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
 
 		await Promise.all(promisesArray);
 	}
@@ -211,7 +213,8 @@ export const updateSLAInquiries = async (sla) => {
 
 	const { _id: slaId } = sla;
 	const promises = [];
-	await LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	await LivechatRooms.findOpenBySlaId(slaId, extraQuery).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises);

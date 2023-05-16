@@ -7,6 +7,7 @@ import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
 import { i18n } from '../../../../../server/lib/i18n';
+import { callbacks } from '../../../../../lib/callbacks';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -121,8 +122,9 @@ export class VisitorInactivityMonitor {
 			return;
 		}
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					promises.push(this.closeRooms(room));

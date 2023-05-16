@@ -3,6 +3,7 @@ import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
 	const visitor = await LivechatVisitors.findOneById(visitorId);
@@ -61,11 +62,16 @@ export async function findChatHistory({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(visitorId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
+		visitorId,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		extraQuery,
+	);
 
 	const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 

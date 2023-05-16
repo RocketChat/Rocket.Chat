@@ -6,7 +6,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -18,7 +18,7 @@ declare module '@rocket.chat/model-typings' {
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
 		updateDepartmentAncestorsById: (rid: string, ancestors?: string[]) => Promise<UpdateResult>;
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
-		findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom>;
+		findAbandonedOpenRooms(date: Date, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
 		unsetAllPredictedVisitorAbandonment(): Promise<void>;
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
@@ -31,13 +31,17 @@ declare module '@rocket.chat/model-typings' {
 		): Promise<UpdateResult | Document>;
 		removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document>;
 		bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document>;
-		findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+		findOpenBySlaId(
+			slaId: string,
+			options: FindOptions<IOmnichannelRoom>,
+			extraQuery?: Filter<IOmnichannelRoom>,
+		): FindCursor<IOmnichannelRoom>;
 		setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult>;
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
 	}
 }
 
-// @ts-expect-error - Model is in JS, and types are getting weird :)
+// @ts-expect-error Type 'LivechatRoomsRawEE' is not assignable to type 'ILivechatRoomsModel'.
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, trash);
@@ -129,11 +133,16 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+	findOpenBySlaId(
+		slaId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom> {
 		const query = {
 			t: 'l',
 			open: true,
 			slaId,
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -159,6 +168,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
+	// TODO - check if removable, looks unused
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
 		const query = {
 			t: 'l',
@@ -182,12 +192,13 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(query, update);
 	}
 
-	findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom> {
+	findAbandonedOpenRooms(date: Date, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({
 			'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 			'waitingResponse': { $exists: false },
 			'closedAt': { $exists: false },
 			'open': true,
+			...extraQuery,
 		});
 	}
 
@@ -267,29 +278,15 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(query, update);
 	}
 
-	find(...args: Parameters<LivechatRoomsRaw['find']>) {
-		const [query, ...restArgs] = args;
-		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
-		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.find', query: restrictedQuery });
-		return super.find(restrictedQuery, ...restArgs);
-	}
-
-	findPaginated(...args: Parameters<LivechatRoomsRaw['findPaginated']>) {
-		const [query, ...restArgs] = args;
-		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
-		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.findPaginated', query: restrictedQuery });
-		return super.findPaginated(restrictedQuery, ...restArgs);
-	}
-
 	/** @deprecated Use updateOne or updateMany instead */
-	update(...args: Parameters<LivechatRoomsRaw['update']>) {
+	async update(...args: Parameters<LivechatRoomsRaw['update']>) {
 		const [query, ...restArgs] = args;
-		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
+		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.update', query: restrictedQuery });
 		return super.update(restrictedQuery, ...restArgs);
 	}
 
-	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']> & { bypassUnits?: boolean }) {
+	async updateOne(...args: [...Parameters<LivechatRoomsRaw['updateOne']>, { bypassUnits?: boolean }?]) {
 		const [query, update, opts, extraOpts] = args;
 		if (extraOpts?.bypassUnits) {
 			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
@@ -298,14 +295,14 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			// We need to find a way of remove the meteor dependency when fetching units, and then, we can remove this flag
 			return super.updateOne(query, update, opts);
 		}
-		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
+		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateOne', query: restrictedQuery });
 		return super.updateOne(restrictedQuery, update, opts);
 	}
 
-	updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {
+	async updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {
 		const [query, ...restArgs] = args;
-		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
+		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateMany', query: restrictedQuery });
 		return super.updateMany(restrictedQuery, ...restArgs);
 	}
