@@ -1,6 +1,5 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
@@ -55,7 +54,7 @@ const updateInquiries = async (inquiries: ILivechatInquiryRecord[] = []) =>
 	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId: IOmnichannelAgent['_id']) => {
-	const { departments } = await APIClient.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: 'true' });
+	const { departments } = await sdk.rest.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: 'true' });
 	return departments;
 };
 
