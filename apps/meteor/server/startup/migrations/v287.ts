@@ -51,7 +51,12 @@ addMigration({
 				},
 			},
 		);
-		await Messages.col.dropIndex('snippeted_1');
+
+		try {
+			await Messages.col.dropIndex('snippeted_1');
+		} catch (error: unknown) {
+			console.error('Error while removing index snippeted_1 from rocketchat_message', error);
+		}
 
 		await upsertPermissions();
 	},

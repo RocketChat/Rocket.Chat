@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { i18n } from '../../../server/lib/i18n';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 
 /*
@@ -28,7 +28,7 @@ slashCommands.add({
 		}).toArray();
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('User_doesnt_exist', {
+				msg: i18n.t('User_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [usernames.join(' @')],
 					lng: settings.get('Language') || 'en',
@@ -49,7 +49,7 @@ slashCommands.add({
 			}
 			const usernameStr = user.username as string;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Username_is_already_in_here', {
+				msg: i18n.t('Username_is_already_in_here', {
 					postProcess: 'sprintf',
 					sprintf: [usernameStr],
 					lng: settings.get('Language') || 'en',
@@ -70,11 +70,11 @@ slashCommands.add({
 					}
 					if (error === 'cant-invite-for-direct-room') {
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+							msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
 						});
 					} else {
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
+							msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
 						});
 					}
 				}
