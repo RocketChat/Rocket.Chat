@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async 'authorization:removeUserFromRole'(roleId, username, scope = 'Users') {
+	async 'authorization:removeUserFromRole'(roleId, username, scope) {
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
