@@ -115,11 +115,11 @@ export const useFilteredApps = ({
 		}
 
 		if (context && context === 'private') {
-			filtered = apps.filter((app) => 'private' in app);
+			filtered = apps.filter((app) => app.private);
 		}
 
 		if (context && context === 'installed') {
-			filtered = apps.filter((app) => !('private' in app));
+			filtered = apps.filter((app) => !app.private);
 		}
 
 		const total = filtered.length;

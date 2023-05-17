@@ -73,8 +73,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(isAdminUser?: string): Promise<App[]> {
-		const result = await APIClient.get('/apps/marketplace', { isAdminUser });
+	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
+		const result = await APIClient.get('/apps/marketplace', { isAdminUser: isAdminUser.toString() });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one

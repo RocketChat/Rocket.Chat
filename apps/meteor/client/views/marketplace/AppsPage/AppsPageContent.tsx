@@ -4,7 +4,6 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
@@ -24,9 +23,9 @@ import PrivateEmptyState from './PrivateEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
-	const { marketplaceApps, installedApps } = useAppsResult();
+	const { marketplaceApps, installedApps, reload } = useAppsResult();
+	console.log(marketplaceApps, installedApps);
 	const [text, setText] = useDebouncedState('', 500);
-	const reload = useAppsReload();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [currentRouteName] = useCurrentRoute();
