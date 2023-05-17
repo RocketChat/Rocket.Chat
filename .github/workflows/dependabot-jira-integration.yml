@@ -22,3 +22,4 @@ jobs:
           JIRA_ISSUE_TYPE: Task
           JIRA_WATCHERS: igor.rincon@rocket.chat,bruno.cestari@rocket.chat,giovani.salvador@rocket.chat
           JIRA_RESTRICTED_COMMENT_ROLE: Writer
+          JIRA_ISSUE_LABELS: team_collab
