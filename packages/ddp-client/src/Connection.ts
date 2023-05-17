@@ -192,8 +192,9 @@ export class ConnectionImpl
 
 				this.retryOptions.retryTimer = setTimeout(() => {
 					this.reconnect();
-				}, this.retryOptions.retryTime);
+				}, this.retryOptions.retryTime * this.retryCount);
 			};
+			this.ws = ws;
 		});
 	}
 

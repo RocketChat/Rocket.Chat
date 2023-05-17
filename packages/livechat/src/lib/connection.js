@@ -7,7 +7,6 @@ import { loadConfig } from './main';
 import { loadMessages } from './room';
 
 let self;
-let timer;
 let connectedListener;
 let disconnectedListener;
 let initiated = false;
@@ -30,7 +29,7 @@ const Connection = {
 			this.clearListeners();
 			await loadConfig();
 			await import('../i18next');
-			await Livechat.connection.connect();
+			// await Livechat.connection.connect();
 			this.addListeners();
 			this.clearAlerts();
 		} catch (e) {
@@ -38,22 +37,22 @@ const Connection = {
 		}
 	},
 
-	reconnect() {
-		if (timer) {
-			return;
-		}
-		timer = setTimeout(async () => {
-			try {
-				clearTimeout(timer);
-				timer = false;
-				await this.connect();
-				await loadMessages();
-			} catch (e) {
-				console.error('Reconecting error: ', e);
-				this.reconnect();
-			}
-		}, 5000);
-	},
+	// reconnect() {
+	// 	if (timer) {
+	// 		return;
+	// 	}
+	// 	timer = setTimeout(async () => {
+	// 		try {
+	// 			clearTimeout(timer);
+	// 			timer = false;
+	// 			await this.connect();
+	// 			await loadMessages();
+	// 		} catch (e) {
+	// 			console.error('Reconecting error: ', e);
+	// 			this.reconnect();
+	// 		}
+	// 	}, 5000);
+	// },
 
 	async clearAlerts() {
 		const { alerts } = store.state;
@@ -74,7 +73,7 @@ const Connection = {
 	async handleDisconnected() {
 		await self.clearAlerts();
 		await self.displayAlert({ id: livechatDisconnectedAlertId, children: i18next.t('livechat_is_not_connected'), error: true, timeout: 0 });
-		self.reconnect();
+		// self.reconnect();
 	},
 
 	addListeners() {
@@ -83,7 +82,7 @@ const Connection = {
 		}
 
 		if (!disconnectedListener) {
-			disconnectedListener = Livechat.connection.on('close', this.handleDisconnected);
+			disconnectedListener = Livechat.connection.on('disconnected', this.handleDisconnected);
 		}
 	},
 

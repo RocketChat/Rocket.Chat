@@ -353,7 +353,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.rest.put(`/v1/livechat/message/${id}`, params);
 	}
 
-	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): LivechatClientImpl {
+	static create(url: string, retryOptions = { retryCount: 3, retryTime: 10000 }): LivechatClientImpl {
 		// TODO: Decide what to do with the EJSON objects
 		const ddp = new DDPDispatcher();
 

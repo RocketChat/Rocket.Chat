@@ -6664,7 +6664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ddp-client@workspace:packages/ddp-client":
+"@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
   dependencies:
