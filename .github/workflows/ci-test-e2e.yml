@@ -106,7 +106,7 @@ jobs:
               break
             fi
             i=$((i + 1))
-            sleep 30
+            sleep 5
           done
           if [ $i -eq 10 ]; then
             echo "Failed to verify httpbin is running"
