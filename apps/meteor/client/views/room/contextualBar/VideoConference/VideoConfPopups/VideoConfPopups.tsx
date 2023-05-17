@@ -32,8 +32,8 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 		}
 
 		return (): void => {
-			customSound.pause('ringtone');
-			customSound.pause('dialtone');
+			customSound.stop('ringtone');
+			customSound.stop('dialtone');
 		};
 	}, [customSound, isRinging, isCalling]);
 
