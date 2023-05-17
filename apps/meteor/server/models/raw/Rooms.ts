@@ -131,7 +131,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async getMostRecentAverageChatDurationTime(
 		numberMostRecentChats: number,
-		department: string,
+		department?: string,
 	): Promise<{ props: { _id: IRoom['_id']; avgChatDuration: number } }> {
 		const aggregate = [
 			{
