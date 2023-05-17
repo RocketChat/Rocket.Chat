@@ -411,7 +411,7 @@ describe('[Outgoing Integrations]', function () {
 			});
 		});
 
-		it.skip('should return the integration successfully when the user is able to see only your own integrations', (done) => {
+		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
 			updatePermission('manage-outgoing-integrations', [])
 				.then(() => updatePermission('manage-own-outgoing-integrations', ['user']))
 				.then(() => {

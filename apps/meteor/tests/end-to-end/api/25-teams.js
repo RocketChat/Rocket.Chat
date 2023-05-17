@@ -1482,7 +1482,7 @@ describe('[Teams]', () => {
 			});
 		});
 
-		it.skip('should return public rooms for private team', (done) => {
+		it('should return public rooms for private team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
 				updatePermission('view-all-teams', ['admin']).then(() => {
 					request
@@ -1771,7 +1771,7 @@ describe('[Teams]', () => {
 				expect(response.body).to.have.property('success', true);
 			});
 
-			it.skip('should return the user subscription with the right notification preferences', (done) => {
+			it('should return the user subscription with the right notification preferences', (done) => {
 				request
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)

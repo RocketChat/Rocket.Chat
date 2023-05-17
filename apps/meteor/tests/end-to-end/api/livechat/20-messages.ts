@@ -23,7 +23,7 @@ describe('LIVECHAT - messages', function () {
 	});
 
 	describe('Quote message feature for visitors', () => {
-		it.skip('it should verify if visitor can quote message', async () => {
+		it('it should verify if visitor can quote message', async () => {
 			const {
 				room: { _id: roomId },
 				visitor: { token },
@@ -33,7 +33,7 @@ describe('LIVECHAT - messages', function () {
 			const agentMsgSentence = faker.lorem.sentence();
 			const agentMsg = await sendAgentMessage(roomId, agentMsgSentence);
 
-			const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
 			const msgLink = `${siteUrl}/live/${roomId}?msg=${agentMsg._id}`;
 			const quotedMsgSentence = faker.lorem.sentence();

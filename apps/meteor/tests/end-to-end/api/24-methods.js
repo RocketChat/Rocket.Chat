@@ -1875,7 +1875,7 @@ describe('Meteor.methods', function () {
 		});
 	});
 
-	describe.skip('[@setUserActiveStatus]', () => {
+	describe('[@setUserActiveStatus]', () => {
 		let testUser;
 		let testUser2;
 		const testUserCredentials = {};

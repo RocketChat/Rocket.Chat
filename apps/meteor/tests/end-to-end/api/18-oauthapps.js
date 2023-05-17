@@ -227,7 +227,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it.skip('should delete an app by its id', async () => {
+		it('should delete an app by its id', async () => {
 			await request
 				.post(api(`oauth-apps.delete`))
 				.set(credentials)

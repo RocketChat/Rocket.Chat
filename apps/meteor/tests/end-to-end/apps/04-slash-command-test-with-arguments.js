@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, request, credentials, api } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 
-describe.skip('Apps - Slash Command "test-with-arguments"', function () {
+describe('Apps - Slash Command "test-with-arguments"', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
