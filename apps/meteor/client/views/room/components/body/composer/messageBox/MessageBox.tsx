@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -41,6 +40,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -77,16 +77,6 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-const getComposerPlaceholder = (placeholder: string, room: IRoom) => {
-	const roomName = roomCoordinator.getRoomName(room?.t, room);
-
-	if (isDirectMessageRoom(room)) {
-		return `${placeholder} @${roomName}`;
-	}
-
-	return `${placeholder} #${roomName}`;
-};
-
 type MessageBoxProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
@@ -118,11 +108,10 @@ const MessageBox = ({
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
+	const chat = useChat();
 	const t = useTranslation();
 	const room = useUserRoom(rid);
-	const chat = useChat();
-
-	const composerPlaceholder = room && getComposerPlaceholder(t('Message'), room);
+	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
