@@ -24,8 +24,17 @@ import { AccountImpl } from './types/Account';
 
 * In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
 */
-interface SDK {
-	stream(name: string, params: unknown[], cb: (data: unknown) => void): () => void;
+export interface SDK {
+	stream(
+		name: string,
+		params: unknown[],
+		cb: (...data: unknown[]) => void,
+	): {
+		stop: () => void;
+		ready: () => Promise<void>;
+		isReady: boolean;
+		onReady: (cb: () => void) => void;
+	};
 
 	connection: Connection;
 	account: Account;
@@ -83,8 +92,14 @@ export class DDPSDK implements SDK {
 				}
 			}),
 		];
-		return () => {
-			cancel.forEach((fn) => fn());
+
+		return {
+			stop: () => {
+				cancel.forEach((fn) => fn());
+			},
+			ready: async () => undefined,
+			isReady: false,
+			onReady: (_cb: () => void) => void 0,
 		};
 	}
 
