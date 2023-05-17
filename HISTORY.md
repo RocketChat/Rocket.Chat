@@ -1,3 +1,25 @@
+# 6.2.1
+
+`2023-05-17  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps engine and vm2 ([#29262](https://github.com/RocketChat/Rocket.Chat/pull/29262))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+
 # 6.2.0
 
 `2023-05-15  ·  9 🎉  ·  2 🚀  ·  80 🐛  ·  290 🔍  ·  56 👩‍💻👨‍💻`
