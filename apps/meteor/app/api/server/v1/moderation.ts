@@ -6,8 +6,9 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users, Messages } from '@rocket.chat/models';
+import { ModerationReports, Users } from '@rocket.chat/models';
 import type { IModerationReport } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
@@ -32,7 +33,9 @@ API.v1.addRoute(
 			const latest = _latest ? new Date(_latest) : new Date();
 			const oldest = _oldest ? new Date(_oldest) : new Date(0);
 
-			const reports = await ModerationReports.findReportsGroupedByUser(latest, oldest, selector, { offset, count, sort }).toArray();
+			const escapedSelector = escapeRegExp(selector);
+
+			const reports = await ModerationReports.findReportsGroupedByUser(latest, oldest, escapedSelector, { offset, count, sort }).toArray();
 
 			if (reports.length === 0) {
 				return API.v1.success({
@@ -43,7 +46,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countReportsInRange(latest, oldest, selector);
+			const total = await ModerationReports.countReportsInRange(latest, oldest, escapedSelector);
 
 			return API.v1.success({
 				reports,
@@ -75,7 +78,13 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, selector, { offset, count, sort });
+			const escapedSelector = escapeRegExp(selector);
+
+			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, escapedSelector, {
+				offset,
+				count,
+				sort,
+			});
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -155,20 +164,19 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// TODO change complicated camelcases to simple verbs/nouns
 			const { userId, msgId, reason, action: actionParam } = this.bodyParams;
 
 			if (userId) {
-				const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-				if (!user) {
-					return API.v1.failure('user-not-found');
+				const report = await ModerationReports.findOne({ 'message.u._id': userId, '_hidden': { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
 			if (msgId) {
-				const message = await Messages.findOneById(msgId, { projection: { _id: 1 } });
-				if (!message) {
-					return API.v1.failure('error-message-not-found');
+				const report = await ModerationReports.findOne({ 'message._id': msgId, '_hidden': { $ne: true } }, { projection: { _id: 1 } });
+				if (!report) {
+					return API.v1.failure('no-reports-found');
 				}
 			}
 
@@ -203,7 +211,9 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { selector = '' } = this.queryParams;
 
-			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId, selector, { count, sort, offset });
+			const escapedSelector = escapeRegExp(selector);
+
+			const { cursor, totalCount } = ModerationReports.findReportsByMessageId(msgId, escapedSelector, { count, sort, offset });
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
