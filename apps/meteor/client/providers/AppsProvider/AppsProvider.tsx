@@ -39,8 +39,6 @@ const AppsProvider: FC = ({ children }) => {
 		dispatchMarketplaceApps({ type: 'request' });
 		dispatchInstalledApps({ type: 'request' });
 
-		console.log('brah');
-
 		let installedApps: App[] = [];
 		let marketplaceApps: App[] = [];
 
