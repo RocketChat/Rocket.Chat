@@ -1,0 +1,6 @@
+/dist
+/build
+/node_modules
+/storybook-static
+/.storybook/jest-results.json
+/**/*.mdx
