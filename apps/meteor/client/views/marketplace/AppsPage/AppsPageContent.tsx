@@ -24,7 +24,6 @@ import PrivateEmptyState from './PrivateEmptyState';
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps, reload } = useAppsResult();
-	console.log(marketplaceApps, installedApps);
 	const [text, setText] = useDebouncedState('', 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
