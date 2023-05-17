@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
 import { LivechatUnit } from '@rocket.chat/models';
@@ -53,21 +53,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.col.deleteOne(query);
 	}
 
-	createOrUpdateDepartment(
-		_id: string | null,
-		data: {
-			enabled: boolean;
-			name: string;
-			description?: string | undefined;
-			showOnRegistration: boolean;
-			email: string;
-			showOnOfflineForm: boolean;
-			requestTagBeforeClosingChat?: boolean | undefined;
-			chatClosingTags?: string[] | undefined;
-			fallbackForwardDepartment?: string | undefined;
-			departmentsAllowedToForward?: string[] | undefined;
-		},
-	): Promise<ILivechatDepartment> {
+	createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO): Promise<ILivechatDepartment> {
 		return super.createOrUpdateDepartment(_id, { ...data, type: 'd' });
 	}
 

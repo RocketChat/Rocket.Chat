@@ -11,7 +11,12 @@ import {
 	LivechatUnit,
 } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
-import type { IOmnichannelBusinessUnit, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelBusinessUnit,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+	LivechatDepartmentDTO,
+} from '@rocket.chat/core-typings';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
@@ -219,18 +224,7 @@ export const LivechatEnterprise = {
 	 */
 	async saveDepartment(
 		_id: string | null,
-		departmentData: {
-			enabled: boolean;
-			name: string;
-			description?: string;
-			showOnRegistration: boolean;
-			email: string;
-			showOnOfflineForm: boolean;
-			requestTagBeforeClosingChat?: boolean;
-			chatClosingTags?: string[];
-			fallbackForwardDepartment?: string;
-			departmentsAllowedToForward?: string[];
-		},
+		departmentData: LivechatDepartmentDTO,
 		departmentAgents?: {
 			upsert?: { agentId: string; count?: number; order?: number }[];
 			remove?: { agentId: string; count?: number; order?: number };
