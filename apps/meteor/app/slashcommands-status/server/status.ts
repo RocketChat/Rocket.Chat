@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { setUserStatusMethod } from '../../user-status/server/methods/setUserStatus';
 import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
@@ -18,7 +18,7 @@ slashCommands.add({
 		const lng = user?.language || settings.get('Language') || 'en';
 
 		try {
-			await Meteor.callAsync('setUserStatus', null, params);
+			await setUserStatusMethod(userId, undefined, params);
 
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('StatusMessage_Changed_Successfully', { lng }),

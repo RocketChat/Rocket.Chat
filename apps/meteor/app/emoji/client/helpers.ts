@@ -77,6 +77,10 @@ export const getCategoriesList = () => {
 		}
 	}
 
+	const rocketPosition = categoriesList.findIndex((category) => category.key === CUSTOM_CATEGORY);
+	const rocketCategory = categoriesList.splice(rocketPosition, 1)[0];
+	categoriesList.push(rocketCategory);
+
 	return categoriesList;
 };
 

@@ -387,6 +387,10 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
+		if (file.rid) {
+			return;
+		}
+
 		if (!file.userId) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
