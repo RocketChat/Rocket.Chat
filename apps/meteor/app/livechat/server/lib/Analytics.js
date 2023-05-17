@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment-timezone';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger/server';
+import { i18n } from '../../../../server/lib/i18n';
 
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
@@ -142,7 +142,7 @@ export const Analytics = {
 			return;
 		}
 
-		const t = (s) => TAPi18n.__(s, { lng: language });
+		const t = (s) => i18n.t(s, { lng: language });
 
 		return this.OverviewData[name](from, to, departmentId, timezone, t);
 	},

@@ -1,16 +1,7 @@
 import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
-import type { EmojiPackage } from '../lib/rocketchat';
+import type { EmojiPackages } from '../lib/rocketchat';
 
-let EmojiPicker: any;
-const removeFromRecent = (emoji: string) => {
-	if (!EmojiPicker) {
-		// since this function will be only called client side, the import needs to happen here
-		({ EmojiPicker } = require('./lib/EmojiPicker'));
-	}
-	EmojiPicker.removeFromRecent(emoji.replace(/(^:|:$)/g, ''));
-};
-
-export const emoji: EmojiPackage = {
+export const emoji: EmojiPackages = {
 	packages: {
 		base: {
 			emojiCategories: [{ key: 'recent', i18n: 'Frequently_Used' }],
@@ -21,10 +12,6 @@ export const emoji: EmojiPackage = {
 			toneList: {},
 			render: emojioneRender,
 			renderPicker(emojiToRender) {
-				if (!emoji.list[emojiToRender]) {
-					removeFromRecent(emojiToRender);
-					return;
-				}
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
 				if (!correctPackage) {
 					return;
@@ -34,6 +21,5 @@ export const emoji: EmojiPackage = {
 			},
 		},
 	},
-	/** @type {Record<string, unknown>} */
 	list: {},
 };

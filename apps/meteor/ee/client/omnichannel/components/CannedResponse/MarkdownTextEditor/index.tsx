@@ -3,12 +3,13 @@ import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo, useCallback, useRef, useState } from 'react';
 
-import { EmojiPicker } from '../../../../../../app/emoji/client';
 import { Backdrop } from '../../../../../../client/components/Backdrop';
+import { useEmojiPicker } from '../../../../../../client/contexts/EmojiPickerContext';
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
 const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, value }) => {
+	const t = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -16,7 +17,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 
 	const [visible, setVisible] = useState(false);
 
-	const t = useTranslation();
+	const { open: openEmojiPicker } = useEmojiPicker();
 
 	const useMarkdownSyntax = (char: '*' | '_' | '~' | '[]()'): (() => void) =>
 		useCallback(() => {
@@ -63,13 +64,8 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 		}
 	};
 
-	const openEmojiPicker = (): void => {
+	const handleOpenEmojiPicker = (): void => {
 		if (!useEmojisPreference) {
-			return;
-		}
-
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
 			return;
 		}
 
@@ -77,9 +73,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			throw new Error('Missing textAreaRef');
 		}
 
-		EmojiPicker.open(textAreaRef.current, (emoji: string): void => {
-			onClickEmoji(emoji);
-		});
+		openEmojiPicker(textAreaRef.current, (emoji: string) => onClickEmoji(emoji));
 	};
 
 	const openPlaceholderSelect = (): void => {
@@ -95,7 +89,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title={t('Italic')} />
 					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title={t('Strike')} />
 					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title={t('Link')} />
-					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} title={t('Emoji')} />
+					<TextEditor.Toolbox.IconButton name='emoji' action={handleOpenEmojiPicker} title={t('Emoji')} />
 				</Box>
 				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />
 				<Backdrop
