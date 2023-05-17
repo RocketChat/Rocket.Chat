@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
@@ -195,26 +194,20 @@ export class RocketChatMessageAdapter {
 	}
 
 	public async reactToMessage(user: FederatedUser, message: IMessage, reaction: string, externalEventId: string): Promise<void> {
-		// we need to run this as the user due to a high coupling in this function that relies on the logged in user
-		await Meteor.runAsUser(user.getInternalId(), async () => {
-			try {
-				await executeSetReaction(reaction, message._id);
-				user.getUsername() &&
-					(await Messages.setFederationReactionEventId(user.getUsername() as string, message._id, reaction, externalEventId));
-			} catch (error: any) {
-				if (error?.message?.includes('Invalid emoji provided.')) {
-					await executeSetReaction(DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST, message._id);
-				}
+		try {
+			await executeSetReaction(user.getInternalId(), reaction, message._id);
+			user.getUsername() &&
+				(await Messages.setFederationReactionEventId(user.getUsername() as string, message._id, reaction, externalEventId));
+		} catch (error: any) {
+			if (error?.message?.includes('Invalid emoji provided.')) {
+				await executeSetReaction(user.getInternalId(), DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST, message._id);
 			}
-		});
+		}
 	}
 
 	public async unreactToMessage(user: FederatedUser, message: IMessage, reaction: string, externalEventId: string): Promise<void> {
-		// we need to run this as the user due to a high coupling in this function that relies on the logged in user
-		await Meteor.runAsUser(user.getInternalId(), async () => {
-			await executeSetReaction(reaction, message._id);
-			await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
-		});
+		await executeSetReaction(user.getInternalId(), reaction, message._id);
+		await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
 	}
 
 	public async findOneByFederationIdOnReactions(federationEventId: string, user: FederatedUser): Promise<IMessage | null | undefined> {
