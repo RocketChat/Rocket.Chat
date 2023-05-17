@@ -17,6 +17,8 @@
 		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
+		"@changesets/changelog-github": "^0.4.8",
+		"@changesets/cli": "^2.26.1",
 		"@types/chart.js": "^2.9.37",
 		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
