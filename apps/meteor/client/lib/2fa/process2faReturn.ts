@@ -59,22 +59,13 @@ export async function process2faReturn({
 		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
 	};
 
-	assertModalProps(props);
+	try {
+		const code = await invokeTwoFactorModal(props);
 
-	imperativeModal.open({
-		component: TwoFactorModal,
-		props: {
-			...props,
-			onConfirm: (code: string, method: string): void => {
-				imperativeModal.close();
-				onCode(method === 'password' ? SHA256(code) : code, method);
-			},
-			onClose: (): void => {
-				imperativeModal.close();
-				originalCallback(new Meteor.Error('totp-canceled'));
-			},
-		},
-	});
+		onCode(code, props.method);
+	} catch (error) {
+		originalCallback(error, result);
+	}
 }
 
 export async function process2faAsyncReturn({
@@ -100,23 +91,29 @@ export async function process2faAsyncReturn({
 
 		assertModalProps(props);
 
-		return new Promise<unknown>((resolve, reject) => {
-			imperativeModal.open({
-				component: TwoFactorModal,
-				props: {
-					...props,
-					onConfirm: (code: string, method: string): void => {
-						imperativeModal.close();
+		const code = await invokeTwoFactorModal(props);
 
-						// once we have the code, we resolve the promise with the result of the `onCode` callback
-						resolve(onCode(method === 'password' ? SHA256(code) : code, method));
-					},
-					onClose: (): void => {
-						imperativeModal.close();
-						reject(new Meteor.Error('totp-canceled'));
-					},
-				},
-			});
-		});
+		return onCode(code, props.method);
 	});
 }
+
+export const invokeTwoFactorModal = async (props: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string | undefined }) => {
+	assertModalProps(props);
+
+	return new Promise<string>((resolve, reject) => {
+		imperativeModal.open({
+			component: TwoFactorModal,
+			props: {
+				...props,
+				onConfirm: (code: string, method: string): void => {
+					imperativeModal.close();
+					resolve(method === 'password' ? SHA256(code) : code);
+				},
+				onClose: (): void => {
+					imperativeModal.close();
+					reject(new Meteor.Error('totp-canceled'));
+				},
+			},
+		});
+	});
+};
