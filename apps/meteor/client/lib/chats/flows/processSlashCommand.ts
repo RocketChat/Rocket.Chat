@@ -5,7 +5,8 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
 import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
-import { slashCommands, APIClient } from '../../../../app/utils/client';
+import { slashCommands } from '../../../../app/utils/client';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { call } from '../../utils/call';
 import type { ChatAPI } from '../ChatAPI';
@@ -73,7 +74,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		return true;
 	}
 
-	await APIClient.post('/v1/statistics.telemetry', {
+	await sdk.rest.post('/v1/statistics.telemetry', {
 		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
 	});
 

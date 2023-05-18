@@ -20,7 +20,7 @@ export const applyCustomTranslations = (): void => {
 		const parsedCustomTranslations: Record<string, unknown> = JSON.parse(customTranslations);
 
 		for (const [lang, translations] of Object.entries(parsedCustomTranslations)) {
-			i18n.addResourceBundle(lang, 'project', translations);
+			i18n.addResourceBundle(lang, 'core', translations);
 		}
 	} catch (e) {
 		console.error('Invalid setting Custom_Translations', e);

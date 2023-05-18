@@ -26,7 +26,12 @@ declare module '../DDPSDK' {
 			streamName: N,
 			key: K,
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): () => void;
+		): {
+			stop: () => void;
+			ready: () => Promise<void>;
+			isReady: boolean;
+			onReady: (cb: () => void) => void;
+		};
 	}
 }
 
@@ -50,19 +55,19 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 	}
 
 	onTyping(cb: (username: string, activities: string) => void): () => void {
-		return this.ev.on('typing', (args) => cb(...args));
+		return this.ev.on('typing', (args) => args[1] && cb(args[0], args[1]));
 	}
 
 	onRoomMessage(rid: string, cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void) {
-		return this.stream('room-messages', rid, cb);
+		return this.stream('room-messages', rid, cb).stop;
 	}
 
 	onRoomTyping(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/typing`>) => void) {
-		return this.stream('notify-room', `${rid}/typing`, cb);
+		return this.stream('notify-room', `${rid}/typing`, cb).stop;
 	}
 
 	onRoomDeleteMessage(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>) => void) {
-		return this.stream('notify-room', `${rid}/deleteMessage`, cb);
+		return this.stream('notify-room', `${rid}/deleteMessage`, cb).stop;
 	}
 
 	onAgentChange(rid: string, cb: (data: LivechatRoomEvents<'agentData'>) => void): () => void {
@@ -70,7 +75,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 			if (data.type === 'agentData') {
 				cb(data.data);
 			}
-		});
+		}).stop;
 	}
 
 	onAgentStatusChange(rid: string, cb: (data: LivechatRoomEvents<'agentStatus'>) => void): () => void {
@@ -78,15 +83,15 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 			if (data.type === 'agentStatus') {
 				cb(data.status);
 			}
-		});
+		}).stop;
 	}
 
-	onQueuePositionChange(rid: string, cb: (data: LivechatRoomEvents<'queueData'>) => void): () => void {
+	onQueuePositionChange(rid: string, cb: (data: LivechatRoomEvents<'queueData' | 'agentData'>) => void): () => void {
 		return this.stream('livechat-room', rid, (data) => {
 			if (data.type === 'queueData') {
 				cb(data.data);
 			}
-		});
+		}).stop;
 	}
 
 	onVisitorChange(rid: string, cb: (data: LivechatRoomEvents<'visitorData'>) => void): () => void {
@@ -94,7 +99,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 			if (data.type === 'visitorData') {
 				cb(data.visitor);
 			}
-		});
+		}).stop;
 	}
 
 	notifyVisitorTyping(rid: string, username: string, typing: boolean) {
