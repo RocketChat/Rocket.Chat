@@ -1,6 +1,6 @@
 import { Table } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
 
 const style = { width: '100%' };
@@ -14,7 +14,6 @@ const AgentOverview = ({
 	dateRange: { start: string; end: string };
 	departmentId: string;
 }) => {
-	const t = useTranslation();
 	const { start, end } = dateRange;
 
 	const params = useMemo(
@@ -49,7 +48,7 @@ const AgentOverview = ({
 			<Table.Head>
 				<Table.Row>
 					{displayData.head?.map(({ name }, i) => (
-						<Table.Cell key={i}>{t(name)}</Table.Cell>
+						<Table.Cell key={i}>{name}</Table.Cell>
 					))}
 				</Table.Row>
 			</Table.Head>
