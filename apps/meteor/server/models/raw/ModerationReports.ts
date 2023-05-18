@@ -231,7 +231,13 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 					},
 				},
 				{
-					'u.username': {
+					'message.u.username': {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+				{
+					'message.u.name': {
 						$regex: selector,
 						$options: 'i',
 					},
