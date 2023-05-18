@@ -33,7 +33,7 @@ const onUserCalendar = async function (notification: ICalendarNotification): Pro
 
 Tracker.autorun(async () => {
 	if (!Meteor.userId()) {
-		return Notifications.unUser('calendar', onUserCalendar);
+		return Notifications.unUser('calendar');
 	}
 
 	return Notifications.onUser('calendar', onUserCalendar);

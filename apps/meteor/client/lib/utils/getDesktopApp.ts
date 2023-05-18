@@ -13,14 +13,7 @@ type AppointmentData = {
 	reminderDueBy?: Date;
 };
 
-type OutlookEventsResponse =
-	| {
-			status: 'success';
-			data: AppointmentData[];
-	  }
-	| {
-			status: 'canceled';
-	  };
+type OutlookEventsResponse = { status: 'success' | 'canceled' };
 
 type WindowMaybeDesktop = typeof window & {
 	RocketChatDesktop?: {

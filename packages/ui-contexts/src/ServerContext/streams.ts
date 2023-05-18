@@ -17,6 +17,7 @@ import type {
 	IIntegrationHistory,
 	ILivechatInquiryRecord,
 	IUserDataEvent,
+	ICalendarNotification,
 } from '@rocket.chat/core-typings';
 
 type ILivechatInquiryWithType = ILivechatInquiryRecord & { type?: 'added' | 'removed' | 'changed' };
@@ -88,6 +89,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
+		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 	];
 
 	'importers': [
