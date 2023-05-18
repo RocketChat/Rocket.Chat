@@ -1,5 +1,4 @@
 import { Table } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
 
@@ -25,7 +24,7 @@ const AgentOverview = ({
 		[departmentId, end, start, type],
 	);
 
-	const [displayData, setDisplayData] = useState<{ head: { name: TranslationKey }[]; data: { name: string; value: number | string }[] }>({
+	const [displayData, setDisplayData] = useState<{ head: { name: string }[]; data: { name: string; value: number | string }[] }>({
 		head: [],
 		data: [],
 	});
