@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
@@ -226,7 +226,7 @@ const RoomBody = (): ReactElement => {
 
 		const unSubscribeFromNotifyUser = subscribeToNotifyUser(
 			`${user._id}/subscriptions-changed`,
-			(event: string, subscription: ISubscription) => {
+			(event, subscription) => {
 				if (event === 'removed' && subscription.rid === room._id) {
 					queryClient.invalidateQueries(['rooms', room._id]);
 					dispatchToastMessage({
