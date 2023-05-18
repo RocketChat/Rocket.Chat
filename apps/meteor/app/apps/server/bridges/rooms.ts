@@ -1,18 +1,13 @@
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { ISubscription, IUser as ICoreUser, RoomType as CoreRoomType } from '@rocket.chat/core-typings';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
+import { Room } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -24,39 +19,31 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
 		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		let roomType: CoreRoomType;
 
 		switch (room.type) {
 			case RoomType.CHANNEL:
-				return this.createChannel(room.creator.id, rcRoom, members);
+				roomType = 'c';
+				break;
 			case RoomType.PRIVATE_GROUP:
-				return this.createPrivateGroup(room.creator.id, rcRoom, members);
+				roomType = 'p';
+				break;
 			case RoomType.DIRECT_MESSAGE:
-				return this.createDirectMessage(room.creator.id, members);
+				roomType = 'd';
+				break;
 			default:
 				throw new Error('Only channels, private groups and direct messages can be created.');
 		}
-	}
 
-	private prepareExtraData(room: Record<string, any>): Record<string, unknown> {
-		const extraData = Object.assign({}, room);
+		const extraData = Object.assign({}, rcRoom);
 		delete extraData.name;
 		delete extraData.t;
 		delete extraData.ro;
 		delete extraData.customFields;
 
-		return extraData;
-	}
+		const { _id } = await Room.create(room.creator.id, { name: rcRoom.name, type: roomType, readOnly: rcRoom.ro, extraData, members });
 
-	private async createChannel(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
-		return (await createChannelMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
-	}
-
-	private async createDirectMessage(userId: string, members: string[]): Promise<string> {
-		return (await createDirectMessage(members, userId)).rid;
-	}
-
-	private async createPrivateGroup(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
-		return (await createPrivateGroupMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
+		return _id;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
@@ -97,10 +84,11 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
-		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return Promise.all(
-			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),
+		const subscriptions = await Subscriptions.findByRoomId(roomId, {}).toArray();
+		const promisedMembers = subscriptions.map(async (sub: ISubscription) =>
+			this.orch.getConverters()?.get('users').convertById(sub.u?._id),
 		);
+		return Promise.all(promisedMembers);
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -121,22 +109,23 @@ export class AppRoomBridge extends RoomBridge {
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm });
+		// @ts-ignore Circular reference on field 'value'
+		await Rooms.updateOne(rm._id, rm);
 
-		for await (const username of members) {
+		const promisedAddedUsers = members.map(async (username: string) => {
 			const member = await Users.findOneByUsername(username, {});
 
-			if (!member) {
-				continue;
+			if (member) {
+				return Room.addUserToRoom(rm._id, member);
 			}
+		});
 
-			await addUserToRoom(rm._id, member);
-		}
+		await Promise.all(promisedAddedUsers);
 	}
 
 	protected async delete(roomId: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is deleting a room.`);
-		await deleteRoom(roomId);
+		await Rooms.removeById(roomId);
 	}
 
 	protected async createDiscussion(
@@ -160,16 +149,17 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		const discussion = {
-			prid: rcRoom.prid,
-			t_name: rcRoom.fname,
-			pmid: rcMessage ? rcMessage._id : undefined,
+			parentRoomId: rcRoom.prid,
+			parentMessageId: rcMessage ? rcMessage._id : undefined,
+			creatorId: room.creator.id,
+			name: rcRoom.fname,
+			members: members.length > 0 ? members : [],
 			reply: reply && reply.trim() !== '' ? reply : undefined,
-			users: members.length > 0 ? members : [],
 		};
 
-		const { rid } = await createDiscussion(room.creator.id, discussion);
+		const { _id } = await Room.createDiscussion(discussion);
 
-		return rid;
+		return _id;
 	}
 
 	protected getModerators(roomId: string, appId: string): Promise<IUser[]> {
@@ -193,9 +183,9 @@ export class AppRoomBridge extends RoomBridge {
 		}).toArray()) as unknown as {
 			uid: string;
 		}[];
-		// Was this a bug?
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
-		const userConverter = this.orch.getConverters()!.get('users');
-		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
+		const userConverter = this.orch.getConverters()?.get('users');
+		const promisedUsers = users.map(async (user: ICoreUser) => userConverter.convertToApp(user));
+		return Promise.all(promisedUsers);
 	}
 }
