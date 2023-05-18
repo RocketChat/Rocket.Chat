@@ -4004,6 +4004,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kaciras/deasync@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@kaciras/deasync@npm:1.0.3"
+  dependencies:
+    follow-redirects: ^1.15.2
+    tar-fs: ^2.1.1
+  checksum: 6986db099e8676ae2c21d1122db9f60dd5b74dd4ec06eb164c7ded0f512d037146f82cd3dee189d2863b1c6064f17d33b273edf67b25d3bb71050c5a6fe1aa6b
+  languageName: node
+  linkType: hard
+
 "@kossnocorp/desvg@npm:^0.1.1":
   version: 0.1.2
   resolution: "@kossnocorp/desvg@npm:0.1.2"
@@ -6808,6 +6818,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/apps-engine@npm:1.39.1-alpha.248":
+  version: 1.39.1-alpha.248
+  resolution: "@rocket.chat/apps-engine@npm:1.39.1-alpha.248"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.19
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: d7be27748f482bb41ee234344bfbe6040f161b33c5cfe20d3e054e07d5b7c6ff87a40672c49d9250da354d1a0de0a6b4d2c2cb1ce65e889726932404898b1e6d
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
@@ -7525,6 +7553,7 @@ __metadata:
     "@bugsnag/plugin-react": ^7.17.0
     "@faker-js/faker": ^6.3.1
     "@google-cloud/storage": ^5.20.5
+    "@kaciras/deasync": ^1.0.3
     "@nivo/bar": 0.79.1
     "@nivo/core": 0.79.0
     "@nivo/heatmap": 0.79.1
@@ -7536,7 +7565,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.39.1
+    "@rocket.chat/apps-engine": 1.39.1-alpha.248
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -20563,6 +20592,16 @@ __metadata:
     debug:
       optional: true
   checksum: 6aa4e3e3cdfa3b9314801a1cd192ba756a53479d9d8cca65bf4db3a3e8834e62139245cd2f9566147c8dfe2efff1700d3e6aefd103de4004a7b99985e71dd533
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
