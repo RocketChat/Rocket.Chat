@@ -6800,24 +6800,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.39.1":
-  version: 1.39.1
-  resolution: "@rocket.chat/apps-engine@npm:1.39.1"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    jose: ^4.11.1
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ^3.4.0
-    vm2: ^3.9.19
-  peerDependencies:
-    "@rocket.chat/ui-kit": "*"
-  checksum: f42f2c93f872b04fedd88fc08ac1223db2140036c2e9cb336e01fc58fd2fd347a747b657009a5efd785bdfa858331a91ec56b94abe997e5bddeee03b7e8c4280
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/apps-engine@npm:1.39.0-deasync":
   version: 1.39.0-deasync
   resolution: "@rocket.chat/apps-engine@npm:1.39.0-deasync"
@@ -6833,6 +6815,24 @@ __metadata:
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
   checksum: f896ddb401fa85440775a0ace2d06260189e33835c0e79b0eb9c2ee411e285048bcb9700c44c64fb18896a8d90e6a3a597d1d609957034301f851268f8e0488f
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:1.39.1":
+  version: 1.39.1
+  resolution: "@rocket.chat/apps-engine@npm:1.39.1"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.19
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: f42f2c93f872b04fedd88fc08ac1223db2140036c2e9cb336e01fc58fd2fd347a747b657009a5efd785bdfa858331a91ec56b94abe997e5bddeee03b7e8c4280
   languageName: node
   linkType: hard
 
@@ -37812,7 +37812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.19":
+"vm2@npm:^3.9.17, vm2@npm:^3.9.19":
   version: 3.9.19
   resolution: "vm2@npm:3.9.19"
   dependencies:
