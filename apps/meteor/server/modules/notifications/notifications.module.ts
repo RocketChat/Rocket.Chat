@@ -571,9 +571,3 @@ type ExtractNotifyUserEventName<
 	E extends StreamKeys<T> = StreamKeys<T>,
 > = E extends `${infer X}/${infer I}` ? (P extends X ? I : never) : never;
 
-// type X = ExtractNotifyUserEventName<'notify-user', 'webrtc'>;
-
-// type Y = StreamerCallbackArgs<'notify-user', `${string}/${'webrtc'}`>;
-// const a: NotificationsModule = {};
-
-// a.notifyUserInThisInstance('asda', 'webrtc', 'a', 'b', 'c');
