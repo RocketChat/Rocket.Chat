@@ -1,16 +1,15 @@
 import '@rocket.chat/icons/dist/rocketchat.css';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import './index.css';
 import App from './App';
 import { Provider } from './Context';
 
-ReactDOM.render(
-  <React.StrictMode>
+document.body.innerHTML = '<div id="root"></div>';
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
     <Provider>
       <App />
     </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
 );

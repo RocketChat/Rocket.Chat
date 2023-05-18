@@ -3,54 +3,62 @@
   "version": "0.31.22",
   "homepage": "./",
   "private": true,
+  "devDependencies": {
+    "@babel/eslint-parser": "~7.21.3",
+    "@rocket.chat/eslint-config": "workspace:~",
+    "@types/react-beautiful-dnd": "^13.1.4",
+    "@types/react-dom": "^18",
+    "css-loader": "^6.7.3",
+    "eslint": "~8.38.0",
+    "eslint-plugin-import": "~2.26.0",
+    "html-webpack-plugin": "^5.5.1",
+    "lint-staged": "~13.2.1",
+    "postcss": "^8.4.23",
+    "prettier": "~2.8.7",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "^4.15.0"
+  },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.5",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.4",
     "@rocket.chat/css-in-js": "^0.31.12",
-    "@rocket.chat/fuselage": "workspace:~",
-    "@rocket.chat/fuselage-hooks": "workspace:~",
-    "@rocket.chat/fuselage-polyfills": "workspace:~",
-    "@rocket.chat/fuselage-tokens": "workspace:~",
+    "@rocket.chat/fuselage": "next",
+    "@rocket.chat/fuselage-hooks": "next",
+    "@rocket.chat/fuselage-polyfills": "next",
+    "@rocket.chat/fuselage-tokens": "next",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
-    "@rocket.chat/icons": "workspace:~",
-    "@rocket.chat/logo": "workspace:~",
-    "@rocket.chat/styled": "workspace:~",
+    "@rocket.chat/icons": "next",
+    "@rocket.chat/logo": "next",
+    "@rocket.chat/styled": "next",
     "@types/jest": "^29.5.0",
     "@types/node": "~14.18.42",
-    "@types/react": "^17.0.57",
-    "@types/react-dom": "^17.0.19",
+    "@types/react": "~17.0.57",
     "codemirror": "^6.0.1",
     "eslint4b-prebuilt": "^6.7.2",
     "json5": "^2.2.3",
-    "react": "^17.0.2",
+    "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.1",
     "react-split-pane": "^0.1.92",
     "react-virtuoso": "~3.1.5",
     "typescript": "~5.0.4",
     "use-subscription": "^1.7.0",
-    "web-vitals": "^2.1.4",
-    "webpack": "~5.78.0"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev": "webpack-dev-server --mode development",
+    "build": "rm -rf dist &&  build",
     "lint": "lint",
     "lint-and-fix": "lint-and-fix",
-    "lint-staged": "lint-staged",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "lint-staged": "lint-staged"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "volta": {
+    "extends": "../../package.json"
   },
   "browserslist": {
     "production": [
@@ -63,21 +71,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@babel/eslint-parser": "~7.21.3",
-    "@rocket.chat/eslint-config-alt": "workspace:~",
-    "@types/react-beautiful-dnd": "^13.1.4",
-    "eslint": "~8.38.0",
-    "eslint-plugin-import": "~2.26.0",
-    "gh-pages": "^4.0.0",
-    "lint-all": "workspace:~",
-    "lint-staged": "~13.2.1",
-    "prettier": "~2.8.7"
-  },
-  "postcss": {
-    "plugins": {
-      "postcss-plugin": {}
-    }
   }
 }
