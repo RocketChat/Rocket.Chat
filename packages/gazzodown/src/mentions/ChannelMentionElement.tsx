@@ -1,5 +1,4 @@
-import { Palette } from '@rocket.chat/fuselage';
-import styled from '@rocket.chat/styled';
+import { Message } from '@rocket.chat/fuselage';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -7,17 +6,6 @@ import { MarkupInteractionContext } from '../MarkupInteractionContext';
 type ChannelMentionElementProps = {
 	mention: string;
 };
-
-const ChannelMention = styled('span')`
-	color: ${Palette.statusColor['status-font-on-info'].toString()};
-	cursor: pointer;
-	font-weight: 700;
-	font-size: 0.875rem;
-	line-height: 1.25rem;
-	&:hover {
-		text-decoration: underline;
-	}
-`;
 
 const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactElement => {
 	const { resolveChannelMention, onChannelMentionClick } = useContext(MarkupInteractionContext);
@@ -29,7 +17,12 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 		return <>#{mention}</>;
 	}
 
-	return <ChannelMention onClick={handleClick}>#{resolved.name ?? mention}</ChannelMention>;
+	return (
+		// @ts-expect-error because I'm dumb and forgot to add types
+		<Message.Mention clickable tag='#' onClick={handleClick}>
+			{resolved.name ?? mention}
+		</Message.Mention>
+	);
 };
 
 export default memo(ChannelMentionElement);

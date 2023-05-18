@@ -1,5 +1,4 @@
-import { Palette } from '@rocket.chat/fuselage';
-import styled from '@rocket.chat/styled';
+import { Message } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
@@ -8,24 +7,6 @@ import { MarkupInteractionContext } from '../MarkupInteractionContext';
 type UserMentionElementProps = {
 	mention: string;
 };
-
-const GroupMention = styled('span')`
-	color: ${Palette.statusColor['status-font-on-warning'].toString()};
-	font-weight: 700;
-	font-size: 0.875rem;
-	line-height: 1.25rem;
-`;
-
-const UserMention = styled('span', ({ own: _own, ...props }: { own: boolean }) => props)`
-	cursor: pointer;
-	color: ${(p): string => Palette.statusColor[p.own ? 'status-font-on-danger' : 'status-font-on-info'].toString()};
-	font-weight: 700;
-	font-size: 0.875rem;
-	line-height: 1.25rem;
-	&:hover {
-		text-decoration: underline;
-	}
-`;
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
 	const { resolveUserMention, onUserMentionClick } = useContext(MarkupInteractionContext);
@@ -38,11 +19,19 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
 
 	if (mention === 'all') {
-		return <GroupMention>@all</GroupMention>;
+		return (
+			<Message.Mention tag='@' variant='relevant'>
+				all
+			</Message.Mention>
+		);
 	}
 
 	if (mention === 'here') {
-		return <GroupMention>@here</GroupMention>;
+		return (
+			<Message.Mention tag='@' variant='relevant'>
+				here
+			</Message.Mention>
+		);
 	}
 
 	if (!resolved) {
@@ -50,15 +39,17 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	}
 
 	return (
-		<UserMention
-			// className={resolved._id === uid ? 'mention-link mention-link--me mention-link--user' : 'mention-link mention-link--user'}
-			own={resolved._id === uid}
+		<Message.Mention
+			tag='@'
+			variant={resolved._id === uid ? 'critical' : 'other'}
 			title={resolved.username || resolved.name}
+			clickable
+			// @ts-expect-error because I'm dumb and forgot to add types
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
-			@{(showRealName ? resolved.name : resolved.username) ?? mention}
-		</UserMention>
+			{(showRealName ? resolved.name : resolved.username) ?? mention}
+		</Message.Mention>
 	);
 };
 
