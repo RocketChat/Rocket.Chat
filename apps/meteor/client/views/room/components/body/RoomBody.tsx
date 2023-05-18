@@ -224,21 +224,18 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		const unSubscribeFromNotifyUser = subscribeToNotifyUser(
-			`${user._id}/subscriptions-changed`,
-			(event, subscription) => {
-				if (event === 'removed' && subscription.rid === room._id) {
-					queryClient.invalidateQueries(['rooms', room._id]);
-					dispatchToastMessage({
-						type: 'success',
-						message: t('You_have_been_removed_from_room', {
-							roomName: room?.fname || room?.name || '',
-						}),
-					});
-					homeRouter.push({});
-				}
-			},
-		);
+		const unSubscribeFromNotifyUser = subscribeToNotifyUser(`${user._id}/subscriptions-changed`, (event, subscription) => {
+			if (event === 'removed' && subscription.rid === room._id) {
+				queryClient.invalidateQueries(['rooms', room._id]);
+				dispatchToastMessage({
+					type: 'success',
+					message: t('You_have_been_removed_from_room', {
+						roomName: room?.fname || room?.name || '',
+					}),
+				});
+				homeRouter.push({});
+			}
+		});
 
 		return unSubscribeFromNotifyUser;
 	}, [user?._id, homeRouter, subscribeToNotifyUser, room._id, room?.fname, room?.name, t, dispatchToastMessage, queryClient]);
