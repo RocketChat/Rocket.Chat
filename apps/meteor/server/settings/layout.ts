@@ -112,7 +112,8 @@ export const createLayoutSettings = () =>
 				'Layout_Login_Terms',
 				'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
 				{
-					type: 'string',
+					type: 'code',
+					code: 'text/html',
 					multiline: true,
 					public: true,
 				},
