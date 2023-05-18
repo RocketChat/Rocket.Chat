@@ -27,6 +27,7 @@ jobs:
 
   release:
     name: Release
+    needs: [release-versions]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -39,9 +40,12 @@ jobs:
           cache-modules: true
           install: true
 
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
           title: 'chore: Bump packages'
         env:
+          HUSKY: 0
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
