@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
-import { t } from '../../../app/utils/lib/i18n';
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
