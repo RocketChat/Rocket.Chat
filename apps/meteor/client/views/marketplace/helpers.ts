@@ -173,13 +173,15 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 
 export const appStatusSpanProps = (
 	{ installed, status, subscriptionInfo, appRequestStats, migrated }: App,
+	isEnterprise?: boolean,
 	context?: string,
 	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
 	const isEnabled = status && appEnabledStatuses.includes(status);
+
 	if (installed) {
 		if (isEnabled) {
-			return migrated
+			return migrated && !isEnterprise
 				? {
 						label: 'Enabled*',
 						tooltipText: t('Grandfathered_app'),
@@ -189,7 +191,7 @@ export const appStatusSpanProps = (
 				  };
 		}
 
-		return migrated
+		return migrated && !isEnterprise
 			? {
 					label: 'Disabled*',
 					tooltipText: t('Grandfathered_app'),
@@ -236,8 +238,13 @@ export const appStatusSpanProps = (
 	}
 };
 
-export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context: string): appStatusSpanResponseProps[] => {
-	const status = appStatusSpanProps(app, context, isAppDetailsPage);
+export const appMultiStatusProps = (
+	app: App,
+	isAppDetailsPage: boolean,
+	context: string,
+	isEnterprise: boolean,
+): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app, isEnterprise, context, isAppDetailsPage);
 	const statuses = [];
 
 	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {

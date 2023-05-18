@@ -47,7 +47,7 @@ jobs:
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
           echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
-          NODE_VERSION=$(node -p "require('./package.json').volta.node")
+          NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
