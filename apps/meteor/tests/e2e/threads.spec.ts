@@ -106,7 +106,7 @@ test.describe.serial('Threads', () => {
 		});
 
 		test('expect delete the thread message and keep thread open if has more than one message', async ({ page }) => {
-			await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('another reply message');
+			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('another reply message');
 			await page.keyboard.press('Enter');
 
 			await poHomeChannel.content.openLastThreadMessageMenu();

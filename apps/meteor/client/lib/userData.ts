@@ -1,9 +1,9 @@
-import type { ILivechatAgent, IUser, IUserDataEvent, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 export const isSyncReady = new ReactiveVar(false);
 
@@ -60,7 +60,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 	cancel?.();
 
-	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
+	const result = Notifications.onUser('userData', (data) => {
 		switch (data.type) {
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,7 +78,10 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 		}
 	});
 
-	const { ldap, lastLogin, services: rawServices, ...userData } = await APIClient.get('/v1/me');
+	cancel = result.stop;
+	await result.ready();
+
+	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
 
 	// email?: {
 	// 	verificationTokens?: IUserEmailVerificationToken[];
