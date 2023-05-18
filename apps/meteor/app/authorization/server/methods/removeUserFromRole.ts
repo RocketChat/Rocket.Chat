@@ -11,7 +11,7 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope: undefined): Promise<boolean>;
+		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope?: string): Promise<boolean>;
 	}
 }
 
@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 				username,
 			},
 			scope,
-		};
+		} as const;
 		if (settings.get('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);
 		}
