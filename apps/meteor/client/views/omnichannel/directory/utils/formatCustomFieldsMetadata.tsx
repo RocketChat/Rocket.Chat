@@ -1,5 +1,4 @@
-import type { ILivechatCustomField, Serialized } from '@rocket.chat/core-typings';
-import type { CustomFieldMetadata } from '@rocket.chat/ui-contexts';
+import type { ILivechatCustomField, Serialized, CustomFieldMetadata } from '@rocket.chat/core-typings';
 
 export const formatCustomFieldsMetadata = (
 	customFields: Serialized<ILivechatCustomField>[],

@@ -131,7 +131,7 @@ function EditUser({ data, roles, onReload, ...props }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<Margins inlineEnd='x4'>
-							<Button danger flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>
+							<Button flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>
 								{t('Reset')}
 							</Button>
 							<Button primary mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>

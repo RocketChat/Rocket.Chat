@@ -94,4 +94,3 @@ export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';
 
 export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
-export { CustomFieldMetadata } from './types/CustomFieldMetadata';
