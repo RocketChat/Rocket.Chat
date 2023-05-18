@@ -1,2 +1,4 @@
+[ "$HUSKY" = "0" ] && echo "skipling push hook" && exit 0
+
 yarn lint && \
 yarn testunit
