@@ -63,6 +63,7 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 										onClick={option.action}
 										data-qa-type='message-action'
 										data-qa-id={option.id}
+										role={option.role ? option.role : 'button'}
 									/>
 								))}
 								{index !== arr.length - 1 && <OptionDivider />}
