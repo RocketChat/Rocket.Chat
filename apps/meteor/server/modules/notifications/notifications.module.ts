@@ -570,4 +570,3 @@ type ExtractNotifyUserEventName<
 	P extends string,
 	E extends StreamKeys<T> = StreamKeys<T>,
 > = E extends `${infer X}/${infer I}` ? (P extends X ? I : never) : never;
-
