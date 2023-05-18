@@ -85,5 +85,7 @@ export interface RestClientInterface {
 
 	send(endpoint: string, method: string, options?: Omit<RequestInit, 'method'>): Promise<Response>;
 
-	handleTwoFactorChallenge(cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string }) => Promise<string>): void;
+	handleTwoFactorChallenge(
+		cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string; invalidAttempt?: boolean }) => Promise<string>,
+	): void;
 }

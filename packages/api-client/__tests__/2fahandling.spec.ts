@@ -26,14 +26,25 @@ beforeEach(() => {
 			};
 		}
 
+		if (req.headers.get('x-2fa-code') === 'WRONG_2FA_CODE') {
+			return {
+				status: 400,
+				body: JSON.stringify({
+					errorType: 'totp-invalid',
+					message: 'Invalid TOTP provided',
+					details: {
+						method: 'totp',
+					},
+				}),
+			};
+		}
+
 		return {
 			status: 400,
 			body: JSON.stringify({
-				// error: 'totp-required',
 				errorType: 'totp-required',
 				details: {
 					method: 'totp',
-					// emailOrUsername?: string | undefined;
 				},
 			}),
 		};
@@ -91,7 +102,7 @@ test('if the 2fa handler is provided, and fails if should throw the error thrown
 	expect(fn).toHaveBeenCalledTimes(1);
 });
 
-test('if the 2fa handler is provided,  and handled it should resolves', async () => {
+test('if the 2fa handler is provided it should resolves', async () => {
 	const fn = jest.fn();
 
 	const client = new RestClient({
@@ -115,4 +126,38 @@ test('if the 2fa handler is provided,  and handled it should resolves', async ()
 	});
 
 	expect(fn).toHaveBeenCalledTimes(1);
+});
+
+test.only('should be ask for 2fa code again if the code is wrong', async () => {
+	const fn = jest.fn();
+
+	const client = new RestClient({
+		baseUrl: 'https://example.com',
+	});
+
+	let retries = 0;
+
+	client.handleTwoFactorChallenge(() => {
+		fn();
+
+		if (!retries) {
+			retries++;
+			return Promise.resolve('WRONG_2FA_CODE');
+		}
+
+		return Promise.resolve('2FA_CODE');
+	});
+
+	const result = await client.post('/v1/login', { user: 'foo', username: 'foo', email: 'foo', password: 'foo', code: 'foo' });
+
+	expect(result).toMatchObject({
+		status: 'success',
+		data: {
+			userId: 'foo',
+			email: 'foo',
+			username: 'foo',
+		},
+	});
+
+	expect(fn).toHaveBeenCalledTimes(2);
 });

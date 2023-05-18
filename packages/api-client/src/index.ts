@@ -10,7 +10,7 @@ import type {
 } from '@rocket.chat/rest-typings';
 
 import type { Middleware, RestClientInterface } from './RestClientInterface';
-import { hasRequiredTwoFactorMethod, isTotpRequiredError } from './errors';
+import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
 
 export { RestClientInterface };
 
@@ -50,7 +50,11 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 };
 
 export class RestClient implements RestClientInterface {
-	private twoFactorHandler?: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string }) => Promise<string>;
+	private twoFactorHandler?: (args: {
+		method: 'totp' | 'email' | 'password';
+		emailOrUsername?: string;
+		invalidAttempt?: boolean;
+	}) => Promise<string>;
 
 	private readonly baseUrl: string;
 
@@ -232,10 +236,14 @@ export class RestClient implements RestClientInterface {
 
 			const error = await response.json();
 
-			if (isTotpRequiredError(error) && hasRequiredTwoFactorMethod(error) && this.twoFactorHandler) {
+			if ((isTotpRequiredError(error) || isTotpInvalidError(error)) && hasRequiredTwoFactorMethod(error) && this.twoFactorHandler) {
 				const method2fa = 'details' in error ? error.details.method : 'password';
 
-				const code = await this.twoFactorHandler({ method: method2fa, emailOrUsername: error.details.emailOrUsername });
+				const code = await this.twoFactorHandler({
+					method: method2fa,
+					emailOrUsername: error.details.emailOrUsername,
+					invalidAttempt: isTotpInvalidError(error),
+				});
 
 				return this.send(endpoint, method, {
 					...options,
@@ -302,7 +310,9 @@ export class RestClient implements RestClientInterface {
 		} as RestClientInterface['send'];
 	}
 
-	handleTwoFactorChallenge(cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string }) => Promise<string>): void {
+	handleTwoFactorChallenge(
+		cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string; invalidAttempt?: boolean }) => Promise<string>,
+	): void {
 		this.twoFactorHandler = cb;
 	}
 }

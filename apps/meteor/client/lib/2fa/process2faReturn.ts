@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 
 import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
-import { isTotpRequiredError } from './utils';
+import { isTotpInvalidError, isTotpRequiredError } from './utils';
+import { t } from '../../../app/utils/lib/i18n';
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
@@ -49,7 +50,7 @@ export async function process2faReturn({
 	onCode: (code: string, method: string) => void;
 	emailOrUsername: string | null | undefined;
 }): Promise<void> {
-	if (!isTotpRequiredError(error) || !hasRequiredTwoFactorMethod(error)) {
+	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
 		originalCallback(error, result);
 		return;
 	}
@@ -57,6 +58,8 @@ export async function process2faReturn({
 	const props = {
 		method: error.details.method,
 		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		// eslint-disable-next-line no-nested-ternary
+		invalidAttempt: isTotpInvalidError(error),
 	};
 
 	try {
@@ -64,40 +67,58 @@ export async function process2faReturn({
 
 		onCode(code, props.method);
 	} catch (error) {
-		originalCallback(error, result);
+		process2faReturn({
+			error,
+			result,
+			originalCallback,
+			onCode,
+			emailOrUsername,
+		});
 	}
 }
 
 export async function process2faAsyncReturn({
-	promise,
+	error,
 	onCode,
 	emailOrUsername,
 }: {
-	promise: Promise<unknown>;
+	error: unknown;
 	onCode: (code: string, method: string) => unknown | Promise<unknown>;
 	emailOrUsername: string | null | undefined;
 }): Promise<unknown> {
 	// if the promise is rejected, we need to check if it's a 2fa error
-	return promise.catch(async (error) => {
-		// if it's not a 2fa error, we reject the promise
-		if (!isTotpRequiredError(error) || !hasRequiredTwoFactorMethod(error)) {
-			throw error;
-		}
+	// if it's not a 2fa error, we reject the promise
+	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
+		throw error;
+	}
 
-		const props = {
-			method: error.details.method,
-			emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
-		};
+	const props = {
+		method: error.details.method,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		// eslint-disable-next-line no-nested-ternary
+		invalidAttempt: isTotpInvalidError(error),
+	};
 
-		assertModalProps(props);
+	assertModalProps(props);
 
+	try {
 		const code = await invokeTwoFactorModal(props);
 
 		return onCode(code, props.method);
-	});
+	} catch (error) {
+		return process2faAsyncReturn({
+			error,
+			onCode,
+			emailOrUsername,
+		});
+	}
 }
 
-export const invokeTwoFactorModal = async (props: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string | undefined }) => {
+export const invokeTwoFactorModal = async (props: {
+	method: 'totp' | 'email' | 'password';
+	emailOrUsername?: string | undefined;
+	invalidAttempt?: boolean;
+}) => {
 	assertModalProps(props);
 
 	return new Promise<string>((resolve, reject) => {
