@@ -198,8 +198,6 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			return;
 		}
 
-		const role = clientAction !== 'removed' && (data || (await Roles.findOneById(id)));
-
 		if (clientAction === 'removed') {
 			void broadcast('watch.roles', {
 				clientAction: 'removed',
@@ -210,6 +208,8 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			});
 			return;
 		}
+
+		const role = data || (await Roles.findOneById(id));
 
 		if (!role) {
 			return;
