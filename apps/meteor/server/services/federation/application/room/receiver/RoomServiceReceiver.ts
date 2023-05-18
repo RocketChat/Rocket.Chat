@@ -1,4 +1,7 @@
+// TODO: Refactor this file splitting it into smaller files + removing the complexity of the most important method (changeMembership)
+/* eslint-disable complexity */
 import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
@@ -25,6 +28,7 @@ import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
 import { getMessageRedactionHandler } from '../message/receiver/message-redaction-helper';
+import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
 
 export class FederationRoomServiceReceiver extends AbstractFederationApplicationService {
 	constructor(
@@ -86,7 +90,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			federatedUser && (await this.updateUserDisplayNameInternally(federatedUser, userProfile?.displayName));
 		}
 
-		if (wasGeneratedOnTheProxyServer && (isUserJoiningByHimself || !affectedFederatedRoom)) {
+		if (wasGeneratedOnTheProxyServer && !isUserJoiningByHimself && !affectedFederatedRoom) {
 			return;
 		}
 
@@ -115,6 +119,11 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 
 		if (!federatedInviteeUser || !federatedInviterUser) {
 			throw new Error('Invitee or inviter user not found');
+		}
+
+		if (isUserJoiningByHimself) {
+			await this.whenUserIsJoiningByHimself(externalRoomId, normalizedRoomId, federatedInviterUser, federatedInviteeUser);
+			return;
 		}
 
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
@@ -169,12 +178,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!leave && inviteeAlreadyJoinedTheInternalRoom) {
 			return;
 		}
-
 		if (leave) {
-			const inviteeAlreadyJoinedTheInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
-				federatedRoom.getInternalId(),
-				federatedInviteeUser.getInternalId(),
-			);
 			if (!inviteeAlreadyJoinedTheInternalRoom) {
 				return;
 			}
@@ -200,14 +204,127 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			);
 			return;
 		}
-		if (isUserJoiningByHimself) {
-			await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
-			return;
-		}
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
+	}
+
+	private async whenUserIsJoiningByHimself(
+		externalRoomId: string,
+		normalizedRoomId: string,
+		federatedInviterUser: FederatedUser,
+		federatedInviteeUser: FederatedUser,
+	): Promise<void> {
+		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (room) {
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+				room.getInternalId(),
+				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+			);
+			const inviteeAlreadyJoinedTheInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
+				room.getInternalId(),
+				federatedInviteeUser.getInternalId(),
+			);
+			if (inviteeAlreadyJoinedTheInternalRoom) {
+				return;
+			}
+			await this.internalRoomAdapter.addUserToRoom(room, federatedInviteeUser);
+			return;
+		}
+
+		const externalRoomData = await this.bridge.getRoomData(federatedInviterUser.getExternalId(), externalRoomId);
+		if (!externalRoomData) {
+			return;
+		}
+
+		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
+		const roomCreationProcessIsRunningLocallyAlready =
+			!room && creatorUser && federatedInviterUser.getInternalId() === creatorUser.getInternalId();
+		if (roomCreationProcessIsRunningLocallyAlready) {
+			return;
+		}
+
+		if (!creatorUser) {
+			await this.createFederatedUserAndReturnIt(externalRoomData.creator.id, externalRoomData.creator.username);
+		}
+		const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
+		if (!federatedCreatorUser) {
+			return;
+		}
+		const isRoomFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(externalRoomId),
+			this.internalHomeServerDomain,
+		);
+		const newFederatedRoom = FederatedRoom.createInstance(
+			externalRoomId,
+			normalizedRoomId,
+			federatedCreatorUser,
+			RoomType.CHANNEL,
+			isRoomFromTheSameHomeServer ? externalRoomData.name : undefined,
+		);
+		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+		if (!isRoomFromTheSameHomeServer && externalRoomData.name) {
+			await this.onChangeRoomName({
+				externalRoomId,
+				normalizedRoomName: externalRoomData.name,
+				externalEventId: '',
+				externalSenderId: federatedCreatorUser.getExternalId(),
+				normalizedRoomId,
+			});
+		}
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+		// Do not need to await this, this can be done in parallel
+		void this.createFederatedUsersForRoomMembers(
+			federatedRoom,
+			externalRoomData.joinedMembers,
+			externalRoomData.creator.id,
+			federatedInviteeUser.getExternalId(),
+		);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+			createdInternalRoomId,
+			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+		);
+		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
+	}
+
+	private async createFederatedUserAndReturnIt(externalUserId: string, externalUsername?: string): Promise<FederatedUser> {
+		const user = await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId);
+		if (user) {
+			return user;
+		}
+		const isUserFromTheSameHomeserver = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(externalUserId),
+			this.internalHomeServerDomain,
+		);
+		const existsOnlyOnProxyServer = isUserFromTheSameHomeserver;
+		const localUsername = externalUsername || removeExternalSpecificCharsFromExternalIdentifier(externalUserId);
+		const username = isUserFromTheSameHomeserver ? localUsername : removeExternalSpecificCharsFromExternalIdentifier(externalUserId); // TODO: move these common functions to a proper layer
+		await this.createFederatedUserInternallyOnly(externalUserId, username, existsOnlyOnProxyServer);
+
+		return (await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId)) as FederatedUser;
+	}
+
+	private async createFederatedUsersForRoomMembers(
+		federatedRoom: FederatedRoom,
+		externalMembersExternalIds: string[],
+		creatorExternalId: string,
+		myselfExternalId: string,
+	): Promise<void> {
+		const membersExcludingOnesInvolvedInTheCreationProcess = externalMembersExternalIds.filter(
+			(externalMemberId) => externalMemberId !== creatorExternalId && externalMemberId !== myselfExternalId,
+		);
+
+		const federatedUsers = await Promise.all(
+			membersExcludingOnesInvolvedInTheCreationProcess.map((externalMemberId) => this.createFederatedUserAndReturnIt(externalMemberId)),
+		);
+		await this.internalRoomAdapter.addUsersToRoomWhenJoinExternalPublicRoom(
+			federatedUsers.filter(Boolean) as FederatedUser[],
+			federatedRoom,
+		);
 	}
 
 	private async handleDMRoomInviteWhenAllUsersWereBeingProvidedInTheCreationalEvent(
@@ -469,7 +586,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			this.bridge.extractHomeserverOrigin(externalRoomId),
 			this.internalHomeServerDomain,
 		);
-		if (shouldUseExternalRoomIdAsRoomName) {
+		if (shouldUseExternalRoomIdAsRoomName && federatedRoom.shouldUpdateRoomName(externalRoomId)) {
 			federatedRoom.changeRoomName(externalRoomId);
 			await this.internalRoomAdapter.updateRoomName(federatedRoom);
 		}

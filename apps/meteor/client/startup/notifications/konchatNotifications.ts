@@ -7,7 +7,6 @@ import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
-import type { NotificationEvent } from '../../../app/ui/client/lib/KonchatNotification';
 import { getUserPreference } from '../../../app/utils/client';
 import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
@@ -47,7 +46,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Notifications.onUser('notification', (notification: NotificationEvent) => {
+		Notifications.onUser('notification', (notification) => {
 			const openedRoomId = ['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) ? RoomManager.opened : undefined;
 
 			// This logic is duplicated in /client/startup/unread.coffee.
@@ -77,7 +76,7 @@ Meteor.startup(() => {
 			void notifyNewRoom(sub);
 		});
 
-		Notifications.onUser('subscriptions-changed', (_action: 'changed' | 'removed', sub: ISubscription) => {
+		Notifications.onUser('subscriptions-changed', (_, sub) => {
 			void notifyNewRoom(sub);
 		});
 	});
