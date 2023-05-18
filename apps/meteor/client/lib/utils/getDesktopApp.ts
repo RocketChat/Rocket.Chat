@@ -1,18 +1,3 @@
-type AppointmentData = {
-	id: string;
-	subject: string;
-	startTime: Date;
-	endTime: Date;
-	description: string;
-
-	isAllDay: boolean;
-	isCanceled: boolean;
-	organizer?: string;
-	meetingUrl?: string;
-	reminderMinutesBeforeStart?: number;
-	reminderDueBy?: Date;
-};
-
 type OutlookEventsResponse = { status: 'success' | 'canceled' };
 
 type WindowMaybeDesktop = typeof window & {
