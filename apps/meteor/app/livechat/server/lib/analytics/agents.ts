@@ -1,6 +1,15 @@
 import { LivechatRooms, LivechatAgentActivity } from '@rocket.chat/models';
 
-export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
+type Period = {
+	start: Date;
+	end: Date;
+};
+
+export const findAllAverageServiceTimeAsync = async ({
+	start,
+	end,
+	options = {},
+}: Period & { options?: { offset?: number; count?: number } }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -19,7 +28,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} 
 	};
 };
 
-export const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
+export const findAllServiceTimeAsync = async ({ start, end, options = {} }: Period & { options?: { offset?: number; count?: number } }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -34,7 +43,15 @@ export const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
 	};
 };
 
-export const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, options = {} }) => {
+export const findAvailableServiceTimeHistoryAsync = async ({
+	start,
+	end,
+	fullReport,
+	options = {},
+}: Period & {
+	options: { offset?: number; count?: number };
+	fullReport: boolean;
+}) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -43,6 +60,7 @@ export const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullRep
 		end,
 		fullReport,
 		onlyCount: true,
+		options: {},
 	}).toArray();
 	return {
 		agents: await LivechatAgentActivity.findAvailableServiceTimeHistory({
@@ -50,6 +68,7 @@ export const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullRep
 			end,
 			fullReport,
 			options,
+			onlyCount: false,
 		}).toArray(),
 		total: total.length ? total[0].total : 0,
 	};

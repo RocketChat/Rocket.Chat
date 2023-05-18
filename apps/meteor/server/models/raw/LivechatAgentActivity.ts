@@ -155,19 +155,10 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 			.toArray();
 	}
 
-	findAvailableServiceTimeHistory({
-		start,
-		end,
-		fullReport,
-		onlyCount = false,
-		options = {},
-	}: {
-		start: string;
-		end: string;
-		fullReport: boolean;
-		onlyCount: boolean;
-		options: any;
-	}): AggregationCursor<ILivechatAgentActivity> {
+	findAvailableServiceTimeHistory<
+		C extends boolean,
+		R = C extends false ? AggregationCursor<ILivechatAgentActivity> : AggregationCursor<{ total: number }>,
+	>({ start, end, fullReport, onlyCount, options = {} }: { start: Date; end: Date; fullReport: boolean; onlyCount: C; options: any }): R {
 		const match = {
 			$match: {
 				date: {
@@ -209,7 +200,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const params = [match, lookup, unwind, group, project, sort] as object[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
+			return this.col.aggregate<{ total: number }>(params) as R;
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -217,6 +208,6 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<ILivechatAgentActivity>(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }) as R;
 	}
 }

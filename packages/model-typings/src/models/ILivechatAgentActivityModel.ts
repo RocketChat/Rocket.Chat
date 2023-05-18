@@ -26,11 +26,20 @@ export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentAc
 		}[]
 	>;
 
-	findAvailableServiceTimeHistory(params: {
-		start: string;
-		end: string;
+	findAvailableServiceTimeHistory<
+		C extends boolean,
+		R = C extends false ? AggregationCursor<ILivechatAgentActivity> : AggregationCursor<{ total: number }>,
+	>({
+		start,
+		end,
+		fullReport,
+		onlyCount,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
 		fullReport: boolean;
-		onlyCount: boolean;
+		onlyCount: C;
 		options: any;
-	}): AggregationCursor<ILivechatAgentActivity>;
+	}): R;
 }
