@@ -61,7 +61,7 @@ type CreateDiscussionProperties = {
 	encrypted?: boolean;
 };
 
-const create = async ({
+export const create = async ({
 	prid,
 	pmid,
 	t_name: discussionName,
