@@ -18,7 +18,6 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 	}
 
 	return (
-		// @ts-expect-error because I'm dumb and forgot to add types
 		<Message.Mention clickable tag='#' onClick={handleClick}>
 			{resolved.name ?? mention}
 		</Message.Mention>

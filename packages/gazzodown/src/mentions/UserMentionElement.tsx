@@ -44,7 +44,6 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			variant={resolved._id === uid ? 'critical' : 'other'}
 			title={resolved.username || resolved.name}
 			clickable
-			// @ts-expect-error because I'm dumb and forgot to add types
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
