@@ -24,7 +24,13 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData, ICreateDiscussionParams, ICreateRoomExtraData } from './types/IRoomService';
+import type {
+	IRoomService,
+	ICreateRoomParams,
+	ISubscriptionExtraData,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
+} from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
@@ -47,7 +53,7 @@ import { AppFabricationFulfillment, IAppsManagerService } from './types/IAppsMan
 import { IAppsStatisticsService, AppsStatisticsResult } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import { IAppsConverterService } from './types/IAppsConverterService';
-import { ILivechatService, CloseRoomParams } from './types/ILivechatService'
+import { ILivechatService, CloseRoomParams } from './types/ILivechatService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -133,7 +139,7 @@ export {
 	ILivechatService,
 	CloseRoomParams,
 	ICreateDiscussionParams,
-	ICreateRoomExtraData
+	ICreateRoomExtraData,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
