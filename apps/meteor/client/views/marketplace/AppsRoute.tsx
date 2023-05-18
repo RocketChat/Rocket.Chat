@@ -41,7 +41,11 @@ const AppsRoute = (): ReactElement => {
 		};
 	}, [marketplaceRoute, context]);
 
-	if ((context === 'explore' || context === 'installed' || context === 'private') && !canAccessMarketplace) {
+	if (
+		(context === 'explore' || context === 'installed' || context === 'private' || context === 'enterprise') &&
+		!canAccessMarketplace &&
+		!isAdminUser
+	) {
 		return <NotAuthorizedPage />;
 	}
 
