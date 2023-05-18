@@ -10,6 +10,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 
 	trigger?: string;
 	triggerAnywhere?: boolean;
+	triggerLength?: number;
 
 	suffix?: string;
 	prefix?: string;

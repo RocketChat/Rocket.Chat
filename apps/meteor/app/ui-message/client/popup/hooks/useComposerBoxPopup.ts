@@ -27,6 +27,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			callbackRef: (node: HTMLElement) => void;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
+			filter: unknown;
 	  }
 	| {
 			popup: undefined;
@@ -37,6 +38,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			select: undefined;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
+			filter: unknown;
 	  };
 
 const keys = {
@@ -251,6 +253,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			select: undefined,
 			suspended: true,
 			commandsRef,
+			filter: undefined,
 		};
 	}
 
@@ -260,6 +263,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		ariaActiveDescendant,
 		popup,
 		select,
+		filter,
 
 		suspended,
 

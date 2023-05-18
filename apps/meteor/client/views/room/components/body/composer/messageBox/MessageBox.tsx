@@ -330,17 +330,21 @@ const MessageBox = ({
 		select,
 		commandsRef,
 		callbackRef: c,
+		filter
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
+	const showComposerBoxPopupPreview = popup && !popup.preview;
+	const showComposerBoxPopup = showComposerBoxPopupPreview && popup?.triggerLength ? typeof filter === 'string' && popup.triggerLength - 1 < filter.length : true;
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
-			{popup && !popup.preview && (
+			{showComposerBoxPopup && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}
 			{/*
