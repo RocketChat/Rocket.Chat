@@ -138,7 +138,7 @@ const createWidget = (url) => {
 		smallScreen = matches;
 		updateWidgetStyle(widget.dataset.state === 'opened');
 		callHook('setExpanded', smallScreen);
-		callHook('setParentUrl', window.location.url);
+		callHook('setParentUrl', window.location.href);
 	};
 
 	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
