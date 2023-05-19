@@ -35,7 +35,7 @@ export type NotificationEvent = {
 		name?: string;
 		message?: {
 			msg: string;
-			t: string;
+			t?: string;
 		};
 	};
 };
