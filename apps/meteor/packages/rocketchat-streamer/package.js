@@ -13,8 +13,6 @@ Package.onUse(function (api) {
 
 	api.addFiles('lib/ev.js');
 
-	api.addFiles('client/client.js', 'client');
-
 	api.addFiles('server/server.js', 'server');
 
 	api.export('Streamer');
