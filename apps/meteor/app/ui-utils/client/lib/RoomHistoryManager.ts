@@ -8,6 +8,7 @@ import type { MutableRefObject } from 'react';
 
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { readMessage } from './readMessages';
+import { getUserPreference } from '../../../utils/client';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -150,7 +151,8 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
+		const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, showThreadsInMainChannel);
 
 		if (!result) {
 			throw new Error('loadHistory returned nothing');
@@ -180,7 +182,7 @@ class RoomHistoryManagerClass extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = messages.filter((msg) => !msg.tmid || msg.tshow);
+		const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
 
 		room.loaded += visibleMessages.length;
 

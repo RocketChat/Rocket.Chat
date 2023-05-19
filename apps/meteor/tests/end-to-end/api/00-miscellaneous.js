@@ -142,6 +142,7 @@ describe('miscellaneous', function () {
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
+					'showThreadsInMainChannel',
 					// 'clockMode',
 					'useEmojis',
 					'convertAsciiEmoji',
