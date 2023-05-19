@@ -36,7 +36,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const registerUser = useRegisterMethod();
 	const [errorOnRegister, setErrorOnRegister] = useState<string | undefined>(undefined);
 	const [invalidEmailInput, setInvalidEmailInput] = useState<boolean>(false);
-	const debouncedInvalidEmailInput = useDebouncedValue(invalidEmailInput, 5000);
+	const debouncedInvalidEmailInput = useDebouncedValue(invalidEmailInput, 2000);
 
 	const {
 		register,
@@ -107,6 +107,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
+									pattern: /^\S+@\S+$/i,
 									onChange: () => {
 										clearErrors(['username', 'email']);
 									},
