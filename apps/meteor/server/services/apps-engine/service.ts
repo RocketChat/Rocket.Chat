@@ -2,7 +2,6 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting } from '@rocket.chat/core-typings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
@@ -84,7 +83,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			}
 		});
 
-		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
+		this.onEvent('apps.settingUpdated', async (appId: string, setting): Promise<void> => {
 			Apps.getRocketChatLogger().debug(`"apps.settingUpdated" event received for app "${appId}"`, { setting });
 			const app = Apps.getManager()?.getOneById(appId);
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
