@@ -10,6 +10,10 @@ class PublicSettingsCachedCollection extends CachedCollection<ISetting> {
 			userRelated: false,
 		});
 	}
+
+	async setupStreamer(): Promise<void> {
+		return this.setupListener();
+	}
 }
 
 const instance = new PublicSettingsCachedCollection();
