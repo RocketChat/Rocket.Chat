@@ -13,14 +13,7 @@ import { isDocker } from '../../../utils/server';
 
 const logger = new Logger('UploadProxy');
 
-// @ts-expect-error - l
-const dummyRouter = WebApp.connectHandlers._router;
-
-// Create a dummy route
-dummyRouter.route('*');
-// fetch the newly created "layer"
-const stackedRoute = dummyRouter.stack.pop();
-stackedRoute.handle = async (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+async function handle(req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
 	// Quick check to see if request should be catch
 	if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 		return next();
@@ -104,8 +97,17 @@ stackedRoute.handle = async (req: createServer.IncomingMessage, res: http.Server
 	req.pipe(proxy, {
 		end: true,
 	});
-};
+}
+
+// @ts-expect-error - l
+const dummyRouter = WebApp.connectHandlers._router;
+
+// Create a dummy route
+dummyRouter.route('*');
+// fetch the newly created "layer"
+const stackedRoute = dummyRouter.stack.pop();
+stackedRoute.handle = handle;
 
 // Move the layer to the top :)
-// @ts-expect-error - l
+
 WebApp.connectHandlers._router.stack.unshift(stackedRoute);
