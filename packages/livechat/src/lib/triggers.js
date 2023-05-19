@@ -80,6 +80,7 @@ class Triggers {
 			token,
 			firedTriggers = [],
 			config: { triggers },
+			parentUrl,
 		} = store.state;
 		Livechat.credentials.token = token;
 
@@ -88,6 +89,7 @@ class Triggers {
 		}
 
 		this._started = true;
+		this._parentUrl = parentUrl;
 		this._triggers = [...triggers];
 
 		firedTriggers.forEach((triggerId) => {
@@ -166,7 +168,7 @@ class Triggers {
 				switch (condition.name) {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.parent.location.href)) {
+						if (hrefRegExp.test(this._parentUrl)) {
 							this.fire(trigger);
 						}
 						break;

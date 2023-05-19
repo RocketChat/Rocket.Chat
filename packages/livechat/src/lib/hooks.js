@@ -200,6 +200,9 @@ const api = {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
 	},
+	setParentUrl(parentUrl) {
+		store.setState({ parentUrl });
+	},
 };
 
 const onNewMessage = (event) => {
