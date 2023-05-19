@@ -24,6 +24,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
