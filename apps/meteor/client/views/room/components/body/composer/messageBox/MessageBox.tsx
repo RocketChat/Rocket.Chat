@@ -11,7 +11,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -40,6 +40,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -107,15 +108,16 @@ const MessageBox = ({
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
+	const chat = useChat();
+	const t = useTranslation();
+	const room = useUserRoom(rid);
+	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
-
-	const t = useTranslation();
-
-	const chat = useChat();
 
 	if (!chat) {
 		throw new Error('Chat context not found');
@@ -373,12 +375,12 @@ const MessageBox = ({
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
-					aria-label={t('Message')}
+					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
 					onChange={setTyping}
 					style={textAreaStyle}
-					placeholder={t('Message')}
+					placeholder={composerPlaceholder}
 					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
