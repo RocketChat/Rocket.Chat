@@ -230,61 +230,59 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	return (
 		<Dropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
-			<div>
-				<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
-					<EmojiPickerHeader>
-						<TextInput
-							autoFocus
-							ref={textInputRef}
-							value={searchTerm}
-							onChange={handleSearch}
-							addon={<Icon name='magnifier' size='x20' />}
-							placeholder={t('Search')}
-							aria-label={t('Search')}
+			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
+				<EmojiPickerHeader>
+					<TextInput
+						autoFocus
+						ref={textInputRef}
+						value={searchTerm}
+						onChange={handleSearch}
+						addon={<Icon name='magnifier' size='x20' />}
+						placeholder={t('Search')}
+						aria-label={t('Search')}
+					/>
+				</EmojiPickerHeader>
+				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { overflowX: 'scroll', h: 'x64' })}>
+					{emojiCategories.map((category, index) => (
+						<EmojiPickerCategoryItem
+							key={category.key}
+							index={index}
+							category={category}
+							active={category.key === currentCategory}
+							handleGoToCategory={handleGoToCategory}
 						/>
-					</EmojiPickerHeader>
-					<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { overflowX: 'scroll', h: 'x64' })}>
-						{emojiCategories.map((category, index) => (
-							<EmojiPickerCategoryItem
-								key={category.key}
-								index={index}
-								category={category}
-								active={category.key === currentCategory}
-								handleGoToCategory={handleGoToCategory}
-							/>
-						))}
-					</EmojiPickerCategoryHeader>
-					<Divider mb='x12' />
-					<EmojiPickerListArea role='tabpanel'>
-						{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
-						{!searching && (
-							<CategoriesResult
-								ref={virtuosoRef}
-								emojiListByCategory={emojiListByCategory}
-								categoriesPosition={categoriesPosition}
-								customItemsLimit={customItemsLimit}
-								handleLoadMore={handleLoadMore}
-								handleSelectEmoji={handleSelectEmoji}
-								handleScroll={handleScroll}
-							/>
+					))}
+				</EmojiPickerCategoryHeader>
+				<Divider mb='x12' />
+				<EmojiPickerListArea role='tabpanel'>
+					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
+					{!searching && (
+						<CategoriesResult
+							ref={virtuosoRef}
+							emojiListByCategory={emojiListByCategory}
+							categoriesPosition={categoriesPosition}
+							customItemsLimit={customItemsLimit}
+							handleLoadMore={handleLoadMore}
+							handleSelectEmoji={handleSelectEmoji}
+							handleScroll={handleScroll}
+						/>
+					)}
+				</EmojiPickerListArea>
+				<EmojiPickerPreviewArea>
+					<div>
+						{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
+						{canManageEmoji && emojiToPreview === null && (
+							<Button small onClick={handleGoToAddCustom}>
+								{t('Add_emoji')}
+							</Button>
 						)}
-					</EmojiPickerListArea>
-					<EmojiPickerPreviewArea>
-						<div>
-							{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
-							{canManageEmoji && emojiToPreview === null && (
-								<Button small onClick={handleGoToAddCustom}>
-									{t('Add_emoji')}
-								</Button>
-							)}
-						</div>
-						<ToneSelectorWrapper caption={t('Skin_tone')}>
-							<ToneSelector tone={actualTone} setTone={setActualTone} />
-						</ToneSelectorWrapper>
-					</EmojiPickerPreviewArea>
-					<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
-				</EmojiPickerContainer>
-			</div>
+					</div>
+					<ToneSelectorWrapper caption={t('Skin_tone')}>
+						<ToneSelector tone={actualTone} setTone={setActualTone} />
+					</ToneSelectorWrapper>
+				</EmojiPickerPreviewArea>
+				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
+			</EmojiPickerContainer>
 		</Dropdown>
 	);
 };
