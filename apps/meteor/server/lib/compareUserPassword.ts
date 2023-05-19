@@ -6,7 +6,7 @@ import type { IUser, IPassword } from '@rocket.chat/core-typings';
  * @param {object} user User object
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
-export async function compareUserPassword(user: IUser, pass: IPassword): boolean {
+export async function compareUserPassword(user: IUser, pass: IPassword): Promise<boolean> {
 	if (!user?.services?.password?.bcrypt?.trim()) {
 		return false;
 	}

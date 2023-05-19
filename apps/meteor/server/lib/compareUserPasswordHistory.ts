@@ -8,7 +8,7 @@ import { settings } from '../../app/settings/server';
  * @param {object} user User object
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
-export async function compareUserPasswordHistory(user: IUser, pass: IPassword): boolean {
+export async function compareUserPasswordHistory(user: IUser, pass: IPassword): Promise<boolean> {
 	if (!user?.services?.passwordHistory || !settings.get('Accounts_Password_History_Enabled')) {
 		return true;
 	}
