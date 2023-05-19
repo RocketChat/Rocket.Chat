@@ -7051,6 +7051,74 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/dummy-service-ee@workspace:^, @rocket.chat/dummy-service-ee@workspace:ee/apps/dummy-service-ee":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/dummy-service-ee@workspace:ee/apps/dummy-service-ee"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/dummy-service": "workspace:^"
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/string-helpers": 0.31.22
+    "@types/eslint": ^8.4.10
+    "@types/node": ^14.18.21
+    "@types/polka": ^0.5.4
+    ejson: ^2.2.2
+    eslint: ^8.29.0
+    eventemitter3: ^4.0.7
+    fibers: ^5.0.3
+    mem: ^8.1.1
+    moleculer: ^0.14.21
+    mongodb: ^4.12.1
+    nats: ^2.4.0
+    pino: ^8.4.2
+    polka: ^0.5.2
+    ts-node: ^10.9.1
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/dummy-service@workspace:^, @rocket.chat/dummy-service@workspace:ee/apps/dummy-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/dummy-service@workspace:ee/apps/dummy-service"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/string-helpers": 0.31.22
+    "@types/eslint": ^8.4.10
+    "@types/node": ^14.18.21
+    "@types/polka": ^0.5.4
+    ejson: ^2.2.2
+    eslint: ^8.29.0
+    eventemitter3: ^4.0.7
+    fibers: ^5.0.3
+    mem: ^8.1.1
+    moleculer: ^0.14.21
+    mongodb: ^4.12.1
+    nats: ^2.4.0
+    pino: ^8.4.2
+    polka: ^0.5.2
+    ts-node: ^10.9.1
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/emitter@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/emitter@npm:0.31.22"
+  checksum: 0c14b4fffb3a89189b4f03a43be49c77f37889738fc31a0495c0591c8df232e456c2657365bed06d1396b97540c6a80a185009b9d3124c1f33c8dfac2a44d9d3
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/emitter@npm:next":
   version: 0.31.23-dev.103
   resolution: "@rocket.chat/emitter@npm:0.31.23-dev.103"
@@ -7573,6 +7641,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/cron": "workspace:^"
     "@rocket.chat/css-in-js": next
+    "@rocket.chat/dummy-service-ee": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
@@ -8291,6 +8360,15 @@ __metadata:
     typescript: ~5.0.2
   languageName: unknown
   linkType: soft
+
+"@rocket.chat/string-helpers@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/string-helpers@npm:0.31.22"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 5c574c9b8d0b72b44e48ff91dfa83c3648d1fbc2757fc5959ea8a18fafa5959a843e89551aa3e2b7a612b6e1d929f60b5dd8dc0f522841640b7ddd0b90c31faa
+  languageName: node
+  linkType: hard
 
 "@rocket.chat/string-helpers@npm:next":
   version: 0.31.23-dev.103
@@ -36932,6 +37010,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~4.6.4":
+  version: 4.6.4
+  resolution: "typescript@npm:4.6.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.0.2":
   version: 5.0.2
   resolution: "typescript@npm:5.0.2"
@@ -36939,6 +37027,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: bef1dcd166acfc6934b2ec4d72f93edb8961a5fab36b8dd2aaf6f4f4cd5c0210f2e0850aef4724f3b4913d5aef203a94a28ded731b370880c8bcff7e4ff91fc1
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.6.4#~builtin<compat/typescript>":
+  version: 4.6.4
+  resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=f456af"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1cb434fbc637d347be90e3a0c6cd05e33c38f941713c8786d3031faf1842c2c148ba91d2fac01e7276b0ae3249b8633f1660e32686cc7a8c6a8fd5361dc52c66
   languageName: node
   linkType: hard
 

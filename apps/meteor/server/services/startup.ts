@@ -1,6 +1,7 @@
 import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
+import { DummyServiceEe } from '@rocket.chat/dummy-service-ee/src/DummyServiceEe';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
@@ -69,5 +70,7 @@ if (!isRunningMs()) {
 		// Always register the service and manage licensing inside the service (tbd)
 		api.registerService(new QueueWorker(db, Logger));
 		api.registerService(new OmnichannelTranscript(Logger));
+
+		api.registerService(new DummyServiceEe());
 	})();
 }

@@ -227,6 +227,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
+		"@rocket.chat/dummy-service-ee": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.1",
