@@ -21,7 +21,7 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 
 	const domainWhiteListSetting = settings.get<string>('Livechat_AllowedDomainsList');
 	let domainWhiteList = [];
-	if (req.headers.referer && !domainWhiteListSetting.trim()) {
+	if (req.headers.referer && domainWhiteListSetting.trim()) {
 		domainWhiteList = domainWhiteListSetting.split(',').map((domain) => domain.trim());
 
 		const referer = url.parse(req.headers.referer);

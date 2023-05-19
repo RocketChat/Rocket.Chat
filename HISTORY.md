@@ -1,3 +1,25 @@
+# 6.2.2
+
+`2023-05-19  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Livechat `CSP` whitelist validation ([#29278](https://github.com/RocketChat/Rocket.Chat/pull/29278))
+
+  This PR fixes the Livechat CSP validation, which was incorrectly blocking access to the widget for all non whitelisted domains.
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@ggazzo](https://github.com/ggazzo)
+
 # 6.2.1
 
 `2023-05-17  ·  1 🔍  ·  1 👩‍💻👨‍💻`
