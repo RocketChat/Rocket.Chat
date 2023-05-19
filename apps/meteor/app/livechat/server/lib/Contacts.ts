@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -80,7 +80,7 @@ export const Contacts = {
 		for await (const cf of allowedCF) {
 			if (!customFields.hasOwnProperty(cf._id)) {
 				if (cf.required) {
-					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 				}
 				continue;
 			}
@@ -88,7 +88,7 @@ export const Contacts = {
 
 			if (!cfValue || typeof cfValue !== 'string') {
 				if (cf.required) {
-					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 				}
 				continue;
 			}
@@ -96,7 +96,7 @@ export const Contacts = {
 			if (cf.regexp) {
 				const regex = new RegExp(cf.regexp);
 				if (!regex.test(cfValue)) {
-					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 				}
 			}
 
