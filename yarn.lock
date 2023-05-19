@@ -4004,6 +4004,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kaciras/deasync@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@kaciras/deasync@npm:1.0.3"
+  dependencies:
+    follow-redirects: ^1.15.2
+    tar-fs: ^2.1.1
+  checksum: 6986db099e8676ae2c21d1122db9f60dd5b74dd4ec06eb164c7ded0f512d037146f82cd3dee189d2863b1c6064f17d33b273edf67b25d3bb71050c5a6fe1aa6b
+  languageName: node
+  linkType: hard
+
 "@kossnocorp/desvg@npm:^0.1.1":
   version: 0.1.2
   resolution: "@kossnocorp/desvg@npm:0.1.2"
@@ -6782,6 +6792,7 @@ __metadata:
     eslint: ^8.29.0
     filter-obj: ^3.0.0
     jest: ~29.5.0
+    jest-fetch-mock: ^3.0.3
     query-string: ^7.1.1
     split-on-first: ^3.0.0
     strict-uri-encode: ^2.0.0
@@ -6805,6 +6816,24 @@ __metadata:
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
   checksum: f42f2c93f872b04fedd88fc08ac1223db2140036c2e9cb336e01fc58fd2fd347a747b657009a5efd785bdfa858331a91ec56b94abe997e5bddeee03b7e8c4280
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:1.39.1-alpha.248":
+  version: 1.39.1-alpha.248
+  resolution: "@rocket.chat/apps-engine@npm:1.39.1-alpha.248"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.19
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: d7be27748f482bb41ee234344bfbe6040f161b33c5cfe20d3e054e07d5b7c6ff87a40672c49d9250da354d1a0de0a6b4d2c2cb1ce65e889726932404898b1e6d
   languageName: node
   linkType: hard
 
@@ -6991,6 +7020,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": next
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/ejson": ^2.2.0
     "@types/eslint": ^8.4.10
     "@types/meteor": ^2.9.2
@@ -7524,6 +7554,7 @@ __metadata:
     "@bugsnag/plugin-react": ^7.17.0
     "@faker-js/faker": ^6.3.1
     "@google-cloud/storage": ^5.20.5
+    "@kaciras/deasync": ^1.0.3
     "@nivo/bar": 0.79.1
     "@nivo/core": 0.79.0
     "@nivo/heatmap": 0.79.1
@@ -7535,7 +7566,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.39.1
+    "@rocket.chat/apps-engine": 1.39.1-alpha.248
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -16791,6 +16822,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@npm:^3.0.4":
+  version: 3.1.6
+  resolution: "cross-fetch@npm:3.1.6"
+  dependencies:
+    node-fetch: ^2.6.11
+  checksum: 704b3519ab7de488328cc49a52cf1aa14132ec748382be5b9557b22398c33ffa7f8c2530e8a97ed8cb55da52b0a9740a9791d361271c4591910501682d981d9c
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^5.0.1, cross-spawn@npm:^5.1.0":
   version: 5.1.0
   resolution: "cross-spawn@npm:5.1.0"
@@ -20562,6 +20602,16 @@ __metadata:
     debug:
       optional: true
   checksum: 6aa4e3e3cdfa3b9314801a1cd192ba756a53479d9d8cca65bf4db3a3e8834e62139245cd2f9566147c8dfe2efff1700d3e6aefd103de4004a7b99985e71dd533
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -24602,6 +24652,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-fetch-mock@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "jest-fetch-mock@npm:3.0.3"
+  dependencies:
+    cross-fetch: ^3.0.4
+    promise-polyfill: ^8.1.3
+  checksum: fb052f7e0ef1c8192a9c15efdd1b18d281ab68fc6b1648b30bff8880fe24418bdf12190ea79b1996932dc15417c3c01f5b2d77ef7104a7e7943e7cbe8d61071d
+  languageName: node
+  linkType: hard
+
 "jest-get-type@npm:^27.5.1":
   version: 27.5.1
   resolution: "jest-get-type@npm:27.5.1"
@@ -28109,7 +28169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.5.0":
+"node-fetch@npm:^2.5.0, node-fetch@npm:^2.6.11":
   version: 2.6.11
   resolution: "node-fetch@npm:2.6.11"
   dependencies:
@@ -31289,6 +31349,13 @@ __metadata:
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
   checksum: 22749483091d2c594261517f4f80e05226d4d5ecc1fc917e1886929da56e22b5718b7f2a75f3807e7a7d471bc3be2907fe92e6e8f373ddf5c64bae35b5af3981
+  languageName: node
+  linkType: hard
+
+"promise-polyfill@npm:^8.1.3":
+  version: 8.3.0
+  resolution: "promise-polyfill@npm:8.3.0"
+  checksum: 206373802076c77def0805758d0a8ece64120dfa6603f092404a1004211f8f2f67f33cadbc35953fc2a8ed0b0d38c774e88bdf01e20ce7a920723a60df84b7a5
   languageName: node
   linkType: hard
 
