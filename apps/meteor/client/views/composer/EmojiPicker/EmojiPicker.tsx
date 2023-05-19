@@ -66,7 +66,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const [searchResults, setSearchResults] = useState<EmojiItem[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 
-	const { emojiToPreview } = usePreviewEmoji();
+	const { emojiToPreview, handleRemovePreview } = usePreviewEmoji();
+
+	useEffect(() => () => handleRemovePreview(), []);
 
 	const scrollCategories = useMediaQuery('(width < 340px)');
 
