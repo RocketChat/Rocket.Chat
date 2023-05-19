@@ -23,6 +23,9 @@ Meteor.startup(() => {
 			Notifications.onLogged('roles-change', (role) => {
 				if (role.type === 'added') {
 					if (!role.scope) {
+						if (!role.u) {
+							return;
+						}
 						UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
 						ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 					}
@@ -32,6 +35,9 @@ Meteor.startup(() => {
 
 				if (role.type === 'removed') {
 					if (!role.scope) {
+						if (!role.u) {
+							return;
+						}
 						UserRoles.update({ _id: role.u._id }, { $pull: { roles: role._id } });
 						ChatMessage.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 					}
