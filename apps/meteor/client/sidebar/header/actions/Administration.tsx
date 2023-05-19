@@ -67,7 +67,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 				appBoxItems={appBoxItems}
 				onDismiss={onDismiss}
 				appsManagementAllowed={hasManageAppsPermission}
-				showMarketplace={hasAccessMarketplacePermission}
+				showMarketplace={hasAccessMarketplacePermission || hasManageAppsPermission}
 			/>
 		),
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
