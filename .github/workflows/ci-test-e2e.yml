@@ -141,6 +141,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          SKIP_MONGODEPRECATION_BANNER: ${{ matrix.mongodb-version == '4.4' && 'true' || 'false' }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
