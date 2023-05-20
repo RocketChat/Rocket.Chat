@@ -101,7 +101,7 @@ Meteor.startup(async function () {
 			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
 			if (!(await Users.bannerExistsById(id))) {
-				if (skipMongoDbDeprecationBanner) {
+				if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
 					return;
 				}
 				sendMessagesToAdmins({
