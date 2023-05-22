@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label, Chevron } from '@rocket.chat/fuselage';
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 
 import { context, docAction } from '../../Context';
 import ItemsIcon from './ItemsIcon';
