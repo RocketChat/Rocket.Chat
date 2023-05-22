@@ -123,7 +123,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		}
 		phone = phone.replace(/\s/g, '');
 		if (phone.includes('+')) phone = phone.slice(3);
-
+		if (phone.length > 16) return false;
 		if (!phone || initialValue.phone === phone) {
 			return true;
 		}
