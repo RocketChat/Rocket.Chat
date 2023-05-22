@@ -26,6 +26,10 @@ test.describe.serial('channel-management', () => {
 		await page.goto('/home');
 	});
 
+	test.afterAll(async () => {
+		await regularUserPage.close();
+	});
+
 	test('expect add "user1" to "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
