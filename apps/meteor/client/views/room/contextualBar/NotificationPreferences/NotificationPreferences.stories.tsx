@@ -17,47 +17,15 @@ export default {
 export const Default: ComponentStory<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
 Default.storyName = 'NotificationsPreferences';
 Default.args = {
-	formValues: {
-		turnOn: true,
-		muteGroupMentions: false,
-		showCounter: true,
-		showMentions: true,
-		desktopAlert: 'default',
-		desktopSound: 'chime',
-		mobileAlert: 'mentions',
-		emailAlert: 'nothing',
-	},
-	formHandlers: {
-		handleTurnOn: action('formHandlers.handleTurnOn'),
-		handleMuteGroupMentions: action('formHandlers.handleMuteGroupMentions'),
-		handleShowMentions: action('formHandlers.handleShowMentions'),
-		handleShowCounter: action('formHandlers.handleShowCounter'),
-		handleDesktopAlert: action('formHandlers.handleDesktopAlert'),
-		handleDesktopSound: action('formHandlers.handleDesktopSound'),
-		handleMobileAlert: action('formHandlers.handleMobileAlert'),
-		handleEmailAlert: action('formHandlers.handleEmailAlert'),
-	},
-	handlePlaySound: action('handlePlaySound'),
 	handleClose: action('handleClose'),
-	handleSaveButton: action('handleSaveButton'),
-	handleOptions: {
+	handleSave: action('handleSaveButton'),
+	handlePlaySound: action('handlePlaySound'),
+	notificationOptions: {
 		alerts: [
 			['default', 'Default'],
 			['all', 'All_messages'],
 			['mentions', 'Mentions'],
 			['nothing', 'Nothing'],
 		],
-		audio: [
-			['default', 'Default'],
-			['all', 'All_messages'],
-			['mentions', 'Mentions'],
-			['nothing', 'Nothing'],
-		],
-		sound: [
-			['none None', 'None'],
-			['0 default', 'Default'],
-			['chime', 'Chime'],
-		],
 	},
-	formHasUnsavedChanges: false,
 };

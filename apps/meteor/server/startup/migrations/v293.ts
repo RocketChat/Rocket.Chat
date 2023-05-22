@@ -1,20 +1,9 @@
-import { Integrations } from '@rocket.chat/models';
-
 import { addMigration } from '../../lib/migrations';
+import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 293,
-	name: 'Set overrideDestinationChannelEnabled for all incoming webhook integrations',
 	async up() {
-		await Integrations.updateMany(
-			{
-				type: 'webhook-incoming',
-			},
-			{
-				$set: {
-					overrideDestinationChannelEnabled: true,
-				},
-			},
-		);
+		await upsertPermissions();
 	},
 });
