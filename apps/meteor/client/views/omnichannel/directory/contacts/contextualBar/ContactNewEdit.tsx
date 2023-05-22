@@ -117,8 +117,13 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		const { contact } = await getContactBy({ email });
 		return !contact || contact._id === id || t('Email_already_exists');
 	};
-
 	const isPhoneValid = async (phone: string): Promise<boolean | string> => {
+		if (!/^[\d+\s]+$/.test(phone)) {
+			return false;
+		}
+		phone = phone.replace(/\s/g, '');
+		if (phone.includes('+')) phone = phone.slice(3);
+
 		if (!phone || initialValue.phone === phone) {
 			return true;
 		}
