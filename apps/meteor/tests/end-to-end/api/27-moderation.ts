@@ -97,7 +97,7 @@ describe('[Moderation]', function () {
 		});
 
 		// create a reported message by sending a request to chat.reportMessage
-		before(async () => {
+		beforeEach(async () => {
 			await request
 				.post(api('chat.reportMessage'))
 				.set(credentials)
@@ -112,7 +112,7 @@ describe('[Moderation]', function () {
 				});
 		});
 
-		before(async () => {
+		beforeEach(async () => {
 			await request
 				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
