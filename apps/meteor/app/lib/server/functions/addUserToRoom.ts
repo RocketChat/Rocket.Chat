@@ -44,7 +44,7 @@ export const addUserToRoom = async function (
 		throw new Meteor.Error((error as any)?.message);
 	}
 
-	callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
+	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
 
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);

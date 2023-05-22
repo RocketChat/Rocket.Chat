@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
