@@ -3,13 +3,11 @@ import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../../../../app/authorization/client';
 import { settings } from '../../../../../app/settings/client';
-import { APIClient } from '../../../../../app/utils/client';
 import { CannedResponse } from '../collections/CannedResponse';
 import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 
 const events = {
-	changed: (response) => {
-		delete response.type;
+	changed: ({ type, ...response }) => {
 		CannedResponse.upsert({ _id: response._id }, response);
 	},
 	removed: (response) => CannedResponse.remove({ _id: response._id }),
@@ -35,7 +33,7 @@ Meteor.startup(() => {
 				}
 				events[response.type](response);
 			});
-			const { responses } = await APIClient.get('/v1/canned-responses.get');
+			const { responses } = await sdk.rest.get('/v1/canned-responses.get');
 			responses.forEach((response) => CannedResponse.insert(response));
 			c.stop();
 		} catch (error) {

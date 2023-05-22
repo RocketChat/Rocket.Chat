@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
 import { loadButtons } from '../../../../app/ui-message/client/ActionButtonSyncer';
-import { APIClient, slashCommands } from '../../../../app/utils/client';
+import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 
 export const AppEvents = Object.freeze({
@@ -49,7 +49,8 @@ export class AppWebsocketReceiver extends Emitter {
 
 	onCommandAddedOrUpdated = (command) => {
 		const retryOnFailure = (retries) => {
-			APIClient.get('/v1/commands.get', { command })
+			sdk.rest
+				.get('/v1/commands.get', { command })
 				.then((result) => {
 					slashCommands.add(result.command);
 				})
