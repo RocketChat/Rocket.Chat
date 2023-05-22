@@ -17,7 +17,6 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
@@ -26,7 +25,10 @@ import { Team, api } from '@rocket.chat/core-services';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import {
+	checkUsernameAvailability,
+	checkUsernameAvailabilityWithValidation,
+} from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
@@ -40,6 +42,9 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { i18n } from '../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -156,7 +161,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
+			await saveUserPreferences(this.bodyParams.data, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -337,7 +342,10 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
+			if (
+				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
+				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			) {
 				return API.v1.unauthorized();
 			}
 
@@ -564,7 +572,7 @@ API.v1.addRoute(
 
 			// Now set their username
 			const { fields } = await this.parseJsonQuery();
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('setUsername', this.bodyParams.username));
+			await setUsernameWithValidation(userId, this.bodyParams.username);
 
 			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
@@ -585,7 +593,10 @@ API.v1.addRoute(
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 				await Meteor.callAsync('resetAvatar');
-			} else if (await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) {
+			} else if (
+				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
+				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			) {
 				await Meteor.callAsync('resetAvatar', user._id);
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
@@ -624,7 +635,7 @@ API.v1.addRoute(
 					preferences,
 				});
 			}
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
+			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
 	},
 );
@@ -666,7 +677,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { username } = this.queryParams;
-			const result = await Meteor.callAsync('checkUsernameAvailability', username);
+
+			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
 
 			return API.v1.success({ result });
 		},
