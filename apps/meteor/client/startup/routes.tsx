@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
@@ -81,7 +81,7 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			const result = await sdk.rest.get(`/v1/livechat/visitor/${queryParams.token}`);
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
