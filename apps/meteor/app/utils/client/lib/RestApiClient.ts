@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from '../../../../client/lib/baseURI';
-import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
+import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 
 class RestApiClient extends RestClient {
 	getCredentials():
@@ -28,31 +28,24 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
+APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
+
+/**
+ * The original rest api code throws the Response object, which is very useful
+ * for the client sometimes, if the developer wants to access more information about the error
+ * unfortunately/fortunately Rocket.Chat expects an error object (from Response.json()
+ * This middleware will throw the error object instead.
+ * */
+
 APIClient.use(async function (request, next) {
 	try {
 		return await next(...request);
 	} catch (error) {
-		if (!(error instanceof Response)) {
-			throw error;
+		if (error instanceof Response) {
+			const e = await error.json();
+			throw e;
 		}
 
-		const e = await error.json();
-
-		return new Promise(async (resolve, reject) => {
-			await process2faReturn({
-				error: e,
-				result: null,
-				emailOrUsername: undefined,
-				originalCallback: () => reject(e),
-				onCode(code, method) {
-					return resolve(
-						next(request[0], request[1], {
-							...request[2],
-							headers: { ...request[2]?.headers, 'x-2fa-code': code, 'x-2fa-method': method },
-						}),
-					);
-				},
-			});
-		});
+		throw error;
 	}
 });

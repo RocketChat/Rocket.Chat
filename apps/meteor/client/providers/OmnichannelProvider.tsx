@@ -116,11 +116,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 
 		initializeLivechatInquiryStream(user?._id);
-		Notifications.onUser('departmentAgentData', handleDepartmentAgentData);
-
-		return (): void => {
-			Notifications.unUser('departmentAgentData', handleDepartmentAgentData);
-		};
+		return Notifications.onUser('departmentAgentData', handleDepartmentAgentData).stop;
 	}, [manuallySelected, user?._id]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
@@ -153,7 +153,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.startingNewCall = true;
 		this.emit('calling/changed');
 
-		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
+		const { data } = await sdk.rest.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			this.emit('calling/changed');
@@ -241,7 +241,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public async loadCapabilities(): Promise<void> {
-		const { capabilities } = await APIClient.get('/v1/video-conference.capabilities').catch((e: any) => {
+		const { capabilities } = await sdk.rest.get('/v1/video-conference.capabilities').catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to load video conference capabilities`);
 
 			return Promise.reject(e);
@@ -349,7 +349,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url } = await APIClient.post('/v1/video-conference.join', params).catch((e) => {
+		const { url } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
 			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
 
@@ -431,7 +431,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		APIClient.post('/v1/video-conference.cancel', { callId });
+		sdk.rest.post('/v1/video-conference.cancel', { callId });
 	}
 
 	private disconnect(): void {
@@ -498,11 +498,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] connecting user ${userId}`);
 		this.userId = userId;
 
-		this.hooks.push(
-			await Notifications.onUser('video-conference', (data: { action: string; params: DirectCallParams }) =>
-				this.onVideoConfNotification(data),
-			),
-		);
+		const { stop, ready } = Notifications.onUser('video-conference', (data) => this.onVideoConfNotification(data));
+
+		await ready();
+
+		this.hooks.push(stop);
 	}
 
 	private abortIncomingCall(callId: string): void {
@@ -743,7 +743,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('calling/changed');
 
 		if (!joined) {
-			APIClient.post('/v1/video-conference.cancel', { callId: params.callId });
+			sdk.rest.post('/v1/video-conference.cancel', { callId: params.callId });
 		}
 	}
 

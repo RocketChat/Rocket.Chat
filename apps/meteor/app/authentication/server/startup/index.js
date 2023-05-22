@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
@@ -13,12 +12,14 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
+import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
+import { i18n } from '../../../../server/lib/i18n';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -36,7 +37,7 @@ Meteor.startup(() => {
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
-		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const subject = i18n.t('Accounts_Admin_Email_Approval_Needed_Subject_Default');
 		const siteName = settings.get('Site_Name');
 
 		return `[${siteName}] ${subject}`;
@@ -47,7 +48,7 @@ Accounts.emailTemplates.userToActivate = {
 			? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default'
 			: 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		return Mailer.replace(TAPi18n.__(email), {
+		return Mailer.replace(i18n.t(email), {
 			name: escapeHTML(options.name),
 			email: escapeHTML(options.email),
 			reason: escapeHTML(options.reason),
@@ -62,14 +63,14 @@ Accounts.emailTemplates.userActivated = {
 		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
-		return `[${siteName}] ${TAPi18n.__(subject)}`;
+		return `[${siteName}] ${i18n.t(subject)}`;
 	},
 
 	html({ active, name, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return Mailer.replace(TAPi18n.__(`Accounts_Email_${action}`), {
+		return Mailer.replace(i18n.t(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
 		});
 	},
@@ -157,7 +158,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	callbacks.run('beforeCreateUser', options, user);
+	await callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -217,7 +218,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await Mailer.send(email);
 	}
 
-	callbacks.run('onCreateUser', options, user);
+	await callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
 	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
@@ -270,29 +271,23 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
-			});
+			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
 		}
 
 		if (user.type !== 'visitor') {
-			Meteor.defer(function () {
+			setImmediate(function () {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			Object.keys(avatarSuggestions).some((service) => {
+			for await (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function () {
-						return Promise.await(Meteor.callAsync('setAvatarFromService', avatarData.blob, '', service));
-					});
-					return true;
+					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
+					break;
 				}
-
-				return false;
-			});
+			}
 		}
 	}
 
@@ -322,7 +317,7 @@ Accounts.insertUserDoc = function (...args) {
 };
 
 const validateLoginAttemptAsync = async function (login) {
-	login = callbacks.run('beforeValidateLogin', login);
+	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
@@ -369,10 +364,10 @@ const validateLoginAttemptAsync = async function (login) {
 		}
 	}
 
-	login = callbacks.run('onValidateLogin', login);
+	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function () {
+	setImmediate(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
