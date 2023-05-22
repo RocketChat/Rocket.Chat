@@ -1,4 +1,3 @@
-// TODO: check props
 export type RoomDropdownItem = {
 	id: string;
 	label: string;

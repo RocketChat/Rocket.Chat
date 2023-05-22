@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
-import type { RoomDropdownItem, RoomTypeDropDownListProps } from './RoomDropdownDefinitions';
+import type { RoomDropdownItem, RoomTypeDropDownListProps } from '../RoomDropDown/RoomDropdownDefinitions';
 
 export const useRoomTypeToggle = (
 	setData: Dispatch<SetStateAction<RoomTypeDropDownListProps['categories']>>,
