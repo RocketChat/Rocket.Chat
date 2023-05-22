@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { usePermission, useRoute, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -43,7 +43,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			return;
 		}
 
-		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
+		return subscribeToRoom(rid, (room) => {
 			queryClient.setQueryData(['rooms', rid], room);
 		});
 	}, [subscribeToRoom, rid, queryClient, room]);

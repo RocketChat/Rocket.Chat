@@ -38,6 +38,13 @@ export const updateSetting = (setting:string, value:ISetting['value']):Promise<v
 			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
 	});
 
+export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
+	const response = await request.get(`/api/v1/settings/${setting}`).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+	return response.body.value;
+};
+
+
 export const updateEESetting = (setting:string, value:ISetting['value']):Promise<void|Error> =>
 	IS_EE ? new Promise((resolve,reject) => {
 		request

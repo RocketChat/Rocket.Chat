@@ -7,54 +7,28 @@ import { getURL } from '../../../utils/client';
 
 const getCustomSoundId = (soundId: ICustomSound['_id']) => `custom-sound-${soundId}`;
 
+const defaultSounds = [
+	{ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') },
+	{ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') },
+	{ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') },
+	{ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: getURL('sounds/chelle.mp3') },
+	{ _id: 'ding', name: 'Ding', extension: 'mp3', src: getURL('sounds/ding.mp3') },
+	{ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: getURL('sounds/droplet.mp3') },
+	{ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: getURL('sounds/highbell.mp3') },
+	{ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: getURL('sounds/seasons.mp3') },
+	{ _id: 'telephone', name: 'Telephone', extension: 'mp3', src: getURL('sounds/telephone.mp3') },
+	{ _id: 'outbound-call-ringing', name: 'Outbound Call Ringing', extension: 'mp3', src: getURL('sounds/outbound-call-ringing.mp3') },
+	{ _id: 'call-ended', name: 'Call Ended', extension: 'mp3', src: getURL('sounds/call-ended.mp3') },
+	{ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') },
+	{ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') },
+];
+
 class CustomSoundsClass {
 	list: ReactiveVar<Record<string, ICustomSound>>;
 
 	constructor() {
 		this.list = new ReactiveVar({});
-		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
-		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') });
-		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') });
-		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: getURL('sounds/chelle.mp3') });
-		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: getURL('sounds/ding.mp3') });
-		this.add({
-			_id: 'droplet',
-			name: 'Droplet',
-			extension: 'mp3',
-			src: getURL('sounds/droplet.mp3'),
-		});
-		this.add({
-			_id: 'highbell',
-			name: 'Highbell',
-			extension: 'mp3',
-			src: getURL('sounds/highbell.mp3'),
-		});
-		this.add({
-			_id: 'seasons',
-			name: 'Seasons',
-			extension: 'mp3',
-			src: getURL('sounds/seasons.mp3'),
-		});
-		this.add({
-			_id: 'telephone',
-			name: 'Telephone',
-			extension: 'mp3',
-			src: getURL('sounds/telephone.mp3'),
-		});
-		this.add({
-			_id: 'outbound-call-ringing',
-			name: 'Outbound Call Ringing',
-			extension: 'mp3',
-			src: getURL('sounds/outbound-call-ringing.mp3'),
-		});
-		this.add({
-			_id: 'call-ended',
-			name: 'Call Ended',
-			extension: 'mp3',
-			src: getURL('sounds/call-ended.mp3'),
-		});
-		this.add({ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') });
-		this.add({ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') });
+		defaultSounds.forEach((sound) => this.add(sound));
 	}
 
 	add(sound: ICustomSound) {
@@ -138,6 +112,15 @@ class CustomSoundsClass {
 		}
 
 		audio.pause();
+	};
+
+	stop = (soundId: ICustomSound['_id']) => {
+		const audio = document.querySelector<HTMLAudioElement>(`#${getCustomSoundId(soundId)}`);
+		if (!audio?.load) {
+			return;
+		}
+
+		audio?.load();
 	};
 
 	isPlaying = (soundId: ICustomSound['_id']) => {
