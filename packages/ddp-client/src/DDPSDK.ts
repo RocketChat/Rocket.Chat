@@ -70,6 +70,10 @@ export class DDPSDK implements SDK {
 		readonly rest: RestClient,
 	) {}
 
+	call(method: string, ...params: unknown[]) {
+		return this.client.callAsync(method, ...params);
+	}
+
 	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
 		const { id } = this.client.subscribe(`stream-${name}`, key);
 
