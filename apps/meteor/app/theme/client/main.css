@@ -4,6 +4,7 @@
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
 @import 'imports/general/react-root.css';
+@import 'imports/general/font.css';
 
 /* Forms */
 @import 'imports/general/forms.css';
