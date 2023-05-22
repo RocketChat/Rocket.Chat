@@ -1,4 +1,3 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { useCallback, useEffect } from 'react';
 
 import { AsyncStatePhase } from '../../lib/asyncState';
@@ -6,7 +5,7 @@ import type { RecordList, RecordListBatchChanges } from '../../lib/lists/RecordL
 
 const INITIAL_ITEM_COUNT = 25;
 
-export const useScrollableRecordList = <T extends IRocketChatRecord>(
+export const useScrollableRecordList = <T extends { _id: string; _updatedAt?: Date }>(
 	recordList: RecordList<T>,
 	fetchBatchChanges: (start: number, end: number) => Promise<RecordListBatchChanges<T>>,
 	initialItemCount: number = INITIAL_ITEM_COUNT,

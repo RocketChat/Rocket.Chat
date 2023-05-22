@@ -13,8 +13,8 @@ describe('[CE] LIVECHAT - business hours', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('livechat/business-hour', () => {

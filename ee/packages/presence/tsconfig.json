@@ -1,0 +1,10 @@
+{
+	"extends": "../../../tsconfig.base.server.json",
+	"compilerOptions": {
+		"strictPropertyInitialization": false, // TODO: Remove this line
+		"declaration": true,
+		"outDir": "./dist",
+		"rootDir": "./src",
+	},
+	"files": ["./src/Presence.ts"]
+}

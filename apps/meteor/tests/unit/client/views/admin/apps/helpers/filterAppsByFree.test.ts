@@ -2,7 +2,7 @@
 import type { PurchaseType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { filterAppsByFree } from '../../../../../../../client/views/admin/apps/helpers/filterAppsByFree';
+import { filterAppsByFree } from '../../../../../../../client/views/marketplace/helpers/filterAppsByFree';
 
 describe('filterAppsByFree', () => {
 	it('should return true if app purchase type is buy and price does not exist or is 0', () => {

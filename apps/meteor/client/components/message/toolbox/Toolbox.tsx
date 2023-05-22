@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ITranslatedMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -11,7 +11,6 @@ import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import { useRoom, useRoomSubscription } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
@@ -38,13 +37,12 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 type ToolboxProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
+	room: IRoom;
+	subscription?: ISubscription;
 };
 
-const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null => {
+const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
-
-	const room = useRoom();
-	const subscription = useRoomSubscription();
 
 	const settings = useSettings();
 	const user = useUser();

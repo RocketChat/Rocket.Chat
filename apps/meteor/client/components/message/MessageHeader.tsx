@@ -11,12 +11,12 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
-import { useUserCard } from '../../hooks/useUserCard';
 import { useUserData } from '../../hooks/useUserData';
-import { getUserDisplayName } from '../../lib/getUserDisplayName';
 import type { UserPresence } from '../../lib/presence';
+import { useChat } from '../../views/room/contexts/ChatContext';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
@@ -28,7 +28,6 @@ type MessageHeaderProps = {
 
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const t = useTranslation();
-	const { open: openUserCard } = useUserCard();
 
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -42,6 +41,8 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
 	const shouldShowRolesList = roles.length > 0;
 
+	const chat = useChat();
+
 	return (
 		<FuselageMessageHeader>
 			<MessageNameContainer>
@@ -49,8 +50,11 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					{...(!showUsername && { 'data-qa-type': 'username' })}
 					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 					data-username={user.username}
-					onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
-					style={{ cursor: 'pointer' }}
+					{...(user.username !== undefined &&
+						chat?.userCard && {
+							onClick: chat?.userCard.open(message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 				>
 					{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
 				</MessageName>
@@ -60,8 +64,11 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 						<MessageUsername
 							data-username={user.username}
 							data-qa-type='username'
-							style={{ cursor: 'pointer' }}
-							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+							{...(user.username !== undefined &&
+								chat?.userCard && {
+									onClick: chat?.userCard.open(message.u.username),
+									style: { cursor: 'pointer' },
+								})}
 						>
 							@{user.username}
 						</MessageUsername>

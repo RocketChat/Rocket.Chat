@@ -3,8 +3,8 @@ import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
-import s from 'underscore.string';
 
+import { strRight } from '../../../../../lib/utils/stringUtils';
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
@@ -23,7 +23,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const getAbsoluteUrl = useAbsoluteUrl();
 
 	const callbackURL = (sectionName: string): string => {
-		const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
+		const id = strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 		return getAbsoluteUrl(`_oauth/${id}`);
 	};
 
@@ -60,25 +60,26 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const removeCustomOauthFactory =
 		(id: string): (() => void) =>
 		(): void => {
-			const close = (): void => setModal(null);
+			const handleConfirm = async (): Promise<void> => {
+				try {
+					await removeOAuthService(id);
+					dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				} finally {
+					setModal(null);
+				}
+			};
+
 			setModal(
 				<GenericModal
-					onClose={close}
-					onCancel={close}
+					onClose={() => setModal(null)}
+					onCancel={() => setModal(null)}
 					title={t('Are_you_sure')}
 					variant='danger'
 					confirmText={t('Yes_delete_it')}
-					onConfirm={async (): Promise<void> => {
-						try {
-							await removeOAuthService(id);
-							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						} finally {
-							setModal(null);
-						}
-					}}
-				></GenericModal>,
+					onConfirm={handleConfirm}
+				/>,
 			);
 		};
 
@@ -95,7 +96,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 		>
 			{sections.map((sectionName) => {
 				if (sectionIsCustomOAuth(sectionName)) {
-					const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
+					const id = strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
 					const handleRemoveCustomOAuthButtonClick = removeCustomOauthFactory(id);
 

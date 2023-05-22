@@ -62,7 +62,8 @@ export const useFilesList = (
 			return {
 				items: files.map((file) => ({
 					...file,
-					_updatedAt: new Date(file._updatedAt),
+					uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
+					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
 				})),
 				itemCount: total,
 			};
@@ -73,10 +74,7 @@ export const useFilesList = (
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
 		filesList,
 		fetchMessages,
-		useMemo(() => {
-			const filesListSize = getConfig('discussionListSize');
-			return filesListSize ? parseInt(filesListSize, 10) : undefined;
-		}, []),
+		useMemo(() => parseInt(`${getConfig('discussionListSize', 10)}`), []),
 	);
 
 	// TODO: chapter day : frontend create useStreamUpdatesForUploadList

@@ -1,12 +1,14 @@
 import { Field, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
+import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 const AddUser = ({ onReload, ...props }) => {
 	const t = useTranslation();
@@ -19,6 +21,9 @@ const AddUser = ({ onReload, ...props }) => {
 		const roles = await getRoleData();
 		return roles;
 	});
+
+	const isSmtpEnabled = useSmtpConfig();
+
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -53,9 +58,11 @@ const AddUser = ({ onReload, ...props }) => {
 		validationKeys[key] && validationKeys[key](value, values);
 	};
 
+	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
+
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
 		{
-			roles: [],
+			roles: defaultUserRoles,
 			name: '',
 			username: '',
 			statusText: '',
@@ -66,7 +73,7 @@ const AddUser = ({ onReload, ...props }) => {
 			verified: false,
 			requirePasswordChange: false,
 			setRandomPassword: false,
-			sendWelcomeEmail: true,
+			sendWelcomeEmail: isSmtpEnabled,
 			joinDefaultChannels: true,
 			customFields: {},
 		},
@@ -129,7 +136,15 @@ const AddUser = ({ onReload, ...props }) => {
 	);
 
 	return (
-		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
+		<UserForm
+			errors={errors}
+			formValues={values}
+			formHandlers={handlers}
+			availableRoles={availableRoles}
+			append={append}
+			isSmtpEnabled={isSmtpEnabled}
+			{...props}
+		/>
 	);
 };
 

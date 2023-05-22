@@ -25,6 +25,7 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
@@ -42,11 +43,16 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
+import type { FederationEndpoints } from './v1/federation';
+import type { ModerationEndpoints } from './v1/moderation';
+import type { AuthEndpoints } from './v1/auth';
+import type { DefaultEndpoints } from './default';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,
+		ModerationEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
 		CommandsEndpoints,
@@ -72,6 +78,7 @@ export interface Endpoints
 		LicensesEndpoints,
 		MiscEndpoints,
 		PermissionsEndpoints,
+		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
 		VoipEndpoints,
@@ -86,7 +93,10 @@ export interface Endpoints
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
-		ImportEndpoints {}
+		FederationEndpoints,
+		AuthEndpoints,
+		ImportEndpoints,
+		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
 	TEndpoints extends Endpoints,
@@ -199,6 +209,7 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './v1/permissions';
+export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
@@ -216,11 +227,16 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
+export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
+export * from './v1/oauthapps/OAuthAppsGetParamsGET';
+export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
+export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
+export * from './v1/instances';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
@@ -229,6 +245,7 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/moderation';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
@@ -240,3 +257,8 @@ export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
 export * from './v1/email-inbox';
+export * from './v1/federation';
+export * from './v1/rooms';
+export * from './v1/groups';
+export * from './v1/chat';
+export * from './v1/auth';

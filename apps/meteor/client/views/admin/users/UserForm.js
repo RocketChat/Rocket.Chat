@@ -17,7 +17,7 @@ import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
 
-export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, ...props }) {
+export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();
 	const [hasCustomFields, setHasCustomFields] = useState(false);
 
@@ -108,7 +108,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							{errors && errors.email && <Field.Error>{errors.email}</Field.Error>}
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
-									<Box>{t('Verified')}</Box>
+									<Box color='default' fontScale='p2m'>
+										{t('Verified')}
+									</Box>
 									<ToggleSwitch checked={verified} onChange={handleVerified} />
 								</Box>
 							</Field.Row>
@@ -164,30 +166,33 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 
 			<FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Password')}</Field.Label>
-							<Field.Row>
-								<PasswordInput
-									errors={errors && errors.password}
-									flexGrow={1}
-									value={password}
-									onChange={handlePassword}
-									addon={<Icon name='key' size='x20' />}
-									autoComplete='new-password'
-								/>
-							</Field.Row>
-							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
-						</Field>
-					),
-					[t, password, handlePassword, errors],
+					() =>
+						!setRandomPassword && (
+							<Field>
+								<Field.Label>{t('Password')}</Field.Label>
+								<Field.Row>
+									<PasswordInput
+										errors={errors && errors.password}
+										flexGrow={1}
+										value={password}
+										onChange={handlePassword}
+										addon={<Icon name='key' size='x20' />}
+										autoComplete='new-password'
+									/>
+								</Field.Row>
+								{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
+							</Field>
+						),
+					[t, password, handlePassword, errors, setRandomPassword],
 				)}
 				{useMemo(
 					() => (
 						<Field>
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-									<Box>{t('Require_password_change')}</Box>
+									<Box color='default' fontScale='p2m'>
+										{t('Require_password_change')}
+									</Box>
 									<ToggleSwitch
 										disabled={setRandomPassword}
 										checked={setRandomPassword || requirePasswordChange}
@@ -204,13 +209,18 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 						<Field>
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-									<Box>{t('Set_random_password_and_send_by_email')}</Box>
-									<ToggleSwitch checked={setRandomPassword} onChange={handleSetRandomPassword} />
+									<Box color='default' fontScale='p2m'>
+										{t('Set_random_password_and_send_by_email')}
+									</Box>
+									<ToggleSwitch checked={setRandomPassword} disabled={!isSmtpEnabled} onChange={handleSetRandomPassword} />
 								</Box>
 							</Field.Row>
+							{!isSmtpEnabled && (
+								<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+							)}
 						</Field>
 					),
-					[t, setRandomPassword, handleSetRandomPassword],
+					[t, setRandomPassword, handleSetRandomPassword, isSmtpEnabled],
 				)}
 				{useMemo(
 					() => (
@@ -235,7 +245,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field>
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-										<Box>{t('Join_default_channels')}</Box>
+										<Box color='default' fontScale='p2m'>
+											{t('Join_default_channels')}
+										</Box>
 										<ToggleSwitch checked={joinDefaultChannels} onChange={handleJoinDefaultChannels} />
 									</Box>
 								</Field.Row>
@@ -249,13 +261,18 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field>
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-										<Box>{t('Send_welcome_email')}</Box>
-										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} />
+										<Box color='default' fontScale='p2m'>
+											{t('Send_welcome_email')}
+										</Box>
+										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} disabled={!isSmtpEnabled} />
 									</Box>
 								</Field.Row>
+								{!isSmtpEnabled && (
+									<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+								)}
 							</Field>
 						),
-					[handleSendWelcomeEmail, t, sendWelcomeEmail],
+					[handleSendWelcomeEmail, t, sendWelcomeEmail, isSmtpEnabled],
 				)}
 				{hasCustomFields && (
 					<>

@@ -2,9 +2,13 @@ import type { IRoom, IOmnichannelRoom, IVoipRoom, ISubscription } from '@rocket.
 import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
-export type RoomContextValue = {
+export interface IRoomWithFederationOriginalName extends IRoom {
+	federationOriginalName?: string;
+}
+
+type RoomContextValue = {
 	rid: IRoom['_id'];
-	room: IRoom;
+	room: IRoomWithFederationOriginalName;
 	subscription?: ISubscription;
 	hasMorePreviousMessages: boolean;
 	hasMoreNextMessages: boolean;

@@ -19,11 +19,14 @@ export const getUpgradeTabType = ({
 		if (hadExpiredTrials) {
 			return 'upgrade-your-plan';
 		}
+
 		if (registered) {
 			return 'go-fully-featured-registered';
 		}
+
 		return 'go-fully-featured';
 	}
+
 	if (isTrial) {
 		return 'trial-enterprise';
 	}

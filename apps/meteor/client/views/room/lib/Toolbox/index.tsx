@@ -16,7 +16,7 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	key: string;
 };
 
-export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
+type ActionRenderer = (props: ActionRendererProps) => ReactNode;
 
 type OptionRendererProps = ComponentProps<typeof Option>;
 
@@ -36,14 +36,12 @@ export type ToolboxActionConfig = {
 	'groups': Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	'hotkey'?: string;
 	'action'?: (e?: MouseEvent<HTMLElement>) => void;
-	'template'?:
-		| string
-		| ComponentType<{
-				tabBar: ToolboxContextValue;
-				_id: IRoom['_id'];
-				rid: IRoom['_id'];
-				teamId: IRoom['teamId'];
-		  }>;
+	'template'?: ComponentType<{
+		tabBar: ToolboxContextValue;
+		_id: IRoom['_id'];
+		rid: IRoom['_id'];
+		teamId: IRoom['teamId'];
+	}>;
 	'featured'?: boolean;
 };
 
