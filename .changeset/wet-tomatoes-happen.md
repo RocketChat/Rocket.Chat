@@ -3,4 +3,4 @@
 "@rocket.chat/model-typings": patch
 ---
 
-fix: admin rooms page filters
+fix: "Discussions" filter is prioritized in admin "Rooms" page
