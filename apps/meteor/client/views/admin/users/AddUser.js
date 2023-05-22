@@ -22,8 +22,7 @@ const AddUser = ({ onReload, ...props }) => {
 		return roles;
 	});
 
-	const isSmtpEnabled = false;
-	console.log('isSMTPEnabled: ', isSmtpEnabled);
+	const isSmtpEnabled = useSmtpConfig();
 
 	const [errors, setErrors] = useState({});
 
