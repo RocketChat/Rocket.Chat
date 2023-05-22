@@ -1,6 +1,6 @@
 import './splitPlane.css';
 import type { FC } from 'react';
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import SplitPane from 'react-split-pane';
 
 import { context, tabsToggleAction } from '../../../Context';

@@ -1,6 +1,6 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, navMenuToggleAction } from '../../Context';
 import BurgerIcon from './BurgerIcon';

@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Tile, Flex } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React from 'react';
 
 import Divider from './Divider';
 import Logo from './Logo';

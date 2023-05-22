@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Icon } from '@rocket.chat/fuselage';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, docAction } from '../../../../Context';
 

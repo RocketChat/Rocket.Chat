@@ -1,6 +1,5 @@
 import { Box, Scrollable } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React from 'react';
 
 import CodeEditor from '../../CodeEditor';
 import extensions from '../../CodeEditor/Extensions';

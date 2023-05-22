@@ -3,10 +3,10 @@ import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
-import ComponentSideBar from '../Components/ComponentSideBar';
-import NavBar from '../Components/NavBar';
-import Preview from '../Components/Preview';
-import NavMenu from '../Components/navMenu';
+import ComponentSideBar from '../ComponentSideBar';
+import NavBar from '../NavBar';
+import Preview from '../Preview';
+import NavMenu from '../navMenu';
 import { context, isMobileAction, isTabletAction } from '../Context';
 
 const Playground: FC = () => {

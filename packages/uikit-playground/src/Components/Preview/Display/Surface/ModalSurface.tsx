@@ -9,7 +9,6 @@ import {
   ButtonGroup,
   Button,
 } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import DraggableList from '../../../Draggable/DraggableList';
 import type { DraggableListProps } from '../../../Draggable/DraggableList';

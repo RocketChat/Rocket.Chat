@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Label } from '@rocket.chat/fuselage';
 import type { FC, ReactNode } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const PanelBtn: FC<{ icon: ReactNode; name: string; isSmall: boolean }> = ({
   icon,

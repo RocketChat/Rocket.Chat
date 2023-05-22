@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React from 'react';
 
 const MenuItem: FC<{ name: string }> = ({ name }) => {
   const pointer = css`

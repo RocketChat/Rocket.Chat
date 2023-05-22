@@ -5,7 +5,6 @@ import {
   UiKitMessage as uiKitMessage,
 } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import React from 'react';
 
 import DeleteElementBtn from './DeleteElementBtn';
 import ElementWrapper from './ElementWrapper';

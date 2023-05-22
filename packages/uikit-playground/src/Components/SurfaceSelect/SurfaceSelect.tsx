@@ -1,6 +1,6 @@
 import { Select } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, surfaceAction } from '../../Context';
 import options from './options';

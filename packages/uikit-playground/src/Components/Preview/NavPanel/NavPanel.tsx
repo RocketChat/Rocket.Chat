@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import type { FC } from 'react';
 
 import { context } from '../../../Context';

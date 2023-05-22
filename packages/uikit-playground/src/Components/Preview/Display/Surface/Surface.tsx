@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
 import { context, docAction } from '../../../../Context';
