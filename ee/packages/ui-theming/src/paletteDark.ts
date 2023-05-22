@@ -63,7 +63,7 @@ export const palette = [
 			{ name: 'status-background-info', token: '', color: '#A8C3EB' },
 			{ name: 'status-background-success', token: '', color: '#C1EBDD' },
 			{ name: 'status-background-warning', token: '', color: '#FEEFBE' },
-			{ name: 'status-background-warning-2', token: '', color: '#4E4731' },
+			{ name: 'status-background-warning-2', token: '', color: '#3C3625' },
 			{ name: 'status-background-danger', token: '', color: '#FFBDC5' },
 			{ name: 'status-background-service-1', token: '', color: '#FCE3CF' },
 			{ name: 'status-background-service-2', token: '', color: '#EDD0F7' },
