@@ -14,7 +14,7 @@ import {
 	wait,
 	reservedWords,
 } from '../../data/api-data.js';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
+import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';

@@ -23,7 +23,7 @@ const lastNDays =
 		end: utc ? moment.utc().endOf('day').subtract(1, 'days').toDate() : moment().endOf('day').toDate(),
 	});
 
-export const periods = [
+const periods = [
 	{
 		key: 'last 7 days',
 		label: label('Last_7_days'),
@@ -41,9 +41,9 @@ export const periods = [
 	},
 ] as const;
 
-export type Period = typeof periods[number];
+export type Period = (typeof periods)[number];
 
-export const getPeriod = (key: typeof periods[number]['key']): Period => {
+export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
@@ -54,7 +54,7 @@ export const getPeriod = (key: typeof periods[number]['key']): Period => {
 };
 
 export const getPeriodRange = (
-	key: typeof periods[number]['key'],
+	key: (typeof periods)[number]['key'],
 	utc = false,
 ): {
 	start: Date;

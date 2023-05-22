@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-export type AccountsCustomField = {
+type AccountsCustomField = {
 	type: 'text' | 'select';
 	required: boolean;
 	defaultValue: string;

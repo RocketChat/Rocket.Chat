@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
+import { i18n } from '../../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
@@ -36,18 +35,18 @@ API.v1.addRoute(
 				return API.v1.failure('Room cannot be placed on hold after being closed');
 			}
 
-			const user = Meteor.user();
+			const user = await Meteor.userAsync();
 			if (!user) {
 				return API.v1.failure('Invalid user');
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
 			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				return API.v1.failure('Not authorized');
 			}
 
 			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
-			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
+			const comment = i18n.t('Omnichannel_On_Hold_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 

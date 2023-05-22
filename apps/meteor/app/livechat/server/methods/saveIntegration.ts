@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,6 +21,7 @@ Meteor.methods<ServerMethods>({
 				method: 'livechat:saveIntegration',
 			});
 		}
+		methodDeprecationLogger.warn('livechat:saveIntegration is deprecated and will be removed on the next major release of Rocket.Chat');
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));
@@ -27,6 +29,10 @@ Meteor.methods<ServerMethods>({
 
 		if (typeof values.Livechat_secret_token !== 'undefined') {
 			await Settings.updateValueById('Livechat_secret_token', trim(values.Livechat_secret_token));
+		}
+
+		if (typeof values.Livechat_http_timeout === 'number') {
+			await Settings.updateValueById('Livechat_http_timeout', values.Livechat_http_timeout);
 		}
 
 		if (typeof values.Livechat_webhook_on_start !== 'undefined') {

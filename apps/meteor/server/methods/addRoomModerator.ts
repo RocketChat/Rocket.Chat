@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-services';
+import { api, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -29,14 +29,20 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1 } });
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'addRoomModerator',
+			});
+		}
+
 		if (!(await hasPermissionAsync(uid, 'set-moderator', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -44,7 +50,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -52,23 +58,22 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
+		if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
 			throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
 				method: 'addRoomModerator',
 			});
 		}
 
-		Subscriptions.addRoleById(subscription._id, 'moderator');
+		await Subscriptions.addRoleById(subscription._id, 'moderator');
 
-		const fromUser = Users.findOneById(uid);
+		const fromUser = await Users.findOneById(uid);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addRoomLeader',
+			});
+		}
 
-		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-			role: 'moderator',
-		});
+		await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role: 'moderator' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
@@ -84,7 +89,7 @@ Meteor.methods<ServerMethods>({
 				name: fromUser.name,
 			},
 			scope: rid,
-		};
+		} as const;
 
 		if (settings.get<boolean>('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);

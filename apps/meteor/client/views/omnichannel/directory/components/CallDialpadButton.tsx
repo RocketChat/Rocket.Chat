@@ -7,7 +7,7 @@ import React from 'react';
 import { useVoipOutboundStates } from '../../../../contexts/CallContext';
 import { useDialModal } from '../../../../hooks/useDialModal';
 
-export const rcxCallDialButton = css`
+const rcxCallDialButton = css`
 	.rcx-show-call-button-on-hover:not(:hover) & {
 		display: none !important;
 	}

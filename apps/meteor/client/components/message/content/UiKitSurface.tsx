@@ -2,7 +2,7 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { UiKitComponent, UiKitMessage, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitMessage, kitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
 import React from 'react';
@@ -17,7 +17,7 @@ import {
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
-import ParsedText from './uikit/ParsedText';
+import GazzodownText from '../../GazzodownText';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -26,18 +26,6 @@ const patchMessageParser = () => {
 	}
 
 	patched = true;
-
-	// TODO: move this to fuselage-ui-kit itself
-	messageParser.text = ({ text, type }) => {
-		if (type !== 'mrkdwn') {
-			return <>{text}</>;
-		}
-
-		return <ParsedText text={text} />;
-	};
-
-	// TODO: move this to fuselage-ui-kit itself
-	messageParser.mrkdwn = ({ text }) => <ParsedText text={text} />;
 };
 
 type UiKitSurfaceProps = {
@@ -111,7 +99,9 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	return (
 		<MessageBlock fixedWidth>
 			<kitContext.Provider value={context}>
-				<UiKitComponent render={UiKitMessage} blocks={blocks} />
+				<GazzodownText>
+					<UiKitComponent render={UiKitMessage} blocks={blocks} />
+				</GazzodownText>
 			</kitContext.Provider>
 		</MessageBlock>
 	);
