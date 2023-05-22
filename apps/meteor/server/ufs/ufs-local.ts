@@ -69,11 +69,14 @@ export class LocalStore extends Store {
 		this.delete = async (fileId) => {
 			const path = await this.getFilePath(fileId);
 
-			const statResult = await stat(path);
-
-			if (statResult?.isFile()) {
-				await unlink(path);
-				await this.removeById(fileId);
+			try {
+				const statResult = await stat(path);
+				if (statResult?.isFile()) {
+					await unlink(path);
+					await this.removeById(fileId);
+				}
+			} catch (_e) {
+				// noop
 			}
 		};
 
