@@ -154,50 +154,50 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
+		const handleDeleteTeam = async (deletedRooms: IRoom[]): Promise<void> => {
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
+
+			try {
+				setDeleting(true);
+				setModal(null);
+				await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
+				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
+				roomsRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setDeleting(false);
+			} finally {
+				onDelete();
+			}
+		};
+
 		if (room.teamMain) {
 			setModal(
-				<DeleteTeamModalWithRooms
-					onConfirm={async (deletedRooms: IRoom[]): Promise<void> => {
-						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
-
-						try {
-							setDeleting(true);
-							setModal(null);
-							await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
-							dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-							roomsRoute.push({});
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-							setDeleting(false);
-						} finally {
-							onDelete();
-						}
-					}}
-					onCancel={(): void => setModal(null)}
-					teamId={room.teamId as string}
-				/>,
+				<DeleteTeamModalWithRooms onConfirm={handleDeleteTeam} onCancel={(): void => setModal(null)} teamId={room.teamId as string} />,
 			);
 
 			return;
 		}
 
+		const handleDeleteRoom = async (): Promise<void> => {
+			try {
+				setDeleting(true);
+				setModal(null);
+				await deleteRoom({ roomId: room._id });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				roomsRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setDeleting(false);
+			} finally {
+				onDelete();
+			}
+		};
+
 		setModal(
 			<GenericModal
 				variant='danger'
-				onConfirm={async (): Promise<void> => {
-					try {
-						setDeleting(true);
-						setModal(null);
-						await deleteRoom({ roomId: room._id });
-						dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-						roomsRoute.push({});
-					} catch (error) {
-						dispatchToastMessage({ type: 'error', message: error });
-						setDeleting(false);
-					} finally {
-						onDelete();
-					}
-				}}
+				onConfirm={handleDeleteRoom}
 				onClose={(): void => setModal(null)}
 				onCancel={(): void => setModal(null)}
 				confirmText={t('Yes_delete_it')}

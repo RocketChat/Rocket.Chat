@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 				method: 'setUserPassword',
 			});
 		}
-		if (compareUserPassword(user, { plain: password })) {
+		if (await compareUserPassword(user, { plain: password })) {
 			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 				method: 'setUserPassword',
 			});
@@ -48,7 +48,7 @@ Meteor.methods<ServerMethods>({
 
 		passwordPolicy.validate(password);
 
-		Accounts.setPassword(userId, password, {
+		await Accounts.setPasswordAsync(userId, password, {
 			logout: false,
 		});
 

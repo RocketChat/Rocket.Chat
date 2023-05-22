@@ -52,12 +52,12 @@ const CustomContentCard = (): ReactElement | null => {
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
-				<Card.Title>
+				<Box display='flex' mbe='x12'>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
-						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x16' />
+						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
-				</Card.Title>
+				</Box>
 				<Box mb='x8' role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>

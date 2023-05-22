@@ -96,6 +96,23 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
+      - name: Start httpbin container and wait for it to be ready
+        run: |
+          docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
+          i=0
+          while [ $i -lt 10 ]; do
+            if curl -s -o /dev/null http://localhost:10000; then
+              echo "httpbin is running"
+              break
+            fi
+            i=$((i + 1))
+            sleep 5
+          done
+          if [ $i -eq 10 ]; then
+            echo "Failed to verify httpbin is running"
+            exit 1
+          fi
+
       - name: yarn build
         run: yarn build
 

@@ -5,7 +5,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
-import fiber from 'fibers';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
 
@@ -44,7 +43,7 @@ const casTicket = function (req, token, callback) {
 			service: `${appUrl}/_cas/${token}`,
 		},
 		ticketId,
-		Meteor.bindEnvironment(async function (err, status, username, details) {
+		async function (err, status, username, details) {
 			if (err) {
 				logger.error(`error when trying to validate: ${err.message}`);
 			} else if (status) {
@@ -62,7 +61,7 @@ const casTicket = function (req, token, callback) {
 			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 
 			callback();
-		}),
+		},
 	);
 };
 
@@ -99,11 +98,7 @@ const middleware = function (req, res, next) {
 
 // Listen to incoming OAuth http requests
 WebApp.connectHandlers.use(function (req, res, next) {
-	// Need to create a fiber since we're using synchronous http calls and nothing
-	// else is wrapping this in a fiber automatically
-	fiber(function () {
-		middleware(req, res, next);
-	}).run();
+	middleware(req, res, next);
 });
 
 /*
