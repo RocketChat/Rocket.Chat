@@ -10,6 +10,8 @@ import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
+import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
+import type { ILivechatPriority } from '../ILivechatPriority';
 
 type MentionType = 'user' | 'team';
 
@@ -46,6 +48,8 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
+	| 'omnichannel_priority_change_history'
+	| 'omnichannel_sla_change_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
 	| 'livechat_transfer_history_fallback'
@@ -57,7 +61,7 @@ type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_o
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
-type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
@@ -90,6 +94,13 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'new-moderator'
+	| 'moderator-removed'
+	| 'new-owner'
+	| 'owner-removed'
+	| 'new-leader'
+	| 'leader-removed'
+	| 'discussion-created'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -120,9 +131,9 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-	groupable?: false;
+	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
-	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
 	md?: Root;
@@ -136,6 +147,8 @@ export interface IMessage extends IRocketChatRecord {
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
+	pinnedAt?: Date;
+	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
 	drid?: RoomID;
@@ -160,6 +173,11 @@ export interface IMessage extends IRocketChatRecord {
 
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
+	fileUpload?: {
+		publicFilePath: string;
+		type?: string;
+		size?: number;
+	};
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 
@@ -185,6 +203,18 @@ export interface IMessage extends IRocketChatRecord {
 	federation?: {
 		eventId: string;
 	};
+
+	/* used when message type is "omnichannel_sla_change_history" */
+	slaData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
+	};
+
+	/* used when message type is "omnichannel_priority_change_history" */
+	priorityData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
+	};
 }
 
 export type MessageSystem = {
@@ -196,9 +226,16 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
-export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
-	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message &&
+	(message as { editedAt?: unknown }).editedAt instanceof Date &&
+	'editedBy' in message &&
+	typeof (message as { editedBy?: unknown }).editedBy === 'object' &&
+	(message as { editedBy?: unknown }).editedBy !== null &&
+	'_id' in (message as IEditedMessage).editedBy &&
+	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
@@ -279,7 +316,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	requestData?: {
 		type: 'visitor' | 'user';
 		visitor?: ILivechatVisitor;
-		user?: IUser;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	};
 	webRtcCallEndTs?: Date;
 	comment?: string;
@@ -300,20 +337,12 @@ export const isMessageDiscussion = (message: IMessage): message is IMessageDiscu
 	return 'drid' in message;
 };
 
-export type IMessageEdited = IMessage & {
-	editedAt: Date;
-	editedBy: Pick<IUser, '_id' | 'username'>;
-};
-
-export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
-	return 'editedAt' in message && 'editedBy' in message;
-};
-
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
 		references?: string[];
 		messageId?: string;
+		thread?: string[];
 	};
 };
 

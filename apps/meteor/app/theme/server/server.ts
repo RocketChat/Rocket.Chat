@@ -16,10 +16,10 @@ settings.watch('theme-custom-css', (value) => {
 });
 
 // TODO: Add a migration to remove this setting from the database
-Meteor.startup(() => {
-	Settings.deleteMany({ _id: /theme-color/ });
-	Settings.deleteOne({ _id: /theme-font/ });
-	Settings.deleteOne({ _id: 'css' });
+Meteor.startup(async () => {
+	await Settings.deleteMany({ _id: /theme-color/ });
+	await Settings.deleteOne({ _id: /theme-font/ });
+	await Settings.deleteOne({ _id: 'css' });
 });
 
 WebApp.rawConnectHandlers.use((req, res, next) => {

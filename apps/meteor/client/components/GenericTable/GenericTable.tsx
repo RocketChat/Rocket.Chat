@@ -1,7 +1,7 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement, Key, Ref } from 'react';
+import type { ReactNode, ReactElement, Key, Ref, RefAttributes } from 'react';
 import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
@@ -24,7 +24,7 @@ type GenericTableProps<FilterProps extends { onChange?: (params: GenericTablePar
 	fixed?: boolean;
 	header?: ReactNode;
 	params?: GenericTableParams;
-	setParams?: (params: GenericTableParams) => void;
+	setParams?: React.Dispatch<React.SetStateAction<GenericTableParams>>;
 	children?: (props: ResultProps, key: number) => ReactElement;
 	renderFilter?: (props: FilterProps) => ReactElement;
 	renderRow?: (props: ResultProps) => ReactElement;
@@ -61,8 +61,17 @@ const GenericTable = forwardRef(function GenericTable<
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ ...params, text: params.text || '', current, itemsPerPage });
-	}, [params, current, itemsPerPage, setParams]);
+		setParams((prevParams) => {
+			setCurrent(prevParams.text === params.text ? current : 0);
+
+			return {
+				...params,
+				text: params.text || '',
+				current: prevParams.text === params.text ? current : 0,
+				itemsPerPage,
+			};
+		});
+	}, [params, current, itemsPerPage, setParams, setCurrent, setItemsPerPage]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
 
@@ -105,6 +114,8 @@ const GenericTable = forwardRef(function GenericTable<
 			)}
 		</>
 	);
-});
+}) as <TFilterProps extends { onChange?: (params: GenericTableParams) => void }, TResultProps extends { _id?: Key } | object>(
+	props: GenericTableProps<TFilterProps, TResultProps> & RefAttributes<HTMLElement>,
+) => ReactElement | null;
 
 export default GenericTable;

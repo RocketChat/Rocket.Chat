@@ -1,6 +1,7 @@
-import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
+import type { IServerInfo, IStats, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IInstance } from '@rocket.chat/rest-typings';
 import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -11,7 +12,7 @@ import InstancesModal from './InstancesModal';
 
 type DeploymentCardProps = {
 	info: IServerInfo;
-	instances: Array<IInstanceStatus>;
+	instances: Serialized<IInstance[]>;
 	statistics: IStats;
 };
 

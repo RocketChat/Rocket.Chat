@@ -1,26 +1,32 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
-	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: IRoom['_id'] | undefined) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: string | undefined): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Accessing_permissions',
 			});
 		}
 
-		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
+		if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:addUserToRole',
 			});
@@ -39,20 +45,20 @@ Meteor.methods({
 			apiDeprecationLogger.warn(`Calling authorization:addUserToRole with role names will be deprecated in future versions of Rocket.Chat`);
 		}
 
-		if (role._id === 'admin' && !hasPermission(userId, 'assign-admin-role')) {
+		if (role._id === 'admin' && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Assign_admin',
 			});
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(username, {
+			projection: {
 				_id: 1,
 			},
 		});
 
-		if (!user || !user._id) {
+		if (!user?._id) {
 			throw new Meteor.Error('error-user-not-found', 'User not found', {
 				method: 'authorization:addUserToRole',
 			});
@@ -68,7 +74,7 @@ Meteor.methods({
 		const add = await Roles.addUserRoles(user._id, [role._id], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: role._id,
 				u: {

@@ -1,9 +1,10 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import {
@@ -26,12 +27,20 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
+	const searchTerm = useDebouncedValue(text, 500);
+	const prevSearchTerm = useRef<string>('');
+
 	const query = useDebouncedValue(
-		useMemo(
-			() => ({
+		useMemo(() => {
+			if (searchTerm !== prevSearchTerm.current) {
+				setCurrent(0);
+			}
+
+			return {
 				fields: JSON.stringify({
 					name: 1,
 					username: 1,
@@ -43,17 +52,16 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				}),
 				query: JSON.stringify({
 					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
+						{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } },
+						{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
+						{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
 					],
 				}),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: current,
-			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
-		),
+				offset: searchTerm === prevSearchTerm.current ? current : 0,
+			};
+		}, [searchTerm, sortBy, sortDirection, itemsPerPage, current, setCurrent]),
 		500,
 	);
 
@@ -68,6 +76,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 			return users;
 		},
 		{
+			refetchOnWindowFocus: false,
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			},
@@ -77,6 +86,10 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
+
+	useEffect(() => {
+		prevSearchTerm.current = searchTerm;
+	}, [searchTerm]);
 
 	const handleClick = useMutableCallback((id): void =>
 		usersRoute.push({
@@ -152,8 +165,8 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						current={current}
 						itemsPerPage={itemsPerPage}
 						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>

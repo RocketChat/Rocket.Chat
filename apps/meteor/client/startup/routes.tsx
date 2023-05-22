@@ -2,20 +2,21 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
-import { APIClient } from '../../app/utils/client';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
+
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const ResetPasswordPage = lazy(() =>
@@ -30,6 +31,9 @@ const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
+
+const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
+const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 
 FlowRouter.wait();
 
@@ -48,7 +52,7 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(() => {
+				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
@@ -56,7 +60,7 @@ FlowRouter.route('/', {
 					} else {
 						FlowRouter.go('home');
 					}
-				});
+				}, 0);
 				c.stop();
 			}
 		});
@@ -77,13 +81,13 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			const result = await sdk.rest.get(`/v1/livechat/visitor/${queryParams.token}`);
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
 			}
 
-			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Visitor_does_not_exist') });
+			dispatchToastMessage({ type: 'error', message: t('Visitor_does_not_exist') });
 			return;
 		}
 
@@ -197,10 +201,17 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
+FlowRouter.route('/conference/:id', {
+	name: 'conference',
+	action: () => {
+		appLayout.render(<ConferenceRoute />);
+	},
+});
+
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render(<SetupWizardRoute />);
+		appLayout.renderStandalone(<SetupWizardRoute />);
 	},
 });
 
@@ -235,36 +246,17 @@ FlowRouter.route('/reset-password/:token', {
 	},
 });
 
-FlowRouter.route('/snippet/:snippetId/:snippetName', {
-	name: 'snippetView',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='snippetPage' />
-			</MainLayout>,
-		);
-	},
-});
-
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='authorize' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthAuthorizationPage />);
 	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
 	name: 'oauth/error',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='oauth404' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthErrorPage />);
 	},
 });
 

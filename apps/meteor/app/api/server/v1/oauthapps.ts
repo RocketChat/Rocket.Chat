@@ -1,9 +1,10 @@
-import { isOauthAppsGetParams, isOauthAppsAddParams } from '@rocket.chat/rest-typings';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-import { addOAuthApp } from '../../../oauth2-server-config/server/admin/methods/addOAuthApp';
+import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
+import { deprecationWarning } from '../helpers/deprecationWarning';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -23,22 +24,69 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'oauth-apps.get',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isOauthAppsGetParams },
 	{
 		async get() {
-			if (!isOauthAppsGetParams(this.queryParams)) {
-				return API.v1.failure('At least one of the query parameters "clientId" or "appId" is required.');
-			}
-
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
 			}
-
+			if ('appId' in this.queryParams) {
+				return API.v1.success(
+					deprecationWarning({
+						endpoint: 'oauth-apps.get',
+						warningMessage: ({ versionWillBeRemoved, endpoint }) =>
+							`appId get parameter from "${endpoint}" is deprecated and will be removed after version ${versionWillBeRemoved}. Use _id instead.`,
+						response: { oauthApp },
+					}),
+				);
+			}
 			return API.v1.success({
 				oauthApp,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.update',
+	{
+		authRequired: true,
+		validateParams: isUpdateOAuthAppParams,
+	},
+	{
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
+			const { appId } = this.bodyParams;
+
+			const result = await Meteor.callAsync('updateOAuthApp', appId, this.bodyParams);
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.delete',
+	{
+		authRequired: true,
+		validateParams: isDeleteOAuthAppParams,
+	},
+	{
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
+			const { appId } = this.bodyParams;
+
+			const result = await Meteor.callAsync('deleteOAuthApp', appId);
+
+			return API.v1.success(result);
 		},
 	},
 );
@@ -51,6 +99,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });
