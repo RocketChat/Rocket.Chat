@@ -54,7 +54,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatClient {
 		return this.ev.on('message', (args) => cb(...args));
 	}
 
-	onTyping(cb: (username: string, activities: string) => void): () => void {
+	onTyping(cb: (username: string, typing: boolean) => void): () => void {
 		return this.ev.on('typing', (args) => args[1] && cb(args[0], args[1]));
 	}
 

@@ -21,6 +21,7 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 };
 
 const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
 Meteor.startup(async function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
@@ -100,6 +101,9 @@ Meteor.startup(async function () {
 			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
 			if (!(await Users.bannerExistsById(id))) {
+				if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
+					return;
+				}
 				sendMessagesToAdmins({
 					msgs: async ({ adminUser }) => [
 						{
