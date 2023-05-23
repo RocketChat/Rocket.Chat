@@ -236,7 +236,7 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatRoomTransferParams },
 	{
 		async post() {
-			apiDeprecationLogger.warn('livechat/room.transfer has been deprecated. Use livechat/room.forward instead.');
+			apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response);
 
 			const { rid, token, department } = this.bodyParams;
 

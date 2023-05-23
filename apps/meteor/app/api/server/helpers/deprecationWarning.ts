@@ -14,7 +14,7 @@ export function deprecationWarning<T>({
 }: DeprecationWarningParams<T>): T {
 	const warning = typeof warningMessage === 'function' ? warningMessage({ endpoint, versionWillBeRemoved, response }) : warningMessage;
 
-	apiDeprecationLogger.warn(warning);
+	apiDeprecationLogger.endpoint(endpoint, versionWillBeRemoved);
 	if (process.env.NODE_ENV === 'development') {
 		return {
 			warning,
