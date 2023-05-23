@@ -1,5 +1,5 @@
 type action = {
-  type: string;
+  type: 'sidebarToggle';
   payload: boolean;
 };
 

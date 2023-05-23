@@ -2,7 +2,8 @@ import { Select } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useContext } from 'react';
 
-import { context, surfaceAction } from '../../Context';
+import { context } from '../../Context';
+import { surfaceAction } from '../../Context/action';
 import options from './options';
 
 const SurfaceSelect: FC = () => {

@@ -3,7 +3,8 @@ import { Tabs } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useContext } from 'react';
 
-import { context, tabsToggleAction } from '../../../Context';
+import { context } from '../../../Context';
+import { tabsToggleAction } from '../../../Context/action';
 
 const TabChange: FC<{ tabsItem: string[] }> = ({ tabsItem }) => {
   const {

@@ -4,7 +4,8 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import json5 from 'json5';
 import { useEffect, useContext } from 'react';
 
-import { docAction, context } from '../../Context';
+import { context } from '../../Context';
+import { docAction } from '../../Context/action';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 

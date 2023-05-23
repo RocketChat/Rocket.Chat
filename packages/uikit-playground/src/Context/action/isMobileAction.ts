@@ -1,5 +1,5 @@
 type action = {
-  type: string;
+  type: 'isMobile';
   payload: boolean;
 };
 

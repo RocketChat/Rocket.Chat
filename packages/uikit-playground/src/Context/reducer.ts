@@ -1,8 +1,12 @@
+import type { DocAction } from './action/docAction';
 import type { initialStateType } from './initialState';
 
-type actionType = { type: string; payload: any };
+type ActionType =
+  | DocAction
+  | { type: 'navMenuToogle' | 'surface' | 'editorToggle'; payload: number }
+  | { type: 'isMobile' | 'isTablet' | 'sidebarToggle' | 'navMenuToggle'; payload: boolean }
 
-const reducer = (state: initialStateType, action: actionType) => {
+const reducer = (state: initialStateType, action: ActionType) => {
   switch (action.type) {
     case 'isMobile':
       return { ...state, isMobile: action.payload };

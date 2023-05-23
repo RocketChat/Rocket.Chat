@@ -3,7 +3,8 @@ import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 import SplitPane from 'react-split-pane';
 
-import { context, tabsToggleAction } from '../../../Context';
+import { context } from '../../../Context';
+import { tabsToggleAction } from '../../../Context/action';
 import Display from '../Display';
 import Editor from '../Editor';
 

@@ -1,7 +1,7 @@
 import prettier from 'prettier';
 import pluginBabel from 'prettier/parser-babel';
 
-const codePrettier = (code: string, cursor: any) =>
+const codePrettier = (code: string, cursor: number) =>
   prettier.formatWithCursor(code, {
     parser: 'json',
     plugins: [pluginBabel],

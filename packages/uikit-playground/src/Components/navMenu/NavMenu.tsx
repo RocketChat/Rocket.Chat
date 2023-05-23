@@ -3,7 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useState, useContext } from 'react';
 
-import { context, navMenuToggleAction } from '../../Context';
+import { context } from '../../Context';
+import { navMenuToggleAction } from '../../Context/action';
 import Menu from './Menu';
 
 const NavMenu: FC = () => {

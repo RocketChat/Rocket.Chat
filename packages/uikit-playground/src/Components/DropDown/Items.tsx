@@ -2,10 +2,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Label, Chevron } from '@rocket.chat/fuselage';
 import { useState, useContext } from 'react';
 
-import { context, docAction } from '../../Context';
+import { context } from '../../Context';
 import ItemsIcon from './ItemsIcon';
 import { itemStyle, labelStyle } from './itemsStyle';
 import type { ItemProps } from './types';
+import { docAction } from '../../Context/action';
 
 const Items = ({ label, children, layer, payload }: ItemProps) => {
   const [isOpen, toggleItemOpen] = useState<boolean>(layer === 1);

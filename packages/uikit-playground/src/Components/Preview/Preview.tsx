@@ -3,7 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
-import { context, tabsToggleAction } from '../../Context';
+import { context } from '../../Context';
+import { tabsToggleAction } from '../../Context/action';
 import NavPanel from './NavPanel';
 import Wrapper from './Wrapper';
 

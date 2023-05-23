@@ -3,7 +3,8 @@ import type { FC } from 'react';
 import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
-import { context, docAction } from '../../../../Context';
+import { context } from '../../../../Context';
+import { docAction } from '../../../../Context/action';
 import type { Block } from '../../../Draggable/DraggableList';
 import BannerSurface from './BannerSurface';
 import MessageSurface from './MessageSurface';
@@ -27,7 +28,7 @@ const Surface: FC = () => {
     setUniqueBlocks(
       payload.map((block, i) => ({ id: `${i}`, payload: block }))
     );
-  }, [payload.length]);
+  }, [payload]);
 
   useEffect(() => {
     dispatch(
@@ -36,7 +37,7 @@ const Surface: FC = () => {
         changedByEditor: false,
       })
     );
-  }, [uniqueBlocks]);
+  }, [dispatch]);
 
   const onDragEnd = ({ destination, source }: DropResult) => {
     if (!destination) return;
@@ -46,7 +47,7 @@ const Surface: FC = () => {
     setUniqueBlocks(newBlocks);
   };
 
-  const surfaceRender: { [key: number]: any } = {
+  const surfaceRender: { [key: number]: () => JSX.Element } = {
     '1': () => <MessageSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
     '2': () => <BannerSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
     '3': () => <ModalSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,

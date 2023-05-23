@@ -7,7 +7,8 @@ import ComponentSideBar from '../Components/ComponentSideBar';
 import NavBar from '../Components/NavBar';
 import Preview from '../Components/Preview';
 import NavMenu from '../Components/navMenu';
-import { context, isMobileAction, isTabletAction } from '../Context';
+import { context } from '../Context';
+import { isMobileAction, isTabletAction } from '../Context/action';
 
 const Playground: FC = () => {
   const {

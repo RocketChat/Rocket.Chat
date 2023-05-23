@@ -3,7 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
-import { context, sidebarToggleAction } from '../../Context';
+import { context } from '../../Context';
+import { sidebarToggleAction } from '../../Context/action';
 import ScrollableSideBar from './ScrollableSideBar';
 import SliderBtn from './SliderBtn';
 

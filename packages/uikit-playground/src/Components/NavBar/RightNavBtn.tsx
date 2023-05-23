@@ -2,7 +2,8 @@ import { Box, Button } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useContext } from 'react';
 
-import { context, navMenuToggleAction } from '../../Context';
+import { context } from '../../Context';
+import { navMenuToggleAction } from '../../Context/action';
 import BurgerIcon from './BurgerIcon';
 
 const RightNavBtn: FC = () => {
