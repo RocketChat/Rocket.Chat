@@ -9,7 +9,7 @@ export const addSprinfToI18n = function (t: (typeof i18n)['t']): typeof t & {
 	(key: string, ...replaces: any): string;
 } {
 	return function (key: string, ...replaces: any): string {
-		if (isObject(replaces[0])) {
+		if (!isObject(replaces[0])) {
 			return t(key, ...replaces);
 		}
 		return t(key, {
