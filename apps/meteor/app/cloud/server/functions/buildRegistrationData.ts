@@ -16,7 +16,7 @@ type WorkspaceRegistrationData<T> = {
 	accountName: SettingValue;
 	organizationType: unknown;
 	industry: unknown;
-	orgSize: unknown;
+	orgSize: string;
 	country: unknown;
 	language: unknown;
 	agreePrivacyTerms: SettingValue;
@@ -63,7 +63,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		accountName,
 		organizationType,
 		industry,
-		orgSize,
+		orgSize: String(orgSize),
 		country,
 		language,
 		agreePrivacyTerms,
