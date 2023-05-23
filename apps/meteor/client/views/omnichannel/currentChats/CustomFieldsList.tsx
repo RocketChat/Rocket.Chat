@@ -7,12 +7,12 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Contextualbar, ContextualbarScrollableContent, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 
-type CustomFieldsContextualbarProps = {
+type CustomFieldsListProps = {
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
 	allCustomFields: ILivechatCustomField[];
 };
 
-const CustomFieldsContextualbar = ({ setCustomFields, allCustomFields }: CustomFieldsContextualbarProps): ReactElement => {
+const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsListProps): ReactElement => {
 	const { register, watch, control } = useForm({ mode: 'onChange' });
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
@@ -63,4 +63,4 @@ const CustomFieldsContextualbar = ({ setCustomFields, allCustomFields }: CustomF
 	);
 };
 
-export default CustomFieldsContextualbar;
+export default CustomFieldsList;
