@@ -535,7 +535,7 @@ export class NotificationsModule {
 		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		// }
 		emit(uid, args as any);
-		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
+		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
 
 	progressUpdated(progress: {
