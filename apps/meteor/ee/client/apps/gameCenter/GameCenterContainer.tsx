@@ -3,11 +3,11 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import {
-	VerticalbarTitle,
-	VerticalbarHeader,
-	VerticalbarBack,
-	VerticalbarContent,
-	VerticalbarClose,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarContent,
+	ContextualbarClose,
 } from '../../../../client/components/Contextualbar';
 import type { IGame } from './GameCenter';
 
@@ -20,16 +20,16 @@ interface IGameCenterContainerProps {
 const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps): ReactElement => {
 	return (
 		<>
-			<VerticalbarHeader>
-				{handleBack && <VerticalbarBack onClick={handleBack} />}
-				<VerticalbarTitle>
+			<ContextualbarHeader>
+				{handleBack && <ContextualbarBack onClick={handleBack} />}
+				<ContextualbarTitle>
 					<Avatar url={game.icon} /> {game.name}
-				</VerticalbarTitle>
-				{handleClose && <VerticalbarClose onClick={handleClose} />}
-			</VerticalbarHeader>
-			<VerticalbarContent pb='x16'>
+				</ContextualbarTitle>
+				{handleClose && <ContextualbarClose onClick={handleClose} />}
+			</ContextualbarHeader>
+			<ContextualbarContent pb='x16'>
 				<iframe style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url}></iframe>
-			</VerticalbarContent>
+			</ContextualbarContent>
 		</>
 	);
 };

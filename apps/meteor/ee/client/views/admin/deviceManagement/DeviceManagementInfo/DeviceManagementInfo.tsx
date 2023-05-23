@@ -4,14 +4,14 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import InfoPanel from '../../../../../../client/components/InfoPanel';
 import {
-	Verticalbar,
-	VerticalbarHeader,
-	VerticalbarClose,
-	VerticalbarScrollableContent,
-	VerticalbarFooter,
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
 } from '../../../../../../client/components/Contextualbar';
+import InfoPanel from '../../../../../../client/components/InfoPanel';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
@@ -35,12 +35,12 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<Verticalbar>
-			<VerticalbarHeader>
+		<Contextualbar>
+			<ContextualbarHeader>
 				{t('Device_Info')}
-				<VerticalbarClose onClick={handleCloseContextualBar} />
-			</VerticalbarHeader>
-			<VerticalbarScrollableContent>
+				<ContextualbarClose onClick={handleCloseContextualBar} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
@@ -83,15 +83,15 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 						<InfoPanel.Text>{ip}</InfoPanel.Text>
 					</InfoPanel.Field>
 				</InfoPanel>
-			</VerticalbarScrollableContent>
-			<VerticalbarFooter>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
-			</VerticalbarFooter>
-		</Verticalbar>
+			</ContextualbarFooter>
+		</Contextualbar>
 	);
 };
 

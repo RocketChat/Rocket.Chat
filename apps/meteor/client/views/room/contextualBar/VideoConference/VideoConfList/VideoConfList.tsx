@@ -60,7 +60,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						)}
 						{!error && total === 0 && (
 							<ContextualbarEmptyContent
-								icon='video'
+								icon='phone'
 								title={t('No_history')}
 								subtitle={t('There_is_no_video_conference_history_in_this_room')}
 							/>

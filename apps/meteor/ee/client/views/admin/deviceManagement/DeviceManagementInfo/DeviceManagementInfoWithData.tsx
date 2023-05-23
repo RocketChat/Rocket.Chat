@@ -5,11 +5,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import {
-	Verticalbar,
-	VerticalbarSkeleton,
-	VerticalbarHeader,
-	VerticalbarClose,
-	VerticalbarContent,
+	Contextualbar,
+	ContextualbarSkeleton,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarContent,
 } from '../../../../../../client/components/Contextualbar';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
@@ -36,20 +36,20 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<Verticalbar>
-				<VerticalbarSkeleton />
-			</Verticalbar>
+			<Contextualbar>
+				<ContextualbarSkeleton />
+			</Contextualbar>
 		);
 	}
 
 	if (error || !data) {
 		return (
-			<Verticalbar>
-				<VerticalbarHeader>
+			<Contextualbar>
+				<ContextualbarHeader>
 					{t('Device_Info')}
-					<VerticalbarClose />
-				</VerticalbarHeader>
-				<VerticalbarContent>
+					<ContextualbarClose />
+				</ContextualbarHeader>
+				<ContextualbarContent>
 					<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 						<States>
 							<StatesIcon name='warning' variation='danger' />
@@ -58,8 +58,8 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 							<StatesSubtitle>{error?.message}</StatesSubtitle>
 						</States>
 					</Box>
-				</VerticalbarContent>
-			</Verticalbar>
+				</ContextualbarContent>
+			</Contextualbar>
 		);
 	}
 

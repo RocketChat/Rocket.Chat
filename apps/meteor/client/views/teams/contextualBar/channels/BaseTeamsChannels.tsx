@@ -7,8 +7,6 @@ import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'reac
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -16,7 +14,10 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import Row from './Row';
 
 type BaseTeamsChannelsProps = {
@@ -104,34 +105,29 @@ const BaseTeamsChannels = ({
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{!loading && channels.length === 0 && (
-					<Box textAlign='center' p='x12' color='annotation'>
-						{t('No_channels_in_team')}
-					</Box>
-				)}
+				{!loading && channels.length === 0 && <ContextualbarEmptyContent title={t('No_channels_in_team')} />}
 
 				{!loading && channels.length > 0 && (
-					<Box pi='x18' pb='x12'>
-						<Box is='span' color='hint' fontScale='p2'>
-							{t('Showing')}: {channels.length}
-						</Box>
+					<>
+						<Box pi='x18' pb='x12'>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing')}: {channels.length}
+							</Box>
 
-						<Box is='span' color='hint' fontScale='p2' mis='x8'>
-							{t('Total')}: {total}
+							<Box is='span' color='hint' fontScale='p2' mis='x8'>
+								{t('Total')}: {total}
+							</Box>
 						</Box>
-					</Box>
-				)}
-
-				{!loading && (
-					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-						<Virtuoso
-							totalCount={total}
-							data={channels}
-							// eslint-disable-next-line react/no-multi-comp
-							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
-						/>
-					</Box>
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<Virtuoso
+								totalCount={total}
+								data={channels}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+								itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
+							/>
+						</Box>
+					</>
 				)}
 			</ContextualbarContent>
 

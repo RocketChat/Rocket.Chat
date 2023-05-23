@@ -4,27 +4,22 @@ import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react'
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import {
 	ContextualbarHeader,
 	ContextualbarContent,
 	ContextualbarTitle,
 	ContextualbarIcon,
 	ContextualbarClose,
+	ContextualbarEmptyContent,
 } from '../../../components/Contextualbar';
+import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
 import ContactHistoryItem from './ContactHistoryItem';
 import { useHistoryList } from './useHistoryList';
 
-const ContactHistoryContextualbar = ({
-	setChatId,
-	close,
-}: {
-	setChatId: Dispatch<SetStateAction<string>>;
-	close: () => void;
-}): ReactElement => {
+const ContactHistoryList = ({ setChatId, close }: { setChatId: Dispatch<SetStateAction<string>>; close: () => void }): ReactElement => {
 	const [text, setText] = useState('');
 	const t = useTranslation();
 	const room = useOmnichannelRoom();
@@ -79,12 +74,7 @@ const ContactHistoryContextualbar = ({
 						<StatesSubtitle>{error.toString()}</StatesSubtitle>
 					</States>
 				)}
-				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
+				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && totalItemCount > 0 && history.length > 0 && (
 						<Virtuoso
@@ -106,4 +96,4 @@ const ContactHistoryContextualbar = ({
 	);
 };
 
-export default ContactHistoryContextualbar;
+export default ContactHistoryList;

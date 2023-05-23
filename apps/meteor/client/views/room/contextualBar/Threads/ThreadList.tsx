@@ -6,18 +6,15 @@ import type { FormEvent, ReactElement, VFC } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
+	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-// import ContextualbarContent from '../../../../components/Contextualbar/ContextualbarContent';
-// import ContextualbarHeader from '../../../../components/Contextualbar/ContextualbarHeader';
-// import ContextualbarIcon from '../../../../components/Contextualbar/ContextualbarIcon';
-// import ContextualbarText from '../../../../components/Contextualbar/ContextualbarText';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -162,11 +159,7 @@ const ThreadList: VFC = () => {
 					</Callout>
 				)}
 
-				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && (
-					<Box p={24} color='annotation' textAlign='center' width='full'>
-						{t('No_Threads')}
-					</Box>
-				)}
+				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && itemCount > 0 && items.length > 0 && (

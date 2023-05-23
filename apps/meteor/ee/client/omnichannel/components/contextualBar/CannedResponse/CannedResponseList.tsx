@@ -1,20 +1,20 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FC, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import {
-	VerticalbarHeader,
-	VerticalbarTitle,
-	VerticalbarClose,
-	VerticalbarContent,
-	VerticalbarInnerContent,
-	VerticalbarFooter,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarInnerContent,
+	ContextualbarFooter,
 } from '../../../../../../client/components/Contextualbar';
+import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import { useTabContext } from '../../../../../../client/views/room/contexts/ToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
@@ -61,12 +61,12 @@ const CannedResponseList: FC<{
 
 	return (
 		<>
-			<VerticalbarHeader>
-				<VerticalbarTitle>{t('Canned_Responses')}</VerticalbarTitle>
-				<VerticalbarClose onClick={onClose} />
-			</VerticalbarHeader>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 
-			<VerticalbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p='x24' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -81,9 +81,9 @@ const CannedResponseList: FC<{
 						</Margins>
 					</Box>
 				</Box>
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{itemCount === 0 && <Box p='x24'>{t('No_Canned_Responses')}</Box>}
-					{itemCount > 0 && cannedItems.length > 0 && (
+				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
+				{itemCount > 0 && cannedItems.length > 0 && (
+					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 						<Virtuoso
 							style={{ width: inlineSize }}
 							totalCount={itemCount}
@@ -91,7 +91,7 @@ const CannedResponseList: FC<{
 							overscan={25}
 							data={cannedItems}
 							components={{
-								Scroller: ScrollableContentWrapper as any,
+								Scroller: ScrollableContentWrapper,
 							}}
 							itemContent={(_index, data): ReactElement => (
 								<Item
@@ -103,26 +103,26 @@ const CannedResponseList: FC<{
 								/>
 							)}
 						/>
-					)}
-				</Box>
-			</VerticalbarContent>
+					</Box>
+				)}
+			</ContextualbarContent>
 
 			{cannedId && (
-				<VerticalbarInnerContent>
+				<ContextualbarInnerContent>
 					<WrapCannedResponse
 						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}
 						reload={reload}
 					/>
-				</VerticalbarInnerContent>
+				</ContextualbarInnerContent>
 			)}
 
-			<VerticalbarFooter>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClickCreate}>{t('Create')}</Button>
 				</ButtonGroup>
-			</VerticalbarFooter>
+			</ContextualbarFooter>
 		</>
 	);
 };

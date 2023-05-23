@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
-import { VerticalbarScrollableContent } from '../../../../client/components/Contextualbar';
+import { ContextualbarScrollableContent } from '../../../../client/components/Contextualbar';
 
 type SlaEditProps = {
 	isNew?: boolean;
@@ -76,7 +76,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	});
 
 	return (
-		<VerticalbarScrollableContent is='form' {...props}>
+		<ContextualbarScrollableContent is='form' {...props}>
 			<Field>
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
@@ -116,7 +116,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 					</Margins>
 				</Box>
 			</Field.Row>
-		</VerticalbarScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 }
 

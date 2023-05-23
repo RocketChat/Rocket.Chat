@@ -6,8 +6,14 @@ import type { RefObject } from 'react';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarContent,
+	ContextualbarClose,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarContent, ContextualbarClose } from '../../../../components/Contextualbar';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import DiscussionsListRow from './DiscussionsListRow';
 
@@ -86,11 +92,7 @@ function DiscussionsList({
 					</Callout>
 				)}
 
-				{!loading && total === 0 && (
-					<Box width='full' textAlign='center' p='x24' color='annotation'>
-						{t('No_Discussions_found')}
-					</Box>
-				)}
+				{!loading && total === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (

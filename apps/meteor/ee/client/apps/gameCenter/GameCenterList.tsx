@@ -3,8 +3,13 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+} from '../../../../client/components/Contextualbar';
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { VerticalbarHeader, VerticalbarTitle, VerticalbarClose, VerticalbarContent } from '../../../../client/components/Contextualbar';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
 
@@ -30,12 +35,12 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 
 	return (
 		<div>
-			<VerticalbarHeader>
-				<VerticalbarTitle>{t('Apps_Game_Center')}</VerticalbarTitle>
-				{handleClose && <VerticalbarClose onClick={handleClose} />}
-			</VerticalbarHeader>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Apps_Game_Center')}</ContextualbarTitle>
+				{handleClose && <ContextualbarClose onClick={handleClose} />}
+			</ContextualbarHeader>
 			{!isLoading && (
-				<VerticalbarContent>
+				<ContextualbarContent>
 					{games && (
 						<div>
 							<Table>
@@ -73,13 +78,13 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 							</Table>
 						</div>
 					)}
-				</VerticalbarContent>
+				</ContextualbarContent>
 			)}
 
 			{isLoading && (
-				<VerticalbarContent>
+				<ContextualbarContent>
 					<FormSkeleton />
-				</VerticalbarContent>
+				</ContextualbarContent>
 			)}
 		</div>
 	);

@@ -7,8 +7,6 @@ import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -16,7 +14,10 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
@@ -128,40 +129,36 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{!loading && members.length <= 0 && (
-					<Box textAlign='center' p='x12' color='annotation'>
-						{t('No_members_found')}
-					</Box>
-				)}
+				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members.length > 0 && (
-					<Box pi='x18' pb='x12'>
-						<Box is='span' color='hint' fontScale='p2'>
-							{t('Showing')}: {members.length}
+				{!loading && members && members.length > 0 && (
+					<>
+						<Box pi='x18' pb='x12'>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing')}: {members.length}
+							</Box>
+
+							<Box is='span' color='hint' fontScale='p2' mis='x8'>
+								{t('Total')}: {total}
+							</Box>
 						</Box>
 
-						<Box is='span' color='hint' fontScale='p2' mis='x8'>
-							{t('Total')}: {total}
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<Virtuoso
+								style={{
+									height: '100%',
+									width: '100%',
+								}}
+								totalCount={total}
+								overscan={50}
+								data={members}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+								itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
+							/>
 						</Box>
-					</Box>
+					</>
 				)}
-
-				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-					{!loading && members && members.length > 0 && (
-						<Virtuoso
-							style={{
-								height: '100%',
-								width: '100%',
-							}}
-							totalCount={total}
-							overscan={50}
-							data={members}
-							// eslint-disable-next-line react/no-multi-comp
-							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
-						/>
-					)}
-				</Box>
 			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>

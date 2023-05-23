@@ -9,18 +9,15 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import type { MessageActionContext } from '../../../../../app/ui-utils/client/lib/MessageAction';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import {
 	ContextualbarContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
+	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-// import ContextualbarContent from '../../../../components/Contextualbar/ContextualbarContent';
-// import ContextualbarHeader from '../../../../components/Contextualbar/ContextualbarHeader';
-// import ContextualbarIcon from '../../../../components/Contextualbar/ContextualbarIcon';
-// import ContextualbarText from '../../../../components/Contextualbar/ContextualbarText';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -34,7 +31,7 @@ import { useTabBarClose } from '../../contexts/ToolboxContext';
 type MessageListTabProps = {
 	iconName: ComponentProps<typeof Icon>['name'];
 	title: ReactNode;
-	emptyResultMessage: ReactNode;
+	emptyResultMessage: string;
 	context: MessageActionContext;
 	queryResult: UseQueryResult<IMessage[]>;
 };
@@ -66,11 +63,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				)}
 				{queryResult.isSuccess && (
 					<>
-						{queryResult.data.length === 0 && (
-							<Box p={24} color='annotation' textAlign='center' width='full'>
-								{emptyResultMessage}
-							</Box>
-						)}
+						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
 
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
