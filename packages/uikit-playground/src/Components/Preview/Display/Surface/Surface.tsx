@@ -4,7 +4,6 @@ import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
 import { context } from '../../../../Context';
-import { docAction } from '../../../../Context/action';
 import type { Block } from '../../../Draggable/DraggableList';
 import BannerSurface from './BannerSurface';
 import MessageSurface from './MessageSurface';
@@ -17,27 +16,16 @@ const Surface: FC = () => {
       doc: { payload },
       surface,
     },
-    dispatch,
   } = useContext(context);
   const [uniqueBlocks, setUniqueBlocks] = useState<Block[]>(
     payload.map((block, i) => ({ id: `${i}`, payload: block }))
   );
 
   useEffect(() => {
-    console.log(payload);
     setUniqueBlocks(
       payload.map((block, i) => ({ id: `${i}`, payload: block }))
     );
   }, [payload]);
-
-  useEffect(() => {
-    dispatch(
-      docAction({
-        payload: uniqueBlocks.map((block) => block.payload),
-        changedByEditor: false,
-      })
-    );
-  }, [dispatch]);
 
   const onDragEnd = ({ destination, source }: DropResult) => {
     if (!destination) return;
