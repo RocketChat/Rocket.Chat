@@ -74,7 +74,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
-		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser.toString() });
+		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
