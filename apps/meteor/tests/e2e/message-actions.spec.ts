@@ -34,7 +34,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="reply-in-thread"]').click();
-		await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('this is a reply message');
+		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
