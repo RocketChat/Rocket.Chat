@@ -83,8 +83,8 @@ export const apiDeprecationLogger = ((logger) => {
 
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: (method: string, version: string) => {
-			const message = `The method "${method}" is deprecated and will be removed on version ${version}`;
+		method: (method: string, version: string, info = '') => {
+			const message = `The method "${method}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
 			compareVersions(version, message);
 			logger.warn(message);
 		},
