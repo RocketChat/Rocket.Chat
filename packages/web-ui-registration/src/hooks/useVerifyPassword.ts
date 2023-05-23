@@ -7,7 +7,7 @@ export const useVerifyPassword = (password: string) => {
 
 	if (!data?.enabled) return;
 
-	const handleRepeatingChars = (maxRepeatingChars: number) => {
+	const handleRepeatingChars = (maxRepeatingChars: number | undefined) => {
 		const repeatingCharsHash = {} as Record<string, number>;
 
 		for (let i = 0; i < password.length; i++) {
@@ -24,9 +24,9 @@ export const useVerifyPassword = (password: string) => {
 		return true;
 	};
 
-	const passwordVerificationsTemplate: Record<string, (lengthCriteria: number) => boolean> = {
-		'get-password-policy-minLength': (minLength: number) => password.length >= minLength,
-		'get-password-policy-maxLength': (maxLength: number) => password.length <= maxLength,
+	const passwordVerificationsTemplate: Record<string, (lengthCriteria?: number) => boolean> = {
+		'get-password-policy-minLength': (minLength: number | undefined) => Boolean(minLength && password.length >= minLength),
+		'get-password-policy-maxLength': (maxLength: number | undefined) => Boolean(maxLength && password.length <= maxLength),
 		'get-password-policy-forbidRepeatingCharactersCount': handleRepeatingChars,
 		'get-password-policy-mustContainAtLeastOneLowercase': () => /[a-z]/.test(password),
 		'get-password-policy-mustContainAtLeastOneUppercase': () => /[A-Z]/.test(password),
@@ -34,7 +34,7 @@ export const useVerifyPassword = (password: string) => {
 		'get-password-policy-mustContainAtLeastOneSpecialCharacter': () => /[^A-Za-z0-9\s]/.test(password),
 	};
 
-	const passwordVerifications = {} as Record<string, boolean | ((lengthCriteria: number) => boolean)>;
+	const passwordVerifications = {} as Record<string, boolean>;
 
 	data?.policy.forEach((currentPolicy) => {
 		if (!Array.isArray(currentPolicy)) return;
@@ -43,9 +43,10 @@ export const useVerifyPassword = (password: string) => {
 
 		if (currentPolicy[1]) {
 			passwordVerifications[currentPolicy[0]] = passwordVerificationsTemplate[currentPolicy[0]](Object.values(currentPolicy[1])[0]);
+			return;
 		}
 
-		passwordVerifications[currentPolicy[0]] = passwordVerificationsTemplate[currentPolicy[0]];
+		passwordVerifications[currentPolicy[0]] = passwordVerificationsTemplate[currentPolicy[0]]();
 	});
 
 	return passwordVerifications;

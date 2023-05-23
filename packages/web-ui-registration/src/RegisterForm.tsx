@@ -1,5 +1,5 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Box, Icon } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -9,6 +9,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 import EmailConfirmationForm from './EmailConfirmationForm';
+// import { useVerifyPassword } from './hooks/useVerifyPassword';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -21,6 +22,7 @@ type LoginRegisterPayload = {
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
+	// const passwordVerifications = useVerifyPassword('Teste');
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -139,11 +141,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								placeholder={passwordPlaceholder}
 							/>
 						</Field.Row>
-						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
-					</Field>
-					{requiresPasswordConfirmation && (
-						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('registration.component.form.confirmPassword')}*</Field.Label>
+						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -157,14 +155,42 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									placeholder={passwordConfirmationPlaceholder}
 								/>
 							</Field.Row>
-							{errors.passwordConfirmation?.type === 'validate' && (
-								<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
-							)}
-							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
-							)}
-						</Field>
-					)}
+						)}
+						{errors.passwordConfirmation?.type === 'validate' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
+						)}
+						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+						)}
+						<Box display='flex' flexDirection='column' mbs='x8'>
+							<Box mbe='x8' fontScale='c2'>
+								Your Password must have:
+							</Box>
+							<Box display='flex' flexWrap='wrap'>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> At least 8 characters
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> Max. 2 repeating characters
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> At least one lowercase letter
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one symbol
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At most 24 characters
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one uppercase letter
+								</Box>
+								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
+									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one number
+								</Box>
+							</Box>
+						</Box>
+					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
 							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>
