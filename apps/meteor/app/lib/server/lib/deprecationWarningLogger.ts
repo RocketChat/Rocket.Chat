@@ -1,3 +1,4 @@
+import semver from 'semver';
 import type { Response } from 'express';
 
 import { Logger } from '../../../logger/server';
@@ -6,20 +7,33 @@ const deprecationLogger = new Logger('DeprecationWarning');
 
 type MessageFn<T> = (params: { parameter: string; version: string } & T) => string;
 
+const throwErrorsForVersionsUnder = process.env.ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER;
+
+const writeDeprecationHeader = (res: Response | undefined, type: string, message: string, version: string) => {
+	if (res) {
+		res.header('x-deprecation-type', type);
+		res.header('x-deprecation-message', message);
+		res.header('x-deprecation-version', version);
+	}
+};
+
+const compareVersions = (version: string, message: string) => {
+	if (process.env.TEST_MODE === 'true') {
+		throw new Error(message);
+	}
+	if (throwErrorsForVersionsUnder && semver.lte(version, throwErrorsForVersionsUnder)) {
+		throw new Error(message);
+	}
+};
+
 export const apiDeprecationLogger = ((logger) => {
 	return {
 		endpoint: (endpoint: string, version: string, res: Response, info = '') => {
 			const message = `The endpoint "${endpoint}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
 
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 
-			if (res) {
-				res.header('x-deprecation-type', 'endpoint-deprecation');
-				res.header('x-deprecation-message', message);
-				res.header('x-deprecation-version', version);
-			}
+			writeDeprecationHeader(res, 'endpoint-deprecation', message, version);
 
 			logger.warn(message);
 		},
@@ -36,15 +50,9 @@ export const apiDeprecationLogger = ((logger) => {
 					endpoint,
 					version,
 				}) ?? `The parameter "${parameter}" in the endpoint "${endpoint}" is deprecated and will be removed on version ${version}`;
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 
-			if (res) {
-				res.header('x-deprecation-type', 'parameter-deprecation');
-				res.header('x-deprecation-message', message);
-				res.header('x-deprecation-version', version);
-			}
+			writeDeprecationHeader(res, 'parameter-deprecation', message, version);
 
 			logger.warn(message);
 		},
@@ -64,15 +72,9 @@ export const apiDeprecationLogger = ((logger) => {
 					endpoint,
 					version,
 				}) ?? `The usage of the endpoint "${endpoint}" is deprecated and will be removed on version ${version}`;
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 
-			if (res) {
-				res.header('x-deprecation-type', 'invalid-usage');
-				res.header('x-deprecation-message', message);
-				res.header('x-deprecation-version', version);
-			}
+			writeDeprecationHeader(res, 'invalid-usage', message, version);
 
 			logger.warn(message);
 		},
@@ -81,18 +83,14 @@ export const apiDeprecationLogger = ((logger) => {
 
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: (method: string, version: number) => {
+		method: (method: string, version: string) => {
 			const message = `The method "${method}" is deprecated and will be removed on version ${version}`;
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 			logger.warn(message);
 		},
-		parameter: (method: string, parameter: string, version: number) => {
+		parameter: (method: string, parameter: string, version: string) => {
 			const message = `The parameter "${parameter}" in the method "${method}" is deprecated and will be removed on version ${version}`;
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 			logger.warn(message);
 		},
 		deprecatedParameterUsage: (
@@ -109,17 +107,13 @@ export const methodDeprecationLogger = ((logger) => {
 					method,
 					version,
 				}) ?? `The usage of the method "${method}" is deprecated and will be removed on version ${version}`;
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions(version, message);
 
 			logger.warn(message);
 		},
 		/** @deprecated */
 		warn: (message: string) => {
-			if (process.env.TEST_MODE === 'true') {
-				throw new Error(message);
-			}
+			compareVersions('0.0.0', message);
 			logger.warn(message);
 		},
 	};

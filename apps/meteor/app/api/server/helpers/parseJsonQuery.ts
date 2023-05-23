@@ -6,20 +6,16 @@ import { clean } from '../lib/cleanQuery';
 import { API } from '../api';
 import type { Logger } from '../../../logger/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import type { PartialThis } from '../definition';
 
 const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],
 	'def': ['$or', '$and', '$regex'],
 };
 
-const warnFields =
-	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
-		? (...rest: any): void => {
-				console.warn(...rest, new Error().stack);
-		  }
-		: new Function();
-
 export async function parseJsonQuery(
+	this: PartialThis,
 	route: string,
 	userId: string,
 	params: {
@@ -56,7 +52,7 @@ export async function parseJsonQuery(
 
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields) {
-		warnFields('attribute fields is deprecated');
+		apiDeprecationLogger.parameter(this.request.url, 'fields', '7.0.0', this.response);
 		try {
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 
@@ -107,7 +103,7 @@ export async function parseJsonQuery(
 
 	let query: Record<string, any> = {};
 	if (params.query) {
-		warnFields('attribute query is deprecated');
+		apiDeprecationLogger.parameter(this.request.url, 'query', '7.0.0', this.response);
 
 		try {
 			query = ejson.parse(params.query);
