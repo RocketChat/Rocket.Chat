@@ -7,11 +7,17 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
-import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
+import {
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+} from '../../../../components/Contextualbar';
+// import ContextualbarContent from '../../../../components/Contextualbar/ContextualbarContent';
+// import ContextualbarHeader from '../../../../components/Contextualbar/ContextualbarHeader';
+// import ContextualbarIcon from '../../../../components/Contextualbar/ContextualbarIcon';
+// import ContextualbarText from '../../../../components/Contextualbar/ContextualbarText';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -114,13 +120,13 @@ const ThreadList: VFC = () => {
 
 	return (
 		<>
-			<VerticalBarHeader>
-				<VerticalBarIcon name='thread' />
-				<VerticalBarText>{t('Threads')}</VerticalBarText>
-				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
-			</VerticalBarHeader>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='thread' />
+				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
+			</ContextualbarHeader>
 
-			<VerticalBarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -192,7 +198,7 @@ const ThreadList: VFC = () => {
 						/>
 					)}
 				</Box>
-			</VerticalBarContent>
+			</ContextualbarContent>
 		</>
 	);
 };

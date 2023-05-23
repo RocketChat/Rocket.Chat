@@ -1,17 +1,17 @@
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import ContactHistoryVerticalBar from './ContactHistoryVerticalBar';
-import ContactHistoryMessagesVerticalBar from './MessageList/ContactHistoryMessagesVerticalBar';
+import ContactHistoryContextualbar from './ContactHistoryContextualbar';
+import ContactHistoryMessagesContextualbar from './MessageList/ContactHistoryMessagesContextualbar';
 
 const ContactHistory = ({ tabBar: { close } }: any): ReactElement => {
 	const [chatId, setChatId] = useState<string>('');
 	return (
 		<>
 			{chatId && chatId !== '' ? (
-				<ContactHistoryMessagesVerticalBar chatId={chatId} setChatId={setChatId} close={close} />
+				<ContactHistoryMessagesContextualbar chatId={chatId} setChatId={setChatId} close={close} />
 			) : (
-				<ContactHistoryVerticalBar setChatId={setChatId} close={close} />
+				<ContactHistoryContextualbar setChatId={setChatId} close={close} />
 			)}
 		</>
 	);

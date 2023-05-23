@@ -5,7 +5,13 @@ import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+} from '../../../../components/Contextualbar';
 import Row from './Row';
 
 function RoomFiles({
@@ -47,13 +53,13 @@ function RoomFiles({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='attachment' />
-				<VerticalBar.Text>{t('Files')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='attachment' />
+				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.Content p='x12'>
+			<ContextualbarContent p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -97,7 +103,7 @@ function RoomFiles({
 						itemContent={(index, data) => <Row data={itemData} index={index} item={data} />}
 					/>
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 }

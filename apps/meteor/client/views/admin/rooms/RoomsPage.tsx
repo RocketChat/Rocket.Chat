@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
 
@@ -15,7 +15,7 @@ const RoomsPage = (): ReactElement => {
 
 	const roomsRoute = useRoute('admin-rooms');
 
-	const handleVerticalBarCloseButtonClick = (): void => {
+	const handleContextualbarCloseButtonClick = (): void => {
 		roomsRoute.push({});
 	};
 
@@ -30,13 +30,13 @@ const RoomsPage = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar>
-					<VerticalBar.Header>
-						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-					</VerticalBar.Header>
+				<Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+						<ContextualbarClose onClick={handleContextualbarCloseButtonClick} />
+					</ContextualbarHeader>
 					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
-				</VerticalBar>
+				</Contextualbar>
 			)}
 		</Page>
 	);

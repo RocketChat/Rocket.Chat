@@ -9,7 +9,14 @@ import { Virtuoso } from 'react-virtuoso';
 
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+} from '../../../../components/Contextualbar';
 import Row from './Row';
 
 type BaseTeamsChannelsProps = {
@@ -70,13 +77,13 @@ const BaseTeamsChannels = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='hash' />
-				<VerticalBar.Text>{t('Team_Channels')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='hash' />
+				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.Content p='x12'>
+			<ContextualbarContent p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -126,10 +133,10 @@ const BaseTeamsChannels = ({
 						/>
 					</Box>
 				)}
-			</VerticalBar.Content>
+			</ContextualbarContent>
 
 			{(onClickAddExisting || onClickCreateNew) && (
-				<VerticalBar.Footer>
+				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickAddExisting && (
 							<Button onClick={onClickAddExisting} width='50%'>
@@ -142,7 +149,7 @@ const BaseTeamsChannels = ({
 							</Button>
 						)}
 					</ButtonGroup>
-				</VerticalBar.Footer>
+				</ContextualbarFooter>
 			)}
 		</>
 	);

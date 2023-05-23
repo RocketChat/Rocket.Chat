@@ -2,7 +2,7 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import * as Status from '../UserStatus';
-import VerticalBar from '../VerticalBar';
+import { Contextualbar } from '../Contextualbar';
 import UserInfo from './UserInfo';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <VerticalBar height='100vh'>{fn()}</VerticalBar>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof UserInfo>;
 
 const Template: ComponentStory<typeof UserInfo> = (args) => <UserInfo {...args} />;

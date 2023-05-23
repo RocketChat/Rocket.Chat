@@ -5,14 +5,20 @@ import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarContent,
+	ContextualbarTitle,
+	ContextualbarIcon,
+	ContextualbarClose,
+} from '../../../components/Contextualbar';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
 import ContactHistoryItem from './ContactHistoryItem';
 import { useHistoryList } from './useHistoryList';
 
-const ContactHistoryVerticalBar = ({
+const ContactHistoryContextualbar = ({
 	setChatId,
 	close,
 }: {
@@ -34,13 +40,13 @@ const ContactHistoryVerticalBar = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='history' />
-				<VerticalBar.Text>{t('Contact_Chat_History')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={close} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='history' />
+				<ContextualbarTitle>{t('Contact_Chat_History')}</ContextualbarTitle>
+				<ContextualbarClose onClick={close} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0}>
+			<ContextualbarContent paddingInline={0}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -95,9 +101,9 @@ const ContactHistoryVerticalBar = ({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 };
 
-export default ContactHistoryVerticalBar;
+export default ContactHistoryContextualbar;

@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
@@ -69,18 +69,18 @@ const CustomUserStatusRoute = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar bg='light' flexShrink={0}>
-					<VerticalBar.Header>
+				<Contextualbar bg='light' flexShrink={0}>
+					<ContextualbarHeader>
 						{context === 'edit' && t('Custom_User_Status_Edit')}
 						{context === 'new' && t('Custom_User_Status_Add')}
 						{context === 'presence-service' && t('Presence_service_cap')}
-						<VerticalBar.Close onClick={handleClose} />
-					</VerticalBar.Header>
+						<ContextualbarClose onClick={handleClose} />
+					</ContextualbarHeader>
 					{context === 'presence-service' && <CustomUserStatusService />}
 					{(context === 'new' || context === 'edit') && (
 						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
 					)}
-				</VerticalBar>
+				</Contextualbar>
 			)}
 		</Page>
 	);

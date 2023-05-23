@@ -5,7 +5,14 @@ import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarAction,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+} from '../../../../components/Contextualbar';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -13,7 +20,7 @@ import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequ
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 
-const ContactHistoryMessagesVerticalBar = ({
+const ContactHistoryMessagesContextualbar = ({
 	chatId,
 	setChatId,
 	close,
@@ -38,14 +45,14 @@ const ContactHistoryMessagesVerticalBar = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Action onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
-				<VerticalBar.Icon name='history' />
-				<VerticalBar.Text>{t('Chat_History')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={close} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarAction onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
+				<ContextualbarIcon name='history' />
+				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
+				<ContextualbarClose onClick={close} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0}>
+			<ContextualbarContent paddingInline={0}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -107,9 +114,9 @@ const ContactHistoryMessagesVerticalBar = ({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 };
 
-export default ContactHistoryMessagesVerticalBar;
+export default ContactHistoryMessagesContextualbar;

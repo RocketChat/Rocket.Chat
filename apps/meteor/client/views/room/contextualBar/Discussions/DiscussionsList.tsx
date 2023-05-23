@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import { ContextualbarHeader, ContextualbarIcon, ContextualbarContent, ContextualbarClose } from '../../../../components/Contextualbar';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import DiscussionsListRow from './DiscussionsListRow';
 
@@ -47,15 +47,15 @@ function DiscussionsList({
 	});
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='discussion' />
+			<ContextualbarHeader>
+				<ContextualbarIcon name='discussion' />
 				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
 					{t('Discussions')}
 				</Box>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -111,7 +111,7 @@ function DiscussionsList({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 }

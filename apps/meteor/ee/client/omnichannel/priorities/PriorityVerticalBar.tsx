@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import { Verticalbar, VerticalbarHeader, VerticalbarClose, VerticalbarScrollableContent } from '../../../../client/components/Contextualbar';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
 
@@ -17,14 +17,14 @@ export const PriorityVerticalBar = ({ priorityId, onClose, onSave }: PriorityVer
 	const t = useTranslation();
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header>
+		<Verticalbar>
+			<VerticalbarHeader>
 				{t('Edit_Priority')}
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent height='100%'>
+				<VerticalbarClose onClick={onClose} />
+			</VerticalbarHeader>
+			<VerticalbarScrollableContent height='100%'>
 				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
-			</VerticalBar.ScrollableContent>
-		</VerticalBar>
+			</VerticalbarScrollableContent>
+		</Verticalbar>
 	);
 };

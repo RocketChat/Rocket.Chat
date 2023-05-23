@@ -5,7 +5,14 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarClose,
+} from '../../../../components/Contextualbar';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import type { initialValues } from './PruneMessagesWithData';
 
@@ -46,12 +53,12 @@ const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClo
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='eraser' />
-				<VerticalBar.Text>{t('Prune_Messages')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='eraser' />
+				<ContextualbarTitle>{t('Prune_Messages')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<PruneMessagesDateTimeRow
 					label={t('Newer_than')}
 					dateTime={{ date: newerDate, time: newerTime }}
@@ -98,14 +105,14 @@ const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClo
 				</Field>
 				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}
 				{validateText && <Callout type='warning'>{validateText}</Callout>}
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button danger disabled={Boolean(validateText)} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

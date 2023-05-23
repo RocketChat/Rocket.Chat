@@ -4,7 +4,14 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, MouseEventHandler } from 'react';
 import React, { memo } from 'react';
 
-import VerticalBar from '../../../../../../client/components/VerticalBar';
+import {
+	Verticalbar,
+	VerticalbarHeader,
+	VerticalbarTitle,
+	VerticalbarAction,
+	VerticalbarContent,
+	VerticalbarFooter,
+} from '../../../../../../client/components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{
@@ -24,12 +31,12 @@ const CannedResponse: FC<{
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<VerticalBar display='flex' flexDirection='column' width={'full'} overflow='hidden' zIndex={100} insetBlock={0}>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
-				<VerticalBar.Text>!{shortcut}</VerticalBar.Text>
-			</VerticalBar.Header>
-			<VerticalBar.Content>
+		<Verticalbar display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+			<VerticalbarHeader>
+				{onClickBack && <VerticalbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
+				<VerticalbarTitle>!{shortcut}</VerticalbarTitle>
+			</VerticalbarHeader>
+			<VerticalbarContent>
 				<Box pb='24px'>
 					<Box mbe='16px'>
 						<Box fontScale='p2m' mbe='8px'>
@@ -74,16 +81,16 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 				</Box>
-			</VerticalBar.Content>
-			<VerticalBar.Footer>
+			</VerticalbarContent>
+			<VerticalbarFooter>
 				<ButtonGroup stretch>
 					{canEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
 					<Button primary onClick={onClickUse}>
 						{t('Use')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
-		</VerticalBar>
+			</VerticalbarFooter>
+		</Verticalbar>
 	);
 };
 

@@ -9,7 +9,14 @@ import { Virtuoso } from 'react-virtuoso';
 
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+} from '../../../../components/Contextualbar';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
@@ -82,13 +89,12 @@ const RoomMembers = ({
 
 	return (
 		<>
-			<VerticalBar.Header data-qa-id='RoomHeader-Members'>
-				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.Content p='x12'>
+			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
+				<ContextualbarIcon name='members' />
+				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarContent p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -156,9 +162,9 @@ const RoomMembers = ({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
-				<VerticalBar.Footer>
+				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
 							<Button onClick={onClickInvite} width='50%'>
@@ -173,7 +179,7 @@ const RoomMembers = ({
 							</Button>
 						)}
 					</ButtonGroup>
-				</VerticalBar.Footer>
+				</ContextualbarFooter>
 			)}
 		</>
 	);

@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import VerticalBar from '../../../../client/components/VerticalBar';
+import { VerticalbarHeader, VerticalbarTitle, VerticalbarClose, VerticalbarContent } from '../../../../client/components/Contextualbar';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
 
@@ -30,13 +30,12 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 
 	return (
 		<div>
-			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Apps_Game_Center')}</VerticalBar.Text>
-				{handleClose && <VerticalBar.Close onClick={handleClose} />}
-			</VerticalBar.Header>
-
+			<VerticalbarHeader>
+				<VerticalbarTitle>{t('Apps_Game_Center')}</VerticalbarTitle>
+				{handleClose && <VerticalbarClose onClick={handleClose} />}
+			</VerticalbarHeader>
 			{!isLoading && (
-				<VerticalBar.Content>
+				<VerticalbarContent>
 					{games && (
 						<div>
 							<Table>
@@ -74,13 +73,13 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 							</Table>
 						</div>
 					)}
-				</VerticalBar.Content>
+				</VerticalbarContent>
 			)}
 
 			{isLoading && (
-				<VerticalBar.Content>
+				<VerticalbarContent>
 					<FormSkeleton />
-				</VerticalBar.Content>
+				</VerticalbarContent>
 			)}
 		</div>
 	);

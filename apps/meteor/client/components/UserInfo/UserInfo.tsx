@@ -12,7 +12,7 @@ import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import UserCard from '../UserCard';
-import VerticalBar from '../VerticalBar';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -67,7 +67,7 @@ const UserInfo = ({
 	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
-		<VerticalBar.ScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p='x24' {...props}>
 			<InfoPanel>
 				{username && (
 					<InfoPanel.Avatar>
@@ -183,7 +183,7 @@ const UserInfo = ({
 					)}
 				</InfoPanel.Section>
 			</InfoPanel>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

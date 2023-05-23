@@ -7,7 +7,7 @@ import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserInfo from '../../../components/UserInfo';
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
 
@@ -113,7 +113,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
+		<ContextualbarScrollableContent is='form' {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
@@ -207,7 +207,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					</Margins>
 				</Box>
 			</Field.Row>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

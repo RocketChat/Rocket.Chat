@@ -4,7 +4,7 @@ import type { FC, ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -130,7 +130,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	};
 
 	return (
-		<VerticalBar.ScrollableContent {...(props as any)}>
+		<ContextualbarScrollableContent {...props}>
 			<FieldGroup>
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
@@ -173,7 +173,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 					{t('Delete')}
 				</Button>
 			</ButtonGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

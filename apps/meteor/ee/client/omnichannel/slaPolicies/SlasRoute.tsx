@@ -7,7 +7,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import type { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
-import VerticalBar from '../../../../client/components/VerticalBar';
+import { Verticalbar, VerticalbarHeader, VerticalbarClose } from '../../../../client/components/Contextualbar';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveSlaButton from './RemoveSlaButton';
 import SlaEditWithData from './SlaEditWithData';
@@ -128,16 +128,15 @@ function SlasRoute(): ReactElement {
 		};
 
 		return (
-			<VerticalBar>
-				<VerticalBar.Header>
+			<Verticalbar>
+				<VerticalbarHeader>
 					{context === 'edit' && t('Edit_SLA_Policy')}
 					{context === 'new' && t('New_SLA_Policy')}
-					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-				</VerticalBar.Header>
-
+					<VerticalbarClose onClick={handleVerticalBarCloseButtonClick} />
+				</VerticalbarHeader>
 				{context === 'edit' && <SlaEditWithData slaId={id || ''} reload={refetch} />}
 				{context === 'new' && <SlaNew reload={refetch} />}
-			</VerticalBar>
+			</Verticalbar>
 		);
 	}, [t, context, id, SlasRoute, refetch]);
 

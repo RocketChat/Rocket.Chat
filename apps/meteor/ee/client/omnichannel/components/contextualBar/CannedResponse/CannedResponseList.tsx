@@ -7,7 +7,14 @@ import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
-import VerticalBar from '../../../../../../client/components/VerticalBar';
+import {
+	VerticalbarHeader,
+	VerticalbarTitle,
+	VerticalbarClose,
+	VerticalbarContent,
+	VerticalbarInnerContent,
+	VerticalbarFooter,
+} from '../../../../../../client/components/Contextualbar';
 import { useTabContext } from '../../../../../../client/views/room/contexts/ToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
@@ -54,12 +61,12 @@ const CannedResponseList: FC<{
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Canned_Responses')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
+			<VerticalbarHeader>
+				<VerticalbarTitle>{t('Canned_Responses')}</VerticalbarTitle>
+				<VerticalbarClose onClick={onClose} />
+			</VerticalbarHeader>
 
-			<VerticalBar.Content paddingInline={0} ref={ref}>
+			<VerticalbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p='x24' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -98,24 +105,24 @@ const CannedResponseList: FC<{
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</VerticalbarContent>
 
 			{cannedId && (
-				<VerticalBar.InnerContent>
+				<VerticalbarInnerContent>
 					<WrapCannedResponse
 						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}
 						reload={reload}
 					/>
-				</VerticalBar.InnerContent>
+				</VerticalbarInnerContent>
 			)}
 
-			<VerticalBar.Footer>
+			<VerticalbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClickCreate}>{t('Create')}</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</VerticalbarFooter>
 		</>
 	);
 };

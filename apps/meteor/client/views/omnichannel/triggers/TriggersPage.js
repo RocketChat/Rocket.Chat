@@ -4,7 +4,7 @@ import { useRoute, useRouteParameter, usePermission, useTranslation } from '@roc
 import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';
@@ -26,7 +26,7 @@ const MonitorsPage = () => {
 		router.push({ context: 'new' });
 	});
 
-	const handleCloseVerticalBar = useMutableCallback(() => {
+	const handleCloseContextualbar = useMutableCallback(() => {
 		router.push({});
 	});
 
@@ -47,16 +47,16 @@ const MonitorsPage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar>
-					<VerticalBar.Header>
+				<Contextualbar>
+					<ContextualbarHeader>
 						{t('Trigger')}
-						<VerticalBar.Close onClick={handleCloseVerticalBar} />
-					</VerticalBar.Header>
-					<VerticalBar.ScrollableContent>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					<ContextualbarScrollableContent>
 						{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={reload.current} />}
 						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
-					</VerticalBar.ScrollableContent>
-				</VerticalBar>
+					</ContextualbarScrollableContent>
+				</Contextualbar>
 			)}
 		</Page>
 	);

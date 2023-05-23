@@ -10,11 +10,17 @@ import { Virtuoso } from 'react-virtuoso';
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import type { MessageActionContext } from '../../../../../app/ui-utils/client/lib/MessageAction';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
-import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
+import {
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+} from '../../../../components/Contextualbar';
+// import ContextualbarContent from '../../../../components/Contextualbar/ContextualbarContent';
+// import ContextualbarHeader from '../../../../components/Contextualbar/ContextualbarHeader';
+// import ContextualbarIcon from '../../../../components/Contextualbar/ContextualbarIcon';
+// import ContextualbarText from '../../../../components/Contextualbar/ContextualbarText';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -47,12 +53,12 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 	return (
 		<>
-			<VerticalBarHeader>
-				<VerticalBarIcon name={iconName} />
-				<VerticalBarText>{title}</VerticalBarText>
-				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
-			</VerticalBarHeader>
-			<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarHeader>
+				<ContextualbarIcon name={iconName} />
+				<ContextualbarTitle>{title}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
+			</ContextualbarHeader>
+			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size={12} />
@@ -119,7 +125,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						)}
 					</>
 				)}
-			</VerticalBarContent>
+			</ContextualbarContent>
 		</>
 	);
 };
