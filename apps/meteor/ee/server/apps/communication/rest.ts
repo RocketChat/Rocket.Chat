@@ -223,7 +223,7 @@ export class AppsRestApi {
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
+						apiDeprecationLogger.endpoint(this.request.route, '6.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
@@ -247,7 +247,7 @@ export class AppsRestApi {
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response, 'Use /apps/categories to get the categories list.');
+						apiDeprecationLogger.endpoint(this.request.route, '6.0.0', this.response, 'Use /apps/categories to get the categories list.');
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
 						if (token) {
@@ -276,7 +276,7 @@ export class AppsRestApi {
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
-						apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
+						apiDeprecationLogger.endpoint(this.request.route, '6.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -298,7 +298,7 @@ export class AppsRestApi {
 							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
-					apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
+					apiDeprecationLogger.endpoint(this.request.route, '6.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
 					const apps = manager.get().map(formatAppInstanceForRest);
 

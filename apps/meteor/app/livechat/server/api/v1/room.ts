@@ -25,7 +25,6 @@ import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
-import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
@@ -235,8 +234,6 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '6.0.0' },
 	{
 		async post() {
-			apiDeprecationLogger.endpoint(this.request.url, '6.0.0', this.response);
-
 			const { rid, token, department } = this.bodyParams;
 
 			const guest = await findGuest(token);

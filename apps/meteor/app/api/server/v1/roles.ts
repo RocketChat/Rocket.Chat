@@ -67,7 +67,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.url, 'roleName', '6.0.0', this.response);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '6.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -124,7 +124,7 @@ API.v1.addRoute(
 				}
 
 				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.url,
+					this.request.route,
 					'role',
 					'6.0.0',
 					this.response,
@@ -205,7 +205,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.url, 'roleName', '6.0.0', this.response);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '6.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);

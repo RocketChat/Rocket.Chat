@@ -52,7 +52,7 @@ export async function parseJsonQuery(
 
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields) {
-		apiDeprecationLogger.parameter(this.request.url, 'fields', '7.0.0', this.response);
+		apiDeprecationLogger.parameter(this.request.route, 'fields', '7.0.0', this.response);
 		try {
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 
@@ -103,7 +103,7 @@ export async function parseJsonQuery(
 
 	let query: Record<string, any> = {};
 	if (params.query) {
-		apiDeprecationLogger.parameter(this.request.url, 'query', '7.0.0', this.response);
+		apiDeprecationLogger.parameter(this.request.route, 'query', '7.0.0', this.response);
 
 		try {
 			query = ejson.parse(params.query);

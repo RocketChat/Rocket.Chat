@@ -1,5 +1,5 @@
+import type { Response } from 'meteor/rocketchat:restivus';
 import semver from 'semver';
-import type { Response } from 'express';
 
 import { Logger } from '../../../logger/server';
 
@@ -11,9 +11,9 @@ const throwErrorsForVersionsUnder = process.env.ROCKET_CHAT_DEPRECATION_THROW_ER
 
 const writeDeprecationHeader = (res: Response | undefined, type: string, message: string, version: string) => {
 	if (res) {
-		res.header('x-deprecation-type', type);
-		res.header('x-deprecation-message', message);
-		res.header('x-deprecation-version', version);
+		res.setHeader('x-deprecation-type', type);
+		res.setHeader('x-deprecation-message', message);
+		res.setHeader('x-deprecation-version', version);
 	}
 };
 
