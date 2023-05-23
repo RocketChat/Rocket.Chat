@@ -1,12 +1,32 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import Row from './Row';
+
+type BaseTeamsChannelsProps = {
+	loading: boolean;
+	channels: IRoom[];
+	text: string;
+	type: 'all' | 'autoJoin';
+	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
+	setText: (e: ChangeEvent<HTMLInputElement>) => void;
+	onClickClose: () => void;
+	onClickAddExisting: false | ((e: SyntheticEvent) => void);
+	onClickCreateNew: false | ((e: SyntheticEvent) => void);
+	total: number;
+	loadMoreItems: (start: number, end: number) => void;
+	onClickView: (room: IRoom) => void;
+	reload: () => void;
+};
 
 const BaseTeamsChannels = ({
 	loading,
@@ -22,19 +42,31 @@ const BaseTeamsChannels = ({
 	loadMoreItems,
 	onClickView,
 	reload,
-}) => {
+}: BaseTeamsChannelsProps) => {
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
-	const options = useMemo(
+	const options: SelectOption[] = useMemo(
 		() => [
 			['all', t('All')],
-			['autoJoin', t('Auto-join')],
+			['autoJoin', t('Team_Auto-join')],
 		],
 		[t],
 	);
 
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+
+	const loadMoreChannels = useDebouncedCallback(
+		() => {
+			if (channels.length >= total) {
+				return;
+			}
+
+			lm(channels.length);
+		},
+		300,
+		[lm, channels],
+	);
 
 	return (
 		<>
@@ -55,7 +87,7 @@ const BaseTeamsChannels = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
+							<Select flexGrow={0} width='110px' onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -70,14 +102,27 @@ const BaseTeamsChannels = ({
 						{t('No_channels_in_team')}
 					</Box>
 				)}
+
+				{!loading && channels.length > 0 && (
+					<Box pi='x18' pb='x12'>
+						<Box is='span' color='hint' fontScale='p2'>
+							{t('Showing')}: {channels.length}
+						</Box>
+
+						<Box is='span' color='hint' fontScale='p2' mis='x8'>
+							{t('Total')}: {total}
+						</Box>
+					</Box>
+				)}
+
 				{!loading && (
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 						<Virtuoso
 							totalCount={total}
-							endReached={lm}
 							data={channels}
-							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} />}
+							// eslint-disable-next-line react/no-multi-comp
+							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
 						/>
 					</Box>
 				)}

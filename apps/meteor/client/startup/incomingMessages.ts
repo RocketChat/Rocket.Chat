@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../app/models/client';
@@ -20,16 +20,16 @@ Meteor.startup(() => {
 	});
 
 	CachedCollectionManager.onLogin(() => {
-		Notifications.onUser('subscriptions-changed', (_action: unknown, sub: ISubscription) => {
+		Notifications.onUser('subscriptions-changed', (_action, sub) => {
 			ChatMessage.update(
 				{
 					rid: sub.rid,
-					...(sub?.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
+					...('ignored' in sub && sub.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
 				},
 				{ $unset: { ignored: true } },
 				{ multi: true },
 			);
-			if (sub?.ignored) {
+			if ('ignored' in sub && sub.ignored) {
 				ChatMessage.update(
 					{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
 					{ $set: { ignored: true } },
