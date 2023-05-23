@@ -403,9 +403,9 @@ const RoomBody = (): ReactElement => {
 				sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-
-			wrapper.addEventListener('scroll', handleWrapperScroll);
 		};
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
@@ -414,6 +414,18 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [room._id, sendToBottom]);
+
+	useEffect(() => {
+		const store = RoomManager.getStore(room._id);
+
+		if (store?.scroll && !store.atBottom) {
+			scrollMessageList(() => {
+				return { left: 30, top: store.scroll };
+			});
+		} else {
+			sendToBottom();
+		}
+	}, [room._id, scrollMessageList, sendToBottom]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
