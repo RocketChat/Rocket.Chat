@@ -1,8 +1,8 @@
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/Livechat';
 
@@ -30,8 +30,8 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Users.findOneById(uid, { fields: { _id: 1, utcOffset: 1, language: 1 } });
-		const language = user.language || settings.get('Language') || 'en';
+		const user = await Users.findOneById(uid, { projection: { _id: 1, utcOffset: 1, language: 1 } });
+		const language = user?.language || settings.get('Language') || 'en';
 
 		return Livechat.Analytics.getAnalyticsOverviewData({
 			...options,

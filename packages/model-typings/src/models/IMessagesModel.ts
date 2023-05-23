@@ -101,7 +101,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IMessage['u'], '_id' | 'username' | 'name'>,
 		unread?: boolean,
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>>;
@@ -136,7 +136,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ignoreThreads: boolean,
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
-	findVisibleByRoomId(rid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findVisibleByRoomId<T extends IMessage = IMessage>(rid: string, options?: FindOptions<T>): FindCursor<T>;
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
@@ -187,7 +187,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
 
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult>;
+	setAsDeletedByIdsAndUser(_ids: string[], user: IMessage['u']): Promise<Document | UpdateResult>;
 	setHiddenById(_id: string, hidden: boolean): Promise<UpdateResult>;
+	setHiddenByIds(_ids: string[], hidden: boolean): Promise<Document | UpdateResult>;
 	setPinnedByIdAndUserId(
 		_id: string,
 		pinnedBy: Pick<IUser, '_id' | 'username'> | undefined,

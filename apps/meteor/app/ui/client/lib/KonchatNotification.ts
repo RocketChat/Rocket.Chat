@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserPreference } from '../../../utils/client';
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
 import { e2e } from '../../../e2e/client';
 import { ChatSubscription } from '../../../models/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
@@ -35,7 +35,7 @@ export type NotificationEvent = {
 		name?: string;
 		message?: {
 			msg: string;
-			t: string;
+			t?: string;
 		};
 	};
 };
@@ -70,7 +70,7 @@ class KonchatNotification {
 
 		const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
 		const n = new Notification(notification.title, {
-			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
+			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
 			body: stripTags(message.msg),
 			tag: notification.payload._id,
 			canReply: true,
@@ -156,7 +156,7 @@ class KonchatNotification {
 			return;
 		}
 
-		if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
+		if ((Meteor.user() as IUser | null)?.status === 'busy') {
 			return;
 		}
 
@@ -174,7 +174,7 @@ class KonchatNotification {
 	}
 
 	public async newMessage(rid: IRoom['_id'] | undefined) {
-		if (((await Meteor.userAsync()) as IUser | null)?.status === 'busy') {
+		if ((Meteor.user() as IUser | null)?.status === 'busy') {
 			return;
 		}
 
@@ -194,14 +194,14 @@ class KonchatNotification {
 
 		try {
 			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				CustomSounds.play(sub.audioNotificationValue, {
+				void CustomSounds.play(sub.audioNotificationValue, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 				return;
 			}
 
-			if (newMessageNotification !== 'none') {
-				CustomSounds.play(newMessageNotification, {
+			if (newMessageNotification && newMessageNotification !== 'none') {
+				void CustomSounds.play(newMessageNotification, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 			}
@@ -228,7 +228,9 @@ class KonchatNotification {
 		newRoomSound = newRoomSound.filter((_rid) => _rid !== rid);
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
-		return $(`.link-room-${rid}`).removeClass('new-room-highlight');
+		const link = document.querySelector(`.link-room-${rid}`);
+
+		link?.classList.remove('new-room-highlight');
 	}
 }
 

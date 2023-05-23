@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -12,7 +11,7 @@ const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
-	callbacks.run('livechat.afterInquiryQueued', inquiry);
+	await callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
@@ -108,7 +107,7 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
+		if (servedBy && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 

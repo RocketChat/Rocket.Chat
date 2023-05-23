@@ -1,5 +1,5 @@
 import type { ILivechatPriority } from './ILivechatPriority';
-import type { IOmnichannelRoom } from './IRoom';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
@@ -24,6 +24,7 @@ export interface IVisitor {
 	token: string;
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
+	lastMessageTs?: Date;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
@@ -44,7 +45,9 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 		agentId: IUser['_id'];
 		username?: IUser['username'];
 	};
-
+	source: {
+		type: OmnichannelSourceType;
+	};
 	// Note: for the sort order to be maintained, we're making priorityWeight and estimatedWaitingTimeQueue required
 	priorityId?: IOmnichannelRoom['priorityId'];
 	priorityWeight: ILivechatPriority['sortItem'];

@@ -314,6 +314,19 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+
+		const query = {
+			'username': expression,
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByLDAPId(id, attribute = undefined) {
 		const query = {
 			'services.ldap.id': id,
@@ -1187,12 +1200,28 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
+	}
+
 	findActiveUsersEmail2faEnable(options) {
 		const query = {
 			'active': true,
 			'services.email2fa.enabled': true,
 		};
 		return this.find(query, options);
+	}
+
+	countActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
 	}
 
 	setAsFederated(uid) {
@@ -1275,6 +1304,12 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		);
+	}
+
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
 	}
 
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
@@ -1435,6 +1470,13 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgents(agentId) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
 	findOneBotAgent() {
 		// TODO:: Create class Agent
 		const query = {
@@ -1446,9 +1488,9 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
-		const query = queryStatusAgentOnline({ _id });
+		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
 		return this.findOne(query);
 	}
@@ -1460,6 +1502,15 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countAgents() {
+		// TODO: Create class Agent
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	// 2
@@ -1852,6 +1903,17 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+		const query = {
+			'email.address': emailAddress.trim().toLowerCase(),
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneAdmin(userId, options) {
 		const query = { roles: { $in: ['admin'] }, _id: userId };
 
@@ -1968,6 +2030,12 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByUsernames(usernames, options) {
+		const query = { username: { $in: usernames } };
+
+		return this.find(query, options);
+	}
+
 	findByUsernamesIgnoringCase(usernames, options) {
 		const query = {
 			username: {
@@ -2074,7 +2142,7 @@ export class UsersRaw extends BaseRaw {
 
 	async getLastLogin(options = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
-		const [user] = await this.findOne({}, options);
+		const user = await this.findOne({}, options);
 		return user?.lastLogin;
 	}
 
@@ -2185,6 +2253,12 @@ export class UsersRaw extends BaseRaw {
 
 	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
 		return this.find({
+			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
+		});
+	}
+
+	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.col.countDocuments({
 			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
 		});
 	}
@@ -2621,10 +2695,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 

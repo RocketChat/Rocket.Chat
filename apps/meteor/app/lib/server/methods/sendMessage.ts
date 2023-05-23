@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
@@ -11,10 +10,10 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { i18n } from '../../../../server/lib/i18n';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
 	if (message.tshow && !message.tmid) {
@@ -52,13 +51,17 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		}
 	}
 
-	const user = Users.findOneById(uid, {
-		fields: {
+	const user = await Users.findOneById(uid, {
+		projection: {
 			username: 1,
 			type: 1,
 			name: 1,
 		},
 	});
+	if (!user?.username) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
 	let { rid } = message;
 
 	// do not allow nested threads
@@ -85,7 +88,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: TAPi18n.__(errorMessage, {}, user.language),
+			msg: i18n.t(errorMessage, { lng: user.language }),
 		});
 
 		if (typeof err === 'string') {

@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
 import {
 	callJoinRoom,
 	messageContainsHighlight,
@@ -51,8 +50,8 @@ export const sendNotification = async ({
 
 	if (!subscription.receiver) {
 		subscription.receiver = [
-			Users.findOneById(subscription.u._id, {
-				fields: {
+			await Users.findOneById(subscription.u._id, {
+				projection: {
 					active: 1,
 					emails: 1,
 					language: 1,
@@ -74,7 +73,7 @@ export const sendNotification = async ({
 
 	const isThread = !!message.tmid && !message.tshow;
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+	notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
@@ -217,12 +216,12 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return;
 	}
 
-	const sender = roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}
 
-	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = getMentions(message);
+	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = await getMentions(message);
 
 	const mentionIdsWithoutGroups = [...mentionIds];
 
@@ -237,7 +236,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// add users in thread to mentions array because they follow the same rules
 	mentionIds.push(...usersInThread);
 
-	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}

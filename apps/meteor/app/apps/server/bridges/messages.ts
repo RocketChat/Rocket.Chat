@@ -10,6 +10,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { deleteMessage } from '../../../lib/server';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
@@ -20,7 +21,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async create(message: IMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new message.`);
 
-		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const sentMessage = await executeSendMessage(convertedMessage.u._id, convertedMessage);
 
@@ -44,7 +45,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('A message must exist to update.');
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = await Users.findOneById(message.editor.id);
 
 		if (!editor) {
@@ -54,10 +55,23 @@ export class AppMessageBridge extends MessageBridge {
 		await updateMessage(msg, editor);
 	}
 
+	protected async delete(message: IMessage, user: IUser, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is deleting a message.`);
+
+		if (!message.id) {
+			throw new Error('Invalid message id');
+		}
+
+		const convertedMsg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedUser = await this.orch.getConverters()?.get('users').convertById(user.id);
+
+		await deleteMessage(convertedMsg, convertedUser);
+	}
+
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a user.`);
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		if (!msg) {
 			return;
@@ -75,7 +89,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map((s) => s.u._id);
 
@@ -90,7 +104,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				notifications.notifyRoom(id, 'typing', username, isTyping);
+				notifications.notifyRoom(id, 'typing', username!, isTyping);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');

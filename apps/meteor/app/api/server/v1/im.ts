@@ -24,6 +24,8 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -132,7 +134,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The direct message room, is already closed to the sender`);
 			}
 
-			await Meteor.callAsync('hideRoom', room._id);
+			await hideRoomMethod(this.userId, room._id);
 
 			return API.v1.success();
 		},
@@ -367,7 +369,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -419,7 +421,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(msgs, this.userId),
+				messages: await normalizeMessagesForUser(msgs, this.userId),
 				offset,
 				count: msgs.length,
 				total,
@@ -542,7 +544,7 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
-			await Meteor.callAsync('saveRoomSettings', room._id, 'roomTopic', topic);
+			await saveRoomSettings(this.userId, room._id, 'roomTopic', topic);
 
 			return API.v1.success({
 				topic,

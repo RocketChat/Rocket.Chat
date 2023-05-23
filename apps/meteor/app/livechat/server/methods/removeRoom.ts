@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeRoom'(rid) {
 		const user = Meteor.userId();
-		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-rooms'))) {
+		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 

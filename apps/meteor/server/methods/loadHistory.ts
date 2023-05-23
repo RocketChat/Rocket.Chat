@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
@@ -41,24 +40,24 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}
 
-		if (!fromId || !(await canAccessRoomAsync(room, { _id: fromId }))) {
+		// this checks the Allow Anonymous Read setting, so no need to check again
+		if (!(await canAccessRoomAsync(room, fromId ? { _id: fromId } : undefined))) {
 			return false;
 		}
 
-		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
+		// if fromId is undefined and it passed the previous check, the user is reading anonymously
+		if (!fromId) {
+			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages });
+		}
+
 		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
-		if (
-			room.t === 'c' &&
-			!canAnonymous &&
-			!canPreview &&
-			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))
-		) {
+		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))) {
 			return false;
 		}
 

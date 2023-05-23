@@ -1,6 +1,6 @@
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { searchProviderService } from './service';
 import { searchEventService } from './events';
@@ -13,13 +13,13 @@ class Search extends ServiceClassInternal {
 	constructor() {
 		super();
 
-		this.onEvent('watch.users', async ({ clientAction, data, id }) => {
+		this.onEvent('watch.users', async ({ clientAction, id, ...rest }) => {
 			if (clientAction === 'removed') {
 				searchEventService.promoteEvent('user.delete', id, undefined);
 				return;
 			}
 
-			const user = data ?? Users.findOneById(id);
+			const user = ('data' in rest && rest.data) || (await Users.findOneById(id));
 			searchEventService.promoteEvent('user.save', id, user);
 		});
 
