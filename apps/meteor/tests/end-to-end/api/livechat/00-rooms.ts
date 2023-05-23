@@ -29,7 +29,7 @@ import {
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import {
-	addPermissionToDefaultRoles,
+	restorePermissionToRoles,
 	addPermissions,
 	removePermissionFromAllRoles,
 	updateEEPermission,
@@ -138,7 +138,7 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.error).to.be.equal('unauthorized');
 				});
 
-			await addPermissionToDefaultRoles('view-livechat-rooms');
+			await restorePermissionToRoles('view-livechat-rooms');
 		});
 		it('should return an error when the "agents" query parameter is not valid', async () => {
 			await request
@@ -440,7 +440,7 @@ describe('LIVECHAT - rooms', function () {
 			await removePermissionFromAllRoles('view-l-room');
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
 
-			await addPermissionToDefaultRoles('view-l-room');
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
@@ -462,7 +462,7 @@ describe('LIVECHAT - rooms', function () {
 
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
 
-			await addPermissionToDefaultRoles('view-l-room');
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
@@ -634,8 +634,8 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.error).to.have.string('unauthorized');
 				});
 
-			await addPermissionToDefaultRoles('transfer-livechat-guest');
-			await addPermissionToDefaultRoles('view-l-room');
+			await restorePermissionToRoles('transfer-livechat-guest');
+			await restorePermissionToRoles('view-l-room');
 		});
 
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
@@ -865,7 +865,7 @@ describe('LIVECHAT - rooms', function () {
 
 			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 
-			await addPermissionToDefaultRoles('view-l-room');
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should return the messages of the room', async () => {
 			const visitor = await createVisitor();
@@ -1284,7 +1284,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect(403);
 			expect(body).to.have.property('success', false);
 
-			await addPermissionToDefaultRoles('view-livechat-rooms');
+			await restorePermissionToRoles('view-livechat-rooms');
 		});
 		it('should fail if room is not a valid room id', async () => {
 			const { body } = await request

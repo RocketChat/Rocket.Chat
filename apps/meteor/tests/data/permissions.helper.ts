@@ -71,16 +71,16 @@ export const removePermissionFromAllRoles = async (permission: Permission) => {
     await updatePermission(permission, []);
 };
 
-export const addPermissionToDefaultRoles = async (permission: Permission) => {
-    const defaultRoles = permissions.find((p) => p._id === permission);
-    if (!defaultRoles) {
+export const restorePermissionToRoles = async (permission: Permission) => {
+    const defaultPermission = permissions.find((p) => p._id === permission);
+    if (!defaultPermission) {
         throw new Error(`No default roles found for permission ${permission}`);
     }
 
-    const mutableDefaultRoles: string[] = defaultRoles.roles.map((r) => r);
+    const mutableDefaultRoles: string[] = defaultPermission.roles.map((r) => r);
 
-    const eeOnlyRoles = ['livechat-monitor'];
     if (!IS_EE) {
+		const eeOnlyRoles = ['livechat-monitor'];
         eeOnlyRoles.forEach((role) => {
             const index = mutableDefaultRoles.indexOf(role);
             if (index !== -1) {
