@@ -7,13 +7,14 @@
 		"@types/strict-uri-encode": "^2.0.0",
 		"eslint": "^8.29.0",
 		"jest": "~29.5.0",
+		"jest-fetch-mock": "^3.0.3",
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
+		"testunit": "jest",
 		"build": "tsc -p tsconfig.json",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json"
 	},
