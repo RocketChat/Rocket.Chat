@@ -54,7 +54,7 @@
     "react-dom": "*"
   },
   "devDependencies": {
-    "@rocket.chat/apps-engine": "1.39.0",
+    "@rocket.chat/apps-engine": "1.39.1",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "next",

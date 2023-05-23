@@ -1,12 +1,13 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import RoomMembersRow from './RoomMembersRow';
@@ -65,6 +66,18 @@ const RoomMembers = ({
 			['all', t('All')],
 		],
 		[t],
+	);
+
+	const loadMoreMembers = useDebouncedCallback(
+		() => {
+			if (members.length >= total) {
+				return;
+			}
+
+			loadMore(members.length);
+		},
+		300,
+		[loadMore, members],
 	);
 
 	return (
@@ -135,10 +148,10 @@ const RoomMembers = ({
 								width: '100%',
 							}}
 							totalCount={total}
-							endReached={loadMore}
 							overscan={50}
 							data={members}
-							components={{ Scroller: ScrollableContentWrapper }}
+							// eslint-disable-next-line react/no-multi-comp
+							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
