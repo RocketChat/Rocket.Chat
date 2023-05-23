@@ -1,45 +1,56 @@
-import type { SettingValue } from '@rocket.chat/core-typings';
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Statistics, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
 
-type WorkspaceRegistrationData<T> = {
+interface WorkspaceRegistrationData {
 	uniqueId: string;
-	workspaceId: SettingValue;
-	address: SettingValue;
+	workspaceId: string;
 	contactName: string;
-	contactEmail: T;
+	contactEmail: string | undefined;
 	seats: number;
-	allowMarketing: SettingValue;
-	accountName: SettingValue;
-	organizationType: unknown;
-	industry: unknown;
+	allowMarketing: boolean;
+	accountName: string;
+	website: string;
+	address: string;
+	siteName: string;
+	workspaceType: string;
+	organizationType: string;
+	industry: string;
 	orgSize: string;
-	country: unknown;
-	language: unknown;
-	agreePrivacyTerms: SettingValue;
-	website: SettingValue;
-	siteName: SettingValue;
-	workspaceType: unknown;
+	country: string;
+	language: string;
+	agreePrivacyTerms: boolean;
 	deploymentMethod: string;
 	deploymentPlatform: string;
-	version: unknown;
-	licenseVersion: number;
-	enterpriseReady: boolean;
+	version: string;
 	setupComplete: boolean;
+	enterpriseReady: boolean;
+	licenseVersion: number;
+	npsEnabled: boolean;
 	connectionDisable: boolean;
-	npsEnabled: SettingValue;
-};
 
-export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
+	deploymentName?: string;
+	domainName?: string;
+	regionCode?: string;
+	marketing?: WorkspaceTrialMarketing;
+}
+
+interface WorkspaceTrialMarketing {
+	utmContent: string;
+	utmMedium: string;
+	utmSource: string;
+	utmCampaign: string;
+}
+export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData> {
 	const stats = (await Statistics.findLast()) || (await statistics.get());
 
-	const address = settings.get('Site_Url');
-	const siteName = settings.get('Site_Name');
-	const workspaceId = settings.get('Cloud_Workspace_Id');
-	const allowMarketing = settings.get('Allow_Marketing_Emails');
+	const address = String(settings.get('Site_Url'));
+	const siteName = String(settings.get('Site_Name'));
+	const workspaceId = String(settings.get('Cloud_Workspace_Id'));
+	const allowMarketing = Boolean(settings.get('Allow_Marketing_Emails'));
 	const accountName = settings.get('Organization_Name');
 	const website = settings.get('Website');
 	const npsEnabled = settings.get('NPS_survey_enabled');
@@ -60,23 +71,23 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		contactEmail,
 		seats,
 		allowMarketing,
-		accountName,
-		organizationType,
-		industry,
+		accountName: String(accountName),
+		organizationType: String(organizationType),
+		industry: String(industry),
 		orgSize: String(orgSize),
-		country,
-		language,
-		agreePrivacyTerms,
-		website,
+		country: String(country),
+		language: String(language),
+		agreePrivacyTerms: Boolean(agreePrivacyTerms),
+		website: String(website),
 		siteName,
-		workspaceType,
+		workspaceType: String(workspaceType),
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
+		version: String(stats.version),
 		licenseVersion: LICENSE_VERSION,
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
-		npsEnabled,
+		npsEnabled: Boolean(npsEnabled),
 	};
 }

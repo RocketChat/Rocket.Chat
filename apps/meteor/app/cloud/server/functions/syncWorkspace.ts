@@ -38,7 +38,10 @@ export async function syncWorkspace(reconnectCheck = false) {
 		});
 
 		if (!request.ok) {
-			throw new Error((await request.json()).error);
+			if (request.size > 0) {
+				throw new Error((await request.json()).error);
+			}
+			throw new Error(request.statusText);
 		}
 
 		result = await request.json();
