@@ -40,7 +40,7 @@ type InquiryWithExtraData = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
-		const { maxNumberSimultaneousChat = 0 } = department || {};
+		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
 		}
@@ -152,7 +152,8 @@ export const processWaitingQueue = async (department: string | undefined, inquir
 
 	helperLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 	const { defaultAgent } = inquiry;
-	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
+	// TODO: remove this typecast when routing manager becomes TS
+	const room = (await RoutingManager.delegateInquiry(inquiry, defaultAgent)) as IOmnichannelRoom;
 
 	const propagateAgentDelegated = async (rid: string, agentId: string) => {
 		await dispatchAgentDelegated(rid, agentId);
