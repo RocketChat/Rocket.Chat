@@ -23,3 +23,4 @@
 /apps/meteor/ee/client/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/voip @RocketChat/omnichannel
+/apps/meteor/app/statistics @RocketChat/sre @RocketChat/Architecture @RocketChat/Data
