@@ -18,9 +18,6 @@ const writeDeprecationHeader = (res: Response | undefined, type: string, message
 };
 
 const compareVersions = (version: string, message: string) => {
-	if (process.env.TEST_MODE === 'true') {
-		throw new Error(message);
-	}
 	if (throwErrorsForVersionsUnder && semver.lte(version, throwErrorsForVersionsUnder)) {
 		throw new Error(message);
 	}
