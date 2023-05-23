@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -74,6 +74,8 @@ const RoomMembers = ({
 		300,
 		[loadMoreItems, members],
 	);
+
+	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 
 	return (
 		<>
@@ -147,7 +149,9 @@ const RoomMembers = ({
 							data={members}
 							// eslint-disable-next-line react/no-multi-comp
 							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
+							itemContent={(index, data): ReactElement => (
+								<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
+							)}
 						/>
 					)}
 				</Box>
