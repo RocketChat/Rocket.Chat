@@ -122,7 +122,16 @@ describe('LIVECHAT - Integrations', function () {
 	});
 
 	describe('Livechat - Webhooks', () => {
-		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+		const webhookUrl = process.env.WEBHOOK_TEST_URL;
+		console.log('--------------------------------------');
+		console.log('Webhook test URL:', webhookUrl);
+		console.log('--------------------------------------');
+
+		if (!webhookUrl && process.env.TEST_MODE) {
+			console.warn('Webhook test URL not set. Skipping webhook tests.');
+			return;
+		}
+
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);
