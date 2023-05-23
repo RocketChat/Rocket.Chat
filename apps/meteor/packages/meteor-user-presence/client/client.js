@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 import { check } from 'meteor/check';
 
 import { debounce } from './utils';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 
 let timer;
 let status;
@@ -83,10 +82,10 @@ const setUserPresence = debounce(async (newStatus) => {
 	}
 	switch (newStatus) {
 		case 'online':
-			await sdk.call('UserPresence:online', UserPresence.userId);
+			await Meteor.callAsync('UserPresence:online', UserPresence.userId);
 			break;
 		case 'away':
-			await sdk.call('UserPresence:away', UserPresence.userId);
+			await Meteor.callAsync('UserPresence:away', UserPresence.userId);
 			UserPresence.stopTimer();
 			break;
 		default:
