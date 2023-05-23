@@ -1,13 +1,14 @@
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom, ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -191,13 +192,33 @@ export class ListenersModule {
 			notifications.streamRoles.emitWithoutBroadcast('roles', payload as any);
 		});
 
+		const notifyInquiryTaken = (inquiry: ILivechatInquiryRecord & Pick<IRoom, 'servedBy'>) => {
+			notifications.streamUser.subscriptions.forEach(async (sub) => {
+				if (!/rooms-changed/.test(sub.eventName)) return;
+
+				const { userId } = sub.subscription._session;
+
+				if (!userId || !inquiry.servedBy) return;
+
+				const isDiffAgent = inquiry.servedBy._id !== userId;
+				const isLivechatAdmin = await hasPermissionAsync(userId, 'view-livechat-rooms');
+
+				if (!isLivechatAdmin && isDiffAgent) {
+					notifications.notifyUser(userId, 'rooms-changed', 'removed', { _id: inquiry.rid } as IRoom);
+				}
+			});
+		};
+
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
+
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
 					_id: inquiry._id,
 					clientAction,
 				});
+
+				notifyInquiryTaken(inquiry);
 
 				if (inquiry.department) {
 					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
@@ -218,6 +239,10 @@ export class ListenersModule {
 				Object.keys(diff).length === 3
 			) {
 				return;
+			}
+
+			if (clientAction === 'updated' && diff?.status === 'taken') {
+				notifyInquiryTaken(inquiry);
 			}
 
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {

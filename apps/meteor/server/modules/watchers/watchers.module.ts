@@ -35,6 +35,7 @@ import {
 	PbxEvents,
 	Permissions,
 	LivechatPriority,
+	LivechatRooms,
 } from '@rocket.chat/models';
 import type { EventSignatures } from '@rocket.chat/core-services';
 
@@ -226,6 +227,14 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			case 'inserted':
 			case 'updated':
 				data = data ?? (await LivechatInquiry.findOneById(id)) ?? undefined;
+				if (data?.status === 'taken') {
+					const room = await LivechatRooms.findOneById(data.rid);
+					if (!room) {
+						break;
+					}
+
+					(data as any).servedBy = room.servedBy;
+				}
 				break;
 
 			case 'removed':
