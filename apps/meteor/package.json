@@ -121,7 +121,6 @@
 		"@types/lodash.get": "^4.4.7",
 		"@types/mailparser": "^3.4.0",
 		"@types/marked": "^4.0.8",
-		"@types/meteor": "^2.9.2",
 		"@types/meteor-collection-hooks": "^0.8.6",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "^8.2.3",
