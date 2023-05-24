@@ -103,7 +103,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	}, [getUserData, initialUsername]);
 
 	const validateEmailFormat = (email: string): boolean | string => {
-		if (email === initialValue.email) {
+		if (!email || email === initialValue.email) {
 			return true;
 		}
 
@@ -114,8 +114,8 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		return true;
 	};
 
-	const validateContactField = async (name: 'phone' | 'email', value: string) => {
-		if (value === initialValue[name]) {
+	const validateContactField = async (name: 'phone' | 'email', value: string, optional = true) => {
+		if ((optional && !value) || value === initialValue[name]) {
 			return true;
 		}
 
