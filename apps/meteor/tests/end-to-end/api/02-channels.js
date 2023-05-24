@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
@@ -2092,6 +2092,22 @@ describe('[Channels]', function () {
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
+		});
+
+		it('/channels.list.join should return empty list when member of no group', async () => {
+			const user = await createUser({ joinDefaultChannels: false });
+			const newCreds = await login(user.username, password);
+			await request
+				.get(api('channels.list.joined'))
+				.set(newCreds)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.equal(0);
+					expect(res.body).to.have.property('total').that.is.equal(0);
+					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);
+				});
 		});
 	});
 });

@@ -10,14 +10,14 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
 
-export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, ...props }) {
+export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();
 	const [hasCustomFields, setHasCustomFields] = useState(false);
 
@@ -56,8 +56,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	} = formHandlers;
 
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
-
-	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
 
 	return (
 		<VerticalBar.ScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
@@ -168,23 +166,24 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 
 			<FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Password')}</Field.Label>
-							<Field.Row>
-								<PasswordInput
-									errors={errors && errors.password}
-									flexGrow={1}
-									value={password}
-									onChange={handlePassword}
-									addon={<Icon name='key' size='x20' />}
-									autoComplete='new-password'
-								/>
-							</Field.Row>
-							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
-						</Field>
-					),
-					[t, password, handlePassword, errors],
+					() =>
+						!setRandomPassword && (
+							<Field>
+								<Field.Label>{t('Password')}</Field.Label>
+								<Field.Row>
+									<PasswordInput
+										errors={errors && errors.password}
+										flexGrow={1}
+										value={password}
+										onChange={handlePassword}
+										addon={<Icon name='key' size='x20' />}
+										autoComplete='new-password'
+									/>
+								</Field.Row>
+								{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
+							</Field>
+						),
+					[t, password, handlePassword, errors, setRandomPassword],
 				)}
 				{useMemo(
 					() => (

@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
@@ -85,6 +86,14 @@ export interface IUserServices {
 	ldap?: {
 		id: string;
 		idAttribute?: string;
+	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
+	};
+	dolphin?: {
+		NickName?: string;
 	};
 }
 
@@ -184,16 +193,17 @@ export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && 
 export type IUserDataEvent = {
 	id: unknown;
 } & (
-	| ({
+	| {
 			type: 'inserted';
-	  } & IUser)
+			data: IUser;
+	  }
 	| {
 			type: 'removed';
 	  }
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<keyof IUser, boolean | 0 | 1>;
+			unset: Record<string, number>;
 	  }
 );
 

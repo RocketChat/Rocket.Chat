@@ -20,14 +20,19 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 
 	const getArchivedDepartments = useEndpoint('GET', '/v1/livechat/departments/archived');
 
-	const { data, isLoading } = useQuery(['omnichannel', 'departments', 'archived', debouncedText, pagination, sort], async () =>
-		getArchivedDepartments({
-			onlyMyDepartments: 'true' as const,
-			text,
-			sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
-			...(pagination.current && { offset: pagination.current }),
-			...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
-		}),
+	const result = useQuery(
+		['omnichannel', 'departments', 'archived', debouncedText, pagination, sort],
+		async () =>
+			getArchivedDepartments({
+				onlyMyDepartments: 'true' as const,
+				text,
+				sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
+				...(pagination.current && { offset: pagination.current }),
+				...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
+			}),
+		{
+			keepPreviousData: true,
+		},
 	);
 
 	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <ArchivedItemMenu dep={dep} />;
@@ -35,7 +40,15 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			<DepartmentsTable data={data} sort={sort} pagination={pagination} removeButton={removeButton} loading={isLoading}></DepartmentsTable>
+			<DepartmentsTable
+				aria-busy={text !== debouncedText}
+				aria-live='assertive'
+				data={result.data}
+				sort={sort}
+				pagination={pagination}
+				removeButton={removeButton}
+				loading={result.isLoading && result.isInitialLoading}
+			></DepartmentsTable>
 		</>
 	);
 };

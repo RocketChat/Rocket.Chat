@@ -1,13 +1,11 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import moment from 'moment';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
@@ -15,9 +13,10 @@ import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { fetch } from '../../../../server/lib/http/fetch';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
+import { httpCall } from '../../../../server/lib/http/call';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 class RocketChatIntegrationHandler {
 	constructor() {
@@ -229,6 +228,16 @@ class RocketChatIntegrationHandler {
 	}
 
 	buildSandbox(store = {}) {
+		const httpAsync = async (method, url, options) => {
+			try {
+				return {
+					result: await httpCall(method, url, options),
+				};
+			} catch (error) {
+				return { error };
+			}
+		};
+
 		const sandbox = {
 			scriptTimeout(reject) {
 				return setTimeout(() => reject('timed out'), 3000);
@@ -237,7 +246,6 @@ class RocketChatIntegrationHandler {
 			s,
 			console,
 			moment,
-			Fiber,
 			Promise,
 			Store: {
 				set: (key, val) => {
@@ -246,14 +254,10 @@ class RocketChatIntegrationHandler {
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {
-				try {
-					return {
-						result: HTTP.call(method, url, options),
-					};
-				} catch (error) {
-					return { error };
-				}
+				// TODO: deprecate, track and alert
+				return deasyncPromise(httpAsync(method, url, options));
 			},
+			// TODO: Export fetch as the non deprecated method
 		};
 
 		Object.keys(Models)
@@ -356,20 +360,26 @@ class RocketChatIntegrationHandler {
 				sandbox,
 			});
 
-			const scriptResult = vm.run(`
-				new Promise((resolve, reject) => {
-					Fiber(() => {
-						scriptTimeout(reject);
-						try {
-							resolve(script[method](params))
-						} catch(e) {
-							reject(e);
-						}
-					}).run();
-				}).catch((error) => { throw new Error(error); });
-			`);
+			const result = await new Promise((resolve, reject) => {
+				process.nextTick(async () => {
+					try {
+						const scriptResult = await vm.run(`
+							new Promise((resolve, reject) => {
+								scriptTimeout(reject);
+								try {
+									resolve(script[method](params))
+								} catch(e) {
+									reject(e);
+								}
+							}).catch((error) => { throw new Error(error); });
+						`);
 
-			const result = Future.fromPromise(scriptResult).wait();
+						resolve(scriptResult);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
 
 			outgoingLogger.debug({
 				msg: `Script method "${method}" result of the Integration "${integration.name}" is:`,
@@ -773,7 +783,7 @@ class RocketChatIntegrationHandler {
 			{
 				method: opts.method,
 				headers: opts.headers,
-				...(opts.data && { body: JSON.stringify(opts.data) }),
+				...(opts.data && { body: opts.data }),
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
@@ -897,7 +907,7 @@ class RocketChatIntegrationHandler {
 							}
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
-							Meteor.setTimeout(() => {
+							setTimeout(() => {
 								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 							}, waitTime);
 						} else {

@@ -1,7 +1,6 @@
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
@@ -11,13 +10,14 @@ import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { getPath } from './getPath';
 import { joinPath } from '../fileUtils';
-import { getURL } from '../../../app/utils/lib/getURL';
+import { getURL } from '../../../app/utils/server/getURL';
 import { getRoomData } from './getRoomData';
 import { sendEmail } from './sendEmail';
 import { makeZipFile } from './makeZipFile';
 import { copyFileUpload } from './copyFileUpload';
 import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
+import { i18n } from '../i18n';
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
@@ -266,8 +266,8 @@ export async function processDataDownloads(): Promise<void> {
 			return;
 		}
 
-		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', {
+		const subject = i18n.t('UserDataDownload_EmailSubject');
+		const body = i18n.t('UserDataDownload_EmailBody', {
 			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 		});
 
