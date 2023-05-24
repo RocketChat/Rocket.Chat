@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { StreamerEvents } from '@rocket.chat/ui-contexts';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -9,7 +10,7 @@ type UserPresenceStreamProps = {
 
 type UserPresenceStreamArgs = {
 	uid: string;
-	args: unknown;
+	args: StreamerEvents['user-presence'][number]['args'];
 };
 
 const e = new Emitter<{
@@ -97,6 +98,6 @@ export class StreamPresence {
 	}
 }
 
-export const emit = (uid: string, args: UserPresenceStreamArgs): void => {
+export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void => {
 	e.emit(uid, { uid, args });
 };
