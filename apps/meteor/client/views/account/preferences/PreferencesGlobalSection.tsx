@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Select, Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
+import { SelectV2, Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -60,7 +60,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 				<Field>
 					<Field.Label>{t('Theme_Appearence')}</Field.Label>
 					<Field.Row>
-						<Select value={themeAppearence} onChange={handleThemeAppearence} options={themeOptions} />
+						<SelectV2 selectedKey={themeAppearence} onChange={handleThemeAppearence} options={themeOptions} />
 					</Field.Row>
 				</Field>
 			</FieldGroup>
