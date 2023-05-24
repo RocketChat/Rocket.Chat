@@ -234,7 +234,9 @@ export class RestClient implements RestClientInterface {
 				return Promise.reject(response);
 			}
 
-			const error = await response.json();
+			const clone = response.clone();
+
+			const error = await clone.json();
 
 			if ((isTotpRequiredError(error) || isTotpInvalidError(error)) && hasRequiredTwoFactorMethod(error) && this.twoFactorHandler) {
 				const method2fa = 'details' in error ? error.details.method : 'password';
