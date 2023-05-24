@@ -32,22 +32,22 @@ import type {
 import { MATRIX_POWER_LEVELS } from '../../definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../rocket-chat/definitions/FederatedRoomInternalRoles';
 
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
 };
 
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''): string => {
 	return matrixUserId.split(':')[0]?.replace('@', '');
 };
 
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
 
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const isAnExternalUserIdFormat = (userId: string): boolean => isAnExternalIdentifierFormat(userId) && userId.includes('@');
 
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const extractServerNameFromExternalIdentifier = (identifier = ''): string => {
 	const splitted = identifier.split(':');
 
