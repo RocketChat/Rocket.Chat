@@ -4,6 +4,7 @@ import type { ComponentType, ReactElement } from 'react';
 export const createSurfaceRenderer = <
   S extends UiKit.SurfaceRenderer<ReactElement>
 >(
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   SurfaceComponent: ComponentType,
   surfaceRenderer: S
 ) =>

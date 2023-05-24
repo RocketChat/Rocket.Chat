@@ -1,36 +1,40 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
+import { Box, Palette } from '@rocket.chat/fuselage';
+import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
+import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
+	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+
+	const sideBarBackground = css`
+		background-color: ${Palette.surface['surface-tint']};
+	`;
 
 	const sideBarStyle = css`
 		position: relative;
 		z-index: 2;
 		display: flex;
 		flex-direction: column;
-		flex: 0 0 var(--sidebar-width);
-		width: var(--sidebar-width);
-		max-width: var(--sidebar-width);
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
-		background-color: var(--sidebar-background);
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		@media (width < 768px) {
+		@media (max-width: 767px) {
 			position: absolute;
 			user-select: none;
 			transform: translate3d(-100%, 0, 0);
@@ -49,12 +53,17 @@ const Sidebar = () => {
 			}
 		}
 
-		@media (min-width: 1372px) {
-			/* 1440px -68px (eletron menu) */
-			flex: 0 0 20%;
-
-			width: 20%;
-			max-width: 20%;
+		@media (min-width: 768px) and (max-width: 1599px) {
+			width: var(--sidebar-width);
+			min-width: var(--sidebar-width);
+		}
+		@media (min-width: 1600px) and (max-width: 1919px) {
+			width: var(--sidebar-md-width);
+			min-width: var(--sidebar-md-width);
+		}
+		@media (min-width: 1920px) {
+			width: var(--sidebar-lg-width);
+			min-width: var(--sidebar-lg-width);
 		}
 	`;
 
@@ -89,11 +98,13 @@ const Sidebar = () => {
 						'rcx-sidebar--main',
 						`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
 						sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+						sideBarBackground,
 					].filter(Boolean)}
 					role='navigation'
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
+					{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
 					<SidebarRoomList />
 					<SidebarFooter />
 				</Box>

@@ -47,22 +47,16 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 		return registered ? 'phone' : 'phone-disabled';
 	};
 
-	const getColor = (): 'warning' | 'success' | undefined => {
-		if (networkStatus === 'offline') {
-			return 'warning';
-		}
-		return registered ? 'success' : undefined;
-	};
-
 	return (
 		<Sidebar.TopBar.Action
 			icon={getIcon()}
 			disabled={inCall}
-			color={getColor()}
 			aria-checked={registered}
 			aria-label={t('VoIP_Toggle')}
 			data-tooltip={getTitle()}
 			{...props}
+			success={registered}
+			warning={networkStatus === 'offline'}
 			onClick={onClickVoipButton}
 		/>
 	);

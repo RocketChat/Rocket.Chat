@@ -6,10 +6,6 @@ import type { MessageList } from '../../lib/lists/MessageList';
 import type { FieldExpression, Query } from '../../lib/minimongo';
 import { createFilterFromQuery } from '../../lib/minimongo';
 
-type RoomMessagesRidEvent = IMessage;
-
-type NotifyRoomRidDeleteMessageEvent = { _id: IMessage['_id'] };
-
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
@@ -45,21 +41,18 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			return;
 		}
 
-		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message: RoomMessagesRidEvent) => {
+		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message) => {
 			messageList.handle(message);
 		});
 
-		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id: mid }: NotifyRoomRidDeleteMessageEvent) => {
+		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id: mid }) => {
 			messageList.remove(mid);
 		});
 
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-			`${rid}/deleteMessageBulk`,
-			(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-				const matchDeleteCriteria = createDeleteCriteria(params);
-				messageList.prune(matchDeleteCriteria);
-			},
-		);
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
+			const matchDeleteCriteria = createDeleteCriteria(params);
+			messageList.prune(matchDeleteCriteria);
+		});
 
 		return (): void => {
 			unsubscribeFromRoomMessages();

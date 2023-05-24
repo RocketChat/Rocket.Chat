@@ -48,6 +48,15 @@ WithValue.args = {
 	placeholder: 'Placeholder',
 };
 
+export const WithDescription = Template.bind({});
+WithDescription.args = {
+	_id: 'setting_id',
+	label: 'Label',
+	hint: 'Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+	value: 'console.log("Hello World!");',
+	placeholder: 'Placeholder',
+};
+
 export const WithResetButton = Template.bind({});
 WithResetButton.args = {
 	_id: 'setting_id',
