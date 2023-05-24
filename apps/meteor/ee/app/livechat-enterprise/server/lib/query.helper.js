@@ -17,19 +17,3 @@ export const addQueryRestrictionsToRoomsModel = async (originalQuery = {}) => {
 	query.$and = [condition, ...expressions];
 	return query;
 };
-
-export const restrictQuery = async (originalQuery = {}) => {
-	const query = { ...originalQuery };
-
-	const units = await getUnitsFromUser();
-	if (!Array.isArray(units)) {
-		return query;
-	}
-
-	const expressions = query.$and || [];
-	const condition = {
-		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: units } }],
-	};
-	query.$and = [condition, ...expressions];
-	return query;
-};

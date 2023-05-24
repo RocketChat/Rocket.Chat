@@ -24,7 +24,6 @@ declare module '@rocket.chat/model-typings' {
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
-		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
 		setSlaForRoomById(
 			roomId: string,
 			sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
@@ -166,17 +165,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				},
 			},
 		);
-	}
-
-	// TODO - check if removable, looks unused
-	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
-		const query = {
-			t: 'l',
-			open: true,
-			priorityId,
-		};
-
-		return this.find(query);
 	}
 
 	setPredictedVisitorAbandonmentByRoomId(rid: string, willBeAbandonedAt: Date): Promise<UpdateResult> {
