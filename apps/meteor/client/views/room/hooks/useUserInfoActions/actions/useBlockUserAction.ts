@@ -18,7 +18,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		throw Error('Room not provided');
 	}
 
-	const { roomCanBlock } = getRoomDirectives(room);
+	const { roomCanBlock } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
 	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
@@ -40,7 +40,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 			roomCanBlock && uid !== ownUserId
 				? {
 						label: t(isUserBlocked ? 'Unblock' : 'Block'),
-						icon: 'ban',
+						icon: 'ban' as const,
 						action: toggleBlockUserAction,
 				  }
 				: undefined,

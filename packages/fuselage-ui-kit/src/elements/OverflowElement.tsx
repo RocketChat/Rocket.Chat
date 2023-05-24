@@ -35,6 +35,7 @@ const OverflowElement = ({
         fromTextObjectToString(surfaceRenderer, text, i) ?? '',
         undefined,
         undefined,
+        undefined,
         url,
       ]),
     [block.options, surfaceRenderer]

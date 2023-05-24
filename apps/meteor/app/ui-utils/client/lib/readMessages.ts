@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
-import $ from 'jquery';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
-import { RoomManager } from './RoomManager';
+import { LegacyRoomManager } from './LegacyRoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
-import { APIClient } from '../../../utils/client';
+import { RoomManager } from '../../../../client/lib/RoomManager';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
-export class ReadMessage extends Emitter {
+class ReadMessage extends Emitter {
 	protected enabled: boolean;
 
 	protected debug = false;
@@ -35,14 +34,19 @@ export class ReadMessage extends Emitter {
 		return this.enabled === true;
 	}
 
-	public read(rid: IRoom['_id'] = Session.get('openedRoom')) {
+	public read(rid: IRoom['_id'] | undefined = RoomManager.opened) {
 		if (!this.enabled) {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
 		}
 
+		if (!rid) {
+			this.log('readMessage -> readNow canceled by rid: undefined');
+			return;
+		}
+
 		const subscription = ChatSubscription.findOne({ rid });
-		if (subscription == null) {
+		if (!subscription) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
 		}
@@ -52,17 +56,16 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = RoomManager.getOpenedRoomByRid(rid);
-		if (room == null) {
+		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
+		if (!room) {
 			this.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name);
 			return;
 		}
 
 		// Only read messages if user saw the first unread message
-		const unreadMark = $('.message.first-unread, .rcx-message-divider--unread');
-		if (unreadMark.length > 0) {
-			const position = unreadMark.position();
-			const visible = (position ? position.top : 0) >= 0;
+		const unreadMark = document.querySelector<HTMLElement>('.message.first-unread, .rcx-message-divider--unread');
+		if (unreadMark) {
+			const visible = unreadMark.offsetTop >= 0;
 
 			if (!visible) {
 				this.log('readMessage -> readNow canceled, unread mark visible:', visible);
@@ -76,19 +79,19 @@ export class ReadMessage extends Emitter {
 		return this.readNow(rid);
 	}
 
-	public readNow(rid: IRoom['_id'] = Session.get('openedRoom')) {
-		if (rid == null) {
+	public readNow(rid: IRoom['_id'] | undefined = RoomManager.opened) {
+		if (!rid) {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
 
 		const subscription = ChatSubscription.findOne({ rid });
-		if (subscription == null) {
+		if (!subscription) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
 		}
 
-		return APIClient.post('/v1/subscriptions.read', { rid }).then(() => {
+		return sdk.rest.post('/v1/subscriptions.read', { rid }).then(() => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
 		});
@@ -104,7 +107,7 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = RoomManager.openedRooms[subscription.t + subscription.name];
+		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
 		if (!room) {
 			return;
 		}

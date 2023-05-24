@@ -28,6 +28,7 @@ export const palette = [
 			{ name: 'surface-dark', token: 'N400', color: '#E4E7EA' },
 			{ name: 'surface-featured', token: '', color: '#5F1477' },
 			{ name: 'surface-featured-hover', token: '', color: '#4A105D' },
+			{ name: 'surface-overlay', token: '', color: 'rgba(0, 0, 0, 0.6)' },
 		],
 	},
 	{
@@ -43,7 +44,7 @@ export const palette = [
 		description: 'These should be applied according to surfaces',
 		list: [
 			{ name: 'font-white', token: 'N800', color: '#2F343D' },
-			{ name: 'font-disabled', token: '', color: '#3E4146' },
+			{ name: 'font-disabled', token: '', color: '#60646C' },
 			{ name: 'font-annotation', token: 'N600', color: '#9EA2A8' },
 			{ name: 'font-hint', token: 'N600', color: '#9EA2A8' },
 			{ name: 'font-secondary-info', token: '', color: '#9EA2A8' },
@@ -86,10 +87,23 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
+			{ name: 'badge-background-level-0', token: '', color: '#2F343D' },
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
 			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
 			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
 			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
+		],
+	},
+	{
+		category: 'Status Bullet',
+		description: 'Used to show user status',
+		list: [
+			{ name: 'status-bullet-online', token: '', color: '#1CBF89' },
+			{ name: 'status-bullet-away', token: '', color: '#AC892F' },
+			{ name: 'status-bullet-busy', token: '', color: '#C14454' },
+			{ name: 'status-bullet-disabled', token: '', color: '#955828' },
+			{ name: 'status-bullet-offline', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-loading', token: '', color: '#9ea2a8' },
 		],
 	},
 	{

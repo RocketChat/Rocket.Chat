@@ -6,7 +6,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import Header from '../Header';
 import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
-import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
@@ -38,9 +37,6 @@ const Room = (): ReactElement => {
 						(tab && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
-									{typeof tab.template === 'string' && (
-										<VerticalBarOldActions {...tab} name={tab.template} tabBar={toolbox} rid={room._id} _id={room._id} />
-									)}
 									{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
 										<Suspense fallback={<VerticalBarSkeleton />}>
 											{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}

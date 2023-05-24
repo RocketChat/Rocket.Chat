@@ -6,7 +6,11 @@ import VerticalTemplate from './template/VerticalTemplate';
 const SecretRegisterInvalidForm = (): ReactElement => {
 	const t = useTranslation();
 
-	return <VerticalTemplate>{t('Invalid_secret_URL_message')}</VerticalTemplate>;
+	return (
+		<VerticalTemplate>
+			<h2>{t('Invalid_secret_URL_message')}</h2>
+		</VerticalTemplate>
+	);
 };
 
 export default SecretRegisterInvalidForm;

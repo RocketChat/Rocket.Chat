@@ -18,6 +18,7 @@ import {
 	UserState,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Random } from '@rocket.chat/random';
 import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
 	useRoute,
@@ -31,7 +32,6 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
-import { Random } from 'meteor/random';
 import type { FC } from 'react';
 import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -59,8 +59,9 @@ const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
 };
 
 const stopRingBackById = (soundId: VoipSound): void => {
+	const sound = CustomSounds.getSound(soundId);
 	CustomSounds.pause(soundId);
-	CustomSounds.remove(soundId);
+	CustomSounds.remove(sound);
 };
 
 const stopTelephoneRingback = (): void => stopRingBackById('telephone');
@@ -271,7 +272,7 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleCallHangup = (_event: { roomId: string }): void => {
+		return subscribeToNotifyUser(`${user._id}/call.hangup`, (event): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 
 			if (hasVoIPEnterpriseLicense) {
@@ -281,10 +282,8 @@ export const CallProvider: FC = ({ children }) => {
 
 			closeRoom();
 
-			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
-		};
-
-		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
+			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: event.roomId });
+		});
 	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, hasVoIPEnterpriseLicense, closeRoom]);
 
 	useEffect(() => {
