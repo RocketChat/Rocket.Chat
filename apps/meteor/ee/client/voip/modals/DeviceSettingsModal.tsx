@@ -57,14 +57,14 @@ const DeviceSettingsModal = (): ReactElement => {
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Device_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				{!setSinkIdAvailable && (
-					<Box color='on-danger' display='flex' flexDirection='column'>
+					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
 						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
@@ -72,7 +72,7 @@ const DeviceSettingsModal = (): ReactElement => {
 					</Box>
 				)}
 				{!isDeviceManagementEnabled && (
-					<Box color='on-danger' display='flex' flexDirection='column'>
+					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
 				)}

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
@@ -62,6 +62,21 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should fail to create the same channel twice', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.contain('error-duplicate-channel-name');
 				})
 				.end(done);
 		});
@@ -144,7 +159,7 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
-		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
 			request
 				.get(api('channels.info'))
 				.set(credentials)
@@ -521,6 +536,36 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	it('/channels.addModerator should fail with missing room Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.addModerator should fail with missing user Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
 	it('/channels.removeModerator', (done) => {
 		request
 			.post(api('channels.removeModerator'))
@@ -533,6 +578,36 @@ describe('[Channels]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid room id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid user id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
 			})
 			.end(done);
 	});
@@ -2017,6 +2092,22 @@ describe('[Channels]', function () {
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
+		});
+
+		it('/channels.list.join should return empty list when member of no group', async () => {
+			const user = await createUser({ joinDefaultChannels: false });
+			const newCreds = await login(user.username, password);
+			await request
+				.get(api('channels.list.joined'))
+				.set(newCreds)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.equal(0);
+					expect(res.body).to.have.property('total').that.is.equal(0);
+					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);
+				});
 		});
 	});
 });

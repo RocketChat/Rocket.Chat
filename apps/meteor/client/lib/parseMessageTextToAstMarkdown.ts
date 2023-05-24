@@ -90,15 +90,17 @@ export const parseMessageAttachments = <T extends MessageAttachment>(
 			);
 		}
 
-		if (isFileAttachment(attachment) && attachment.description) {
-			attachment.descriptionMd = attachment.descriptionMd ?? textToMessageToken(attachment.description, parseOptions);
-		}
-
 		const text =
 			(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
 			attachment.text ||
 			attachment.description ||
 			'';
+
+		if (isFileAttachment(attachment) && attachment.description) {
+			attachment.descriptionMd = translated
+				? textToMessageToken(text, parseOptions)
+				: attachment.descriptionMd ?? textToMessageToken(text, parseOptions);
+		}
 
 		return {
 			...attachment,

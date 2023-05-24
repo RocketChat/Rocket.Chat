@@ -37,7 +37,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' color='default' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Box mb='x4'>{t('Search')}</Box>
 				<TextInput addon={<Icon name='magnifier' size='x20' />} onChange={setShortcut} value={shortcutValue} />

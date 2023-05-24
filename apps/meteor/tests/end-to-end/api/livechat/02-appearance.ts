@@ -11,29 +11,26 @@ describe('LIVECHAT - appearance', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('livechat/appearance', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/appearance')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
-			});
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+			await request.get(api('livechat/appearance')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an array of settings', (done) => {
-			updatePermission('view-livechat-manager', ['admin']).then(() => {
-				request
-					.get(api('livechat/appearance'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.appearance).to.be.an('array');
-					})
-					.end(done);
-			});
+		it('should return an array of settings', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await request
+				.get(api('livechat/appearance'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.appearance).to.be.an('array');
+				});
 		});
 	});
 });

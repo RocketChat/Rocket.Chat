@@ -7,7 +7,7 @@ import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRing
 import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
-import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
+import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
 addAction('calls', ({ room }) => {

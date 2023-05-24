@@ -10,7 +10,7 @@ const hasIntegrationsPermission = async (userId: string, integration: IIntegrati
 		return true;
 	}
 
-	if (userId === integration._createdBy._id) {
+	if (userId === integration._createdBy?._id) {
 		return hasPermissionAsync(userId, `manage-own-${type}-integrations`);
 	}
 
