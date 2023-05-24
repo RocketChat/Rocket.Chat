@@ -53,7 +53,8 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		context && router.push({ context, page: 'list' });
 	});
 
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace, name } = appData || {};
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
+
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(async () => {
@@ -94,9 +95,9 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 						<>
 							<AppDetailsPageHeader app={appData} />
 							<AppDetailsPageTabs
+								context={context || ''}
 								installed={installed}
 								isSecurityVisible={isSecurityVisible}
-								marketplace={marketplace}
 								settings={settings}
 								tab={tab}
 							/>

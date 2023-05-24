@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-services';
+import { api, Message, Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -50,23 +50,23 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === true) {
+		if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === true) {
 			throw new Meteor.Error('error-user-already-leader', 'User is already a leader', {
 				method: 'addRoomLeader',
 			});
 		}
 
-		Subscriptions.addRoleById(subscription._id, 'leader');
+		await Subscriptions.addRoleById(subscription._id, 'leader');
 
-		const fromUser = Users.findOneById(uid);
+		const fromUser = await Users.findOneById(uid);
 
-		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-			role: 'leader',
-		});
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addRoomLeader',
+			});
+		}
+
+		await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role: 'leader' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
@@ -80,7 +80,6 @@ Meteor.methods<ServerMethods>({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name,
 				},
 				scope: rid,
 			});

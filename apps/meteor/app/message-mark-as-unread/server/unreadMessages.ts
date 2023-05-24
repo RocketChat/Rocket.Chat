@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import logger from './logger';
-import { Subscriptions } from '../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,7 +36,8 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			return;
 		}
 
 		if (typeof firstUnreadMessage?._id !== 'string') {
@@ -61,11 +61,18 @@ Meteor.methods<ServerMethods>({
 				action: 'Unread_messages',
 			});
 		}
-		const lastSeen = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId).ls;
+		const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId))?.ls;
+		if (!lastSeen) {
+			throw new Meteor.Error('error-subscription-not-found', 'Subscription not found', {
+				method: 'unreadMessages',
+				action: 'Unread_messages',
+			});
+		}
+
 		if (firstUnreadMessage.ts >= lastSeen) {
 			return logger.debug('Provided message is already marked as unread');
 		}
 		logger.debug(`Updating unread  message of ${originalMessage.ts} as the first unread`);
-		return Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+		await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	},
 });

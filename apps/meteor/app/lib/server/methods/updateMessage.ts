@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { canSendMessage } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateMessage } from '../functions';
 
@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async updateMessage(message) {
+	async updateMessage(message: IEditedMessage) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const uid = Meteor.userId();
@@ -29,13 +29,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage?._id) {
 			return;
 		}
 
 		Object.entries(message).forEach(([key, value]) => {
-			if (!allowedEditedFields.includes(key) && value !== originalMessage[key]) {
+			if (!allowedEditedFields.includes(key) && value !== originalMessage[key as keyof IMessage]) {
 				throw new Meteor.Error('error-invalid-update-key', `Cannot update the message ${key}`, {
 					method: 'updateMessage',
 				});
@@ -88,8 +88,11 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const user = Meteor.users.findOne(uid) as IUser;
-		canSendMessage(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
+		}
+		await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {

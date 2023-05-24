@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
+import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
@@ -32,12 +33,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminUser });
+	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
-	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
+	const { data } = useIsEnterprise();
+	const isEnterprise = data?.isEnterprise ?? false;
+
+	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
 	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
@@ -113,7 +117,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center'>
+		<Box {...props} display='flex' alignItems='center' mie='x8'>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -147,7 +151,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inline='x8' key={index}>
+				<Margins inlineEnd='x8' key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "6.1.0-develop",
+	"version": "6.3.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -17,6 +17,8 @@
 		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
+		"@changesets/changelog-github": "^0.4.8",
+		"@changesets/cli": "^2.26.1",
 		"@types/chart.js": "^2.9.37",
 		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
@@ -41,7 +43,7 @@
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
 		"yarn": "3.2.2",
-		"node": "14.21.2",
+		"node": "14.21.3",
 		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@3.2.2",
@@ -55,7 +57,7 @@
 		]
 	},
 	"volta": {
-		"node": "14.21.2",
+		"node": "14.21.3",
 		"yarn": "1.22.18"
 	},
 	"resolutions": {

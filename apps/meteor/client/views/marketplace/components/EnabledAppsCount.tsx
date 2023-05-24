@@ -1,7 +1,8 @@
-import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+
+import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
 const EnabledAppsCount = ({
 	variant,
@@ -18,27 +19,18 @@ const EnabledAppsCount = ({
 }): ReactElement | null => {
 	const t = useTranslation();
 
-	return (
-		<Box
-			display='flex'
-			flexDirection='column'
-			mi='16px'
-			minWidth='200px'
-			justifyContent='center'
-			data-tooltip={t('Apps_Count_Enabled_tooltip', {
-				number: enabled,
-				context: context === 'private' ? 'private' : 'marketplace',
-			})}
-		>
-			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' w='full'>
-				<Box fontScale='c1'>{t('Apps_Count_Enabled', { count: enabled })}</Box>
+	const privateAppsCountText: string = t('Private_Apps_Count_Enabled', { count: enabled });
+	const marketplaceAppsCountText: string = t('Apps_Count_Enabled', { count: enabled });
 
-				<Box fontScale='c1' color='annotation'>
-					{`${enabled} / ${limit}`}
-				</Box>
-			</Box>
-			<ProgressBar variant={variant} percentage={percentage} />
-		</Box>
+	return (
+		<GenericResourceUsage
+			title={context === 'private' ? privateAppsCountText : marketplaceAppsCountText}
+			value={enabled}
+			max={limit}
+			percentage={percentage}
+			threshold={80}
+			variant={variant}
+		/>
 	);
 };
 

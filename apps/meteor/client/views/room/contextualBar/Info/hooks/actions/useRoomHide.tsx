@@ -26,7 +26,7 @@ export const useRoomHide = (room: IRoom) => {
 			setModal(null);
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
 		setModal(
 			<WarningModal

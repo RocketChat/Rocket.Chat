@@ -3,7 +3,7 @@ import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/a
 import type { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
-import { t } from '../../../app/utils/client';
+import { t } from '../../../app/utils/lib/i18n';
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { dispatchToastMessage } from '../../lib/toast';
 
@@ -60,6 +60,8 @@ type FormattedPriceAndPlan = {
 	type: PlanType;
 	price: string;
 };
+
+type appButtonPropsType = App & { isAdminUser: boolean; endUserRequested: boolean };
 
 export const apiCurlGetter =
 	(absoluteUrl: (path: string) => string) =>
@@ -174,10 +176,12 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	// TODO: Unify this two variables
 	requestedEndUser,
-}: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
+	endUserRequested,
+}: appButtonPropsType): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
-		if (requestedEndUser) {
+		if (requestedEndUser || endUserRequested) {
 			return {
 				action: 'request',
 				label: 'Requested',
@@ -298,13 +302,15 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 
 export const appStatusSpanProps = (
 	{ installed, status, subscriptionInfo, appRequestStats, migrated }: App,
+	isEnterprise?: boolean,
 	context?: string,
 	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
 	const isEnabled = status && appEnabledStatuses.includes(status);
+
 	if (installed) {
 		if (isEnabled) {
-			return migrated
+			return migrated && !isEnterprise
 				? {
 						label: 'Enabled*',
 						tooltipText: t('Grandfathered_app'),
@@ -314,7 +320,7 @@ export const appStatusSpanProps = (
 				  };
 		}
 
-		return migrated
+		return migrated && !isEnterprise
 			? {
 					label: 'Disabled*',
 					tooltipText: t('Grandfathered_app'),
@@ -361,8 +367,13 @@ export const appStatusSpanProps = (
 	}
 };
 
-export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context: string): appStatusSpanResponseProps[] => {
-	const status = appStatusSpanProps(app, context, isAppDetailsPage);
+export const appMultiStatusProps = (
+	app: App,
+	isAppDetailsPage: boolean,
+	context: string,
+	isEnterprise: boolean,
+): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app, isEnterprise, context, isAppDetailsPage);
 	const statuses = [];
 
 	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {
@@ -376,9 +387,9 @@ export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context
 	return statuses;
 };
 
-export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
+const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
+const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [

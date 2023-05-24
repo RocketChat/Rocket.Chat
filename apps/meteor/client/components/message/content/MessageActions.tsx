@@ -6,7 +6,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { actionLinks } from '../../../../app/action-links/client';
+import { actionLinks } from '../../../lib/actionLinks';
 import MessageAction from './actions/MessageAction';
 
 type MessageActionOptions = {

@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -12,7 +11,7 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope: undefined): Promise<boolean>;
+		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope?: string): Promise<boolean>;
 	}
 }
 
@@ -47,12 +46,12 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(username, {
+			projection: {
 				_id: 1,
 				roles: 1,
 			},
-		}) as Pick<IUser, '_id' | 'roles'>;
+		});
 
 		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -62,13 +61,11 @@ Meteor.methods<ServerMethods>({
 
 		// prevent removing last user from admin role
 		if (role._id === 'admin') {
-			const adminCount = Meteor.users
-				.find({
-					roles: {
-						$in: ['admin'],
-					},
-				})
-				.count();
+			const adminCount = await Users.col.countDocuments({
+				roles: {
+					$in: ['admin'],
+				},
+			});
 
 			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
@@ -88,7 +85,7 @@ Meteor.methods<ServerMethods>({
 				username,
 			},
 			scope,
-		};
+		} as const;
 		if (settings.get('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);
 		}
