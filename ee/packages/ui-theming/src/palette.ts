@@ -87,6 +87,7 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
+			{ name: 'badge-background-level-0', token: '', color: '#E4E7EA' },
 			{ name: 'badge-background-level-1', token: 'N700', color: '#6C727A' },
 			{ name: 'badge-background-level-2', token: '', color: '#1D74F5' },
 			{ name: 'badge-background-level-3', token: '', color: '#F38C39' },
