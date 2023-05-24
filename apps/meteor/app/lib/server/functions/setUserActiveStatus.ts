@@ -115,9 +115,6 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	if (!active && !settings.get('Accounts_Send_Email_When_Deactivating')) {
 		return true;
 	}
-	if (!user.emails) {
-		return true;
-	}
 
 	const destinations =
 		Array.isArray(user.emails) && user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
