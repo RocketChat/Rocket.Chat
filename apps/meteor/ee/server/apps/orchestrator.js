@@ -51,12 +51,6 @@ export class AppServerOrchestrator {
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-
-		// TODO: Remove it when fixed the race condition
-		// This enforce Fibers for a method not waited on apps-engine preventing a race condition
-		const { storeEntries } = this._logStorage;
-		this._logStorage.storeEntries = (...args) => Promise.await(storeEntries.call(this._logStorage, ...args));
-
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
@@ -240,9 +234,9 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-void settingsRegistry.addGroup('General', function () {
-	this.section('Apps', function () {
-		this.add('Apps_Logs_TTL', '30_days', {
+void settingsRegistry.addGroup('General', async function () {
+	await this.section('Apps', async function () {
+		await this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
 			values: [
 				{
@@ -263,7 +257,7 @@ void settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Logs_TTL_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+		await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [
 				{
@@ -280,7 +274,7 @@ void settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+		await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
 			type: 'string',
 			public: true,
 			enableQuery: {

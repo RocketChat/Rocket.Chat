@@ -53,7 +53,7 @@ export async function sendViaEmail(
 	const localMoment = moment();
 
 	if (lang !== 'en') {
-		const localeFn = getMomentLocale(lang);
+		const localeFn = await getMomentLocale(lang);
 		if (localeFn) {
 			Function(localeFn).call({ moment });
 			localMoment.locale(lang);
@@ -73,7 +73,7 @@ export async function sendViaEmail(
 		})
 		.join('');
 
-	Mailer.send({
+	await Mailer.send({
 		to: emails,
 		from: settings.get('From_Email'),
 		replyTo: email,

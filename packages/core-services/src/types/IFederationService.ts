@@ -5,6 +5,14 @@ export interface IFederationService {
 
 	verifyMatrixId(matrixId: string): Promise<string>;
 }
+
+export interface IFederationJoinExternalPublicRoomInput {
+	internalUserId: string;
+	externalRoomId: string;
+	roomName?: string;
+	pageToken?: string;
+}
+
 export interface IFederationServiceEE {
 	createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void>;
 
@@ -25,7 +33,9 @@ export interface IFederationServiceEE {
 
 	removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void>;
 
-	joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void>;
+	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string, roomName?: string, pageToken?: string): Promise<void>;
+
+	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
 
 	verifyMatrixId(matrixId: string): Promise<string>;
 }

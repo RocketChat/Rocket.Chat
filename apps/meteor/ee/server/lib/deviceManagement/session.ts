@@ -9,7 +9,8 @@ import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
-import { t, getUserPreference } from '../../../../app/utils/server';
+import { getUserPreference } from '../../../../app/utils/server';
+import { t } from '../../../../app/utils/lib/i18n';
 
 let mailTemplates: string;
 
@@ -90,7 +91,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
 
 				if (shouldSendLoginEmail) {
-					Mailer.send({
+					await Mailer.send({
 						to: `${name} <${email}>`,
 						from: Accounts.emailTemplates.from,
 						subject: settings.get('Device_Management_Email_Subject'),

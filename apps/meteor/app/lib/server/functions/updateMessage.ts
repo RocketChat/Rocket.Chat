@@ -43,7 +43,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 
 	parseUrlsInMessage(message);
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
 
@@ -74,10 +74,10 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(async function () {
+	setImmediate(async function () {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
-			callbacks.run('afterSaveMessage', msg, room, user._id);
+			await callbacks.run('afterSaveMessage', msg, room, user._id);
 		}
 	});
 };

@@ -1,7 +1,7 @@
 import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
 import { processDirectEmail } from './processDirectEmail';
 
@@ -73,7 +73,7 @@ class POP3Intercepter {
 
 			// parse raw email data to  JSON object
 			simpleParser(data, (err, mail) => {
-				Promise.await(processDirectEmail(mail));
+				processDirectEmail(mail);
 			});
 
 			this.currentMsgCount += 1;

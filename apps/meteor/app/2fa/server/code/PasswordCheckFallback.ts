@@ -24,7 +24,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 			return false;
 		}
 
-		const passCheck = Accounts._checkPassword(user as Meteor.User, {
+		const passCheck = await Accounts._checkPasswordAsync(user as Meteor.User, {
 			digest: code.toLowerCase(),
 			algorithm: 'sha-256',
 		});

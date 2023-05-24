@@ -11,7 +11,7 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope: undefined): Promise<boolean>;
+		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope?: string): Promise<boolean>;
 	}
 }
 
@@ -61,13 +61,11 @@ Meteor.methods<ServerMethods>({
 
 		// prevent removing last user from admin role
 		if (role._id === 'admin') {
-			const adminCount = Meteor.users
-				.find({
-					roles: {
-						$in: ['admin'],
-					},
-				})
-				.count();
+			const adminCount = await Users.col.countDocuments({
+				roles: {
+					$in: ['admin'],
+				},
+			});
 
 			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
@@ -87,7 +85,7 @@ Meteor.methods<ServerMethods>({
 				username,
 			},
 			scope,
-		};
+		} as const;
 		if (settings.get('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);
 		}
