@@ -4,9 +4,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
-import PageSkeleton from '../../components/PageSkeleton';
 import { AppEvents } from '../../../ee/client/apps/communication';
 import { Apps } from '../../../ee/client/apps/orchestrator';
+import PageSkeleton from '../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
 import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
