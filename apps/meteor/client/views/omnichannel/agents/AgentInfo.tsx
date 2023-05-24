@@ -3,10 +3,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormsSubscription } from '../additionalForms';

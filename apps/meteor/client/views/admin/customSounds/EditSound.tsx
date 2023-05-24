@@ -3,8 +3,8 @@ import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from 
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 

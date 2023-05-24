@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 
 type CustomUserStatusFormProps = {
 	onClose: () => void;

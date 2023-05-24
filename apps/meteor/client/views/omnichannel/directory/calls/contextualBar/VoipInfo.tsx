@@ -6,8 +6,6 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
-import InfoPanel from '../../../../../components/InfoPanel';
-import { UserStatus } from '../../../../../components/UserStatus';
 import {
 	ContextualbarIcon,
 	ContextualbarHeader,
@@ -16,6 +14,8 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../../components/Contextualbar';
+import InfoPanel from '../../../../../components/InfoPanel';
+import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';

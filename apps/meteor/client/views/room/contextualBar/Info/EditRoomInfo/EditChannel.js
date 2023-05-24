@@ -31,8 +31,6 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
-import GenericModal from '../../../../../components/GenericModal';
-import RawText from '../../../../../components/RawText';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -40,6 +38,8 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../../components/Contextualbar';
+import GenericModal from '../../../../../components/GenericModal';
+import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';

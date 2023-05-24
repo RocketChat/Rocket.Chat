@@ -5,10 +5,6 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
-import UserCard from '../../../../components/UserCard';
-import UserInfo from '../../../../components/UserInfo';
-import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -17,6 +13,10 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 } from '../../../../components/Contextualbar';
+import { FormSkeleton } from '../../../../components/Skeleton';
+import UserCard from '../../../../components/UserCard';
+import UserInfo from '../../../../components/UserInfo';
+import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';

@@ -8,11 +8,11 @@ import React, { memo } from 'react';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import UserCard from '../UserCard';
-import { ContextualbarScrollableContent } from '../Contextualbar';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<

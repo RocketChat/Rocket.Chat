@@ -52,7 +52,9 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsContextualbarCloseButtonClick} />}</Contextualbar>;
+	return (
+		<Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsContextualbarCloseButtonClick} />}</Contextualbar>
+	);
 };
 
 export default CallsContextualBarDirectory;

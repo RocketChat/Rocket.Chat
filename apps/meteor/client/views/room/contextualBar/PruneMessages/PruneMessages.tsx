@@ -4,7 +4,6 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -13,6 +12,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarClose,
 } from '../../../../components/Contextualbar';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import type { initialValues } from './PruneMessagesWithData';
 

@@ -2,8 +2,8 @@ import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@roc
 import React from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client';
-import Page from '../../../components/Page';
 import { Contextualbar } from '../../../components/Contextualbar';
+import Page from '../../../components/Page';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';

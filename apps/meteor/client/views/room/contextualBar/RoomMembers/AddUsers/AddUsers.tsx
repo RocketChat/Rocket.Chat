@@ -4,8 +4,6 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
-import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -14,6 +12,8 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../../components/Contextualbar';
+import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 
 type AddUsersProps = {
 	onClickClose?: () => void;

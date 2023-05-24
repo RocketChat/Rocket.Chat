@@ -6,8 +6,8 @@ import React from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
-import { UserStatus } from '../../../../../components/UserStatus';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
+import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';

@@ -6,8 +6,8 @@ import type { FC, ReactElement } from 'react';
 import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import UserInfo from '../../../components/UserInfo';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import UserInfo from '../../../components/UserInfo';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
 

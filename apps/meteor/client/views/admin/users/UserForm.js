@@ -14,8 +14,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import CustomFieldsForm from '../../../components/CustomFieldsForm';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();

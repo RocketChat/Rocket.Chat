@@ -3,8 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
-import Page from '../../../components/Page';
 import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';

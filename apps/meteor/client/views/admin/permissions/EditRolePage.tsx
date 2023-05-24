@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 import RoleForm from './RoleForm';
 
 const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {

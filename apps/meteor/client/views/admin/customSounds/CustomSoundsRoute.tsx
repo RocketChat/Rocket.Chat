@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 
+import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
@@ -15,7 +16,6 @@ import { GenericTableLoadingTable } from '../../../components/GenericTable/V2/Ge
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
-import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundRow from './CustomSoundRow';

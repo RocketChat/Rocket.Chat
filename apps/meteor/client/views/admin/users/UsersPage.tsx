@@ -5,8 +5,8 @@ import React, { useEffect, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
-import Page from '../../../components/Page';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import Page from '../../../components/Page';
 import AddUser from './AddUser';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import EditUserWithData from './EditUserWithData';

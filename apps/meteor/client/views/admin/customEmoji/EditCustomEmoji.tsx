@@ -3,8 +3,8 @@ import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } 
 import type { FC, ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';

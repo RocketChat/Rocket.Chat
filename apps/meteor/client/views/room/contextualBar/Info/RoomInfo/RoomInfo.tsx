@@ -3,9 +3,6 @@ import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import InfoPanel from '../../../../../components/InfoPanel';
-import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
-import MarkdownText from '../../../../../components/MarkdownText';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -14,6 +11,9 @@ import {
 	ContextualbarClose,
 	ContextualbarTitle,
 } from '../../../../../components/Contextualbar';
+import InfoPanel from '../../../../../components/InfoPanel';
+import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
+import MarkdownText from '../../../../../components/MarkdownText';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';

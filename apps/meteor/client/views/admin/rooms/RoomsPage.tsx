@@ -2,8 +2,8 @@ import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-con
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import Page from '../../../components/Page';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import Page from '../../../components/Page';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
 

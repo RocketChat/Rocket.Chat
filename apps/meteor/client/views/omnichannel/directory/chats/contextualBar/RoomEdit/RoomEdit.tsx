@@ -7,9 +7,9 @@ import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import { CustomFieldsForm } from '../../../../../../components/CustomFieldsFormV2';
 import Tags from '../../../../../../components/Omnichannel/Tags';
-import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import { useFormsSubscription } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';

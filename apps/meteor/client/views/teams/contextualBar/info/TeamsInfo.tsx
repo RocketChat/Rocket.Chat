@@ -5,9 +5,6 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 
-import InfoPanel from '../../../../components/InfoPanel';
-import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
-import MarkdownText from '../../../../components/MarkdownText';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -15,6 +12,9 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
+import InfoPanel from '../../../../components/InfoPanel';
+import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
+import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../hooks/useActionSpread';

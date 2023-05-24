@@ -1,8 +1,8 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import * as Status from '../UserStatus';
 import { Contextualbar } from '../Contextualbar';
+import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 
 export default {

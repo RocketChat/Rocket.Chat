@@ -8,11 +8,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import { ContextualbarContent } from '../../../components/Contextualbar';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
 

@@ -6,8 +6,8 @@ import React, { useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 
 type EditOAuthAddAppPayload = {
 	name: string;

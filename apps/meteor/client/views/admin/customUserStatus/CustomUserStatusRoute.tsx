@@ -3,8 +3,8 @@ import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting 
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
-import Page from '../../../components/Page';
 import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
+import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';

@@ -7,8 +7,8 @@ import type { ReactElement } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
-import GenericModal from '../../../components/GenericModal';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import GenericModal from '../../../components/GenericModal';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
