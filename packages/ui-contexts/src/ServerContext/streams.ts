@@ -19,6 +19,7 @@ import type {
 	IUserDataEvent,
 	IUserStatus,
 	ILivechatInquiryRecord,
+	OmnichannelEventDataSignature,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -134,6 +135,7 @@ export interface StreamerEvents {
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
+		{ key: `${string}/omnichannel.events`; args: [OmnichannelEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
 		{ key: `${string}/uiInteraction`; args: [unknown] },
 		{

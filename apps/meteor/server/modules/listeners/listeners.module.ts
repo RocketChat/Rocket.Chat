@@ -344,6 +344,10 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
 		});
 
+		service.onEvent('omnichannel.events', (userId, data): void => {
+			notifications.notifyUserInThisInstance(userId, 'omnichannel.events', data);
+		});
+
 		service.onEvent('call.callerhangup', (userId, data): void => {
 			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});

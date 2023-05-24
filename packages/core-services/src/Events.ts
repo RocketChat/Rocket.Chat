@@ -29,6 +29,7 @@ import type {
 	VideoConference,
 	AtLeast,
 	ILivechatInquiryRecord,
+	OmnichannelEventDataSignature,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -258,4 +259,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+	'omnichannel.events'(userId: string, data: OmnichannelEventDataSignature): void;
 };
