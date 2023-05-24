@@ -3,6 +3,7 @@ import type {
 	OmichannelRoutingConfig,
 	OmnichannelSortingMechanismSettingType,
 	ILivechatInquiryRecord,
+	OmnichannelEventDataSignature,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
@@ -126,7 +127,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleEventReceived = async (event: any): Promise<void> => {
+		const handleEventReceived = async (event: OmnichannelEventDataSignature): Promise<void> => {
 			ChatRoom.remove(event.data.roomId);
 			queryClient.removeQueries({ queryKey: ['rooms', event.data.roomId], exact: true });
 		};
