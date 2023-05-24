@@ -13,6 +13,7 @@ import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from '
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
+import { ChatRoom } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
@@ -61,6 +62,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
 	const subscribe = useStream('notify-logged');
+	const subscribeToNotifyUser = useStream('notify-user');
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
 
@@ -118,6 +120,19 @@ const OmnichannelProvider: FC = ({ children }) => {
 		initializeLivechatInquiryStream(user?._id);
 		return Notifications.onUser('departmentAgentData', handleDepartmentAgentData).stop;
 	}, [manuallySelected, user?._id]);
+
+	useEffect(() => {
+		if (!user) {
+			return;
+		}
+
+		const handleEventReceived = async (event: any): Promise<void> => {
+			ChatRoom.remove(event.data.roomId);
+			queryClient.removeQueries({ queryKey: ['rooms', event.data.roomId], exact: true });
+		};
+
+		return subscribeToNotifyUser(`${user._id}/omnichannel.events`, handleEventReceived);
+	}, [subscribeToNotifyUser, user, queryClient]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {
