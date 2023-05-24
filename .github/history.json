@@ -3244,7 +3244,7 @@
         },
         {
           "pr": "7557",
-          "title": "[FIX] Revert emojione package version upgrade",
+          "title": "[FIX] Revert JoyPixels package version upgrade",
           "userLogin": "sampaiodiego",
           "milestone": "0.58.0",
           "contributors": [
@@ -7598,7 +7598,7 @@
         },
         {
           "pr": "8078",
-          "title": "[MOVE] Move files from emojione to client/server folders",
+          "title": "[MOVE] Move files from JoyPixels to client/server folders",
           "userLogin": "vcapretz",
           "milestone": "0.60.0",
           "contributors": [
@@ -20771,7 +20771,7 @@
         },
         {
           "pr": "12605",
-          "title": "Convert emoji-emojione to main module structure",
+          "title": "Convert emoji-JoyPixels to main module structure",
           "userLogin": "MarcosSpessatto",
           "milestone": "0.72.0",
           "contributors": [
@@ -23531,7 +23531,7 @@
         },
         {
           "pr": "12605",
-          "title": "Convert emoji-emojione to main module structure",
+          "title": "Convert emoji-JoyPixels to main module structure",
           "userLogin": "MarcosSpessatto",
           "milestone": "0.72.0",
           "contributors": [
@@ -30273,7 +30273,7 @@
         },
         {
           "pr": "13807",
-          "title": "[IMPROVE] Upgrade EmojiOne to JoyPixels 4.5.0",
+          "title": "[IMPROVE] Upgrade JoyPixels to JoyPixels 4.5.0",
           "userLogin": "wreiske",
           "milestone": "1.1.0",
           "contributors": [
@@ -56918,7 +56918,7 @@
           "pr": "20359",
           "title": "[FIX] Custom emojis to override default",
           "userLogin": "aKn1ghtOut",
-          "description": "Due to the sequence of the imports and how the emojiRenderer prioritizes lists, the custom emojis could not override the emojione emojis. Making two small changes fixed the issue.\r\n\r\nWith the custom emoji for `:facepalm:` added, you can check out the result below:\r\n### Before\r\n![Screenshot from 2021-01-25 02-20-04](https://user-images.githubusercontent.com/38764067/105643088-dfb0e080-5eb3-11eb-8a00-582c53fbe9a4.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-25 02-18-58](https://user-images.githubusercontent.com/38764067/105643076-cdcf3d80-5eb3-11eb-84b8-5dbc4f1135df.png)",
+          "description": "Due to the sequence of the imports and how the emojiRenderer prioritizes lists, the custom emojis could not override the JoyPixels emojis. Making two small changes fixed the issue.\r\n\r\nWith the custom emoji for `:facepalm:` added, you can check out the result below:\r\n### Before\r\n![Screenshot from 2021-01-25 02-20-04](https://user-images.githubusercontent.com/38764067/105643088-dfb0e080-5eb3-11eb-8a00-582c53fbe9a4.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-25 02-18-58](https://user-images.githubusercontent.com/38764067/105643076-cdcf3d80-5eb3-11eb-84b8-5dbc4f1135df.png)",
           "contributors": [
             "aKn1ghtOut"
           ]
@@ -96196,7 +96196,7 @@
           "pr": "27184",
           "title": "[IMPROVE] Add message name container component to message name header and system message",
           "userLogin": "filipemarins",
-          "description": "Add `MessageNameContainer` wrapper to display `name` and `username` inline and separate them with a blank space.\r\n\r\nUpdate font size of system message:\r\n\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 51 58](https://user-images.githubusercontent.com/9275105/200626484-bfcf3eb2-ac36-4b6c-8158-b84bf93023bd.png)\r\n\r\n\r\nAfter:\r\n<img width=\"720\" alt=\"Screenshot 2022-11-08 at 10 56 10\" src=\"https://user-images.githubusercontent.com/9275105/200584230-2f8a63b9-137b-441e-9671-b4801688cac5.png\">\r\n\r\n\r\nAdd removed message variation to `ThreadMessageOrigin` component\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)\r\n\r\nAfter:\r\n<img width=\"185\" alt=\"Screenshot 2022-11-08 at 10 51 47\" src=\"https://user-images.githubusercontent.com/9275105/200582261-7e371e1a-adfd-47a0-8440-facd06e61b09.png\">",
+          "description": "Add `MessageNameContainer` wrapper to display `name` and `username` inline and separate them with a blank space.\r\n\r\nUpdate font size of system message:\r\n\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 51 58](https://user-images.githubusercontent.com/9275105/200626484-bfcf3eb2-ac36-4b6c-8158-b84bf93023bd.png)\r\n\r\n\r\nAfter:\r\n<img width=\"720\" alt=\"Screenshot 2022-11-08 at 10 56 10\" src=\"https://user-images.githubusercontent.com/9275105/200584230-2f8a63b9-137b-441e-9671-b4801688cac5.png\">\r\n\r\n\r\nAdd removed message variation to `ThreadMessageOrigin` component\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)\r\n\r\nAfter:\r\n<img width=\"185\" alt=\"Screenshot 2022-11-08 at 10 51 47\" src=\"https://user-images.githubusercontent.com/9275105/200582261-7e371jpa-adfd-47a0-8440-facd06e61b09.png\">",
           "milestone": "5.4.0",
           "contributors": [
             "filipemarins",
@@ -102615,7 +102615,7 @@
         "pr": "27184",
         "title": "[IMPROVE] Add message name container component to message name header and system message",
         "userLogin": "filipemarins",
-        "description": "Add `MessageNameContainer` wrapper to display `name` and `username` inline and separate them with a blank space.\r\n\r\nUpdate font size of system message:\r\n\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 51 58](https://user-images.githubusercontent.com/9275105/200626484-bfcf3eb2-ac36-4b6c-8158-b84bf93023bd.png)\r\n\r\n\r\nAfter:\r\n<img width=\"720\" alt=\"Screenshot 2022-11-08 at 10 56 10\" src=\"https://user-images.githubusercontent.com/9275105/200584230-2f8a63b9-137b-441e-9671-b4801688cac5.png\">\r\n\r\n\r\nAdd removed message variation to `ThreadMessageOrigin` component\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)\r\n\r\nAfter:\r\n<img width=\"185\" alt=\"Screenshot 2022-11-08 at 10 51 47\" src=\"https://user-images.githubusercontent.com/9275105/200582261-7e371e1a-adfd-47a0-8440-facd06e61b09.png\">",
+        "description": "Add `MessageNameContainer` wrapper to display `name` and `username` inline and separate them with a blank space.\r\n\r\nUpdate font size of system message:\r\n\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 51 58](https://user-images.githubusercontent.com/9275105/200626484-bfcf3eb2-ac36-4b6c-8158-b84bf93023bd.png)\r\n\r\n\r\nAfter:\r\n<img width=\"720\" alt=\"Screenshot 2022-11-08 at 10 56 10\" src=\"https://user-images.githubusercontent.com/9275105/200584230-2f8a63b9-137b-441e-9671-b4801688cac5.png\">\r\n\r\n\r\nAdd removed message variation to `ThreadMessageOrigin` component\r\nBefore:\r\n![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)\r\n\r\nAfter:\r\n<img width=\"185\" alt=\"Screenshot 2022-11-08 at 10 51 47\" src=\"https://user-images.githubusercontent.com/9275105/200582261-7e371jpa-adfd-47a0-8440-facd06e61b09.png\">",
         "milestone": "5.4.0",
         "contributors": [
           "filipemarins",

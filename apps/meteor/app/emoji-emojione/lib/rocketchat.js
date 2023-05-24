@@ -1,171 +1,171 @@
-import emojione from 'emojione';
+import JoyPixels from 'JoyPixels';
 import mem from 'mem';
 
-import { emojioneRender, emojioneRenderFromShort } from './emojioneRender';
+import { JoyPixelsRender, JoyPixelsRenderFromShort } from './JoyPixelsRender';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
-// TODO remove fix below when issue is solved: https://github.com/joypixels/emojione/issues/617
+// TODO remove fix below when issue is solved: https://github.com/joypixels/JoyPixels/issues/617
 
 // add missing emojis not provided by JS object, but included on emoji.json
-emojione.shortnames +=
+JoyPixels.shortnames +=
 	'|:tm:|:copyright:|:registered:|:digit_zero:|:digit_one:|:digit_two:|:digit_three:|:digit_four:|:digit_five:|:digit_six:|:digit_seven:|:digit_eight:|:digit_nine:|:pound_symbol:|:asterisk_symbol:';
-emojione.regShortNames = new RegExp(
-	`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojione.shortnames})`,
+JoyPixels.regShortNames = new RegExp(
+	`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${JoyPixels.shortnames})`,
 	'gi',
 );
 
-emojione.emojioneList[':tm:'] = {
+JoyPixels.JoyPixelsList[':tm:'] = {
 	uc_base: '2122',
 	uc_output: '2122-fe0f',
 	uc_match: '2122-fe0f',
 	uc_greedy: '2122-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':copyright:'] = {
+JoyPixels.JoyPixelsList[':copyright:'] = {
 	uc_base: '00a9',
 	uc_output: '00a9-f0ef',
 	uc_match: '00a9-fe0f',
 	uc_greedy: '00a9-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':registered:'] = {
+JoyPixels.JoyPixelsList[':registered:'] = {
 	uc_base: '00ae',
 	uc_output: '00ae-fe0f',
 	uc_match: '00ae-fe0f',
 	uc_greedy: '00ae-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_zero:'] = {
+JoyPixels.JoyPixelsList[':digit_zero:'] = {
 	uc_base: '0030',
 	uc_output: '0030-fe0f',
 	uc_match: '0030-fe0f',
 	uc_greedy: '0030-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_one:'] = {
+JoyPixels.JoyPixelsList[':digit_one:'] = {
 	uc_base: '0031',
 	uc_output: '0031-fe0f',
 	uc_match: '0031-fe0f',
 	uc_greedy: '0031-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_two:'] = {
+JoyPixels.JoyPixelsList[':digit_two:'] = {
 	uc_base: '0032',
 	uc_output: '0032-fe0f',
 	uc_match: '0032-fe0f',
 	uc_greedy: '0032-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_three:'] = {
+JoyPixels.JoyPixelsList[':digit_three:'] = {
 	uc_base: '0033',
 	uc_output: '0033-fe0f',
 	uc_match: '0033-fe0f',
 	uc_greedy: '0033-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_four:'] = {
+JoyPixels.JoyPixelsList[':digit_four:'] = {
 	uc_base: '0034',
 	uc_output: '0034-fe0f',
 	uc_match: '0034-fe0f',
 	uc_greedy: '0034-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_five:'] = {
+JoyPixels.JoyPixelsList[':digit_five:'] = {
 	uc_base: '0035',
 	uc_output: '0035-fe0f',
 	uc_match: '0035-fe0f',
 	uc_greedy: '0035-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_six:'] = {
+JoyPixels.JoyPixelsList[':digit_six:'] = {
 	uc_base: '0036',
 	uc_output: '0036-fe0f',
 	uc_match: '0036-fe0f',
 	uc_greedy: '0036-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_seven:'] = {
+JoyPixels.JoyPixelsList[':digit_seven:'] = {
 	uc_base: '0037',
 	uc_output: '0037-fe0f',
 	uc_match: '0037-fe0f',
 	uc_greedy: '0037-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_eight:'] = {
+JoyPixels.JoyPixelsList[':digit_eight:'] = {
 	uc_base: '0038',
 	uc_output: '0038-fe0f',
 	uc_match: '0038-fe0f',
 	uc_greedy: '0038-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':digit_nine:'] = {
+JoyPixels.JoyPixelsList[':digit_nine:'] = {
 	uc_base: '0039',
 	uc_output: '0039-fe0f',
 	uc_match: '0039-fe0f',
 	uc_greedy: '0039-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':pound_symbol:'] = {
+JoyPixels.JoyPixelsList[':pound_symbol:'] = {
 	uc_base: '0023',
 	uc_output: '0023-fe0f',
 	uc_match: '0023-fe0f',
 	uc_greedy: '0023-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 
-emojione.emojioneList[':asterisk_symbol:'] = {
+JoyPixels.JoyPixelsList[':asterisk_symbol:'] = {
 	uc_base: '002a',
 	uc_output: '002a-fe0f',
 	uc_match: '002a-fe0f',
 	uc_greedy: '002a-fe0f',
 	shortnames: [],
 	category: 'symbols',
-	emojiPackage: 'emojione',
+	emojiPackage: 'JoyPixels',
 };
 // end fix
 
-// fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
+// fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/JoyPixels/blob/4.5.0/lib/js/joypixels.min.js#L249
 (function (ns) {
 	ns.shortnameConversionMap = mem(ns.shortnameConversionMap, { maxAge: 1000 });
 
@@ -180,12 +180,12 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			}
 
 			// map shortname to parent
-			if (!ns.emojioneList[shortname]) {
-				for (const emoji in ns.emojioneList) {
-					if (!ns.emojioneList.hasOwnProperty(emoji) || emoji === '') {
+			if (!ns.JoyPixelsList[shortname]) {
+				for (const emoji in ns.JoyPixelsList) {
+					if (!ns.JoyPixelsList.hasOwnProperty(emoji) || emoji === '') {
 						continue;
 					}
-					if (ns.emojioneList[emoji].shortnames.indexOf(shortname) === -1) {
+					if (ns.JoyPixelsList[emoji].shortnames.indexOf(shortname) === -1) {
 						continue;
 					}
 					shortname = emoji;
@@ -193,9 +193,9 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 				}
 			}
 
-			const unicode = ns.emojioneList[shortname].uc_output;
-			const fname = ns.emojioneList[shortname].uc_base;
-			const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+			const unicode = ns.JoyPixelsList[shortname].uc_output;
+			const fname = ns.JoyPixelsList[shortname].uc_base;
+			const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.JoyPixelsList[shortname].category;
 			const title = ns.imageTitleTag ? `title="${shortname}"` : '';
 			// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 			// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
@@ -205,9 +205,9 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : shortname;
 
 			if (ns.sprites) {
-				return `<span class="emojione emojione-${category} _${fname}" ${title}>${alt}</span>`;
+				return `<span class="JoyPixels JoyPixels-${category} _${fname}" ${title}>${alt}</span>`;
 			}
-			return `<img class="emojione" alt="${alt}" ${title} src="${ePath}${fname}${ns.fileExtension}"/>`;
+			return `<img class="JoyPixels" alt="${alt}" ${title} src="${ePath}${fname}${ns.fileExtension}"/>`;
 		},
 		{ maxAge: 1000 },
 	);
@@ -224,7 +224,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			m3 = ns.unescapeHTML(m3);
 			const unicode = ns.asciiList[m3];
 			const shortname = mappedUnicode[unicode];
-			const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+			const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.JoyPixelsList[shortname].category;
 			const title = ns.imageTitleTag ? `title="${ns.escapeHTML(m3)}"` : '';
 			// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 			// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
@@ -234,9 +234,9 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : ns.escapeHTML(m3);
 
 			if (ns.sprites) {
-				return `${m2}<span class="emojione emojione-${category} _${unicode}"  ${title}>${alt}</span>`;
+				return `${m2}<span class="JoyPixels JoyPixels-${category} _${unicode}"  ${title}>${alt}</span>`;
 			}
-			return `${m2}<img class="emojione" alt="${alt}" ${title} src="${ePath}${unicode}${ns.fileExtension}"/>`;
+			return `${m2}<img class="JoyPixels" alt="${alt}" ${title} src="${ePath}${unicode}${ns.fileExtension}"/>`;
 		},
 		{ maxAge: 1000, cacheKey: JSON.stringify },
 	);
@@ -254,16 +254,16 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 
 		return str;
 	};
-})(emojione);
+})(JoyPixels);
 
 export function getEmojiConfig() {
 	return {
-		emojione,
+		JoyPixels,
 		emojisByCategory,
 		emojiCategories,
 		toneList,
-		render: emojioneRender,
-		renderPicker: emojioneRenderFromShort,
+		render: JoyPixelsRender,
+		renderPicker: JoyPixelsRenderFromShort,
 		sprites: true,
 	};
 }

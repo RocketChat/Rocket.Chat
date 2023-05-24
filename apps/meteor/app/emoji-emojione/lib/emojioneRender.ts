@@ -1,9 +1,9 @@
-import emojione from 'emojione';
+import JoyPixels from 'JoyPixels';
 
-export function emojioneRender(message: string): string {
-	return emojione.toImage(message);
+export function JoyPixelsRender(message: string): string {
+	return JoyPixels.toImage(message);
 }
 
-export function emojioneRenderFromShort(message: string): string {
-	return emojione.shortnameToImage(message);
+export function JoyPixelsRenderFromShort(message: string): string {
+	return JoyPixels.shortnameToImage(message);
 }

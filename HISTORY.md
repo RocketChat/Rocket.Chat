@@ -15,10 +15,14 @@
 
 - auto link custom domain ([#28501](https://github.com/RocketChat/Rocket.Chat/pull/28501))
 
-  **Changes:**  
-  - Auto Link Custom Domain new setting under Message group  path: `/admin/settings/Message`  
-  - New translation keys for English  
-  - Adding types to message-parser `Options`  
+  **Changes:**
+  
+  - Auto Link Custom Domain new setting under Message group  path: `/admin/settings/Message`
+  
+  - New translation keys for English
+  
+  - Adding types to message-parser `Options`
+  
   - New hook `useAutoLinkDomains` to get the setting and return an array of domains
 
   **Current:** 
@@ -260,8 +264,10 @@
 
 - Invalid JSON in Custom Translations setting crashes the UI ([#28600](https://github.com/RocketChat/Rocket.Chat/pull/28600))
 
-  - Check if JSON code settings (with `type: code` and `code: application/json`) are valid before saving, or throw an error otherwise;  
-  - Dismiss custom settings when the custom translations JSON provided is invalid (instead of throwing an error and crashing the UI);  
+  - Check if JSON code settings (with `type: code` and `code: application/json`) are valid before saving, or throw an error otherwise;
+  
+  - Dismiss custom settings when the custom translations JSON provided is invalid (instead of throwing an error and crashing the UI);
+  
   - Fix the Custom Translations setting desciption so that the example is shown as a code snippet.
 
 - Leader Bar presence status alignment ([#28793](https://github.com/RocketChat/Rocket.Chat/pull/28793))
@@ -299,11 +305,16 @@
 
   The `MessageBoxReplies` component was not displaying the attachments previews in the correct way, it was using the `DefaultAttachment` instead.
 
-  To accomplish the expected behavior I had to do the following **changes**:  
-  - Edit the `MessageBoxReplies` to add a `collapsed` prop to the attachments to always start as collapsed  
-  - Add a new prop to the `MessageCollapsible` component to control the preview attachments in `MessageBoxReplies` to always start as collapsed  
-  - Edit the Attachment components to read the `collapsed` value and send it thought   
-  - Edited the `ShareMessageModal` to display the correct attachment and its previews  
+  To accomplish the expected behavior I had to do the following **changes**:
+  
+  - Edit the `MessageBoxReplies` to add a `collapsed` prop to the attachments to always start as collapsed
+  
+  - Add a new prop to the `MessageCollapsible` component to control the preview attachments in `MessageBoxReplies` to always start as collapsed
+  
+  - Edit the Attachment components to read the `collapsed` value and send it thought 
+  
+  - Edited the `ShareMessageModal` to display the correct attachment and its previews
+  
   - Edited the `useCollapse` hook prop as optional because was not making sense to put it as mandatory since it was getting the value from the user preferences as default and for the `MessageCollapsible` work in a dynamic way
 
   **Current Behavior:**
@@ -456,8 +467,10 @@
   The thread preview message was not displaying emojis and when the parent message was a quoted message it was not displaying the correct message.
 
   To fix the issues I did:
-  
-  - Emoji Issue:  I used the `<GazzodownText /> ` component to call `<PreviewMarkup />` conditionally when passed the prop `preview`. The  `<GazzodownText /> ` component it's necessary because it has the `MarkupInteractionContext.Provider` that has the context necessary to display the emoji and other elements  
+
+  
+  - Emoji Issue:  I used the `<GazzodownText /> ` component to call `<PreviewMarkup />` conditionally when passed the prop `preview`. The  `<GazzodownText /> ` component it's necessary because it has the `MarkupInteractionContext.Provider` that has the context necessary to display the emoji and other elements
+  
   - Empty parent message: Since the parent message it's a quote, the initial string from a quote message it's a link that references the original message followed by `\n` break line. I added a validation to check if it's a quoteAttachment message, if it is I remove the first markdown token responsible by the link
 
   **Before:**
@@ -480,8 +493,10 @@
 
   Sometimes when the user focuses on the window that is running the Rocket.Chat some queries are triggered again without a reason, to prevent this to happen I added a option to `useQuery` hook, `refetchOnWindowFocus: false`
 
-  **Queries impacted:**  
-  - useThreadMainMessageQuery.ts   - called when has to get the thread main message, for e.g in thread preview reply  
+  **Queries impacted:**
+  
+  - useThreadMainMessageQuery.ts   - called when has to get the thread main message, for e.g in thread preview reply
+  
   - useHasLicenseModule.ts   - called when the client starts to show/hide certain areas that are restricted by licenses, this don't change very often
 
 - use raw image url ([#28861](https://github.com/RocketChat/Rocket.Chat/pull/28861) by [@avelino](https://github.com/avelino))
@@ -619,8 +634,10 @@
 
 - Change price filters for Enterprise apps ([#27553](https://github.com/RocketChat/Rocket.Chat/pull/27553))
 
-  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.  
-  * Created a new "Enterprise" pricing filter in the _Apps_ page.  
+  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.
+  
+  * Created a new "Enterprise" pricing filter in the _Apps_ page.
+  
   * Removed the "Free" tag next to the _install_ button for enterprise apps, on the _App Info_ page.
 
   ![New-version](https://user-images.githubusercontent.com/84182706/208493531-11fc0153-2c94-4fab-baac-e359ba89ed72.gif)
@@ -853,9 +870,12 @@
 
 - Migrate SMS to Service ([#28123](https://github.com/RocketChat/Rocket.Chat/pull/28123))
 
-  - Moves everything related to SMS on Omnichannel to a service (Integrations)  
-  - Service left with broad name as it will contain more "integrations" (webhooks, for example)  
-  - Removed /app/sms folder  
+  - Moves everything related to SMS on Omnichannel to a service (Integrations)
+  
+  - Service left with broad name as it will contain more "integrations" (webhooks, for example)
+  
+  - Removed /app/sms folder
+  
   - Moved some files to typescript
 
 - Miscelaneous ([#28732](https://github.com/RocketChat/Rocket.Chat/pull/28732))
@@ -1008,7 +1028,8 @@
 
 - regression: name search not working in moderation console ([#29209](https://github.com/RocketChat/Rocket.Chat/pull/29209))
 
-  - Added back the search by-name feature  
+  - Added back the search by-name feature
+  
   - Fixed an incorrect Mongo filter key
 
 - regression: Opening DM through UserCard takes too long. ([#29190](https://github.com/RocketChat/Rocket.Chat/pull/29190))
@@ -3579,7 +3600,7 @@
   ![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)
 
   After:
-  <img width="185" alt="Screenshot 2022-11-08 at 10 51 47" src="https://user-images.githubusercontent.com/9275105/200582261-7e371e1a-adfd-47a0-8440-facd06e61b09.png">
+  <img width="185" alt="Screenshot 2022-11-08 at 10 51 47" src="https://user-images.githubusercontent.com/9275105/200582261-7e371jpa-adfd-47a0-8440-facd06e61b09.png">
 
 - Add searchTerm support for livechat/rid/messages API ([#27214](https://github.com/RocketChat/Rocket.Chat/pull/27214))
 
@@ -18608,7 +18629,7 @@
   Avoids an `undefined` value to break a rendered attachment.
 
 - Correct direction for admin mapview text ([#20897](https://github.com/RocketChat/Rocket.Chat/pull/20897) by [@aKn1ghtOut](https://github.com/aKn1ghtOut))
-
+JoyPixels
   ![Screenshot from 2021-02-25 02-49-21](https://user-images.githubusercontent.com/38764067/109068512-f8602080-7715-11eb-8e22-d610f9d046d8.png)
   ![Screenshot from 2021-02-25 02-49-46](https://user-images.githubusercontent.com/38764067/109068516-fa29e400-7715-11eb-9119-1c79abce278f.png)
   ![Screenshot from 2021-02-25 02-49-57](https://user-images.githubusercontent.com/38764067/109068519-fbf3a780-7715-11eb-8b3d-0dc32f898725.png)
@@ -27040,7 +27061,7 @@
 
 - Setting option to mark as containing a secret/password ([#10273](https://github.com/RocketChat/Rocket.Chat/pull/10273))
 
-### 🚀 Improvements
+### 🚀 ImpJoyPixelss
 
 
 - Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface ([#14431](https://github.com/RocketChat/Rocket.Chat/pull/14431))
@@ -28908,7 +28929,7 @@
 -  Convert rocketchat-mentions-flextab to main module structure ([#12757](https://github.com/RocketChat/Rocket.Chat/pull/12757))
 
 -  Convert rocketchat-reactions to main module structure ([#12888](https://github.com/RocketChat/Rocket.Chat/pull/12888))
-
+JoyPixels
 -  Convert rocketchat-ui-account to main module structure ([#12842](https://github.com/RocketChat/Rocket.Chat/pull/12842))
 
 -  Convert rocketchat-ui-flextab to main module structure ([#12859](https://github.com/RocketChat/Rocket.Chat/pull/12859))
@@ -29469,7 +29490,7 @@
 - Wrong test case for `users.setAvatar` endpoint ([#12539](https://github.com/RocketChat/Rocket.Chat/pull/12539))
 
 <details>
-<summary>🔍 Minor changes</summary>
+<summary>🔍 MinoJoyPixelss</summary>
 
 
 -  Convert rocketchat-channel-settings to main module structure ([#12594](https://github.com/RocketChat/Rocket.Chat/pull/12594))
@@ -33266,7 +33287,7 @@
 - Wrong file name when upload to AWS S3 ([#8296](https://github.com/RocketChat/Rocket.Chat/pull/8296))
 
 - Wrong message when reseting password and 2FA is enabled ([#8489](https://github.com/RocketChat/Rocket.Chat/pull/8489))
-
+JoyPixels
 - Wrong room counter name ([#9013](https://github.com/RocketChat/Rocket.Chat/pull/9013) by [@karlprieb](https://github.com/karlprieb))
 
 - Xenforo [BD]API for 'user.user_id; instead of 'id' ([#8968](https://github.com/RocketChat/Rocket.Chat/pull/8968) by [@wesnspace](https://github.com/wesnspace))
@@ -34379,7 +34400,7 @@
 - Fix Private Channel List Submit ([#7432](https://github.com/RocketChat/Rocket.Chat/pull/7432))
 
 - Fix room load on first hit ([#7687](https://github.com/RocketChat/Rocket.Chat/pull/7687))
-
+JoyPixels
 - Fix Secret Url ([#7321](https://github.com/RocketChat/Rocket.Chat/pull/7321))
 
 - Fix Unread Bar Disappearing ([#7403](https://github.com/RocketChat/Rocket.Chat/pull/7403))

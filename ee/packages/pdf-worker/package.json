@@ -14,7 +14,7 @@
 		"@storybook/testing-library": "~0.0.13",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~13.4.0",
-		"@types/emojione": "^2.2.6",
+		"@types/JoyPixels": "^2.2.6",
 		"@types/jest": "~29.5.0",
 		"@types/react-dom": "^18",
 		"@types/testing-library__jest-dom": "~5.14.5",

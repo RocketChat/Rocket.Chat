@@ -12,7 +12,7 @@ import '../app/custom-sounds/client';
 import '../app/dolphin/client';
 import '../app/drupal/client';
 import '../app/emoji/client';
-import '../app/emoji-emojione/client';
+import '../app/emoji-JoyPixels/client';
 import '../app/emoji-custom/client';
 import '../app/file-upload/client';
 import '../app/github-enterprise/client';

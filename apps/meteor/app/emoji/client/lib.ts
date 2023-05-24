@@ -1,4 +1,4 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import { JoyPixelsRender } from '../../emoji-JoyPixels/lib/JoyPixelsRender';
 import type { EmojiPackages } from '../lib/rocketchat';
 
 export const emoji: EmojiPackages = {
@@ -10,7 +10,7 @@ export const emoji: EmojiPackages = {
 				recent: [],
 			},
 			toneList: {},
-			render: emojioneRender,
+			render: JoyPixelsRender,
 			renderPicker(emojiToRender) {
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
 				if (!correctPackage) {
