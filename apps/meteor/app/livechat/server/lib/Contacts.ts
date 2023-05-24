@@ -84,11 +84,17 @@ export const Contacts = {
 				token,
 				name,
 				livechatData,
+				// if phone has some value, set
 				...(phone && { phone: [{ phoneNumber: phone }] }),
 				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
 				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
 			},
 			...(!contactManager?.username && { $unset: { contactManager: 1 } }),
+			$unset: {
+				// if field is explicitely set to empty string, remove
+				...(phone === '' && { phone: 1 }),
+				...(visitorEmail === '' && { visitorEmails: 1 }),
+			},
 		};
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
