@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { GenericResourceUsage } from '../../../../../../client/components/GenericResourceUsage/GenericResourceUsage';
+import { GenericResourceUsage } from '../../../../../../client/components/GenericResourceUsage';
 
 type SeatsCapUsageProps = {
 	limit: number;

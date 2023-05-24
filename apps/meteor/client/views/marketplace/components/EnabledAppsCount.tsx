@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { GenericResourceUsage } from '../../../components/GenericResourceUsage/GenericResourceUsage';
+import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
 const EnabledAppsCount = ({
 	variant,

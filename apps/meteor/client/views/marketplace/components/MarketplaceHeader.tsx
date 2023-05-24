@@ -3,7 +3,7 @@ import { usePermission, useRoute, useRouteParameter, useSetModal, useTranslation
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage/GenericResourceUsageSkeleton';
+import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
 import Page from '../../../components/Page';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';

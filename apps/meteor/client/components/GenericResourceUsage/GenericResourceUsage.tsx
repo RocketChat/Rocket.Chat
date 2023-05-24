@@ -2,7 +2,7 @@ import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import React from 'react';
 
-export const GenericResourceUsage = ({
+const GenericResourceUsage = ({
 	title,
 	value,
 	max,
@@ -33,3 +33,5 @@ export const GenericResourceUsage = ({
 		</Box>
 	);
 };
+
+export default GenericResourceUsage;
