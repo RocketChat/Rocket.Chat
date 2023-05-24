@@ -84,4 +84,8 @@ export interface RestClientInterface {
 	use(middleware: Middleware<RestClientInterface['send']>): void;
 
 	send(endpoint: string, method: string, options?: Omit<RequestInit, 'method'>): Promise<Response>;
+
+	handleTwoFactorChallenge(
+		cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string; invalidAttempt?: boolean }) => Promise<string>,
+	): void;
 }

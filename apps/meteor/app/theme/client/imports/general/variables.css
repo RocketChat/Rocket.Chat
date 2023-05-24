@@ -73,6 +73,7 @@
 	--success-color: #2de0a5;
 	--selection-color: #02acec;
 	--attention-color: #9c27b0;
+	--transparent-darker: rgba(0, 0, 0, 0.5);
 
 	/* #endregion */
 
