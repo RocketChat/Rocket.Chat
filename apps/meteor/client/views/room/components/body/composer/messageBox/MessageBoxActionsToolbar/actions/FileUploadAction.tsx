@@ -32,11 +32,6 @@ const FileUploadAction = ({ collapsed, chatContext, disabled, ...props }: FileUp
 
 	const handleUpload = () => {
 		fileInputRef.current?.click();
-
-		// Simple hack for iOS aka codegueira
-		if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-			fileInputRef.current?.click();
-		}
 	};
 
 	if (collapsed) {
