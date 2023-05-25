@@ -83,15 +83,22 @@ const AppsProvider: FC = ({ children }) => {
 		return unregisterListeners;
 	}, [invalidateAppsCountQuery, isAdminUser, queryClient]);
 
-	const marketplace = useQuery(['apps-marketplace', isAdminUser], () => Apps.getAppsFromMarketplace(isAdminUser ? 'true' : 'false'));
+	const marketplace = useQuery(['apps-marketplace', isAdminUser], () => Apps.getAppsFromMarketplace(isAdminUser ? 'true' : 'false'), {
+		staleTime: Infinity,
+		refetchOnWindowFocus: false,
+		keepPreviousData: true,
+	});
 
-	const instance = useQuery(['apps-instance', isAdminUser], () =>
-		Apps.getInstalledApps().then((result: App[]) =>
-			result.map((current: App) => ({
-				...current,
-				installed: true,
-			})),
-		),
+	const instance = useQuery(
+		['apps-instance', isAdminUser],
+		() =>
+			Apps.getInstalledApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+				})),
+			),
+		{ staleTime: Infinity, refetchOnWindowFocus: false, keepPreviousData: true },
 	);
 
 	const store = useQuery(
