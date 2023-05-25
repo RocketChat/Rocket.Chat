@@ -49,18 +49,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			{
 				onError: (error: any) => {
 					if ([error.error, error.errorType].includes('error-invalid-email')) {
-						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
+						setError('email', { type: 'invalid-email', message: t('registration_component_form_invalidEmail') });
 					}
 					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
+						setError('username', { type: 'user-already-exists', message: t('registration_component_form_usernameAlreadyExists') });
 					}
 
 					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
+						setError('email', { type: 'email-already-exists', message: t('registration_component_form_emailAlreadyExists') });
 					}
 
 					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
+						setError('username', { type: 'username-already-exists', message: t('registration_component_form_userAlreadyExist') });
 					}
 				},
 			},
@@ -74,66 +74,66 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
 			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
+				<Form.Title id={formLabelId}>{t('registration_component_form_createAnAccount')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
 					<Field>
 						<Field.Label htmlFor='name'>
-							{requireNameForRegister ? `${t('registration.component.form.name')}*` : t('registration.component.form.nameOptional')}
+							{requireNameForRegister ? `${t('registration_component_form_name')}*` : t('registration_component_form_nameOptional')}
 						</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('name', {
 									required: requireNameForRegister,
 								})}
-								error={errors.name && t('registration.component.form.requiredField')}
+								error={errors.name && t('registration_component_form_requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								id='name'
 							/>
 						</Field.Row>
-						{errors.name && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.name && <Field.Error>{t('registration_component_form_requiredField')}</Field.Error>}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='email'>{t('registration.component.form.email')}*</Field.Label>
+						<Field.Label htmlFor='email'>{t('registration_component_form_email')}*</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('email', {
 									required: true,
 								})}
-								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.requiredField')}
+								placeholder={usernameOrEmailPlaceholder || t('registration_component_form_emailPlaceholder')}
+								error={errors.email && t('registration_component_form_requiredField')}
 								name='email'
 								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'
 							/>
 						</Field.Row>
-						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.email && <Field.Error>{errors.email.message || t('registration_component_form_requiredField')}</Field.Error>}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='username'>{t('registration.component.form.username')}*</Field.Label>
+						<Field.Label htmlFor='username'>{t('registration_component_form_username')}*</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('username', {
 									required: true,
 								})}
-								error={errors.username && (errors.username.message || t('registration.component.form.requiredField'))}
+								error={errors.username && (errors.username.message || t('registration_component_form_requiredField'))}
 								aria-invalid={errors.username ? 'true' : undefined}
 								id='username'
 								placeholder='jon.doe'
 							/>
 						</Field.Row>
 						{errors.username?.message && <Field.Error>{errors.username.message}</Field.Error>}
-						{errors.username?.type === 'required' && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.username?.type === 'required' && <Field.Error>{t('registration_component_form_requiredField')}</Field.Error>}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='password'>{t('registration.component.form.password')}*</Field.Label>
+						<Field.Label htmlFor='password'>{t('registration_component_form_password')}*</Field.Label>
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
-									required: t('registration.component.form.requiredField'),
+									required: t('registration_component_form_requiredField'),
 								})}
-								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
+								error={errors.password && (errors.password?.message || t('registration_component_form_requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
 								placeholder={passwordPlaceholder}
@@ -143,7 +143,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('registration.component.form.confirmPassword')}*</Field.Label>
+							<Field.Label htmlFor='passwordConfirmation'>{t('registration_component_form_confirmPassword')}*</Field.Label>
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -151,34 +151,34 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 										deps: ['password'],
 										validate: (val: string) => watch('password') === val,
 									})}
-									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
+									error={errors.passwordConfirmation?.type === 'validate' ? t('registration_component_form_invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
 									placeholder={passwordConfirmationPlaceholder}
 								/>
 							</Field.Row>
 							{errors.passwordConfirmation?.type === 'validate' && (
-								<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
+								<Field.Error>{t('registration_component_form_invalidConfirmPass')}</Field.Error>
 							)}
 							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+								<Field.Error>{t('registration_component_form_requiredField')}</Field.Error>
 							)}
 						</Field>
 					)}
 					{manuallyApproveNewUsersRequired && (
 						<Field>
-							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>
+							<Field.Label htmlFor='reason'>{t('registration_component_form_reasonToJoin')}*</Field.Label>
 							<Field.Row>
 								<TextAreaInput
 									{...register('reason', {
 										required: true,
 									})}
-									error={errors.reason && t('registration.component.form.requiredField')}
+									error={errors.reason && t('registration_component_form_requiredField')}
 									aria-invalid={errors.reason ? 'true' : undefined}
 									id='reason'
 								/>
 							</Field.Row>
-							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+							{errors.reason && <Field.Error>{t('registration_component_form_requiredField')}</Field.Error>}
 						</Field>
 					)}
 				</FieldGroup>
@@ -186,7 +186,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' disabled={registerUser.isLoading} primary>
-						{t('registration.component.form.joinYourTeam')}
+						{t('registration_component_form_joinYourTeam')}
 					</Button>
 				</ButtonGroup>
 				<ActionLink
@@ -194,7 +194,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						setLoginRoute('login');
 					}}
 				>
-					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
+					<Trans i18nKey='registration_page_register_back'>Back to Login</Trans>
 				</ActionLink>
 			</Form.Footer>
 		</Form>

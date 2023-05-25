@@ -30,35 +30,35 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('registration.component.resetPassword')}</Form.Title>
+				<Form.Title>{t('registration_component_resetPassword')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='email'>{t('registration.component.form.email')}</Field.Label>
+						<Field.Label htmlFor='email'>{t('registration_component_form_email')}</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('email', {
 									required: true,
 									pattern: {
 										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-										message: t('registration.page.resetPassword.errors.invalidEmail'),
+										message: t('registration_page_resetPassword_errors_invalidEmail'),
 									},
 								})}
-								error={errors.email && (errors.email?.message || t('registration.component.form.requiredField'))}
+								error={errors.email && (errors.email?.message || t('registration_component_form_requiredField'))}
 								aria-invalid={Boolean(errors.email)}
-								placeholder={t('registration.component.form.emailPlaceholder')}
+								placeholder={t('registration_component_form_emailPlaceholder')}
 								name='email'
 								id='email'
 							/>
 						</Field.Row>
-						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.email && <Field.Error>{errors.email.message || t('registration_component_form_requiredField')}</Field.Error>}
 					</Field>
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
 						<Callout role='status' mbs='x24' icon='mail'>
-							{t('registration.page.resetPassword.sent')}
+							{t('registration_page_resetPassword_sent')}
 						</Callout>
 					</FieldGroup>
 				)}
@@ -66,7 +66,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' disabled={isSubmitting} primary>
-						{t('registration.page.resetPassword.sendInstructions')}
+						{t('registration_page_resetPassword_sendInstructions')}
 					</Button>
 				</ButtonGroup>
 
@@ -75,7 +75,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						setLoginRoute('login');
 					}}
 				>
-					{t('registration.page.register.back')}
+					{t('registration_page_register_back')}
 				</ActionLink>
 			</Form.Footer>
 		</Form>
