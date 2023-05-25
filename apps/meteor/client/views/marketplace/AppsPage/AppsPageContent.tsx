@@ -23,7 +23,7 @@ import PrivateEmptyState from './PrivateEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
-	const { marketplaceApps, installedApps, reload } = useAppsResult();
+	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
@@ -35,7 +35,6 @@ const AppsPageContent = (): ReactElement => {
 
 	const context = useRouteParameter('context');
 
-	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
 	const isRequested = context === 'requested';
 
@@ -74,12 +73,17 @@ const AppsPageContent = (): ReactElement => {
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const getAppsData = useCallback((): appsDataType => {
-		if (isMarketplace || isEnterprise || isRequested) {
-			return marketplaceApps;
+		switch (context) {
+			case 'enterprise':
+			case 'explore':
+			case 'requested':
+				return marketplaceApps;
+			case 'private':
+				return privateApps;
+			default:
+				return installedApps;
 		}
-
-		return installedApps;
-	}, [isMarketplace, isEnterprise, isRequested, installedApps, marketplaceApps]);
+	}, [context, marketplaceApps, installedApps, privateApps]);
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({

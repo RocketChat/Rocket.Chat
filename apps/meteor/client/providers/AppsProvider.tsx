@@ -108,7 +108,7 @@ const AppsProvider: FC = ({ children }) => {
 
 			const marketplaceApps: App[] = [];
 			const installedApps: App[] = [];
-
+			const privateApps: App[] = [];
 			const clonedData = [...instance.data];
 
 			sortByName(marketplace.data).forEach((app) => {
@@ -129,13 +129,20 @@ const AppsProvider: FC = ({ children }) => {
 					marketplaceVersion: app.version,
 				};
 
-				if (installedApp && !installedApp.private) {
+				if (installedApp) {
 					installedApps.push(record);
 				}
+
 				marketplaceApps.push(record);
 			});
 
-			return [marketplaceApps, installedApps];
+			sortByName(clonedData).forEach((app) => {
+				if (app.private) {
+					privateApps.push(app);
+				}
+			});
+
+			return [marketplaceApps, installedApps, privateApps];
 		},
 		{
 			enabled: marketplace.isSuccess && instance.isSuccess && !instance.isRefetching,
@@ -154,6 +161,7 @@ const AppsProvider: FC = ({ children }) => {
 			value={{
 				installedApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[1] } },
 				marketplaceApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[0] } },
+				privateApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[2] } },
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
