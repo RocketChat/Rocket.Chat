@@ -5,10 +5,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../components/Contextualbar';
 import InfoPanel from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
-import VerticalBar from '../../../../components/VerticalBar';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../hooks/useActionSpread';
@@ -120,13 +126,12 @@ const TeamsInfo = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled' />
-				<VerticalBar.Text>{t('Teams_Info')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='info-circled' />
+				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent p='x24'>
 				<InfoPanel>
 					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={room} />
@@ -196,7 +201,7 @@ const TeamsInfo = ({
 						)}
 					</InfoPanel.Section>
 				</InfoPanel>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };
