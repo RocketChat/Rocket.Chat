@@ -3,7 +3,14 @@ import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+} from '../../../components/Contextualbar';
 import { useOutlookAuthentication } from '../useOutlookAuthentication';
 import OutlookSettingItem from './OutlookSettingItem';
 
@@ -50,12 +57,12 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='calendar' />
-				<VerticalBar.Text>{t('Outlook_calendar_settings')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
-			<VerticalBar.Content paddingInline={0} color='default'>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='calendar' />
+				<ContextualbarTitle>{t('Outlook_calendar_settings')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
+			<ContextualbarContent paddingInline={0} color='default'>
 				{calendarSettings.map((setting, index) => {
 					if (setting.id === 'authentication' && !setting.enabled) {
 						return;
@@ -63,12 +70,12 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 
 					return <OutlookSettingItem key={index} {...setting} />;
 				})}
-			</VerticalBar.Content>
-			<VerticalBar.Footer>
+			</ContextualbarContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onChangeRoute}>{t('Back_to_calendar')}</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

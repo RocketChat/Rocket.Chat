@@ -6,8 +6,16 @@ import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarSkeleton,
+} from '../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../components/VerticalBar';
 import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../useOutlookAuthentication';
@@ -62,40 +70,40 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	};
 
 	if (isLoading) {
-		return <VerticalBar.Skeleton />;
+		return <ContextualbarSkeleton />;
 	}
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='calendar' />
-				<VerticalBar.Text>{t('Outlook_calendar')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='calendar' />
+				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 
 			{canSync && !authEnabled && total === 0 && (
 				<>
-					<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
+					<ContextualbarContent paddingInline={0} ref={ref} color='default'>
 						<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
 							<States>
 								<StatesIcon name='user' />
 								<StatesTitle>{t('Log_in_to_sync')}</StatesTitle>
 							</States>
 						</Box>
-					</VerticalBar.Content>
-					<VerticalBar.Footer>
+					</ContextualbarContent>
+					<ContextualbarFooter>
 						<ButtonGroup mbs='x8' stretch>
 							<Button primary disabled={isSyncing} onClick={handleSync}>
 								{isSyncing ? t('Please_wait') : t('Login')}
 							</Button>
 						</ButtonGroup>
-					</VerticalBar.Footer>
+					</ContextualbarFooter>
 				</>
 			)}
 
 			{(authEnabled || (!authEnabled && total > 0)) && (
 				<>
-					<VerticalBar.Content paddingInline={0} ref={ref} color='default'>
+					<ContextualbarContent paddingInline={0} ref={ref} color='default'>
 						{(total === 0 || isError) && (
 							<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
 								{isError && (
@@ -128,8 +136,8 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 								/>
 							</Box>
 						)}
-					</VerticalBar.Content>
-					<VerticalBar.Footer>
+					</ContextualbarContent>
+					<ContextualbarFooter>
 						<ButtonGroup stretch>
 							<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
 							{outlookUrl && (
@@ -146,7 +154,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 								</Button>
 							</ButtonGroup>
 						)}
-					</VerticalBar.Footer>
+					</ContextualbarFooter>
 				</>
 			)}
 		</>
