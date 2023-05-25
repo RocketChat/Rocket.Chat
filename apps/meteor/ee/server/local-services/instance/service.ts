@@ -8,6 +8,7 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
+import { getTransporter } from './getTransporter';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
@@ -60,17 +61,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
-		const port = process.env.TCP_PORT ? String(process.env.TCP_PORT).trim() : 0;
-
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
-			transporter: {
-				type: 'TCP',
-				options: {
-					port,
-					udpDiscovery: false,
-				},
-			},
+			transporter: getTransporter(),
 		});
 
 		this.broker.createService({
