@@ -392,7 +392,7 @@ API.v1.addRoute(
 API.v1.addRoute(
 	'pw.getPolicy',
 	{
-		authRequired: true,
+		authRequired: false,
 	},
 	{
 		get() {

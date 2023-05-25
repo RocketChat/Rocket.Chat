@@ -1,11 +1,11 @@
 import { usePasswordPolicy } from './usePasswordPolicy';
 
-export const useVerifyPassword = (password: string) => {
+export const useVerifyPassword = (password: string | undefined) => {
 	const { data, isLoading } = usePasswordPolicy({});
 
 	if (isLoading) return;
 
-	if (!data?.enabled) return;
+	if (!data?.enabled || password === undefined) return;
 
 	const handleRepeatingChars = (maxRepeatingChars: number | undefined) => {
 		const repeatingCharsHash = {} as Record<string, number>;
@@ -34,7 +34,7 @@ export const useVerifyPassword = (password: string) => {
 		'get-password-policy-mustContainAtLeastOneSpecialCharacter': () => /[^A-Za-z0-9\s]/.test(password),
 	};
 
-	const passwordVerifications = {} as Record<string, boolean>;
+	const passwordVerifications = {} as Record<string, { isValid: boolean; limit: number | undefined }>;
 
 	data?.policy.forEach((currentPolicy) => {
 		if (!Array.isArray(currentPolicy)) return;
@@ -42,11 +42,17 @@ export const useVerifyPassword = (password: string) => {
 		if (currentPolicy[0] === 'get-password-policy-forbidRepeatingCharacters') return;
 
 		if (currentPolicy[1]) {
-			passwordVerifications[currentPolicy[0]] = passwordVerificationsTemplate[currentPolicy[0]](Object.values(currentPolicy[1])[0]);
+			passwordVerifications[currentPolicy[0]] = {
+				isValid: passwordVerificationsTemplate[currentPolicy[0]](Object.values(currentPolicy[1])[0]),
+				limit: Object.values(currentPolicy[1])[0],
+			};
 			return;
 		}
 
-		passwordVerifications[currentPolicy[0]] = passwordVerificationsTemplate[currentPolicy[0]]();
+		passwordVerifications[currentPolicy[0]] = {
+			isValid: passwordVerificationsTemplate[currentPolicy[0]](),
+			limit: undefined,
+		};
 	});
 
 	return passwordVerifications;

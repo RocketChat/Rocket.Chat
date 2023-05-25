@@ -9,7 +9,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 import EmailConfirmationForm from './EmailConfirmationForm';
-// import { useVerifyPassword } from './hooks/useVerifyPassword';
+import { useVerifyPassword } from './hooks/useVerifyPassword';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -22,7 +22,6 @@ type LoginRegisterPayload = {
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
-	// const passwordVerifications = useVerifyPassword('Teste');
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -44,6 +43,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		clearErrors,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
+
+	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -67,6 +68,31 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 				},
 			},
 		);
+	};
+
+	const handleRenderPasswordVerification = (passwordVerifications: ReturnType<typeof useVerifyPassword>) => {
+		const verifications = [];
+
+		if (!passwordVerifications) return null;
+
+		for (const verification in passwordVerifications) {
+			if (passwordVerifications[verification]) {
+				const { isValid, limit } = passwordVerifications[verification];
+				verifications.push(
+					<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1' key={verification}>
+						<Icon
+							name={isValid && watch('password').length !== 0 ? 'success-circle' : 'error-circle'}
+							color={isValid && watch('password').length !== 0 ? 'status-font-on-success' : 'status-font-on-danger'}
+							size='x16'
+							mie='x4'
+						/>{' '}
+						{t(`${verification}-label`, { limit })}
+					</Box>,
+				);
+			}
+		}
+
+		return verifications;
 	};
 
 	if (errors.email?.type === 'invalid-email') {
@@ -162,34 +188,16 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
 							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
-						<Box display='flex' flexDirection='column' mbs='x8'>
-							<Box mbe='x8' fontScale='c2'>
-								Your Password must have:
-							</Box>
-							<Box display='flex' flexWrap='wrap'>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> At least 8 characters
+						{passwordVerifications && (
+							<Box display='flex' flexDirection='column' mbs='x8'>
+								<Box mbe='x8' fontScale='c2'>
+									Your Password must have:
 								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> Max. 2 repeating characters
-								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='success-circle' size='x16' color='status-font-on-success' mie='x4' /> At least one lowercase letter
-								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one symbol
-								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At most 24 characters
-								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one uppercase letter
-								</Box>
-								<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1'>
-									<Icon name='error-circle' size='x16' color='status-font-on-danger' mie='x4' /> At least one number
+								<Box display='flex' flexWrap='wrap'>
+									{handleRenderPasswordVerification(passwordVerifications)}
 								</Box>
 							</Box>
-						</Box>
+						)}
 					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
