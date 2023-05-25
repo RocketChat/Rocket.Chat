@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -46,8 +46,8 @@ const AppsFilters = ({
 	const t = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
-
-	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
+	const breakpoints = useBreakpoints();
+	const shouldFiltersStack = ['xs', 'sm', 'md'].some((size) => breakpoints.includes(size));
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
@@ -59,7 +59,7 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = useMediaQuery('(min-width: 1060px)') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
 		<Box pi='x24'>
