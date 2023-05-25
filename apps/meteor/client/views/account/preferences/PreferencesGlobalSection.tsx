@@ -60,7 +60,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 				<Field>
 					<Field.Label>{t('Theme_Appearence')}</Field.Label>
 					<Field.Row>
-						<SelectV2 selectedKey={themeAppearence} onChange={handleThemeAppearence} options={themeOptions} />
+						<SelectV2 selectedKey={themeAppearence} onSelectionChange={handleThemeAppearence} options={themeOptions} />
 					</Field.Row>
 				</Field>
 			</FieldGroup>
