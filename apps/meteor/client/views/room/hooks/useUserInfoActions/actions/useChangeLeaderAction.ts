@@ -28,9 +28,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
-	const changeLeaderMessage = isLeader
-		? 'User__username__removed_from__room_name__leaders'
-		: 'User__username__is_now_a_leader_of__room_name_';
+	const changeLeaderMessage = isLeader ? 'User_removed_as_leader' : 'User_is_now_a_leader';
 	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
 		successMessage: t(changeLeaderMessage, { username: user.username, room_name: roomName }),
 	});

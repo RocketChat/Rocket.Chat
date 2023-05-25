@@ -37,7 +37,7 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'room_changed_announcement',
 		system: true,
-		message: 'room_changed_announcement',
+		message: 'Room_changed_announcement',
 		data(message: IMessage) {
 			return {
 				user_by: message.u?.username,
@@ -49,7 +49,7 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'room_changed_description',
 		system: true,
-		message: 'room_changed_description',
+		message: 'Room_changed_description',
 		data(message: IMessage) {
 			return {
 				user_by: message.u?.username,
