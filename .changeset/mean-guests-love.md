@@ -4,8 +4,8 @@
 
 feat: *Enterprise* Add support for different transporters to connect multiple monolith instances.
 
-To use that, a new env var called `MONOLITH_TRANSPORTER` should be set. A commonly used transporter is NATS:
+To use that, you can use the `TRANSPORTER` env var adding "monolith+" to the transporter value. To use NATS for example, your env var should be:
 
 ```bash
-export MONOLITH_TRANSPORTER=nats://localhost:4222
+export TRANSPORTER="monolith+nats://localhost:4222"
 ```

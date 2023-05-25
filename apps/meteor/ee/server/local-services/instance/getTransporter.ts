@@ -1,16 +1,17 @@
-const { MONOLITH_TRANSPORTER, TCP_PORT } = process.env;
+export function getTransporter({ transporter, port }: { transporter?: string; port?: string } = {}) {
+	if (transporter) {
+		if (!transporter.match(/^(?:monolith\+)/)) {
+			throw new Error('invalid transporter');
+		}
 
-export function getTransporter() {
-	if (MONOLITH_TRANSPORTER) {
-		return MONOLITH_TRANSPORTER;
+		const [, ...url] = transporter.split('+');
+		return url.join('');
 	}
-
-	const port = TCP_PORT ? String(TCP_PORT).trim() : 0;
 
 	return {
 		type: 'TCP',
 		options: {
-			port,
+			port: port ? port.trim() : 0,
 			udpDiscovery: false,
 		},
 	};
