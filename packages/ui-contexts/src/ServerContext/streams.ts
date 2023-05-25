@@ -297,7 +297,7 @@ export interface StreamerEvents {
 		},
 	];
 
-	'user-presence': [{ key: string; args: [username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string] }];
+	'user-presence': [{ key: string; args: [[username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string]] }];
 
 	// TODO: rename to 'integration-history'
 	'integrationHistory': [

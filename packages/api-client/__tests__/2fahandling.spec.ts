@@ -71,7 +71,7 @@ test('if the 2fa handler is not provided, it should throw an error', async () =>
 
 		expect(error.status).toBe(400);
 
-		const body = error.body && (await JSON.parse(error.body.toString()));
+		const body = error.json();
 
 		expect(body).toMatchObject({
 			errorType: 'totp-required',
