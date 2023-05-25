@@ -38,7 +38,18 @@ export const initialState = () => ({
 	businessUnit: null,
 });
 
-const dontPersist = ['messages', 'typing', 'loading', 'alerts', 'unread', 'noMoreMessages', 'modal', 'incomingCallAlert', 'ongoingCall'];
+const dontPersist = [
+	'messages',
+	'typing',
+	'loading',
+	'alerts',
+	'unread',
+	'noMoreMessages',
+	'modal',
+	'incomingCallAlert',
+	'ongoingCall',
+	'parentUrl',
+];
 export const store = new Store(initialState(), { dontPersist });
 
 if (process.env.NODE_ENV === 'development') {

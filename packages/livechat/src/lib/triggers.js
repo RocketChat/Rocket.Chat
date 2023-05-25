@@ -80,7 +80,6 @@ class Triggers {
 			token,
 			firedTriggers = [],
 			config: { triggers },
-			parentUrl,
 		} = store.state;
 		Livechat.credentials.token = token;
 
@@ -89,7 +88,6 @@ class Triggers {
 		}
 
 		this._started = true;
-		this._parentUrl = parentUrl;
 		this._triggers = [...triggers];
 
 		firedTriggers.forEach((triggerId) => {
@@ -98,6 +96,12 @@ class Triggers {
 					trigger.skip = true;
 				}
 			});
+		});
+
+		store.on('change', ([state, prevState]) => {
+			if (prevState.parentUrl !== state.parentUrl) {
+				this.processPageUrlTriggers();
+			}
 		});
 	}
 
@@ -164,11 +168,13 @@ class Triggers {
 			if (trigger.skip) {
 				return;
 			}
+
 			trigger.conditions.forEach((condition) => {
 				switch (condition.name) {
 					case 'page-url':
+						const { parentUrl } = store.state;
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(this._parentUrl)) {
+						if (parentUrl && hrefRegExp.test(parentUrl)) {
 							this.fire(trigger);
 						}
 						break;
@@ -188,6 +194,25 @@ class Triggers {
 			});
 		});
 		this._requests = [];
+	}
+
+	processPageUrlTriggers() {
+		const { parentUrl } = store.state;
+
+		if (!parentUrl) return;
+
+		this._triggers.forEach((trigger) => {
+			if (trigger.skip) return;
+
+			trigger.conditions.forEach((condition) => {
+				if (condition.name !== 'page-url') return;
+
+				const hrefRegExp = new RegExp(condition.value, 'g');
+				if (hrefRegExp.test(parentUrl)) {
+					this.fire(trigger);
+				}
+			});
+		});
 	}
 
 	set triggers(newTriggers) {
