@@ -3,8 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
+import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';
@@ -26,7 +26,7 @@ const MonitorsPage = () => {
 		router.push({ context: 'new' });
 	});
 
-	const handleCloseVerticalBar = useMutableCallback(() => {
+	const handleCloseContextualbar = useMutableCallback(() => {
 		router.push({});
 	});
 
@@ -47,16 +47,16 @@ const MonitorsPage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar>
-					<VerticalBar.Header>
+				<Contextualbar>
+					<ContextualbarHeader>
 						{t('Trigger')}
-						<VerticalBar.Close onClick={handleCloseVerticalBar} />
-					</VerticalBar.Header>
-					<VerticalBar.ScrollableContent>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					<ContextualbarScrollableContent>
 						{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={reload.current} />}
 						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
-					</VerticalBar.ScrollableContent>
-				</VerticalBar>
+					</ContextualbarScrollableContent>
+				</Contextualbar>
 			)}
 		</Page>
 	);
