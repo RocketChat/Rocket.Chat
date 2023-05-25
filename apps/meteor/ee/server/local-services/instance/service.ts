@@ -63,7 +63,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	async created() {
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
-			transporter: getTransporter(),
+			transporter: getTransporter({
+				transporter: process.env.TRANSPORTER,
+				port: process.env.TCP_PORT,
+			}),
 		});
 
 		this.broker.createService({
