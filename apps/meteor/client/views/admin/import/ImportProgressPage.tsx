@@ -99,7 +99,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const progress = useQuery(
-		['ImportProgressPage', 'progress'],
+		['importers', 'progress'],
 		async () => {
 			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
@@ -117,14 +117,7 @@ const ImportProgressPage = function ImportProgressPage() {
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 					prepareImportRoute.push();
-					return;
 				}
-				handleProgressUpdated({
-					key: progress.key,
-					step: progress.step,
-					total: progress.total,
-					completed: progress.completed,
-				});
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
