@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { createElement, memo, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 import Header from '../Header';
 import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import RoomBody from '../components/body/RoomBody';
@@ -38,7 +38,7 @@ const Room = (): ReactElement => {
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
 									{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
-										<Suspense fallback={<VerticalBarSkeleton />}>
+										<Suspense fallback={<ContextualbarSkeleton />}>
 											{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
 										</Suspense>
 									)}
@@ -48,7 +48,7 @@ const Room = (): ReactElement => {
 						(appsContextualBarContext && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
-									<Suspense fallback={<VerticalBarSkeleton />}>
+									<Suspense fallback={<ContextualbarSkeleton />}>
 										<AppsContextualBar
 											viewId={appsContextualBarContext.viewId}
 											roomId={appsContextualBarContext.roomId}
