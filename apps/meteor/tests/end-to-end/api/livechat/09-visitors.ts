@@ -6,7 +6,7 @@ import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -791,11 +791,11 @@ describe('LIVECHAT - visitors', function () {
 	describe('omnichannel/contact', () => {
 		let contact: ILivechatVisitor;
 		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 			const res = await request.get(api(`omnichannel/contact?text=nel`)).set(credentials).send();
 			expect(res.body).to.have.property('success', false);
 
-			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should create a new contact', async () => {
 			const token = getRandomVisitorToken();
