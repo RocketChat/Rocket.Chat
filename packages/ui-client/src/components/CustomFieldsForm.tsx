@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, Field, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, Select, TextInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Control, FieldValues } from 'react-hook-form';
@@ -64,7 +64,7 @@ const CustomField = <T extends FieldValues>({
 			defaultValue={defaultValue ?? ''}
 			rules={{ required, minLength: props.minLength, maxLength: props.maxLength }}
 			render={({ field }) => (
-				<Field>
+				<Field rcx-field-group__item>
 					<Field.Label>
 						{label || t(name as TranslationKey)}
 						{required && '*'}
@@ -80,10 +80,10 @@ const CustomField = <T extends FieldValues>({
 };
 
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => (
-	<FieldGroup>
+	<>
 		{metadata.map(({ name: fieldName, ...props }) => {
 			props.label = props.label ?? fieldName;
 			return <CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} {...props} />;
 		})}
-	</FieldGroup>
+	</>
 );
