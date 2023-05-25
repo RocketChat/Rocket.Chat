@@ -16,7 +16,7 @@ import React, { useCallback, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();
@@ -68,7 +68,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	}, [watch, handleCustomFields]);
 
 	return (
-		<VerticalBar.ScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
+		<ContextualbarScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 			<FieldGroup>
 				{prepend}
 				{useMemo(
@@ -297,6 +297,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				)}
 				{append}
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 }
