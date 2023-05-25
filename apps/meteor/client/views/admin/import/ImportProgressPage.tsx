@@ -41,13 +41,13 @@ const ImportProgressPage = function ImportProgressPage() {
 		},
 		{
 			onSuccess: ({ valid, status }) => {
-				console.log('currentOperation', valid, status);
 				if (!valid) {
 					importHistoryRoute.push();
 					return;
 				}
 
 				if (status === 'importer_done') {
+					dispatchToastMessage({ type: 'success', message: t('Importer_done') });
 					importHistoryRoute.push();
 					return;
 				}
@@ -65,7 +65,6 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const handleProgressUpdated = useMutableCallback(
 		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
-			console.log('handleProgressUpdated', key, step, completed, total);
 			if (!currentOperation.isSuccess) {
 				return;
 			}
@@ -113,7 +112,6 @@ const ImportProgressPage = function ImportProgressPage() {
 			refetchInterval: 1000,
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
-				console.log('progress', progress);
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 					prepareImportRoute.push();
