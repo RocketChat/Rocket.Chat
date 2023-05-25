@@ -448,20 +448,7 @@ API.v1.addRoute(
 				delete guestData.phone;
 			}
 
-			const pms = (await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)])) as {
-				status: string;
-				reason: {
-					isClientSafe: boolean;
-					error: string;
-					message: string;
-					errorType: string;
-				};
-			}[];
-			const filtered = pms.filter((pm) => pm.status === 'rejected');
-
-			if (filtered.length > 0) {
-				return API.v1.failure(filtered[0].reason.error);
-			}
+			await Promise.all([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
 
 			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,

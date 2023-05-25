@@ -84,7 +84,7 @@ export const Contacts = {
 				}
 				continue;
 			}
-			const cfValue: string | undefined = trim(customFields[cf._id] || '');
+			const cfValue: string = trim(customFields[cf._id]);
 
 			if (!cfValue || typeof cfValue !== 'string') {
 				if (cf.required) {
