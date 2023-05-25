@@ -1,9 +1,8 @@
-/* eslint-disable complexity */
-import { useUniqueId, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { useState, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -22,7 +21,6 @@ type LoginRegisterPayload = {
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
-	const [inputEmail, setInputEmail] = useState('');
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -34,9 +32,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
-	const [errorOnRegister, setErrorOnRegister] = useState<string | undefined>(undefined);
-	const [invalidEmailInput, setInvalidEmailInput] = useState<boolean>(false);
-	const debouncedInvalidEmailInput = useDebouncedValue(invalidEmailInput, 2000);
 
 	const {
 		register,
@@ -67,8 +62,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
 					}
-
-					setErrorOnRegister(error.error);
 				},
 			},
 		);
@@ -107,26 +100,16 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
-									pattern: /^\S+@\S+$/i,
-									onChange: () => {
-										clearErrors(['username', 'email']);
+									pattern: {
+										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										message: t('registration.component.form.invalidEmail'),
 									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email || debouncedInvalidEmailInput ? 'Error' : undefined}
+								error={errors.email && t('registration.component.form.invalidEmail')}
 								name='email'
+								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-									setInputEmail(String(event.target.value));
-
-									if (RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'gm').test(inputEmail) === false) {
-										setInvalidEmailInput(true);
-										return;
-									}
-									setInvalidEmailInput(false);
-								}}
-								aria-invalid={errors.email || debouncedInvalidEmailInput ? 'true' : undefined}
-								defaultValue={inputEmail}
 							/>
 						</Field.Row>
 						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
@@ -201,11 +184,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</Field.Row>
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
-					)}
-				</FieldGroup>
-				<FieldGroup disabled={registerUser.isLoading}>
-					{errorOnRegister === 'error-user-is-not-activated' && (
-						<Callout type='warning'>{t('registration.page.registration.waitActivationWarning')}</Callout>
 					)}
 				</FieldGroup>
 			</Form.Container>
