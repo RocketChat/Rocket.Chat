@@ -4,8 +4,8 @@ import React, { forwardRef, memo } from 'react';
 
 import Page from '../Page';
 
-const VerticalBarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof Page.ScrollableContent>>(
-	function VerticalBarScrollableContent({ children, ...props }, ref) {
+const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof Page.ScrollableContent>>(
+	function ContextualbarScrollableContent({ children, ...props }, ref) {
 		return (
 			<Page.ScrollableContent p='x24' {...props} ref={ref}>
 				<Margins blockEnd='x16'>{children}</Margins>
@@ -14,4 +14,4 @@ const VerticalBarScrollableContent = forwardRef<HTMLElement, ComponentProps<type
 	},
 );
 
-export default memo(VerticalBarScrollableContent);
+export default memo(ContextualbarScrollableContent);

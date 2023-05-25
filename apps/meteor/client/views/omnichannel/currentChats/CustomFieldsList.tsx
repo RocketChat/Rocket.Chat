@@ -5,14 +5,14 @@ import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarScrollableContent, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 
-type CustomFieldsVerticalBarProps = {
+type CustomFieldsListProps = {
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
 	allCustomFields: ILivechatCustomField[];
 };
 
-const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
+const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsListProps): ReactElement => {
 	const { register, watch, control } = useForm({ mode: 'onChange' });
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
@@ -26,12 +26,12 @@ const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFie
 	const currentChatsRoute = useRoute('omnichannel-current-chats');
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header>
+		<Contextualbar>
+			<ContextualbarHeader>
 				{t('Filter_by_Custom_Fields')}
-				<VerticalBar.Close onClick={(): void => currentChatsRoute.push({ context: '' })} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent is='form'>
+				<ContextualbarClose onClick={(): void => currentChatsRoute.push({ context: '' })} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent is='form'>
 				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
 				{allCustomFields
 					.filter((customField) => customField.scope !== 'visitor')
@@ -58,9 +58,9 @@ const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFie
 							</Field>
 						),
 					)}
-			</VerticalBar.ScrollableContent>
-		</VerticalBar>
+			</ContextualbarScrollableContent>
+		</Contextualbar>
 	);
 };
 
-export default CustomFieldsVerticalBar;
+export default CustomFieldsList;
