@@ -1354,8 +1354,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount;
 
-			// decrease message count
-			await Rooms.decreaseMessageCountById(rid, count);
+			if (count) {
+				// decrease message count
+				await Rooms.decreaseMessageCountById(rid, count);
+			}
 
 			return count;
 		}
@@ -1377,8 +1379,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			})
 		).deletedCount;
 
-		// decrease message count
-		await Rooms.decreaseMessageCountById(rid, count);
+		if (count) {
+			// decrease message count
+			await Rooms.decreaseMessageCountById(rid, count);
+		}
 
 		return count;
 	}
