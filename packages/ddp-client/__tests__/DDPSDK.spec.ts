@@ -167,7 +167,9 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 		sdk.connection.connect(),
 	]);
 
-	const { stop } = sdk.stream(streamName, streamParams, cb);
+	const subscription = sdk.stream(streamName, streamParams, cb);
+
+	expect(subscription.isReady).toBe(false);
 
 	expect(sdk.client.subscriptions.size).toBe(1);
 
@@ -177,6 +179,10 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
 		return server.send(`{"msg":"ready","subs":["${id}"]}`);
 	});
+
+	await expect(subscription.ready()).resolves.toBe(undefined);
+
+	expect(subscription.isReady).toBe(true);
 
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
@@ -208,10 +214,10 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
 		return server.send(`{"msg":"ready","subs":["${id}"]}`);
 	});
-
+	expect(subscription.isReady).toBe(true);
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
 
-	stop();
+	subscription.stop();
 
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);

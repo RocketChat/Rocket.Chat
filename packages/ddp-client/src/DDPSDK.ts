@@ -39,8 +39,9 @@ export class DDPSDK implements SDK {
 	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
 		const subscription = this.client.subscribe(`stream-${name}`, key);
 
+		const stop = subscription.stop.bind(subscription);
 		const cancel = [
-			() => subscription.stop(),
+			() => stop(),
 			this.client.onCollection(`stream-${name}`, (data) => {
 				if (!isValidPayload(data)) {
 					return;
@@ -58,12 +59,11 @@ export class DDPSDK implements SDK {
 			}),
 		];
 
-		return {
-			...subscription,
+		return Object.assign(subscription, {
 			stop: () => {
 				cancel.forEach((fn) => fn());
 			},
-		};
+		});
 	}
 
 	/**

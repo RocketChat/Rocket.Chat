@@ -98,12 +98,23 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		const stop = this.ddp.onPublish(id, (payload) => {
+		const s = self.ddp.onPublish(id, (payload) => {
 			if ('error' in payload) {
+				result.error = payload.error;
 				this.subscriptions.delete(id);
+				return;
 			}
-			this.subscriptions.delete(id);
+			result.isReady = true;
+			this.subscriptions.set(id, {
+				...result,
+				isReady: true,
+			});
 		});
+
+		const stop = () => {
+			s();
+			self.unsubscribe(id);
+		};
 
 		const result: Subscription = {
 			id,
@@ -116,7 +127,6 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 				}
 
 				if (subscription.isReady) {
-					console.warn('Subscription is already ready');
 					return Promise.resolve();
 				}
 
@@ -139,19 +149,6 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		};
 
 		this.subscriptions.set(id, result);
-
-		self.ddp.onPublish(id, (payload) => {
-			if ('error' in payload) {
-				result.error = payload.error;
-				this.subscriptions.delete(id);
-				return;
-			}
-			result.isReady = true;
-			this.subscriptions.set(id, {
-				...result,
-				isReady: true,
-			});
-		});
 
 		return result;
 	}
