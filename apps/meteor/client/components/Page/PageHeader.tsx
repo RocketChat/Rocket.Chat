@@ -22,6 +22,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 		<Box
 			borderBlockEndWidth='default'
 			minHeight='x64'
+			pb='x8'
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
@@ -30,7 +31,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 				marginInline='x24'
 				display='flex'
 				flexDirection='row'
-				flexWrap='nowrap'
+				flexWrap='wrap'
 				alignItems='center'
 				color='default'
 				{...props}
