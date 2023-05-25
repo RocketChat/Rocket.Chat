@@ -3,8 +3,8 @@ import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from 
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
@@ -117,7 +117,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<ContextualbarScrollableContent {...props}>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -159,7 +159,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</ButtonGroup>
 				</Field.Row>
 			</Field>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 }
 
