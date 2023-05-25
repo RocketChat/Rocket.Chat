@@ -17,18 +17,20 @@ const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
 
 	const { lng } = match.params;
 
-	Assets.getText(`i18n/${lng}.i18n.json`, (err: Error, data: Record<string, any>) => {
-		if (err || !data) {
-			res.writeHead(400);
-			res.end();
-			return;
+	try {
+		const data = await Assets.getTextAsync(`i18n/${lng}.i18n.json`);
+		if (!data) {
+			throw new Error();
 		}
 
 		res.setHeader('Content-Type', 'application/json');
 		res.setHeader('Content-Length', data.length);
 		res.writeHead(200);
 		res.end(data);
-	});
+	} catch (e) {
+		res.writeHead(400);
+		res.end();
+	}
 };
 
 WebApp.connectHandlers.use('/i18n/', i18nHandler);
