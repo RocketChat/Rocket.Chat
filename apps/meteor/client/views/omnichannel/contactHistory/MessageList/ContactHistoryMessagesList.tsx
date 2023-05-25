@@ -4,8 +4,16 @@ import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react'
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarAction,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -13,7 +21,7 @@ import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequ
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 
-const ContactHistoryMessagesVerticalBar = ({
+const ContactHistoryMessagesList = ({
 	chatId,
 	setChatId,
 	close,
@@ -38,14 +46,14 @@ const ContactHistoryMessagesVerticalBar = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Action onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
-				<VerticalBar.Icon name='history' />
-				<VerticalBar.Text>{t('Chat_History')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={close} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarAction onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
+				<ContextualbarIcon name='history' />
+				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
+				<ContextualbarClose onClick={close} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0}>
+			<ContextualbarContent paddingInline={0}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -78,12 +86,7 @@ const ContactHistoryMessagesVerticalBar = ({
 						<StatesSubtitle>{error.toString()}</StatesSubtitle>
 					</States>
 				)}
-				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
+				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && totalItemCount > 0 && history.length > 0 && (
 						<Virtuoso
@@ -107,9 +110,9 @@ const ContactHistoryMessagesVerticalBar = ({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 };
 
-export default ContactHistoryMessagesVerticalBar;
+export default ContactHistoryMessagesList;
