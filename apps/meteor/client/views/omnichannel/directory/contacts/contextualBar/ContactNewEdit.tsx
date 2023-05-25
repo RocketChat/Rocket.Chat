@@ -8,8 +8,8 @@ import { useForm } from 'react-hook-form';
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
-import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../lib/utils/createToken';
 import { useFormsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../components/FormSkeleton';
@@ -171,7 +171,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
 					<Field.Label>{t('Name')}*</Field.Label>
 					<Field.Row>
@@ -203,8 +203,8 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 				</Field>
 				{canViewCustomFields() && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
@@ -213,7 +213,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };
