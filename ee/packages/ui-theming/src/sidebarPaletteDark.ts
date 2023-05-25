@@ -23,11 +23,11 @@ export const palette = [
 		description: 'Used to show user status',
 		list: [
 			{ name: 'status-bullet-online', token: '', color: '#1CBF89' },
-			{ name: 'status-bullet-away', token: '', color: '#AC892F' },
-			{ name: 'status-bullet-busy', token: '', color: '#C14454' },
-			{ name: 'status-bullet-disabled', token: '', color: '#955828' },
-			{ name: 'status-bullet-offline', token: '', color: '#6C727A' },
-			{ name: 'status-bullet-loading', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-away', token: '', color: '#B08C30' },
+			{ name: 'status-bullet-busy', token: '', color: '#C75765' },
+			{ name: 'status-bullet-disabled', token: '', color: '#CC7F42' },
+			{ name: 'status-bullet-offline', token: '', color: '#8B9098' },
+			{ name: 'status-bullet-loading', token: '', color: '#8B9098' },
 		],
 	},
 	{
