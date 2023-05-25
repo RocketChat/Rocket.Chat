@@ -1,4 +1,3 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
@@ -45,36 +44,19 @@ const AppsProvider: FC = ({ children }) => {
 	useEffect(() => {
 		const listeners = {
 			APP_ADDED: (): void => {
-				queryClient.invalidateQueries(['apps-instance', isAdminUser]);
-				queryClient.invalidateQueries(['apps-stored', isAdminUser]);
+				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
 			},
 			APP_UPDATED: (): void => {
-				queryClient.invalidateQueries(['apps-instance', isAdminUser]);
-				queryClient.invalidateQueries(['apps-stored', isAdminUser]);
+				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
 			},
-			APP_REMOVED: (appId: string): void => {
-				queryClient.setQueryData<App[]>(['apps-instance', isAdminUser], (data) => {
-					return data?.filter((app) => app.id !== appId);
-				});
-				queryClient.invalidateQueries(['apps-stored', isAdminUser]);
+			APP_REMOVED: (): void => {
+				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
 			},
-			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
-				queryClient.setQueryData<App[]>(['apps-instance', isAdminUser], (data) => {
-					return data?.map((app) => {
-						if (app.id !== appId) {
-							return app;
-						}
-						return {
-							...app,
-							status,
-						};
-					});
-				});
-				queryClient.invalidateQueries(['apps-stored', isAdminUser]);
+			APP_STATUS_CHANGE: (): void => {
+				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
 			},
 			APP_SETTING_UPDATED: (): void => {
-				queryClient.invalidateQueries(['apps-instance', isAdminUser]);
-				queryClient.invalidateQueries(['apps-stored', isAdminUser]);
+				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
 			},
 		};
 		const unregisterListeners = registerListeners(listeners);
@@ -83,26 +65,42 @@ const AppsProvider: FC = ({ children }) => {
 		return unregisterListeners;
 	}, [invalidateAppsCountQuery, isAdminUser, queryClient]);
 
-	const marketplace = useQuery(['apps-marketplace', isAdminUser], () => Apps.getAppsFromMarketplace(isAdminUser ? 'true' : 'false'), {
-		staleTime: Infinity,
-		refetchOnWindowFocus: false,
-		keepPreviousData: true,
-	});
+	const marketplace = useQuery(
+		['marketplace', 'apps-marketplace', isAdminUser],
+		() => {
+			const result = Apps.getAppsFromMarketplace(isAdminUser ? 'true' : 'false');
+			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
+			return result;
+		},
+		{
+			staleTime: Infinity,
+			refetchOnWindowFocus: false,
+			keepPreviousData: true,
+			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
+		},
+	);
 
 	const instance = useQuery(
-		['apps-instance', isAdminUser],
-		() =>
-			Apps.getInstalledApps().then((result: App[]) =>
+		['marketplace', 'apps-instance', isAdminUser],
+		async () => {
+			const result = await Apps.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
 				})),
-			),
-		{ staleTime: Infinity, refetchOnWindowFocus: false, keepPreviousData: true },
+			);
+			return result;
+		},
+		{
+			staleTime: Infinity,
+			refetchOnWindowFocus: false,
+			keepPreviousData: true,
+			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
+		},
 	);
 
 	const store = useQuery(
-		['apps-stored', isAdminUser],
+		['marketplace', 'apps-stored', isAdminUser],
 		() => {
 			if (!marketplace.isSuccess || !instance.isSuccess) {
 				throw new Error('Apps not loaded');
@@ -112,9 +110,11 @@ const AppsProvider: FC = ({ children }) => {
 			const installedApps: App[] = [];
 			const privateApps: App[] = [];
 
+			const clonedData = [...instance.data];
+
 			sortByName(marketplace.data).forEach((app) => {
-				const appIndex = instance.data.findIndex(({ id }) => id === app.id);
-				const [installedApp] = appIndex > -1 ? instance.data.splice(appIndex, 1) : [];
+				const appIndex = clonedData.findIndex(({ id }) => id === app.id);
+				const [installedApp] = appIndex > -1 ? clonedData.splice(appIndex, 1) : [];
 
 				const record = {
 					...app,
@@ -140,7 +140,7 @@ const AppsProvider: FC = ({ children }) => {
 				marketplaceApps.push(record);
 			});
 
-			sortByName(instance.data).forEach((app) => {
+			sortByName(clonedData).forEach((app) => {
 				if (app.private) {
 					privateApps.push(app);
 				}
@@ -149,10 +149,13 @@ const AppsProvider: FC = ({ children }) => {
 			return [marketplaceApps, installedApps, privateApps];
 		},
 		{
-			enabled: marketplace.isSuccess && instance.isSuccess,
+			enabled: marketplace.isSuccess && instance.isSuccess && !instance.isRefetching,
+			refetchOnWindowFocus: false,
 			keepPreviousData: true,
 		},
 	);
+
+	console.log(instance.isRefetching, instance.isSuccess);
 
 	if (!store.isSuccess) {
 		return <PageSkeleton />;
@@ -166,10 +169,7 @@ const AppsProvider: FC = ({ children }) => {
 				marketplaceApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[0] } },
 				privateApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[2] } },
 				reload: async () => {
-					await Promise.all([
-						queryClient.invalidateQueries(['apps-marketplace', isAdminUser]),
-						queryClient.invalidateQueries(['apps-instance', isAdminUser]),
-					]);
+					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 			}}
 		/>
