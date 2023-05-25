@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
@@ -81,7 +81,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<ContextualbarScrollableContent {...props}>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -115,7 +115,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					</ButtonGroup>
 				</Field.Row>
 			</Field>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

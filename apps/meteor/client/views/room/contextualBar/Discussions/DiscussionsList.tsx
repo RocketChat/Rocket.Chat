@@ -6,8 +6,14 @@ import type { RefObject } from 'react';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarContent,
+	ContextualbarClose,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import DiscussionsListRow from './DiscussionsListRow';
 
@@ -47,15 +53,15 @@ function DiscussionsList({
 	});
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='discussion' />
+			<ContextualbarHeader>
+				<ContextualbarIcon name='discussion' />
 				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
 					{t('Discussions')}
 				</Box>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -86,11 +92,7 @@ function DiscussionsList({
 					</Callout>
 				)}
 
-				{!loading && total === 0 && (
-					<Box width='full' textAlign='center' p='x24' color='annotation'>
-						{t('No_Discussions_found')}
-					</Box>
-				)}
+				{!loading && total === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (
@@ -111,7 +113,7 @@ function DiscussionsList({
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 }

@@ -23,9 +23,11 @@ export class LDAPEEManager extends LDAPManager {
 
 		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
 		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+		const mergeExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Merge_Existent_Users') ?? false;
 
 		const options = this.getConverterOptions();
 		options.skipExistingUsers = !updateExistingUsers;
+		options.skipNewUsers = !createNewUsers;
 
 		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
@@ -33,7 +35,7 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			await ldap.connect();
 
-			if (createNewUsers) {
+			if (createNewUsers || mergeExistingUsers) {
 				await this.importNewUsers(ldap, converter);
 			} else if (updateExistingUsers) {
 				await this.updateExistingUsers(ldap, converter);
