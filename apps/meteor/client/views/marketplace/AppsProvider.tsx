@@ -155,8 +155,6 @@ const AppsProvider: FC = ({ children }) => {
 		},
 	);
 
-	console.log(instance.isRefetching, instance.isSuccess);
-
 	if (!store.isSuccess) {
 		return <PageSkeleton />;
 	}
