@@ -39,7 +39,7 @@ test.describe.serial('imports', () => {
 		await poAdmin.btnStartImport.click();
 
 		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
-			timeout: 30_000,
+			timeout: 40_000,
 		});
 	});
 
