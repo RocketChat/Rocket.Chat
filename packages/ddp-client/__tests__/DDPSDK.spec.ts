@@ -20,14 +20,16 @@ it('should handle a stream of messages', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await Promise.all([
+		server.nextMessage.then((message) => {
+			expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+			server.send(`{"msg":"connected","session":"${streamParams}"}`);
+		}),
 
-	const sdk = await create;
+		sdk.connection.connect(),
+	]);
 
 	const stream = sdk.stream(streamName, streamParams, cb);
 
@@ -56,14 +58,16 @@ it('should ignore messages other from changed', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await Promise.all([
+		server.nextMessage.then((message) => {
+			expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+			server.send(`{"msg":"connected","session":"${streamParams}"}`);
+		}),
 
-	const sdk = await create;
+		sdk.connection.connect(),
+	]);
 
 	const stream = sdk.stream(streamName, streamParams, cb);
 
@@ -87,14 +91,16 @@ it('should handle streams after reconnect', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await Promise.all([
+		server.nextMessage.then((message) => {
+			expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+			return server.send(`{"msg":"connected","session":"${streamParams}"}`);
+		}),
 
-	const sdk = await create;
+		sdk.connection.connect(),
+	]);
 
 	const stream = sdk.stream(streamName, streamParams, cb);
 
@@ -151,16 +157,17 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await Promise.all([
+		server.nextMessage.then((message) => {
+			expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+			return server.send(`{"msg":"connected","session":"${streamParams}"}`);
+		}),
+		sdk.connection.connect(),
+	]);
 
-	const sdk = await create;
-
-	const stopSubscription = sdk.stream(streamName, streamParams, cb);
+	const { stop } = sdk.stream(streamName, streamParams, cb);
 
 	expect(sdk.client.subscriptions.size).toBe(1);
 
@@ -204,7 +211,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
 
-	stopSubscription();
+	stop();
 
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
 	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
