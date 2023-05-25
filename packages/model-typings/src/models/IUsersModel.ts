@@ -374,4 +374,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countRoomMembers(roomId: string): Promise<number>;
 	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findAllOnlineAgentsExcludingManagersAndMonitors(
+		excludeIds: string[],
+		includeIds?: string[],
+		options?: FindOptions<IUser>,
+	): FindCursor<IUser>;
 }

@@ -2875,4 +2875,27 @@ export class UsersRaw extends BaseRaw {
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
 	}
+
+	findAllOnlineAgentsExcludingManagersAndMonitors(excludeIds = [], includeIds = [], options = {}) {
+		const extraQuery = { _id: { $nin: excludeIds } };
+		if (includeIds.length > 0) {
+			extraQuery._id = {
+				...extraQuery._id,
+				$in: includeIds,
+			};
+		}
+
+		return this.find(
+			{
+				roles: {
+					$all: ['livechat-agent'],
+					$nin: ['livechat-manager', 'livechat-monitor'],
+				},
+				statusLivechat: 'available',
+				status: 'online',
+				...extraQuery,
+			},
+			options,
+		);
+	}
 }
