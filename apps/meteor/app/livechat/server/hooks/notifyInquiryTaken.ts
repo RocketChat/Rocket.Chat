@@ -24,7 +24,7 @@ callbacks.add(
 
 		if (departmentId) {
 			usersToInclude.push(
-				(await LivechatDepartmentAgents.findByDepartmentIds([departmentId], { projection: { agentId: 1 } }).toArray()).map(
+				...(await LivechatDepartmentAgents.findByDepartmentIds([departmentId], { projection: { agentId: 1 } }).toArray()).map(
 					(d) => d.agentId,
 				),
 			);
