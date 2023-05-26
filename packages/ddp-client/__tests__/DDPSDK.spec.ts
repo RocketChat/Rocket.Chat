@@ -189,3 +189,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();
 });
+
+it('should create and connect to a stream', async () => {
+	await handleConnection(server, DDPSDK.createAndConnect('ws://localhost:1234'));
+});

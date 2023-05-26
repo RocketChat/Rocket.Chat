@@ -27,6 +27,7 @@ export class TimeoutControl
 
 	constructor(readonly timeout: number = 60_000, readonly heartbeat: number = timeout / 2) {
 		super();
+		/* istanbul ignore next */
 		if (this.heartbeat >= this.timeout) {
 			throw new Error('Heartbeat must be less than timeout');
 		}

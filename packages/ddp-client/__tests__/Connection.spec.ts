@@ -22,8 +22,6 @@ it('should connect', async () => {
 
 	expect(connection.status).toBe('idle');
 	expect(connection.session).toBeUndefined();
-	connection.on('connection', console.log);
-	client.onDispatchMessage(console.log);
 	await handleConnection(server, connection.connect());
 
 	expect(connection.session).toBe('session');
@@ -121,7 +119,7 @@ it('should handle reconnecting', async () => {
 	jest.useRealTimers();
 });
 
-it.only('should queue messages if the connection is not ready', async () => {
+it('should queue messages if the connection is not ready', async () => {
 	const client = new MinimalDDPClient();
 	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
@@ -140,4 +138,22 @@ it.only('should queue messages if the connection is not ready', async () => {
 	expect(connection.queue.size).toBe(0);
 
 	await handleMethod(server, '1', 'method', ['arg1', 'arg2']);
+});
+
+it('should throw an error if a reconnect is called while a connection is in progress', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+
+	await expect(connection.reconnect()).rejects.toThrow('Connection in progress');
+});
+
+it('should throw an error if a connect is called while a connection is in progress', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+
+	await expect(connection.connect()).rejects.toThrow('Connection in progress');
 });

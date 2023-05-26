@@ -103,7 +103,7 @@ export class ConnectionImpl
 
 	reconnect(): Promise<boolean> {
 		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.resolve(true);
+			return Promise.reject(new Error('Connection in progress'));
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
@@ -116,6 +116,10 @@ export class ConnectionImpl
 	}
 
 	connect() {
+		if (this.status === 'connecting' || this.status === 'connected') {
+			return Promise.reject(new Error('Connection in progress'));
+		}
+
 		this.status = 'connecting';
 		this.emit('connecting');
 		this.emitStatus();
@@ -132,18 +136,18 @@ export class ConnectionImpl
 
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
 				// (The message was once used to help implement Meteor's hot code reload feature; it is now only included to force old clients to update).
-				this.client.onceMessage((data) => {
-					if (data.msg === undefined) {
-						return;
-					}
-					if (data.msg === 'failed') {
-						return;
-					}
-					if (data.msg === 'connected') {
-						return;
-					}
-					this.close();
-				});
+				// this.client.onceMessage((data) => {
+				// 	if (data.msg === undefined) {
+				// 		return;
+				// 	}
+				// 	if (data.msg === 'failed') {
+				// 		return;
+				// 	}
+				// 	if (data.msg === 'connected') {
+				// 		return;
+				// 	}
+				// 	this.close();
+				// });
 
 				// The client sends a connect message.
 
@@ -166,6 +170,7 @@ export class ConnectionImpl
 						this.emit('disconnected');
 						return reject(payload.version);
 					}
+					/* istanbul ignore next */
 					reject(new Error('Unknown message type'));
 				});
 			};
