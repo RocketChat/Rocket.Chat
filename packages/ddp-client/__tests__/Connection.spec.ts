@@ -14,7 +14,6 @@ afterEach(() => {
 	WS.clean();
 });
 
-
 it('should connect', async () => {
 	const client = new MinimalDDPClient();
 	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
