@@ -134,8 +134,8 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	useEffect(() => {
-		return streamer('progress', ({ count: { completed, total }, ...rest }) => {
-			handleProgressUpdated({ ...rest, completed, total } as any);
+		return streamer('progress', ({ count, key, step, ...rest }) => {
+			handleProgressUpdated({ ...rest, key: key!, step: step!, completed: count!.completed, total: count!.total });
 		});
 	}, [handleProgressUpdated, streamer]);
 

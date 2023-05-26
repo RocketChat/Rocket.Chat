@@ -38,7 +38,7 @@ Meteor.startup(async function () {
 
 		await addUserRolesAsync('rocket.cat', ['bot']);
 
-		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+		const buffer = Buffer.from(await Assets.getBinaryAsync('avatars/rocketcat.png'));
 
 		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 		const fileStore = FileUpload.getStore('Avatars');
@@ -50,10 +50,8 @@ Meteor.startup(async function () {
 			size: buffer.length,
 		};
 
-		await Meteor.runAsUser('rocket.cat', async () => {
-			await fileStore.insert(file, rs);
-			Users.setAvatarData('rocket.cat', 'local', null);
-		});
+		const upload = await fileStore.insert(file, rs);
+		await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 	}
 
 	if (process.env.ADMIN_PASS) {
