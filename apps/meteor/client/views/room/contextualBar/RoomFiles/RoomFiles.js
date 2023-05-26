@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, Field } from '@rocket.chat/fuselage';
 import { useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -54,22 +54,22 @@ function RoomFiles({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
-							<TextInput
-								data-qa-files-search
-								id={searchId}
-								placeholder={t('Search_Files')}
-								ref={inputRef}
-								value={text}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
-						</Margins>
-					</Box>
-				</Box>
+				<Field>
+					<Field.Row>
+						<TextInput
+							data-qa-files-search
+							id={searchId}
+							placeholder={t('Search_Files')}
+							ref={inputRef}
+							value={text}
+							onChange={setText}
+							addon={<Icon name='magnifier' size='x20' />}
+						/>
+						<Box w='x144' mis='x8'>
+							<Select onChange={setType} value={type} options={options} />
+						</Box>
+					</Field.Row>
+				</Field>
 
 				{loading && (
 					<Box p='x12'>

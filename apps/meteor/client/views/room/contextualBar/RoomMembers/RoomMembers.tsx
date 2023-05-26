@@ -90,23 +90,15 @@ const RoomMembers = ({
 
 			<VerticalBar.Content p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
-							<TextInput
-								placeholder={t('Search_by_username')}
-								value={text}
-								ref={inputRef}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={(value): void => setType(value as 'online' | 'all')}
-								value={type}
-								options={options}
-							/>
-						</Margins>
+					<TextInput
+						placeholder={t('Search_by_username')}
+						value={text}
+						ref={inputRef}
+						onChange={setText}
+						addon={<Icon name='magnifier' size='x20' />}
+					/>
+					<Box w='x144' mis='x8'>
+						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 					</Box>
 				</Box>
 
