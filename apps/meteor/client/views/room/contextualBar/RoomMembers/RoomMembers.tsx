@@ -7,9 +7,17 @@ import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
@@ -82,13 +90,12 @@ const RoomMembers = ({
 
 	return (
 		<>
-			<VerticalBar.Header data-qa-id='RoomHeader-Members'>
-				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.Content p='x12'>
+			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
+				<ContextualbarIcon name='members' />
+				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarContent p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
@@ -122,43 +129,39 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{!loading && members.length <= 0 && (
-					<Box textAlign='center' p='x12' color='annotation'>
-						{t('No_members_found')}
-					</Box>
-				)}
+				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members.length > 0 && (
-					<Box pi='x18' pb='x12'>
-						<Box is='span' color='hint' fontScale='p2'>
-							{t('Showing')}: {members.length}
+				{!loading && members && members.length > 0 && (
+					<>
+						<Box pi='x18' pb='x12'>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing')}: {members.length}
+							</Box>
+
+							<Box is='span' color='hint' fontScale='p2' mis='x8'>
+								{t('Total')}: {total}
+							</Box>
 						</Box>
 
-						<Box is='span' color='hint' fontScale='p2' mis='x8'>
-							{t('Total')}: {total}
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<Virtuoso
+								style={{
+									height: '100%',
+									width: '100%',
+								}}
+								totalCount={total}
+								overscan={50}
+								data={members}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+								itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
+							/>
 						</Box>
-					</Box>
+					</>
 				)}
-
-				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-					{!loading && members && members.length > 0 && (
-						<Virtuoso
-							style={{
-								height: '100%',
-								width: '100%',
-							}}
-							totalCount={total}
-							overscan={50}
-							data={members}
-							// eslint-disable-next-line react/no-multi-comp
-							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
-						/>
-					)}
-				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
-				<VerticalBar.Footer>
+				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
 							<Button onClick={onClickInvite} width='50%'>
@@ -173,7 +176,7 @@ const RoomMembers = ({
 							</Button>
 						)}
 					</ButtonGroup>
-				</VerticalBar.Footer>
+				</ContextualbarFooter>
 			)}
 		</>
 	);

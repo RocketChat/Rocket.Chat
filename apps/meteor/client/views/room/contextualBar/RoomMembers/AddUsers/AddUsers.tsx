@@ -4,9 +4,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import VerticalBar from '../../../../../components/VerticalBar';
 
 type AddUsersProps = {
 	onClickClose?: () => void;
@@ -22,12 +29,12 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederat
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{t('Add_users')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{t('Add_users')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
@@ -38,14 +45,14 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederat
 						)}
 					</Field>
 				</FieldGroup>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
 						{t('Add_users')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

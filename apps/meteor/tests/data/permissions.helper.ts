@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
+import { permissions } from '../../app/authorization/server/constant/permissions';
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
@@ -63,3 +64,30 @@ export const removePermissions = async (perms: string[]) => {
 export const addPermissions = async (perms: { [key: string]: string[] }) => {
 	await updateManyPermissions(perms);
 };
+
+type Permission = typeof permissions[number]['_id']
+
+export const removePermissionFromAllRoles = async (permission: Permission) => {
+    await updatePermission(permission, []);
+};
+
+export const restorePermissionToRoles = async (permission: Permission) => {
+    const defaultPermission = permissions.find((p) => p._id === permission);
+    if (!defaultPermission) {
+        throw new Error(`No default roles found for permission ${permission}`);
+    }
+
+    const mutableDefaultRoles: string[] = defaultPermission.roles.map((r) => r);
+
+    if (!IS_EE) {
+		const eeOnlyRoles = ['livechat-monitor'];
+        eeOnlyRoles.forEach((role) => {
+            const index = mutableDefaultRoles.indexOf(role);
+            if (index !== -1) {
+                mutableDefaultRoles.splice(index, 1);
+            }
+        });
+    }
+
+    await updatePermission(permission, mutableDefaultRoles);
+}

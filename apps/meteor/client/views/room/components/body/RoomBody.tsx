@@ -563,7 +563,10 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
+							<div
+								ref={messagesBoxRef}
+								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
+							>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
