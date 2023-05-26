@@ -98,7 +98,7 @@ export const getUnreadMessages = () => {
 				.findIndex((item) => item.u._id === user?._id);
 
 	if (lastReadMessageIndex !== -1) {
-		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user._id);
+		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user?._id);
 
 		return unreadMessages;
 	}
