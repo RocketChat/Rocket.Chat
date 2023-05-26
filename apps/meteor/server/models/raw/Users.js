@@ -2819,7 +2819,11 @@ export class UsersRaw extends BaseRaw {
 
 	// here
 	getActiveLocalUserCount() {
-		return this.col.countDocuments({ active: true, federated: false, isRemote: false });
+		return Promise.all([
+			this.col.countDocuments({ active: true }),
+			this.col.countDocuments({ federated: true }),
+			this.col.countDocuments({ isRemote: true }),
+		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {
