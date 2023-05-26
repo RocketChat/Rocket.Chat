@@ -7376,7 +7376,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.119":
+"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/css-in-js@npm:0.31.23"
   dependencies:
@@ -7402,7 +7402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.119":
+"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/css-supports@npm:0.31.23"
   dependencies:
@@ -7630,10 +7630,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.295":
-  version: 0.32.0-dev.295
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.295"
-  checksum: f7e573164669d17f693f3afb0b6d1c71410ce428cbb2278c7e7f6d41b4aea758f1b39065cf70514e0bd1be7af5686ad885bb9a3da2e3d365f3df74d92c880ae0
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.296":
+  version: 0.32.0-dev.296
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.296"
+  checksum: 76cfad1c8e41fc7a464af97b38a0518e5a2aec8408064b85d986b7a82d60b5e0ca9613058137739478e0b0fcb4fe8efad8d2462329d203341916fa5d7498f8f0
   languageName: node
   linkType: hard
 
@@ -7658,7 +7658,7 @@ __metadata:
     "@storybook/builder-webpack5": ~6.5.15
     "@storybook/manager-webpack5": ~6.5.15
     "@storybook/react": ~6.5.15
-    "@storybook/source-loader": ~6.5.15
+    "@storybook/source-loader": ~6.5.16
     "@storybook/theming": ~6.5.15
     "@tanstack/react-query": ^4.16.1
     "@types/react": ~17.0.57
@@ -7694,14 +7694,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.345
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.345"
+  version: 0.32.0-dev.346
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.346"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.119
-    "@rocket.chat/css-supports": ~0.31.23-dev.119
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.295
-    "@rocket.chat/memo": ~0.31.23-dev.119
-    "@rocket.chat/styled": ~0.31.23-dev.119
+    "@rocket.chat/css-in-js": ~0.31.23-dev.120
+    "@rocket.chat/css-supports": ~0.31.23-dev.120
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.296
+    "@rocket.chat/memo": ~0.31.23-dev.120
+    "@rocket.chat/styled": ~0.31.23-dev.120
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -7713,7 +7713,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 5233cedd20ac9c6044826eec52e993fb942d751a163f4bad9fe53940a4e5217a73382388b91757386922052751834a6ff16e281e8c02df8a3ec3e7f3a1a82d6a
+  checksum: 27ec445f31d36e132ca0bb1b82aa8ad6baee65fee7c3a76efd1589958a83dcafd7b88448a750ac1e11520df2bec887d3fcbeaedbaca9a68bf72b47cc613eabff
   languageName: node
   linkType: hard
 
@@ -7737,7 +7737,7 @@ __metadata:
     "@storybook/addon-interactions": ~6.5.15
     "@storybook/addon-links": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@testing-library/jest-dom": ^5.16.5
@@ -7941,7 +7941,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.119":
+"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/memo@npm:0.31.23"
   checksum: 070debb940749a2e4463cf767dd65c6967cea664a5bd67c22a812d611f6c3c46d6fe4bb0bf329e43dcd927493413add37c45ae3b05ec08f0b24e9d7385caebdd
@@ -8733,7 +8733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.119":
+"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/styled@npm:0.31.23"
   dependencies:
@@ -8783,7 +8783,7 @@ __metadata:
     "@storybook/addon-links": ~6.5.15
     "@storybook/addon-postcss": ~2.0.0
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -8829,7 +8829,7 @@ __metadata:
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -8901,7 +8901,7 @@ __metadata:
     "@storybook/addon-links": ~6.5.15
     "@storybook/addon-postcss": ~2.0.0
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/jest": ~29.5.0
@@ -8949,7 +8949,7 @@ __metadata:
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -10378,7 +10378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/manager-webpack4@npm:6.5.16, @storybook/manager-webpack4@npm:~6.5.14, @storybook/manager-webpack4@npm:~6.5.15":
+"@storybook/manager-webpack4@npm:6.5.16, @storybook/manager-webpack4@npm:~6.5.14, @storybook/manager-webpack4@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/manager-webpack4@npm:6.5.16"
   dependencies:
@@ -10708,7 +10708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/source-loader@npm:6.5.16, @storybook/source-loader@npm:~6.5.15":
+"@storybook/source-loader@npm:6.5.16, @storybook/source-loader@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/source-loader@npm:6.5.16"
   dependencies:
