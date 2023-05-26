@@ -4,6 +4,9 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
+import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../utils/lib/i18n';
+
 type RegisterContactProps = {
 	_id?: string;
 	token: string;
@@ -68,16 +71,37 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
+		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>>('visitor', {
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		});
 
-		const livechatData = Object.keys(customFields)
-			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
-			.reduce((obj: Record<string, unknown | string>, key) => {
-				obj[key] = customFields[key];
-				return obj;
-			}, {});
+		const livechatData: Record<string, string> = {};
+
+		for await (const cf of allowedCF) {
+			if (!customFields.hasOwnProperty(cf._id)) {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+			const cfValue: string = trim(customFields[cf._id]);
+
+			if (!cfValue || typeof cfValue !== 'string') {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+
+			if (cf.regexp) {
+				const regex = new RegExp(cf.regexp);
+				if (!regex.test(cfValue)) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+			}
+
+			livechatData[cf._id] = cfValue;
+		}
 
 		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {

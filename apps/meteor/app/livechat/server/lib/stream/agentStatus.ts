@@ -67,11 +67,11 @@ export const onlineAgents = {
 
 		try {
 			if (action === 'close') {
-				return Livechat.closeOpenChats(userId, comment);
+				return await Livechat.closeOpenChats(userId, comment);
 			}
 
 			if (action === 'forward') {
-				return Livechat.forwardOpenChats(userId);
+				return await Livechat.forwardOpenChats(userId);
 			}
 		} catch (e) {
 			logger.error({
