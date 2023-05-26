@@ -2892,7 +2892,6 @@ export class UsersRaw extends BaseRaw {
 					$nin: ['livechat-manager', 'livechat-monitor'],
 				},
 				statusLivechat: 'available',
-				status: 'online',
 				...extraQuery,
 			},
 			options,
