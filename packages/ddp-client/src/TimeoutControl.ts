@@ -27,7 +27,6 @@ export class TimeoutControl
 
 	constructor(readonly timeout: number = 60_000, readonly heartbeat: number = timeout / 2) {
 		super();
-		this.reset();
 		if (this.heartbeat >= this.timeout) {
 			throw new Error('Heartbeat must be less than timeout');
 		}
@@ -61,10 +60,23 @@ export class TimeoutControl
 		});
 
 		timeoutControl.on('timeout', () => {
+			console.log('Timeout');
 			connection.close();
 		});
 
 		ddp.onMessage(() => timeoutControl.reset());
+
+		connection.on('close', () => {
+			timeoutControl.stop();
+		});
+
+		connection.on('disconnected', () => {
+			timeoutControl.stop();
+		});
+
+		connection.on('connected', () => {
+			timeoutControl.reset();
+		});
 
 		return timeoutControl;
 	}
