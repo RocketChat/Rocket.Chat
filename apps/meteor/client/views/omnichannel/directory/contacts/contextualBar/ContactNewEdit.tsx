@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
+import { validatePhone } from '../../../../../../lib/phoneValidator';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
@@ -119,8 +120,11 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	};
 
 	const isPhoneValid = async (phone: string): Promise<boolean | string> => {
-		if (!phone || initialValue.phone === phone) {
+		if (phone === initialValue.phone) {
 			return true;
+		}
+		if(!validatePhone(phone)){
+			return t('error-invalid-phone-number');
 		}
 
 		const { contact } = await getContactBy({ phone });
