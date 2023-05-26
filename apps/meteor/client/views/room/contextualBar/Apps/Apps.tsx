@@ -6,7 +6,13 @@ import { BlockContext } from '@rocket.chat/ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/client/getURL';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarClose,
+} from '../../../../components/Contextualbar';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 
 type AppsProps = {
@@ -19,17 +25,17 @@ type AppsProps = {
 
 const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Element => (
 	<>
-		<VerticalBar.Header>
+		<ContextualbarHeader>
 			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
-			<VerticalBar.Text>{modalParser.text(view.title, BlockContext.NONE, 0)}</VerticalBar.Text>
-			{onClose && <VerticalBar.Close onClick={onClose} />}
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
+			<ContextualbarTitle>{modalParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+			{onClose && <ContextualbarClose onClick={onClose} />}
+		</ContextualbarHeader>
+		<ContextualbarScrollableContent>
 			<Box is='form' method='post' action='#' onSubmit={onSubmit}>
 				<UiKitComponent render={UiKitModal} blocks={view.blocks as LayoutBlock[]} />
 			</Box>
-		</VerticalBar.ScrollableContent>
-		<VerticalBar.Footer>
+		</ContextualbarScrollableContent>
+		<ContextualbarFooter>
 			<ButtonGroup align='end'>
 				{view.close && (
 					<Button danger={view.close.style === 'danger'} onClick={onCancel}>
@@ -42,7 +48,7 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 					</Button>
 				)}
 			</ButtonGroup>
-		</VerticalBar.Footer>
+		</ContextualbarFooter>
 	</>
 );
 

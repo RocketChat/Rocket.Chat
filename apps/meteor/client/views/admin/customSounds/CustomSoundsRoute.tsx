@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 
+import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
@@ -15,7 +16,6 @@ import { GenericTableLoadingTable } from '../../../components/GenericTable/V2/Ge
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundRow from './CustomSoundRow';
@@ -159,15 +159,15 @@ const CustomSoundsRoute = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar flexShrink={0}>
-					<VerticalBar.Header>
-						{context === 'edit' && <VerticalBar.Text>{t('Custom_Sound_Edit')}</VerticalBar.Text>}
-						{context === 'new' && <VerticalBar.Text>{t('Custom_Sound_Add')}</VerticalBar.Text>}
-						<VerticalBar.Close onClick={handleClose} />
-					</VerticalBar.Header>
+				<Contextualbar flexShrink={0}>
+					<ContextualbarHeader>
+						{context === 'edit' && <ContextualbarTitle>{t('Custom_Sound_Edit')}</ContextualbarTitle>}
+						{context === 'new' && <ContextualbarTitle>{t('Custom_Sound_Add')}</ContextualbarTitle>}
+						<ContextualbarClose onClick={handleClose} />
+					</ContextualbarHeader>
 					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleChange} />}
-				</VerticalBar>
+				</Contextualbar>
 			)}
 		</Page>
 	);
