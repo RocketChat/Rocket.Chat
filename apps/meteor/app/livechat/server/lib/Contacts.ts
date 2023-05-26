@@ -103,16 +103,24 @@ export const Contacts = {
 			livechatData[cf._id] = cfValue;
 		}
 
+		const fieldsToRemove = {
+			// if field is explicitely set to empty string, remove
+			...(phone === '' && { phone: 1 }),
+			...(visitorEmail === '' && { visitorEmails: 1 }),
+			...(!contactManager?.username && { contactManager: 1 }),
+		};
+
 		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {
 				token,
 				name,
 				livechatData,
+				// if phone has some value, set
 				...(phone && { phone: [{ phoneNumber: phone }] }),
 				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
 				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
 			},
-			...(!contactManager?.username && { $unset: { contactManager: 1 } }),
+			...(Object.keys(fieldsToRemove).length && { $unset: fieldsToRemove }),
 		};
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
