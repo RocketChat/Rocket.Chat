@@ -63,13 +63,7 @@ function ContactTable(): ReactElement {
 			}),
 	);
 
-	const {
-		data: contactResult,
-		isLoading: isLoadingContacts,
-		isError: contanctTableError,
-		isSuccess,
-		refetch: contactReload,
-	} = useCurrentContacts(query);
+	const { data: contactResult, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 	return (
 		<>
 			<FilterByText
@@ -142,18 +136,18 @@ function ContactTable(): ReactElement {
 								</GenericTableRow>
 							);
 						})}
-					{isLoadingContacts && <GenericTableLoadingTable headerCells={6} />}
-					{contanctTableError && <Box mbs='x16'>{t('Something_went_wrong')}</Box>}
+					{isLoading && <GenericTableLoadingTable headerCells={6} />}
+					{isError && <Box mbs='x16'>{t('Something_went_wrong')}</Box>}
 				</GenericTableBody>
 			</GenericTable>
 
-			{contanctTableError && (
+			{isError && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={() => contactReload()}>
+							<StatesAction onClick={() => refetch()}>
 								<Icon mie='x4' size='x20' name='reload' />
 								{t('Reload_page')}
 							</StatesAction>
