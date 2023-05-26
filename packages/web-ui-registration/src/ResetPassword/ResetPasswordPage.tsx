@@ -1,12 +1,21 @@
-import { Button, Field, Modal, Box, PasswordInput, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, useRoute, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import {
+	useVerifyPassword,
+	useRouteParameter,
+	useRoute,
+	useUser,
+	useMethod,
+	useTranslation,
+	useLoginWithToken,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Form } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
-import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
+// import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
@@ -20,10 +29,6 @@ const ResetPasswordPage = (): ReactElement => {
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
-	const policies = usePasswordPolicy({
-		token: user ? undefined : token,
-	});
-
 	const homeRouter = useRoute('home');
 
 	const changePasswordReason = getChangePasswordReason(user || {});
@@ -36,11 +41,14 @@ const ResetPasswordPage = (): ReactElement => {
 		setError,
 		formState: { errors },
 		formState,
+		watch,
 	} = useForm<{
 		password: string;
 	}>({
 		mode: 'onChange',
 	});
+
+	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const submit = handleSubmit(async (data) => {
 		try {
@@ -80,7 +88,8 @@ const ResetPasswordPage = (): ReactElement => {
 							/>
 						</Field.Row>
 						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						<Field.Hint>
+						<PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />
+						{/* <Field.Hint>
 							{policies.isLoading && <InputBoxSkeleton />}
 							{policies.isSuccess &&
 								policies.data.enabled &&
@@ -89,7 +98,7 @@ const ResetPasswordPage = (): ReactElement => {
 										{t(...(policy as unknown as [name: TranslationKey, options?: Record<string, unknown>]))}
 									</Box>
 								))}
-						</Field.Hint>
+						</Field.Hint> */}
 					</Field>
 				</Form.Container>
 				<Form.Footer>

@@ -1,4 +1,4 @@
-import { usePasswordPolicy } from './usePasswordPolicy';
+import { usePasswordPolicy } from '@rocket.chat/web-ui-registration';
 
 export const useVerifyPassword = (password: string | undefined) => {
 	const { data, isLoading } = usePasswordPolicy({});

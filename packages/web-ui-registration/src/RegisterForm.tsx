@@ -1,7 +1,8 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Box, Icon } from '@rocket.chat/fuselage';
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useVerifyPassword } from '@rocket.chat/ui-contexts';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -9,7 +10,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 import EmailConfirmationForm from './EmailConfirmationForm';
-import { useVerifyPassword } from './hooks/useVerifyPassword';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -68,31 +68,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 				},
 			},
 		);
-	};
-
-	const handleRenderPasswordVerification = (passwordVerifications: ReturnType<typeof useVerifyPassword>) => {
-		const verifications = [];
-
-		if (!passwordVerifications) return null;
-
-		for (const verification in passwordVerifications) {
-			if (passwordVerifications[verification]) {
-				const { isValid, limit } = passwordVerifications[verification];
-				verifications.push(
-					<Box display='flex' flexBasis='50%' alignItems='center' mbe='x8' fontScale='c1' key={verification}>
-						<Icon
-							name={isValid && watch('password').length !== 0 ? 'success-circle' : 'error-circle'}
-							color={isValid && watch('password').length !== 0 ? 'status-font-on-success' : 'status-font-on-danger'}
-							size='x16'
-							mie='x4'
-						/>{' '}
-						{t(`${verification}-label`, { limit })}
-					</Box>,
-				);
-			}
-		}
-
-		return verifications;
 	};
 
 	if (errors.email?.type === 'invalid-email') {
@@ -188,16 +163,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
 							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
-						{passwordVerifications && (
-							<Box display='flex' flexDirection='column' mbs='x8'>
-								<Box mbe='x8' fontScale='c2'>
-									Your Password must have:
-								</Box>
-								<Box display='flex' flexWrap='wrap'>
-									{handleRenderPasswordVerification(passwordVerifications)}
-								</Box>
-							</Box>
-						)}
+						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
 					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
