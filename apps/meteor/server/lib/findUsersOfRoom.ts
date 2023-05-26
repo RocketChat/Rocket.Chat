@@ -27,7 +27,7 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 		},
 		sort: {
 			statusConnection: -1,
-			...(sort || { [settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1 }),
+			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
 		...(skip > 0 && { skip }),
 		...(limit > 0 && { limit }),
