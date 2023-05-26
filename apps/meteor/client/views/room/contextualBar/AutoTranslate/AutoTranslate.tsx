@@ -4,7 +4,13 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarClose,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarContent,
+} from '../../../../components/Contextualbar';
 
 type AutoTranslateProps = {
 	language: string;
@@ -27,12 +33,12 @@ const AutoTranslate = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='language' />
-				<VerticalBar.Text>{t('Auto_Translate')}</VerticalBar.Text>
-				{handleClose && <VerticalBar.Close onClick={handleClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.Content pbs='x24'>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='language' />
+				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
+				{handleClose && <ContextualbarClose onClick={handleClose} />}
+			</ContextualbarHeader>
+			<ContextualbarContent pbs='x24'>
 				<FieldGroup>
 					<Field>
 						<Field.Row>
@@ -47,7 +53,7 @@ const AutoTranslate = ({
 						</Field.Row>
 					</Field>
 				</FieldGroup>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 };

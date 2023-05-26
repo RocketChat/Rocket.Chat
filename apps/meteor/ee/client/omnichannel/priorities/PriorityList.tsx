@@ -2,29 +2,36 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../client/components/Contextualbar';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
 
-type PriorityVerticalBarProps = {
+type PriorityListProps = {
 	context: 'edit';
 	priorityId: string;
 	onSave: (data: PriorityFormData) => Promise<void>;
 	onClose: () => void;
 };
 
-export const PriorityVerticalBar = ({ priorityId, onClose, onSave }: PriorityVerticalBarProps): ReactElement | null => {
+const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): ReactElement | null => {
 	const t = useTranslation();
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header>
+		<Contextualbar>
+			<ContextualbarHeader>
 				{t('Edit_Priority')}
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent height='100%'>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent height='100%'>
 				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
-			</VerticalBar.ScrollableContent>
-		</VerticalBar>
+			</ContextualbarScrollableContent>
+		</Contextualbar>
 	);
 };
+
+export default PriorityList;

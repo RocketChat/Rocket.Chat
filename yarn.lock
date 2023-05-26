@@ -3124,9 +3124,9 @@ __metadata:
   linkType: hard
 
 "@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "@codemirror/state@npm:6.2.0"
-  checksum: fdc99c773dc09c700dd02bf918f06132aa8d3069c262cc4eb6ca5c810ce24ae2d7e90719ae7630a8158fd263018de6d40bd78f312e6bfba754e737b64e6c6b3d
+  version: 6.2.1
+  resolution: "@codemirror/state@npm:6.2.1"
+  checksum: d12a321d0471b264b9d3259042bff913a8b939e8d28d408ff452004538a71ca9d5329df3f8a1d8a9183f5b42a7ef5b200737bcab1065714f5ae8e0a5ba9d59d3
   languageName: node
   linkType: hard
 
@@ -3766,10 +3766,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.40.0":
-  version: 8.40.0
-  resolution: "@eslint/js@npm:8.40.0"
-  checksum: e84936b8ebd1c8fd90e860182e95d1404006da4cbca722b14950b298aeeca102b080aa9b62c8e69f90824ec54e19f1ba79b239046223624d1414ee82e8e628ac
+"@eslint/js@npm:8.41.0":
+  version: 8.41.0
+  resolution: "@eslint/js@npm:8.41.0"
+  checksum: af013d70fe8d0429cdf5cd8b5dcc6fc384ed026c1eccb0cfe30f5849b968ab91645111373fd1b83282b38955b1bdfbe667c1a7dbda3b06cae753521223cad775
   languageName: node
   linkType: hard
 
@@ -4403,11 +4403,11 @@ __metadata:
   linkType: hard
 
 "@lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.1.3, @lezer/highlight@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "@lezer/highlight@npm:1.1.4"
+  version: 1.1.5
+  resolution: "@lezer/highlight@npm:1.1.5"
   dependencies:
     "@lezer/common": ^1.0.0
-  checksum: 30e848c02839bfcd9472fcd6e74d71cba12379cef38f27d0c6cab0e6831f92150cfc629d267a40cc31f84cf46ac0a935400163fdf931b2672c516bec29417485
+  checksum: 1f0b0a3dc7e1f23d889ce7a61d9ce1ba4d3b307205baf58f97252588df4c6751e4c86d39c20cd0bc7ac39ab82ff78a9251db91148b3b069965ec55d5fe9c4ef5
   languageName: node
   linkType: hard
 
@@ -7376,7 +7376,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.108":
+"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/css-in-js@npm:0.31.23"
   dependencies:
@@ -7402,7 +7402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.108":
+"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/css-supports@npm:0.31.23"
   dependencies:
@@ -7630,10 +7630,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.284":
-  version: 0.32.0-dev.284
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.284"
-  checksum: 21db73e73666fb7a63259ff8adcef85e377ae562f2cf813f6e7846c2779cf6cfce055d80d3045cc84589b9e10301983052a03b8b897f0172b209f38819c58df2
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.296":
+  version: 0.32.0-dev.296
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.296"
+  checksum: 76cfad1c8e41fc7a464af97b38a0518e5a2aec8408064b85d986b7a82d60b5e0ca9613058137739478e0b0fcb4fe8efad8d2462329d203341916fa5d7498f8f0
   languageName: node
   linkType: hard
 
@@ -7658,7 +7658,7 @@ __metadata:
     "@storybook/builder-webpack5": ~6.5.15
     "@storybook/manager-webpack5": ~6.5.15
     "@storybook/react": ~6.5.15
-    "@storybook/source-loader": ~6.5.15
+    "@storybook/source-loader": ~6.5.16
     "@storybook/theming": ~6.5.15
     "@tanstack/react-query": ^4.16.1
     "@types/react": ~17.0.57
@@ -7694,14 +7694,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.334
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.334"
+  version: 0.32.0-dev.346
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.346"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.108
-    "@rocket.chat/css-supports": ~0.31.23-dev.108
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.284
-    "@rocket.chat/memo": ~0.31.23-dev.108
-    "@rocket.chat/styled": ~0.31.23-dev.108
+    "@rocket.chat/css-in-js": ~0.31.23-dev.120
+    "@rocket.chat/css-supports": ~0.31.23-dev.120
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.296
+    "@rocket.chat/memo": ~0.31.23-dev.120
+    "@rocket.chat/styled": ~0.31.23-dev.120
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -7713,7 +7713,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 1347c46f66c5c159548ec000fbc1ef4a7629ce762a98c4d46950c95a877e738aa261be97c4b37374c97f79b471ce09e6b1a382f502176b8cdbaa475df5b1e859
+  checksum: 27ec445f31d36e132ca0bb1b82aa8ad6baee65fee7c3a76efd1589958a83dcafd7b88448a750ac1e11520df2bec887d3fcbeaedbaca9a68bf72b47cc613eabff
   languageName: node
   linkType: hard
 
@@ -7731,13 +7731,13 @@ __metadata:
     "@rocket.chat/styled": next
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addon-interactions": ~6.5.15
     "@storybook/addon-links": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@testing-library/jest-dom": ^5.16.5
@@ -7841,12 +7841,12 @@ __metadata:
     "@rocket.chat/logo": next
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-kit": next
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-backgrounds": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addon-knobs": ~6.4.0
     "@storybook/addon-postcss": ~2.0.0
-    "@storybook/addon-viewport": ~6.5.15
+    "@storybook/addon-viewport": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/theming": ~6.5.15
     "@typescript-eslint/eslint-plugin": ^5.30.7
@@ -7941,7 +7941,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.108":
+"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/memo@npm:0.31.23"
   checksum: 070debb940749a2e4463cf767dd65c6967cea664a5bd67c22a812d611f6c3c46d6fe4bb0bf329e43dcd927493413add37c45ae3b05ec08f0b24e9d7385caebdd
@@ -8733,7 +8733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.108":
+"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.120":
   version: 0.31.23
   resolution: "@rocket.chat/styled@npm:0.31.23"
   dependencies:
@@ -8776,14 +8776,14 @@ __metadata:
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addon-interactions": ~6.5.15
     "@storybook/addon-links": ~6.5.15
     "@storybook/addon-postcss": ~2.0.0
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -8825,11 +8825,11 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": next
     "@rocket.chat/icons": next
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -8894,14 +8894,14 @@ __metadata:
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addon-interactions": ~6.5.15
     "@storybook/addon-links": ~6.5.15
     "@storybook/addon-postcss": ~2.0.0
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/jest": ~29.5.0
@@ -8945,11 +8945,11 @@ __metadata:
     "@rocket.chat/icons": next
     "@rocket.chat/styled": next
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-actions": ~6.5.15
+    "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/builder-webpack4": ~6.5.15
-    "@storybook/manager-webpack4": ~6.5.15
+    "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.15
     "@storybook/testing-library": ~0.0.13
     "@types/babel__core": ^7.1.20
@@ -9191,7 +9191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:6.5.16, @storybook/addon-actions@npm:~6.5.14, @storybook/addon-actions@npm:~6.5.15":
+"@storybook/addon-actions@npm:6.5.16, @storybook/addon-actions@npm:~6.5.14, @storybook/addon-actions@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-actions@npm:6.5.16"
   dependencies:
@@ -9567,7 +9567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-viewport@npm:6.5.16, @storybook/addon-viewport@npm:~6.5.15":
+"@storybook/addon-viewport@npm:6.5.16, @storybook/addon-viewport@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-viewport@npm:6.5.16"
   dependencies:
@@ -10378,7 +10378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/manager-webpack4@npm:6.5.16, @storybook/manager-webpack4@npm:~6.5.14, @storybook/manager-webpack4@npm:~6.5.15":
+"@storybook/manager-webpack4@npm:6.5.16, @storybook/manager-webpack4@npm:~6.5.14, @storybook/manager-webpack4@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/manager-webpack4@npm:6.5.16"
   dependencies:
@@ -10708,7 +10708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/source-loader@npm:6.5.16, @storybook/source-loader@npm:~6.5.15":
+"@storybook/source-loader@npm:6.5.16, @storybook/source-loader@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/source-loader@npm:6.5.16"
   dependencies:
@@ -12685,13 +12685,13 @@ __metadata:
   linkType: hard
 
 "@typescript-eslint/eslint-plugin@npm:^5.57.1":
-  version: 5.59.6
-  resolution: "@typescript-eslint/eslint-plugin@npm:5.59.6"
+  version: 5.59.7
+  resolution: "@typescript-eslint/eslint-plugin@npm:5.59.7"
   dependencies:
     "@eslint-community/regexpp": ^4.4.0
-    "@typescript-eslint/scope-manager": 5.59.6
-    "@typescript-eslint/type-utils": 5.59.6
-    "@typescript-eslint/utils": 5.59.6
+    "@typescript-eslint/scope-manager": 5.59.7
+    "@typescript-eslint/type-utils": 5.59.7
+    "@typescript-eslint/utils": 5.59.7
     debug: ^4.3.4
     grapheme-splitter: ^1.0.4
     ignore: ^5.2.0
@@ -12704,7 +12704,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: fc495b5eadc70603f0d677921a70f151ac94453ebd76b77abbf7ed213c09daf05a3e2b2e2b16139b30dc6574d068d988e4e53c017759f3d3307fa394cfd4ae39
+  checksum: 10d28bac7a5af9e41767be0bb9c270ee3dcdfeaa38d1b036c6822e7260b88821c460699ba943664eb1ef272d00de6a81b99d7d955332044ea87b624e7ead84a1
   languageName: node
   linkType: hard
 
@@ -12737,19 +12737,19 @@ __metadata:
   linkType: hard
 
 "@typescript-eslint/parser@npm:^5.57.1":
-  version: 5.59.6
-  resolution: "@typescript-eslint/parser@npm:5.59.6"
+  version: 5.59.7
+  resolution: "@typescript-eslint/parser@npm:5.59.7"
   dependencies:
-    "@typescript-eslint/scope-manager": 5.59.6
-    "@typescript-eslint/types": 5.59.6
-    "@typescript-eslint/typescript-estree": 5.59.6
+    "@typescript-eslint/scope-manager": 5.59.7
+    "@typescript-eslint/types": 5.59.7
+    "@typescript-eslint/typescript-estree": 5.59.7
     debug: ^4.3.4
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 1f6e259f501e3d13f9632bd71da2cf3d11150f1276079522e8d5c392a07c3aea867c855481981fca3bf32beb6bef046ef64cdfceba8ea4150f27099e44d9a92c
+  checksum: bc44f37a11a44f84ae5f0156213f3e2e49aef2ecac94d9e161a0c721acd29462e288f306ad4648095ac1c0e5a5f62b78280c1735883cf39f79ee3afcba312119
   languageName: node
   linkType: hard
 
@@ -12783,13 +12783,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/scope-manager@npm:5.59.6"
+"@typescript-eslint/scope-manager@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/scope-manager@npm:5.59.7"
   dependencies:
-    "@typescript-eslint/types": 5.59.6
-    "@typescript-eslint/visitor-keys": 5.59.6
-  checksum: 65cce7b3fc320e264ef966da9a26bb7cba014ec5a0c9c5518cb08a624d67ac6eb67dd8e2df49b33eeaaaacaf42c73f291d56f93a9d1ec82c58bd1e7e872e530b
+    "@typescript-eslint/types": 5.59.7
+    "@typescript-eslint/visitor-keys": 5.59.7
+  checksum: 43f7ea93fddbe2902122a41050677fe3eff2ea468f435b981592510cfc6136e8c28ac7d3a3e05fb332c0b3078a29bd0c91c35b2b1f4e788b4eb9aaeb70e21583
   languageName: node
   linkType: hard
 
@@ -12810,12 +12810,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/type-utils@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/type-utils@npm:5.59.6"
+"@typescript-eslint/type-utils@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/type-utils@npm:5.59.7"
   dependencies:
-    "@typescript-eslint/typescript-estree": 5.59.6
-    "@typescript-eslint/utils": 5.59.6
+    "@typescript-eslint/typescript-estree": 5.59.7
+    "@typescript-eslint/utils": 5.59.7
     debug: ^4.3.4
     tsutils: ^3.21.0
   peerDependencies:
@@ -12823,7 +12823,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: f8e09dc16f413090ec464d48bd86e1b44a569e5a6ed78370f3e8132e80a464dfcdc1525f4f0706b79e397841b1865016cb38353475264beec49851d78a7fdd36
+  checksum: 9cbeffad27b145b478e4cbbab2b44c5b246a9b922f01fd06d401ea4c41a4fa6dc8ba75d13a6409b3b4474ccaf2018770a4c6c599172e22ec2004110e00f4e721
   languageName: node
   linkType: hard
 
@@ -12848,10 +12848,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/types@npm:5.59.6"
-  checksum: e898ca629d95b69f5dbfb7c9a3d28f943e5a372d37bf7efaefb41341d2d7147372cd4956b35b637e9b3a1b8555d64a5b35776650b815c4227b114513247ec2b5
+"@typescript-eslint/types@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/types@npm:5.59.7"
+  checksum: 52eccec9e2d631eb2808e48b5dc33a837b5e242fa9eddace89fc707c9f2283b5364f1d38b33d418a08d64f45f6c22f051800898e1881a912f8aac0c3ae300d0a
   languageName: node
   linkType: hard
 
@@ -12909,12 +12909,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/typescript-estree@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/typescript-estree@npm:5.59.6"
+"@typescript-eslint/typescript-estree@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/typescript-estree@npm:5.59.7"
   dependencies:
-    "@typescript-eslint/types": 5.59.6
-    "@typescript-eslint/visitor-keys": 5.59.6
+    "@typescript-eslint/types": 5.59.7
+    "@typescript-eslint/visitor-keys": 5.59.7
     debug: ^4.3.4
     globby: ^11.1.0
     is-glob: ^4.0.3
@@ -12923,7 +12923,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 65b7879e8cd4ccb987c1e1fa75cd84250cb46799ba0de6cdcaec70f6700b45ae4efcebb24163ca7946152e1b12595ee58e35bfb31ea6d35b3f39deaf973d4f1a
+  checksum: eefe82eedf9ee2e14463c3f2b5b18df084c1328a859b245ee897a9a7075acce7cca0216a21fd7968b75aa64189daa008bfde1e2f9afbcc336f3dfe856e7f342e
   languageName: node
   linkType: hard
 
@@ -12961,21 +12961,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/utils@npm:5.59.6"
+"@typescript-eslint/utils@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/utils@npm:5.59.7"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@types/json-schema": ^7.0.9
     "@types/semver": ^7.3.12
-    "@typescript-eslint/scope-manager": 5.59.6
-    "@typescript-eslint/types": 5.59.6
-    "@typescript-eslint/typescript-estree": 5.59.6
+    "@typescript-eslint/scope-manager": 5.59.7
+    "@typescript-eslint/types": 5.59.7
+    "@typescript-eslint/typescript-estree": 5.59.7
     eslint-scope: ^5.1.1
     semver: ^7.3.7
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 40ffe1d2f1fbf6c30aa05f4a68785fb1e77aa09772ea45b001daf4068e504830cf60a441a819b2c6ffe4a19216aba404869300b2ce6bc2a67d093f74ded504a7
+  checksum: d8682700187ca94cc6441480cb6b87d0514a9748103c15dd93206c5b1c6fefa59063662f27a4103e16abbcfb654a61d479bc55af8f23d96f342431b87f31bb4e
   languageName: node
   linkType: hard
 
@@ -13009,13 +13009,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/visitor-keys@npm:5.59.6":
-  version: 5.59.6
-  resolution: "@typescript-eslint/visitor-keys@npm:5.59.6"
+"@typescript-eslint/visitor-keys@npm:5.59.7":
+  version: 5.59.7
+  resolution: "@typescript-eslint/visitor-keys@npm:5.59.7"
   dependencies:
-    "@typescript-eslint/types": 5.59.6
+    "@typescript-eslint/types": 5.59.7
     eslint-visitor-keys: ^3.3.0
-  checksum: 8f216411344f5ed618ab838fa3fc4b04f3041f33e08d9b160df4db988f496c71f934c4b0362f686ce63ecf7f5d926c67190d5116c91945c1957544728449ec6b
+  checksum: 4367f2ea68dd96a0520485434ad11e1bd26239eeeb3a2150bee7478a0f1df3c2099a39f96486722932be0456bcb7a47a483b452876d1d30bdeb9b81d354eef3d
   languageName: node
   linkType: hard
 
@@ -20236,13 +20236,13 @@ __metadata:
   linkType: hard
 
 "eslint@npm:^8.38.0":
-  version: 8.40.0
-  resolution: "eslint@npm:8.40.0"
+  version: 8.41.0
+  resolution: "eslint@npm:8.41.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
     "@eslint/eslintrc": ^2.0.3
-    "@eslint/js": 8.40.0
+    "@eslint/js": 8.41.0
     "@humanwhocodes/config-array": ^0.11.8
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -20262,13 +20262,12 @@ __metadata:
     find-up: ^5.0.0
     glob-parent: ^6.0.2
     globals: ^13.19.0
-    grapheme-splitter: ^1.0.4
+    graphemer: ^1.4.0
     ignore: ^5.2.0
     import-fresh: ^3.0.0
     imurmurhash: ^0.1.4
     is-glob: ^4.0.0
     is-path-inside: ^3.0.3
-    js-sdsl: ^4.1.4
     js-yaml: ^4.1.0
     json-stable-stringify-without-jsonify: ^1.0.1
     levn: ^0.4.1
@@ -20281,7 +20280,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: b79eba37f52f517a420eec99a80ae9f284d2cbe73afc0d4d3d4d5ed1cce0b06f21badc0374bfb7ac239efd2d49a1fd7c6111d6c3d52888521f377ba33de77e61
+  checksum: 09979a6f8451dcc508a7005b6670845c8a518376280b3fd96657a406b8b6ef29d0e480d1ba11b4eb48da93d607e0c55c9b877676fe089d09973ec152354e23b2
   languageName: node
   linkType: hard
 
@@ -22680,6 +22679,13 @@ __metadata:
   version: 1.0.4
   resolution: "grapheme-splitter@npm:1.0.4"
   checksum: 0c22ec54dee1b05cd480f78cf14f732cb5b108edc073572c4ec205df4cd63f30f8db8025afc5debc8835a8ddeacf648a1c7992fe3dcd6ad38f9a476d84906620
+  languageName: node
+  linkType: hard
+
+"graphemer@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "graphemer@npm:1.4.0"
+  checksum: bab8f0be9b568857c7bec9fda95a89f87b783546d02951c40c33f84d05bb7da3fd10f863a9beb901463669b6583173a8c8cc6d6b306ea2b9b9d5d3d943c3a673
   languageName: node
   linkType: hard
 
@@ -33315,12 +33321,12 @@ __metadata:
   linkType: hard
 
 "react-virtuoso@npm:^4.3.7":
-  version: 4.3.7
-  resolution: "react-virtuoso@npm:4.3.7"
+  version: 4.3.8
+  resolution: "react-virtuoso@npm:4.3.8"
   peerDependencies:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
-  checksum: 5a00634e76146b20bbda11d5d2f8e5dbbc9f559ab049fb74ec4250503c03052a1bb4ff401b3596da904d96cfdf0d6bda5748bc833d3b2c773803601e72352249
+  checksum: 40edf3ed404a43191140eba96e6f14206d8bfa4e12d8f00fab83514f4e43a8c0d7bf518190ec699f1bfee1dd4e893ecd3c9098f221ebeb8f76e117a85ca09ed4
   languageName: node
   linkType: hard
 
@@ -34367,8 +34373,8 @@ __metadata:
   linkType: hard
 
 "rollup@npm:^3.21.0":
-  version: 3.22.0
-  resolution: "rollup@npm:3.22.0"
+  version: 3.23.0
+  resolution: "rollup@npm:3.23.0"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -34376,7 +34382,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 6da2bfe1eb16714ccd4bf56ca92430309dc71b4492a3c38502f68f645433dcc789fb79f3761fc2269aa0cf20ece7821c4d7c95b860b7343c2ed52ed1c36c9a90
+  checksum: 0721065cf725c5611815be61d2b01f20b4d0027e17035f6e76384d38396b56cf6ed21a3db78eb004d9db4d24c8a6a19da4563b4ff96b5dd36f0a0f7a3baf85e8
   languageName: node
   linkType: hard
 
