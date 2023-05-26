@@ -108,7 +108,7 @@ export class DDPSDK implements SDK {
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
 		connection.on('connected', () => {
-			Object.entries(stream.subscriptions).forEach(([, sub]) => {
+			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});
 		});
