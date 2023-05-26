@@ -8,8 +8,5 @@ export const useCurrentContacts = (
 ): UseQueryResult<OperationResult<'GET', '/v1/livechat/visitors.search'>> => {
 	const currentContacts = useEndpoint('GET', '/v1/livechat/visitors.search');
 
-	return useQuery(['current-contacts', query], () => currentContacts(query), {
-		// TODO: Update this to use an stream of room changes instead of polling
-		cacheTime: 0,
-	});
+	return useQuery(['current-contacts', query], () => currentContacts(query));
 };
