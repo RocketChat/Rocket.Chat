@@ -14,7 +14,6 @@ afterEach(() => {
 	WS.clean();
 });
 
-// 87,92,105,134,142,166
 
 it('should connect', async () => {
 	const client = new MinimalDDPClient();
