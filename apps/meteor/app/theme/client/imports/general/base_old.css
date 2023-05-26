@@ -998,10 +998,10 @@
 .rc-old .highlight-text {
 	padding: 0 2px 2px;
 
-	color: var(--rcx-color-font-pure-black, #2f343d);
+	color: var(--rcx-color-font-pure-white, #ffffff);
 
 	border-radius: var(--border-radius);
-	background-color: var(--rcx-color-status-background-info, #d1ebfe);
+	background-color: var(--rcx-color-badge-background-level-4, #f5455c);
 }
 
 @keyframes zoomIn {
