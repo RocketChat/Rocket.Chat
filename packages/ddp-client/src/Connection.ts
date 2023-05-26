@@ -22,7 +22,7 @@ type RetryOptions = {
 	retryTime: number;
 };
 
-type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
+type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
 export interface Connection
 	extends Emitter<{
@@ -69,7 +69,7 @@ export class ConnectionImpl
 
 	retryCount = 0;
 
-	private queue = new Set<string>();
+	public queue = new Set<string>();
 
 	constructor(
 		readonly url: string,
@@ -84,6 +84,7 @@ export class ConnectionImpl
 				this.ws.send(message);
 				return;
 			}
+
 			this.queue.add(message);
 		});
 
@@ -108,6 +109,8 @@ export class ConnectionImpl
 		clearTimeout(this.retryOptions.retryTimer);
 
 		this.emit('reconnecting');
+
+		this.emit('connection', 'reconnecting');
 
 		return this.connect();
 	}
@@ -201,7 +204,7 @@ export class ConnectionImpl
 		WebSocketImpl: WebSocketConstructor,
 		client: DDPClient,
 		retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
-	): Connection {
+	): ConnectionImpl {
 		return new ConnectionImpl(url, WebSocketImpl, client, retryOptions);
 	}
 }

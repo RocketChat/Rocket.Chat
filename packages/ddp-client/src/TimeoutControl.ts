@@ -60,7 +60,6 @@ export class TimeoutControl
 		});
 
 		timeoutControl.on('timeout', () => {
-			console.log('Timeout');
 			connection.close();
 		});
 
