@@ -81,7 +81,7 @@ it('should ignore messages other from changed', async () => {
 	expect(cb).toBeCalledTimes(0);
 });
 
-it.only('should handle streams after reconnect', async () => {
+it('should handle streams after reconnect', async () => {
 	const cb = jest.fn();
 
 	const streamName = 'stream';
