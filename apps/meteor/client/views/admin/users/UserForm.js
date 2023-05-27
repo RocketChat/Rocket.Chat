@@ -14,8 +14,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
-import VerticalBar from '../../../components/VerticalBar';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();
@@ -58,7 +58,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
 
 	return (
-		<VerticalBar.ScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
+		<ContextualbarScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 			<FieldGroup>
 				{prepend}
 				{useMemo(
@@ -283,6 +283,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				<CustomFieldsForm onLoadFields={onLoadCustomFields} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 				{append}
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 }
