@@ -1,12 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
-import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useForm } from '../../../hooks/useForm';
+import React, { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 type TranscriptModalProps = {
 	email: string;
@@ -28,54 +25,50 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 }) => {
 	const t = useTranslation();
 
-	const inputRef = useAutoFocus<HTMLInputElement>(true);
-
-	const { values, handlers } = useForm({
-		email: emailDefault || '',
-		subject: t('Transcript_of_your_livechat_conversation'),
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		setFocus,
+		watch,
+		formState: { errors, isValid },
+	} = useForm({
+		defaultValues: { email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') },
 	});
 
-	const { email, subject } = values as { email: string; subject: string };
-	const { handleEmail, handleSubject } = handlers;
-	const [emailError, setEmailError] = useState('');
-	const [subjectError, setSubjectError] = useState('');
+	useEffect(() => {
+		setFocus('subject');
+	}, [setFocus]);
+
 	const { transcriptRequest } = room;
 	const roomOpen = room?.open;
 	const token = room?.v?.token;
 
-	const handleRequest = useCallback(() => {
-		onRequest(email, subject);
-	}, [email, onRequest, subject]);
-
-	const handleSend = useCallback(
-		(e) => {
-			e.preventDefault();
-			onSend && token && onSend(email, subject, token);
-		},
-		[email, onSend, subject, token],
-	);
-
 	const handleDiscard = useCallback(() => onDiscard(), [onDiscard]);
 
-	useComponentDidUpdate(() => {
-		setEmailError(!email ? t('The_field_is_required', t('Email')) : '');
-	}, [t, email]);
-
-	useComponentDidUpdate(() => {
-		setSubjectError(!subject ? t('The_field_is_required', t('Subject')) : '');
-	}, [t, subject]);
-
-	const canSave = useMemo(() => !!subject, [subject]);
+	const submit = useCallback(
+		({ email, subject }: { email: string; subject: string }) => {
+			if (roomOpen && !transcriptRequest) {
+				onRequest(email, subject);
+			}
+			if (!roomOpen && onSend && token) {
+				onSend(email, subject, token);
+			}
+		},
+		[onRequest, onSend, roomOpen, token, transcriptRequest],
+	);
 
 	useEffect(() => {
 		if (transcriptRequest) {
-			handleEmail(transcriptRequest.email);
-			handleSubject(transcriptRequest.subject);
+			setValue('email', transcriptRequest.email);
+			setValue('subject', transcriptRequest.subject);
 		}
-	});
+	}, [setValue, transcriptRequest]);
+
+	const canSubmit = isValid && Boolean(watch('subject'));
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSend} {...props} />} {...props}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
 			<Modal.Header>
 				<Modal.Icon name='mail-arrow-top-right' />
 				<Modal.Title>{t('Transcript')}</Modal.Title>
@@ -88,27 +81,24 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 					<Field.Row>
 						<TextInput
 							disabled={!!emailDefault || !!transcriptRequest}
-							error={emailError}
+							error={errors.email?.message}
 							flexGrow={1}
-							value={email}
-							onChange={handleEmail}
+							{...register('email', { required: t('The_field_is_required', t('Email')) })}
 						/>
 					</Field.Row>
-					<Field.Error>{emailError}</Field.Error>
+					<Field.Error>{errors.email?.message}</Field.Error>
 				</Field>
 				<Field marginBlock='x15'>
 					<Field.Label>{t('Subject')}*</Field.Label>
 					<Field.Row>
 						<TextInput
-							ref={inputRef}
 							disabled={!!transcriptRequest}
-							error={subjectError}
+							error={errors.subject?.message}
 							flexGrow={1}
-							value={subject}
-							onChange={handleSubject}
+							{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
 						/>
 					</Field.Row>
-					<Field.Error>{subjectError}</Field.Error>
+					<Field.Error>{errors.subject?.message}</Field.Error>
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
@@ -120,12 +110,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button disabled={!canSave} primary onClick={handleRequest}>
+						<Button aria-label='request-button' disabled={!canSubmit} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button disabled={!canSave} primary type='submit'>
+						<Button aria-label='send-button' disabled={!canSubmit} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}
