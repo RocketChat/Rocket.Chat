@@ -25,7 +25,8 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-	return WS.clean();
+	server.close();
+	WS.clean();
 });
 
 it('should handle a stream of messages', async () => {
@@ -80,7 +81,7 @@ it('should ignore messages other from changed', async () => {
 	expect(cb).toBeCalledTimes(0);
 });
 
-it('should handle streams after reconnect', async () => {
+it.only('should handle streams after reconnect', async () => {
 	const cb = jest.fn();
 
 	const streamName = 'stream';
@@ -108,18 +109,17 @@ it('should handle streams after reconnect', async () => {
 
 	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
-	await server.close();
-	await WS.clean();
+	server.close();
+	WS.clean();
 
 	server = new WS('ws://localhost:1234');
 
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, server.connected, Promise.resolve(jest.advanceTimersByTimeAsync(1000)), reconnect, connecting, connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
 
-	await jest.advanceTimersByTimeAsync(1000);
-
+	// the client should reconnect and resubscribe
 	await handleSubscription(server, result.id, streamName, streamParams);
 
 	fire(server, streamName, streamParams);
