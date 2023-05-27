@@ -3,12 +3,16 @@ import { settingsRegistry } from '../../app/settings/server';
 export const createLayoutSettings = () =>
 	settingsRegistry.addGroup('Layout', async function () {
 		await this.section('Login', async function () {
-			await this.add('Layout_Login_Hide_Logo', false, {
-				type: 'boolean',
-				public: true,
-				enterprise: true,
-				invalidValue: false,
-			});
+			await this.add(
+				'Layout_Login_Hide_Logo',
+				'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
+				{
+					type: 'boolean',
+					public: true,
+					enterprise: true,
+					invalidValue: false,
+				}
+			);
 			await this.add('Layout_Login_Hide_Title', false, {
 				type: 'boolean',
 				public: true,
@@ -110,7 +114,7 @@ export const createLayoutSettings = () =>
 			});
 			await this.add(
 				'Layout_Login_Terms',
-				'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
+				false,
 				{
 					type: 'string',
 					multiline: true,
