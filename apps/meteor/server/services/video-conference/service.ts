@@ -420,7 +420,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
 		/* deprecated */
-		Notifications.notifyRoom(rid, callId);
+		(Notifications.notifyRoom as any)(rid, callId);
 
 		Notifications.notifyRoom(rid, 'videoconf', callId);
 	}
