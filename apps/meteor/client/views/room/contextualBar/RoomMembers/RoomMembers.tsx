@@ -132,10 +132,10 @@ const RoomMembers = ({
 				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
 				{!loading && members.length > 0 && (
-            <>
-					<Box pi='x18' pb='x12'>
-						<Box is='span' color='hint' fontScale='p2'>
-							{t('Showing_current_of_total', { current: members.length, total })}
+					<>
+						<Box pi='x18' pb='x12'>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
 						</Box>
 
@@ -148,6 +148,7 @@ const RoomMembers = ({
 								totalCount={total}
 								overscan={50}
 								data={members}
+								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 								itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
 							/>
