@@ -2889,7 +2889,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				roles: {
 					$all: ['livechat-agent'],
-					$nin: ['livechat-manager', 'livechat-monitor'],
+					$nin: ['livechat-manager', 'livechat-monitor', 'admin'],
 				},
 				statusLivechat: 'available',
 				...extraQuery,
