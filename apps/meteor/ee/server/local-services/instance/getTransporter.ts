@@ -9,10 +9,7 @@ export function getTransporter({ transporter, port }: { transporter?: string; po
 	}
 
 	return {
-		type: 'TCP',
-		options: {
-			port: port ? port.trim() : 0,
-			udpDiscovery: false,
-		},
+		port: port ? port.trim() : 0,
+		udpDiscovery: false,
 	};
 }

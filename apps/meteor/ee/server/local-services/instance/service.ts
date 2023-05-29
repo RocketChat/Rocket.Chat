@@ -1,7 +1,7 @@
 import os from 'os';
 
 import type { BrokerNode } from 'moleculer';
-import { ServiceBroker } from 'moleculer';
+import { ServiceBroker, Transporters } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import { InstanceStatus } from '@rocket.chat/instance-status';
@@ -15,6 +15,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private broadcastStarted = false;
 
+	private transporter: Transporters.TCP | Transporters.NATS;
+
+	private isTransporterTCP = true;
+
 	private broker: ServiceBroker;
 
 	private troubleshootDisableInstanceBroadcast = false;
@@ -22,12 +26,20 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT });
+		if (typeof tx === 'string') {
+			this.transporter = new Transporters.NATS({ url: tx });
+			this.isTransporterTCP = false;
+		} else {
+			this.transporter = new Transporters.TCP(tx);
+		}
+
 		this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
 			if (clientAction === 'removed') {
 				return;
 			}
 
-			if (clientAction === 'inserted' && data?.extraInformation?.port) {
+			if (this.isTransporterTCP && clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
 				this.connectNode(data);
 			}
 		});
@@ -63,10 +75,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	async created() {
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
-			transporter: getTransporter({
-				transporter: process.env.TRANSPORTER,
-				port: process.env.TCP_PORT,
-			}),
+			transporter: this.transporter,
 		});
 
 		this.broker.createService({
@@ -131,18 +140,20 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
 
-		await InstanceStatusRaw.find(
-			{
-				'extraInformation.tcpPort': {
-					$exists: true,
+		if (this.isTransporterTCP) {
+			await InstanceStatusRaw.find(
+				{
+					'extraInformation.tcpPort': {
+						$exists: true,
+					},
 				},
-			},
-			{
-				sort: {
-					_createdAt: -1,
+				{
+					sort: {
+						_createdAt: -1,
+					},
 				},
-			},
-		).forEach(this.connectNode.bind(this));
+			).forEach(this.connectNode.bind(this));
+		}
 	}
 
 	private connectNode(record: any) {
