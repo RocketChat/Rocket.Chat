@@ -448,7 +448,13 @@ API.v1.addRoute(
 				delete guestData.phone;
 			}
 
-			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
+			const result = await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+
+			const firstError = result.find((item) => item.status === 'rejected');
+			if (firstError) {
+				throw new Error((firstError as PromiseRejectedResult).reason.error);
+			}
 
 			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,
