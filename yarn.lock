@@ -8216,6 +8216,7 @@ __metadata:
     iconv-lite: ^0.6.3
     image-size: ^1.0.1
     imap: ^0.8.19
+    inter-ui: ^3.19.3
     ip-range-check: ^0.2.0
     is-svg: ^4.3.2
     jquery: ^3.6.0
@@ -24152,6 +24153,13 @@ __metadata:
     strip-ansi: ^5.1.0
     through: ^2.3.6
   checksum: 175ad4cd1ebed493b231b240185f1da5afeace5f4e8811dfa83cf55dcae59c3255eaed990aa71871b0fd31aa9dc212f43c44c50ed04fb529364405e72f484d28
+  languageName: node
+  linkType: hard
+
+"inter-ui@npm:^3.19.3":
+  version: 3.19.3
+  resolution: "inter-ui@npm:3.19.3"
+  checksum: 74435e742e9829402cf15ac08aa48541c93e96d7528a29ba3bc2a14b059ccd3f330ddba8b1c96f06bfdda46b0c7e1a406db22a309045b3412b66ec4dcb5efa2a
   languageName: node
   linkType: hard
 
