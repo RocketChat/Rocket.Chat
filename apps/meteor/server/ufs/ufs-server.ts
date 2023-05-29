@@ -8,7 +8,7 @@ import mkdirp from 'mkdirp';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import { UploadFS } from '.';
+import { UploadFS } from './ufs';
 
 Meteor.startup(() => {
 	const path = UploadFS.config.tmpDir;

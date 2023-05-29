@@ -8,7 +8,7 @@ import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 
 import './Presence';
 
-class Stream extends Streamer {
+class Stream extends Streamer<'local'> {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		Meteor.publish(name, function (eventName, options) {
 			return fn.call(this, eventName, options);

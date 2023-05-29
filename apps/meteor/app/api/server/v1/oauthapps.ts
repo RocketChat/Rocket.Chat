@@ -63,7 +63,7 @@ API.v1.addRoute(
 
 			const { appId } = this.bodyParams;
 
-			const result = Meteor.call('updateOAuthApp', appId, this.bodyParams);
+			const result = await Meteor.callAsync('updateOAuthApp', appId, this.bodyParams);
 
 			return API.v1.success(result);
 		},
@@ -84,7 +84,7 @@ API.v1.addRoute(
 
 			const { appId } = this.bodyParams;
 
-			const result = Meteor.call('deleteOAuthApp', appId);
+			const result = await Meteor.callAsync('deleteOAuthApp', appId);
 
 			return API.v1.success(result);
 		},

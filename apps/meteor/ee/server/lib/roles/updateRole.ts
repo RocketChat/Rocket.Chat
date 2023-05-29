@@ -42,6 +42,7 @@ export const updateRole = async (roleId: IRole['_id'], roleData: Omit<IRole, '_i
 		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
 			_id: roleId,
+			scope: roleData.scope,
 		});
 	}
 

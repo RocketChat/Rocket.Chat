@@ -11,12 +11,16 @@ type EmojiProps = MessageParser.Emoji & {
 };
 
 const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
-	const { convertAsciiToEmoji } = useContext(MarkupInteractionContext);
+	const { convertAsciiToEmoji, useEmoji } = useContext(MarkupInteractionContext);
 
 	const asciiEmoji = useMemo(
 		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
 		[emoji],
 	);
+
+	if (!useEmoji && 'shortCode' in emoji) {
+		return <PlainSpan text={emoji.shortCode === emoji.value.value ? `:${emoji.shortCode}:` : emoji.value.value} />;
+	}
 
 	if (!convertAsciiToEmoji && asciiEmoji) {
 		return <PlainSpan text={asciiEmoji} />;
