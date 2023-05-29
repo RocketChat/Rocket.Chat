@@ -1,11 +1,18 @@
-import { Box, Icon, TextInput, Select, Throbber, Field } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
 import { useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
 import Row from './Row';
 
 function RoomFiles({
@@ -47,29 +54,31 @@ function RoomFiles({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='attachment' />
-				<VerticalBar.Text>{t('Files')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='attachment' />
+				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.Content p='x12'>
-				<Field>
-					<Field.Row>
-						<TextInput
-							data-qa-files-search
-							id={searchId}
-							placeholder={t('Search_Files')}
-							ref={inputRef}
-							value={text}
-							onChange={setText}
-							addon={<Icon name='magnifier' size='x20' />}
-						/>
-						<Box w='x144' mis='x8'>
-							<Select onChange={setType} value={type} options={options} />
-						</Box>
-					</Field.Row>
-				</Field>
+			<ContextualbarContent p='x12'>
+				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline='x4'>
+							<TextInput
+								data-qa-files-search
+								id={searchId}
+								placeholder={t('Search_Files')}
+								ref={inputRef}
+								value={text}
+								onChange={setText}
+								addon={<Icon name='magnifier' size='x20' />}
+							/>
+							<Box w='x144' mis='x8'>
+								<Select onChange={setType} value={type} options={options} />
+							</Box>
+						</Margins>
+					</Box>
+				</Box>
 
 				{loading && (
 					<Box p='x12'>
@@ -77,27 +86,25 @@ function RoomFiles({
 					</Box>
 				)}
 
-				{!loading && filesItems.length <= 0 && (
-					<Box textAlign='center' p='x12' color='annotation'>
-						{t('No_files_found')}
+				{!loading && filesItems.length <= 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
+
+				{!loading && filesItems.length > 0 && (
+					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
+						<Virtuoso
+							style={{
+								height: '100%',
+								width: '100%',
+							}}
+							totalCount={total}
+							endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+							overscan={50}
+							data={filesItems}
+							components={{ Scroller: ScrollableContentWrapper }}
+							itemContent={(index, data) => <Row data={itemData} index={index} item={data} />}
+						/>
 					</Box>
 				)}
-
-				<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-					<Virtuoso
-						style={{
-							height: '100%',
-							width: '100%',
-						}}
-						totalCount={total}
-						endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
-						overscan={50}
-						data={filesItems}
-						components={{ Scroller: ScrollableContentWrapper }}
-						itemContent={(index, data) => <Row data={itemData} index={index} item={data} />}
-					/>
-				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 }

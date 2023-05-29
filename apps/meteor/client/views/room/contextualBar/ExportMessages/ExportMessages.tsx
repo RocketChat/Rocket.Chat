@@ -5,7 +5,13 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useState, useMemo } from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../components/Contextualbar';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
@@ -29,12 +35,12 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='mail' />
-				<VerticalBar.Text>{t('Export_Messages')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={close} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='mail' />
+				<ContextualbarTitle>{t('Export_Messages')}</ContextualbarTitle>
+				<ContextualbarClose onClick={close} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Method')}</Field.Label>
@@ -45,7 +51,7 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 				</FieldGroup>
 				{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
 				{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };
