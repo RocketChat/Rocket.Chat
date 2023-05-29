@@ -387,4 +387,11 @@ export const createGeneralSettings = () =>
 				i18nDescription: 'Update_EnableChecker_Description',
 			});
 		});
+		await this.section('Moderation', async function () {
+			await this.add('Trust_Roles', false, {
+				type: 'boolean',
+				i18nDescription: 'Trust_Roles_Description',
+				public: true,
+			});
+		});
 	});
