@@ -44,6 +44,14 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]:invalid');
 	}
 
+	get invalidInputName() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]:invalid');
+	}
+
+	get invalidInputEmail() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]:invalid');
+	}
+
 	get btnTagsAdd() {
 		return this.page.locator('[data-qa="DepartmentEditAddButton-ConversationClosingTags"]');
 	}
@@ -130,5 +138,9 @@ export class OmnichannelDepartments {
 
 	btnTag(tagName: string) {
 		return this.page.locator('button', { hasText: tagName });
+	}
+
+	errorMessage(message: string): Locator {
+		return this.page.locator(`.rcx-field__error >> text="${message}"`);
 	}
 }
