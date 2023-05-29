@@ -6,7 +6,7 @@ import type {
 	OmnichannelEventDataSignature,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream, useRoute } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
@@ -66,7 +66,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const subscribeToNotifyUser = useStream('notify-user');
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
-	const homeRoute = useRoute('home');
 
 	const {
 		data: { priorities = [] } = {},
@@ -128,12 +127,18 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return;
 		}
 
-		return subscribeToNotifyUser(`${user._id}/omnichannel.events`, async (event: OmnichannelEventDataSignature): Promise<void> => {
-			homeRoute.push();
-			ChatRoom.remove(event.data.roomId);
-			queryClient.removeQueries({ queryKey: ['rooms', event.data.roomId], exact: true });
-		});
-	}, [subscribeToNotifyUser, user, queryClient, homeRoute]);
+		return subscribeToNotifyUser(
+			`${user._id}/omnichannel.events`,
+			async ({ event, data }: OmnichannelEventDataSignature): Promise<void> => {
+				if (event === 'InquiryTaken') {
+					ChatRoom.remove(data.roomId);
+					queryClient.removeQueries(['rooms', data.roomId]);
+					queryClient.removeQueries(['rooms', { reference: data.roomId, type: 'l' }]);
+					queryClient.removeQueries(['/v1/rooms.info', data.roomId]);
+				}
+			},
+		);
+	}, [subscribeToNotifyUser, user, queryClient]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {

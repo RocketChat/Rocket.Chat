@@ -51,8 +51,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useEffect(() => {
 		if (isSuccess && !room) {
 			homeRoute.push();
+			queryClient.removeQueries(['rooms', rid], { exact: true });
 		}
-	}, [isSuccess, room, homeRoute]);
+	}, [isSuccess, room, homeRoute, rid, queryClient]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
