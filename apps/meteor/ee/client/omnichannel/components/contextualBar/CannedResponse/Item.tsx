@@ -27,7 +27,8 @@ const Item: FC<{
 			pbs={16}
 			pbe={12}
 			pi={24}
-			borderBlockEndWidth='2px'
+			color='default'
+			borderBlockEndWidth={1}
 			borderBlockEndColor='light'
 			borderBlockEndStyle='solid'
 			onClick={onClickItem}

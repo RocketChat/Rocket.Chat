@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -12,6 +11,7 @@ import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);
@@ -61,7 +61,15 @@ type CreateDiscussionProperties = {
 	encrypted?: boolean;
 };
 
-const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
+const create = async ({
+	prid,
+	pmid,
+	t_name: discussionName,
+	reply,
+	users,
+	user,
+	encrypted,
+}: CreateDiscussionProperties): Promise<IRoom & { rid: string }> => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
 	if (pmid) {
@@ -123,7 +131,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
 			await addUserToRoom(discussionAlreadyExists._id, user);
-			return discussionAlreadyExists;
+			return { ...discussionAlreadyExists, rid: discussionAlreadyExists._id };
 		}
 	}
 
@@ -165,7 +173,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	let discussionMsg;
 	if (message) {
 		if (parentRoom.encrypted) {
-			message.msg = TAPi18n.__('Encrypted_message');
+			message.msg = i18n.t('Encrypted_message');
 		}
 		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 
@@ -191,6 +199,37 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const createDiscussion = async (
+	userId: string,
+	{ prid, pmid, t_name: discussionName, reply, users, encrypted }: Omit<CreateDiscussionProperties, 'user'>,
+): Promise<
+	IRoom & {
+		rid: string;
+	}
+> => {
+	if (!settings.get('Discussion_enabled')) {
+		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+	}
+
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'DiscussionCreation',
+		});
+	}
+
+	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user']))) {
+		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+	}
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'createDiscussion',
+		});
+	}
+
+	return create({ prid, pmid, t_name: discussionName, reply, users, user, encrypted });
+};
+
 Meteor.methods<ServerMethods>({
 	/**
 	 * Create discussion by room or message
@@ -203,10 +242,6 @@ Meteor.methods<ServerMethods>({
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
 	async createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
-		if (!settings.get('Discussion_enabled')) {
-			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
-		}
-
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -214,10 +249,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasAtLeastOnePermissionAsync(uid, ['start-discussion', 'start-discussion-other-user']))) {
-			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
-		}
-
-		return create({ prid, pmid, t_name: discussionName, reply, users, user: (await Meteor.userAsync()) as IUser, encrypted });
+		return createDiscussion(uid, { prid, pmid, t_name: discussionName, reply, users, encrypted });
 	},
 });
