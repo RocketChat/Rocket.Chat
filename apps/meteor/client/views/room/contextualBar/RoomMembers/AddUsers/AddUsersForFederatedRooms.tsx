@@ -4,18 +4,18 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useAddMatrixUsers } from './ValidateMatrixInvitedUsers/useAddMatrixUsers';
 
-type AddUsersProps = {
+type AddUsersForFederatedRoomsProps = {
 	onClickClose?: () => void;
 	onClickBack?: () => void;
-	onClickSave: () => Promise<void>;
-	users: Exclude<IUser['username'], undefined>[];
 	onChange: (value: string | string[]) => void;
+	users: Exclude<IUser['username'], undefined>[];
 };
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: AddUsersProps): ReactElement => {
+const AddUsersForFederatedRooms = ({ onClickClose, onClickBack, onChange, users }: AddUsersForFederatedRoomsProps): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -29,13 +29,13 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 				<FieldGroup>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						{<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />}
+						{<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />}
 					</Field>
 				</FieldGroup>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
+					<Button primary disabled={!users || users.length === 0} onClick={useAddMatrixUsers({ users: users.filter((user) => user.startsWith('@'))})}>
 						{t('Add_users')}
 					</Button>
 				</ButtonGroup>
@@ -44,4 +44,4 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 	);
 };
 
-export default AddUsers;
+export default AddUsersForFederatedRooms;

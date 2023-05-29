@@ -1,6 +1,6 @@
 import { Modal, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 type ValidateMatrixIdModalProps = {
@@ -9,27 +9,27 @@ type ValidateMatrixIdModalProps = {
 	onConfirm?: () => void;
 };
 
+const verificationStatusAsIcon = (verificationStatus: string) => {
+	if (verificationStatus === 'VERIFIED') {
+		return 'circle-check';
+	}
+
+	if (verificationStatus === 'UNVERIFIED') {
+		return 'circle-cross';
+	}
+
+	if (verificationStatus === 'UNABLE_TO_VERIFY') {
+		return 'circle-exclamation';
+	}
+};
+
 const ValidateMatrixIdModal = ({ onClose, onConfirm, _matrixIdVerifiedStatus }: ValidateMatrixIdModalProps): ReactElement => {
 	const t = useTranslation();
-
-	const verificationStatusAsIcon = (verificationStatus: string) => {
-		if (verificationStatus === 'VERIFIED') {
-			return <Icon name='circle-check' size='x20' />;
-		}
-
-		if (verificationStatus === 'UNVERIFIED') {
-			return <Icon name='circle-cross' size='x20' />;
-		}
-
-		if (verificationStatus === 'UNABLE_TO_VERIFY') {
-			return <Icon name='circle-exclamation' size='x20' />;
-		}
-	};
 
 	const matrixIdsAfterValidationList = () =>
 		Array.from(_matrixIdVerifiedStatus.entries()).map(([_matrixId, _verificationStatus]) => (
 			<li key={_matrixId}>
-				{_matrixId}: {verificationStatusAsIcon(_verificationStatus)}
+				{_matrixId}: <Icon name={verificationStatusAsIcon(_verificationStatus) as ComponentProps<typeof Icon>['name']} size='x20' />
 			</li>
 		));
 

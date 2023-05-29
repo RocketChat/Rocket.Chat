@@ -9,6 +9,7 @@ import { useForm } from '../../../../../hooks/useForm';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import AddUsers from './AddUsers';
+import AddUsersForFederatedRooms from './AddUsersForFederatedRooms';
 
 type AddUsersWithDataProps = {
 	rid: IRoom['_id'];
@@ -43,15 +44,10 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 		}
 	});
 
-	return (
-		<AddUsers
-			onClickClose={onClickClose}
-			onClickBack={onClickBack}
-			onClickSave={handleSave}
-			users={users}
-			isRoomFederated={isRoomFederated(room)}
-			onChange={handleUsers}
-		/>
+	return isRoomFederated(room) ? (
+		<AddUsersForFederatedRooms onClickClose={onClickClose} onClickBack={onClickBack} onChange={handleUsers} users={users} />
+	) : (
+		<AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={handleUsers} />
 	);
 };
 
