@@ -1,17 +1,31 @@
+/* eslint-disable no-debugger */
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
 import { DDPSDK } from '../src/DDPSDK';
+import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription } from './helpers';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
-let server: WS;
+export let server: WS;
+
+const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
+	return (async (...args) => {
+		const methods = [].concat(...Array(times));
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		for (const _ of methods) {
+			// eslint-disable-next-line no-await-in-loop
+			await fn(...args);
+		}
+	}) as F;
+};
+
 beforeEach(async () => {
 	server = new WS('ws://localhost:1234');
 });
 
 afterEach(() => {
-	WS.clean();
+	return WS.clean();
 });
 
 it('should handle a stream of messages', async () => {
@@ -20,30 +34,23 @@ it('should handle a stream of messages', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
-
-	const sdk = await create;
+	await handleConnection(server, sdk.connection.connect());
 
 	const stream = sdk.stream(streamName, streamParams, cb);
 
-	const [id] = [...sdk.client.subscriptions.keys()];
-	await server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
+	await handleSubscription(server, stream.id, streamName, streamParams);
 
-	await stream;
+	await stream.ready();
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	fireStreamChange(server, streamName, streamParams);
+	fireStreamChange(server, streamName, streamParams);
+	fireStreamChange(server, streamName, streamParams);
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}-another"}}`);
+	expect(cb).toBeCalledTimes(3);
+
+	fireStreamChange(server, streamName, `${streamParams}-another`);
 
 	expect(cb).toBeCalledTimes(3);
 
@@ -56,27 +63,19 @@ it('should ignore messages other from changed', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
-
-	const sdk = await create;
+	await handleConnection(server, sdk.connection.connect());
 
 	const stream = sdk.stream(streamName, streamParams, cb);
 
-	const [id] = [...sdk.client.subscriptions.keys()];
-	await server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
+	await handleSubscription(server, stream.id, streamName, streamParams);
 
-	await stream;
+	await stream.ready();
 
-	await server.send(`{"msg":"added","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"removed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	fireStreamAdded(server, streamName, streamParams);
+
+	fireStreamRemove(server, streamName, streamParams);
 
 	expect(cb).toBeCalledTimes(0);
 });
@@ -87,61 +86,47 @@ it('should handle streams after reconnect', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await handleConnection(server, sdk.connection.connect());
 
-	const sdk = await create;
+	const result = sdk.stream(streamName, streamParams, cb);
 
-	const stream = sdk.stream(streamName, streamParams, cb);
+	expect(result.isReady).toBe(false);
 
-	const [id] = [...sdk.client.subscriptions.keys()];
-	await server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
+	expect(sdk.client.subscriptions.size).toBe(1);
 
-	await stream;
+	await handleSubscription(server, result.id, streamName, streamParams);
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	await result.ready();
+
+	const fire = callXTimes(fireStreamChange, 3);
+
+	await fire(server, streamName, streamParams);
 
 	expect(cb).toBeCalledTimes(3);
+
+	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
+	await server.close();
+	await WS.clean();
 
-	server.close();
-	WS.clean();
 	server = new WS('ws://localhost:1234');
-
-	server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
 
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+	await handleConnection(server, server.connected, Promise.resolve(jest.advanceTimersByTimeAsync(1000)), reconnect, connecting, connected);
 
-	jest.runAllTimers();
+	await jest.advanceTimersByTimeAsync(1000);
 
-	await reconnect;
-	await connecting;
-	await connected;
+	await handleSubscription(server, result.id, streamName, streamParams);
 
-	server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
-
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	fire(server, streamName, streamParams);
+	await jest.advanceTimersByTimeAsync(1000);
 
 	expect(cb).toBeCalledTimes(6);
+
 	jest.useRealTimers();
 });
 
@@ -151,66 +136,60 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	const streamName = 'stream';
 	const streamParams = '123';
 
-	const create = DDPSDK.create('ws://localhost:1234');
+	const sdk = DDPSDK.create('ws://localhost:1234');
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
+	await handleConnection(server, sdk.connection.connect());
 
-	const sdk = await create;
+	const subscription = sdk.stream(streamName, streamParams, cb);
 
-	const stopSubscription = sdk.stream(streamName, streamParams, cb);
+	expect(subscription.isReady).toBe(false);
 
 	expect(sdk.client.subscriptions.size).toBe(1);
 
-	const [id] = [...sdk.client.subscriptions.keys()];
+	await handleSubscription(server, subscription.id, streamName, streamParams);
 
-	await server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
+	await expect(subscription.ready()).resolves.toBe(undefined);
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	expect(subscription.isReady).toBe(true);
+
+	fireStreamChange(server, streamName, streamParams);
+	fireStreamChange(server, streamName, streamParams);
+	fireStreamChange(server, streamName, streamParams);
 
 	expect(cb).toBeCalledTimes(3);
+
+	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
 
 	server.close();
 	WS.clean();
 	server = new WS('ws://localhost:1234');
 
-	server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
-	});
-
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
 
-	jest.runAllTimers();
+	await handleSubscription(server, subscription.id, streamName, streamParams);
 
-	await reconnect;
-	await connecting;
-	await connected;
+	expect(subscription.isReady).toBe(true);
 
-	server.nextMessage.then((message) => {
-		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
-		return server.send(`{"msg":"ready","subs":["${id}"]}`);
-	});
+	fireStreamChange(server, streamName, streamParams);
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	subscription.stop();
 
-	stopSubscription();
+	expect(sdk.client.subscriptions.size).toBe(0);
 
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
-	await server.send(`{"msg":"changed","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`);
+	fireStreamChange(server, streamName, streamParams);
+	fireStreamChange(server, streamName, streamParams);
+	jest.advanceTimersByTimeAsync(1000);
 
 	expect(cb).toBeCalledTimes(4);
 
 	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();
+});
+
+it('should create and connect to a stream', async () => {
+	await handleConnection(server, DDPSDK.createAndConnect('ws://localhost:1234'));
 });
