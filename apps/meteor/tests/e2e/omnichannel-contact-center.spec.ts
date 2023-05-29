@@ -102,22 +102,26 @@ test.describe('Omnichannel Contact Center', () => {
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
-		await test.step('validate existing email', async () => {
+		await test.step('input existing email', async () => {
 			await poContacts.newContact.inputEmail.selectText();
 			await poContacts.newContact.inputEmail.type(EXISTING_CONTACT.email);
-			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).toBeVisible();
-			await expect(poContacts.newContact.btnSave).toBeDisabled();
-		});
-
-		await test.step('input email', async () => {
-			await poContacts.newContact.inputEmail.selectText();
-			await poContacts.newContact.inputEmail.type(NEW_CONTACT.email);
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
 
-		await test.step('validate existing phone ', async () => {
+		await test.step('input existing phone ', async () => {
+			await poContacts.newContact.inputPhone.selectText();
 			await poContacts.newContact.inputPhone.type(EXISTING_CONTACT.phone);
+			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
+		});
+
+		await test.step('run async validations ', async () => {
+			await expect(poContacts.newContact.btnSave).toBeEnabled();
+			await poContacts.newContact.btnSave.click();
+
+			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).toBeVisible();
+			await expect(poContacts.newContact.btnSave).toBeDisabled();
+
 			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).toBeVisible();
 			await expect(poContacts.newContact.btnSave).toBeDisabled();
 		});
@@ -126,6 +130,13 @@ test.describe('Omnichannel Contact Center', () => {
 			await poContacts.newContact.inputPhone.selectText();
 			await poContacts.newContact.inputPhone.type(NEW_CONTACT.phone);
 			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
+		});
+
+		await test.step('input email', async () => {
+			await poContacts.newContact.inputEmail.selectText();
+			await poContacts.newContact.inputEmail.type(NEW_CONTACT.email);
+			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
+			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
 
 		await test.step('save new contact ', async () => {
@@ -172,31 +183,17 @@ test.describe('Omnichannel Contact Center', () => {
 			await expect(poContacts.contactInfo.errorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
-		await test.step('validate existing email', async () => {
+		await test.step('input existing email', async () => {
 			await poContacts.contactInfo.inputEmail.selectText();
 			await poContacts.contactInfo.inputEmail.type(EXISTING_CONTACT.email);
-			await expect(poContacts.contactInfo.errorMessage(ERROR.existingEmail)).toBeVisible();
-			await expect(poContacts.contactInfo.btnSave).toBeDisabled();
-		});
-
-		await test.step('input email', async () => {
-			await poContacts.contactInfo.inputEmail.selectText();
-			await poContacts.contactInfo.inputEmail.type(EDIT_CONTACT.email);
 			await expect(poContacts.contactInfo.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.contactInfo.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
 		});
 
-		await test.step('validate existing phone ', async () => {
+		await test.step('input existing phone ', async () => {
 			await poContacts.contactInfo.inputPhone.selectText();
 			await poContacts.contactInfo.inputPhone.type(EXISTING_CONTACT.phone);
-			await expect(poContacts.contactInfo.errorMessage(ERROR.existingPhone)).toBeVisible();
-			await expect(poContacts.contactInfo.btnSave).toBeDisabled();
-		});
-
-		await test.step('input phone ', async () => {
-			await poContacts.contactInfo.inputPhone.selectText();
-			await poContacts.contactInfo.inputPhone.type(EDIT_CONTACT.phone);
 			await expect(poContacts.contactInfo.errorMessage(ERROR.existingPhone)).not.toBeVisible();
 			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
 		});
@@ -204,15 +201,38 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('validate name is required', async () => {
 			await poContacts.contactInfo.inputName.selectText();
 			await poContacts.contactInfo.inputName.type(' ');
-
-			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
-			await poContacts.contactInfo.btnSave.click();
 			await expect(poContacts.contactInfo.errorMessage(ERROR.nameRequired)).toBeVisible();
+
+			await expect(poContacts.contactInfo.btnSave).not.toBeEnabled();
 		});
 
 		await test.step('edit name', async () => {
 			await poContacts.contactInfo.inputName.selectText();
 			await poContacts.contactInfo.inputName.type(EDIT_CONTACT.name);
+		});
+
+		await test.step('run async validations ', async () => {
+			await expect(poContacts.newContact.btnSave).toBeEnabled();
+			await poContacts.newContact.btnSave.click();
+
+			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).toBeVisible();
+			await expect(poContacts.newContact.btnSave).toBeDisabled();
+
+			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).toBeVisible();
+			await expect(poContacts.newContact.btnSave).toBeDisabled();
+		});
+
+		await test.step('input phone ', async () => {
+			await poContacts.newContact.inputPhone.selectText();
+			await poContacts.newContact.inputPhone.type(EDIT_CONTACT.phone);
+			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
+		});
+
+		await test.step('input email', async () => {
+			await poContacts.newContact.inputEmail.selectText();
+			await poContacts.newContact.inputEmail.type(EDIT_CONTACT.email);
+			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
+			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
 
 		await test.step('save new contact ', async () => {

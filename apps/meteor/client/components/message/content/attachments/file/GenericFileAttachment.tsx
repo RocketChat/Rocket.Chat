@@ -36,11 +36,7 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						<MessageGenericPreviewTitle
-							externalUrl={hasDownload && link ? getURL(link) : undefined}
-							data-qa-type='attachment-title-link'
-							download={hasDownload}
-						>
+						<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
 							{title}
 						</MessageGenericPreviewTitle>
 						{size && (
