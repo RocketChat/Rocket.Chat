@@ -1,18 +1,7 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-type ToolBoxActionProps = {
-	'id': string;
-	'icon': ComponentProps<typeof Icon>['name'];
-	'action': (id: string) => void;
-	'index': string;
-	'title': string;
-	'data-tooltip': string;
-} & ComponentProps<typeof IconButton>;
-
-const ToolBoxAction = forwardRef<HTMLButtonElement, ToolBoxActionProps>(function ToolBoxAction(
+const ToolBoxAction = forwardRef<HTMLButtonElement, any>(function ToolBoxAction(
 	{ id, icon, action, index, title, 'data-tooltip': tooltip, ...props },
 	ref,
 ) {
