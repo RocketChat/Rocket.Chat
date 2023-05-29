@@ -3,6 +3,9 @@ import { LivechatTag } from '@rocket.chat/models';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 
+import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { hasAccessToDepartment } from './departments';
+
 type FindTagsParams = {
 	userId: string;
 	text?: string;
@@ -33,19 +36,41 @@ type FindTagsByIdResult = ILivechatTag | null;
 // If viewAll is false, then all public tags will be returned, and
 //  if department is specified, then all department tags will be returned
 export async function findTags({
+	userId,
 	text,
 	department,
 	viewAll,
 	pagination: { offset, count, sort },
 }: FindTagsParams): Promise<FindTagsResult> {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags'))) {
+		if (viewAll) {
+			viewAll = false;
+		}
+
+		if (department) {
+			if (!(await hasAccessToDepartment(userId, department))) {
+				department = undefined;
+			}
+		}
+	}
+
 	const query = {
-		...((text || !viewAll) && {
-			$and: [
-				...(text ? [{ $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }] : []),
-				...(!viewAll ? [{ $or: [{ departments: { $size: 0 } }, ...(department ? [{ departments: department }] : [])] }] : []),
-			],
-		}),
+		$and: [
+			...(text ? [{ $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }] : []),
+			...(!viewAll
+				? [
+						{
+							$or: [{ departments: { $size: 0 } }, ...(department ? [{ departments: department }] : [])],
+						},
+				  ]
+				: []),
+		],
 	};
+
+	if (!query?.$and?.length) {
+		// @ts-expect-error TS is not smart enough to understand that $and is optional here
+		delete query.$and;
+	}
 
 	const { cursor, totalCount } = LivechatTag.findPaginated(query, {
 		sort: sort || { name: 1 },
