@@ -10,7 +10,8 @@ to: packages/<%= name %>/package.json
 		"@types/jest": "^27.4.1",
 		"eslint": "^8.12.0",
 		"jest": "~29.5.0",
-		"ts-jest": "~29.0.5",
+		"@swc/core": "^1.3.60",
+		"@swc/jest": "^0.2.26",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
