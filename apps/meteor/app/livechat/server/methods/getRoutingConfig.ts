@@ -7,7 +7,7 @@ import { RoutingManager } from '../lib/RoutingManager';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:getRoutingConfig'(): OmichannelRoutingConfig;
+		'livechat:getRoutingConfig'(): OmichannelRoutingConfig | undefined;
 	}
 }
 

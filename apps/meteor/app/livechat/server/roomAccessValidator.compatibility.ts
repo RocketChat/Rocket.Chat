@@ -41,8 +41,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 		if (!user?._id) {
 			return false;
 		}
-		const { previewRoom } = RoutingManager.getConfig();
-		if (!previewRoom) {
+		if (!RoutingManager.getConfig()?.previewRoom) {
 			return;
 		}
 

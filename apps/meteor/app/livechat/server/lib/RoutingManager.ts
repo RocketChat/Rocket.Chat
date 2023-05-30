@@ -2,6 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type {
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IRoutingMethod,
+	IRoutingMethodConstructor,
+	RoutingMethodConfig,
+	SelectedAgent,
+} from '@rocket.chat/core-typings';
 
 import {
 	createLivechatSubscription,
@@ -19,7 +28,42 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
 
-export const RoutingManager = {
+type Routing = {
+	methodName: string | null;
+	methods: Record<string, IRoutingMethod>;
+	startQueue(): void;
+	isMethodSet(): boolean;
+	setMethodNameAndStartQueue(name: string): void;
+	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
+	getMethod(): IRoutingMethod;
+	getConfig(): RoutingMethodConfig | undefined;
+	getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined>;
+	delegateInquiry(
+		inquiry: ILivechatInquiryRecord,
+		agent?: SelectedAgent | null,
+		options?: { clientAction?: boolean; forwardingToDepartment?: boolean },
+	): Promise<IOmnichannelRoom | null>;
+	assignAgent(inquiry: ILivechatInquiryRecord, agent: SelectedAgent): Promise<ILivechatInquiryRecord>;
+	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
+	takeInquiry(
+		inquiry: ILivechatInquiryRecord,
+		agent: SelectedAgent | null,
+		options?: { clientAction?: boolean; forwardingToDepartment?: boolean },
+	): Promise<IOmnichannelRoom | null>;
+	transferRoom(
+		room: IOmnichannelRoom,
+		guest: ILivechatVisitor,
+		transferData: {
+			departmentId?: string;
+			userId?: string;
+			transferredBy: { _id: string };
+		},
+	): Promise<boolean>;
+	delegateAgent(agent: SelectedAgent, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
+	removeAllRoomSubscriptions(room: IOmnichannelRoom, ignoreUser?: { _id: string }): Promise<void>;
+};
+
+export const RoutingManager: Routing = {
 	methodName: null,
 	methods: {},
 
@@ -44,12 +88,16 @@ export const RoutingManager = {
 		this.startQueue();
 	},
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	registerMethod(name, Method) {
 		logger.debug(`Registering new routing method with name ${name}`);
 		this.methods[name] = new Method();
 	},
 
 	getMethod() {
+		if (!this.methodName) {
+			throw new Meteor.Error('error-routing-method-not-set');
+		}
 		if (!this.methods[this.methodName]) {
 			throw new Meteor.Error('error-routing-method-not-available');
 		}
@@ -57,7 +105,7 @@ export const RoutingManager = {
 	},
 
 	getConfig() {
-		return this.getMethod().config || {};
+		return this.getMethod().config;
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
@@ -71,7 +119,7 @@ export const RoutingManager = {
 		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
-			logger.debug(`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`);
+			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
 		}
 
 		if (!agent) {
@@ -101,17 +149,17 @@ export const RoutingManager = {
 		}
 
 		await LivechatRooms.changeAgentByRoomId(rid, agent);
-		await Rooms.incUsersCountById(rid);
+		await Rooms.incUsersCountById(rid, 1);
 
 		const user = await Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);
 
-		await Message.saveSystemMessage('command', rid, 'connected', user);
+		user && (await Message.saveSystemMessage('command', rid, 'connected', user));
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
@@ -120,7 +168,7 @@ export const RoutingManager = {
 		const room = await LivechatRooms.findOneById(rid);
 
 		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
-		if (!room || !room.open) {
+		if (!room?.open) {
 			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
 			return false;
 		}
@@ -171,7 +219,7 @@ export const RoutingManager = {
 
 		const { _id, rid } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
-		if (!room || !room.open) {
+		if (!room?.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;
 		}
@@ -248,7 +296,8 @@ export const RoutingManager = {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;
 			}
-			removeAgentFromSubscription(roomId, u);
+			// @ts-expect-error - File changed to TS in other PR, expecting error for now
+			void removeAgentFromSubscription(roomId, u);
 		});
 	},
 };
