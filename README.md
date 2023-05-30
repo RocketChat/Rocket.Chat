@@ -93,14 +93,14 @@ You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNati
 
 # 🧩 Apps Engine for Rocket.Chat
 
-You can develop your own app that can be integrated with Rocket.Chat. We provide an [Open Source Apps Engine framework](https://developer.rocket.chat/apps-engine/rocketchat-app) increasing the world of possibilities of integrations around the Rocket.Chat ecosystem
+You can develop your own app that can be integrated with Rocket.Chat. We provide an [Open Source Apps Engine framework](https://developer.rocket.chat/apps-engine/getting-started) increasing the world of possibilities of integrations around the Rocket.Chat ecosystem
 
 # 📚 Learn More
 
 - [Product Documentation](https://docs.rocket.chat)
 - [Developer Documentation](https://developer.rocket.chat)
 - [API Documentation](https://developer.rocket.chat/reference/api)
-- [Apps Engine Development](https://developer.rocket.chat/apps-engine/rocketchat-app)
+- [Apps Engine Development](https://developer.rocket.chat/apps-engine/rocket.chat-apps-and-apps-engine)
 - [See who's using Rocket.Chat](https://www.rocket.chat/customers)
 
 # 🆕 Feature Request
@@ -111,7 +111,7 @@ You can develop your own app that can be integrated with Rocket.Chat. We provide
 
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
-Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/playlist?list=PLee3gqXJQrFVaxryc0OKTKc92yqQX9U-5), held monthly. Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
+
 
 # 👥 Contributions
 
@@ -129,9 +129,6 @@ We're hiring developers, support people, and product managers all the time. Plea
 - [Facebook](https://www.facebook.com/RocketChatApp)
 - [LinkedIn](https://www.linkedin.com/company/rocket-chat)
 - [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
-
-
-
 
 ## 🗒️ Credits
 
