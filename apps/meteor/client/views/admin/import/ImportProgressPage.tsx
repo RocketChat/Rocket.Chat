@@ -41,13 +41,13 @@ const ImportProgressPage = function ImportProgressPage() {
 		},
 		{
 			onSuccess: ({ valid, status }) => {
-				console.log('currentOperation', valid, status);
 				if (!valid) {
 					importHistoryRoute.push();
 					return;
 				}
 
 				if (status === 'importer_done') {
+					dispatchToastMessage({ type: 'success', message: t('Importer_done') });
 					importHistoryRoute.push();
 					return;
 				}
@@ -65,7 +65,6 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const handleProgressUpdated = useMutableCallback(
 		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
-			console.log('handleProgressUpdated', key, step, completed, total);
 			if (!currentOperation.isSuccess) {
 				return;
 			}
@@ -99,7 +98,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const progress = useQuery(
-		['ImportProgressPage', 'progress'],
+		['importers', 'progress'],
 		async () => {
 			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
@@ -113,18 +112,10 @@ const ImportProgressPage = function ImportProgressPage() {
 			refetchInterval: 1000,
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
-				console.log('progress', progress);
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 					prepareImportRoute.push();
-					return;
 				}
-				handleProgressUpdated({
-					key: progress.key,
-					step: progress.step,
-					total: progress.total,
-					completed: progress.completed,
-				});
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
@@ -158,7 +149,8 @@ const ImportProgressPage = function ImportProgressPage() {
 								<Box display='flex' justifyContent='center'>
 									<Box is='progress' value={progress.data.completed} max={progress.data.total} marginInlineEnd='x24' />
 									<Box is='span' fontScale='p2'>
-										{progress.data.completed}/{progress.data.total} ({numberFormat(progress.data.completed / progress.data.total, 0)}
+										{progress.data.completed}/{progress.data.total} (
+										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}
 										%)
 									</Box>
 								</Box>
