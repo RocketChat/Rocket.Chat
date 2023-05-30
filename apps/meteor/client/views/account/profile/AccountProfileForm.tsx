@@ -342,7 +342,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							/>
 						</Field.Row>
 						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
-						<PasswordVerifier password={password} passwordVerifications={passwordVerifications} />
+						{passwordVerifications && <PasswordVerifier password={password} passwordVerifications={passwordVerifications} />}
 					</Field>
 				),
 				[

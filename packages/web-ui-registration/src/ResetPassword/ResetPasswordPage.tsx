@@ -1,6 +1,7 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
+	useSetting,
 	useVerifyPassword,
 	useRouteParameter,
 	useRoute,
@@ -29,6 +30,8 @@ const ResetPasswordPage = (): ReactElement => {
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
+
 	const homeRouter = useRoute('home');
 
 	const changePasswordReason = getChangePasswordReason(user || {});
@@ -44,6 +47,7 @@ const ResetPasswordPage = (): ReactElement => {
 		watch,
 	} = useForm<{
 		password: string;
+		passwordConfirmation: string;
 	}>({
 		mode: 'onChange',
 	});
@@ -69,7 +73,7 @@ const ResetPasswordPage = (): ReactElement => {
 		<HorizontalTemplate>
 			<Form onSubmit={submit}>
 				<Form.Header>
-					<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
+					<Modal.Title textAlign='start'>{t('Reset_password')}</Modal.Title>
 				</Form.Header>
 				<Form.Container>
 					<Field>
@@ -82,23 +86,28 @@ const ResetPasswordPage = (): ReactElement => {
 								error={errors.password?.message}
 								aria-invalid={errors.password ? 'true' : 'false'}
 								id='password'
-								placeholder={t('Type_your_new_password')}
+								placeholder={t('Create_a_password')}
 								name='password'
 								autoComplete='off'
 							/>
 						</Field.Row>
+						{requiresPasswordConfirmation && (
+							<Field.Row>
+								<PasswordInput
+									{...register('passwordConfirmation', {
+										required: true,
+										deps: ['password'],
+										validate: (val: string) => watch('password') === val,
+									})}
+									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
+									aria-invalid={errors.passwordConfirmation ? 'true' : false}
+									id='passwordConfirmation'
+									placeholder={t('Confirm_password')}
+								/>
+							</Field.Row>
+						)}
 						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						<PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />
-						{/* <Field.Hint>
-							{policies.isLoading && <InputBoxSkeleton />}
-							{policies.isSuccess &&
-								policies.data.enabled &&
-								policies.data.policy?.map((policy, index) => (
-									<Box is='p' textAlign='start' key={index}>
-										{t(...(policy as unknown as [name: TranslationKey, options?: Record<string, unknown>]))}
-									</Box>
-								))}
-						</Field.Hint> */}
+						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
 					</Field>
 				</Form.Container>
 				<Form.Footer>
