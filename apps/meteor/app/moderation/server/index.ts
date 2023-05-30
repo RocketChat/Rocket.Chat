@@ -21,12 +21,12 @@ const addPermissionsToRole = async (roleName: string, permissions: string[]) => 
 	}
 };
 
-Meteor.startup(async () => {
+Meteor.startup(() => {
 	settings.watch('Trust_Roles', async (value) => {
 		if (value === true) {
 			await addPermissionsToRole('novice', novice);
 			await addPermissionsToRole('explorer', explorer);
-			await addRoleEditRestriction();
+			addRoleEditRestriction();
 		}
 
 		if (value === false) {
