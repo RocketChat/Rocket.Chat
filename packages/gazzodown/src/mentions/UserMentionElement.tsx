@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
@@ -18,11 +19,19 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
 
 	if (mention === 'all') {
-		return <span className='mention-link mention-link--all mention-link--group'>all</span>;
+		return (
+			<Message.Mention tag='@' variant='relevant'>
+				all
+			</Message.Mention>
+		);
 	}
 
 	if (mention === 'here') {
-		return <span className='mention-link mention-link--here mention-link--group'>here</span>;
+		return (
+			<Message.Mention tag='@' variant='relevant'>
+				here
+			</Message.Mention>
+		);
 	}
 
 	if (!resolved) {
@@ -30,14 +39,16 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	}
 
 	return (
-		<span
-			className={resolved._id === uid ? 'mention-link mention-link--me mention-link--user' : 'mention-link mention-link--user'}
+		<Message.Mention
+			tag='@'
+			variant={resolved._id === uid ? 'critical' : 'other'}
 			title={resolved.username || resolved.name}
+			clickable
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
 			{(showRealName ? resolved.name : resolved.username) ?? mention}
-		</span>
+		</Message.Mention>
 	);
 };
 

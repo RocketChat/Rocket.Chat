@@ -3,7 +3,7 @@ import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocke
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
@@ -17,7 +17,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const { data } = useIsEnterprise();
 	const isEnterprise = !!data?.isEnterprise;
 
-	const handleCloseVerticalBar = useMutableCallback(() => {
+	const handleCloseContextualbar = useMutableCallback(() => {
 		router.push({});
 	});
 
@@ -27,18 +27,18 @@ const PermissionsContextBar = (): ReactElement | null => {
 		}
 
 		setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
-		handleCloseVerticalBar();
-	}, [context, isEnterprise, handleCloseVerticalBar, setModal]);
+		handleCloseContextualbar();
+	}, [context, isEnterprise, handleCloseContextualbar, setModal]);
 
 	return (
 		(context && (
-			<VerticalBar>
-				<VerticalBar.Header>
-					<VerticalBar.Text>{context === 'edit' ? t('Role_Editing') : t('New_role')}</VerticalBar.Text>
-					<VerticalBar.Close onClick={handleCloseVerticalBar} />
-				</VerticalBar.Header>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
+					<ContextualbarClose onClick={handleCloseContextualbar} />
+				</ContextualbarHeader>
 				<EditRolePageWithData roleId={_id} />
-			</VerticalBar>
+			</Contextualbar>
 		)) ||
 		null
 	);
