@@ -12,58 +12,49 @@ import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onM
 /**
  * @param inputData[]: recebe um array de todos os dados
  * @param dropdownOptions[]: recebe um array com as opções que vão aparecer no dropdown, seguindo um formato específico
- * @param filterFunction: função para filtrar o array
+ * @param defaultTitle: título padrão do dropdown, quando não selecionado // For example: 'All rooms'
+	@param selectedOptionsTitle: título quando uma ou mais opções forem selecionadas // For example: 'Rooms (3)'
+ * @param filterFunction: função (ou função composta por outras funções menores) para filtrar o array
  * @returns um componente React e um array filtrado de acordo com uma função passada no dropdown
  */
 
 // TODO: remove multicomponents from file!!!
-// TODO: CODE A FILTER FUNCTION WITH USEREDUCER!!!!!
-// TODO: add a counter to make the UI change according to the design, like: 'Rooms (5)'
 
-/*
-   type TitleOptionProp = {
-      id: string;
-      text: string;
-      isGroupTitle: boolean;
-   };
-   type CheckboxOptionProp = {
-      id: string;
-      text: string;
-      checked: boolean;
-   };
-   type DropdownOptionList = TitleOptionProp | CheckboxOptionProp;
-*/
+type TitleOptionProp = {
+	id: string;
+	text: string;
+	isGroupTitle: boolean;
+	checked: never;
+};
 
-type OptionProp =
-	| {
-			// Different font style, does not have a checkbox and is not clickable. Should be used to create dividers and titles for smaller groups
-			id: string;
-			text: string;
-			isGroupTitle: boolean;
-	  }
-	| {
-			// This option has a checkbox
-			id: string;
-			text: string;
-			checked: boolean;
-	  };
+type CheckboxOptionProp = {
+	id: string;
+	text: string;
+	isGroupTitle: never;
+	checked: boolean;
+};
+
+export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
 type DropDownProps = {
 	inputData: any[];
 	dropdownOptions: OptionProp[];
-	dropdownTitle: TranslationKey;
-	filterFunction: (props: any) => any; // tipar a função e o inputData
+	defaultTitle: TranslationKey; // For example: 'All rooms'
+	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
+	filterFunction: (props: any) => any; // TODO: tipar a função e o inputData
 };
 
 // TODO: move DropDownAnchor to new file!!
 
 type DropDownAnchorProps = {
 	onClick?: MouseEventHandler<HTMLElement>;
-	dropdownTitle: TranslationKey;
+	defaultTitle: TranslationKey;
+	selectedOptionsTitle: TranslationKey;
+	selectedOptionsCount: number;
 } & ComponentProps<typeof Button>;
 
 export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(function DropDownAnchor(
-	{ onClick, dropdownTitle, ...props },
+	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, ...props },
 	ref,
 ) {
 	const t = useTranslation();
@@ -82,7 +73,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			bg='surface-light'
 			{...props}
 		>
-			{t(dropdownTitle)}
+			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' fontSize='x20' color='hint' />
 			</Box>
@@ -143,11 +134,9 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 	);
 };
 
-// ------------------- RoomsDropDown -------------------
+// ------------------- CustomDropDown -------------------
 
-// TODO: remover props: desconstruir
-
-export const RoomsDropDown = (props: DropDownProps) => {
+export const CustomDropDown = ({ inputData, dropdownOptions, defaultTitle, selectedOptionsTitle, filterFunction }: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -164,33 +153,41 @@ export const RoomsDropDown = (props: DropDownProps) => {
 	);
 
 	// Everything is selected by default
-	const [selectedOptions, setSelectedOptions] = useState(props.dropdownOptions);
+	const [selectedOptions, setSelectedOptions] = useState(dropdownOptions);
 
-	function handleSelectOption(selectedOption: OptionProp) {
-		if (selectedOption.checked === true) {
-			// the user has enabled this option
-			setSelectedOptions([...selectedOptions, selectedOption]);
+	const handleFilteredOptions = useCallback(
+		() => inputData.filter(filterFunction(selectedOptions)),
+		[filterFunction, inputData, selectedOptions],
+	);
+
+	const onSelect = (item: OptionProp): void => {
+		item.checked = !item.checked;
+
+		if (item.checked === true) {
+			// the user has enabled this option -> add it to the selected options
+			setSelectedOptions([...selectedOptions, item]);
 		} else {
-			// the user has disabled this option
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== selectedOption.id));
+			// the user has disabled this option -> remove this from the selected options list
+			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 		}
-	}
-
-	const handleFilteredOptions = useCallback(() => props.inputData.filter(props.filterFunction(selectedOptions)), [props, selectedOptions]);
-
-	// fazer outra função que chama o hook e chamar no onSelected
+	};
 
 	return (
 		<>
-			<DropDownAnchor ref={reference} onClick={toggleCollapsed as any} dropdownTitle={props.dropdownTitle} />
+			<DropDownAnchor
+				ref={reference}
+				onClick={toggleCollapsed as any}
+				defaultTitle={defaultTitle}
+				selectedOptionsTitle={selectedOptionsTitle}
+				selectedOptionsCount={selectedOptions.length}
+			/>
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<DropDownList
-						options={props.dropdownOptions}
-						onSelected={() => {
-							// TODO: select option
-							handleSelectOption(props.dropdownOptions[0]);
-							handleFilteredOptions();
+						options={dropdownOptions}
+						onSelected={(item) => {
+							onSelect(item);
+							handleFilteredOptions;
 						}}
 					/>
 					{/* TODO: are options being marked as checked??? */}

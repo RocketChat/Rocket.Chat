@@ -19,6 +19,8 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import type { OptionProp } from './DropDown/CustomDropDown';
+import { CustomDropDown } from './DropDown/CustomDropDown';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -211,9 +213,43 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
+	const roomTypeOptions = [
+		{
+			id: 'filter_by_room_type',
+			text: 'filter_by_room_type',
+			isGroupTitle: true,
+		},
+		{
+			id: 'all_rooms',
+			text: 'all_rooms',
+			checked: true,
+		},
+	] as OptionProp[];
+
+	/*
+	const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => isPublicRoom(room) === false;
+	const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room) === true;
+
+	const filterRoomsByChannels = ({ t }: Partial<IRoom>): boolean => t === 'c';
+	const filterRoomsByDirectMessages = ({ t }: Partial<IRoom>): boolean => t === 'd';
+	const filterRoomsByDiscussions = (room: Partial<IRoom>): boolean => isDiscussion(room) === true;
+	const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'l'; // LiveChat
+	const filterRoomsByTeams = (room: Partial<IRoom>): boolean => isTeamRoom(room);
+	*/
+
 	return (
 		<>
-			<FilterByTypeAndText setFilter={setRoomFilter} />
+			{/* TODO: mudar aqui */}
+			{/* <FilterByTypeAndText setFilter={setRoomFilter} /> */}
+			{data && (
+				<CustomDropDown
+					inputData={data.rooms}
+					dropdownOptions={roomTypeOptions}
+					defaultTitle={'All_rooms' as any}
+					selectedOptionsTitle='Rooms'
+					filterFunction={console.log('oi') as any}
+				/>
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
