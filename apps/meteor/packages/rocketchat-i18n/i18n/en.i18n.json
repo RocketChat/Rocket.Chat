@@ -5310,7 +5310,7 @@
   "Version_version": "Version {{version}}",
   "App_Request_Admin_Message": "Hi {{admin_name}}, {{user_name}} submitted a request to install {{app_name}} app on this workspace.  \n  \n This is the message they included:  \n>{{message}}  \n  \n To learn more and install the {{app_name}} app, [click here]({{learn_more}}).",
   "App_version_incompatible_tooltip": "App incompatible with Rocket.Chat version",
-  "App_request_enduser_message": "The app you requested, {{appname}}, has just been installed on this workspace.  \n [Click here]({{learnmore}}) to learn about the app.",
+  "App_request_enduser_message": "The app you requested, {{appName}}, has just been installed on this workspace.  \n [Click here]({{learnmore}}) to learn about the app.",
   "App_requests_by_workspace": "App requests by workspace members appear here",
   "Video_Conference_Description": "Configure conferencing calls for your workspace.",
   "Video_Chat_Window": "Video Chat",
@@ -5771,8 +5771,8 @@
   "Toolbox_room_actions": "Primary Room actions",
   "Theme_light": "Light",
   "Theme_dark": "Dark",
-  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appname}} will be disabled by default.** Disable another {{context}} app or upgrade to Enterprise to enable this app.",
-  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nCommunity edition app limit has been exceeded.  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appname}} will be disabled by default.** You will need to disable at least {{exceed}} other {{context}} apps or upgrade to Enterprise to enable this app.",
+  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appName}} will be disabled by default.** Disable another {{context}} app or upgrade to Enterprise to enable this app.",
+  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nCommunity edition app limit has been exceeded.  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appName}} will be disabled by default.** You will need to disable at least {{exceed}} other {{context}} apps or upgrade to Enterprise to enable this app.",
   "Workspaces_on_Community_edition_install_app": "Workspaces on Community Edition can have up to {{limit}} {{context}} apps enabled. Upgrade to Enterprise to enable unlimited apps.",
   "Apps_Currently_Enabled": "{{enabled}} of {{limit}} {{context}} apps currently enabled.",
   "Disable_another_app": "Disable another app or upgrade to Enterprise to enable this app.",
@@ -5878,7 +5878,7 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "I agree with <1>Terms and Conditions</1> and <3>Privacy Policy</3>",
   "Larger_amounts_of_active_connections": "For larger amounts of active connections you can consider our",
   "multiple_instance_solutions": "multiple instance solutions",
-  "Uninstall_grandfathered_app": "Uninstall {{appname}}?",
+  "Uninstall_grandfathered_app": "Uninstall {{appName}}?",
   "App_will_lose_grandfathered_status": "**This {{context}} app will lose its grandfathered status.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them.",
   "Theme_Appearence": "Theme Appearence"
 }

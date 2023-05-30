@@ -5251,7 +5251,7 @@
   "Version_version": "Version {{version}}",
   "App_Request_Admin_Message": "Hej {{admin_name}}, {{user_name}} skickade en förfrågan om att installera appen {{app_name}} på den här arbetsytan.  \n  \n Detta meddelande skickades med i samband med förfrågan:  \n>{{message}}  \n  \n Om du vill veta mer och installera appen {{app_name}}, [klicka här]({{learn_more}}).",
   "App_version_incompatible_tooltip": "Appen är inkompatibel med Rocket.Chat-versionen",
-  "App_request_enduser_message": "Appen du begärde, {{appname}}, har just installerats på den här arbetsytan.  \n [Klicka här]({{learnmore}}) för att lära dig mer om appen.",
+  "App_request_enduser_message": "Appen du begärde, {{appName}}, har just installerats på den här arbetsytan.  \n [Klicka här]({{learnmore}}) för att lära dig mer om appen.",
   "App_requests_by_workspace": "Här visas appförfrågningar från arbetsytans medlemmar",
   "Video_Conference_Description": "Konfigurera konferenssamtal för arbetsytan.",
   "Video_Chat_Window": "Videochatt",
@@ -5707,8 +5707,8 @@
   "Toolbox_room_actions": "Primära åtgärder i rum",
   "Theme_light": "Ljus",
   "Theme_dark": "Mörk",
-  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{kontext}} appar aktiverade.  \n  \n**{{appname}} är inaktiverad som standard.** Inaktivera en annan {{kontex}}-app eller uppgradera till Enterprise för att aktivera den här appen.",
-  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nGränsen för apparna i gemenskapsutgåvan har överskridits.  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}} appar aktiverade.  \n  \n**{{appname}} är inaktiverad som standard.** Du måste inaktivera minst {{exceed}} andra {{context}}-appar eller uppgradera till Enterprise för att aktivera den här appen.",
+  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{kontext}} appar aktiverade.  \n  \n**{{appName}} är inaktiverad som standard.** Inaktivera en annan {{kontex}}-app eller uppgradera till Enterprise för att aktivera den här appen.",
+  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nGränsen för apparna i gemenskapsutgåvan har överskridits.  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}} appar aktiverade.  \n  \n**{{appName}} är inaktiverad som standard.** Du måste inaktivera minst {{exceed}} andra {{context}}-appar eller uppgradera till Enterprise för att aktivera den här appen.",
   "Workspaces_on_Community_edition_install_app": "Arbetsytorna i Community Edition kan ha upp till {{limit}} {{context}} appar aktiverade. Uppgradera till Enterprise för att aktivera obegränsat antal appar.",
   "Apps_Currently_Enabled": "{{enabled}} av {{limit}} {{context}}-appar är för närvarande aktiverade.",
   "Disable_another_app": "Inaktivera en annan app eller uppgradera till Enterprise för att aktivera den här appen.",
@@ -5814,7 +5814,7 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Jag godkänner <1>villkoren</1> och <3>integritetspolicyn</3>",
   "Larger_amounts_of_active_connections": "För större mängder aktiva anslutningar kan du överväga vår",
   "multiple_instance_solutions": "lösningar med flera instanser",
-  "Uninstall_grandfathered_app": "Avinstallera {{appname}}?",
+  "Uninstall_grandfathered_app": "Avinstallera {{appName}}?",
   "App_will_lose_grandfathered_status": "**Denna {{context}}-app kommer att förlora sin status som gammal app.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} __kontext__-appar aktiverade. Gamla appar inkluderas i gränsen, men gränsen tillämpas inte på dem.",
   "Theme_Appearence": "Utseende för tema"
 }

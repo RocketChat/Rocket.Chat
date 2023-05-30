@@ -5246,7 +5246,7 @@
   "Version_version": "Versio {{version}}",
   "App_Request_Admin_Message": "Hei {{admin_name}}, {{user_name}} lähetti pyynnön asentaa {{app_name}} tähän työtilaan.  \n  \n Tämä on hänen viestinsä:  \n>{{message}}  \n  \n Katso lisätietoja ja asenna {{app_name}} [napsauttamalla tätä]({{learn_more}}).",
   "App_version_incompatible_tooltip": "Sovellus ei ole yhteensopiva Rocket.Chat-version kanssa",
-  "App_request_enduser_message": "Pyytämäsi sovellus {{appname}} on asennettu juuri tähän työtilaan.  \n Katso lisätietoja sovelluksesta [napsauttamalla tätä]({{learnmore}}).",
+  "App_request_enduser_message": "Pyytämäsi sovellus {{appName}} on asennettu juuri tähän työtilaan.  \n Katso lisätietoja sovelluksesta [napsauttamalla tätä]({{learnmore}}).",
   "App_requests_by_workspace": "Työtilan jäsenten sovelluspyynnöt näkyvät tässä",
   "Video_Conference_Description": "Määritä konferenssipuhelut työtilaa varten.",
   "Video_Chat_Window": "Videokeskustelu",
@@ -5702,8 +5702,8 @@
   "Toolbox_room_actions": "Ensisijaiset huoneen Room toimet",
   "Theme_light": "Vaalea",
   "Theme_dark": "Tumma",
-  "Enable_of_limit_apps_currently_enabled": "**{{enabled}}/{{limit}} {{context}} sovellusta on nyt käytössä.**  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}}sovellusta.  \n  \n**{{appname}} on oletusarvoisesti poissa käytöstä.** Jos haluat ottaa tämän sovelluksen käyttöön, poista käytöstä jokin muu {{context}}sovellus tai päivitä yritysversioon.",
-  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}}/{{limit}} {{context}}sovellusta on nyt käytössä.**  \n  \nYhteisöversion sovellusraja on saavutettu.  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}}sovellusta.  \n  \n**{{appname}} poistetaan oletusarvoisesti käytöstä.** Poista käytöstä vähintään {{exceed}} muuta {{context}}sovellusta tai päivitä yritysversioon, jotta voit ottaa tämän sovelluksen käyttöön.",
+  "Enable_of_limit_apps_currently_enabled": "**{{enabled}}/{{limit}} {{context}} sovellusta on nyt käytössä.**  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}}sovellusta.  \n  \n**{{appName}} on oletusarvoisesti poissa käytöstä.** Jos haluat ottaa tämän sovelluksen käyttöön, poista käytöstä jokin muu {{context}}sovellus tai päivitä yritysversioon.",
+  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}}/{{limit}} {{context}}sovellusta on nyt käytössä.**  \n  \nYhteisöversion sovellusraja on saavutettu.  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}}sovellusta.  \n  \n**{{appName}} poistetaan oletusarvoisesti käytöstä.** Poista käytöstä vähintään {{exceed}} muuta {{context}}sovellusta tai päivitä yritysversioon, jotta voit ottaa tämän sovelluksen käyttöön.",
   "Workspaces_on_Community_edition_install_app": "Yhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}}sovellusta. Päivitä yritysversioon, jotta voit ottaa sovelluksia käyttöön rajattomasti.",
   "Apps_Currently_Enabled": "{{enabled}}/{{limit}} {{context}}sovellusta on nyt käytössä.",
   "Disable_another_app": "Ota tämä sovellus käyttöön poistamalla jokin muu sovellus käytöstä tai päivittämällä yritysversioon.",
@@ -5809,7 +5809,7 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Hyväksyn <1>käyttöehdot</1> ja <3>tietosuojakäytännön</3>",
   "Larger_amounts_of_active_connections": "Jos tarvitset enemmän aktiivisia yhteyksiä, ota harkintaan",
   "multiple_instance_solutions": "usean esiintymän ratkaisut",
-  "Uninstall_grandfathered_app": "Poistetaanko {{appname}}?",
+  "Uninstall_grandfathered_app": "Poistetaanko {{appName}}?",
   "App_will_lose_grandfathered_status": "**Tämä {{context}}sovellus menettää aikaisemmin käytetössä olleen sovelluksen tilansa.**  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}} sovellusta. aikaisemmin Aikaisemmin käytössä olleet sovellukset lasketaan mukaan rajoitukseen, mutta rajoitusta ei sovelleta niihin.",
   "Theme_Appearence": "Teeman ulkoasu"
 }
