@@ -109,13 +109,19 @@ const ImportProgressPage = function ImportProgressPage() {
 			};
 		},
 		{
-			refetchInterval: 1000,
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 					prepareImportRoute.push();
+					return;
 				}
+				handleProgressUpdated({
+					key: progress.key,
+					step: progress.step,
+					total: progress.total,
+					completed: progress.completed,
+				});
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
