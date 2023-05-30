@@ -6,11 +6,21 @@ import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useRoom } from '../../contexts/RoomContext';
+
+const mergeHideSysMessages = (
+	sysMesArray1: Array<MessageTypesValues>,
+	sysMesArray2: Array<MessageTypesValues>,
+): Array<MessageTypesValues> => {
+	return Array.from(new Set([...sysMesArray1, ...sysMesArray2]));
+};
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
-	const hideSysMes = useSetting<MessageTypesValues[]>('Hide_System_Messages');
+	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages') ?? [];
+	const room = useRoom();
+	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	const hideSysMessages = useStableArray(Array.isArray(hideSysMes) ? hideSysMes : []);
+	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({

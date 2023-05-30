@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
-import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
@@ -71,36 +71,33 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				return false;
 			};
-			Notifications.onUser(
-				WEB_RTC_EVENTS.WEB_RTC,
-				(type: any, data: any) => {
-					if (data.room == null) {
-						return;
-					}
-					webrtcInstance.onUserStream(type, data);
-				},
-				visitorId,
-			);
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onVisitor(WEB_RTC_EVENTS.WEB_RTC, visitorId, (type: any, data: any) => {
+				if (data.room == null) {
+					return;
+				}
+				webrtcInstance.onUserStream(type, data);
+			});
+
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
-					Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+					Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 						isMobileDevice: isMobileDevice(),
 					});
 				} else if (type === 'cameraStatus') {
 					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 				isMobileDevice: isMobileDevice(),
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'callStatus', { callStatus: 'inProgress' });
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'callStatus', { callStatus: 'inProgress' });
 		} else if (!isAgentActive) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
 			if (status === 'inProgress') {
-				Notifications.notifyRoom(roomId, 'webrtc', 'getDeviceType');
+				Notifications.notifyRoom(roomId, 'webrtc' as any, 'getDeviceType');
 				webrtcInstance.startCall({
 					audio: true,
 					video: {
@@ -109,7 +106,7 @@ const CallPage: FC<CallPageProps> = ({
 					},
 				});
 			}
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
@@ -142,7 +139,7 @@ const CallPage: FC<CallPageProps> = ({
 		}
 		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
 		setIsCameraOn(!isCameraOn);
-		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
+		Notifications.notifyRoom(roomId, 'webrtc' as any, 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
 	const closeWindow = (): void => {
@@ -199,7 +196,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='mic'
 						square
-						data-title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
+						title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 						onClick={(): any => toggleButton('mic')}
 						className={isMicOn ? 'On' : 'Off'}
 						size={Number(buttonSize)}
@@ -209,7 +206,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='camera'
 						square
-						data-title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
+						title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 						onClick={(): void => toggleButton('camera')}
 						className={isCameraOn ? 'On' : 'Off'}
 						size={parseInt(buttonSize)}
@@ -228,7 +225,7 @@ const CallPage: FC<CallPageProps> = ({
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
 					)}
-					<Button square danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
+					<Button square danger title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
 				</ButtonGroup>

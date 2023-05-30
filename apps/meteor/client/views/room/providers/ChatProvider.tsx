@@ -1,9 +1,9 @@
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 
-import { ChatMessages } from '../../../../app/ui/client/lib/ChatMessages';
 import { ChatContext } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
+import { useChatMessagesInstance } from './hooks/useChatMessagesInstance';
 
 type ChatProviderProps = {
 	children: ReactNode;
@@ -12,17 +12,7 @@ type ChatProviderProps = {
 
 const ChatProvider = ({ children, tmid }: ChatProviderProps): ReactElement => {
 	const { _id: rid } = useRoom();
-
-	const chatMessages = useMemo(() => ChatMessages.hold({ rid, tmid }), [rid, tmid]);
-
-	useEffect(
-		() => (): void => {
-			ChatMessages.release({ rid, tmid });
-		},
-		[rid, tmid],
-	);
-
-	const value = useMemo(() => chatMessages, [chatMessages]);
+	const value = useChatMessagesInstance({ rid, tmid });
 
 	return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

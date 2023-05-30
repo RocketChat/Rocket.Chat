@@ -2,10 +2,9 @@ import path, { join } from 'path';
 import { mkdir, mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { getURL } from '../../../app/utils/lib/getURL';
+import { getURL } from '../../../app/utils/server/getURL';
 import { getPath } from './getPath';
 import { copyFileUpload } from './copyFileUpload';
 import { getRoomData } from './getRoomData';
@@ -13,6 +12,7 @@ import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
 import { makeZipFile } from './makeZipFile';
 import { uploadZipFile } from './uploadZipFile';
 import { sendEmail } from './sendEmail';
+import { i18n } from '../i18n';
 
 type ExportFile = {
 	rid: string;
@@ -32,7 +32,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await mkdir(exportPath, { recursive: true });
 	await mkdir(assetsPath, { recursive: true });
 
-	const roomData = getRoomData(data.rid);
+	const roomData = await getRoomData(data.rid);
 
 	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${data.format}`;
 
@@ -73,11 +73,11 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 
-	const subject = TAPi18n.__('Channel_Export');
+	const subject = i18n.t('Channel_Export');
 
-	const body = TAPi18n.__('UserDataDownload_EmailBody', {
+	const body = i18n.t('UserDataDownload_EmailBody', {
 		download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 	});
 
-	sendEmail(user, subject, body);
+	await sendEmail(user, subject, body);
 };

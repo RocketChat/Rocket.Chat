@@ -1,6 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
+import { OmnichannelCurrentChats } from './omnichannel-current-chats';
+import { OmnichannelTriggers } from './omnichannel-triggers';
 
 export class HomeOmnichannel {
 	private readonly page: Page;
@@ -11,19 +13,28 @@ export class HomeOmnichannel {
 
 	readonly tabs: HomeFlextab;
 
+	readonly triggers: OmnichannelTriggers;
+
+	readonly omnisidenav: OmnichannelSidenav;
+
+	readonly currentChats: OmnichannelCurrentChats;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
 		this.sidenav = new HomeSidenav(page);
 		this.tabs = new HomeFlextab(page);
+		this.triggers = new OmnichannelTriggers(page);
+		this.omnisidenav = new OmnichannelSidenav(page);
+		this.currentChats = new OmnichannelCurrentChats(page);
 	}
 
 	get toastSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
-	get btnVerticalBarClose(): Locator {
-		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
 	get btnCurrentChats(): Locator {

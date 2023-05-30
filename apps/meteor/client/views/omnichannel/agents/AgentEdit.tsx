@@ -6,8 +6,8 @@ import type { FC, ReactElement } from 'react';
 import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
-import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
 
@@ -21,7 +21,7 @@ type dataType = {
 type AgentEditProps = {
 	data: dataType;
 	userDepartments: { departments: Pick<ILivechatDepartmentAgents, 'departmentId'>[] };
-	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name'>[] };
+	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] };
 	uid: string;
 	reset: () => void;
 };
@@ -37,11 +37,16 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	const email = getUserEmailAddress(user);
 
-	const options: [string, string][] = useMemo(
-		() =>
-			availableDepartments?.departments ? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id])) : [],
-		[availableDepartments],
-	);
+	const options: [string, string][] = useMemo(() => {
+		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
+
+		return availableDepartments?.departments
+			? availableDepartments.departments.map(({ _id, name, archived }) =>
+					name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
+			  )
+			: [];
+	}, [availableDepartments.departments, t]);
+
 	const initialDepartmentValue = useMemo(
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
@@ -108,7 +113,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
+		<ContextualbarScrollableContent is='form' {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
@@ -202,7 +207,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					</Margins>
 				</Box>
 			</Field.Row>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

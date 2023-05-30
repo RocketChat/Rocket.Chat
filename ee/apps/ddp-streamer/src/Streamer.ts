@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
 import { api } from '@rocket.chat/core-services';
+import type { StreamNames } from '@rocket.chat/ui-contexts';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
@@ -8,10 +9,10 @@ import { isEmpty } from './lib/utils';
 import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [name, eventName, args]);
+	void api.broadcast('stream', [name, eventName, args]);
 });
 
-export class Stream extends Streamer {
+export class Stream<N extends StreamNames> extends Streamer<N> {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		server.publish(name, fn);
 	}
@@ -60,7 +61,8 @@ export class Stream extends Streamer {
 			// if the connection state is not open anymore, it somehow got to a weird state,
 			// we'll emit close so it can clean up the weird state, and so we stop emitting to it
 			if (subscription.client.ws.readyState !== WebSocket.OPEN) {
-				subscription.client.ws.emit('close');
+				subscription.stop();
+				subscription.client.ws.close();
 				continue;
 			}
 
@@ -89,7 +91,8 @@ export class Stream extends Streamer {
 
 					// if we still tried to send data to a destroyed stream, we'll try again to close the connection
 					if (subscription.client.ws.readyState !== WebSocket.OPEN) {
-						subscription.client.ws.emit('close');
+						subscription.stop();
+						subscription.client.ws.close();
 					}
 				}
 				console.error('Error trying to send data to stream.', error);

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps, ReactNode } from 'react';
 import React, { useCallback } from 'react';
@@ -9,12 +9,15 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import type { MessageActionContext } from '../../../../../app/ui-utils/client/lib/MessageAction';
+import {
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
-import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -28,7 +31,7 @@ import { useTabBarClose } from '../../contexts/ToolboxContext';
 type MessageListTabProps = {
 	iconName: ComponentProps<typeof Icon>['name'];
 	title: ReactNode;
-	emptyResultMessage: ReactNode;
+	emptyResultMessage: string;
 	context: MessageActionContext;
 	queryResult: UseQueryResult<IMessage[]>;
 };
@@ -36,6 +39,7 @@ type MessageListTabProps = {
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const closeTabBar = useTabBarClose();
 	const handleTabBarCloseButtonClick = useCallback(() => {
@@ -46,12 +50,12 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 	return (
 		<>
-			<VerticalBarHeader>
-				<VerticalBarIcon name={iconName} />
-				<VerticalBarText>{title}</VerticalBarText>
-				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
-			</VerticalBarHeader>
-			<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarHeader>
+				<ContextualbarIcon name={iconName} />
+				<ContextualbarTitle>{title}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
+			</ContextualbarHeader>
+			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size={12} />
@@ -59,11 +63,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				)}
 				{queryResult.isSuccess && (
 					<>
-						{queryResult.data.length === 0 && (
-							<Box p={24} color='annotation' textAlign='center' width='full'>
-								{emptyResultMessage}
-							</Box>
-						)}
+						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
 
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
@@ -96,7 +96,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 														)}
 
 														{system ? (
-															<SystemMessage message={message} />
+															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 														) : (
 															<RoomMessage
 																message={message}
@@ -105,6 +105,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 																mention={mention}
 																all={all}
 																context={context}
+																showUserAvatar={showUserAvatar}
 															/>
 														)}
 													</>
@@ -117,7 +118,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						)}
 					</>
 				)}
-			</VerticalBarContent>
+			</ContextualbarContent>
 		</>
 	);
 };

@@ -166,7 +166,7 @@ class Triggers {
 				switch (condition.name) {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.location.href)) {
+						if (hrefRegExp.test(window.parent.location.href)) {
 							this.fire(trigger);
 						}
 						break;

@@ -5,6 +5,7 @@ import proxyquire from 'proxyquire';
 import type { ReactNode } from 'react';
 import React from 'react';
 
+import ModalContextMock from '../../../tests/mocks/client/ModalContextMock';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 import type * as AdministrationModelListModule from './AdministrationModelList';
 
@@ -29,13 +30,16 @@ describe('AdministrationModelList', () => {
 			'../../../app/authorization/client': {
 				userHasAllPermission: () => true,
 			},
+			'@tanstack/react-query': {
+				useQuery: () => '',
+			},
 			...stubs,
 		}).default;
 	};
 
 	it('should render administration', async () => {
 		const AdministrationModelList = loadMock();
-		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={() => null} />);
+		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={() => null} />, { wrapper: ModalContextMock });
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.getByText('Workspace')).to.exist;
@@ -44,7 +48,7 @@ describe('AdministrationModelList', () => {
 
 	it('should not render workspace', async () => {
 		const AdministrationModelList = loadMock();
-		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={() => null} />);
+		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={() => null} />, { wrapper: ModalContextMock });
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.queryByText('Workspace')).to.not.exist;
@@ -56,27 +60,15 @@ describe('AdministrationModelList', () => {
 		const handleDismiss = spy();
 
 		const ProvidersMock = ({ children }: { children: ReactNode }) => {
-			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
+			return (
+				<ModalContextMock>
+					<RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>
+				</ModalContextMock>
+			);
 		};
 
-		it('should go to admin info', async () => {
+		it('should go to admin index', async () => {
 			const AdministrationModelList = loadMock();
-
-			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
-
-			const button = screen.getByText('Workspace');
-
-			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-info'));
-			await waitFor(() => expect(handleDismiss).to.have.been.called());
-		});
-
-		it('should go to admin index if no permission', async () => {
-			const AdministrationModelList = loadMock({
-				'../../../app/authorization/client': {
-					userHasAllPermission: () => false,
-				},
-			});
 
 			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
 
@@ -117,6 +109,7 @@ describe('AdministrationModelList', () => {
 					showWorkspace={false}
 					onDismiss={handleDismiss}
 				/>,
+				{ wrapper: ProvidersMock },
 			);
 
 			const button = screen.getByText('Admin Item');
@@ -136,6 +129,7 @@ describe('AdministrationModelList', () => {
 					showWorkspace={false}
 					onDismiss={handleDismiss}
 				/>,
+				{ wrapper: ProvidersMock },
 			);
 
 			const button = screen.getByText('Admin Item');

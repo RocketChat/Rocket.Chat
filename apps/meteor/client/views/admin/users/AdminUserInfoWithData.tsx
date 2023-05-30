@@ -1,3 +1,4 @@
+import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -7,11 +8,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import VerticalBar from '../../../components/VerticalBar';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
 
@@ -95,17 +96,17 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	if (isLoading) {
 		return (
-			<VerticalBar.Content>
+			<ContextualbarContent>
 				<FormSkeleton />
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		);
 	}
 
 	if (error || !user || !data?.user) {
 		return (
-			<VerticalBar.Content pb='x16'>
+			<ContextualbarContent pb='x16'>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		);
 	}
 
@@ -118,7 +119,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isAdmin={data?.user.roles.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
-					isAFederatedUser={data?.user.federated}
+					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}
 					onChange={onChange}
 					onReload={onReload}
 				/>

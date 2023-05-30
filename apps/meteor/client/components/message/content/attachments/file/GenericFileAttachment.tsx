@@ -24,13 +24,14 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	title_link_download: hasDownload,
 	size,
 	format,
+	collapsed,
 }) => {
 	const getURL = useMediaUrl();
 
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={link}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
