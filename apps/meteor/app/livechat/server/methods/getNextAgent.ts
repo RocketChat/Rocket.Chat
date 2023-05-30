@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const agent = await Livechat.getNextAgent(department);
-		if (!agent) {
+		if (!agent?.agentId) {
 			return;
 		}
 

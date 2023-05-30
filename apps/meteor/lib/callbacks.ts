@@ -17,6 +17,7 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -158,19 +159,7 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (
-		agent: {
-			agentId: string;
-			username: string;
-		},
-		params?: { department?: string },
-	) =>
-		| {
-				agentId: string;
-				username: string;
-		  }
-		| null
-		| undefined;
+	'livechat.beforeDelegateAgent': (agent: SelectedAgent | undefined, params?: { department?: string }) => SelectedAgent | null | undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
