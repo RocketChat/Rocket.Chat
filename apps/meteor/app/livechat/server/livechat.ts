@@ -5,7 +5,7 @@ import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
-const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html') || '');
+const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
 
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
@@ -21,7 +21,7 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 
 	const domainWhiteListSetting = settings.get<string>('Livechat_AllowedDomainsList');
 	let domainWhiteList = [];
-	if (req.headers.referer && !domainWhiteListSetting.trim()) {
+	if (req.headers.referer && domainWhiteListSetting.trim()) {
 		domainWhiteList = domainWhiteListSetting.split(',').map((domain) => domain.trim());
 
 		const referer = url.parse(req.headers.referer);
