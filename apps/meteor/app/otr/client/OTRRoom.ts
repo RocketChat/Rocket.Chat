@@ -244,7 +244,6 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
-		console.trace('onUserStream', data, type);
 		switch (type) {
 			case 'handshake':
 				let timeout: NodeJS.Timeout;
