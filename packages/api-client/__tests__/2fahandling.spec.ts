@@ -71,7 +71,7 @@ test('if the 2fa handler is not provided, it should throw an error', async () =>
 
 		expect(error.status).toBe(400);
 
-		const body = error.json();
+		const body = await error.json();
 
 		expect(body).toMatchObject({
 			errorType: 'totp-required',
@@ -128,7 +128,7 @@ test('if the 2fa handler is provided it should resolves', async () => {
 	expect(fn).toHaveBeenCalledTimes(1);
 });
 
-test.only('should be ask for 2fa code again if the code is wrong', async () => {
+test('should be ask for 2fa code again if the code is wrong', async () => {
 	const fn = jest.fn();
 
 	const client = new RestClient({
