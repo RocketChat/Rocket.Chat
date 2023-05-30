@@ -1,48 +1,14 @@
 import { RestClient } from '@rocket.chat/api-client';
 
 import { ClientStreamImpl } from './ClientStream';
-import type { ClientStream } from './ClientStream';
+import type { ClientStream } from './types/ClientStream';
 import type { Connection } from './Connection';
 import { ConnectionImpl } from './Connection';
 import { DDPDispatcher } from './DDPDispatcher';
 import { TimeoutControl } from './TimeoutControl';
 import type { Account } from './types/Account';
 import { AccountImpl } from './types/Account';
-
-/*
-* The following procedure is used for streaming data:
-* In the original Meteor DDP, Collections were used and publications and subscriptions were used to synchronize data between the client and server.
-* However, controlling the `mergebox` can be expensive and doesn't scale well for many clients.
-* To address this issue, we are using a specific part of the original implementation of the DDP protocol to send the data directly to the client without using the mergebox.
-* This allows the client to receive more data directly from the server, even if the data is the same as before.
-
-* To maintain compatibility with the original Meteor DDP, we use virtual collections.
-* These collections are not real collections, but rather a way to send data to the client.
-* They are named with the prefix stream- followed by the name of the stream.
-* Instead of storing the data, they simply call the changed method.
-* It's up to the application to handle the changed method and use the data it contains.
-
-* In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
-*/
-export interface SDK {
-	stream(
-		name: string,
-		params: unknown[],
-		cb: (...data: unknown[]) => void,
-	): {
-		stop: () => void;
-		ready: () => Promise<void>;
-		isReady: boolean;
-		onReady: (cb: () => void) => void;
-	};
-
-	connection: Connection;
-	account: Account;
-	client: ClientStream;
-
-	timeoutControl: TimeoutControl;
-	rest: RestClient;
-}
+import type { SDK } from './types/SDK';
 
 interface PublicationPayloads {
 	collection: string;
@@ -71,10 +37,11 @@ export class DDPSDK implements SDK {
 	) {}
 
 	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
-		const { id } = this.client.subscribe(`stream-${name}`, key);
+		const subscription = this.client.subscribe(`stream-${name}`, key);
 
+		const stop = subscription.stop.bind(subscription);
 		const cancel = [
-			() => this.client.unsubscribe(id),
+			() => stop(),
 			this.client.onCollection(`stream-${name}`, (data) => {
 				if (!isValidPayload(data)) {
 					return;
@@ -92,14 +59,11 @@ export class DDPSDK implements SDK {
 			}),
 		];
 
-		return {
+		return Object.assign(subscription, {
 			stop: () => {
 				cancel.forEach((fn) => fn());
 			},
-			ready: async () => undefined,
-			isReady: false,
-			onReady: (_cb: () => void) => void 0,
-		};
+		});
 	}
 
 	/**
@@ -144,7 +108,7 @@ export class DDPSDK implements SDK {
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
 		connection.on('connected', () => {
-			Object.entries(stream.subscriptions).forEach(([, sub]) => {
+			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});
 		});
