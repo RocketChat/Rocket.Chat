@@ -13,7 +13,7 @@ import DepartmentsTable from './DepartmentsTable';
 
 const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
-	const [debouncedText = ''] = useDebouncedValue(text, 500);
+	const debouncedText = useDebouncedValue(text, 500) || '';
 
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
