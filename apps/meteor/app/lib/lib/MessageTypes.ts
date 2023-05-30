@@ -194,7 +194,6 @@ Meteor.startup(function () {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -206,7 +205,6 @@ Meteor.startup(function () {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});
