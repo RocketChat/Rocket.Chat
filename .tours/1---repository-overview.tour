@@ -1,0 +1,23 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "1 - Repository-Overview",
+  "steps": [
+    {
+      "file": "package.json",
+      "description": "### 1. Welcome to the Rocket.Chat Code Tour! This tour aims to provide an overview of the *Rocket.Chat* codebase, its architecture, key features and how things are working. \n\n### 2. The code tour is designed for the Everyone, whether you're a developer looking to contribute, a student learning web development, or simply curious about Rocket.Chat's inner workings.\n\n### 3. We'll explore specific modules, functionalities, or important sections of the codebase in a structured manner, allowing you to understand how Rocket.Chat works.",
+      "line": 2
+    },
+    {
+      "directory": "apps/meteor",
+      "description": "### apps/meteor Folder\n#### The \"apps/meteor\" folder is a significant part of the codebase and contains important code and imports related to the Meteor framework in the Rocket Chat project.\n\n- **Folder structure**: The \"apps/meteor\" folder may have a structured organization, with subfolders representing different aspects of the application. For example:\n    - **Client**: This subfolder may contain code specific to the client-side implementation, such as UI components, templates, stylesheets, and client-side libraries.\n    - **Server**: This subfolder may contain code that runs on the server-side, handling server operations like database interactions, API endpoints, and server-side functions.\n    - **Lib**: This subfolder may contain reusable code and utilities that can be shared between the client and server.\n    - **Methods**: This subfolder may contain code for server-side methods, which provide an interface for client-side code to interact with the server and perform operations securely.\n    - **Public**: This subfolder may contain publicly accessible files, such as static assets (images, fonts, etc.) that can be served directly to clients.\n    - **Private**: This subfolder may contain private files and assets that are only accessible to the server-side code."
+    },
+    {
+      "directory": "ee",
+      "description": "### ee (Enterprice Edition) Folder\nThe \"ee\" folder in the Rocket Chat project contains code, features, and functionalities exclusive to the Enterprise Edition of Rocket Chat. It provides additional features tailored for larger organizations, such as advanced security options, compliance features, enhanced administration tools, and integrations with enterprise systems.\n\n**Additional features**: The \"ee\" folder includes code files that implement extra features and functionalities exclusive to the enterprise edition. These features are designed to meet the requirements of enterprise customers, such as advanced security options, compliance features, enhanced administration tools, integrations with enterprise systems, and more."
+    },
+    {
+      "directory": "packages",
+      "description": "### package Folder\nThe \"package\" folder in the Rocket Chat project contains sharable code that can be used by different projects within the Rocket Chat ecosystem. It houses reusable modules, libraries, or components that follow a modular approach to code organization. The shared code is managed as a package with its own versioning system, allowing projects to depend on specific versions. The folder may include documentation, examples, tests, and quality assurance processes to ensure reliability and ease of use. By organizing sharable code in this folder, Rocket Chat promotes code reuse, modularity, and collaboration across projects."
+    }
+  ]
+}
