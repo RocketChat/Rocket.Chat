@@ -58,7 +58,7 @@ export const Default: ComponentStory<typeof InfoPanel> = () => (
 );
 Default.storyName = 'InfoPanel';
 
-// export const Archived = () => <VerticalBar height={800}>
+// export const Archived = () => <Contextualbar height={800}>
 // 	<RoomInfo
 // 		{...room}
 // 		icon='lock'
@@ -68,9 +68,9 @@ Default.storyName = 'InfoPanel';
 // 		onClickDelete={alert}
 // 		archived
 // 	/>
-// </VerticalBar>;
+// </Contextualbar>;
 
-// export const Broadcast = () => <VerticalBar height={800}>
+// export const Broadcast = () => <Contextualbar height={800}>
 // 	<RoomInfo
 // 		{...room}
 // 		icon='lock'
@@ -80,4 +80,4 @@ Default.storyName = 'InfoPanel';
 // 		onClickDelete={alert}
 // 		broadcast
 // 	/>
-// </VerticalBar>;
+// </Contextualbar>;

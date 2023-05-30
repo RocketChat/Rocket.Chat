@@ -6,8 +6,8 @@ import React, { useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 
 type EditOAuthAddAppPayload = {
 	name: string;
@@ -18,7 +18,7 @@ type EditOAuthAddAppPayload = {
 type EditOauthAppProps = {
 	onChange: () => void;
 	data: Serialized<IOAuthApps>;
-} & Omit<ComponentProps<typeof VerticalBar.ScrollableContent>, 'data'>;
+} & Omit<ComponentProps<typeof ContextualbarScrollableContent>, 'data'>;
 
 const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactElement => {
 	const t = useTranslation();
@@ -93,7 +93,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 		));
 
 	return (
-		<VerticalBar.ScrollableContent w='full' {...props}>
+		<ContextualbarScrollableContent w='full' {...props}>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 				<Field>
 					<Field.Label display='flex' justifyContent='space-between' w='full'>
@@ -167,7 +167,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 					</Field.Row>
 				</Field>
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

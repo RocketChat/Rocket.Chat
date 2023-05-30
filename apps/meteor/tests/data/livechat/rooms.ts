@@ -137,13 +137,13 @@ export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> 
 			});
 	});
 
-export const createManager = (): Promise<ILivechatAgent> =>
+export const createManager = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/manager'))
 			.set(credentials)
 			.send({
-				username: adminUsername,
+				username: overrideUsername || adminUsername,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
