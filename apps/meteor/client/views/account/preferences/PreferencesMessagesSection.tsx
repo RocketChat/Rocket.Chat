@@ -130,7 +130,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 				{useMemo(
 					() => (
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Show_threads_in_main_channel')}</Field.Label>
+							<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
 							<Field.Row>
 								<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
 							</Field.Row>
