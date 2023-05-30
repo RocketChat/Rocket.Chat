@@ -31,7 +31,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const settings = {
 		unreadAlert: useUserPreference('unreadAlert'),
-		showMessageInMainThread: useUserPreference('showMessageInMainThread'),
+		showThreadsInMainChannel: useUserPreference('showThreadsInMainChannel'),
 		alsoSendThreadToChannel: useUserPreference('alsoSendThreadToChannel'),
 		useEmojis: useUserPreference('useEmojis'),
 		convertAsciiEmoji: useUserPreference('convertAsciiEmoji'),

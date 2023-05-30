@@ -575,7 +575,7 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_Default_User_Preferences_showThreadsInMainChannel', false, {
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'Show_threads_in_main_channel',
+				i18nLabel: 'Always_show_thread_replies_in_main_channel',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
