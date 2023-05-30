@@ -3327,7 +3327,7 @@
   "Mongo_version": "Mongo Version",
   "MongoDB": "MongoDB",
   "MongoDB_Deprecated": "MongoDB veraltet",
-  "MongoDB_version_s_is_deprecated_please_upgrade_your_installation": "MongoDB-Version % s ist veraltet. Bitte aktualisieren Sie Ihre Installation.",
+  "MongoDB_version_s_is_deprecated_please_upgrade_your_installation": "MongoDB-Version %s ist veraltet. Bitte aktualisieren Sie Ihre Installation.",
   "Monitor_added": "Monitor hinzugefügt",
   "Monitor_new_and_suspicious_logins": "Neue und verdächtige Anmeldungen überwachen",
   "Monitor_history_for_changes_on": "Verlaufsänderungen beobachten für",

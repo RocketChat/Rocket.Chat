@@ -151,24 +151,21 @@ describe('subscribe procedures', () => {
 	it('should be able to subscribe to a collection and receive a result', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
-		const promise = client.subscribe('test');
+		const subscription = client.subscribe('test');
 		ws.handleMessage(
 			JSON.stringify({
 				msg: 'ready',
-				subs: [promise.id],
+				subs: [subscription.id],
 			}),
 		);
 
-		await expect(promise).resolves.toEqual({
-			msg: 'ready',
-			subs: [promise.id],
-		});
+		await expect(subscription.ready()).resolves.toBeUndefined();
 	});
 
 	it('should be able to subscribe to a collection and receive an error', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
-		const promise = client.subscribe('test');
+		const subscription = client.subscribe('test');
 		ws.handleMessage(
 			JSON.stringify({
 				msg: 'nosub',
@@ -178,11 +175,11 @@ describe('subscribe procedures', () => {
 					message: 'Bad Request [400]',
 					errorType: 'Meteor.Error',
 				},
-				id: promise.id,
+				id: subscription.id,
 			}),
 		);
 
-		await expect(promise).rejects.toEqual({
+		await expect(subscription.ready()).rejects.toEqual({
 			error: 400,
 			reason: 'Bad Request',
 			message: 'Bad Request [400]',
@@ -193,29 +190,26 @@ describe('subscribe procedures', () => {
 	it('should be able to unsubscribe from a collection', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
-		const promise = client.subscribe('test');
+		const subscription = client.subscribe('test');
 		ws.handleMessage(
 			JSON.stringify({
 				msg: 'ready',
-				subs: [promise.id],
+				subs: [subscription.id],
 			}),
 		);
-		await expect(promise).resolves.toEqual({
-			msg: 'ready',
-			subs: [promise.id],
-		});
-		const unsubPromise = client.unsubscribe(promise.id);
+		await expect(subscription.ready()).resolves.toBeUndefined();
+		const unsubPromise = client.unsubscribe(subscription.id);
 
 		ws.handleMessage(
 			JSON.stringify({
 				msg: 'nosub',
-				id: promise.id,
+				id: subscription.id,
 			}),
 		);
 
 		expect(unsubPromise).resolves.toEqual({
 			msg: 'nosub',
-			id: promise.id,
+			id: subscription.id,
 		});
 	});
 
@@ -231,10 +225,7 @@ describe('subscribe procedures', () => {
 			}),
 		);
 
-		await expect(promise).resolves.toEqual({
-			msg: 'ready',
-			subs: [promise.id],
-		});
+		await expect(promise.ready()).resolves.toBeUndefined();
 
 		const observer = jest.fn();
 

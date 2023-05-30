@@ -8,6 +8,7 @@ it('should call the heartbeat and timeout callbacks respecting the informed time
 	const timeoutCallback = jest.fn();
 
 	const timeout = new TimeoutControl(100);
+	timeout.reset();
 
 	expect(setTimeout).toHaveBeenCalledTimes(2);
 
@@ -34,6 +35,7 @@ it('should never call the timeout callback if the reset method is called', async
 	const timeoutCallback = jest.fn();
 
 	const timeout = new TimeoutControl(100);
+	timeout.reset();
 
 	expect(setTimeout).toHaveBeenCalledTimes(2);
 
