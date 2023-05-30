@@ -34,15 +34,17 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			this.transporter = new Transporters.TCP(tx);
 		}
 
-		this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
+		if (this.isTransporterTCP) {
+			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
+				if (clientAction === 'removed') {
+					return;
+				}
 
-			if (this.isTransporterTCP && clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
-				this.connectNode(data);
-			}
-		});
+				if (clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
+					this.connectNode(data);
+				}
+			});
+		}
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
