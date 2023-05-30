@@ -1,7 +1,15 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamerCallbackArgs,
+	UploadResult,
+	StreamNames,
+	StreamKeys,
+} from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
@@ -51,13 +59,13 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => sdk.rest.post(endpoint as any, formData);
 
-const getStream = (
-	streamName: string,
+const getStream = <N extends StreamNames, K extends StreamKeys<N>>(
+	streamName: N,
 	_options?: {
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	},
-): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
+): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
 	return (eventName, callback): (() => void) => {
 		return sdk.stream(streamName, [eventName], callback as (...args: any[]) => void).stop;
 	};
@@ -67,9 +75,13 @@ const ee = new Emitter<Record<string, void>>();
 
 const events = new Map<string, () => void>();
 
-const getSingleStream = (
-	streamName: string,
-): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
+const getSingleStream = <N extends StreamNames, K extends StreamKeys<N>>(
+	streamName: N,
+	_options?: {
+		retransmit?: boolean | undefined;
+		retransmitToSelf?: boolean | undefined;
+	},
+): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
 	const stream = getStream(streamName);
 	return (eventName, callback): (() => void) => {
 		ee.on(`${streamName}/${eventName}`, callback);
