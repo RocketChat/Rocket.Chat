@@ -189,7 +189,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
-		message: '__username__was_set__role__by__user_by_',
+		message: 'set__username__as__role__',
 		data(message) {
 			return {
 				username: message.msg,
@@ -200,7 +200,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'subscription-role-removed',
 		system: true,
-		message: '__username__is_no_longer__role__defined_by__user_by_',
+		message: 'removed__username__as__role__',
 		data(message) {
 			return {
 				username: message.msg,
