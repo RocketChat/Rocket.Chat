@@ -115,7 +115,7 @@ Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.yout
 
 # 👥 Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contribute-to-rocket.chat/how-can-i-help) page for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
 
 
 ## 💼 Become a Rocketeer
@@ -131,7 +131,7 @@ We're hiring developers, support people, and product managers all the time. Plea
 - [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
 
 
-Any other questions, reach out to us at [our website](https://rocket.chat/contact) or you can email us directly at [contact@rocket.chat](mailto:contact@rocket.chat). We’d be happy to help!
+
 
 ## 🗒️ Credits
 
