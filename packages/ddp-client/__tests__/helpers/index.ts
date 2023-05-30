@@ -22,10 +22,24 @@ export const handleConnectionAndRejects = async (server: WS, ...client: Promise<
 	]);
 };
 
-export const handleMethod = async (server: WS, id: string, method: string, params: string[]) => {
-	await server.nextMessage.then(async (message) => {
-		await expect(message).toBe(`{"msg":"method","method":"${method}","params":${JSON.stringify(params)},"id":"${id}"}`);
-		server.send(`{"msg":"result","id":"${id}","result":1}`);
+const handleConnectionButNoResponse = async (server: WS, method: string, params: string[]) => {
+	return server.nextMessage.then(async (msg) => {
+		if (typeof msg !== 'string') throw new Error('Expected message to be a string');
+		const message = JSON.parse(msg);
+		await expect(message).toMatchObject({
+			msg: 'method',
+			method,
+			params,
+		});
+		return message;
+	});
+};
+
+export const handleMethod = async (server: WS, method: string, params: string[], ...client: Promise<unknown>[]) => {
+	const result = await handleConnectionButNoResponse(server, method, params);
+	return Promise.all([server.send(`{"msg":"result","id":"${result.id}","result":1}`), ...client]).then((result) => {
+		result.shift();
+		return result;
 	});
 };
 
