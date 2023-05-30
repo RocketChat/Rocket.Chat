@@ -5,7 +5,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
 
-import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
@@ -19,14 +18,11 @@ type AdministrationModelListProps = {
 	onDismiss: () => void;
 };
 
-const INFO_PERMISSIONS = ['view-statistics'];
-
 const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, onDismiss }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
-	const hasInfoPermission = userHasAllPermission(INFO_PERMISSIONS);
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
@@ -39,7 +35,6 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
 	};
 
-	const infoRoute = useRoute('admin-info');
 	const adminRoute = useRoute('admin-index');
 	const upgradeRoute = useRoute('upgrade');
 	const cloudRoute = useRoute('cloud');
@@ -85,12 +80,6 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 						role='listitem'
 						text={t('Workspace')}
 						onClick={() => {
-							if (hasInfoPermission) {
-								infoRoute.push();
-								onDismiss();
-								return;
-							}
-
 							adminRoute.push({ context: '/' });
 							onDismiss();
 						}}
