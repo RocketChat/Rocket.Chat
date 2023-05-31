@@ -39,6 +39,9 @@ test.describe.serial('imports', () => {
 		await expect(poAdmin.btnStartImport).toBeEnabled();
 		await poAdmin.btnStartImport.click();
 
+		await expect(poAdmin.importStatusTable).toBeVisible({
+			timeout: 30_000,
+		});
 		await expect(poAdmin.importStatusTableFirstRowFileCell).toBeVisible({
 			timeout: 30_000,
 		});
