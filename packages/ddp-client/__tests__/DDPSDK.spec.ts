@@ -1,9 +1,11 @@
 /* eslint-disable no-debugger */
+import util from 'util';
+
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
 import { DDPSDK } from '../src/DDPSDK';
-import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription } from './helpers';
+import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
@@ -25,7 +27,9 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-	return WS.clean();
+	server.close();
+	WS.clean();
+	jest.useRealTimers();
 });
 
 it('should handle a stream of messages', async () => {
@@ -108,18 +112,17 @@ it('should handle streams after reconnect', async () => {
 
 	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
-	await server.close();
-	await WS.clean();
+	server.close();
+	WS.clean();
 
 	server = new WS('ws://localhost:1234');
 
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, server.connected, Promise.resolve(jest.advanceTimersByTimeAsync(1000)), reconnect, connecting, connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
 
-	await jest.advanceTimersByTimeAsync(1000);
-
+	// the client should reconnect and resubscribe
 	await handleSubscription(server, result.id, streamName, streamParams);
 
 	fire(server, streamName, streamParams);
@@ -188,8 +191,78 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();
+	sdk.connection.close();
 });
 
 it('should create and connect to a stream', async () => {
-	await handleConnection(server, DDPSDK.createAndConnect('ws://localhost:1234'));
+	const promise = DDPSDK.createAndConnect('ws://localhost:1234');
+	await handleConnection(server, promise);
+	const sdk = await promise;
+	sdk.connection.close();
+});
+
+describe('Method call and Disconnection cases', () => {
+	it('should handle properly if the message was sent after disconnection', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const [result] = await handleMethod(server, 'method', ['args1'], sdk.client.callAsync('method', 'args1'));
+
+		expect(result).toBe(1);
+		// Fake timers are used to avoid waiting for the reconnect timeout
+		jest.useFakeTimers();
+
+		server.close();
+		WS.clean();
+		server = new WS('ws://localhost:1234');
+
+		const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
+		const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+
+		const callResult = sdk.client.callAsync('method', 'args2');
+
+		expect(util.inspect(callResult).includes('pending')).toBe(true);
+
+		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+
+		const [result2] = await handleMethod(server, 'method', ['args2'], callResult);
+
+		expect(util.inspect(callResult).includes('pending')).toBe(false);
+		expect(result2).toBe(1);
+		sdk.connection.close();
+		jest.useRealTimers();
+	});
+
+	it.skip('should handle properly if the message was sent before disconnection but got disconnected before receiving the response', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const callResult = sdk.client.callAsync('method', 'args');
+
+		expect(util.inspect(callResult).includes('pending')).toBe(true);
+
+		// Fake timers are used to avoid waiting for the reconnect timeout
+		jest.useFakeTimers();
+
+		server.close();
+		WS.clean();
+		server = new WS('ws://localhost:1234');
+
+		const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
+		const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+
+		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+
+		expect(util.inspect(callResult).includes('pending')).toBe(true);
+
+		const [result] = await handleMethod(server, 'method', ['args2'], callResult);
+
+		expect(result).toBe(1);
+
+		jest.useRealTimers();
+	});
 });
