@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';

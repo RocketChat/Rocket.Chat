@@ -56,9 +56,9 @@ const AnalyticsPage = () => {
 			<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
 				<Margins block='x4'>
 					<Box display='flex' mi='neg-x4' flexDirection='row' flexWrap='wrap'>
-						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
+						<Box display='flex' mi='x4' flexGrow={1} flexShrink={0} flexDirection='column'>
 							<Label mb='x4'>{t('Type')}</Label>
-							<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
+							<Select options={typeOptions} value={type} onChange={setType} />
 						</Box>
 						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
