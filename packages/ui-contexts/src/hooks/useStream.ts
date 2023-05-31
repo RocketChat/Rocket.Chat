@@ -24,15 +24,7 @@ export function useStream<N extends StreamNames>(
 		retransmit?: boolean;
 		retransmitToSelf?: boolean;
 	},
-): StreamerCallback<N>;
-
-export function useStream(
-	streamName: string,
-	options?: {
-		retransmit?: boolean | undefined;
-		retransmitToSelf?: boolean | undefined;
-	},
-): (eventName: string, callback: (...event: unknown[]) => void) => () => void {
+): StreamerCallback<N> {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 }
@@ -50,14 +42,7 @@ export function useSingleStream<N extends StreamNames>(
 		retransmit?: boolean;
 		retransmitToSelf?: boolean;
 	},
-): StreamerCallback<N>;
-export function useSingleStream<N extends StreamNames>(
-	streamName: N,
-	options?: {
-		retransmit?: boolean | undefined;
-		retransmitToSelf?: boolean | undefined;
-	},
-): (eventName: string, callback: (...event: unknown[]) => void) => () => void {
+): StreamerCallback<N> {
 	const { getSingleStream } = useContext(ServerContext);
 	return useMemo(() => getSingleStream(streamName, options), [getSingleStream, streamName, options]);
 }

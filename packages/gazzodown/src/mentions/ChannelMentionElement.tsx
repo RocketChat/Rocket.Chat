@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/fuselage';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -17,9 +18,9 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 	}
 
 	return (
-		<span className='mention-link mention-link--room' onClick={handleClick}>
-			#{resolved.name ?? mention}
-		</span>
+		<Message.Mention clickable tag='#' onClick={handleClick}>
+			{resolved.name ?? mention}
+		</Message.Mention>
 	);
 };
 
