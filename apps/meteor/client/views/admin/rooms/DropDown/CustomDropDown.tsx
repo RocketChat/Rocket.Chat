@@ -30,18 +30,16 @@ type TitleOptionProp = {
 type CheckboxOptionProp = {
 	id: string;
 	text: string;
-	isGroupTitle: never;
+	isGroupTitle: boolean;
 	checked: boolean;
 };
 
 export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
 type DropDownProps = {
-	inputData: any[];
 	dropdownOptions: OptionProp[];
 	defaultTitle: TranslationKey; // For example: 'All rooms'
 	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
-	filterFunction: (props: any) => any; // TODO: tipar a função e o inputData
 };
 
 // TODO: move DropDownAnchor to new file!!
@@ -110,6 +108,8 @@ export const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box
 // TODO: move DropDownList to new file!!
 
 const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelected: (item: OptionProp) => void }) => {
+	const t = useTranslation();
+
 	return (
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{options.map((option, index) => (
@@ -117,13 +117,15 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 				<Fragment key={index}>
 					{option.isGroupTitle === true && (
 						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
-							{option.text}
+							{t(option.text as TranslationKey)}
 						</Box>
 					)}
+					{/* TODO: mudar desing de acordo com o Figma */}
 					{options.map(
 						(item) =>
-							item.isGroupTitle === false && (
+							!item.isGroupTitle && (
 								<Option key={item.id} onClick={(): void => onSelected(item)}>
+									{t(item.text as TranslationKey)}
 									<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
 								</Option>
 							),
@@ -136,7 +138,7 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 
 // ------------------- CustomDropDown -------------------
 
-export const CustomDropDown = ({ inputData, dropdownOptions, defaultTitle, selectedOptionsTitle, filterFunction }: DropDownProps) => {
+export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsTitle }: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -153,12 +155,7 @@ export const CustomDropDown = ({ inputData, dropdownOptions, defaultTitle, selec
 	);
 
 	// Everything is selected by default
-	const [selectedOptions, setSelectedOptions] = useState(dropdownOptions);
-
-	const handleFilteredOptions = useCallback(
-		() => inputData.filter(filterFunction(selectedOptions)),
-		[filterFunction, inputData, selectedOptions],
-	);
+	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
 	const onSelect = (item: OptionProp): void => {
 		item.checked = !item.checked;
@@ -183,13 +180,7 @@ export const CustomDropDown = ({ inputData, dropdownOptions, defaultTitle, selec
 			/>
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
-					<DropDownList
-						options={dropdownOptions}
-						onSelected={(item) => {
-							onSelect(item);
-							handleFilteredOptions;
-						}}
-					/>
+					<DropDownList options={dropdownOptions} onSelected={onSelect} />
 					{/* TODO: are options being marked as checked??? */}
 				</DropDownListWrapper>
 			)}

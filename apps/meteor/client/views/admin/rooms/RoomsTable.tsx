@@ -222,7 +222,25 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		{
 			id: 'all_rooms',
 			text: 'all_rooms',
-			checked: true,
+			isGroupTitle: false,
+			checked: false,
+		},
+		{
+			id: 'oi1',
+			text: 'oie1',
+			isGroupTitle: false,
+			checked: false,
+		},
+		{
+			id: 'filter_by_room_oiiiii',
+			text: 'filter_by_room_oiiiii',
+			isGroupTitle: true,
+		},
+		{
+			id: 'oi2',
+			text: 'oie2',
+			isGroupTitle: false,
+			checked: false,
 		},
 	] as OptionProp[];
 
@@ -240,16 +258,12 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	return (
 		<>
 			{/* TODO: mudar aqui */}
-			{/* <FilterByTypeAndText setFilter={setRoomFilter} /> */}
-			{data && (
-				<CustomDropDown
-					inputData={data.rooms}
-					dropdownOptions={roomTypeOptions}
-					defaultTitle={'All_rooms' as any}
-					selectedOptionsTitle='Rooms'
-					filterFunction={console.log('oi') as any}
-				/>
-			)}
+			<FilterByTypeAndText setFilter={setRoomFilter} />
+			<CustomDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+			oiiiiiiiiii
+			<CustomDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+			tchauuuuuuu
+			<CustomDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
