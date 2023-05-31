@@ -1,4 +1,8 @@
-import { Random } from '@rocket.chat/random';
+import { UploadFS as UFS } from './ufs';
+import './ufs-methods';
+import './ufs-server';
+import './ufs-gridfs';
+import './ufs-local';
 
 import { Config } from './ufs-config';
 import { Filter } from './ufs-filter';

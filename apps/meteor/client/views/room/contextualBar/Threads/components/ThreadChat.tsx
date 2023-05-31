@@ -6,7 +6,7 @@ import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-co
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
-import VerticalBarContent from '../../../../../components/VerticalBar/VerticalBarContent';
+import { ContextualbarContent } from '../../../../../components/Contextualbar';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
 import ComposerContainer from '../../../components/body/composer/ComposerContainer';
@@ -90,7 +90,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const t = useTranslation();
 
 	return (
-		<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
+		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DropTargetOverlay {...fileUploadOverlayProps} />
 			<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 				<MessageListErrorBoundary>
@@ -123,7 +123,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					</Field>
 				</ComposerContainer>
 			</Box>
-		</VerticalBarContent>
+		</ContextualbarContent>
 	);
 };
 

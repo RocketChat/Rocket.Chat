@@ -6,8 +6,8 @@ import React from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
-import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -107,7 +107,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p='x24'>
 				<Margins block='x4'>
 					{username && (
 						<Field>
@@ -156,8 +156,8 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 						</Field>
 					)}
 				</Margins>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch flexWrap='wrap'>
 					{isCallReady && (
 						<>
@@ -175,7 +175,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };
