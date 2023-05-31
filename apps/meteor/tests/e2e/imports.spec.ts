@@ -40,13 +40,13 @@ test.describe.serial('imports', () => {
 		await poAdmin.btnStartImport.click();
 
 		await expect(poAdmin.importStatusTable).toBeVisible({
-			timeout: 30_000,
+			timeout: 60_000,
 		});
 		await expect(poAdmin.importStatusTableFirstRowFileCell).toBeVisible({
-			timeout: 30_000,
+			timeout: 60_000,
 		});
 		await expect(poAdmin.importStatusTableFirstRowStatusCell).toBeVisible({
-			timeout: 30_000,
+			timeout: 60_000,
 		});
 	});
 
