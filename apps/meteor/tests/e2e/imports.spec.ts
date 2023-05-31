@@ -36,6 +36,7 @@ test.describe.serial('imports', () => {
 		await poAdmin.inputFile.setInputFiles(slackCsvDir);
 		await poAdmin.btnImport.click();
 
+		await expect(poAdmin.btnStartImport).toBeEnabled();
 		await poAdmin.btnStartImport.click();
 
 		await expect(poAdmin.importStatusTableFirstRowFileCell).toBeVisible({
