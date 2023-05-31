@@ -18,6 +18,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { queryClient } from '../../../lib/queryClient';
+
 type RegisterUsernamePayload = {
 	username: Exclude<IUser['username'], undefined>;
 } & IUser['customFields'];
@@ -67,6 +69,7 @@ const RegisterUsername = () => {
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
+			queryClient.invalidateQueries(['users.info']);
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {
