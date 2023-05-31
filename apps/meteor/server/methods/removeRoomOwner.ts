@@ -96,7 +96,7 @@ Meteor.methods<ServerMethods>({
 				name: user.name,
 			},
 			scope: rid,
-		};
+		} as const;
 		if (settings.get('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);
 		}

@@ -14,18 +14,25 @@ it('renders empty', () => {
 
 it('renders a big emoji block', () => {
 	render(
-		<Markup
-			tokens={[
-				{
-					type: 'BIG_EMOJI',
-					value: [
-						{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
-						{ type: 'EMOJI', value: undefined, unicode: '😀' },
-						{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
-					],
-				},
-			]}
-		/>,
+		<MarkupInteractionContext.Provider
+			value={{
+				convertAsciiToEmoji: true,
+				useEmoji: true,
+			}}
+		>
+			<Markup
+				tokens={[
+					{
+						type: 'BIG_EMOJI',
+						value: [
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
+							{ type: 'EMOJI', value: undefined, unicode: '😀' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
+						],
+					},
+				]}
+			/>
+		</MarkupInteractionContext.Provider>,
 	);
 
 	expect(screen.getByRole('presentation')).toHaveTextContent(':smile:😀:smile:');
@@ -38,6 +45,7 @@ it('renders a big emoji block with ASCII emoji', () => {
 		<MarkupInteractionContext.Provider
 			value={{
 				convertAsciiToEmoji: false,
+				useEmoji: true,
 			}}
 		>
 			<Markup
@@ -281,4 +289,58 @@ it('renders a line break', () => {
 	);
 
 	expect(container).toContainHTML('<br>');
+});
+
+it('renders plain text instead of emojis based on preference', () => {
+	render(
+		<MarkupInteractionContext.Provider
+			value={{
+				convertAsciiToEmoji: false,
+				useEmoji: false,
+			}}
+		>
+			<Markup
+				tokens={[
+					{
+						type: 'PARAGRAPH',
+						value: [
+							{ type: 'PLAIN_TEXT', value: 'Hey! ' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
+							{ type: 'PLAIN_TEXT', value: ' ' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: ':)' }, shortCode: 'slight_smile' },
+						],
+					},
+				]}
+			/>
+		</MarkupInteractionContext.Provider>,
+	);
+
+	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
+});
+
+it('renders plain text instead of ASCII emojis based on useEmojis preference', () => {
+	render(
+		<MarkupInteractionContext.Provider
+			value={{
+				convertAsciiToEmoji: true,
+				useEmoji: false,
+			}}
+		>
+			<Markup
+				tokens={[
+					{
+						type: 'PARAGRAPH',
+						value: [
+							{ type: 'PLAIN_TEXT', value: 'Hey! ' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
+							{ type: 'PLAIN_TEXT', value: ' ' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: ':)' }, shortCode: 'slight_smile' },
+						],
+					},
+				]}
+			/>
+		</MarkupInteractionContext.Provider>,
+	);
+
+	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
 });
