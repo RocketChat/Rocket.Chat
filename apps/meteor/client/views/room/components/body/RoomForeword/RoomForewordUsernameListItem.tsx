@@ -13,7 +13,7 @@ type RoomForewordUsernameListItemProps = {
 };
 
 const RoomForewordUsernameListItem: VFC<RoomForewordUsernameListItemProps> = ({ username, href, useRealName }) => {
-	const { data, isLoading, isError } = useUserInfoQuery(username);
+	const { data, isLoading, isError } = useUserInfoQuery({ username });
 
 	return (
 		<Box mi='x4' is='a' href={href}>
