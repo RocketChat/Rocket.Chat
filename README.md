@@ -41,7 +41,7 @@ Send your first message in minutes.
 
 Free for 30 days. Afterwards, choose between continuing to host on our secure cloud or migrate to your private cloud, data center or even air-gapped environment. 
 
-[Start your cloud hosted now](https://www.rocket.chat/trial-saas)
+[Start your cloud hosted trial now](https://rocket.chat/trial-saas)
 
 # 🛠️ Local development
 
