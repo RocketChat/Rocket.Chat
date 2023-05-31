@@ -26,7 +26,6 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 	const targetHeight = target.current?.getBoundingClientRect().height || 0;
 
 	const placement = useMemo(() => {
-		console.log('viewHeight', viewHeight, 'refTop', refTop, 'targetHeight', targetHeight);
 		if (boundingRect.top === 0) {
 			return 'top-start';
 		}
