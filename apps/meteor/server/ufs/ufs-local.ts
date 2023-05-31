@@ -74,7 +74,7 @@ export class LocalStore extends Store {
 					return;
 				}
 			} catch (_e) {
-				// TODO(user) don't ignore, rather this block shouldn't run twice like it does now
+				// FIXME(user) don't ignore, rather this block shouldn't run twice like it does now
 				return;
 			}
 
