@@ -19,6 +19,7 @@ import MultiStaticSelectElement from '../elements/MultiStaticSelectElement';
 import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import I18nTextElement from '../elements/I18nTextElement';
 
 export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
@@ -51,6 +52,18 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     return text ? <Fragment key={index}>{text}</Fragment> : null;
   }
 
+  public i18n(
+    { key = '' }: UiKit.I18n,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return key ? <I18nTextElement key={index} i18nKey={key} /> : null;
+  }
+
   public mrkdwn(
     { text = '' }: UiKit.Markdown,
     context: UiKit.BlockContext,
@@ -70,11 +83,15 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
-    if (textObject.type !== 'mrkdwn') {
-      return this.plain_text(textObject, context, index);
+    if (textObject.type === 'mrkdwn') {
+      return this.mrkdwn(textObject, context, index);
     }
 
-    return this.mrkdwn(textObject, context, index);
+    if (textObject.type === 'i18n') {
+      return this.i18n(textObject, context, index);
+    }
+
+    return this.plain_text(textObject, context, index);
   }
 
   actions(
