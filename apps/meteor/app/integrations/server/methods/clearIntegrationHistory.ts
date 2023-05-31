@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 
 		await IntegrationHistory.removeByIntegrationId(integrationId);
 
-		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed' });
+		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed', id: integrationId });
 
 		return true;
 	},
