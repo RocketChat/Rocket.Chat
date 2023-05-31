@@ -35,11 +35,13 @@ test.describe.serial('imports', () => {
 
 		await poAdmin.inputFile.setInputFiles(slackCsvDir);
 		await poAdmin.btnImport.click();
-		await poAdmin.btnStartImport.waitFor({ state: 'visible' });
 
 		await poAdmin.btnStartImport.click();
 
-		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
+		await expect(poAdmin.importStatusTableFirstRowFileCell).toBeVisible({
+			timeout: 30_000,
+		});
+		await expect(poAdmin.importStatusTableFirstRowStatusCell).toBeVisible({
 			timeout: 30_000,
 		});
 	});
