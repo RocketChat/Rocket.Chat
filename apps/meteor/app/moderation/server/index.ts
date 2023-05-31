@@ -1,4 +1,4 @@
-import { Permissions, Roles } from '@rocket.chat/models';
+import { Permissions, Roles, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { createOrUpdateProtectedRoleAsync } from '../../../server/lib/roles/createOrUpdateProtectedRole';
@@ -30,14 +30,31 @@ Meteor.startup(() => {
 		}
 
 		if (value === false) {
-			const rolesToRemove = ['novice', 'explorer'];
-			const rolePromises = rolesToRemove.map(async (roleName) => {
-				const role = await Roles.findOneById(roleName);
-				if (role) {
-					await Roles.removeById(role._id);
-				}
-			});
-			await Promise.all(rolePromises);
+			try {
+				const rolesToRemove = ['novice', 'explorer'];
+
+				// get the users in the above roles
+				const usersInRole = await Users.findUsersInRoles(rolesToRemove, undefined, { projection: { _id: 1 } }).toArray();
+
+				const usersToRemove = usersInRole.map((user) => user._id);
+
+				// remove the roles from the users
+				await Roles.removeUsersRoles(usersToRemove, rolesToRemove);
+
+				// add the default 'user' role to the users
+				await Roles.addRolesByUserIds(usersToRemove, 'user');
+
+				// remove the roles
+				const rolePromises = rolesToRemove.map(async (roleName) => {
+					const role = await Roles.findOneById(roleName);
+					if (role) {
+						await Roles.removeById(role._id);
+					}
+				});
+				await Promise.all(rolePromises);
+			} catch (error) {
+				console.error('An error occurred, while deleting trust roles:', error);
+			}
 		}
 
 		return value;

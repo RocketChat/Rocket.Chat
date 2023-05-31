@@ -48,6 +48,42 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return true;
 	}
 
+	async addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][]): Promise<boolean> {
+		if (!Array.isArray(userIds)) {
+			userIds = [userIds];
+			console.warn('[WARN] Roles.addRolesByUserIds: userIds should be an array');
+		}
+
+		if (!Array.isArray(roles)) {
+			roles = [roles];
+			console.warn('[WARN] Roles.addRolesByUserIds: roles should be an array');
+		}
+
+		const users = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1 } }).toArray();
+
+		const userIdsToAddRoles = users.map((user) => user._id);
+
+		for await (const roleId of roles) {
+			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
+
+			if (!role) {
+				console.warn(`[WARN] Roles.addRolesByUserIds: role: ${roleId} not found`);
+				continue;
+			}
+
+			switch (role.scope) {
+				case 'Subscriptions':
+					await Subscriptions.addRolesByUserIds(userIdsToAddRoles, [role._id]);
+					break;
+				case 'Users':
+				default:
+					await Users.addRolesByUserIds(userIdsToAddRoles, [role._id]);
+			}
+		}
+
+		return true;
+	}
+
 	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.isUserInRoles method received a role scope instead of a scope value.');
@@ -95,6 +131,30 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				case 'Users':
 				default:
 					await Users.removeRolesByUserId(userId, [roleId]);
+			}
+		}
+		return true;
+	}
+
+	async removeUsersRoles(uids: IUser['_id'][], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
+		}
+
+		for await (const roleId of roles) {
+			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
+
+			if (!role) {
+				continue;
+			}
+
+			switch (role.scope) {
+				case 'Subscriptions':
+					scope && (await Subscriptions.removeRolesByUserIds(uids, [roleId], scope));
+					break;
+				case 'Users':
+				default:
+					await Users.removeRolesByUserIds(uids, [roleId]);
 			}
 		}
 		return true;

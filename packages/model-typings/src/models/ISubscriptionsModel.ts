@@ -34,6 +34,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateResult>;
 
+	removeRolesByUserIds(uids: IUser['_id'][], roles: IRole['_id'][], rid: IRoom['_id']): Promise<Document | UpdateResult>;
+
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<FindCursor<IUser>>;
 
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
@@ -51,6 +53,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): Promise<FindCursor<P>>;
 
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult>;
+
+	addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][], roomId?: IRoom['_id']): Promise<Document | UpdateResult>;
 
 	isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
