@@ -21,7 +21,7 @@ describe('call procedures', () => {
 		expect(callback).toBeCalledWith(null, ['arg1', 'arg2']);
 	});
 
-	it('should be able to  handle errors thrown by the method call', async () => {
+	it('should be able to handle errors thrown by the method call', async () => {
 		const callback = jest.fn();
 		const ws = new MinimalDDPClient(() => undefined);
 
