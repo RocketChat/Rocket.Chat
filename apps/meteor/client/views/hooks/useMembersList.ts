@@ -22,8 +22,7 @@ export const useMembersList = (options: MembersListOptions) => {
 		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
 		async ({ pageParam }) => {
 			const start = pageParam ?? 0;
-			// const end = pageParam?.[1] ?? 20;
-			console.log(start, pageParam);
+
 			return getMembers({
 				roomId: options.rid,
 				offset: start,
