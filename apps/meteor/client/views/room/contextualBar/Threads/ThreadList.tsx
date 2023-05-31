@@ -6,12 +6,15 @@ import type { FormEvent, ReactElement, VFC } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
-import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -114,13 +117,13 @@ const ThreadList: VFC = () => {
 
 	return (
 		<>
-			<VerticalBarHeader>
-				<VerticalBarIcon name='thread' />
-				<VerticalBarText>{t('Threads')}</VerticalBarText>
-				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
-			</VerticalBarHeader>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='thread' />
+				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
+			</ContextualbarHeader>
 
-			<VerticalBarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -156,11 +159,7 @@ const ThreadList: VFC = () => {
 					</Callout>
 				)}
 
-				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && (
-					<Box p={24} color='annotation' textAlign='center' width='full'>
-						{t('No_Threads')}
-					</Box>
-				)}
+				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && itemCount > 0 && items.length > 0 && (
@@ -192,7 +191,7 @@ const ThreadList: VFC = () => {
 						/>
 					)}
 				</Box>
-			</VerticalBarContent>
+			</ContextualbarContent>
 		</>
 	);
 };

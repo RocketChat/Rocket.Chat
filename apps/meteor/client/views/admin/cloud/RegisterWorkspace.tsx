@@ -77,7 +77,7 @@ const RegisterWorkspace = (): ReactNode => {
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow>
-				{handleRegistrationTag()}
+				<Box display='flex'>{handleRegistrationTag()}</Box>
 
 				<Box pb={8}>
 					<Box fontSize='h3' fontWeight={700}>

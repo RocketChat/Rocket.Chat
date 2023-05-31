@@ -35,7 +35,7 @@ export class PdfWorker {
 		return this.validMimeTypes.includes(mimeType?.toLowerCase());
 	}
 
-	async renderToStream({ data }: { template: Templates; data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
+	async renderToStream({ data }: { data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
 		const parsedData = this.worker.parseTemplateData(data);
 		return this.worker.renderTemplate(parsedData);
 	}

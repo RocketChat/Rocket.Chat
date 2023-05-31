@@ -4,7 +4,7 @@ import { stat, unlink } from 'fs/promises';
 import mkdirp from 'mkdirp';
 import type { IUpload } from '@rocket.chat/core-typings';
 
-import { UploadFS } from '.';
+import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
 import { Store } from './ufs-store';
 
