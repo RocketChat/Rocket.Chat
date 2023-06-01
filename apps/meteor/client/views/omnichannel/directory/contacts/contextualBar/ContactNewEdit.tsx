@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
-import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -82,18 +81,16 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	const {
 		register,
-		formState: { errors, isValid: isFormValid, isDirty },
+		formState: { errors, isValid, isDirty },
 		control,
 		setValue,
 		handleSubmit,
-		trigger,
+		setError,
 	} = useForm<ContactFormData>({
-		mode: 'onSubmit',
-		reValidateMode: 'onSubmit',
+		mode: 'onChange',
+		reValidateMode: 'onChange',
 		defaultValues: initialValue,
 	});
-
-	const isValid = isDirty && isFormValid;
 
 	useEffect(() => {
 		if (!initialUsername) {
@@ -105,8 +102,8 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		});
 	}, [getUserData, initialUsername]);
 
-	const isEmailValid = async (email: string): Promise<boolean | string> => {
-		if (email === initialValue.email) {
+	const validateEmailFormat = (email: string): boolean | string => {
+		if (!email || email === initialValue.email) {
 			return true;
 		}
 
@@ -114,20 +111,20 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 			return t('error-invalid-email-address');
 		}
 
-		const { contact } = await getContactBy({ email });
-		return !contact || contact._id === id || t('Email_already_exists');
+		return true;
 	};
 
-	const isPhoneValid = async (phone: string): Promise<boolean | string> => {
-		if (!phone || initialValue.phone === phone) {
+	const validateContactField = async (name: 'phone' | 'email', value: string, optional = true) => {
+		if ((optional && !value) || value === initialValue[name]) {
 			return true;
 		}
 
-		const { contact } = await getContactBy({ phone });
-		return !contact || contact._id === id || t('Phone_already_exists');
+		const query = { [name]: value } as Record<'phone' | 'email', string>;
+		const { contact } = await getContactBy(query);
+		return !contact || contact._id === id;
 	};
 
-	const isNameValid = (v: string): string | boolean => (!v.trim() ? t('The_field_is_required', t('Name')) : true);
+	const validateName = (v: string): string | boolean => (!v.trim() ? t('The_field_is_required', t('Name')) : true);
 
 	const handleContactManagerChange = async (userId: string): Promise<void> => {
 		setUserId(userId);
@@ -141,9 +138,21 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		setValue('username', user.username || '', { shouldDirty: true });
 	};
 
-	const validate = (fieldName: keyof ContactFormData): (() => void) => withDebouncing({ wait: 500 })(() => trigger(fieldName));
+	const validateAsync = async ({ phone = '', email = '' } = {}) => {
+		const isEmailValid = await validateContactField('email', email);
+		const isPhoneValid = await validateContactField('phone', phone);
+
+		!isEmailValid && setError('email', { message: t('Email_already_exists') });
+		!isPhoneValid && setError('phone', { message: t('Phone_already_exists') });
+
+		return isEmailValid && isPhoneValid;
+	};
 
 	const handleSave = async (data: ContactFormData): Promise<void> => {
+		if (!(await validateAsync(data))) {
+			return;
+		}
+
 		const { name, phone, email, customFields, username, token } = data;
 
 		const payload = {
@@ -175,29 +184,21 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 				<Field>
 					<Field.Label>{t('Name')}*</Field.Label>
 					<Field.Row>
-						<TextInput {...register('name', { validate: isNameValid })} error={errors.name?.message} flexGrow={1} />
+						<TextInput {...register('name', { validate: validateName })} error={errors.name?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.name?.message}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							{...register('email', { validate: isEmailValid, onChange: validate('email') })}
-							error={errors.email?.message}
-							flexGrow={1}
-						/>
+						<TextInput {...register('email', { validate: validateEmailFormat })} error={errors.email?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.email?.message}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							{...register('phone', { validate: isPhoneValid, onChange: validate('phone') })}
-							error={errors.phone?.message}
-							flexGrow={1}
-						/>
+						<TextInput {...register('phone')} error={errors.phone?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.phone?.message}</Field.Error>
 				</Field>
@@ -209,7 +210,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid} primary>
+					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid || !isDirty} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
