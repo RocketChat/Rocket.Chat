@@ -13,6 +13,7 @@ import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
 import { AccountImpl } from '../types/Account';
 import { TimeoutControl } from '../TimeoutControl';
+import type { ClientStream } from '../types/ClientStream';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -34,12 +35,7 @@ declare module '../DDPSDK' {
 			streamName: N,
 			data: K | [K, unknown],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): {
-			stop: () => void;
-			ready: () => Promise<void>;
-			isReady: boolean;
-			onReady: (cb: () => void) => void;
-		};
+		): ReturnType<ClientStream['subscribe']>;
 	}
 }
 

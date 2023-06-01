@@ -22,7 +22,7 @@ type RetryOptions = {
 	retryTime: number;
 };
 
-type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
+type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
 export interface Connection
 	extends Emitter<{
@@ -74,6 +74,8 @@ export class ConnectionImpl
 
 	retryCount = 0;
 
+	public queue = new Set<string>();
+
 	constructor(
 		url: string,
 		private WS: WebSocketConstructor,
@@ -83,6 +85,23 @@ export class ConnectionImpl
 		super();
 		this.ssl = url.startsWith('https') || url.startsWith('wss');
 		this.url = url.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
+
+		this.client.onDispatchMessage((message: string) => {
+			if (this.ws && this.ws.readyState === this.ws.OPEN) {
+				this.ws.send(message);
+				return;
+			}
+
+			this.queue.add(message);
+		});
+
+		this.on('connected', () => {
+			this.queue.forEach((message) => {
+				this.ws?.send(message);
+			});
+
+			this.queue.clear();
+		});
 	}
 
 	private emitStatus() {
@@ -91,63 +110,51 @@ export class ConnectionImpl
 
 	reconnect(): Promise<boolean> {
 		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.resolve(true);
+			return Promise.reject(new Error('Connection in progress'));
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
 
 		this.emit('reconnecting');
 
+		this.emit('connection', 'reconnecting');
+
 		return this.connect();
 	}
 
 	connect() {
+		if (this.status === 'connecting' || this.status === 'connected') {
+			return Promise.reject(new Error('Connection in progress'));
+		}
+
 		this.status = 'connecting';
 		this.emit('connecting');
 		this.emitStatus();
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
 
-		let stop: () => void | undefined;
+		this.ws = ws;
+
 		return new Promise<boolean>((resolve, reject) => {
-			const queue = new Set<string>();
-
-			stop = this.client.onDispatchMessage((message: string) => {
-				queue.add(message);
-			});
-
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
 				};
 
-				stop?.();
-
-				queue.forEach((message) => {
-					ws.send(message);
-				});
-
-				queue.clear();
-
-				stop = this.client.onDispatchMessage((message: string) => {
-					ws.send(message);
-				});
-
-				this.retryCount = 0;
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
 				// (The message was once used to help implement Meteor's hot code reload feature; it is now only included to force old clients to update).
-				this.client.onceMessage((data) => {
-					if (data.msg === undefined) {
-						return;
-					}
-					if (data.msg === 'failed') {
-						return;
-					}
-					if (data.msg === 'connected') {
-						return;
-					}
-					this.close();
-				});
+				// this.client.onceMessage((data) => {
+				// 	if (data.msg === undefined) {
+				// 		return;
+				// 	}
+				// 	if (data.msg === 'failed') {
+				// 		return;
+				// 	}
+				// 	if (data.msg === 'connected') {
+				// 		return;
+				// 	}
+				// 	this.close();
+				// });
 
 				// The client sends a connect message.
 
@@ -158,9 +165,9 @@ export class ConnectionImpl
 
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
-						this.emit('connected', payload.session);
 						this.status = 'connected';
 						this.emitStatus();
+						this.emit('connected', payload.session);
 						this.session = payload.session;
 						return resolve(true);
 					}
@@ -170,13 +177,13 @@ export class ConnectionImpl
 						this.emit('disconnected');
 						return reject(payload.version);
 					}
+					/* istanbul ignore next */
 					reject(new Error('Unknown message type'));
 				});
 			};
 
 			ws.onclose = () => {
 				clearTimeout(this.retryOptions.retryTimer);
-				stop?.();
 				if (this.status === 'closed') {
 					return;
 				}
@@ -210,7 +217,7 @@ export class ConnectionImpl
 		WebSocketImpl: WebSocketConstructor,
 		client: DDPClient,
 		retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
-	): Connection {
+	): ConnectionImpl {
 		return new ConnectionImpl(url, WebSocketImpl, client, retryOptions);
 	}
 }

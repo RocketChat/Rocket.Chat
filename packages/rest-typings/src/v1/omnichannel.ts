@@ -138,8 +138,8 @@ export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<Livech
 );
 
 type LivechatDepartmentDepartmentIdAgentsPOST = {
-	upsert: string[];
-	remove: string[];
+	upsert: { agentId: string; username: string; count: number; order: number }[];
+	remove: { agentId: string; username: string; count: number; order: number }[];
 };
 
 const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
