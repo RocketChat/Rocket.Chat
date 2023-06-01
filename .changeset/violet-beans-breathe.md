@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: check for $addToSet to be not empty before passing update
+Fix visitor's query when both email & phone number are empty
