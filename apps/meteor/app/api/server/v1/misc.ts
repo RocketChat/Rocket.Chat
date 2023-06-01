@@ -30,6 +30,7 @@ import { getUserInfo } from '../helpers/getUserInfo';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { i18n } from '../../../../server/lib/i18n';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 /**
  * @openapi
@@ -409,6 +410,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			apiDeprecationLogger.warn(
+				'pw.getPolicyReset is deprecated and will be removed in future versions of Rocket.Chat. Use pw.getPolicy instead.',
+			);
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({

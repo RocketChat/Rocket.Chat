@@ -286,33 +286,31 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				),
 				[bio, handleBio, bioError, t],
 			)}
-			<Box display='flex' flexDirection='row' justifyContent='space-between'>
-				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Email')}</Field.Label>
-							<Field.Row>
-								<TextInput
-									flexGrow={1}
-									value={email}
-									error={emailError}
-									onChange={handleEmail}
-									addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
-									disabled={!allowEmailChange}
-								/>
-								{!verified && (
-									<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis='x24'>
-										{t('Resend_verification_email')}
-									</Button>
-								)}
-							</Field.Row>
-							{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-							<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
-						</Field>
-					),
-					[t, email, emailError, handleEmail, verified, allowEmailChange, previousEmail, handleSendConfirmationEmail],
-				)}
-			</Box>
+			{useMemo(
+				() => (
+					<Field>
+						<Field.Label>{t('Email')}</Field.Label>
+						<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
+							<TextInput
+								flexGrow={1}
+								value={email}
+								error={emailError}
+								onChange={handleEmail}
+								addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
+								disabled={!allowEmailChange}
+							/>
+							{!verified && (
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis='x24'>
+									{t('Resend_verification_email')}
+								</Button>
+							)}
+						</Field.Row>
+						{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
+						<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
+					</Field>
+				),
+				[t, email, emailError, handleEmail, verified, allowEmailChange, previousEmail, handleSendConfirmationEmail],
+			)}
 			{useMemo(
 				() => (
 					<Field>

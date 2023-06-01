@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form';
 import { PasswordVerifier } from '@rocket.chat/ui-client';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
-// import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
