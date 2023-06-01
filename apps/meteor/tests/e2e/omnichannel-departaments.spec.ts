@@ -6,6 +6,12 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelDepartments } from './page-objects';
 import { test, expect } from './utils/test';
 
+const ERROR = {
+	requiredName: 'The field name is required.',
+	requiredEmail: 'The field email is required.',
+	invalidEmail: 'Invalid email address',
+};
+
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('omnichannel-departments', () => {
@@ -35,8 +41,32 @@ test.describe.serial('omnichannel-departments', () => {
 			await expect(poOmnichannelDepartments.btnEnabled).not.toBeVisible();
 			await page.goBack();
 		});
-		await test.step('expect create new department', async () => {
+
+		await test.step('expect name and email to be required', async () => {
 			await poOmnichannelDepartments.btnNew.click();
+			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
+
+			await poOmnichannelDepartments.inputName.fill('any_text');
+			await poOmnichannelDepartments.inputName.fill('');
+			await expect(poOmnichannelDepartments.invalidInputName).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).toBeVisible();
+			await poOmnichannelDepartments.inputName.fill('any_text');
+			await expect(poOmnichannelDepartments.invalidInputName).not.toBeVisible();
+
+			await poOmnichannelDepartments.inputEmail.fill('any_text');
+			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
+
+			await poOmnichannelDepartments.inputEmail.fill('');
+			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
+
+			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
+			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
+		});
+
+		await test.step('expect create new department', async () => {
 			await poOmnichannelDepartments.btnEnabled.click();
 			await poOmnichannelDepartments.inputName.fill(departmentName);
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
@@ -154,6 +184,8 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Enabled tags state', async () => {
+			const tagName = faker.datatype.string(5);
+
 			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
@@ -167,9 +199,19 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.inputTags).toBeVisible();
 				await expect(poOmnichannelDepartments.btnTagsAdd).toBeVisible();
 			});
+
+			await test.step('expect to have add and remove one tag properly tags', async () => {
+				await poOmnichannelDepartments.inputTags.fill(tagName);
+				await poOmnichannelDepartments.btnTagsAdd.click();
+
+				await expect(poOmnichannelDepartments.btnTag(tagName)).toBeVisible();
+				await expect(poOmnichannelDepartments.btnSave).toBeEnabled();
+			});
+
 			await test.step('expect to be invalid if there is no tag added', async () => {
-				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+				await poOmnichannelDepartments.btnTag(tagName).click();
 				await expect(poOmnichannelDepartments.invalidInputTags).toBeVisible();
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
 			});
 
 			await test.step('expect to be not possible adding empty tags', async () => {
@@ -177,19 +219,6 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
 			});
 
-			await test.step('expect to have add and remove one tag properly tags', async () => {
-				const tagName = faker.datatype.string(5);
-				await poOmnichannelDepartments.inputTags.fill(tagName);
-				await poOmnichannelDepartments.btnTagsAdd.click();
-
-				await expect(poOmnichannelDepartments.btnTag(tagName)).toBeVisible();
-
-				await expect(poOmnichannelDepartments.btnSave).toBeEnabled();
-
-				await poOmnichannelDepartments.btnTag(tagName).click();
-				await expect(poOmnichannelDepartments.invalidInputTags).toBeVisible();
-				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
-			});
 			await test.step('expect to not be possible adding same tag twice', async () => {
 				const tagName = faker.datatype.string(5);
 				await poOmnichannelDepartments.inputTags.fill(tagName);
