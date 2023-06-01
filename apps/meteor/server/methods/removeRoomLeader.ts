@@ -65,7 +65,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'leader' });
+		await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'room leader' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
