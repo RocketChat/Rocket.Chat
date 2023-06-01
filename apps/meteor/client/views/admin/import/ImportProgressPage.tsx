@@ -48,7 +48,6 @@ const ImportProgressPage = function ImportProgressPage() {
 				}
 
 				if (status === 'importer_done') {
-					dispatchToastMessage({ type: 'success', message: t('Importer_done') });
 					importHistoryRoute.push();
 					return;
 				}
