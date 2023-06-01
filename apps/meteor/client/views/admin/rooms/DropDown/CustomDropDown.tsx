@@ -118,12 +118,12 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 					{/* TODO: mudar desing de acordo com o Figma */}
 					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props */}
 					{option.isGroupTitle === true ? (
-						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
+						<Box pi='x16' pbs='x8' pbe='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pi='x16' justifyContent='space-around' display='inline-flex'>
+							<Box pi='x8' justifyContent='space-between' display='inline-flex'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} onChange={(): void => onSelected(option)} />
@@ -153,6 +153,8 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 		},
 		[toggleCollapsed],
 	);
+
+	// TODO: create a context that provides the selectedOptions list globally
 
 	// Everything is selected by default
 	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
