@@ -40,7 +40,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			return operation;
 		},
 		{
-			refetchInterval: 2000,
+			refetchInterval: 1000,
 			onSuccess: ({ valid, status }) => {
 				if (!valid) {
 					importHistoryRoute.push();
