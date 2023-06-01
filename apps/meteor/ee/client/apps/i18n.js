@@ -16,8 +16,6 @@ const loadAppI18nResources = (appId, languages) => {
 				return translations;
 			}, {});
 
-			console.log(normalizedLanguage, scopedTranslations);
-
 			i18n.addResourceBundle(normalizedLanguage, 'core', scopedTranslations);
 		} catch (error) {
 			Apps.handleError(error);
