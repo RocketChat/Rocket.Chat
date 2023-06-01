@@ -4,6 +4,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
+import EmojiSpan from './EmojiSpan';
 
 const styles = StyleSheet.create({
 	bold: {
@@ -12,7 +13,13 @@ const styles = StyleSheet.create({
 });
 
 type BoldSpanProps = {
-	children: (MessageParser.Link | MessageParser.MarkupExcluding<MessageParser.Bold>)[];
+	children: (
+		| MessageParser.Emoji
+		| MessageParser.ChannelMention
+		| MessageParser.UserMention
+		| MessageParser.Link
+		| MessageParser.MarkupExcluding<MessageParser.Bold>
+	)[];
 };
 
 const BoldSpan = ({ children }: BoldSpanProps) => (
@@ -30,6 +37,9 @@ const BoldSpan = ({ children }: BoldSpanProps) => (
 
 				case 'ITALIC':
 					return <ItalicSpan key={index} children={child.value} />;
+
+				case 'EMOJI':
+					return <EmojiSpan key={index} {...child} />;
 
 				default:
 					return null;
