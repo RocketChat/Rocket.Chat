@@ -216,27 +216,27 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const roomTypeOptions = [
 		{
 			id: '1',
-			text: 'filter_by_room_type',
+			text: 'Titulo 1',
 			isGroupTitle: true,
 		},
 		{
 			id: '2',
-			text: 'all_rooms',
+			text: 'option 1',
 			checked: false,
 		},
 		{
 			id: '3',
-			text: 'oie1',
+			text: 'option 2',
 			checked: false,
 		},
 		{
 			id: '4',
-			text: 'filter_by_room_oiiiii',
+			text: 'Titulo 2',
 			isGroupTitle: true,
 		},
 		{
 			id: '5',
-			text: 'oie2',
+			text: 'option 3',
 			checked: false,
 		},
 	] as OptionProp[];

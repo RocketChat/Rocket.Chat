@@ -116,19 +116,19 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 				// TODO: how to avoid using key={index}? Should I use option.id?
 				<Fragment key={index}>
 					{/* TODO: mudar desing de acordo com o Figma */}
-					{/* TODO: use SelectOption instead of custom type */}
-					{options.map((item) =>
-						item.isGroupTitle === true ? (
-							<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='red'>
-								{/* color='default' */}
+					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props */}
+					{option.isGroupTitle === true ? (
+						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
+							{t(option.text as TranslationKey)}
+						</Box>
+					) : (
+						<Option key={option.id} onClick={(): void => onSelected(option)}>
+							<Box pi='x16' justifyContent='space-around' display='inline-flex'>
 								{t(option.text as TranslationKey)}
+
+								<CheckBox checked={option.checked} onChange={(): void => onSelected(option)} />
 							</Box>
-						) : (
-							<Option key={item.id} onClick={(): void => onSelected(item)}>
-								{t(item.text as TranslationKey)}
-								<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
-							</Option>
-						),
+						</Option>
 					)}
 				</Fragment>
 			))}
