@@ -228,7 +228,7 @@ const RoomBody = (): ReactElement => {
 			if (event === 'removed' && subscription.rid === room._id) {
 				queryClient.invalidateQueries(['rooms', room._id]);
 				dispatchToastMessage({
-					type: 'success',
+					type: 'info',
 					message: t('You_have_been_removed_from_room', {
 						roomName: room?.fname || room?.name || '',
 					}),
