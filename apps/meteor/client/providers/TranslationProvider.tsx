@@ -77,30 +77,28 @@ const useI18next = (lng: string): typeof i18next => {
 		return result;
 	});
 
-	const instance = useMemo(
-		() =>
-			i18n.init({
-				lng,
-				fallbackLng: 'en',
-				ns: namespacesDefault,
-				nsSeparator: '.',
-				resources: {
-					en: {
-						core: en,
-					},
+	if (!i18n.isInitialized) {
+		i18n.init({
+			lng,
+			fallbackLng: 'en',
+			ns: namespacesDefault,
+			nsSeparator: '.',
+			resources: {
+				en: {
+					core: en,
 				},
-				partialBundledLanguages: true,
-				defaultNS: 'core',
-				backend: {
-					loadPath: `${basePath}/{{lng}}.json`,
-					parse,
-				},
-				react: {
-					useSuspense: true,
-				},
-			}),
-		[lng, basePath, parse],
-	);
+			},
+			partialBundledLanguages: true,
+			defaultNS: 'core',
+			backend: {
+				loadPath: `${basePath}/{{lng}}.json`,
+				parse,
+			},
+			react: {
+				useSuspense: true,
+			},
+		});
+	}
 
 	useEffect(() => {
 		if (i18n.language !== lng) {
@@ -141,7 +139,7 @@ const useI18next = (lng: string): typeof i18next => {
 				i18n.addResourceBundle(ln, namespace, translations);
 			}
 		}
-	}, [customTranslations, instance]);
+	}, [customTranslations]);
 
 	return i18n;
 };
