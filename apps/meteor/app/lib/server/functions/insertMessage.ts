@@ -32,8 +32,6 @@ export const insertMessage = async function (
 		}
 		await Messages.insertOne({
 			_id,
-			// @ts-expect-error - seems it doesn't like this syntax :(
-			'u._id': message.u._id,
 			...rest,
 		});
 		if (!existingMessage) {
