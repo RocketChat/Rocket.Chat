@@ -110,7 +110,9 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&
-								data?.integrations.map((integration) => <IntegrationRow integration={integration} isMobile={isMobile} onClick={onClick} />)}
+								data?.integrations.map((integration) => (
+									<IntegrationRow key={integration._id} integration={integration} isMobile={isMobile} onClick={onClick} />
+								))}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
