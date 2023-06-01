@@ -2815,6 +2815,7 @@
   "Layout_Home_Title": "Home Title",
   "Layout_Legal_Notice": "Legal Notice",
   "Layout_Login_Terms": "Login Terms",
+  "Layout_Login_Terms_Content": "By proceeding you are agreeing to our <a href='terms-of-service'>Terms of Service</a>, <a href='privacy-policy'>Privacy Policy</a> and <a href='legal-notice'>Legal Notice</a>.",
   "Layout_Privacy_Policy": "Privacy Policy",
   "Layout_Show_Home_Button": "Show home page button on sidebar header",
   "Layout_Custom_Content_Description": "Here goes your custom content. It may be placed inside a white block or may take the all space available in the homepage, if you’re on Enterprise.",
