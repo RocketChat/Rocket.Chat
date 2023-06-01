@@ -304,6 +304,10 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findOneByImportId(_id, options) {
+		return this.findOne({ importIds: _id }, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
