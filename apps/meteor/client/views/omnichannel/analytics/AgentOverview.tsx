@@ -1,6 +1,6 @@
 import { Table } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
 
 const style = { width: '100%' };
@@ -19,19 +19,20 @@ const AgentOverview = ({
 
 	const params = useMemo(
 		() => ({
-			chartOptions: { name: type },
-			daterange: { from: start, to: end },
+			name: type,
+			from: start,
+			to: end,
 			...(departmentId && { departmentId }),
 		}),
 		[departmentId, end, start, type],
 	);
 
-	const [displayData, setDisplayData] = useState<{ head: { name: TranslationKey }[]; data: { name: string; value: number | string }[] }>({
+	const [displayData, setDisplayData] = useState<{ head: { name: string }[]; data: { name: string; value: number | string }[] }>({
 		head: [],
 		data: [],
 	});
 
-	const loadData = useMethod('livechat:getAgentOverviewData');
+	const loadData = useEndpoint('GET', '/v1/livechat/analytics/agent-overview');
 
 	useEffect(() => {
 		async function fetchData() {
@@ -49,7 +50,7 @@ const AgentOverview = ({
 			<Table.Head>
 				<Table.Row>
 					{displayData.head?.map(({ name }, i) => (
-						<Table.Cell key={i}>{t(name)}</Table.Cell>
+						<Table.Cell key={i}>{t(name as TranslationKey)}</Table.Cell>
 					))}
 				</Table.Row>
 			</Table.Head>
