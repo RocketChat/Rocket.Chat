@@ -27,7 +27,7 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 	<>
 		<ContextualbarHeader>
 			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
-			<ContextualbarTitle>{modalParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+			<ContextualbarTitle>{modalParser.text(view.title, BlockContext.NONE, 0, view.appId)}</ContextualbarTitle>
 			{onClose && <ContextualbarClose onClick={onClose} />}
 		</ContextualbarHeader>
 		<ContextualbarScrollableContent>
@@ -39,12 +39,12 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 			<ButtonGroup align='end'>
 				{view.close && (
 					<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-						{modalParser.text(view.close.text, BlockContext.NONE, 0)}
+						{modalParser.text(view.close.text, BlockContext.NONE, 0, view.appId)}
 					</Button>
 				)}
 				{view.submit && (
 					<Button {...getButtonStyle(view)} onClick={onSubmit}>
-						{modalParser.text(view.submit.text, BlockContext.NONE, 1)}
+						{modalParser.text(view.submit.text, BlockContext.NONE, 1, view.appId)}
 					</Button>
 				)}
 			</ButtonGroup>

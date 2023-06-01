@@ -155,6 +155,17 @@ class AppClientOrchestrator {
 
 	public async getAppLanguages(appId: string): Promise<IAppStorageItem['languageContent']> {
 		const { languages } = await sdk.rest.get(`/apps/${appId}/languages`);
+
+		Object.entries(languages).forEach(([key, value]) => {
+			const regex = /([a-z]{2,3})-([a-z]{2,4})/;
+			const matches = regex.exec(key);
+
+			if (matches) {
+				languages[`${matches[1]}-${matches[2].toUpperCase()}`] = value;
+			}
+			delete languages[key];
+		});
+
 		return languages;
 	}
 

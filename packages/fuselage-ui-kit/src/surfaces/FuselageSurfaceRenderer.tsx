@@ -55,13 +55,16 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   public i18n(
     { key = '' }: UiKit.I18n,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
+    appId?: string
   ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
+    if (context === UiKit.BlockContext.BLOCK || !appId) {
       return null;
     }
 
-    return key ? <I18nTextElement key={index} i18nKey={key} /> : null;
+    return key ? (
+      <I18nTextElement key={index} appId={appId} i18nKey={key} />
+    ) : null;
   }
 
   public mrkdwn(
@@ -81,14 +84,15 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   public text(
     textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
+    appId?: string
   ): ReactElement | null {
     if (textObject.type === 'mrkdwn') {
       return this.mrkdwn(textObject, context, index);
     }
 
     if (textObject.type === 'i18n') {
-      return this.i18n(textObject, context, index);
+      return this.i18n(textObject, context, index, appId);
     }
 
     return this.plain_text(textObject, context, index);
