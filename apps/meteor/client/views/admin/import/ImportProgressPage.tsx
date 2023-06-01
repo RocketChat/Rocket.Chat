@@ -25,7 +25,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const mutation = useMutation({
 		mutationFn: async (props: { step: ProgressStep; completed: number; total: number }) => {
-			return queryClient.setQueryData<{
+			queryClient.setQueryData<{
 				step: ProgressStep;
 				completed: number;
 				total: number;
