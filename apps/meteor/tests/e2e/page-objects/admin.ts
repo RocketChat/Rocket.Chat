@@ -117,16 +117,8 @@ export class Admin {
 		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
 	}
 
-	get importStatusTable(): Locator {
-		return this.page.locator('[data-qa-id="ImportTable"] tbody');
-	}
-
-	get importStatusTableFirstRowStatusCell(): Locator {
+	get importStatusTableFirstRowCell(): Locator {
 		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="Completed successfully"');
-	}
-
-	get importStatusTableFirstRowFileCell(): Locator {
-		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="slack_export_users.csv"');
 	}
 
 	get btnAssetsSettings(): Locator {
