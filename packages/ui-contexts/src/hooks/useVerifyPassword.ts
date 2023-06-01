@@ -1,7 +1,7 @@
 import { usePasswordPolicy } from './usePasswordPolicy';
 
 export const useVerifyPassword = (password: string | undefined) => {
-	const { data, isLoading } = usePasswordPolicy({});
+	const { data, isLoading } = usePasswordPolicy();
 
 	if (isLoading) return;
 
