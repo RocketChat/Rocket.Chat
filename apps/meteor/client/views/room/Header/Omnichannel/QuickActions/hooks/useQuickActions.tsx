@@ -122,11 +122,11 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, rid, sendTranscript],
 	);
 
-	const discardTranscript = useMethod('livechat:discardTranscript');
+	const discardTranscript = useEndpoint('DELETE', '/v1/livechat/transcript/:rid', { rid });
 
 	const handleDiscardTranscript = useCallback(async () => {
 		try {
-			await discardTranscript(rid);
+			await discardTranscript();
 			dispatchToastMessage({
 				type: 'success',
 				message: t('Livechat_transcript_request_has_been_canceled'),
@@ -135,7 +135,7 @@ export const useQuickActions = (
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [closeModal, discardTranscript, dispatchToastMessage, rid, t]);
+	}, [closeModal, discardTranscript, dispatchToastMessage, t]);
 
 	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
 

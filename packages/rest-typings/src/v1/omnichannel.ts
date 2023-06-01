@@ -3251,6 +3251,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/transcript': {
 		POST: (params: POSTLivechatTranscriptParams) => { message: string };
 	};
+	'/v1/livechat/transcript/:rid': {
+		DELETE: () => boolean;
+	};
 	'/v1/livechat/offline.message': {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
 	};
