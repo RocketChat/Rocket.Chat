@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatTag } from '@rocket.chat/models';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
-import type { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { hasAccessToDepartment } from './departments';
@@ -54,7 +54,9 @@ export async function findTags({
 		}
 	}
 
-	const query = {
+	const query: {
+		$and?: Filter<ILivechatTag>[];
+	} = {
 		$and: [
 			...(text ? [{ $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }] : []),
 			...(!viewAll
@@ -68,7 +70,6 @@ export async function findTags({
 	};
 
 	if (!query?.$and?.length) {
-		// @ts-expect-error TS is not smart enough to understand that $and is optional here
 		delete query.$and;
 	}
 
