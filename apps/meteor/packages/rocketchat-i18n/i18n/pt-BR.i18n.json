@@ -2478,6 +2478,7 @@
   "Layout_Home_Title": "Título da página inicial",
   "Layout_Legal_Notice": "Aviso legal",
   "Layout_Login_Terms": "Termos de login",
+  "Layout_Login_Terms_Content": "Ao continuar você está concordando com nossos <a href='terms-of-service'>Termos de Serviço</a>, <a href='privacy-policy'>Política de Privacidade</a> e <a href='legal-notice'>Aviso Legal</a>.",
   "Layout_Privacy_Policy": "Política de privacidade",
   "Layout_Show_Home_Button": "Exibir \"Botão da página inicial\"",
   "Layout_Sidenav_Footer": "Rodapé da navegação lateral",
