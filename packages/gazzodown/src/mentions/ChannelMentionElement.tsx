@@ -18,9 +18,9 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 	}
 
 	return (
-		<Message.Mention clickable tag='#' onClick={handleClick}>
+		<Message.Highlight variant='link' clickable onClick={handleClick}>
 			{resolved.name ?? mention}
-		</Message.Mention>
+		</Message.Highlight>
 	);
 };
 
