@@ -1,23 +1,18 @@
-import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
-import { t } from '../../app/utils/client';
+import { t } from '../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
-
-type NotifyUserData = {
-	roomId: IRoom['_id'];
-	userId: IUser['_id'];
-};
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
-			Notifications.onUser('otr', (type: string, data: NotifyUserData) => {
+			Notifications.onUser('otr', (type, data) => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
 				}

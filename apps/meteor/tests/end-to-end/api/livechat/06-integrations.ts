@@ -122,6 +122,8 @@ describe('LIVECHAT - Integrations', function () {
 	});
 
 	describe('Livechat - Webhooks', () => {
+		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);
@@ -131,19 +133,16 @@ describe('LIVECHAT - Integrations', function () {
 			it('should fail if setting Livechat_webhookUrl is not set', async () => {
 				await updateSetting('Livechat_webhookUrl', '');
 				await updatePermission('view-livechat-webhooks', ['admin', 'livechat-manager']);
-				await setTimeout(() => null, 1000);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 				expect(response.body).to.have.property('success', false);
 			});
 			it('should return true if webhook test went good', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/200');
-				await setTimeout(() => null, 1000);
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/200`);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
 				expect(response.body.success).to.be.true;
 			});
 			it('should fail if webhook test went bad', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/400');
-				await setTimeout(() => null, 1000);
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/400`);
 				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 			});
 		});

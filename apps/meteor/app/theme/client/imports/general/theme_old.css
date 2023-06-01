@@ -2,8 +2,8 @@
 	-webkit-overflow-scrolling: touch;
 
 	&::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
+		width: 6px;
+		height: 6px;
 
 		background: var(--transparent-dark);
 	}
@@ -27,10 +27,6 @@
 	--rcx-color-background-light: var(--content-background-color);
 }
 
-.color-content-background-color {
-	color: var(--content-background-color);
-}
-
 .primary-background-color {
 	background-color: var(--primary-background-color);
 }
@@ -41,10 +37,6 @@
 
 .color-primary-action-color {
 	color: var(--primary-action-color);
-}
-
-.background-primary-action-color {
-	background-color: var(--primary-action-color);
 }
 
 .secondary-background-color {

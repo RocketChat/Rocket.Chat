@@ -13,7 +13,7 @@ import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
-import { t } from '../../../utils/server';
+import { t } from '../../../utils/lib/i18n';
 import { Selection, SelectionChannel, SelectionUser } from '..';
 
 /**

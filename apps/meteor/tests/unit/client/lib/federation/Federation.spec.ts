@@ -373,8 +373,91 @@ describe('Federation[Client] - Federation', () => {
 			expect(Federation.isEditableByTheUser({} as any, undefined, {} as any)).to.be.false;
 		});
 
-		it('should return false if the current user is NOT the room owner', () => {
+		it('should return false if the subscription is null', () => {
+			expect(Federation.isEditableByTheUser({} as any, {} as any, undefined)).to.be.false;
+		});
+
+		it('should return false if the current room is NOT a federated one', () => {
 			expect(Federation.isEditableByTheUser({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any, {} as any)).to.be.false;
+		});
+
+		it('should return false if the current user is NOT the room owner nor moderator', () => {
+			expect(Federation.isEditableByTheUser({ _id: 'differentId' } as any, { federated: true, u: { _id: 'id' } } as any, {} as any)).to.be
+				.false;
+		});
+
+		it('should return true if the current user is a room owner', () => {
+			expect(
+				Federation.isEditableByTheUser(
+					{ _id: 'differentId' } as any,
+					{ federated: true, u: { _id: 'id' } } as any,
+					{ roles: ['owner'] } as any,
+				),
+			).to.be.true;
+		});
+
+		it('should return true if the current user is a room moderator', () => {
+			expect(
+				Federation.isEditableByTheUser(
+					{ _id: 'differentId' } as any,
+					{ federated: true, u: { _id: 'id' } } as any,
+					{ roles: ['moderator'] } as any,
+				),
+			).to.be.true;
+		});
+	});
+	describe('#canCreateInviteLinks()', () => {
+		it('should return false if the user is null', () => {
+			expect(Federation.canCreateInviteLinks(undefined, { u: { _id: 'id' } } as any, {} as any)).to.be.false;
+		});
+
+		it('should return false if the room is null', () => {
+			expect(Federation.canCreateInviteLinks({} as any, undefined, {} as any)).to.be.false;
+		});
+
+		it('should return false if the subscription is null', () => {
+			expect(Federation.canCreateInviteLinks({} as any, {} as any, undefined)).to.be.false;
+		});
+
+		it('should return false if the current room is NOT a federated one', () => {
+			expect(Federation.canCreateInviteLinks({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any, {} as any)).to.be.false;
+		});
+
+		it('should return false if the current room is federated one but NOT a public one', () => {
+			expect(Federation.canCreateInviteLinks({ _id: 'differentId' } as any, { federated: true, u: { _id: 'id' } } as any, {} as any)).to.be
+				.false;
+		});
+
+		it('should return false if the current room is federated one, a public one but the user is NOT an owner nor moderator', () => {
+			expect(
+				Federation.canCreateInviteLinks({ _id: 'differentId' } as any, { federated: true, t: 'c', u: { _id: 'id' } } as any, {} as any),
+			).to.be.false;
+		});
+
+		it('should return false if the current room is federated one, a public one but the user is NOT an owner nor moderator', () => {
+			expect(
+				Federation.canCreateInviteLinks({ _id: 'differentId' } as any, { federated: true, t: 'c', u: { _id: 'id' } } as any, {} as any),
+			).to.be.false;
+		});
+
+		it('should return true if the current room is federated one, a public one but the user is an owner', () => {
+			expect(
+				Federation.canCreateInviteLinks(
+					{ _id: 'differentId' } as any,
+					{ federated: true, t: 'c', u: { _id: 'id' } } as any,
+					{ roles: ['owner'] } as any,
+				),
+			).to.be.true;
+		});
+
+		it('should return true if the current room is federated one, a public one but the user is an moderator', () => {
+			expect(
+				Federation.canCreateInviteLinks(
+					{ _id: 'differentId' } as any,
+					{ federated: true, t: 'c', u: { _id: 'id' } } as any,
+					{ roles: ['moderator'] } as any,
+				),
+			).to.be.true;
 		});
 	});
 
