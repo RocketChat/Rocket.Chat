@@ -198,7 +198,9 @@ Livechat.onTyping((username, isTyping) => {
 	}
 });
 
-Livechat.onMessage(async (message) => {
+Livechat.onMessage(async (originalMessage) => {
+	let message = JSON.parse(JSON.stringify(originalMessage));
+
 	if (message.ts instanceof Date) {
 		message.ts = message.ts.toISOString();
 	} else {
