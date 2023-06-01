@@ -1,4 +1,6 @@
-import { LivechatDepartmentAgents, LivechatUnit } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatUnit } from '@rocket.chat/models';
+
+import { helperLogger } from '../../lib/logger';
 
 export const getDepartmentsWhichUserCanAccess = async (userId: string): Promise<string[]> => {
 	const departments = await LivechatDepartmentAgents.find(
@@ -24,13 +26,13 @@ export const getDepartmentsWhichUserCanAccess = async (userId: string): Promise<
 export const hasAccessToDepartment = async (userId: string, departmentId: string): Promise<boolean> => {
 	const department = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(userId, departmentId);
 	if (department) {
+		helperLogger.debug(`User ${userId} has access to department ${departmentId} because they are an agent`);
 		return true;
 	}
 
-	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
-	if (monitoredDepartments.find((department) => department._id === departmentId)) {
-		return true;
-	}
-
-	return false;
+	const monitorAccess = await LivechatDepartment.checkIfMonitorIsMonitoringDepartmentById(userId, departmentId);
+	helperLogger.debug(
+		`User ${userId} ${monitorAccess ? 'has' : 'does not have'} access to department ${departmentId} because they are a monitor`,
+	);
+	return monitorAccess;
 };
