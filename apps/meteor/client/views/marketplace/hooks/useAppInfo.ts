@@ -20,7 +20,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 };
 
 export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
-	const { installedApps, marketplaceApps } = useContext(AppsContext);
+	const { installedApps, marketplaceApps, privateApps } = useContext(AppsContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
 
@@ -31,7 +31,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
-			if ((!marketplaceApps.value?.apps?.length && !installedApps.value?.apps.length) || !appId) {
+			if ((!marketplaceApps.value?.apps?.length && !installedApps.value?.apps.length && !privateApps.value?.apps.length) || !appId) {
 				return;
 			}
 
@@ -39,6 +39,8 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
 
 			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
+
+			if (context === 'private') appResult = privateApps.value?.apps.find((app) => app.id === appId);
 
 			if (context === 'installed') appResult = installedApps.value?.apps.find((app) => app.id === appId);
 
@@ -81,7 +83,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 		};
 
 		fetchAppInfo();
-	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps]);
+	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value?.apps]);
 
 	return appData;
 };
