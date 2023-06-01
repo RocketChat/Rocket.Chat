@@ -30,7 +30,7 @@ type TitleOptionProp = {
 type CheckboxOptionProp = {
 	id: string;
 	text: string;
-	isGroupTitle: boolean;
+	isGroupTitle: never;
 	checked: boolean;
 };
 
@@ -115,20 +115,20 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 			{options.map((option, index) => (
 				// TODO: how to avoid using key={index}? Should I use option.id?
 				<Fragment key={index}>
-					{option.isGroupTitle === true && (
-						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
-							{t(option.text as TranslationKey)}
-						</Box>
-					)}
 					{/* TODO: mudar desing de acordo com o Figma */}
-					{options.map(
-						(item) =>
-							!item.isGroupTitle && (
-								<Option key={item.id} onClick={(): void => onSelected(item)}>
-									{t(item.text as TranslationKey)}
-									<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
-								</Option>
-							),
+					{/* TODO: use SelectOption instead of custom type */}
+					{options.map((item) =>
+						item.isGroupTitle === true ? (
+							<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='red'>
+								{/* color='default' */}
+								{t(option.text as TranslationKey)}
+							</Box>
+						) : (
+							<Option key={item.id} onClick={(): void => onSelected(item)}>
+								{t(item.text as TranslationKey)}
+								<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
+							</Option>
+						),
 					)}
 				</Fragment>
 			))}
