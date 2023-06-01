@@ -25,7 +25,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const mutation = useMutation({
 		mutationFn: async (props: { step: ProgressStep; completed: number; total: number }) => {
-			queryClient.setQueryData<{
+			return queryClient.setQueryData<{
 				step: ProgressStep;
 				completed: number;
 				total: number;
@@ -40,6 +40,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			return operation;
 		},
 		{
+			refetchInterval: 2000,
 			onSuccess: ({ valid, status }) => {
 				if (!valid) {
 					importHistoryRoute.push();
@@ -98,7 +99,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const progress = useQuery(
-		['ImportProgressPage', 'progress'],
+		['importers', 'progress'],
 		async () => {
 			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
@@ -109,7 +110,6 @@ const ImportProgressPage = function ImportProgressPage() {
 			};
 		},
 		{
-			refetchInterval: 1000,
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
 				if (!progress) {
@@ -117,12 +117,16 @@ const ImportProgressPage = function ImportProgressPage() {
 					prepareImportRoute.push();
 					return;
 				}
-				handleProgressUpdated({
-					key: progress.key,
-					step: progress.step,
-					total: progress.total,
-					completed: progress.completed,
-				});
+
+				// do not use the endpoint data to update the completed progress, leave it to the streamer
+				if (!(ImportingStartedStates as string[]).includes(progress.step)) {
+					handleProgressUpdated({
+						key: progress.key,
+						step: progress.step,
+						total: progress.total,
+						completed: progress.completed,
+					});
+				}
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
