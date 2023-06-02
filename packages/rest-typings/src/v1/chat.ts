@@ -71,6 +71,56 @@ const chatSendMessageSchema = {
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
+type ChatDraftPOST = {
+	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	draft: string;
+};
+
+const chatDraftPOSTSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+		draft: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isChatPostDraftProps = ajv.compile<ChatDraftPOST>(chatDraftPOSTSchema);
+
+type ChatDraftGET = {
+	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+};
+
+const chatDraftGETSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isChatGetDraftProps = ajv.compile<ChatDraftGET>(chatDraftGETSchema);
+
 type ChatFollowMessage = {
 	mid: IMessage['_id'];
 };
@@ -762,6 +812,12 @@ export type ChatEndpoints = {
 		POST: (params: ChatSendMessage) => {
 			message: IMessage;
 		};
+	};
+	'/v1/chat.draft': {
+		GET: (params: ChatDraftGET) => {
+			draft: string | undefined;
+		};
+		POST: (params: ChatDraftPOST) => void;
 	};
 	'/v1/chat.getMessage': {
 		GET: (params: ChatGetMessage) => {

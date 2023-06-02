@@ -61,6 +61,7 @@ export interface ISubscription extends IRocketChatRecord {
 	ignored?: IUser['_id'][];
 
 	department?: unknown;
+	draft?: string;
 
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';

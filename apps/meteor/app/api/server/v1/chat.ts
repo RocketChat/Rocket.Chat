@@ -4,7 +4,7 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isChatReportMessageProps } from '@rocket.chat/rest-typings';
+import { isChatGetDraftProps, isChatPostDraftProps, isChatReportMessageProps } from '@rocket.chat/rest-typings';
 
 import { roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -221,6 +221,31 @@ API.v1.addRoute(
 			return API.v1.success({
 				message,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.draft',
+	{ authRequired: true, validateParams: { GET: isChatGetDraftProps, POST: isChatPostDraftProps } },
+	{
+		async get() {
+			const { rid, tmid } = this.queryParams;
+
+			return API.v1.success({
+				draft: await Subscriptions.getDraft(rid, this.userId, tmid),
+			});
+		},
+		async post() {
+			const { rid, draft, tmid } = this.bodyParams;
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+			if (!(await canSendMessageAsync(rid, { uid: this.userId, username: this.user.username, type: this.user.type }))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+			await Subscriptions.saveDraft(rid, this.userId, draft, tmid);
+			return API.v1.success();
 		},
 	},
 );
