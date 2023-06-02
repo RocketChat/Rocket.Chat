@@ -76,7 +76,6 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	// }, [visibleActions.length, open]);
 
 	// TODO: Create helper for render Actions
-	// TODO: Add proper Vertical Divider Component
 
 	return (
 		<>
@@ -87,7 +86,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					title: t(title),
 					className,
 					index,
-					info: id === tab?.id,
+					pressed: id === tab?.id,
 					action,
 					key: id,
 					disabled,
@@ -106,7 +105,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					title: t(title),
 					className,
 					index,
-					info: id === tab?.id,
+					pressed: id === tab?.id,
 					action,
 					key: id,
 					disabled,

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../components/VerticalBar/VerticalBar';
+import { Contextualbar } from '../../../components/Contextualbar';
 
 type RoomLayoutProps = {
 	header?: ReactNode;
@@ -21,7 +21,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 				</Box>
 				{footer && <Box is='footer'>{footer}</Box>}
 			</Box>
-			{aside && <VerticalBar is='aside'>{aside}</VerticalBar>}
+			{aside && <Contextualbar is='aside'>{aside}</Contextualbar>}
 		</Box>
 	</Box>
 );
