@@ -31,6 +31,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { i18n } from '../../../../server/lib/i18n';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { deprecationWarning } from '../helpers/deprecationWarning';
 
 /**
  * @openapi
@@ -426,7 +427,13 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
+			return API.v1.success(
+				deprecationWarning({
+					endpoint: 'livechat/room.transfer',
+					versionWillBeRemoved: '7.0',
+					response: passwordPolicy.getPasswordPolicy(),
+				}),
+			);
 		},
 	},
 );
