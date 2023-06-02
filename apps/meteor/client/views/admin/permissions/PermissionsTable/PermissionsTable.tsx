@@ -1,9 +1,10 @@
-import { Margins, Tabs, Button, Pagination, Tile } from '@rocket.chat/fuselage';
+import { Margins, Tabs, Button, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import Page from '../../../../components/Page';
@@ -85,11 +86,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 				<Page.Content mb='neg-x8'>
 					<Margins block='x8'>
 						<PermissionsTableFilter onChange={setFilter} />
-						{permissions?.length === 0 && (
-							<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
-								{t('No_data_found')}
-							</Tile>
-						)}
+						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
 								<GenericTable fixed={false}>
