@@ -9,10 +9,7 @@ type RadioDropdownAnchorProps = {
 	group: RadioDropDownGroup;
 } & Omit<ComponentProps<typeof Button>, 'onClick'>;
 
-const RadioDownAnchor = forwardRef<HTMLInputElement, RadioDropdownAnchorProps>(function SortDropDownAnchor(
-	{ onClick, group, ...props },
-	ref,
-) {
+const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor({ onClick, group, ...props }, ref) {
 	const selected = group?.items.find((item) => item.checked)?.label;
 
 	return (
