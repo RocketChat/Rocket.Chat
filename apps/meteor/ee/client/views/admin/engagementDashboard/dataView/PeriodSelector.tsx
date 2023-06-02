@@ -1,4 +1,4 @@
-import { Select } from '@rocket.chat/fuselage';
+import { Box, Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -17,7 +17,11 @@ const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, onChang
 
 	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);
 
-	return <Select options={options} value={value} onChange={(value: string): void => onChange(value as TPeriod)} />;
+	return (
+		<Box>
+			<Select options={options} value={value} onChange={(value: string): void => onChange(value as TPeriod)} />
+		</Box>
+	);
 };
 
 export default PeriodSelector;

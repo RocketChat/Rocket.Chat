@@ -35,7 +35,9 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Engagement_Dashboard')}>
-				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
+				<Box mb='x8'>
+					<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
+				</Box>
 			</Page.Header>
 			<Tabs>
 				<Tabs.Item data-qa-id='EngagementDashboardPage-usersTab' selected={tab === 'users'} onClick={handleTabClick('users')}>
