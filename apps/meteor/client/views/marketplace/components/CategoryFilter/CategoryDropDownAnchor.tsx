@@ -19,9 +19,10 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			onClick={onClick}
 			display='flex'
 			alignItems='center'
-			flexDirection='row'
-			flexGrow='1'
-			flexShrink='1'
+			justifyContent='space-between'
+			minWidth='x144'
+			flexGrow={1}
+			flexShrink={1}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
 			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}

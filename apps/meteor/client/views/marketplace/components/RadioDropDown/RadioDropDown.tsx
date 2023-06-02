@@ -1,6 +1,5 @@
-import type { SelectLegacy } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 
 import type { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
@@ -10,11 +9,7 @@ import DropDownListWrapper from '../DropDownListWrapper';
 import RadioButtonList from '../RadioButtonList';
 import RadioDropDownAnchor from './RadioDownAnchor';
 
-const RadioDropDown = ({
-	group,
-	onSelected,
-	...props
-}: RadioDropDownProps & Partial<ComponentProps<typeof SelectLegacy>>): ReactElement => {
+const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
