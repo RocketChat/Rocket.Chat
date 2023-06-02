@@ -6,7 +6,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - dashboards', function () {
+describe.only('LIVECHAT - dashboards', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -264,12 +264,38 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/agent-overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-livechat-manager', []);
-			await request.get(api('livechat/analytics/agent-overview')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+		});
+		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: '' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should return empty when chart name is invalid', async () => {
+			await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(Object.keys(res.body)).to.have.lengthOf(1);
+				});
 		});
 		it('should return an array of agent overview data', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -285,12 +311,38 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-livechat-manager', []);
-			await request.get(api('livechat/analytics/overview')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			await request
+				.get(api('livechat/analytics/overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+		});
+		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await request
+				.get(api('livechat/analytics/overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: '' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should return empty when chart name is invalid', async () => {
+			await request
+				.get(api('livechat/analytics/overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(Object.keys(res.body)).to.have.lengthOf(1);
+				});
 		});
 		it('should return an array of analytics overview data', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
 			const result = await request
 				.get(api('livechat/analytics/overview'))
+				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200);
