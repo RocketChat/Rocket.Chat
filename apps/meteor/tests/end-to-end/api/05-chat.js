@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { create } from 'lodash';
 
 import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
 import { password } from '../../data/user';
@@ -512,7 +511,7 @@ describe('[Chat]', function () {
 		});
 	});
 
-	describe.only('/chat.draft', () => {
+	describe('/chat.draft', () => {
 		let readOnlyChannel;
 		const userCredentials = {};
 		before((done) => {
@@ -522,7 +521,7 @@ describe('[Chat]', function () {
 				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
-				.end((err, res) => {
+				.end(() => {
 					request
 						.post(api('login'))
 						.send({
