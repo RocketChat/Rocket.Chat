@@ -6,7 +6,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe.only('LIVECHAT - dashboards', function () {
+describe('LIVECHAT - dashboards', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
