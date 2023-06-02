@@ -11,7 +11,7 @@ to: packages/<%= name %>/package.json
 		"eslint": "^8.12.0",
 		"jest": "~29.5.0",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.0.2"
+		"typescript": "~5.1.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

@@ -1,6 +1,8 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Filter, FindOptions } from 'mongodb';
+import type { Filter, FindOptions, SortDirection } from 'mongodb';
+
+type MongoSort = { [k: string]: SortDirection };
 
 class MessageSearchQueryParser {
 	private query: Exclude<Filter<IMessage>, Partial<IMessage>> = {};
@@ -214,14 +216,14 @@ class MessageSearchQueryParser {
 		return text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, (_: string, direction: string) => {
 			if (direction.startsWith('asc')) {
 				this.options.sort = {
-					...(typeof this.options.sort === 'object' ? this.options.sort : {}),
+					...(typeof this.options.sort === 'object' ? this.options.sort : ({} as MongoSort)),
 					ts: 1,
-				};
+				} as MongoSort;
 			} else if (direction.startsWith('desc')) {
 				this.options.sort = {
-					...(typeof this.options.sort === 'object' ? this.options.sort : {}),
+					...(typeof this.options.sort === 'object' ? this.options.sort : ({} as MongoSort)),
 					ts: -1,
-				};
+				} as MongoSort;
 			}
 			return '';
 		});

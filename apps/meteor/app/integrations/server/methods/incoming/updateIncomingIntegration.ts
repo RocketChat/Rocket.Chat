@@ -80,7 +80,7 @@ Meteor.methods<ServerMethods>({
 						$set: {
 							scriptCompiled,
 						},
-						$unset: { scriptError: 1 },
+						$unset: { scriptError: 1 as const },
 					},
 				);
 			} catch (e) {
@@ -96,7 +96,7 @@ Meteor.methods<ServerMethods>({
 							scriptError,
 						},
 						$unset: {
-							scriptCompiled: 1,
+							scriptCompiled: 1 as const,
 						},
 					},
 				);

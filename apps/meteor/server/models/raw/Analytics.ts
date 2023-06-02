@@ -32,7 +32,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 				$setOnInsert: {
 					_id: Random.id(),
 					date,
-					type: 'messages',
+					type: 'messages' as const,
 				},
 				$inc: { messages: 1 },
 			},
@@ -47,7 +47,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 				$setOnInsert: {
 					_id: Random.id(),
 					date,
-					type: 'users',
+					type: 'users' as const,
 				},
 				$inc: { users: 1 },
 			},
