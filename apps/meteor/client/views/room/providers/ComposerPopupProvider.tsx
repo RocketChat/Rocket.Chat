@@ -197,7 +197,9 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 							})
 							.filter(
 								({ _id }) =>
-									filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
+									filter.length >= 2 &&
+									filterRegex.test(_id) &&
+									(exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
 							)
 							.sort(emojiSort(recents))
 							.slice(0, 10);
