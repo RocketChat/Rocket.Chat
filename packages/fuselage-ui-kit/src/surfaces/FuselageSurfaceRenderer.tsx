@@ -53,7 +53,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   public i18n(
-    { key = '' }: UiKit.I18n,
+    { key = '', args }: UiKit.I18n,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -61,7 +61,9 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return key ? <I18nTextElement key={index} i18nKey={key} /> : null;
+    return key ? (
+      <I18nTextElement key={index} i18nKey={key} args={args} />
+    ) : null;
   }
 
   public mrkdwn(
