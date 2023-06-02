@@ -4,6 +4,7 @@ import type { ReactElement, RefObject } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -173,12 +174,7 @@ const AccountTokensTable = (): ReactElement => {
 					/>
 				</>
 			)}
-			{phase === AsyncStatePhase.RESOLVED && filteredTokens?.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{phase === AsyncStatePhase.RESOLVED && filteredTokens?.length === 0 && <GenericNoResults />}
 		</>
 	);
 };

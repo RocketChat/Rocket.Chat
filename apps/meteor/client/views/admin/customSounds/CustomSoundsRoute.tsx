@@ -8,6 +8,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 
 import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
 import { GenericTableHeader } from '../../../components/GenericTable/V2/GenericTableHeader';
@@ -139,12 +140,7 @@ const CustomSoundsRoute = (): ReactElement => {
 								/>
 							</>
 						)}
-						{isSuccess && data?.length === 0 && (
-							<States>
-								<StatesIcon name='magnifier' />
-								<StatesTitle>{t('No_results_found')}</StatesTitle>
-							</States>
-						)}
+						{isSuccess && data?.length === 0 && <GenericNoResults />}
 
 						{isError && (
 							<States>

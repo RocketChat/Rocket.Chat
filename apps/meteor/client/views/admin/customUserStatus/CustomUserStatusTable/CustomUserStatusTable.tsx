@@ -1,4 +1,4 @@
-import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import type { ReactElement, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
+import GenericNoResult from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -23,6 +24,7 @@ type CustomUserStatusProps = {
 	onClick: (id: string) => void;
 };
 
+// TODO: Missing error state
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
@@ -69,12 +71,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			{data.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>
 					<GenericTable>

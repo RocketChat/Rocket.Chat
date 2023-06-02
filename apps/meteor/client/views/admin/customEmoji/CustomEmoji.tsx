@@ -7,6 +7,7 @@ import type { FC, MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -111,12 +112,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 					/>
 				</>
 			)}
-			{isSuccess && data && data.emojis.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

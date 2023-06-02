@@ -1,10 +1,11 @@
-import { Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, Skeleton, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
+import GenericNoResults from '../../../components/GenericNoResults';
 import Page from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import SettingsGroupCard from './SettingsGroupCard';
@@ -41,12 +42,7 @@ const SettingsPage = (): ReactElement => {
 							</Grid.Item>
 						))}
 				</Grid>
-				{!isLoadingGroups && !groups.length && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
+				{!isLoadingGroups && !groups.length && <GenericNoResults />}
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

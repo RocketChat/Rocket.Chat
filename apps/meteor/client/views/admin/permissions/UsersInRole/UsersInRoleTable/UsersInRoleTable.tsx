@@ -1,11 +1,12 @@
 import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
 import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
@@ -21,6 +22,7 @@ type UsersInRoleTableProps = {
 	paginationData: ReturnType<typeof usePagination>;
 };
 
+// TODO: Missing error state
 const UsersInRoleTable = ({
 	users,
 	reload,
@@ -61,12 +63,7 @@ const UsersInRoleTable = ({
 
 	return (
 		<>
-			{users.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{users.length === 0 && <GenericNoResults />}
 			{users.length > 0 && (
 				<>
 					<GenericTable>
