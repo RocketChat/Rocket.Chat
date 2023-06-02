@@ -5,6 +5,8 @@ import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatIn
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -70,27 +72,56 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
+		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>>('visitor', {
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		});
 
-		const livechatData = Object.keys(customFields)
-			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
-			.reduce((obj: Record<string, unknown | string>, key) => {
-				obj[key] = customFields[key];
-				return obj;
-			}, {});
+		const livechatData: Record<string, string> = {};
+
+		for await (const cf of allowedCF) {
+			if (!customFields.hasOwnProperty(cf._id)) {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+			const cfValue: string = trim(customFields[cf._id]);
+
+			if (!cfValue || typeof cfValue !== 'string') {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+
+			if (cf.regexp) {
+				const regex = new RegExp(cf.regexp);
+				if (!regex.test(cfValue)) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+			}
+
+			livechatData[cf._id] = cfValue;
+		}
+
+		const fieldsToRemove = {
+			// if field is explicitely set to empty string, remove
+			...(phone === '' && { phone: 1 }),
+			...(visitorEmail === '' && { visitorEmails: 1 }),
+			...(!contactManager?.username && { contactManager: 1 }),
+		};
 
 		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {
 				token,
 				name,
 				livechatData,
+				// if phone has some value, set
 				...(phone && { phone: [{ phoneNumber: phone }] }),
 				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
 				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
 			},
-			...(!contactManager?.username && { $unset: { contactManager: 1 } }),
+			...(Object.keys(fieldsToRemove).length && { $unset: fieldsToRemove }),
 		};
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
