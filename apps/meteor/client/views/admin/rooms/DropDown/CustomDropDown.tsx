@@ -69,6 +69,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			borderColor='none'
 			borderWidth='x1'
 			bg='surface-light'
+			h='x40'
 			{...props}
 		>
 			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
@@ -112,18 +113,17 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 
 	return (
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
-			{options.map((option, index) => (
-				// TODO: how to avoid using key={index}? Should I use option.id?
-				<Fragment key={index}>
+			{options.map((option) => (
+				<Fragment key={option.id}>
 					{/* TODO: mudar desing de acordo com o Figma */}
-					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props */}
-					{option.isGroupTitle === true ? (
+					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props -> ver PR da Julia!!! */}
+					{option.isGroupTitle ? (
 						<Box pi='x16' pbs='x8' pbe='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pi='x8' justifyContent='space-between' display='inline-flex'>
+							<Box pi='x8' w='full' justifyContent='space-between' display='inline-flex'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} onChange={(): void => onSelected(option)} />
@@ -156,7 +156,6 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 
 	// TODO: create a context that provides the selectedOptions list globally
 
-	// Everything is selected by default
 	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
 	const onSelect = (item: OptionProp): void => {
@@ -183,7 +182,6 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<DropDownList options={dropdownOptions} onSelected={onSelect} />
-					{/* TODO: are options being marked as checked??? */}
 				</DropDownListWrapper>
 			)}
 		</>

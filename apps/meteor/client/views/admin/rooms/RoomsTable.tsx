@@ -256,7 +256,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		<>
 			{/* TODO: mudar aqui */}
 			<FilterByTypeAndText setFilter={setRoomFilter} />
+
 			<CustomDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
