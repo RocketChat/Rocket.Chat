@@ -29,7 +29,7 @@ test.describe.serial('omnichannel-agents', () => {
 
 		await poOmnichannelAgents.btnEdit.click();
 		await poOmnichannelAgents.btnStatus.click();
-		await page.locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="not-available"]`).click();
+		await page.locator(`.rcx-option__content:has-text("Not available")`).click();
 		await poOmnichannelAgents.btnSave.click();
 	});
 
