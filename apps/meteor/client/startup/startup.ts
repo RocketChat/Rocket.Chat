@@ -1,6 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { Meteor } from 'meteor/meteor';
+import { UserPresence } from 'meteor/rocketchat:user-presence';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
@@ -8,8 +8,9 @@ import moment from 'moment';
 import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
-import { getUserPreference, t } from '../../app/utils/client';
+import { getUserPreference } from '../../app/utils/client';
 import 'hljs9/styles/github.css';
+import { t } from '../../app/utils/lib/i18n';
 import * as banners from '../lib/banners';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';

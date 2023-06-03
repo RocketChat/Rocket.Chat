@@ -7,9 +7,9 @@ import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import { CustomFieldsForm } from '../../../../../../components/CustomFieldsFormV2';
 import Tags from '../../../../../../components/Omnichannel/Tags';
-import VerticalBar from '../../../../../../components/VerticalBar';
 import { useFormsSubscription } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
@@ -113,15 +113,15 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
 		return (
-			<VerticalBar.ScrollableContent>
+			<ContextualbarScrollableContent>
 				<FormSkeleton />
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		);
 	}
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				{canViewCustomFields && customFieldsMetadata && (
 					<CustomFieldsForm formName='livechatData' formControl={control} metadata={customFieldsMetadata} />
 				)}
@@ -144,9 +144,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				{PrioritiesSelect && !!priorities?.length && (
 					<PrioritiesSelect label={t('Priority')} value={priorityIdField.value} options={priorities} onChange={priorityIdField.onChange} />
 				)}
-			</VerticalBar.ScrollableContent>
-
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button flexGrow={1} onClick={onClose}>
 						{t('Cancel')}
@@ -156,7 +155,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 }

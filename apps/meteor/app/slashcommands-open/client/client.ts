@@ -1,4 +1,4 @@
-import type { RoomType, ISubscription } from '@rocket.chat/core-typings';
+import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Mongo } from 'meteor/mongo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -9,7 +9,7 @@ import { Subscriptions, ChatSubscription } from '../../models/client';
 
 slashCommands.add({
 	command: 'open',
-	callback: async function Open(_command, params): Promise<void> {
+	callback: async function Open({ params }: SlashCommandCallbackParams<'open'>): Promise<void> {
 		const dict: Record<string, RoomType[]> = {
 			'#': ['c', 'p'],
 			'@': ['d'],

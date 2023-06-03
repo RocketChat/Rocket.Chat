@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
-import { Gravatar } from 'meteor/jparker:gravatar';
+import Gravatar from 'gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -108,7 +108,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles) {
-		callbacks.run('validateUserRoles', userData);
+		await callbacks.run('validateUserRoles', userData);
 	}
 
 	let nameValidation;
@@ -266,7 +266,7 @@ const handleNickname = (updateUser, nickname) => {
 };
 
 const saveNewUser = async function (userData, sendPassword) {
-	validateEmailDomain(userData.email);
+	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
 	const isGuest = roles && roles.length === 1 && roles.includes('guest');
@@ -282,7 +282,7 @@ const saveNewUser = async function (userData, sendPassword) {
 		createUser.email = userData.email;
 	}
 
-	const _id = Accounts.createUser(createUser);
+	const _id = await Accounts.createUserAsync(createUser);
 
 	const updateUser = {
 		$set: {
@@ -316,10 +316,10 @@ const saveNewUser = async function (userData, sendPassword) {
 	userData._id = _id;
 
 	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
-		const gravatarUrl = Gravatar.imageUrl(userData.email, {
+		const gravatarUrl = Gravatar.url(userData.email, {
 			default: '404',
-			size: 200,
-			secure: true,
+			size: '200',
+			protocol: 'https',
 		});
 
 		try {
@@ -386,7 +386,7 @@ export const saveUser = async function (userId, userData) {
 		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 		passwordPolicy.validate(userData.password)
 	) {
-		Accounts.setPassword(userData._id, userData.password.trim());
+		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
 	} else {
 		sendPassword = false;
 	}
@@ -419,7 +419,7 @@ export const saveUser = async function (userId, userData) {
 
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
-	callbacks.run('afterSaveUser', userData);
+	await callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userId);

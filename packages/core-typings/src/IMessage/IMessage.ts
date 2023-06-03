@@ -131,7 +131,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-	groupable?: false;
+	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
 	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;

@@ -3,10 +3,10 @@ import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
-import { fetch } from '../../../../../server/lib/http/fetch';
 import { Livechat } from '../../../server/lib/Livechat';
 import { settings } from '../../../../settings/server';
 
@@ -182,7 +182,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		try {
 			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
 						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);

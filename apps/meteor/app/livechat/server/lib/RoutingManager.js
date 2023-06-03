@@ -108,7 +108,7 @@ export const RoutingManager = {
 
 		await Message.saveSystemMessage('command', rid, 'connected', user);
 
-		dispatchAgentDelegated(rid, agent.agentId);
+		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
 		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
@@ -142,7 +142,7 @@ export const RoutingManager = {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
 			await this.removeAllRoomSubscriptions(room);
-			dispatchAgentDelegated(rid, null);
+			await dispatchAgentDelegated(rid, null);
 		}
 
 		await dispatchInquiryQueued(inquiry);
@@ -226,7 +226,7 @@ export const RoutingManager = {
 
 	async delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${inquiry._id}`);
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
 			department: inquiry?.department,
 		});
 

@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { subscriptionFields } from '../../modules/watchers/publishFields';
+import { subscriptionFields } from '../../../lib/publishFields';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
