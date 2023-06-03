@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -60,49 +60,70 @@ const AgentsPage = (): ReactElement => {
 					<FilterByText onChange={({ text }: { text: string }): void => setFilter(text)} />
 				</Box>
 				<Page.Content>
-					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							{mediaQuery && (
-								<GenericTableHeaderCell direction={sortDirection} sort='username' active={sortBy === 'username'} onClick={onHeaderClick}>
-									{t('Username')}
-								</GenericTableHeaderCell>
+					{result.phase === AsyncStatePhase.LOADING && (
+						<GenericTable>
+							<GenericTableBody>
+								<GenericTableLoadingTable headerCells={3} />
+							</GenericTableBody>
+						</GenericTable>
+					)}
+					{result.phase === AsyncStatePhase.RESOLVED && result?.value?.users.length > 0 && (
+						<>
+							<GenericTable>
+								<GenericTableHeader>
+									<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
+										{t('Name')}
+									</GenericTableHeaderCell>
+									{mediaQuery && (
+										<GenericTableHeaderCell
+											direction={sortDirection}
+											sort='username'
+											active={sortBy === 'username'}
+											onClick={onHeaderClick}
+										>
+											{t('Username')}
+										</GenericTableHeaderCell>
+									)}
+									<GenericTableHeaderCell
+										direction={sortDirection}
+										sort='emails.address'
+										active={sortBy === 'emails.address'}
+										onClick={onHeaderClick}
+									>
+										{t('Email')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										direction={sortDirection}
+										sort='statusLivechat'
+										active={sortBy === 'statusLivechat'}
+										onClick={onHeaderClick}
+									>
+										{t('Livechat_status')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
+								</GenericTableHeader>
+								<GenericTableBody data-qa='GenericTableAgentInfoBody'>
+									{result.phase === AsyncStatePhase.RESOLVED &&
+										result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
+								</GenericTableBody>
+							</GenericTable>
+							{result.phase === AsyncStatePhase.RESOLVED && (
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={result.value.total}
+									onSetItemsPerPage={setItemsPerPage}
+									onSetCurrent={setCurrent}
+									{...paginationProps}
+								/>
 							)}
-							<GenericTableHeaderCell
-								direction={sortDirection}
-								sort='emails.address'
-								active={sortBy === 'emails.address'}
-								onClick={onHeaderClick}
-							>
-								{t('Email')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								direction={sortDirection}
-								sort='statusLivechat'
-								active={sortBy === 'statusLivechat'}
-								onClick={onHeaderClick}
-							>
-								{t('Livechat_status')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
-						</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-							{result.phase === AsyncStatePhase.RESOLVED &&
-								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
-						</GenericTableBody>
-					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.value.total}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-							{...paginationProps}
-						/>
+						</>
+					)}
+					{result.phase === AsyncStatePhase.RESOLVED && result?.value?.users?.length === 0 && (
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_results_found')}</StatesTitle>
+						</States>
 					)}
 				</Page.Content>
 			</Page>

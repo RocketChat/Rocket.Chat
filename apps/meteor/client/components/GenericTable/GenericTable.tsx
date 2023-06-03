@@ -1,4 +1,4 @@
-import { Pagination, Tile } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, Key, Ref, RefAttributes } from 'react';
@@ -83,9 +83,10 @@ const GenericTable = forwardRef(function GenericTable<
 				? renderFilter({ ...props, onChange: setFilter } as any) // TODO: ugh
 				: null}
 			{results && !results.length ? (
-				<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			) : (
 				<>
 					<GenericTableV2 fixed={fixed} ref={ref}>
