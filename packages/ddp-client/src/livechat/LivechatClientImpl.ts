@@ -5,6 +5,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { DDPDispatchOptions } from '../types/DDPClient';
 import type { LivechatClient, LivechatRoomEvents } from './types/LivechatSDK';
 import { DDPSDK } from '../DDPSDK';
+import type { ClientStream } from '../types/ClientStream';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -26,12 +27,7 @@ declare module '../DDPSDK' {
 			streamName: N,
 			key: K,
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): {
-			stop: () => void;
-			ready: () => Promise<void>;
-			isReady: boolean;
-			onReady: (cb: () => void) => void;
-		};
+		): ReturnType<ClientStream['subscribe']>;
 	}
 }
 
