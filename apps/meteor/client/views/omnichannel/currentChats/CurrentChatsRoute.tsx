@@ -28,6 +28,9 @@ import RemoveChatButton from './RemoveChatButton';
 import { useAllCustomFields } from './hooks/useAllCustomFields';
 import { useCurrentChats } from './hooks/useCurrentChats';
 
+// eslint-disable-next-line import/no-unresolved, import/no-absolute-path
+import DisplayEmptyDataMessage from '/client/components/message/content/empty_data/omnichannel_empty_data/emptyDataMessage';
+
 type DebouncedParams = {
 	fname: string;
 	guest: string;
@@ -226,102 +229,110 @@ const CurrentChatsRoute = (): ReactElement => {
 					/>
 				</Box>
 				<Page.Content>
-					<GenericTable>
-						<GenericTableHeader>
-							{isPriorityEnabled && (
-								<GenericTableHeaderCell
-									key='priorityWeight'
-									direction={sortDirection}
-									active={sortBy === 'priorityWeight'}
-									onClick={setSort}
-									sort='priorityWeight'
-									w='x100'
-									alignItems='center'
-								>
-									{t('Priority')}
-								</GenericTableHeaderCell>
+					<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
+						{result.isLoading && <GenericTableLoadingTable headerCells={4} />}
+					</GenericTableBody>
+					{result.isSuccess && result.data.count ? (
+						<>
+							<GenericTable>
+								<GenericTableHeader>
+									{isPriorityEnabled && (
+										<GenericTableHeaderCell
+											key='priorityWeight'
+											direction={sortDirection}
+											active={sortBy === 'priorityWeight'}
+											onClick={setSort}
+											sort='priorityWeight'
+											w='x100'
+											alignItems='center'
+										>
+											{t('Priority')}
+										</GenericTableHeaderCell>
+									)}
+									<GenericTableHeaderCell
+										key='fname'
+										direction={sortDirection}
+										active={sortBy === 'fname'}
+										onClick={setSort}
+										sort='fname'
+										data-qa='current-chats-header-name'
+									>
+										{t('Name')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key='departmentId'
+										direction={sortDirection}
+										active={sortBy === 'departmentId'}
+										onClick={setSort}
+										sort='departmentId'
+										data-qa='current-chats-header-department'
+									>
+										{t('Department')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key='servedBy'
+										direction={sortDirection}
+										active={sortBy === 'servedBy'}
+										onClick={setSort}
+										sort='servedBy'
+										data-qa='current-chats-header-servedBy'
+									>
+										{t('Served_By')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key='ts'
+										direction={sortDirection}
+										active={sortBy === 'ts'}
+										onClick={setSort}
+										sort='ts'
+										data-qa='current-chats-header-startedAt'
+									>
+										{t('Started_At')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key='lm'
+										direction={sortDirection}
+										active={sortBy === 'lm'}
+										onClick={setSort}
+										sort='lm'
+										data-qa='current-chats-header-lastMessage'
+									>
+										{t('Last_Message')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key='open'
+										direction={sortDirection}
+										active={sortBy === 'open'}
+										onClick={setSort}
+										sort='open'
+										w='x100'
+										data-qa='current-chats-header-status'
+									>
+										{t('Status')}
+									</GenericTableHeaderCell>
+									{canRemoveClosedChats && (
+										<GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove'>
+											{t('Remove')}
+										</GenericTableHeaderCell>
+									)}
+								</GenericTableHeader>
+								<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
+									{result.data.rooms.map((room) => renderRow({ ...room }))}
+								</GenericTableBody>
+							</GenericTable>
+							{result.isSuccess && (
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={result.data.total}
+									onSetItemsPerPage={setItemsPerPage}
+									onSetCurrent={setCurrent}
+									{...paginationProps}
+								/>
 							)}
-							<GenericTableHeaderCell
-								key='fname'
-								direction={sortDirection}
-								active={sortBy === 'fname'}
-								onClick={setSort}
-								sort='fname'
-								data-qa='current-chats-header-name'
-							>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='departmentId'
-								direction={sortDirection}
-								active={sortBy === 'departmentId'}
-								onClick={setSort}
-								sort='departmentId'
-								data-qa='current-chats-header-department'
-							>
-								{t('Department')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='servedBy'
-								direction={sortDirection}
-								active={sortBy === 'servedBy'}
-								onClick={setSort}
-								sort='servedBy'
-								data-qa='current-chats-header-servedBy'
-							>
-								{t('Served_By')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='ts'
-								direction={sortDirection}
-								active={sortBy === 'ts'}
-								onClick={setSort}
-								sort='ts'
-								data-qa='current-chats-header-startedAt'
-							>
-								{t('Started_At')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='lm'
-								direction={sortDirection}
-								active={sortBy === 'lm'}
-								onClick={setSort}
-								sort='lm'
-								data-qa='current-chats-header-lastMessage'
-							>
-								{t('Last_Message')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='open'
-								direction={sortDirection}
-								active={sortBy === 'open'}
-								onClick={setSort}
-								sort='open'
-								w='x100'
-								data-qa='current-chats-header-status'
-							>
-								{t('Status')}
-							</GenericTableHeaderCell>
-							{canRemoveClosedChats && (
-								<GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove'>
-									{t('Remove')}
-								</GenericTableHeaderCell>
-							)}
-						</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
-							{result.isLoading && <GenericTableLoadingTable headerCells={4} />}
-							{result.isSuccess && result.data.rooms.map((room) => renderRow({ ...room }))}
-						</GenericTableBody>
-					</GenericTable>
-					{result.isSuccess && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.data.total}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-							{...paginationProps}
-						/>
+						</>
+					) : (
+						<DisplayEmptyDataMessage />
 					)}
 				</Page.Content>
 			</Page>

@@ -11,6 +11,9 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ArchivedItemMenu from './ArchivedItemMenu';
 import DepartmentsTable from './DepartmentsTable';
 
+// eslint-disable-next-line import/no-unresolved, import/no-absolute-path
+import DisplayEmptyDataMessage from '/client/components/message/content/empty_data/omnichannel_empty_data/emptyDataMessage';
+
 const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
 	const [debouncedText = ''] = useDebouncedValue(text, 500);
@@ -35,7 +38,17 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			<DepartmentsTable data={data} sort={sort} pagination={pagination} removeButton={removeButton} loading={isLoading}></DepartmentsTable>
+			{data?.count === 0 ? (
+				<DisplayEmptyDataMessage />
+			) : (
+				<DepartmentsTable
+					data={data}
+					sort={sort}
+					pagination={pagination}
+					removeButton={removeButton}
+					loading={isLoading}
+				></DepartmentsTable>
+			)}
 		</>
 	);
 };

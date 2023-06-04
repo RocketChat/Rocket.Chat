@@ -18,6 +18,9 @@ import AgentsPageRow from './AgentsPageRow';
 import AgentsTab from './AgentsTab';
 import { useQuery } from './hooks/useQuery';
 
+// eslint-disable-next-line import/no-unresolved, import/no-absolute-path
+import DisplayEmptyDataMessage from '/client/components/message/content/empty_data/omnichannel_empty_data/emptyDataMessage';
+
 const AgentsPage = (): ReactElement => {
 	const t = useTranslation();
 	const canViewAgents = usePermission('manage-livechat-agents');
@@ -60,49 +63,62 @@ const AgentsPage = (): ReactElement => {
 					<FilterByText onChange={({ text }: { text: string }): void => setFilter(text)} />
 				</Box>
 				<Page.Content>
-					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							{mediaQuery && (
-								<GenericTableHeaderCell direction={sortDirection} sort='username' active={sortBy === 'username'} onClick={onHeaderClick}>
-									{t('Username')}
-								</GenericTableHeaderCell>
+					<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
+						{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
+					</GenericTableBody>
+					{result.phase === AsyncStatePhase.RESOLVED && result.value.users.length > 0 ? (
+						<>
+							<GenericTable>
+								<GenericTableHeader>
+									<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
+										{t('Name')}
+									</GenericTableHeaderCell>
+									{mediaQuery && (
+										<GenericTableHeaderCell
+											direction={sortDirection}
+											sort='username'
+											active={sortBy === 'username'}
+											onClick={onHeaderClick}
+										>
+											{t('Username')}
+										</GenericTableHeaderCell>
+									)}
+									<GenericTableHeaderCell
+										direction={sortDirection}
+										sort='emails.address'
+										active={sortBy === 'emails.address'}
+										onClick={onHeaderClick}
+									>
+										{t('Email')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										direction={sortDirection}
+										sort='statusLivechat'
+										active={sortBy === 'statusLivechat'}
+										onClick={onHeaderClick}
+									>
+										{t('Livechat_status')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
+								</GenericTableHeader>
+								<GenericTableBody data-qa='GenericTableAgentInfoBody'>
+									{result.phase === AsyncStatePhase.RESOLVED &&
+										result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
+								</GenericTableBody>
+							</GenericTable>
+							{result.phase === AsyncStatePhase.RESOLVED && (
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={result.value.total}
+									onSetItemsPerPage={setItemsPerPage}
+									onSetCurrent={setCurrent}
+									{...paginationProps}
+								/>
 							)}
-							<GenericTableHeaderCell
-								direction={sortDirection}
-								sort='emails.address'
-								active={sortBy === 'emails.address'}
-								onClick={onHeaderClick}
-							>
-								{t('Email')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								direction={sortDirection}
-								sort='statusLivechat'
-								active={sortBy === 'statusLivechat'}
-								onClick={onHeaderClick}
-							>
-								{t('Livechat_status')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
-						</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-							{result.phase === AsyncStatePhase.RESOLVED &&
-								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
-						</GenericTableBody>
-					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.value.total}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-							{...paginationProps}
-						/>
+						</>
+					) : (
+						<DisplayEmptyDataMessage />
 					)}
 				</Page.Content>
 			</Page>

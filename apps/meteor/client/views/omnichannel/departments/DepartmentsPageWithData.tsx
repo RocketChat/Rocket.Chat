@@ -11,6 +11,9 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import DepartmentItemMenu from './DepartmentItemMenu';
 import DepartmentsTable from './DepartmentsTable';
 
+// eslint-disable-next-line import/no-absolute-path, import/no-unresolved
+import DisplayEmptyDataMessage from '/client/components/message/content/empty_data/omnichannel_empty_data/emptyDataMessage';
+
 const DepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
 	const [debouncedText = ''] = useDebouncedValue(text, 500);
@@ -39,15 +42,19 @@ const DepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			<DepartmentsTable
-				aria-busy={text !== debouncedText}
-				aria-live='assertive'
-				data={result.data}
-				sort={sort}
-				pagination={pagination}
-				removeButton={removeButton}
-				loading={result.isLoading && result.isInitialLoading}
-			></DepartmentsTable>
+			{result?.data?.count === 0 ? (
+				<DisplayEmptyDataMessage />
+			) : (
+				<DepartmentsTable
+					aria-busy={text !== debouncedText}
+					aria-live='assertive'
+					data={result.data}
+					sort={sort}
+					pagination={pagination}
+					removeButton={removeButton}
+					loading={result.isLoading && result.isInitialLoading}
+				/>
+			)}
 		</>
 	);
 };
