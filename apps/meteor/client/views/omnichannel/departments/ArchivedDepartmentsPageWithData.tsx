@@ -43,29 +43,17 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-<<<<<<< HEAD
-			{data?.count === 0 ? (
+			{result?.data?.count === 0 ? (
 				<DisplayEmptyDataMessage />
 			) : (
 				<DepartmentsTable
-					data={data}
+					data={result?.data}
 					sort={sort}
 					pagination={pagination}
 					removeButton={removeButton}
-					loading={isLoading}
+					loading={result.isLoading && result.isInitialLoading}
 				></DepartmentsTable>
 			)}
-=======
-			<DepartmentsTable
-				aria-busy={text !== debouncedText}
-				aria-live='assertive'
-				data={result.data}
-				sort={sort}
-				pagination={pagination}
-				removeButton={removeButton}
-				loading={result.isLoading && result.isInitialLoading}
-			></DepartmentsTable>
->>>>>>> 74c5f36017ec226429de822e588d547b50739c98
 		</>
 	);
 };
