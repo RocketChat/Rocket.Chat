@@ -16,21 +16,26 @@ import DisplayEmptyDataMessage from '/client/components/message/content/empty_da
 
 const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
-	const [debouncedText = ''] = useDebouncedValue(text, 500);
+	const debouncedText = useDebouncedValue(text, 500) || '';
 
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
 
 	const getArchivedDepartments = useEndpoint('GET', '/v1/livechat/departments/archived');
 
-	const { data, isLoading } = useQuery(['omnichannel', 'departments', 'archived', debouncedText, pagination, sort], async () =>
-		getArchivedDepartments({
-			onlyMyDepartments: 'true' as const,
-			text,
-			sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
-			...(pagination.current && { offset: pagination.current }),
-			...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
-		}),
+	const result = useQuery(
+		['omnichannel', 'departments', 'archived', debouncedText, pagination, sort],
+		async () =>
+			getArchivedDepartments({
+				onlyMyDepartments: 'true' as const,
+				text,
+				sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
+				...(pagination.current && { offset: pagination.current }),
+				...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
+			}),
+		{
+			keepPreviousData: true,
+		},
 	);
 
 	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <ArchivedItemMenu dep={dep} />;
@@ -38,6 +43,7 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
+<<<<<<< HEAD
 			{data?.count === 0 ? (
 				<DisplayEmptyDataMessage />
 			) : (
@@ -49,6 +55,17 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 					loading={isLoading}
 				></DepartmentsTable>
 			)}
+=======
+			<DepartmentsTable
+				aria-busy={text !== debouncedText}
+				aria-live='assertive'
+				data={result.data}
+				sort={sort}
+				pagination={pagination}
+				removeButton={removeButton}
+				loading={result.isLoading && result.isInitialLoading}
+			></DepartmentsTable>
+>>>>>>> 74c5f36017ec226429de822e588d547b50739c98
 		</>
 	);
 };

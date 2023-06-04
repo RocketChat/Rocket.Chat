@@ -1,5 +1,5 @@
-import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -30,30 +30,34 @@ export async function connectWorkspace(token: string) {
 	const cloudUrl = settings.get('Cloud_Url');
 	let result;
 	try {
-		result = HTTP.post(`${cloudUrl}/api/oauth/clients`, {
+		const request = await fetch(`${cloudUrl}/api/oauth/clients`, {
+			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
-			data: regInfo,
+			body: regInfo,
 		});
+
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		result = await request.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to Connect with Rocket.Chat Cloud',
 			url: '/api/oauth/clients',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
 		return false;
 	}
 
-	const { data } = result;
-
-	if (!data) {
+	if (!result) {
 		return false;
 	}
 
-	await saveRegistrationData(data);
+	await saveRegistrationData(result);
 
 	return true;
 }

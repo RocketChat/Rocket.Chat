@@ -282,6 +282,127 @@ describe('Meteor.methods', function () {
 		});
 	});
 
+	describe('[@cleanRoomHistory]', () => {
+		let rid = false;
+
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		before('send another sample message', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
+			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: rid,
+					latest: '2016-12-09T13:42:25.304Z',
+					oldest: '2016-08-30T13:42:25.304Z',
+					excludePinned: false,
+					filesOnly: false,
+					ignoreThreads: false,
+					ignoreDiscussion: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('count', 0);
+				});
+
+			const roomAfter = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+			expect(roomBefore.body.group._updatedAt).to.be.equal(roomAfter.body.group._updatedAt);
+		});
+
+		it('should change the _updatedAt value when room is cleaned', async () => {
+			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: rid,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					excludePinned: false,
+					filesOnly: false,
+					ignoreThreads: false,
+					ignoreDiscussion: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('count', 2);
+				});
+
+			const roomAfter = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+			expect(roomBefore.body.group._updatedAt).to.not.be.equal(roomAfter.body.group._updatedAt);
+		});
+	});
+
 	describe('[@loadHistory]', () => {
 		let rid = false;
 		let postMessageDate = false;

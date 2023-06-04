@@ -16,7 +16,7 @@ import DisplayEmptyDataMessage from '/client/components/message/content/empty_da
 
 const DepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
-	const [debouncedText = ''] = useDebouncedValue(text, 500);
+	const debouncedText = useDebouncedValue(text, 500) || '';
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
 

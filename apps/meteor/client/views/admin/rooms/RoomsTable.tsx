@@ -38,7 +38,7 @@ const roomTypeI18nMap = {
 	discussion: 'Discussion',
 } as const;
 
-const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
+const getRoomType = (room: IRoom): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
 	if (room.teamMain) {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
