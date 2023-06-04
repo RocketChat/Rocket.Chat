@@ -1,6 +1,7 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,7 +14,6 @@ import { createToken } from '../../../../../lib/utils/createToken';
 import { useFormsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
-import { useQueryClient } from '@tanstack/react-query';
 
 type ContactNewEditProps = {
 	id: string;
