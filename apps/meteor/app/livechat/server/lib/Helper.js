@@ -258,7 +258,7 @@ export const normalizeAgent = async (agentId) => {
 		return { hiddenInfo: true };
 	}
 
-	const agent = await Users.getAgentInfo(agentId);
+	const agent = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_email'));
 	const { customFields: agentCustomFields, ...extraData } = agent;
 	const customFields = parseAgentCustomFields(agentCustomFields);
 

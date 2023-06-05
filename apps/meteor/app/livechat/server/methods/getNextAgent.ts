@@ -6,6 +6,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +41,6 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		return Users.getAgentInfo(agent.agentId);
+		return Users.getAgentInfo(agent.agentId, settings.get('Livechat_show_agent_email'));
 	},
 });

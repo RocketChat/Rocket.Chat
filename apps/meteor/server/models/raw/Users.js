@@ -1644,7 +1644,7 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		if (showAgentEmail) {
-			options.fields.emails = 1;
+			options.projection.emails = 1;
 		}
 
 		return this.findOne(query, options);
