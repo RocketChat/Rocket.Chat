@@ -83,7 +83,7 @@ Meteor.startup(async function () {
 			});
 		},
 		order: 0,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 
 	MessageAction.addButton({
@@ -111,7 +111,7 @@ Meteor.startup(async function () {
 			return true;
 		},
 		order: -3,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 
 	MessageAction.addButton({
