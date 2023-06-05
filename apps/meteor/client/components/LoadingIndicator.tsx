@@ -1,11 +1,12 @@
-import { Box, Throbber } from '@rocket.chat/fuselage';
 import React from 'react';
 
-const LoadingIndicator = () => {
+const LoadingIndicator = ({ variation }: { variation?: 'medium' | 'large' }) => {
 	return (
-		<Box display='flex' height='100%' width='100%' alignItems='center' justifyContent='center' position='absolute'>
-			<Throbber />
-		</Box>
+		<div className='loading__animation'>
+			<div className={['loading__animation__bounce', variation && `loading__animation__bounce--${variation}`].filter(Boolean).join(' ')} />
+			<div className={['loading__animation__bounce', variation && `loading__animation__bounce--${variation}`].filter(Boolean).join(' ')} />
+			<div className={['loading__animation__bounce', variation && `loading__animation__bounce--${variation}`].filter(Boolean).join(' ')} />
+		</div>
 	);
 };
 
