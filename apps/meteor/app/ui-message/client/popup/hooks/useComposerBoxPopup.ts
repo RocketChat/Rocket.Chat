@@ -85,8 +85,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				.filter((item) => item.isSuccess)
 				.flatMap((item) => item.data as T[])
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
-			const a = sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
-			return a;
+			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
 	}, [items, popup, suspended]);
 
