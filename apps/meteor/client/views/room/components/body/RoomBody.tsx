@@ -5,15 +5,11 @@ import {
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useRoute,
 	useSetting,
-	useStream,
-	useToastMessageDispatch,
 	useTranslation,
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -48,6 +44,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
@@ -60,9 +57,6 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useToolboxContext();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
-	const homeRouter = useRoute('home');
-	const queryClient = useQueryClient();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -76,8 +70,6 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
-
-	const subscribeToNotifyUser = useStream('notify-user');
 
 	const chat = useChat();
 
@@ -219,26 +211,7 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
-	useEffect(() => {
-		if (!user?._id) {
-			return;
-		}
-
-		const unSubscribeFromNotifyUser = subscribeToNotifyUser(`${user._id}/subscriptions-changed`, (event, subscription) => {
-			if (event === 'removed' && subscription.rid === room._id) {
-				queryClient.invalidateQueries(['rooms', room._id]);
-				dispatchToastMessage({
-					type: 'info',
-					message: t('You_have_been_removed_from_room', {
-						roomName: room?.fname || room?.name || '',
-					}),
-				});
-				homeRouter.push({});
-			}
-		});
-
-		return unSubscribeFromNotifyUser;
-	}, [user?._id, homeRouter, subscribeToNotifyUser, room._id, room?.fname, room?.name, t, dispatchToastMessage, queryClient]);
+	useGoToHomeOnRemoved(room, user?._id);
 
 	useEffect(() => {
 		callbacks.add(
