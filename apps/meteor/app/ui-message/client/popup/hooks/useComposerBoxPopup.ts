@@ -85,7 +85,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				.filter((item) => item.isSuccess)
 				.flatMap((item) => item.data as T[])
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
-			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
+			const a = sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
+			return a;
 		});
 	}, [items, popup, suspended]);
 
@@ -112,7 +113,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				end: chat?.composer?.selection.start,
 			});
 		}
-
 		setPopup(undefined);
 		setFocused(undefined);
 	});
@@ -126,13 +126,16 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			return;
 		}
 
-		const configuration = configurations.find(({ trigger, matchSelectorRegex, triggerAnywhere }) => {
+		const configuration = configurations.find(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
 			const selector =
 				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^| |\n)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
 			const result = selector.test(value);
-			return result;
+			if (!triggerLength || !result) {
+				return result;
+			}
+			const filter = value.match(selector);
+			return filter && triggerLength < filter[0].length;
 		});
-
 		setPopup(configuration);
 		if (!configuration) {
 			setFocused(undefined);
