@@ -21,3 +21,14 @@ export const explorer: IPermission['_id'][] = [
 	'delete-own-message',
 	'edit-own-message',
 ];
+
+export const DEFAULT_TRUST_ROLES = [
+	{
+		_id: 'novice',
+		permission: novice,
+	},
+	{
+		_id: 'explorer',
+		permission: explorer,
+	},
+];
