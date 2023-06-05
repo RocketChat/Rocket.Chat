@@ -3316,6 +3316,7 @@
   "Message_Attachments_Thumbnails_Enabled": "Enable image thumbnails to save bandwith",
   "Message_Attachments_Thumbnails_Width": "Thumbnail's max width (in pixels)",
   "Message_Attachments_Thumbnails_Height": "Thumbnail's max height (in pixels)",
+  "Message_with_attachment": "Message with attachment",
   "Report_sent": "Report sent",
   "Message_Attachments_Thumbnails_EnabledDesc": "Thumbnails will be served instead of the original image to reduce bandwith usage. Images at original resolution can be downloaded using the icon next to the attachment's name.",
   "Message_Attachments_Strip_Exif": "Remove EXIF metadata from supported files",
