@@ -420,6 +420,8 @@ export class AppsRestApi {
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
 
+					void orchestrator.getNotifier().appAdded(info.id);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -756,6 +758,8 @@ export class AppsRestApi {
 					info.status = aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
+
+					void orchestrator.getNotifier().appUpdated(info.id);
 
 					return API.v1.success({
 						app: info,

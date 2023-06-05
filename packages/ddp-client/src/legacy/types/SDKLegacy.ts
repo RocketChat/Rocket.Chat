@@ -78,10 +78,10 @@ export type RocketchatSdkLegacyEvents = {
 	'typing': StreamerCallbackArgs<'notify-room', `${string}/typing`>;
 	'deleteMessage': StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>;
 	'roles-change': StreamerCallbackArgs<'notify-logged', 'roles-change'>;
-	'updateEmojiCustom': StreamerCallbackArgs<'notify-all', 'updateEmojiCustom'>;
-	'deleteEmojiCustom': StreamerCallbackArgs<'notify-all', 'deleteEmojiCustom'>;
+	'updateEmojiCustom': StreamerCallbackArgs<'notify-logged', 'updateEmojiCustom'>;
+	'deleteEmojiCustom': StreamerCallbackArgs<'notify-logged', 'deleteEmojiCustom'>;
 	'public-settings-changed': StreamerCallbackArgs<'notify-all', 'public-settings-changed'>;
-	'permissions-changed': StreamerCallbackArgs<'notify-all', 'permissions-changed'>;
+	'permissions-changed': StreamerCallbackArgs<'notify-logged', 'permissions-changed'>;
 	'Users:NameChanged': StreamerCallbackArgs<'notify-logged', 'Users:NameChanged'>;
 	'Users:Deleted': StreamerCallbackArgs<'notify-logged', 'Users:Deleted'>;
 	'updateAvatar': StreamerCallbackArgs<'notify-logged', 'updateAvatar'>;

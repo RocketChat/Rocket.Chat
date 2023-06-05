@@ -12,7 +12,7 @@ const loadAppI18nResources = (appId, languages) => {
 				return translations;
 			}, {});
 
-			i18n.addResourceBundle(language, 'project', scopedTranslations);
+			i18n.addResourceBundle(language, 'core', scopedTranslations);
 		} catch (error) {
 			Apps.handleError(error);
 		}
