@@ -1,4 +1,3 @@
-import { UploadFS as UFS } from './ufs';
 import './ufs-methods';
 import './ufs-server';
 import './ufs-gridfs';
