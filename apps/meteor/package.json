@@ -388,6 +388,7 @@
 		"query-string": "^7.1.1",
 		"queue-fifo": "^0.2.6",
 		"rc-scrollbars": "^1.1.5",
+		"re-resizable": "^6.9.9",
 		"react": "~17.0.2",
 		"react-aria": "~3.23.1",
 		"react-dom": "~17.0.2",

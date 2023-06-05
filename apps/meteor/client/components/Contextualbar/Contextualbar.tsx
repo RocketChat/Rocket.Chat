@@ -3,14 +3,19 @@ import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-
 import type { FC, ComponentProps } from 'react';
 import React, { memo } from 'react';
 
+import ContextualbarResizable from './ContextualbarResizable';
+
+// FIXME: Check the behavior for the `ContextualbarInnerContent`
 const Contextualbar: FC<ComponentProps<typeof ContextualbarComponent>> = ({ children, bg = 'room', ...props }) => {
 	const sizes = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 
 	return (
-		<ContextualbarComponent bg={bg} width={sizes.contextualBar} position={position} {...props}>
-			{children}
-		</ContextualbarComponent>
+		<ContextualbarResizable defaultWidth={sizes.contextualBar}>
+			<ContextualbarComponent bg={bg} position={position} {...props}>
+				{children}
+			</ContextualbarComponent>
+		</ContextualbarResizable>
 	);
 };
 

@@ -54,7 +54,7 @@ const VideoConfListItem = ({
 	return (
 		<Box
 			color='default'
-			borderBlockEndWidth={2}
+			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
