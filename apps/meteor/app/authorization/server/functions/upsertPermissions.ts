@@ -172,6 +172,10 @@ export const upsertPermissions = async (): Promise<void> => {
 			_id: 'edit-livechat-room-customfields',
 			roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 		},
+		{
+			_id: 'enable-livechat-verification-process',
+			roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
+		},
 		{ _id: 'send-omnichannel-chat-transcript', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages', roles: ['admin'] },
 		{ _id: 'toggle-room-e2e-encryption', roles: ['owner', 'admin'] },

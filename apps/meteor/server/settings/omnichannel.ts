@@ -30,6 +30,14 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_enable_verification_process', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'Livechat',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_enable_message_character_limit', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
