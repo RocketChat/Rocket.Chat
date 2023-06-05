@@ -201,7 +201,6 @@ export class ConnectionImpl
 					this.reconnect();
 				}, this.retryOptions.retryTime * this.retryCount);
 			};
-			this.ws = ws;
 		});
 	}
 
