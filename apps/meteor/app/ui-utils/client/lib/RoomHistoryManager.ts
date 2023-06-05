@@ -164,7 +164,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitForElement('.messages-box .wrapper');
+		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
