@@ -83,6 +83,8 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 	handleMessage(payload: string): void {
 		const data = this.decode(payload) as IncomingPayload;
 
+		Object.freeze(data);
+
 		switch (data.msg) {
 			case 'ping':
 				this.pong(data.id);
