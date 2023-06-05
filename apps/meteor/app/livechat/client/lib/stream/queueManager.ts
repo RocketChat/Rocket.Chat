@@ -2,8 +2,8 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } f
 
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import { sdk } from '../../../../utils/client/lib/SDKClient';
 import { queryClient } from '../../../../../client/lib/queryClient';
+import { sdk } from '../../../../utils/client/lib/SDKClient';
 
 const departments = new Set();
 
