@@ -264,9 +264,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		popup,
 		select,
 		filter,
-
 		suspended,
-
 		commandsRef,
 		callbackRef,
 	};
