@@ -155,10 +155,17 @@ class LivechatClass {
 			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
 			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
-		callbacks.runAsync('livechat.closeRoom', {
-			room: newRoom,
-			options,
-		});
+		if (process.env.TEST_MODE) {
+			await callbacks.run('livechat.closeRoom', {
+				room: newRoom,
+				options,
+			});
+		} else {
+			callbacks.runAsync('livechat.closeRoom', {
+				room: newRoom,
+				options,
+			});
+		}
 
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
