@@ -1,4 +1,5 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IModerationService } from '@rocket.chat/core-services';
 import { Permissions, Roles, Users } from '@rocket.chat/models';
 
 import { createOrUpdateProtectedRoleAsync } from '../../lib/roles/createOrUpdateProtectedRole';
