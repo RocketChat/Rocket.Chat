@@ -63,9 +63,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 
 		if (!isLivechatAdmin && room.servedBy._id !== userId) {
-			homeRoute.push();
 			ChatRoom.remove(room._id);
-			queryClient.removeQueries({ queryKey: ['rooms', room._id], exact: true });
+			queryClient.removeQueries(['rooms', room._id]);
+			queryClient.removeQueries(['rooms', { reference: room._id, type: 'l' }]);
+			queryClient.removeQueries(['/v1/rooms.info', room._id]);
 		}
 	}, [homeRoute, isLivechatAdmin, queryClient, userId, room]);
 
