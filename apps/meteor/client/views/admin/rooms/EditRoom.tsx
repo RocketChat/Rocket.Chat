@@ -7,8 +7,8 @@ import type { ReactElement } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
@@ -208,7 +208,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+		<ContextualbarScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 			{room.t !== 'd' && (
 				<Box pbe='x24' display='flex' justifyContent='center'>
 					<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
@@ -357,7 +357,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					</Button>
 				</Field.Row>
 			</Field>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 
