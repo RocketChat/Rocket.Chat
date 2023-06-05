@@ -47,7 +47,9 @@ const AppsFilters = ({
 
 	const isPrivateAppsPage = context === 'private';
 
+
 	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
+
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
