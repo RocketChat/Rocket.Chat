@@ -55,7 +55,7 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
-					<Select flexShrink={0} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
+					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>

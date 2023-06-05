@@ -48,7 +48,7 @@ export async function processThreads(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	const { mentionIds } = getMentions(message);
+	const { mentionIds } = await getMentions(message);
 
 	const replies = [
 		...new Set([
