@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { hasPermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 
@@ -14,16 +14,19 @@ export const {
 		href: 'marketplace/explore',
 		icon: 'compass',
 		i18nLabel: 'Explore',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
 		href: 'marketplace/enterprise',
 		icon: 'lightning',
 		i18nLabel: 'Enterprise',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
 		href: 'marketplace/installed',
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
 		href: 'marketplace/requested',
@@ -36,13 +39,15 @@ export const {
 		href: 'marketplace/private',
 		icon: 'lock',
 		i18nLabel: 'Private_Apps',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
-	{ divider: true, i18nLabel: 'marketplace/private' },
+	{ divider: true, i18nLabel: 'marketplace/private', permissionGranted: (): boolean => hasPermission('access-marketplace') },
 	{
 		href: 'https://go.rocket.chat/i/developing-an-app',
 		icon: 'new-window',
 		i18nLabel: 'Documentation',
 		externalUrl: true,
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
-	{ divider: true, i18nLabel: 'marketplace/Documentation' },
+	{ divider: true, i18nLabel: 'marketplace/Documentation', permissionGranted: (): boolean => hasPermission('access-marketplace') },
 ]);

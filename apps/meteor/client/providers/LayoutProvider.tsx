@@ -35,8 +35,7 @@ const LayoutProvider: FC = ({ children }) => {
 					},
 					size: {
 						sidebar: '240px',
-						// eslint-disable-next-line no-nested-ternary
-						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
+						contextualBar: breakpoints.includes('sm') ? '380px' : '100%',
 					},
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary

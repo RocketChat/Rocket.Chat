@@ -1,4 +1,5 @@
 import '../apps/startup';
+import './apps';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
