@@ -1,3 +1,61 @@
+# 6.2.3
+
+`2023-06-05  ·  1 🎉  ·  9 🐛  ·  9 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🎉 New features
+
+
+- Add support to use `TRANSPORTER` env var for monolith deployments ([#29373](https://github.com/RocketChat/Rocket.Chat/pull/29373))
+
+### 🐛 Bug fixes
+
+
+- `queuedForUser` endpoint not filtering by status ([#29189](https://github.com/RocketChat/Rocket.Chat/pull/29189))
+
+- Embedded layout stops working after navigation occurs ([#29147](https://github.com/RocketChat/Rocket.Chat/pull/29147))
+
+- File upload in Safari, IOS devices ([#27121](https://github.com/RocketChat/Rocket.Chat/pull/27121))
+
+- fix wrong %s translations  ([#29395](https://github.com/RocketChat/Rocket.Chat/pull/29395))
+
+- getActiveLocalUserCount query ([#29349](https://github.com/RocketChat/Rocket.Chat/pull/29349))
+
+- Import progress page stuck at 0% ([#29421](https://github.com/RocketChat/Rocket.Chat/pull/29421))
+
+  - Fix incorrect percentage calc;
+   - Fix import progress page stuck at 0%.
+
+- Importer crashes when sending the "active status" e-mail notification to users ([#29401](https://github.com/RocketChat/Rocket.Chat/pull/29401))
+
+  - Fix `getImportProgress` endpoint returning incorrect count info (`total: 0, completed: 0`);
+   - Fix server crash when sending the "active status" e-mail notification to users on import.
+
+- OTR session closing after 10 seconds without warning ([#29245](https://github.com/RocketChat/Rocket.Chat/pull/29245))
+
+  The `Notifications` streamer is sending two events when there's a license applied to the workspace and it's not using Microservices. I'm avoiding this by simply ignoring the second event in OTRRoom.
+
+  There is still an issue where there's 2 system messages being fired after accepting, but that's not a really big concern since it doesn't break anything.
+
+- unable to create user if Accounts_ManuallyApproveNewUsers is enabled ([#29293](https://github.com/RocketChat/Rocket.Chat/pull/29293))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@jessicaschelly](https://github.com/jessicaschelly)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 # 6.2.2
 
 `2023-05-19  ·  1 🐛  ·  2 👩‍💻👨‍💻`

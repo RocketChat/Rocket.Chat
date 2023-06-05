@@ -304,6 +304,10 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findOneByImportId(_id, options) {
+		return this.findOne({ importIds: _id }, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -2789,7 +2793,11 @@ export class UsersRaw extends BaseRaw {
 
 	// here
 	getActiveLocalUserCount() {
-		return this.col.countDocuments({ active: true, federated: false, isRemote: false });
+		return Promise.all([
+			this.col.countDocuments({ active: true }),
+			this.col.countDocuments({ federated: true }),
+			this.col.countDocuments({ isRemote: true }),
+		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {
