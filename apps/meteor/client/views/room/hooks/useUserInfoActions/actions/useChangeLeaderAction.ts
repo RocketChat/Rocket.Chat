@@ -25,9 +25,9 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
 
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
-	const changeLeaderMessage = isLeader ? 'removed__username__as_room_leader' : 'set__username__as_room_leader';
+	const changeLeaderMessage = isLeader ? 'removed__username__as__role_' : 'set__username__as__role_';
 	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
-		successMessage: t(changeLeaderMessage, { username: user.username }),
+		successMessage: t(changeLeaderMessage, { username: user.username, role: 'leader' }),
 	});
 	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));
 	const changeLeaderOption = useMemo(
