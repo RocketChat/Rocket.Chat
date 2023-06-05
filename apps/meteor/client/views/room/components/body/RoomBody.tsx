@@ -45,6 +45,7 @@ import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
@@ -415,17 +416,7 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [room._id, sendToBottom]);
 
-	useEffect(() => {
-		const store = RoomManager.getStore(room._id);
-
-		if (store?.scroll && !store.atBottom) {
-			scrollMessageList(() => {
-				return { left: 30, top: store.scroll };
-			});
-		} else {
-			sendToBottom();
-		}
-	}, [room._id, scrollMessageList, sendToBottom]);
+	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
