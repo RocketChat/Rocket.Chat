@@ -5,12 +5,12 @@ import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
@@ -25,21 +25,18 @@ type UserCardWithDataProps = {
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
-	const showRealNames = useSetting('UI_Use_Real_Name');
+	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
-	const query = useMemo(() => ({ username }), [username]);
-	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: query });
+	const { data, isLoading } = useUserInfoQuery({ username });
 
 	ref.current = target;
-
-	const isLoading = state === AsyncStatePhase.LOADING;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
 		const {
 			_id,
-			name = username,
+			name,
 			roles = defaultValue,
 			statusText = defaultValue,
 			bio = defaultValue,
@@ -50,7 +47,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 
 		return {
 			_id,
-			name: showRealNames ? name : username,
+			name: getUserDisplayName(name, username, showRealNames),
 			username,
 			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
