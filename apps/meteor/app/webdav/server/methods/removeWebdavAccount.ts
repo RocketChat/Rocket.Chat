@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 
 		check(accountId, String);
 
-		methodDeprecationLogger.method('removeWebdavAccount', '6.0.0');
+		methodDeprecationLogger.method('removeWebdavAccount', '7.0.0');
 
 		const removed = await WebdavAccounts.removeByUserAndId(accountId, userId);
 		if (removed) {

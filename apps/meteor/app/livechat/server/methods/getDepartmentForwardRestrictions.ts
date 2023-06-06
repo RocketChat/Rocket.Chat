@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getDepartmentForwardRestrictions'(departmentId) {
-		methodDeprecationLogger.method('livechat:getDepartmentForwardRestrictions', '6.0.0');
+		methodDeprecationLogger.method('livechat:getDepartmentForwardRestrictions', '7.0.0');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:getDepartmentForwardRestrictions',

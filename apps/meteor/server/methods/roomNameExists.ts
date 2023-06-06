@@ -16,7 +16,7 @@ Meteor.methods<ServerMethods>({
 	async roomNameExists(roomName) {
 		check(roomName, String);
 
-		methodDeprecationLogger.method('roomNameExists', '6.0.0');
+		methodDeprecationLogger.method('roomNameExists', '7.0.0');
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

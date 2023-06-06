@@ -26,7 +26,7 @@ declare module '@rocket.chat/ui-contexts' {
 // TODO: Deprecated: Remove in v6.0.0
 Meteor.methods<ServerMethods>({
 	async 'livechat:transfer'(transferData) {
-		methodDeprecationLogger.method('livechat:transfer', '6.0.0');
+		methodDeprecationLogger.method('livechat:transfer', '7.0.0');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });

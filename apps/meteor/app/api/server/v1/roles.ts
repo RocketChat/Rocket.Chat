@@ -205,7 +205,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '6.0.0', this.response);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);

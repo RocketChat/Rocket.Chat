@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			methodDeprecationLogger.deprecatedParameterUsage(
 				'authorization:addUserToRole',
 				'role',
-				'6.0.0',
+				'7.0.0',
 				({ parameter, method, version }) => `Calling ${method} with \`${parameter}\` names is deprecated and will be removed ${version}`,
 			);
 		}

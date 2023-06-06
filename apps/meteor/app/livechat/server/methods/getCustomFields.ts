@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getCustomFields'() {
-		methodDeprecationLogger.method('livechat:getCustomFields', '6.0.0');
+		methodDeprecationLogger.method('livechat:getCustomFields', '7.0.0');
 		return LivechatCustomField.find().toArray();
 	},
 });

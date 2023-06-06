@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeManager'(username) {
-		methodDeprecationLogger.method('livechat:removeManager', '6.0.0');
+		methodDeprecationLogger.method('livechat:removeManager', '7.0.0');
 
 		const uid = Meteor.userId();
 

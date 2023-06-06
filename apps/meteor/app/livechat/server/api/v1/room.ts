@@ -231,7 +231,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '6.0.0' },
+	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '7.0.0' },
 	{
 		async post() {
 			const { rid, token, department } = this.bodyParams;
@@ -352,7 +352,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams, deprecationVersion: '6.0.0' },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams, deprecationVersion: '7.0.0' },
 	{
 		async put() {
 			// This endpoint is deprecated and will be removed in future versions.

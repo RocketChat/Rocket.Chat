@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:addAgent'(username) {
 		const uid = Meteor.userId();
-		methodDeprecationLogger.method('livechat:addAgent', '6.0.0');
+		methodDeprecationLogger.method('livechat:addAgent', '7.0.0');
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:addAgent' });
 		}

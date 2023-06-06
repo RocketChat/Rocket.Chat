@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
-		methodDeprecationLogger.method('livechat:changeLivechatStatus', '6.0.0');
+		methodDeprecationLogger.method('livechat:changeLivechatStatus', '7.0.0');
 
 		const uid = Meteor.userId();
 

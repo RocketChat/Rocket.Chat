@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:sendOfflineMessage'(data) {
-		methodDeprecationLogger.method('livechat:sendOfflineMessage', '6.0.0');
+		methodDeprecationLogger.method('livechat:sendOfflineMessage', '7.0.0');
 
 		check(data, {
 			name: String,

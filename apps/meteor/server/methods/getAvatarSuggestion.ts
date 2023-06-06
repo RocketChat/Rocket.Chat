@@ -25,7 +25,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getAvatarSuggestion() {
-		methodDeprecationLogger.method('getAvatarSuggestion', '6.0.0');
+		methodDeprecationLogger.method('getAvatarSuggestion', '7.0.0');
 
 		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {

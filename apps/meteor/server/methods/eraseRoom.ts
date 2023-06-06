@@ -67,7 +67,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async eraseRoom(rid: string) {
-		methodDeprecationLogger.method('eraseRoom', '6.0.0');
+		methodDeprecationLogger.method('eraseRoom', '7.0.0');
 
 		check(rid, String);
 

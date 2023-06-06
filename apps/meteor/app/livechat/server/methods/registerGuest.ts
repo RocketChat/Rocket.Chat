@@ -30,7 +30,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
-		methodDeprecationLogger.method('livechat:registerGuest', '6.0.0');
+		methodDeprecationLogger.method('livechat:registerGuest', '7.0.0');
 
 		if (!token) {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'livechat:registerGuest' });

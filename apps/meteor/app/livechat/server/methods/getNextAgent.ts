@@ -19,7 +19,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getNextAgent'({ token, department }) {
-		methodDeprecationLogger.method('livechat:getNextAgent', '6.0.0');
+		methodDeprecationLogger.method('livechat:getNextAgent', '7.0.0');
 		check(token, String);
 
 		const room = await LivechatRooms.findOpenByVisitorToken(token).toArray();

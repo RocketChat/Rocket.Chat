@@ -10,7 +10,7 @@ Meteor.methods<ServerMethods>({
 	async sendConfirmationEmail(to) {
 		check(to, String);
 
-		methodDeprecationLogger.method('sendConfirmationEmail', '6.0.0');
+		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
 
 		const email = to.trim();
 

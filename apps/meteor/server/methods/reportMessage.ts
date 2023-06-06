@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async reportMessage(messageId, description) {
-		methodDeprecationLogger.method('reportMessage', '6.0.0');
+		methodDeprecationLogger.method('reportMessage', '7.0.0');
 
 		check(messageId, String);
 		check(description, String);

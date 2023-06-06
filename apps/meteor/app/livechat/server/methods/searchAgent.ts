@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:searchAgent'(username) {
-		methodDeprecationLogger.method('livechat:searchAgent', '6.0.0');
+		methodDeprecationLogger.method('livechat:searchAgent', '7.0.0');
 
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {

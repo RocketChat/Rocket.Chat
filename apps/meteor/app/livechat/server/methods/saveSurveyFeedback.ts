@@ -23,7 +23,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
-		methodDeprecationLogger.method('livechat:saveSurveyFeedback', '6.0.0');
+		methodDeprecationLogger.method('livechat:saveSurveyFeedback', '7.0.0');
 
 		check(visitorToken, String);
 		check(visitorRoom, String);

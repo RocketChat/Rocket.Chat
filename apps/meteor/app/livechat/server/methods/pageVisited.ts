@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:pageVisited'(token, room, pageInfo) {
-		methodDeprecationLogger.method('livechat:pageVisited', '6.0.0');
+		methodDeprecationLogger.method('livechat:pageVisited', '7.0.0');
 		await Livechat.savePageHistory(token, room, pageInfo);
 	},
 });

@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'Mailer.sendMail'(from, subject, body, dryrun, query) {
-		methodDeprecationLogger.method('Mailer', '6.0.0');
+		methodDeprecationLogger.method('Mailer', '7.0.0');
 
 		const userId = Meteor.userId();
 

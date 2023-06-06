@@ -44,7 +44,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
-		methodDeprecationLogger.method('livechat:closeRoom', '6.0.0');
+		methodDeprecationLogger.method('livechat:closeRoom', '7.0.0');
 
 		const userId = Meteor.userId();
 		if (!userId || !(await hasPermissionAsync(userId, 'close-livechat-room'))) {

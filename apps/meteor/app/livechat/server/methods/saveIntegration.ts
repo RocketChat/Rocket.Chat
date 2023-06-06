@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 				method: 'livechat:saveIntegration',
 			});
 		}
-		methodDeprecationLogger.method('livechat:saveIntegration', '6.0.0');
+		methodDeprecationLogger.method('livechat:saveIntegration', '7.0.0');
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));
