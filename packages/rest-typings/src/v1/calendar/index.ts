@@ -16,7 +16,7 @@ export * from './CalendarEventListProps';
 
 export type CalendarEndpoints = {
 	'/v1/calendar-events.create': {
-		POST: (params: CalendarEventCreateProps) => void;
+		POST: (params: CalendarEventCreateProps) => { id: ICalendarEvent['_id'] };
 	};
 
 	'/v1/calendar-events.list': {
@@ -28,7 +28,7 @@ export type CalendarEndpoints = {
 	};
 
 	'/v1/calendar-events.import': {
-		POST: (params: CalendarEventImportProps) => void;
+		POST: (params: CalendarEventImportProps) => { id: ICalendarEvent['_id'] };
 	};
 
 	'/v1/calendar-events.update': {

@@ -52,7 +52,7 @@ API.v1.addRoute(
 			const { userId: uid } = this;
 			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
-			await Calendar.create({
+			const id = await Calendar.create({
 				uid,
 				startTime: new Date(startTime),
 				externalId,
@@ -62,7 +62,7 @@ API.v1.addRoute(
 				reminderMinutesBeforeStart,
 			});
 
-			return API.v1.success();
+			return API.v1.success({ id });
 		},
 	},
 );
@@ -75,7 +75,7 @@ API.v1.addRoute(
 			const { userId: uid } = this;
 			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
-			await Calendar.import({
+			const id = await Calendar.import({
 				uid,
 				startTime: new Date(startTime),
 				externalId,
@@ -85,7 +85,7 @@ API.v1.addRoute(
 				reminderMinutesBeforeStart,
 			});
 
-			return API.v1.success();
+			return API.v1.success({ id });
 		},
 	},
 );
