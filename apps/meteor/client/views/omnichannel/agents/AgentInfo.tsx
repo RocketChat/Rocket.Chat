@@ -10,7 +10,6 @@ import { UserStatus } from '../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormsSubscription } from '../additionalForms';
-import AgentInfoAction from './AgentInfoAction';
 
 type AgentInfoProps = {
 	uid: string;
@@ -65,6 +64,4 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 	);
 });
 
-export default Object.assign(AgentInfo, {
-	Action: AgentInfoAction,
-});
+export default AgentInfo;
