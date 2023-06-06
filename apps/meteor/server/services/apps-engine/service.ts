@@ -93,16 +93,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			// and sometimes the settings can be an array
 			// so we need to convert it to JSON stringified to compare it
 
-			if (Array.isArray(oldSetting) && Array.isArray(setting.value)) {
-				if (JSON.stringify(oldSetting) === JSON.stringify(setting.value)) {
-					Apps.getRocketChatLogger().info(
-						`"apps.settingUpdated" event received for setting ${setting.id} of app "${appId}", but the setting value is the same`,
-					);
-					return;
-				}
-			}
-
-			if (oldSetting === setting.value) {
+			if (JSON.stringify(oldSetting) === JSON.stringify(setting.value)) {
 				Apps.getRocketChatLogger().info(
 					`"apps.settingUpdated" event received for setting ${setting.id} of app "${appId}", but the setting value is the same`,
 				);
