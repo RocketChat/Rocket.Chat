@@ -22,7 +22,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Chat from '../directory/chats/Chat';
-import CustomFieldsVerticalBar from './CustomFieldsVerticalBar';
+import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
 import { useAllCustomFields } from './hooks/useAllCustomFields';
@@ -326,7 +326,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{id === 'custom-fields' && hasCustomFields && (
-				<CustomFieldsVerticalBar setCustomFields={setCustomFields} allCustomFields={allCustomFields?.customFields || []} />
+				<CustomFieldsList setCustomFields={setCustomFields} allCustomFields={allCustomFields?.customFields || []} />
 			)}
 		</Page>
 	);

@@ -2,7 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import { Contextualbar } from '../../../../../components/Contextualbar';
 import RoomInfo from './RoomInfo';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on[A-Z].*' },
 	},
-	decorators: [(fn) => <VerticalBar height='100vh'>{fn()}</VerticalBar>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
 		icon: 'lock',
 	},
