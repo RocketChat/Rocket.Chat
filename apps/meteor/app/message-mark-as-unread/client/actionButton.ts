@@ -16,21 +16,21 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			return sdk
-				.call('unreadMessages', message)
-				.then(async () => {
-					const subscription = ChatSubscription.findOne({
-						rid: message.rid,
-					});
-					if (subscription == null) {
-						return;
-					}
-					await LegacyRoomManager.close(subscription.t + subscription.name);
-					return FlowRouter.go('home');
-				})
-				.catch((error) => {
-					dispatchToastMessage({ type: 'error', message: error });
+
+			try {
+				await sdk.call('unreadMessages', message);
+				const subscription = ChatSubscription.findOne({
+					rid: message.rid,
 				});
+
+				if (subscription == null) {
+					return;
+				}
+				await LegacyRoomManager.close(subscription.t + subscription.name);
+				return FlowRouter.go('home');
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		},
 		condition({ message, user, room }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
