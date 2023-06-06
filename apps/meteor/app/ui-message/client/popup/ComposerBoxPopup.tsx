@@ -59,7 +59,7 @@ const ComposerBoxPopup = <
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' padding={0} role='menu' mbe='x8' aria-labelledby={id}>
+			<Tile className='message-popup' padding={0} role='menu' mbe='x8' overflow='hidden' aria-labelledby={id}>
 				{title && (
 					<Box bg='tint' pi='x16' pb='x8' id={id}>
 						{title}
@@ -67,6 +67,7 @@ const ComposerBoxPopup = <
 				)}
 				<Box pb='x8' maxHeight='x320'>
 					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
+					{isLoading && <OptionSkeleton />}
 					{itemsFlat.map((item, index) => {
 						return (
 							<Option
@@ -81,7 +82,6 @@ const ComposerBoxPopup = <
 							</Option>
 						);
 					})}
-					{isLoading && <OptionSkeleton />}
 				</Box>
 			</Tile>
 		</Box>
