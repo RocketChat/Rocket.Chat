@@ -1,4 +1,4 @@
-import { TextInput, Icon, Button, Divider, Dropdown } from '@rocket.chat/fuselage';
+import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useLocalStorage, useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -28,6 +28,7 @@ import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 import CategoriesResult from './CategoriesResult';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
+import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
@@ -231,7 +232,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	return (
-		<Dropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
+		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
 				<EmojiPickerHeader>
 					<TextInput
@@ -285,7 +286,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 				</EmojiPickerPreviewArea>
 				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 			</EmojiPickerContainer>
-		</Dropdown>
+		</EmojiPickerDropdown>
 	);
 };
 
