@@ -18,30 +18,17 @@ export class RegisterContainer extends Component {
 		});
 	}
 
-	getDepartment = (department) => {
-		if (department !== '') {
-			return department;
-		}
-
-		const { departments = {} } = this.props;
-		const deptDefault = departments.find((dept) => dept.showOnRegistration);
-
-		if (deptDefault) {
-			return deptDefault._id;
-		}
-	};
-
 	handleSubmit = async ({ name, email, department, ...customFields }) => {
 		const { dispatch, token } = this.props;
 		const fields = {
 			name,
 			email,
-			department: this.getDepartment(department),
+			...(department && { department }),
 		};
 
 		await dispatch({ loading: true, department });
 		try {
-			const user = await Livechat.grantVisitor({ visitor: { ...fields, token } });
+			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
 			await dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			this.registerCustomFields(customFields);

@@ -23,17 +23,18 @@ export const palette = [
 		description: 'Used to show user status',
 		list: [
 			{ name: 'status-bullet-online', token: '', color: '#1CBF89' },
-			{ name: 'status-bullet-away', token: '', color: '#AC892F' },
-			{ name: 'status-bullet-busy', token: '', color: '#C14454' },
-			{ name: 'status-bullet-disabled', token: '', color: '#955828' },
-			{ name: 'status-bullet-offline', token: '', color: '#6C727A' },
-			{ name: 'status-bullet-loading', token: '', color: '#6C727A' },
+			{ name: 'status-bullet-away', token: '', color: '#B08C30' },
+			{ name: 'status-bullet-busy', token: '', color: '#C75765' },
+			{ name: 'status-bullet-disabled', token: '', color: '#CC7F42' },
+			{ name: 'status-bullet-offline', token: '', color: '#8B9098' },
+			{ name: 'status-bullet-loading', token: '', color: '#8B9098' },
 		],
 	},
 	{
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
+			{ name: 'badge-background-level-0', token: '', color: '#404754' },
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
 			{ name: 'badge-background-level-2', token: '', color: '#2C65BA' },
 			{ name: 'badge-background-level-3', token: '', color: '#955828' },

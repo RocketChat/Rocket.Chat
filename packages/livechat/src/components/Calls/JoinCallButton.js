@@ -1,11 +1,10 @@
 import { withTranslation } from 'react-i18next';
 
-import { Livechat } from '../../api';
 import VideoIcon from '../../icons/video.svg';
 import constants from '../../lib/constants';
 import store from '../../store';
 import { Button } from '../Button';
-import { createClassName } from '../helpers';
+import { createClassName, getConnectionBaseUrl } from '../helpers';
 import { isCallOngoing } from './CallStatus';
 import styles from './styles.scss';
 
@@ -19,7 +18,7 @@ export const JoinCallButton = ({ t, ...props }) => {
 				break;
 			}
 			case constants.webRTCCallStartedMessageType: {
-				window.open(`${Livechat.client.host}/meet/${room._id}?token=${token}`, room._id);
+				window.open(`${getConnectionBaseUrl()}/meet/${room._id}?token=${token}`, room._id);
 				break;
 			}
 		}

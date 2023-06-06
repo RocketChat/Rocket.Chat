@@ -30,7 +30,11 @@ function filterRoleList(
 	return filteredRoles.filter((roleId) => rolesToFilterIn.includes(roleId));
 }
 
-function broadcastRoleChange(type: string, roleList: Array<IRole['_id']>, user: AtLeast<IUser, '_id' | 'username'>): void {
+function broadcastRoleChange(
+	type: 'changed' | 'added' | 'removed',
+	roleList: Array<IRole['_id']>,
+	user: AtLeast<IUser, '_id' | 'username'>,
+): void {
 	if (!settings.get('UI_DisplayRoles')) {
 		return;
 	}

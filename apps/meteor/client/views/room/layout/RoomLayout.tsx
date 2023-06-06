@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../components/VerticalBar/VerticalBar';
+import { Contextualbar } from '../../../components/Contextualbar';
 
 type RoomLayoutProps = {
 	header?: ReactNode;
@@ -15,13 +15,13 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 	<Box is='main' h='full' display='flex' flexDirection='column' bg='room' {...props}>
 		{header}
 		<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-			<Box display='flex' flexDirection='column' flexGrow={1}>
+			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
 				<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
 					{body}
 				</Box>
 				{footer && <Box is='footer'>{footer}</Box>}
 			</Box>
-			{aside && <VerticalBar is='aside'>{aside}</VerticalBar>}
+			{aside && <Contextualbar is='aside'>{aside}</Contextualbar>}
 		</Box>
 	</Box>
 );
