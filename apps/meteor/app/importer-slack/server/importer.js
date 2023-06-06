@@ -398,6 +398,7 @@ export class SlackImporter extends Base {
 				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
 					missedTypes[message.subtype] = message;
 				}
+				break;
 		}
 	}
 
