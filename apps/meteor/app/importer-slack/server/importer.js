@@ -398,7 +398,6 @@ export class SlackImporter extends Base {
 				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
 					missedTypes[message.subtype] = message;
 				}
-				break;
 		}
 	}
 
@@ -470,7 +469,7 @@ export class SlackImporter extends Base {
 			const isBotMessage = message.subtype && ['bot_message', 'slackbot_response'].includes(message.subtype);
 
 			if (message.subtype && !regularTypes.includes(message.subtype) && !isBotMessage) {
-				if (this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
+				if (await this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
 					await this.converter.addMessage(newMessage, this._useUpsert);
 				}
 			} else {
