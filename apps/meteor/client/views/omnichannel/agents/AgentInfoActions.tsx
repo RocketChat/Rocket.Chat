@@ -5,7 +5,7 @@ import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import AgentInfo from './AgentInfo';
+import AgentInfoAction from './AgentInfoAction';
 
 const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
@@ -41,14 +41,14 @@ const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 	const handleEditClick = useMutableCallback(() =>
 		agentsRoute.push({
 			context: 'edit',
-			id: String(_id),
+			id: _id,
 		}),
 	);
 
 	return (
 		<>
-			<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />
-			<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />
+			<AgentInfoAction key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />
+			<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />
 		</>
 	);
 };

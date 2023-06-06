@@ -3,11 +3,11 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
-import UserAvatar from '../../../components/avatar/UserAvatar';
+import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
-const AgentsPageRow = ({
+const AgentsTableRow = ({
 	user: { _id, name, username, avatarETag, emails, statusLivechat },
 	mediaQuery,
 	reload,
@@ -60,4 +60,4 @@ const AgentsPageRow = ({
 	);
 };
 
-export default AgentsPageRow;
+export default AgentsTableRow;
