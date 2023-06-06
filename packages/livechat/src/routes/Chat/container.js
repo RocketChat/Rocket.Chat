@@ -57,7 +57,7 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
-		const newUser = await Livechat.grantVisitor({ visitor });
+		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
 
@@ -79,9 +79,7 @@ class ChatContainer extends Component {
 			parentCall('callback', 'chat-started');
 			return newRoom;
 		} catch (error) {
-			const {
-				data: { error: reason },
-			} = error;
+			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
 				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
@@ -132,7 +130,7 @@ class ChatContainer extends Component {
 			this.stopTypingDebounced.stop();
 			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
 		} catch (error) {
-			const reason = error?.data?.error ?? error.message;
+			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
@@ -143,7 +141,7 @@ class ChatContainer extends Component {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
-			await Livechat.uploadFile({ rid, file });
+			await Livechat.uploadFile(rid, file);
 		} catch (error) {
 			const {
 				data: { reason, sizeAllowed },
