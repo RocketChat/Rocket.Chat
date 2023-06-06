@@ -1,7 +1,10 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps, SetStateAction, Dispatch } from 'react';
+import { useCallback } from 'react';
+
+import type { LoginErrors } from './LoginForm';
 
 const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
@@ -11,18 +14,29 @@ const LoginServicesButton = <T extends LoginService>({
 	service,
 	className,
 	disabled,
+	setError,
 	...props
 }: T & {
 	className?: string;
 	disabled?: boolean;
+	setError?: Dispatch<SetStateAction<LoginErrors | undefined>>;
 }): ReactElement => {
 	const t = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, title, clientConfig, ...props });
 
+	const handleOnClick = useCallback(() => {
+		handler().catch((e: { error?: LoginErrors }) => {
+			if (!e.error || typeof e.error !== 'string') {
+				return;
+			}
+			setError?.(e.error);
+		});
+	}, [handler, setError]);
+
 	return (
 		<Button
 			className={className}
-			onClick={handler}
+			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
 			disabled={disabled}
 			alignItems='center'

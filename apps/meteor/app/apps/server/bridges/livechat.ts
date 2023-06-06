@@ -15,6 +15,7 @@ import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@roc
 import { Livechat } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppLivechatBridge extends LivechatBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -22,8 +23,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		// Depends on apps engine separation to microservices
-		return Promise.await(Livechat.isOnline(departmentId));
+		// This function will be converted to sync inside the apps-engine code
+		// TODO: Track Deprecation
+		return deasyncPromise(Livechat.isOnline(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -11,12 +11,12 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: IRoom['_id'] | undefined): Promise<boolean>;
+		'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: string | undefined): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: IRoom['_id'] | undefined) {
+	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope) {
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
