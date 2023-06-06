@@ -1,6 +1,7 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -58,6 +59,7 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -168,6 +170,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

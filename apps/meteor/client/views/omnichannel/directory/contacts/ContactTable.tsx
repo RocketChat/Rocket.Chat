@@ -18,10 +18,9 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { CallDialpadButton } from '../components/CallDialpadButton';
+import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable(): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
@@ -64,8 +63,7 @@ function ContactTable(): ReactElement {
 			}),
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/visitors.search', { params: query });
-
+	const { data: contactResult, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 	return (
 		<>
 			<FilterByText
@@ -74,6 +72,7 @@ function ContactTable(): ReactElement {
 				onButtonClick={onButtonNewClick}
 				onChange={({ text }): void => setTerm(text)}
 			/>
+
 			<GenericTable>
 				<GenericTableHeader>
 					<GenericTableHeaderCell
@@ -112,8 +111,8 @@ function ContactTable(): ReactElement {
 					<GenericTableHeaderCell key='call' width={44} />
 				</GenericTableHeader>
 				<GenericTableBody>
-					{result.phase === AsyncStatePhase.RESOLVED &&
-						result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
+					{contactResult &&
+						contactResult.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
 							const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
@@ -137,17 +136,18 @@ function ContactTable(): ReactElement {
 								</GenericTableRow>
 							);
 						})}
-					{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
+					{isLoading && <GenericTableLoadingTable headerCells={6} />}
+					{isError && <Box mbs='x16'>{t('Something_went_wrong')}</Box>}
 				</GenericTableBody>
 			</GenericTable>
 
-			{result.phase === AsyncStatePhase.REJECTED && (
+			{isError && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={reload}>
+							<StatesAction onClick={() => refetch()}>
 								<Icon mie='x4' size='x20' name='reload' />
 								{t('Reload_page')}
 							</StatesAction>
@@ -155,11 +155,11 @@ function ContactTable(): ReactElement {
 					</States>
 				</Box>
 			)}
-			{result.phase === AsyncStatePhase.RESOLVED && (
+			{isSuccess && (
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					count={result.value.total}
+					count={contactResult.total}
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 					{...paginationProps}
