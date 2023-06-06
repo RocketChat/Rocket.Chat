@@ -29,12 +29,11 @@ export const insertMessage = async function (
 				},
 				{ $set: rest },
 			);
-		}
-		await Messages.insertOne({
-			_id,
-			...rest,
-		});
-		if (!existingMessage) {
+		} else {
+			await Messages.insertOne({
+				_id,
+				...rest,
+			});
 			await Rooms.incMsgCountById(rid, 1);
 		}
 		message._id = _id;
