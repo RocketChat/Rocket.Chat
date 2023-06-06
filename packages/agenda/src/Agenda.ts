@@ -466,7 +466,7 @@ export class Agenda extends EventEmitter {
 
 		const update = {
 			$set,
-			$setOnInsert,
+			...(Object.keys($setOnInsert).length && { $setOnInsert }),
 		};
 
 		// Try an upsert
