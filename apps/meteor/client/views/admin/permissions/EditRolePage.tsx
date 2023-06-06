@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 import RoleForm from './RoleForm';
 
 const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
@@ -91,7 +91,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarScrollableContent>
 				<Box w='full' alignSelf='center' mb='neg-x8'>
 					<Margins block='x8'>
 						<FormProvider {...methods}>
@@ -99,8 +99,8 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 						</FormProvider>
 					</Margins>
 				</Box>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup vertical stretch>
 					<Button primary disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
@@ -112,7 +112,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 					)}
 					{role?._id && <Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>}
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };
