@@ -45,7 +45,9 @@ export const handleMethod = async (server: WS, method: string, params: string[],
 
 export const handleSubscription = async (server: WS, id: string, streamName: string, streamParams: string) => {
 	await server.nextMessage.then(async (message) => {
-		await expect(message).toBe(`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}"]}`);
+		await expect(message).toBe(
+			`{"msg":"sub","id":"${id}","name":"stream-${streamName}","params":["${streamParams}",{"useCollection":false,"args":[null]}]}`,
+		);
 		server.send(`{"msg":"ready","subs":["${id}"]}`);
 	});
 };
