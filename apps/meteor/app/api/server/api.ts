@@ -178,18 +178,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	async parseJsonQuery(this: PartialThis) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
-
-		return parseJsonQuery.call(
-			this,
-			this.request.route,
-			self.userId,
-			self.queryParams,
-			self.logger,
-			self.queryFields,
-			self.queryOperations,
-		);
+		return parseJsonQuery(this);
 	}
 
 	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {

@@ -4,7 +4,6 @@ import ejson from 'ejson';
 import { isValidQuery } from '../lib/isValidQuery';
 import { clean } from '../lib/cleanQuery';
 import { API } from '../api';
-import type { Logger } from '../../../logger/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import type { PartialThis } from '../definition';
@@ -14,23 +13,21 @@ const pathAllowConf = {
 	'def': ['$or', '$and', '$regex'],
 };
 
-export async function parseJsonQuery(
-	this: PartialThis,
-	route: string,
-	userId: string,
-	params: {
-		query?: string;
-		sort?: string;
-		fields?: string;
-	},
-	logger: Logger,
-	queryFields?: string[],
-	queryOperations?: string[],
-): Promise<{
+export async function parseJsonQuery(api: PartialThis): Promise<{
 	sort: Record<string, 1 | -1>;
 	fields: Record<string, 0 | 1>;
 	query: Record<string, unknown>;
 }> {
+	const {
+		request: { route },
+		userId,
+		queryParams: params,
+		logger,
+		queryFields,
+		queryOperations,
+		response,
+	} = api;
+
 	let sort;
 	if (params.sort) {
 		try {
@@ -52,7 +49,7 @@ export async function parseJsonQuery(
 
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields) {
-		apiDeprecationLogger.parameter(this.request.route, 'fields', '7.0.0', this.response);
+		apiDeprecationLogger.parameter(route, 'fields', '7.0.0', response);
 		try {
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 
@@ -103,7 +100,7 @@ export async function parseJsonQuery(
 
 	let query: Record<string, any> = {};
 	if (params.query) {
-		apiDeprecationLogger.parameter(this.request.route, 'query', '7.0.0', this.response);
+		apiDeprecationLogger.parameter(route, 'query', '7.0.0', response);
 
 		try {
 			query = ejson.parse(params.query);
