@@ -6,12 +6,13 @@ import { handleConnection, handleConnectionAndRejects, handleMethod } from './he
 
 let server: WS;
 beforeEach(() => {
-	server = new WS('ws://localhost:1234');
+	server = new WS('ws://localhost:1234/websocket');
 });
 
 afterEach(() => {
 	server.close();
 	WS.clean();
+	jest.useRealTimers();
 });
 
 it('should connect', async () => {
@@ -102,7 +103,7 @@ it('should handle reconnecting', async () => {
 
 	server.close();
 	WS.clean();
-	server = new WS('ws://localhost:1234');
+	server = new WS('ws://localhost:1234/websocket');
 
 	expect(connection.status).toBe('disconnected');
 
