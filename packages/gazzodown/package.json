@@ -22,6 +22,8 @@
 		"@storybook/manager-webpack4": "~6.5.16",
 		"@storybook/react": "~6.5.15",
 		"@storybook/testing-library": "~0.0.13",
+		"@swc/core": "^1.3.60",
+		"@swc/jest": "^0.2.26",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
 		"@types/babel__core": "^7.1.20",
@@ -49,6 +51,7 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"testunit": "jest",
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
