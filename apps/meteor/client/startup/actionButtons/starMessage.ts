@@ -13,7 +13,7 @@ Meteor.startup(() => {
 		icon: 'star',
 		label: 'Star',
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
-		color: 'warning',
+		type: 'interaction',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, (error: any) => {

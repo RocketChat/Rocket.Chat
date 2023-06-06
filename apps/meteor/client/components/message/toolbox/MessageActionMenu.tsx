@@ -22,6 +22,23 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
+	console.log({ options });
+
+	const typeOptions = options
+		.map(({ type, ...option }) => ({
+			...option,
+			...(type && { type }),
+		}))
+		.reduce((acc, option) => {
+			const type = option.type ? option.type : '';
+			acc[type] = acc[type] || [];
+			return acc;
+		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
+		[key: string]: MessageActionConfigOption[];
+	};
+
+	console.log({ typeOptions });
+
 	const groupOptions = options
 		.map(({ color, ...option }) => ({
 			...option,
@@ -36,6 +53,8 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
 		[key: string]: MessageActionConfigOption[];
 	};
+
+	console.log({ groupOptions });
 
 	return (
 		<>

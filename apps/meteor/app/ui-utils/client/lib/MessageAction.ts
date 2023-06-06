@@ -35,7 +35,7 @@ export type MessageActionContext =
 	| 'federated'
 	| 'videoconf'
 	| 'search';
-
+type MessageActionType = 'communication' | 'interaction' | 'duplication' | 'management';
 type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser | undefined;
@@ -74,6 +74,7 @@ export type MessageActionConfig = {
 		},
 	) => any;
 	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
+	type?: MessageActionType;
 };
 
 type MessageActionConfigList = MessageActionConfig[];
