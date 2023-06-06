@@ -1,15 +1,14 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject } from 'react';
 import React from 'react';
 
-import FilterByText from '../../../components/FilterByText';
-import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
+import CustomFieldsTable from './CustomFieldsTable';
 
-const CustomFieldsPage = ({ data, header, setParams, params, title, renderRow, children }) => {
+const CustomFieldsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();
-
 	const router = useRoute('omnichannel-customfields');
 
 	const onAddNew = useMutableCallback(() => router.push({ context: 'new' }));
@@ -17,25 +16,15 @@ const CustomFieldsPage = ({ data, header, setParams, params, title, renderRow, c
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={title}>
+				<Page.Header title={t('Custom_Fields')}>
 					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
 						<Icon name='plus' size='x16' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>
-					<GenericTable
-						data-qa='GenericTableCustomFieldsInfoBody'
-						header={header}
-						renderRow={renderRow}
-						results={data && data.customFields}
-						total={data && data.total}
-						setParams={setParams}
-						params={params}
-						renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
-					/>
+					<CustomFieldsTable reload={reload} />
 				</Page.Content>
 			</Page>
-			{children}
 		</Page>
 	);
 };
