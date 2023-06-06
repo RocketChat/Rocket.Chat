@@ -260,9 +260,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		ariaActiveDescendant,
 		popup,
 		select,
-
 		suspended,
-
 		commandsRef,
 		callbackRef,
 	};

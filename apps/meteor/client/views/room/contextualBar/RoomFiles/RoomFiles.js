@@ -73,7 +73,9 @@ function RoomFiles({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
+							<Box w='x144' mis='x8'>
+								<Select onChange={setType} value={type} options={options} />
+							</Box>
 						</Margins>
 					</Box>
 				</Box>
