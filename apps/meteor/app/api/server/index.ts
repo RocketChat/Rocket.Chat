@@ -1,5 +1,4 @@
 import './helpers/composeRoomWithLastMessage';
-import './helpers/deprecationWarning';
 import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
