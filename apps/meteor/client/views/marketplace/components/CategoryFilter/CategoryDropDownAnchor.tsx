@@ -19,9 +19,10 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			onClick={onClick}
 			display='flex'
 			alignItems='center'
-			flexDirection='row'
-			flexGrow='1'
-			flexShrink='1'
+			justifyContent='space-between'
+			minWidth='x144'
+			flexGrow={1}
+			flexShrink={1}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
 			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
@@ -43,7 +44,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					{selectedCategoriesCount}
 				</Box>
 			)}
-			<Box is='span' display='flex' flexGrow={1} fontWeight={400} fontSize='p2b' color={selectedCategoriesCount ? 'white' : 'hint'}>
+			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
