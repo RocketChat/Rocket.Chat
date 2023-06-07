@@ -5,6 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { RoomManager } from '../RoomManager';
+import { navigate } from '../router';
 import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
@@ -20,18 +21,20 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			return;
 		}
 
-		FlowRouter.go(
-			route?.name ?? '/',
+		navigate(
 			{
-				tab: 'thread',
-				context: message.tmid || message._id,
-				rid: message.rid,
-				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
+				pathname: FlowRouter.path(route?.name ?? '/', {
+					tab: 'thread',
+					context: message.tmid || message._id,
+					rid: message.rid,
+					name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
+				}),
+				search: `?${new URLSearchParams({
+					...queryParams,
+					msg: message._id,
+				}).toString()}`,
 			},
-			{
-				...queryParams,
-				msg: message._id,
-			},
+			{ replace: false },
 		);
 		return;
 	}

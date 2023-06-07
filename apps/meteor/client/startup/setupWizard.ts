@@ -1,9 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { hasRole } from '../../app/authorization/client';
 import { settings } from '../../app/settings/client';
+import { navigate } from '../lib/router';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -14,7 +14,7 @@ Meteor.startup(() => {
 		const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
 
 		if (mustRedirect) {
-			FlowRouter.go('setup-wizard');
+			navigate('/setup-wizard');
 		}
 	});
 });

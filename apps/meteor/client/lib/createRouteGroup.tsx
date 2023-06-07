@@ -7,6 +7,7 @@ import React from 'react';
 
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
+import { navigate } from './router';
 
 let oldRoute: Current;
 
@@ -41,7 +42,7 @@ const registerLazyComponentRoute = (
 			const _enabled = enabled.get();
 
 			if (_enabled === false) {
-				FlowRouter.go('/');
+				navigate('/');
 			}
 		});
 	};
@@ -57,7 +58,11 @@ const registerLazyComponentRoute = (
 			return;
 		}
 
-		oldRoute?.route?.name && FlowRouter.go(oldRoute.route.name, oldRoute.params, oldRoute.queryParams);
+		oldRoute?.route?.name &&
+			navigate({
+				pathname: FlowRouter.path(oldRoute.route.name, oldRoute.params),
+				search: `?${new URLSearchParams(oldRoute.queryParams).toString()}`,
+			});
 	};
 
 	routeGroup.route(path, {

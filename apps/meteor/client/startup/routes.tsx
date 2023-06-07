@@ -9,6 +9,7 @@ import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
+import { navigate } from '../lib/router';
 import { dispatchToastMessage } from '../lib/toast';
 import MainLayout from '../views/root/MainLayout';
 
@@ -47,7 +48,7 @@ FlowRouter.route('/', {
 		);
 
 		if (!Meteor.userId()) {
-			return FlowRouter.go('home');
+			return navigate('/home');
 		}
 
 		Tracker.autorun((c) => {
@@ -56,9 +57,12 @@ FlowRouter.route('/', {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
-						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
+						navigate({
+							pathname: FlowRouter.path(room[0], { name: room[1] }),
+							search: `?${new URLSearchParams(FlowRouter.current().queryParams).toString()}`,
+						});
 					} else {
-						FlowRouter.go('home');
+						navigate('/home');
 					}
 				}, 0);
 				c.stop();
@@ -71,7 +75,7 @@ FlowRouter.route('/login', {
 	name: 'login',
 
 	action() {
-		FlowRouter.go('home');
+		navigate('/home');
 	},
 });
 
@@ -92,7 +96,7 @@ FlowRouter.route('/meet/:rid', {
 		}
 
 		if (!Meteor.userId()) {
-			FlowRouter.go('home');
+			navigate('/home');
 			return;
 		}
 
@@ -233,7 +237,7 @@ FlowRouter.route('/login-token/:token', {
 			],
 			userCallback(error) {
 				console.error(error);
-				FlowRouter.go('/');
+				navigate('/');
 			},
 		});
 	},

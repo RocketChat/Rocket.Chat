@@ -13,6 +13,7 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { navigate } from '../../../../client/lib/router';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -95,7 +96,10 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 				throw new Error('Subscription not found');
 			}
 			const route = subscription.t === 'c' ? 'channel' : 'group';
-			FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
+			navigate({
+				pathname: FlowRouter.path(route, { name: subscription.name }),
+				search: `?${new URLSearchParams(FlowRouter.current().queryParams).toString()}`,
+			});
 		}
 
 		if (msg.t === 'r') {

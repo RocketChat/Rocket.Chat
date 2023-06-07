@@ -6,6 +6,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
+import { navigate } from '../lib/router';
 
 const queryRoutePath = (
 	name: Parameters<RouterContextValue['queryRoutePath']>[0],
@@ -26,7 +27,13 @@ const pushRoute = (
 ): ReturnType<RouterContextValue['pushRoute']> => {
 	const queryParams =
 		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
-	FlowRouter.go(name, parameters, queryParams);
+	navigate(
+		{
+			pathname: FlowRouter.path(name, parameters),
+			search: `?${new URLSearchParams(queryParams).toString()}`,
+		},
+		{ replace: false },
+	);
 };
 
 const replaceRoute = (
@@ -34,11 +41,15 @@ const replaceRoute = (
 	parameters: Parameters<RouterContextValue['replaceRoute']>[1],
 	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 ): ReturnType<RouterContextValue['replaceRoute']> => {
-	FlowRouter.withReplaceState(() => {
-		const queryParams =
-			typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
-		FlowRouter.go(name, parameters, queryParams);
-	});
+	const queryParams =
+		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
+	navigate(
+		{
+			pathname: FlowRouter.path(name, parameters),
+			search: `?${new URLSearchParams(queryParams).toString()}`,
+		},
+		{ replace: true },
+	);
 };
 
 const queryRouteParameter = (

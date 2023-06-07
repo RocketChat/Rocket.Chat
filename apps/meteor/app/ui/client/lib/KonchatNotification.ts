@@ -14,6 +14,8 @@ import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { generatePath } from '../../../../lib/router';
+import { navigate } from '../../../../client/lib/router';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -111,41 +113,38 @@ class KonchatNotification {
 
 			switch (notification.payload?.type) {
 				case 'd':
-					return FlowRouter.go(
-						'direct',
-						{
+					return navigate({
+						pathname: generatePath('/direct/:rid/:tab?/:context?', {
 							rid: notification.payload.rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						}),
+						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+					});
 				case 'c':
-					return FlowRouter.go(
-						'channel',
-						{
+					return navigate({
+						pathname: generatePath('/channel/:name/:tab?/:context?', {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						}),
+						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+					});
 				case 'p':
-					return FlowRouter.go(
-						'group',
-						{
+					return navigate({
+						pathname: generatePath('/group/:name/:tab?/:context?', {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						}),
+						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+					});
 			}
 		};
 	}

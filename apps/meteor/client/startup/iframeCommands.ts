@@ -10,6 +10,7 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
+import { navigate } from '../lib/router';
 import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
 
 const commands = {
@@ -25,7 +26,10 @@ const commands = {
 		}, {} as Record<string, string>);
 
 		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
-		FlowRouter.go(newPath, undefined, { ...FlowRouter.current().queryParams, ...newParams });
+		navigate({
+			pathname: newPath,
+			search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, ...newParams }).toString()}`,
+		});
 	},
 
 	'set-user-status'(data: { status: UserStatus }) {
@@ -75,7 +79,7 @@ const commands = {
 			}
 			void callbacks.run('afterLogoutCleanUp', user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
-			return FlowRouter.go('home');
+			return navigate('/home');
 		});
 	},
 
