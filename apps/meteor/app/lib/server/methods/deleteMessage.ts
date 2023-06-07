@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteMessage(message) {
-		methodDeprecationLogger.warn('deleteMessage method is deprecated, and will be removed in future versions');
+		methodDeprecationLogger.method('deleteMessage', '7.0.0');
 
 		check(
 			message,
