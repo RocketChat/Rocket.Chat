@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}, excludeSelf = false) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 		if (!(await hasPermissionAsync(uid, 'create-c'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
-		return createRoom('c', name, user.username, members, readOnly, {
+		return createRoom('c', name, user.username, members, excludeSelf, readOnly, {
 			customFields,
 			...extraData,
 		});
