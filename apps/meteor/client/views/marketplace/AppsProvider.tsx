@@ -8,7 +8,6 @@ import { Apps } from '../../../ee/client/apps/orchestrator';
 import PageSkeleton from '../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
-import { handleAPIError } from './helpers/handleAPIError';
 import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
 import type { App } from './types';
 
