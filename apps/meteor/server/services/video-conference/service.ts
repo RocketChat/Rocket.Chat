@@ -1,5 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
-import {
+import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
 	IRoom,
@@ -17,13 +17,13 @@ import {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
-	isRoomFederated,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
 	isDirectVideoConference,
 	isGroupVideoConference,
 	isLivechatVideoConference,
+	isRoomFederated,
 } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
