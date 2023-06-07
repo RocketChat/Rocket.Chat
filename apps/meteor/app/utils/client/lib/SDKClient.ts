@@ -5,6 +5,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { APIClient } from './RestApiClient';
 
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client/src/DDPSDK' {
 			args: [key: K, ...args: unknown[]],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
 		): ReturnType<ClientStream['subscribe']>;
+		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
 
@@ -155,11 +157,16 @@ export const createSDK = (rest: RestClientInterface) => {
 		Meteor.call(`stream-${name}`, ...args);
 	};
 
+	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
+		return Meteor.callAsync(method, ...args);
+	};
+
 	return {
 		rest,
 		stop,
 		stream,
 		publish,
+		call,
 	};
 };
 

@@ -41,6 +41,8 @@
   "access_your_basic_information": "access your basic information",
   "access-mailer": "Access Mailer Screen",
   "access-mailer_description": "Permission to send mass email to all users.",
+  "access-marketplace": "Access marketplace",
+  "access-marketplace_description": "Permission to browse and get apps from the marketplace",
   "access-permissions": "Access Permissions Screen",
   "access-permissions_description": "Modify permissions for various roles.",
   "access-setting-permissions": "Modify Setting-Based Permissions",
