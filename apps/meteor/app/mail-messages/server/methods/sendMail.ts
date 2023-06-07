@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'Mailer.sendMail'(from, subject, body, dryrun, query) {
-		methodDeprecationLogger.warn('Mailer.sendMail will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('Mailer.sendMail', '7.0.0');
 
 		const userId = Meteor.userId();
 

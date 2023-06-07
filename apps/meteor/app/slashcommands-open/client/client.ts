@@ -1,11 +1,11 @@
 import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import type { Mongo } from 'meteor/mongo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions, ChatSubscription } from '../../models/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 slashCommands.add({
 	command: 'open',
@@ -33,7 +33,7 @@ slashCommands.add({
 			return;
 		}
 		try {
-			await Meteor.callAsync('createDirectMessage', room);
+			await sdk.call('createDirectMessage', room);
 			const subscription = Subscriptions.findOne(query);
 			if (!subscription) {
 				return;

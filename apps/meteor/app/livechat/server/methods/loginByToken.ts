@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:loginByToken'(token) {
-		methodDeprecationLogger.warn('livechat:loginByToken will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:loginByToken', '7.0.0');
 		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (!visitor) {

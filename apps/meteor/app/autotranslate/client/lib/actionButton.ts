@@ -12,6 +12,7 @@ import {
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
@@ -29,7 +30,7 @@ Meteor.startup(() => {
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						void sdk.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
@@ -63,7 +64,7 @@ Meteor.startup(() => {
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						void sdk.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
