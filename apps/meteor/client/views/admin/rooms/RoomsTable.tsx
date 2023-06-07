@@ -4,7 +4,7 @@ import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback, useContext } from 'react';
 
 import {
 	GenericTable,
@@ -20,7 +20,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import type { OptionProp } from './DropDown/CustomDropDown';
-import { CustomDropDown } from './DropDown/CustomDropDown';
+import { CustomDropDown, CustomDropDownOptionsContext } from './DropDown/CustomDropDown';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -240,6 +240,12 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			checked: false,
 		},
 	] as OptionProp[];
+
+	// TODO: use the context data to filter rooms!
+
+	const contextSelectedOptions = useContext(CustomDropDownOptionsContext);
+
+	console.log(`context data is: ${contextSelectedOptions}`);
 
 	/*
 	const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => isPublicRoom(room) === false;

@@ -4,7 +4,7 @@ import { useOutsideClick, usePosition, useToggle } from '@rocket.chat/fuselage-h
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
-import React, { Fragment, forwardRef, useCallback, useRef, useState } from 'react';
+import React, { Fragment, createContext, forwardRef, useCallback, useRef, useState } from 'react';
 
 import { isValidReference } from '../../../marketplace/helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onMouseEventPreventSideEffects';
@@ -138,6 +138,8 @@ const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelect
 
 // ------------------- CustomDropDown -------------------
 
+export const CustomDropDownOptionsContext = createContext<OptionProp[]>([]);
+
 export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsTitle }: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
@@ -172,18 +174,20 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 
 	return (
 		<>
-			<DropDownAnchor
-				ref={reference}
-				onClick={toggleCollapsed as any}
-				defaultTitle={defaultTitle}
-				selectedOptionsTitle={selectedOptionsTitle}
-				selectedOptionsCount={selectedOptions.length}
-			/>
-			{collapsed && (
-				<DropDownListWrapper ref={reference} onClose={onClose}>
-					<DropDownList options={dropdownOptions} onSelected={onSelect} />
-				</DropDownListWrapper>
-			)}
+			<CustomDropDownOptionsContext.Provider value={selectedOptions}>
+				<DropDownAnchor
+					ref={reference}
+					onClick={toggleCollapsed as any}
+					defaultTitle={defaultTitle}
+					selectedOptionsTitle={selectedOptionsTitle}
+					selectedOptionsCount={selectedOptions.length}
+				/>
+				{collapsed && (
+					<DropDownListWrapper ref={reference} onClose={onClose}>
+						<DropDownList options={dropdownOptions} onSelected={onSelect} />
+					</DropDownListWrapper>
+				)}
+			</CustomDropDownOptionsContext.Provider>
 		</>
 	);
 };
