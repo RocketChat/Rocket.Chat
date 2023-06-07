@@ -390,6 +390,7 @@ export class ChatMessages {
 			try {
 				// @ts-ignore
 				await this.processMessageSend(message);
+				this.setDraftAndUpdateInput('');
 				this.quotedMessages.clear();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
