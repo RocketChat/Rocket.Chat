@@ -5,7 +5,6 @@ import { RouterContext } from '../RouterContext';
 
 type Route = {
 	getPath: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
-	getUrl: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
 	push: (
 		parameters?: RouteParameters,
 		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
@@ -22,7 +21,6 @@ export const useRoute = (name: string): Route => {
 	return useMemo<Route>(
 		() => ({
 			getPath: (parameters, queryStringParameters) => queryRoutePath(name, parameters, queryStringParameters)[1](),
-			getUrl: (parameters, queryStringParameters) => queryRouteUrl(name, parameters, queryStringParameters)[1](),
 			push: (parameters, queryStringParameters) => pushRoute(name, parameters, queryStringParameters),
 			replace: (parameters, queryStringParameters) => replaceRoute(name, parameters, queryStringParameters),
 		}),
