@@ -9,46 +9,54 @@ import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 
+type MessageBlock =
+	| MessageParser.Emoji
+	| MessageParser.ChannelMention
+	| MessageParser.UserMention
+	| MessageParser.Link
+	| MessageParser.MarkupExcluding<MessageParser.Bold>;
+
 type BoldSpanProps = {
-	children: (
-		| MessageParser.Emoji
-		| MessageParser.ChannelMention
-		| MessageParser.UserMention
-		| MessageParser.Link
-		| MessageParser.MarkupExcluding<MessageParser.Bold>
-	)[];
+	children: MessageBlock[];
 };
 
 const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
-	<strong>
+	<>
 		{children.map((block, index) => {
-			switch (block.type) {
-				case 'LINK':
-					return <LinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
-
-				case 'PLAIN_TEXT':
-					return <PlainSpan key={index} text={block.value} />;
-
-				case 'STRIKE':
-					return <StrikeSpan key={index} children={block.value} />;
-
-				case 'ITALIC':
-					return <ItalicSpan key={index} children={block.value} />;
-
-				case 'MENTION_USER':
-					return <UserMentionElement key={index} mention={block.value.value} />;
-
-				case 'MENTION_CHANNEL':
-					return <ChannelMentionElement key={index} mention={block.value.value} />;
-
-				case 'EMOJI':
-					return <EmojiElement key={index} {...block} />;
-
-				default:
-					return null;
+			if (block.type === 'LINK' || block.type === 'PLAIN_TEXT' || block.type === 'STRIKE' || block.type === 'ITALIC') {
+				return <strong key={index}>{renderBlockComponent(block, index)}</strong>;
 			}
+			return renderBlockComponent(block, index);
 		})}
-	</strong>
+	</>
 );
+
+const renderBlockComponent = (block: MessageBlock, index: number): ReactElement | null => {
+	switch (block.type) {
+		case 'EMOJI':
+			return <EmojiElement key={index} {...block} />;
+
+		case 'MENTION_USER':
+			return <UserMentionElement key={index} mention={block.value.value} />;
+
+		case 'MENTION_CHANNEL':
+			return <ChannelMentionElement key={index} mention={block.value.value} />;
+
+		case 'PLAIN_TEXT':
+			return <PlainSpan key={index} text={block.value} />;
+
+		case 'LINK':
+			return <LinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
+
+		case 'STRIKE':
+			return <StrikeSpan key={index} children={block.value} />;
+
+		case 'ITALIC':
+			return <ItalicSpan key={index} children={block.value} />;
+
+		default:
+			return null;
+	}
+};
 
 export default BoldSpan;
