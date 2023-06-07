@@ -64,11 +64,11 @@ export async function getSubscribedRoomsForUserWithDetails(
 				}
 
 				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
-				if (!roomData.shouldChangeOwner) {
+				if (!roomData.shouldChangeOwner && roomData.t !== 'c') {
 					roomData.shouldBeRemoved = true;
 				}
 			}
-		} else {
+		} else if (roomData.t !== 'c') {
 			// If the user is not an owner, remove the room if the user is the only subscriber
 			roomData.shouldBeRemoved = (await Subscriptions.countByRoomId(roomData.rid)) === 1;
 		}
