@@ -22,39 +22,23 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
-	console.log({ options });
-
-	const typeOptions = options
-		.map(({ type, ...option }) => ({
+	const groupOptions = options
+		.map(({ type, color, ...option }) => ({
 			...option,
 			...(type && { type }),
+			...(color === 'alert' && { variant: 'danger' as const }),
 		}))
 		.reduce((acc, option) => {
 			const type = option.type ? option.type : '';
 			acc[type] = acc[type] || [];
-			return acc;
-		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
-		[key: string]: MessageActionConfigOption[];
-	};
+			if (!(isLayoutEmbedded && option.id === 'reply-directly')) acc[type].push(option);
 
-	console.log({ typeOptions });
-
-	const groupOptions = options
-		.map(({ color, ...option }) => ({
-			...option,
-			...((color === 'alert' && { variant: 'danger' as const }) || (color === 'warning' && { variant: 'warning' as const })),
-		}))
-		.reduce((acc, option) => {
-			const group = option.variant ? option.variant : '';
-			acc[group] = acc[group] || [];
-			if (!(isLayoutEmbedded && option.id === 'reply-directly')) acc[group].push(option);
+			if (acc[type].length === 0) delete acc[type];
 
 			return acc;
 		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
 		[key: string]: MessageActionConfigOption[];
 	};
-
-	console.log({ groupOptions });
 
 	return (
 		<>

@@ -19,6 +19,7 @@ Meteor.startup(function () {
 			icon: 'bell',
 			label: 'Follow_message',
 			context: ['message', 'message-mobile', 'threads', 'federated'],
+			type: 'interaction',
 			async action(_, { message }) {
 				if (!message) {
 					return;

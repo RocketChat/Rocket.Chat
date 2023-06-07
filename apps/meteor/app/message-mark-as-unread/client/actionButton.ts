@@ -13,6 +13,7 @@ Meteor.startup(() => {
 		icon: 'flag',
 		label: 'Mark_unread',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			return Meteor.call('unreadMessages', message, async function (error: unknown) {

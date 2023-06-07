@@ -20,6 +20,7 @@ Meteor.startup(function () {
 			icon: 'discussion',
 			label: 'Discussion_start',
 			context: ['message', 'message-mobile'],
+			type: 'communication',
 			async action(_, props) {
 				const { message = messageArgs(this).msg, room } = props;
 

@@ -69,6 +69,7 @@ Meteor.startup(async function () {
 		icon: 'arrow-forward',
 		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'communication',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
@@ -121,6 +122,7 @@ Meteor.startup(async function () {
 		label: 'Get_link',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'duplication',
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;
@@ -144,6 +146,7 @@ Meteor.startup(async function () {
 		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'duplication',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const msgText = getMainMessageText(message).msg;
@@ -162,6 +165,7 @@ Meteor.startup(async function () {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'management',
 		async action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
 			await chat?.messageEditing.editMessage(message);
@@ -205,6 +209,7 @@ Meteor.startup(async function () {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
+		type: 'management',
 		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
 			await chat?.flows.requestMessageDeletion(message);
 		},
@@ -232,6 +237,7 @@ Meteor.startup(async function () {
 		label: 'Report',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
+		type: 'management',
 		action(this: unknown, _, { message = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReportMessageModal,
@@ -257,6 +263,7 @@ Meteor.startup(async function () {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
 		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReactionList,
