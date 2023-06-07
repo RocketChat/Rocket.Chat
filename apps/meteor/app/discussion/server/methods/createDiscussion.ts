@@ -148,6 +148,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		user.username as string,
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,
+		false,
 		{
 			fname: discussionName,
 			description, // TODO discussions remove
