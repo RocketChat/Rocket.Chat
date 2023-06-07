@@ -34,6 +34,7 @@ import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { Logger } from '../../logger/server';
 import { getUserInfo } from './helpers/getUserInfo';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 const logger = new Logger('API');
 
@@ -177,10 +178,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	async parseJsonQuery(this: PartialThis) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
-
-		return parseJsonQuery(this.request.route, self.userId, self.queryParams, self.logger, self.queryFields, self.queryOperations);
+		return parseJsonQuery(this);
 	}
 
 	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
@@ -581,6 +579,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						};
 
 						try {
+							if (options.deprecationVersion) {
+								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response);
+							}
+
 							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 							if (_options.validateParams) {
