@@ -1,6 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
@@ -12,6 +13,8 @@ import DepartmentItemMenu from './DepartmentItemMenu';
 import DepartmentsTable from './DepartmentsTable';
 
 const DepartmentsPageWithData = (): ReactElement => {
+	const t = useTranslation();
+
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500) || '';
 	const pagination = usePagination();
@@ -39,15 +42,22 @@ const DepartmentsPageWithData = (): ReactElement => {
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			<DepartmentsTable
-				aria-busy={text !== debouncedText}
-				aria-live='assertive'
-				data={result.data}
-				sort={sort}
-				pagination={pagination}
-				removeButton={removeButton}
-				loading={result.isLoading && result.isInitialLoading}
-			></DepartmentsTable>
+			{result?.data?.count === 0 ? (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			) : (
+				<DepartmentsTable
+					aria-busy={text !== debouncedText}
+					aria-live='assertive'
+					data={result.data}
+					sort={sort}
+					pagination={pagination}
+					removeButton={removeButton}
+					loading={result.isLoading && result.isInitialLoading}
+				></DepartmentsTable>
+			)}
 		</>
 	);
 };

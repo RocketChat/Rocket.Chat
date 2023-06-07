@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -56,72 +56,88 @@ const ManagersRoute = (): ReactElement => {
 				<Page.Header title={t('Managers')} />
 				<AddManager reload={reload} />
 				<Page.Content>
-					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key={'username'}
-								direction={sortDirection}
-								active={sortBy === 'username'}
-								onClick={setSort}
-								sort='username'
-							>
-								{t('Username')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key={'email'}
-								direction={sortDirection}
-								active={sortBy === 'emails.address'}
-								onClick={setSort}
-								sort='emails.address'
-							>
-								{t('Email')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell key={'remove'} w='x60'>
-								{t('Remove')}
-							</GenericTableHeaderCell>
-						</GenericTableHeader>
-						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
-							{result.phase === AsyncStatePhase.RESOLVED &&
-								result.value.users.length > 0 &&
-								result.value.users.map((user) => (
-									<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
-										<GenericTableCell withTruncatedText>
-											<Box display='flex' alignItems='center'>
-												<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
-												<Box display='flex' withTruncatedText mi='x8'>
-													<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-														<Box fontScale='p2m' withTruncatedText color='default'>
-															{user.name || user.username}
+					{result.phase === AsyncStatePhase.LOADING && (
+						<GenericTable>
+							<GenericTableBody>
+								<GenericTableLoadingTable headerCells={3} />
+							</GenericTableBody>
+						</GenericTable>
+					)}
+					{result.phase === AsyncStatePhase.RESOLVED && result?.value?.users.length > 0 && (
+						<>
+							<GenericTable>
+								<GenericTableHeader>
+									<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+										{t('Name')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key={'username'}
+										direction={sortDirection}
+										active={sortBy === 'username'}
+										onClick={setSort}
+										sort='username'
+									>
+										{t('Username')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell
+										key={'email'}
+										direction={sortDirection}
+										active={sortBy === 'emails.address'}
+										onClick={setSort}
+										sort='emails.address'
+									>
+										{t('Email')}
+									</GenericTableHeaderCell>
+									<GenericTableHeaderCell key={'remove'} w='x60'>
+										{t('Remove')}
+									</GenericTableHeaderCell>
+								</GenericTableHeader>
+								<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
+									{result.phase === AsyncStatePhase.RESOLVED &&
+										result.value.users.length > 0 &&
+										result.value.users.map((user) => (
+											<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
+												<GenericTableCell withTruncatedText>
+													<Box display='flex' alignItems='center'>
+														<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
+														<Box display='flex' withTruncatedText mi='x8'>
+															<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+																<Box fontScale='p2m' withTruncatedText color='default'>
+																	{user.name || user.username}
+																</Box>
+															</Box>
 														</Box>
 													</Box>
-												</Box>
-											</Box>
-										</GenericTableCell>
-										<GenericTableCell>
-											<Box fontScale='p2m' withTruncatedText color='hint'>
-												{user.username}
-											</Box>
-											<Box mi='x4' />
-										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
-										<RemoveManagerButton _id={user._id} reload={reload} />
-									</GenericTableRow>
-								))}
-						</GenericTableBody>
-					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.value.total || 0}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
+												</GenericTableCell>
+												<GenericTableCell>
+													<Box fontScale='p2m' withTruncatedText color='hint'>
+														{user.username}
+													</Box>
+													<Box mi='x4' />
+												</GenericTableCell>
+												<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
+												<RemoveManagerButton _id={user._id} reload={reload} />
+											</GenericTableRow>
+										))}
+								</GenericTableBody>
+							</GenericTable>
+							{result.phase === AsyncStatePhase.RESOLVED && (
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={result.value.total || 0}
+									onSetItemsPerPage={onSetItemsPerPage}
+									onSetCurrent={onSetCurrent}
+									{...paginationProps}
+								/>
+							)}
+						</>
+					)}
+					{result.phase === AsyncStatePhase.RESOLVED && result?.value?.users?.length === 0 && (
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_results_found')}</StatesTitle>
+						</States>
 					)}
 				</Page.Content>
 			</Page>
