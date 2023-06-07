@@ -55,7 +55,6 @@ export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useRoutePath } from './hooks/useRoutePath';
-export { useRouteUrl } from './hooks/useRouteUrl';
 export { useServerInformation } from './hooks/useServerInformation';
 export { useSession } from './hooks/useSession';
 export { useSessionDispatch } from './hooks/useSessionDispatch';
