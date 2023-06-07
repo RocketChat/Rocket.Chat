@@ -1,3 +1,41 @@
+# 6.2.4
+
+`2023-06-07  ·  2 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Imported messages are not displayed ([#29485](https://github.com/RocketChat/Rocket.Chat/pull/29485))
+
+  - Fix issue with imported messages not being displayed in the room.
+   - Fix importer agent being added as a member of every imported room.
+
+- message deletion fails if has files attached on filesystem storage ([#29313](https://github.com/RocketChat/Rocket.Chat/pull/29313))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix Omnichannel Webhooks tests ([#29344](https://github.com/RocketChat/Rocket.Chat/pull/29344))
+
+- use local httpbin container on github CI's ([#29067](https://github.com/RocketChat/Rocket.Chat/pull/29067))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 6.2.3
 
 `2023-06-05  ·  1 🎉  ·  9 🐛  ·  9 👩‍💻👨‍💻`

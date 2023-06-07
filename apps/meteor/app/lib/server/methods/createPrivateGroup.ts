@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}, excludeSelf = false) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
-		return createRoom('p', name, (await Meteor.userAsync())?.username, members, readOnly, {
+		return createRoom('p', name, (await Meteor.userAsync())?.username, members, excludeSelf, readOnly, {
 			customFields,
 			...extraData,
 		});
