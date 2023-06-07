@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
@@ -18,7 +18,7 @@ const CustomFieldsPage = ({ reload }: { reload: MutableRefObject<() => void> }) 
 			<Page>
 				<Page.Header title={t('Custom_Fields')}>
 					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
-						<Icon name='plus' size='x16' /> {t('New')}
+						{t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

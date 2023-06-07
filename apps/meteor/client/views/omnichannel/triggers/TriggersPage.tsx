@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
@@ -39,9 +39,7 @@ const TriggersPage = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Livechat_Triggers')}>
-					<Button onClick={handleAdd}>
-						<Icon name='plus' /> {t('New')}
-					</Button>
+					<Button onClick={handleAdd}>{t('New')}</Button>
 				</Page.Header>
 				<Page.Content>
 					<TriggersTable reload={reload} />
