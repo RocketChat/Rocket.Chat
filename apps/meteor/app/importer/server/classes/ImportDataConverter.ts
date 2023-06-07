@@ -848,15 +848,15 @@ export class ImportDataConverter {
 		try {
 			let roomInfo;
 			if (roomData.t === 'd') {
-				roomInfo = await createDirectMessage(members, startedByUserId);
+				roomInfo = await createDirectMessage(members, startedByUserId, true);
 			} else {
 				if (!roomData.name) {
 					return;
 				}
 				if (roomData.t === 'p') {
-					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members);
+					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
 				} else {
-					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members);
+					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
 				}
 			}
 

@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 
 		check(accountId, String);
 
-		methodDeprecationLogger.warn('removeWebdavAccount will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('removeWebdavAccount', '7.0.0');
 
 		const removed = await WebdavAccounts.removeByUserAndId(accountId, userId);
 		if (removed) {

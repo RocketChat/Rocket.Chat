@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:setCustomField'(token, key, value, overwrite = true) {
-		methodDeprecationLogger.warn('livechat:setCustomField will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:setCustomField', '7.0.0');
 
 		const customField = await LivechatCustomField.findOneById(key);
 		if (customField) {

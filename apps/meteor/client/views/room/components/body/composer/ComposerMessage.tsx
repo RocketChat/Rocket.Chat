@@ -77,7 +77,9 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 		);
 	}
 
-	return <MessageBox readOnly={readOnly ?? false} rid={rid} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return (
+		<MessageBox readOnly={readOnly ?? false} key={rid} rid={rid} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	);
 };
 
 export default memo(ComposerMessage);
