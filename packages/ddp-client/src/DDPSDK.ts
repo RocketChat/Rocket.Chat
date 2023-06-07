@@ -36,8 +36,13 @@ export class DDPSDK implements SDK {
 		readonly rest: RestClient,
 	) {}
 
-	stream(name: string, key: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
-		const subscription = this.client.subscribe(`stream-${name}`, key);
+	call(method: string, ...params: unknown[]) {
+		return this.client.callAsync(method, ...params);
+	}
+
+	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
+		const [key, args] = Array.isArray(data) ? data : [data];
+		const subscription = this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] });
 
 		const stop = subscription.stop.bind(subscription);
 		const cancel = [

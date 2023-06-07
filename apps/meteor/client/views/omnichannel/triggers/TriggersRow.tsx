@@ -1,24 +1,23 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 
-const TriggersRow = memo(function TriggersRow(props) {
-	const { _id, name, description, enabled, onDelete } = props;
+type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
 
-	const dispatchToastMessage = useToastMessageDispatch();
+const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowProps) => {
 	const t = useTranslation();
-
 	const setModal = useSetModal();
-
-	const bhRoute = useRoute('omnichannel-triggers');
-
+	const triggersRoute = useRoute('omnichannel-triggers');
 	const deleteTrigger = useMethod('livechat:removeTrigger');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleClick = useMutableCallback(() => {
-		bhRoute.push({
+		triggersRoute.push({
 			context: 'edit',
 			id: _id,
 		});
@@ -38,7 +37,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 			try {
 				await deleteTrigger(_id);
 				dispatchToastMessage({ type: 'success', message: t('Trigger_removed') });
-				onDelete();
+				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -49,15 +48,15 @@ const TriggersRow = memo(function TriggersRow(props) {
 	});
 
 	return (
-		<Table.Row key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<Table.Cell withTruncatedText>{name}</Table.Cell>
-			<Table.Cell withTruncatedText>{description}</Table.Cell>
-			<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
-			<Table.Cell withTruncatedText>
+		<GenericTableRow key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
+			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{description}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{enabled ? t('Yes') : t('No')}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
 				<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
-			</Table.Cell>
-		</Table.Row>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
-});
+};
 
-export default TriggersRow;
+export default memo(TriggersRow);

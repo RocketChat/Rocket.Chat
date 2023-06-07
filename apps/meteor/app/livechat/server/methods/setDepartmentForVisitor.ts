@@ -24,7 +24,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId }) {
-		methodDeprecationLogger.warn('livechat:setDepartmentForVisitor will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:setDepartmentForVisitor', '7.0.0');
 
 		check(roomId, String);
 		check(visitorToken, String);

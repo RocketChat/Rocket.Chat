@@ -1,4 +1,4 @@
-import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
@@ -23,7 +23,7 @@ const UnitsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				<Page.Header title={t('Units')}>
 					<ButtonGroup>
 						<Button onClick={handleClick} title={t('New_Unit')}>
-							<Icon name='plus' /> {t('New')}
+							{t('New')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
