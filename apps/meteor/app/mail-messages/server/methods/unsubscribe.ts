@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'Mailer:unsubscribe'(_id, createdAt) {
-		methodDeprecationLogger.warn('Mailer:unsubscribe will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('Mailer:unsubscribe', '7.0.0');
 
 		return Mailer.unsubscribe(_id, createdAt);
 	},

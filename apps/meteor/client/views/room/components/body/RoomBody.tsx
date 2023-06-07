@@ -46,6 +46,7 @@ import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
@@ -406,9 +407,9 @@ const RoomBody = (): ReactElement => {
 				sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-
-			wrapper.addEventListener('scroll', handleWrapperScroll);
 		};
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
@@ -417,6 +418,8 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [room._id, sendToBottom]);
+
+	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;

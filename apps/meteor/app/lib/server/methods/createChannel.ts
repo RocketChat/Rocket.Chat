@@ -27,6 +27,7 @@ export const createChannelMethod = async (
 	readOnly = false,
 	customFields: Record<string, any> = {},
 	extraData: Record<string, any> = {},
+	excludeSelf = false,
 ) => {
 	check(name, String);
 	check(members, Match.Optional([String]));
@@ -43,7 +44,7 @@ export const createChannelMethod = async (
 	if (!(await hasPermissionAsync(userId, 'create-c'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 	}
-	return createRoom('c', name, user.username, members, readOnly, {
+	return createRoom('c', name, user.username, members, excludeSelf, readOnly, {
 		customFields,
 		...extraData,
 	});
