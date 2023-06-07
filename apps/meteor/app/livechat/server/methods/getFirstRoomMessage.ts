@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:getFirstRoomMessage'({ rid }) {
 		const uid = Meteor.userId();
-		methodDeprecationLogger.warn('livechat:getFirstRoomMessage will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:getFirsRoomMessage', '7.0.0');
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getFirstRoomMessage',
