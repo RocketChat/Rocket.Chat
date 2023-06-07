@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { t } from '../../../../app/utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../../../lib/toast';
 import { appErroredStatuses } from './appErroredStatuses';
 

@@ -1,6 +1,6 @@
 import type { AppPricingPlan } from '@rocket.chat/core-typings';
 
-import { t } from '../../../../app/utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 import { formatPrice } from './formatPrice';
 
 export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
