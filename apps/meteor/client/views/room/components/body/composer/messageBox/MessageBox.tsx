@@ -14,9 +14,10 @@ import {
 import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
+// import { settings } from '../../../../../../../app/settings/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -39,8 +40,13 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import { MessagePreview } from './MessagePreview';
+import { useMarkdownPreview } from './hooks/useMarkdownPreview';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+
+// const previewAllowed = settings.get('Message_AllowPreviewing');
+const previewAllowed = true;
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -142,6 +148,12 @@ const MessageBox = ({
 	const autofocusRef = useMessageBoxAutoFocus();
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
+	const [inputValue, setInputValue] = useState('');
+	const { md, channels, mentions } = useMarkdownPreview(inputValue, rid);
+
+	const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+		setInputValue(event.currentTarget.value);
+	};
 
 	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
 		e.stopPropagation();
@@ -338,6 +350,12 @@ const MessageBox = ({
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
+	// ==================================================================================================
+	const previewAreaRef = useRef<HTMLTextAreaElement>(null);
+	const shadowPreviewRef = useRef(null);
+	const { shadowStyle: shadowPreviewStyle } = useAutoGrow(previewAreaRef, shadowPreviewRef);
+	// ==================================================================================================
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -382,10 +400,21 @@ const MessageBox = ({
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onKeyDown={handler}
+					onInput={handleInputChange}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
+				{previewAllowed && (
+					<MessagePreview
+						md={md}
+						channels={channels}
+						mentions={mentions}
+						shadowPreviewRef={shadowPreviewRef}
+						shadowPreviewStyle={shadowPreviewStyle}
+					/>
+				)}
+
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
