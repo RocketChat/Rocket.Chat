@@ -1,4 +1,4 @@
-import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
@@ -37,7 +37,7 @@ const SlaPage = () => {
 				<Page.Header title={t('SLA_Policies')}>
 					<ButtonGroup>
 						<Button onClick={handleClick} title={t('New_SLA_Policy')}>
-							<Icon name='plus' /> {t('New')}
+							{t('New')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
