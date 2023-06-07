@@ -83,7 +83,7 @@ class EJSONSerializer extends Base {
 	/**
 	 * Recrusively convert all EJSON.Binary objects to Buffers
 	 */
-	rebufferize(obj: unknown): any {
+	private rebufferize(obj: unknown): any {
 		if (EJSON.isBinary(obj)) {
 			return Buffer.from(obj as Uint8Array);
 		}
