@@ -23,8 +23,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:webhookTest'() {
-		methodDeprecationLogger.info(`Method 'livechat:webhookTest' is deprecated and will be removed in future versions of Rocket.Chat`);
-		this.unblock();
+		methodDeprecationLogger.method('livechat:webhookTest', '7.0.0');
 
 		const sampleData = {
 			type: 'LivechatSession',
