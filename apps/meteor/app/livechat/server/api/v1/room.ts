@@ -25,8 +25,6 @@ import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
-import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
-import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
@@ -233,11 +231,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams },
+	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '7.0.0' },
 	{
 		async post() {
-			apiDeprecationLogger.warn('livechat/room.transfer has been deprecated. Use livechat/room.forward instead.');
-
 			const { rid, token, department } = this.bodyParams;
 
 			const guest = await findGuest(token);
@@ -265,13 +261,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			return API.v1.success(
-				deprecationWarning({
-					endpoint: 'livechat/room.transfer',
-					versionWillBeRemoved: '6.0',
-					response: { room },
-				}),
-			);
+			return API.v1.success({ room });
 		},
 	},
 );
@@ -362,7 +352,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams, deprecationVersion: '7.0.0' },
 	{
 		async put() {
 			// This endpoint is deprecated and will be removed in future versions.
@@ -389,9 +379,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			return API.v1.success(
-				deprecationWarning({ endpoint: 'livechat/room.visitor', versionWillBeRemoved: '6.0', response: { room: roomAfterChange } }),
-			);
+			return API.v1.success({ room: roomAfterChange });
 		},
 	},
 );
