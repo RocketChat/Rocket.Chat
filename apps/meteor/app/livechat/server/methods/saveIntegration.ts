@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 				method: 'livechat:saveIntegration',
 			});
 		}
-		methodDeprecationLogger.warn('livechat:saveIntegration is deprecated and will be removed on the next major release of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:saveIntegration', '7.0.0');
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));
