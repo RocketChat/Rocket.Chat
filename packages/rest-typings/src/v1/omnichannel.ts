@@ -3340,7 +3340,7 @@ export type OmnichannelEndpoints = {
 		GET: () => { settings: ISetting[] };
 	};
 	'/v1/livechat/upload/:rid': {
-		POST: () => IMessage & { newRoom: boolean; showConnecting: boolean };
+		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
 	};
 	'/v1/livechat/inquiries.list': {
 		GET: (params: GETLivechatInquiriesListParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;

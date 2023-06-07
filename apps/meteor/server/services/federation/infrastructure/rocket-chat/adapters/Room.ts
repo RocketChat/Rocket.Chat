@@ -86,12 +86,14 @@ export class RocketChatRoomAdapter {
 		}
 
 		const readonly = false;
+		const excludeSelf = false;
 		const extraData = undefined;
 		const { rid, _id } = await createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getDisplayName(),
 			usernameOrId,
 			federatedRoom.getMembersUsernames(),
+			excludeSelf,
 			readonly,
 			extraData,
 			{ creator: creatorId },
