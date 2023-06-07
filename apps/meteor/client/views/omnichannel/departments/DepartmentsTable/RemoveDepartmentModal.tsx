@@ -4,18 +4,17 @@ import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.ch
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import GenericModal from '../../../components/GenericModal';
+import GenericModal from '../../../../components/GenericModal';
 
-type PermanentDepartmentRemovalModalProps = {
+type RemoveDepartmentModalProps = {
 	_id: string;
 	name: string;
 	reset: () => void;
 	onClose: () => void;
 };
 
-const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: PermanentDepartmentRemovalModalProps): ReactElement => {
+const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartmentModalProps): ReactElement => {
 	const t = useTranslation();
-
 	const [text, setText] = useState('');
 
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });
@@ -52,4 +51,4 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 	);
 };
 
-export default PermanentDepartmentRemovalModal;
+export default RemoveDepartmentModal;
