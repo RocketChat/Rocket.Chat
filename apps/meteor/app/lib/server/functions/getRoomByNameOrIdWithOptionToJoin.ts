@@ -40,8 +40,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 			});
 		}
 
-		const rid = isObject(roomUser) ? [user._id, roomUser._id].sort().join('') : nameOrId;
-		room = await Rooms.findOneById(rid);
+		room = isObject(roomUser) ? await Rooms.findOneDirectRoomContainingAllUserIDs([...new Set([user._id, roomUser._id])]) : null;
 
 		// If the room hasn't been found yet, let's try some more
 		if (!isObject(room)) {
@@ -57,7 +56,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 
 			await createDirectMessage([roomUser.username], user._id);
 
-			return Rooms.findOneById(rid);
+			return Rooms.findOneDirectRoomContainingAllUserIDs([user._id, roomUser._id]);
 		}
 	} else {
 		// Otherwise, we'll treat this as a channel or group.
