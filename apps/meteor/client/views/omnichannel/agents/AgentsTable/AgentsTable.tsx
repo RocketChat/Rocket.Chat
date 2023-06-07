@@ -95,7 +95,6 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-
 					<Pagination
 						divider
 						current={current}

@@ -3314,7 +3314,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
 	};
 	'/v1/livechat/triggers': {
-		GET: (params: GETLivechatTriggersParams) => { triggers: WithId<ILivechatTrigger>[] };
+		GET: (params: GETLivechatTriggersParams) => PaginatedResult<{ triggers: WithId<ILivechatTrigger>[] }>;
 	};
 	'/v1/livechat/triggers/:_id': {
 		GET: () => { trigger: ILivechatTrigger | null };

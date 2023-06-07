@@ -1,8 +1,9 @@
-import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
+import { Button, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useForm } from '../../../hooks/useForm';
 import TriggersForm from './TriggersForm';
 
@@ -74,16 +75,18 @@ const NewTriggerPage = ({ onSave }) => {
 
 	return (
 		<>
-			<FieldGroup>
-				<TriggersForm values={values} handlers={handlers} />
-			</FieldGroup>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} primary onClick={handleSave} disabled={!canSave}>
+			<ContextualbarScrollableContent>
+				<FieldGroup>
+					<TriggersForm values={values} handlers={handlers} />
+				</FieldGroup>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button primary onClick={handleSave} disabled={!canSave}>
 						{t('Save')}
 					</Button>
-				</Margins>
-			</Box>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</>
 	);
 };
