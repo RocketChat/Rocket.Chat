@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { forwardRef } from 'react';
 
@@ -13,7 +13,8 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 	const selected = group?.items.find((item) => item.checked)?.label;
 
 	return (
-		<Button
+		<Box
+			is={Button}
 			ref={ref}
 			onClick={onClick as any}
 			display='flex'
@@ -32,7 +33,7 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 		>
 			{selected}
 			<Icon name='chevron-down' size='x20' />
-		</Button>
+		</Box>
 	);
 });
 

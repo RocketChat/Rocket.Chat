@@ -14,7 +14,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 	const t = useTranslation();
 
 	return (
-		<Button
+		<Box
+			is={Button}
 			ref={ref}
 			onClick={onClick}
 			display='flex'
@@ -50,7 +51,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' fontSize='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
-		</Button>
+		</Box>
 	);
 });
 
