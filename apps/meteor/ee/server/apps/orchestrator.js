@@ -51,12 +51,6 @@ export class AppServerOrchestrator {
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-
-		// TODO: Remove it when fixed the race condition
-		// This enforce Fibers for a method not waited on apps-engine preventing a race condition
-		const { storeEntries } = this._logStorage;
-		this._logStorage.storeEntries = (...args) => Promise.await(storeEntries.call(this._logStorage, ...args));
-
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
@@ -188,6 +182,14 @@ export class AppServerOrchestrator {
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
 		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+	}
+
+	async disableApps() {
+		await this.getManager()
+			.get()
+			.forEach((app) => {
+				this.getManager().disable(app.getID());
+			});
 	}
 
 	async unload() {

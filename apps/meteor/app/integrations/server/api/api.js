@@ -1,8 +1,6 @@
 import { VM, VMScript } from 'vm2';
 import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 import _ from 'underscore';
 import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
@@ -15,12 +13,23 @@ import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
 import { httpCall } from '../../../../server/lib/http/call';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {
+	const httpAsync = async (method, url, options) => {
+		try {
+			return {
+				result: await httpCall(method, url, options),
+			};
+		} catch (error) {
+			return { error };
+		}
+	};
+
 	const sandbox = {
 		scriptTimeout(reject) {
 			return setTimeout(() => reject('timed out'), 3000);
@@ -29,7 +38,6 @@ function buildSandbox(store = {}) {
 		s,
 		console,
 		moment,
-		Fiber,
 		Promise,
 		Livechat,
 		Store: {
@@ -41,18 +49,11 @@ function buildSandbox(store = {}) {
 				return store[key];
 			},
 		},
-		HTTP(method, url, options) {
-			try {
-				// Need to review how we will handle this, possible breaking change on removing fibers
-				return {
-					result: Promise.await(httpCall(method, url, options)),
-				};
-			} catch (error) {
-				return {
-					error,
-				};
-			}
+		HTTP: (method, url, options) => {
+			// TODO: deprecate, track and alert
+			return deasyncPromise(httpAsync(method, url, options));
 		},
+		// TODO: Export fetch as the non deprecated method
 	};
 	Object.keys(Models)
 		.filter((k) => !forbiddenModelMethods.includes(k))
@@ -214,20 +215,26 @@ async function executeIntegrationRest() {
 				sandbox,
 			});
 
-			const scriptResult = vm.run(`
-				new Promise((resolve, reject) => {
-					Fiber(() => {
-						scriptTimeout(reject);
-						try {
-							resolve(script.process_incoming_request({ request: request }));
-						} catch(e) {
-							reject(e);
-						}
-					}).run();
-				}).catch((error) => { throw new Error(error); });
-			`);
+			const result = await new Promise((resolve, reject) => {
+				process.nextTick(async () => {
+					try {
+						const scriptResult = await vm.run(`
+							new Promise((resolve, reject) => {
+								scriptTimeout(reject);
+								try {
+									resolve(script.process_incoming_request({ request: request }));
+								} catch(e) {
+									reject(e);
+								}
+							}).catch((error) => { throw new Error(error); });
+						`);
 
-			const result = Future.fromPromise(scriptResult).wait();
+						resolve(scriptResult);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
 
 			if (!result) {
 				incomingLogger.debug({

@@ -275,7 +275,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		*/
 
 		// Execute all callbacks
-		callbacks.runAsync('afterSaveMessage', message, room);
+		await callbacks.run('afterSaveMessage', message, room);
 		return message;
 	}
 };

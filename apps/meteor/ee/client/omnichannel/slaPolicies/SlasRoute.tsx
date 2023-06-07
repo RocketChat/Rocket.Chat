@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../../client/components/Contextualbar';
 import GenericTable from '../../../../client/components/GenericTable';
 import type { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
-import VerticalBar from '../../../../client/components/VerticalBar';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveSlaButton from './RemoveSlaButton';
 import SlaEditWithData from './SlaEditWithData';
@@ -123,21 +123,20 @@ function SlasRoute(): ReactElement {
 			return null;
 		}
 
-		const handleVerticalBarCloseButtonClick = (): void => {
+		const handleContextualbarCloseButtonClick = (): void => {
 			SlasRoute.push({});
 		};
 
 		return (
-			<VerticalBar>
-				<VerticalBar.Header>
+			<Contextualbar>
+				<ContextualbarHeader>
 					{context === 'edit' && t('Edit_SLA_Policy')}
 					{context === 'new' && t('New_SLA_Policy')}
-					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-				</VerticalBar.Header>
-
+					<ContextualbarClose onClick={handleContextualbarCloseButtonClick} />
+				</ContextualbarHeader>
 				{context === 'edit' && <SlaEditWithData slaId={id || ''} reload={refetch} />}
 				{context === 'new' && <SlaNew reload={refetch} />}
-			</VerticalBar>
+			</Contextualbar>
 		);
 	}, [t, context, id, SlasRoute, refetch]);
 

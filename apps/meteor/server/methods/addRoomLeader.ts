@@ -80,7 +80,6 @@ Meteor.methods<ServerMethods>({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name,
 				},
 				scope: rid,
 			});

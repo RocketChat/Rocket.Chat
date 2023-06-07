@@ -31,6 +31,8 @@ declare module 'meteor/accounts-base' {
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 
+		function _checkPasswordAsync(user: Meteor.User, password: Password): Promise<{ userId: string; error?: any }>;
+
 		function updateOrCreateUserFromExternalService(
 			serviceName: string,
 			serviceData: Record<string, unknown>,

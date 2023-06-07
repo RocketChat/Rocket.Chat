@@ -17,6 +17,7 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -25,8 +26,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		// Depends on apps engine separation to microservices
-		return Promise.await(Livechat.online(departmentId));
+		// This function will be converted to sync inside the apps-engine code
+		// TODO: Track Deprecation
+		return deasyncPromise(Livechat.online(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {

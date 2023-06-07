@@ -37,7 +37,6 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import { call } from '../../../client/lib/utils/call';
 import { getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
@@ -213,7 +212,7 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: t('Save_Your_Encryption_Password'),
+				title: t('Save_your_encryption_password'),
 				html: t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
@@ -223,6 +222,7 @@ class E2E extends Emitter {
 						component: SaveE2EPasswordModal,
 						props: {
 							passwordRevealText,
+							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
@@ -315,7 +315,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await call('e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {

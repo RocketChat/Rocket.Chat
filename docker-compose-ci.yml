@@ -110,7 +110,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   queue-worker-service:
     platform: linux/amd64
     build:
@@ -126,7 +126,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   omnichannel-transcript-service:
     platform: linux/amd64
     build:

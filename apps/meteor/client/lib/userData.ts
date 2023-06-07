@@ -65,7 +65,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
-				Users.insert(user as IUser);
+				Users.insert(user as unknown as IUser);
 				break;
 
 			case 'updated':

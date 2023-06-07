@@ -45,7 +45,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.content.openLastMessageMenu();
 
 		await page.locator('[data-qa-id="reply-in-thread"]').click();
-		await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('any-reply-message');
+		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetTeam}"]`).type('any-reply-message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeTeam.tabs.flexTabViewThreadMessage).toHaveText('any-reply-message');
