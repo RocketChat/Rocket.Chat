@@ -31,7 +31,7 @@ const Tags = ({
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 	const { data: tagsResult, isInitialLoading } = useQuery(
-		['/v1/livechat/tags'],
+		['/v1/livechat/tags', department],
 		() =>
 			getTags({
 				text: '',
