@@ -51,7 +51,8 @@ export async function findInquiries({
 	};
 
 	const filter: Filter<ILivechatInquiryRecord> = {
-		...(status && status in LivechatInquiryStatus && { status }),
+		// V in Enum only works for numeric enums
+		...(status && Object.values(LivechatInquiryStatus).includes(status) && { status }),
 		$or: [
 			{
 				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
