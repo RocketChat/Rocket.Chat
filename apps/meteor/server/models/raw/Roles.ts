@@ -135,13 +135,12 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				continue;
 			}
 
-			switch (role.scope) {
-				case 'Subscriptions':
-					scope && (await Subscriptions.removeRolesByUserIds(uids, [roleId], scope));
-					break;
-				case 'Users':
-				default:
-					await Users.removeRolesByUserIds(uids, [roleId]);
+			if (role.scope === 'Subscriptions') {
+				if (scope) {
+					await Subscriptions.removeRolesByUserIds(uids, [roleId], scope);
+				}
+			} else {
+				await Users.removeRolesByUserIds(uids, [roleId]);
 			}
 		}
 		return true;
