@@ -75,7 +75,7 @@ export const QueueManager = {
 
 		const newRoom = await LivechatRooms.findOneById(rid);
 		if (!newRoom) {
-			logger.debug(`Room with id ${rid} not found`);
+			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 

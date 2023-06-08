@@ -62,9 +62,9 @@ API.v1.addRoute('livechat/room', {
 			if (agentObj) {
 				if (isAgentWithInfo(agentObj)) {
 					const { username = undefined } = agentObj;
-					agent = { agentId, username } as SelectedAgent;
+					agent = { agentId, username };
 				} else {
-					agent = { agentId } as SelectedAgent;
+					agent = { agentId, username: undefined };
 				}
 			}
 
