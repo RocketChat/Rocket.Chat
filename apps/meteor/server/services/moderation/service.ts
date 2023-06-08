@@ -39,8 +39,7 @@ export class ModerationService extends ServiceClassInternal implements IModerati
 			});
 
 			// add the permissions to the role
-			const promises = permissions.map((permission) => Permissions.addRole(permission, roleName));
-			await Promise.all(promises);
+			await Permissions.updateMany({ _id: { $in: permissions }, roles: { $ne: roleName } }, { $addToSet: { roles: roleName } });
 		} catch (error) {
 			console.error(`Error adding permissions to role ${roleName}: ${error}`);
 		}

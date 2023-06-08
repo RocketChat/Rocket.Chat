@@ -5,6 +5,10 @@ import { DEFAULT_TRUST_ROLES } from '../lib/permissions';
 import { addRoleEditRestriction } from '../lib/addRoleEditRestriction';
 
 settings.watch('Trust_Roles', async (value) => {
+	if (value === undefined) {
+		return;
+	}
+
 	if (value) {
 		try {
 			await Promise.all(
@@ -16,17 +20,11 @@ settings.watch('Trust_Roles', async (value) => {
 			console.error('An error occurred while adding permissions to roles:', error);
 		}
 		addRoleEditRestriction();
+	} else {
+		try {
+			await Moderation.resetUserRoles(DEFAULT_TRUST_ROLES.map((role) => role._id));
+		} catch (error) {
+			console.error('An error occurred while deleting trust roles:', error);
+		}
 	}
-
-	if (!value) {
-		return;
-	}
-
-	try {
-		await Moderation.resetUserRoles(DEFAULT_TRUST_ROLES.map((role) => role._id));
-	} catch (error) {
-		console.error('An error occurred while deleting trust roles:', error);
-	}
-
-	return value;
 });
