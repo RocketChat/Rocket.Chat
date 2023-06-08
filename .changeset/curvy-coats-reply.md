@@ -3,5 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Introduces a new service 'Moderation' to handle adding or cleaning up the reputation/trust roles
-Introduces a new boolean setting which enables two new trust roles (novice, explorer) these trust roles have different level of access, to the workspace, that is to be used for reputation system. Thank you!
+New setting added to enable new trust based roles (novice, explorer) with different levels of access (to be used by the reputation apps)

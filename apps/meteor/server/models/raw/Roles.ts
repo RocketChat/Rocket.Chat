@@ -49,16 +49,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	}
 
 	async addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][]): Promise<boolean> {
-		if (!Array.isArray(userIds)) {
-			userIds = [userIds];
-			console.warn('[WARN] Roles.addRolesByUserIds: userIds should be an array');
-		}
-
-		if (!Array.isArray(roles)) {
-			roles = [roles];
-			console.warn('[WARN] Roles.addRolesByUserIds: roles should be an array');
-		}
-
 		const users = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1 } }).toArray();
 
 		const userIdsToAddRoles = users.map((user) => user._id);
@@ -71,13 +61,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				continue;
 			}
 
-			switch (role.scope) {
-				case 'Subscriptions':
-					await Subscriptions.addRolesByUserIds(userIdsToAddRoles, [role._id]);
-					break;
-				case 'Users':
-				default:
-					await Users.addRolesByUserIds(userIdsToAddRoles, [role._id]);
+			if (role.scope === 'Subscriptions') {
+				await Subscriptions.addRolesByUserIds(userIdsToAddRoles, [role._id]);
+			} else {
+				await Users.addRolesByUserIds(userIdsToAddRoles, [role._id]);
 			}
 		}
 

@@ -286,16 +286,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	async addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][], roomId?: IRoom['_id']): Promise<Document | UpdateResult> {
-		if (!Array.isArray(userIds)) {
-			userIds = [userIds];
-			console.warn('[WARN] Subscriptions.addRolesByUserIds: userIds should be an array');
-		}
-
-		if (!Array.isArray(roles)) {
-			roles = [roles];
-			console.warn('[WARN] Subscriptions.addRolesByUserIds: roles should be an array');
-		}
-
 		const query = {
 			'u._id': { $in: userIds },
 			'rid': roomId,
