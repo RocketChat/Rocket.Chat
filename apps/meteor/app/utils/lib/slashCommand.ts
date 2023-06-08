@@ -60,7 +60,7 @@ export const slashCommands = {
 	}: {
 		command: string;
 		params: string;
-		message: RequiredField<Partial<IMessage>, 'rid'>;
+		message: RequiredField<Partial<IMessage>, 'rid' | '_id'>;
 		userId: string;
 		triggerId?: string | undefined;
 	}): Promise<unknown> {
