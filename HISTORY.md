@@ -1,3 +1,22 @@
+# 6.2.5
+
+`2023-06-07  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Seat counter including apps ([#29489](https://github.com/RocketChat/Rocket.Chat/pull/29489))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 6.2.4
 
 `2023-06-07  ·  2 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
