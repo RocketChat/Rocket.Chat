@@ -93,7 +93,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			if (!user) {
 				throw new Error(`The agent with id "${agent.id}" was not found.`);
 			}
-			agentRoom = { agentId: user._id, username: user.username || '' };
+			agentRoom = { agentId: user._id, username: user.username };
 		}
 
 		const result = await getRoom({
