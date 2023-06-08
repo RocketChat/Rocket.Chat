@@ -8,7 +8,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
-import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import DefaultParentRoomField from './DefaultParentRoomField';
 
 type CreateDiscussionFormValues = {
@@ -145,7 +145,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								control={control}
 								name='usernames'
 								render={({ field: { onChange, value } }) => (
-									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Username_Placeholder')} />
+									<UserAutoCompleteMultipleFederated value={value} onChange={onChange} placeholder={t('Username_Placeholder')} />
 								)}
 							/>
 						</Field.Row>
