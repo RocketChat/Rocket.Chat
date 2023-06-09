@@ -12,17 +12,8 @@ import React, { memo, useRef } from 'react';
 import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
-const emojiRegex = /(?![*#0-9]+)[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/gu;
-
-const removeEmojis = (text: string | undefined) => {
-	if (!text) {
-		return '';
-	}
-	return text.replace(emojiRegex, '').trim();
-};
-
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={removeEmojis(title)} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
+	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
 type ToolBoxProps = {
