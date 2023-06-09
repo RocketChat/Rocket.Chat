@@ -27,6 +27,7 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 			color='secondary-info'
 			fontScale='p2'
 			minWidth='x144'
+			h='x40'
 			flexGrow={1}
 			flexShrink={1}
 			{...props}

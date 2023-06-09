@@ -38,6 +38,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					fontSize='micro'
 					color='info'
 					pi='x6'
+					h='x40'
 					display='flex'
 					alignItems='center'
 					justifyContent='center'

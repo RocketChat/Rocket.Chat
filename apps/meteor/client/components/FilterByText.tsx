@@ -41,7 +41,7 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 
 	return (
 		<Box mb='x16' mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Margins all='x4'>
+			<Box mi='x4'>
 				<TextInput
 					placeholder={placeholder ?? t('Search')}
 					ref={inputRef}
@@ -52,14 +52,14 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 					flexGrow={2}
 					minWidth='x220'
 				/>
-				{isFilterByTextPropsWithButton(props) ? (
-					<Button onClick={props.onButtonClick} mis='x8' primary>
-						{props.textButton}
-					</Button>
-				) : (
-					children && <>{children}</>
-				)}
-			</Margins>
+			</Box>
+			{isFilterByTextPropsWithButton(props) ? (
+				<Button onClick={props.onButtonClick} mis='x8' primary>
+					{props.textButton}
+				</Button>
+			) : (
+				children && <Margins all='x4'>{children}</Margins>
+			)}
 		</Box>
 	);
 };
