@@ -1,10 +1,12 @@
 import moment from 'moment-timezone';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
+import { businessHourLogger } from '../lib/logger';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
@@ -18,6 +20,8 @@ export interface IBusinessHourBehavior {
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
+	// If a new agent is created, this callback will be called
+	onNewAgentCreated(agentId: string): Promise<void>;
 }
 
 export interface IBusinessHourType {
@@ -44,13 +48,22 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
-	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+	async changeAgentActiveStatus(agentId: string, status: ILivechatAgentStatus): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
 			{ livechatStatusSystemModified: true },
 			{ livechatStatusSystemModified: true },
 		);
+	}
+
+	async onNewAgentCreated(agentId: string): Promise<void> {
+		businessHourLogger.debug(`Executing onNewAgentCreated for agentId: ${agentId}`);
+		const status = (await this.allowAgentChangeServiceStatus(agentId))
+			? ILivechatAgentStatus.AVAILABLE
+			: ILivechatAgentStatus.NOT_AVAILABLE;
+		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${status}`);
+		await Users.setLivechatStatusIf(agentId, status);
 	}
 }
 

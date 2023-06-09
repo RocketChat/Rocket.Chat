@@ -115,12 +115,19 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-save-agent-department',
 		);
+		callbacks.add(
+			'livechat.onNewAgentCreated',
+			this.behavior.onNewAgentCreated.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-agent-created',
+		);
 	}
 
 	private removeCallbacks(): void {
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove('livechat.onNewAgentCreated', 'business-hour-livechat-on-agent-created');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {

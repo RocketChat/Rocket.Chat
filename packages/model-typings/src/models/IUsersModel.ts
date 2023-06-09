@@ -8,6 +8,7 @@ import type {
 	ILoginToken,
 	IPersonalAccessToken,
 	AtLeast,
+	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -92,7 +93,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setLastRoutingTime(userId: any): Promise<number>;
 
-	setLivechatStatusIf(userId: any, status: any, conditions?: any, extraFields?: any): Promise<UpdateResult>;
+	setLivechatStatusIf(userId: string, status: ILivechatAgentStatus, conditions?: any, extraFields?: any): Promise<UpdateResult>;
 	getAgentAndAmountOngoingChats(
 		userId: any,
 	): Promise<{ agentId: string; username: string; lastAssignTime: Date; lastRoutingTime: Date; queueInfo: { chats: number } }>;
@@ -253,7 +254,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countAgents(): Promise<number>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
-	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
+	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	closeOffice(): Promise<void>;
 	openOffice(): Promise<void>;
