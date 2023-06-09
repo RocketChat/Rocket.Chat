@@ -23,6 +23,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		this.onAddAgentToDepartment = this.onAddAgentToDepartment.bind(this);
 		this.onRemoveAgentFromDepartment = this.onRemoveAgentFromDepartment.bind(this);
 		this.onRemoveDepartment = this.onRemoveDepartment.bind(this);
+		this.onNewAgentCreated = this.onNewAgentCreated.bind(this);
 	}
 
 	async onStartBusinessHours(): Promise<void> {
@@ -133,17 +134,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
-		const isWithinBushinessHours = await this.UsersRepository.isAgentWithinBusinessHours(agentId);
-		if (isWithinBushinessHours) {
-			return true;
-		}
-
-		bhLogger.debug(`No active business hour found for agent with id: ${agentId} based on user's cache. Attempting to recheck the status`);
-
-		// double check to see if user is actually within business hours
-		// this is required since the cache of businessHour Ids we maintain within user's collection might be stale
-		// in many scenario's like, if the agent is created when a business is active,
-		// or if a normal user is converted to agent when a business hour is active
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
 		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
