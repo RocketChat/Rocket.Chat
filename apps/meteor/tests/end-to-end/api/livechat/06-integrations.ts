@@ -123,6 +123,7 @@ describe('LIVECHAT - Integrations', function () {
 
 	describe('Livechat - Webhooks', () => {
 		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);

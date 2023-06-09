@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { ClientStream } from '../ClientStream';
+import type { ClientStream } from './ClientStream';
 
 export interface Account
 	extends Emitter<{

@@ -3,7 +3,7 @@ import { Header } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import VerticalBarSkeleton from '../../components/VerticalBar/VerticalBarSkeleton';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import MessageListSkeleton from '../../components/message/list/MessageListSkeleton';
 import ComposerSkeleton from './Room/ComposerSkeleton';
 import RoomLayout from './layout/RoomLayout';
@@ -31,7 +31,7 @@ const RoomSkeleton = (): ReactElement => (
 				<ComposerSkeleton />
 			</>
 		}
-		aside={<VerticalBarSkeleton />}
+		aside={<ContextualbarSkeleton />}
 	/>
 );
 export default RoomSkeleton;

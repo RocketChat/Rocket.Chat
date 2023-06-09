@@ -31,9 +31,15 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../../components/Contextualbar';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
-import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
@@ -293,13 +299,13 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{room.teamId ? t('edit-team') : t('edit-room')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+			<ContextualbarScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
@@ -505,7 +511,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Button>
 					</Field.Row>
 				</Field>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 }

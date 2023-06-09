@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useRoute, useStream } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { ChatSubscription } from '../../../../app/models/client';
+import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
@@ -34,6 +34,8 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const subscribeToRoom = useStream('room-data');
 
 	const queryClient = useQueryClient();
+	const userId = useUserId();
+	const isLivechatAdmin = usePermission('view-livechat-rooms');
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
@@ -53,6 +55,20 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			homeRoute.push();
 		}
 	}, [isSuccess, room, homeRoute]);
+
+	// TODO: Review the necessity of this effect when we move away from cached collections
+	useEffect(() => {
+		if (!room || !isOmnichannelRoom(room) || !room.servedBy) {
+			return;
+		}
+
+		if (!isLivechatAdmin && room.servedBy._id !== userId) {
+			ChatRoom.remove(room._id);
+			queryClient.removeQueries(['rooms', room._id]);
+			queryClient.removeQueries(['rooms', { reference: room._id, type: 'l' }]);
+			queryClient.removeQueries(['/v1/rooms.info', room._id]);
+		}
+	}, [homeRoute, isLivechatAdmin, queryClient, userId, room]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 

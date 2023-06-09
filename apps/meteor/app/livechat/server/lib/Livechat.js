@@ -79,7 +79,7 @@ export const Livechat = {
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
 			const botAgents = await Livechat.getBotAgents(department);
-			const onlineBots = botAgents.count();
+			const onlineBots = await botAgents.count();
 			Livechat.logger.debug(`Found ${onlineBots} online`);
 			if (onlineBots > 0) {
 				return true;
@@ -225,7 +225,7 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return Object.assign(sendMessage(guest, message, room), {
+		return Object.assign(await sendMessage(guest, message, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});

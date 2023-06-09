@@ -196,7 +196,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 	if (!user.active) {
 		const destinations = [];
 		const usersInRole = await Roles.findUsersInRole('admin');
-		await usersInRole.toArray().forEach((adminUser) => {
+		await usersInRole.forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${adminUser.name}<${email.address}>`);
