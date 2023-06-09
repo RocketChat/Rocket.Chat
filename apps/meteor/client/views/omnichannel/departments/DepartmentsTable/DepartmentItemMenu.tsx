@@ -66,10 +66,10 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 				action: (): void => handleEdit(),
 			},
 		}),
-		archive: {
+		[archived ? 'unarchive' : 'archive']: {
 			label: (
 				<>
-					<Icon name='arrow-down-box' size='x16' marginInlineEnd='x4' />
+					<Icon name={archived ? 'undo' : 'arrow-down-box'} size='x16' marginInlineEnd='x4' />
 					{archived ? t('Unarchive') : t('Archive')}
 				</>
 			),
