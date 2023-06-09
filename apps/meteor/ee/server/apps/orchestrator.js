@@ -184,6 +184,14 @@ export class AppServerOrchestrator {
 		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
 	}
 
+	async disableApps() {
+		await this.getManager()
+			.get()
+			.forEach((app) => {
+				this.getManager().disable(app.getID());
+			});
+	}
+
 	async unload() {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with

@@ -4,7 +4,7 @@ import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
@@ -71,10 +71,10 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Moderation_Message_context_header', { displayName })}</VerticalBar.Text>
-				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Moderation_Message_context_header', { displayName })}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => moderationRoute.push({})} />
+			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && (
 					<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
@@ -102,9 +102,9 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 					</States>
 				)}
 			</Box>
-			<VerticalBar.Footer display='flex'>
+			<ContextualbarFooter display='flex'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

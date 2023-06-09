@@ -67,24 +67,8 @@ describe('AdministrationModelList', () => {
 			);
 		};
 
-		it('should go to admin info', async () => {
+		it('should go to admin index', async () => {
 			const AdministrationModelList = loadMock();
-
-			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
-
-			const button = screen.getByText('Workspace');
-
-			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-info'));
-			await waitFor(() => expect(handleDismiss).to.have.been.called());
-		});
-
-		it('should go to admin index if no permission', async () => {
-			const AdministrationModelList = loadMock({
-				'../../../app/authorization/client': {
-					userHasAllPermission: () => false,
-				},
-			});
 
 			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
 

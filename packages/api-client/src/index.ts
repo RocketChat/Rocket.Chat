@@ -234,7 +234,9 @@ export class RestClient implements RestClientInterface {
 				return Promise.reject(response);
 			}
 
-			const error = await response.json();
+			const clone = response.clone();
+
+			const error = await clone.json();
 
 			if ((isTotpRequiredError(error) || isTotpInvalidError(error)) && hasRequiredTwoFactorMethod(error) && this.twoFactorHandler) {
 				const method2fa = 'details' in error ? error.details.method : 'password';
@@ -265,7 +267,7 @@ export class RestClient implements RestClientInterface {
 		return data ? stringify(data, { arrayFormat: 'bracket' }) : '';
 	}
 
-	upload: RestClientInterface['upload'] = (endpoint, params, events) => {
+	upload: RestClientInterface['upload'] = (endpoint, params, events, options = {}) => {
 		if (!params) {
 			throw new Error('Missing params');
 		}
@@ -281,7 +283,7 @@ export class RestClient implements RestClientInterface {
 		});
 
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
-		Object.entries(this.getCredentialsAsHeaders()).forEach(([key, value]) => {
+		Object.entries({ ...this.getCredentialsAsHeaders(), ...options.headers }).forEach(([key, value]) => {
 			xhr.setRequestHeader(key, value);
 		});
 
