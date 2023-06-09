@@ -40,7 +40,9 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 			});
 		}
 
-		room = isObject(roomUser) ? await Rooms.findOneDirectRoomContainingAllUserIDs([...new Set([user._id, roomUser._id])]) : await Rooms.findOneById(nameOrId);
+		room = isObject(roomUser)
+			? await Rooms.findOneDirectRoomContainingAllUserIDs([...new Set([user._id, roomUser._id])])
+			: await Rooms.findOneById(nameOrId);
 
 		// If the room hasn't been found yet, let's try some more
 		if (!isObject(room)) {
