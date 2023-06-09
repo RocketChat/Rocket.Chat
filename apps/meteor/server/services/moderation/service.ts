@@ -15,9 +15,6 @@ export class ModerationService extends ServiceClassInternal implements IModerati
 		// remove the roles from the users
 		await Roles.removeUsersRoles(usersToRemove, roles);
 
-		// add the default 'user' role to the users
-		await Roles.addRolesByUserIds(usersToRemove, ['user']);
-
 		// remove the roles
 		const rolePromises = roles.map(async (roleName) => {
 			const role = await Roles.findOneById(roleName);
