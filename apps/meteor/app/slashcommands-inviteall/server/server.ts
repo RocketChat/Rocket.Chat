@@ -57,11 +57,11 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		});
 
 		try {
-			const APIsettings = settings.get('API_User_Limit');
+			const APIsettings = settings.get<number>('API_User_Limit');
 			if (!APIsettings) {
 				return;
 			}
-			if (cursor.count() > APIsettings) {
+			if ((await cursor.count()) > APIsettings) {
 				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 					method: 'addAllToRoom',
 				});

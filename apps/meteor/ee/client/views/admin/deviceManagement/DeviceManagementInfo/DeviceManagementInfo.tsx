@@ -4,8 +4,14 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../../client/components/Contextualbar';
 import InfoPanel from '../../../../../../client/components/InfoPanel';
-import VerticalBar from '../../../../../../client/components/VerticalBar';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
@@ -29,12 +35,12 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header>
+		<Contextualbar>
+			<ContextualbarHeader>
 				{t('Device_Info')}
-				<VerticalBar.Close onClick={handleCloseContextualBar} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+				<ContextualbarClose onClick={handleCloseContextualBar} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
@@ -77,15 +83,15 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 						<InfoPanel.Text>{ip}</InfoPanel.Text>
 					</InfoPanel.Field>
 				</InfoPanel>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
-		</VerticalBar>
+			</ContextualbarFooter>
+		</Contextualbar>
 	);
 };
 
