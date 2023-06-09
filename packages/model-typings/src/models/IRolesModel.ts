@@ -6,10 +6,8 @@ import type { IBaseModel } from './IBaseModel';
 export interface IRolesModel extends IBaseModel<IRole> {
 	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole>;
 	addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
-	addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][]): Promise<boolean>;
 	isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
 	removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
-	removeUsersRoles(uids: IUser['_id'][], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
 	findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
 
 	findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options: FindOptions<IRole>): Promise<IRole | null>;

@@ -222,21 +222,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	removeRolesByUserIds(uids: IUser['_id'][], roles: IRole['_id'][], rid: IRoom['_id']): Promise<Document | UpdateResult> {
-		const query = {
-			'u._id': { $in: uids },
-			rid,
-		};
-
-		const update = {
-			$pullAll: {
-				roles,
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<FindCursor<IUser>>;
 
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
@@ -283,21 +268,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
-	}
-
-	async addRolesByUserIds(userIds: IUser['_id'][], roles: IRole['_id'][], roomId?: IRoom['_id']): Promise<Document | UpdateResult> {
-		const query = {
-			'u._id': { $in: userIds },
-			'rid': roomId,
-		};
-
-		const update = {
-			$addToSet: {
-				roles: { $each: roles },
-			},
-		};
-
-		return this.updateMany(query, update);
 	}
 
 	async isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean> {

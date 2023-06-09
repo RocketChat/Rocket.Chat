@@ -1,6 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IModerationService } from '@rocket.chat/core-services';
 import { Permissions, Roles, Users } from '@rocket.chat/models';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { createOrUpdateProtectedRoleAsync } from '../../lib/roles/createOrUpdateProtectedRole';
 
@@ -13,7 +14,16 @@ export class ModerationService extends ServiceClassInternal implements IModerati
 		const usersToRemove = usersInRole.map((user) => user._id);
 
 		// remove the roles from the users
-		await Roles.removeUsersRoles(usersToRemove, roles);
+
+		for await (const roleId of roles) {
+			const role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
+
+			if (!role) {
+				continue;
+			}
+
+			await Users.removeRolesByUserIds(usersToRemove, [roleId]);
+		}
 
 		// remove the roles
 		const rolePromises = roles.map(async (roleName) => {
