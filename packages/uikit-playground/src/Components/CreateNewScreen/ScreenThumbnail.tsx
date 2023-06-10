@@ -1,24 +1,16 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button } from '@rocket.chat/fuselage';
-import type { ReactNode, ComponentProps } from 'react';
-import React, { useContext, useState } from 'react';
+import { Box, Menu } from '@rocket.chat/fuselage';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import type { MouseEvent } from 'react';
+import React, { useContext } from 'react';
 
+import ScreenThumbnailWrapper from './ScreenThumbnailWrapper';
+import Thumbnail from './Thumbnail';
 import { context } from '../../Context';
 import { activeScreenAction } from '../../Context/action/activeScreenAction';
 import { deleteScreenAction } from '../../Context/action/deleteScreenAction';
 import { duplicateScreenAction } from '../../Context/action/duplicateScreenAction';
 import type { docType } from '../../Context/initialState';
 import renderPayload from '../Preview/Display/RenderPayload/RenderPayload';
-import ScreenThumbnailWrapper from './ScreenThumbnailWrapper';
-import Thumbnail from './Thumbnail';
-
-const IntractButton = ({
-  label,
-  ...props
-}: {
-  label: string,
-  icon?: ReactNode,
-} & ComponentProps<typeof Button>) => <Button {...props}>{label}</Button>;
 
 const ScreenThumbnail = ({
   screen,
@@ -28,46 +20,52 @@ const ScreenThumbnail = ({
   disableDelete: boolean,
 }) => {
   const { dispatch } = useContext(context);
-  const [isHover, setIsHover] = useState(false);
+  const toast = useToastBarDispatch();
 
-  const activateScreenHandler = () => {
+  const activateScreenHandler = (e: MouseEvent) => {
+    e.stopPropagation();
     dispatch(activeScreenAction(screen?.id));
   };
 
-  const duplicateScreenHandler = () => {
+  const duplicateScreenHandler = (e: MouseEvent) => {
+    e.stopPropagation();
     dispatch(duplicateScreenAction({ id: screen?.id }));
   };
 
-  const deleteScreenHandler = () => {
+  const deleteScreenHandler = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (disableDelete)
+      return toast({
+        type: 'info',
+        message: 'Cannot delete last screen.',
+      });
     dispatch(deleteScreenAction(screen?.id));
   };
   return (
-    <ScreenThumbnailWrapper
-      onMouseOver={() => setIsHover(true)}
-      onFocus={() => setIsHover(true)}
-      onMouseOut={() => setIsHover(false)}
-      onBlur={() => setIsHover(false)}
-    >
+    <ScreenThumbnailWrapper onClick={activateScreenHandler}>
       <Thumbnail of={renderPayload({ payload: screen.payload })} />
-      <Box
-        w="100%"
-        h="100%"
-        insetBlockStart={0}
-        display="flex"
-        position="absolute"
-        className={css`
-          flex-direction: column;
-          justify-content: space-evenly;
-          transition: var(--animation-default);
-        `}
-        opacity={isHover ? 1 : 0}
-      >
-        <IntractButton label={'Select'} onClick={activateScreenHandler} />
-        <IntractButton label={'Duplicate'} onClick={duplicateScreenHandler} />
-        <IntractButton
-          label={'Delete'}
-          onClick={deleteScreenHandler}
-          disabled={disableDelete}
+      <Box onClick={(e) => e.stopPropagation()}>
+        <Menu
+          tiny
+          position="absolute"
+          insetBlockStart="5px"
+          insetInlineEnd="5px"
+          zIndex={100}
+          placement="bottom-end"
+          icon="cog"
+          options={{
+            duplicate: {
+              label: <Box onClick={duplicateScreenHandler}>Duplicate</Box>,
+            },
+            delete: {
+              label: (
+                <Box onClick={deleteScreenHandler} color="danger">
+                  Delete
+                </Box>
+              ),
+              disabled: disableDelete,
+            },
+          }}
         />
       </Box>
     </ScreenThumbnailWrapper>

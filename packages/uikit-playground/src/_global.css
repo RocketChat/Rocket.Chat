@@ -1,0 +1,55 @@
+.react-flow__edges{
+    z-index: 1000 !important;
+}
+
+.react-flow__nodes{
+    z-index: 1 !important;
+}
+
+.react-flow-targetHandle{
+    width: 8px !important; height: 12px !important;
+    border-radius: 2px !important;
+    background: rgb(125, 161, 185) !important;
+}
+
+.react-flow-sourceHandle{
+    
+}
+
+/* .react-flow-sourceHandle{
+    width: 8px !important; height: 12px !important;
+    border-radius: 2px !important;
+    background: rgb(125, 161, 185) !important;
+} */
+
+/* .react-flow-sourceHandle-message-left{
+    left: -82px !important;
+}
+
+.react-flow-sourceHandle-message-right{
+    right: -38px !important;
+}
+
+.react-flow-sourceHandle-banner-left{
+    left: -60px !important;
+}
+
+.react-flow-sourceHandle-banner-right{
+    right: -30px !important;
+}
+
+.react-flow-sourceHandle-modal-left{
+    left: -38px !important;
+}
+
+.react-flow-sourceHandle-modal-right{
+    right: -38px !important;
+} */
+
+.rcx-modal:has(.uiKitWrapper){
+    padding: 0px !important
+}
+
+.rcx-modal__content:has(.uiKitWrapper){
+    overflow: visible !important
+}

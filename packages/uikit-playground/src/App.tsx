@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import './_global.css';
 import './cssVariables.css';
 import { ToastBarProvider } from '@rocket.chat/fuselage-toastbar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';

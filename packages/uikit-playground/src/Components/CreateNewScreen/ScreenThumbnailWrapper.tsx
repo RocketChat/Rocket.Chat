@@ -5,8 +5,10 @@ import React from 'react';
 
 const ScreenThumbnailWrapper = ({
   children,
+  onClick,
   ...props
 }: {
+  onClick?: ComponentProps<typeof Box>['onClick'],
   children: ReactNode,
 } & ComponentProps<typeof Box>) => (
   <Box
@@ -20,15 +22,28 @@ const ScreenThumbnailWrapper = ({
       place-items: center;
       cursor: pointer;
       overflow: hidden;
-      transition: var(--animation-default);
+      transition: var(--animation-fast);
       &:hover {
-        scale: 1.1;
-        transition: var(--animation-default);
+        scale: 1.02;
+        transition: var(--animation-fast);
         box-shadow: var(--elements-box-shadow);
+
+        .screenThumbnailBackdrop {
+          z-index: 10;
+          background: #cfcfcf45;
+          transition: var(--animation-fast);
+        }
       }
     `}
   >
-    <Box w="100px" h="150px" position="relative" {...props}>
+    <Box
+      w="120px"
+      h="170px"
+      position="absolute"
+      className="screenThumbnailBackdrop"
+      onClick={onClick}
+    />
+    <Box w="100px" h="150px" position="relative" onClick={onClick} {...props}>
       {children}
     </Box>
   </Box>

@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import {
   Modal,
   ModalHeader,
@@ -19,7 +20,13 @@ const ModalSurface = ({ children }: { children: ReactNode }) => (
       <ModalTitle>Modal Header</ModalTitle>
       <ModalClose />
     </ModalHeader>
-    <ModalContent>{children}</ModalContent>
+    <ModalContent
+      className={css`
+        overflow: visible;
+      `}
+    >
+      {children}
+    </ModalContent>
     <ModalFooter>
       <ButtonGroup align="end">
         <Button>Cancel</Button>

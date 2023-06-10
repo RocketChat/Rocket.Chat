@@ -91,6 +91,7 @@ const reducer = (state: initialStateType, action: actionType) => {
             changedByEditor: true,
           },
         },
+        openCreateNewScreen: false,
         activeScreen: id,
       };
     }

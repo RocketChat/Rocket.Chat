@@ -16,7 +16,7 @@ const ElementWrapper = ({
       height: fit-content;
       align-items: center;
       transition: var(--animation-fast);
-      padding: 0 8px;
+      padding: 0px 8px;
 
       &:hover {
         border-radius: 4px;
