@@ -1,7 +1,7 @@
 import type { IApi, IApiEndpoint } from '@rocket.chat/apps-engine/definition/api';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
-// import { AppsApiService } from '@rocket.chat/core-services';
+import { AppsApiService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
@@ -15,13 +15,13 @@ export class AppApisBridge extends ApiBridge {
 
 		this._verifyApi(api, endpoint);
 
-		// await AppsApiService.registerApi(endpoint, appId);
+		await AppsApiService.registerApi(endpoint, appId);
 	}
 
 	protected async unregisterApis(appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is unregistering all apis`);
 
-		// await AppsApiService.unregisterApi(appId);
+		await AppsApiService.unregisterApi(appId);
 	}
 
 	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {
