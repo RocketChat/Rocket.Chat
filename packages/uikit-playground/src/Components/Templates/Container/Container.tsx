@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import type { templateType } from '../templates';
+import type { templateType } from '../../../utils/templates';
 import Section from './Section';
 
 const Container = ({ templates }: { templates: templateType[] }) => {

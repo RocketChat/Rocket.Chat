@@ -1,8 +1,8 @@
 import { Box, Label } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import type { templateType } from '../templates';
 import Payload from './Payload';
+import { templateType } from '../../../utils/templates';
 
 const Section = ({
   template,

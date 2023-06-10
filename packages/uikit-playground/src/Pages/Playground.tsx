@@ -6,7 +6,7 @@ import { useEffect, useContext } from 'react';
 import ComponentSideBar from '../Components/ComponentSideBar';
 import NavBar from '../Components/NavBar';
 import Preview from '../Components/Preview';
-import Templates from '../Components/TemplatesModal';
+import Templates from '../Components/Templates';
 import NavMenu from '../Components/navMenu';
 import { context, isMobileAction, isTabletAction } from '../Context';
 

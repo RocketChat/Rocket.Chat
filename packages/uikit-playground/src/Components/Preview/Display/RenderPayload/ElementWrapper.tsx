@@ -12,26 +12,27 @@ const ElementWrapper = ({
     className={css`
       position: relative;
       box-sizing: border-box;
-      border: 1px solid transparent;
+      outline: 1px solid transparent;
+      height: fit-content;
+      padding: 0 8px;
       align-items: center;
-      padding: 7px;
       transition: var(--animation-fast);
       &:hover {
+        padding: 8px;
         border-radius: 4px;
-        border: var(--elements-border);
+        outline: var(--elements-border);
         transition: var(--animation-fast);
         box-shadow: 0px 0px 8px 1px #ddd;
+
         > .closeBtn {
           visibility: visible !important;
         }
       }
       &:active {
+        padding: 8px;
         background-color: #fff;
-        border: var(--elements-border);
+        outline: var(--elements-border);
         box-shadow: 0px 0px 8px 1px #ddd;
-      }
-      & > div > div {
-        margin: 0 !important;
       }
     `}
   />

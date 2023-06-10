@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import {
   UiKitModal as uiKitModal,
   UiKitBanner as uiKitBanner,
@@ -30,7 +29,7 @@ const RenderPayload = ({
   return (
     <ElementWrapper key={index}>
       <DeleteElementBtn elementIndex={index} />
-      <Box>{uiKitRender[surface]()}</Box>
+      <>{uiKitRender[surface]()}</>
     </ElementWrapper>
   );
 };
