@@ -18,6 +18,7 @@
     "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "next",
     "@rocket.chat/fuselage-polyfills": "next",
+    "@rocket.chat/fuselage-toastbar": "next",
     "@rocket.chat/fuselage-tokens": "next",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
     "@rocket.chat/icons": "next",
