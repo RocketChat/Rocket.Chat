@@ -48,9 +48,7 @@ const ScreenThumbnail = ({
       onMouseOut={() => setIsHover(false)}
       onBlur={() => setIsHover(false)}
     >
-      <Thumbnail
-        of={renderPayload({ index: 0, surface: 1, payload: screen.payload })}
-      />
+      <Thumbnail of={renderPayload({ payload: screen.payload })} />
       <Box
         w="100%"
         h="100%"

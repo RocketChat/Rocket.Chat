@@ -7,13 +7,13 @@ import options from './options';
 
 const SurfaceSelect: FC = () => {
   const {
-    state: { surface },
+    state: { screens, activeScreen },
     dispatch,
   } = useContext(context);
   return (
     <Select
       options={options}
-      value={`${surface}`}
+      value={`${screens[activeScreen].surface}`}
       placeholder={'Surface'}
       onChange={(e) => {
         dispatch(surfaceAction(parseInt(e)));

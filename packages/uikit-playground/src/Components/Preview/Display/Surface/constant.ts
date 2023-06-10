@@ -1,5 +1,5 @@
 export enum SurfaceOptions {
-    message = 1,
+    Message = 1,
     Banner,
     Modal
 }

@@ -1,11 +1,13 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
+import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
 
 export type docType = {
   payload: readonly LayoutBlock[];
   id: string;
   name: string;
+  surface: SurfaceOptions;
   changedByEditor?: boolean;
 };
 
@@ -50,7 +52,6 @@ export type initialStateType = {
   previewTabsToggle: number;
   editorTabsToggle: number;
   navMenuToggle: boolean;
-  surface: number;
   activeScreen: string;
   screens: ScreensType;
   actionPreview: actionPreviewType;
@@ -68,8 +69,7 @@ export const initialState: initialStateType = {
   previewTabsToggle: 0,
   editorTabsToggle: 0,
   navMenuToggle: false,
-  surface: 1,
-  screens: {[initialPageId] : { id: initialPageId, name: 'default1', payload: [], changedByEditor: true },
+  screens: {[initialPageId] : { id: initialPageId, name: 'default1', payload: [], surface: SurfaceOptions.Message, changedByEditor: true },
 },
   activeScreen: initialPageId,
   actionPreview: {},

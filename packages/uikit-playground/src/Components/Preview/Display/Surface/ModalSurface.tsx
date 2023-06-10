@@ -9,26 +9,17 @@ import {
   ButtonGroup,
   Button,
 } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import DraggableList from '../../../Draggable/DraggableList';
-import type { DraggableListProps } from '../../../Draggable/DraggableList';
-import { SurfaceOptions } from './constant';
-
-const ModalSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
+const ModalSurface = ({ children }: { children: ReactNode }) => (
   <Modal>
     <ModalHeader>
       <ModalThumb url="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" />
       <ModalTitle>Modal Header</ModalTitle>
       <ModalClose />
     </ModalHeader>
-    <ModalContent>
-      <DraggableList
-        surface={SurfaceOptions.Modal}
-        blocks={blocks}
-        onDragEnd={onDragEnd}
-      />
-    </ModalContent>
+    <ModalContent>{children}</ModalContent>
     <ModalFooter>
       <ButtonGroup align="end">
         <Button>Cancel</Button>

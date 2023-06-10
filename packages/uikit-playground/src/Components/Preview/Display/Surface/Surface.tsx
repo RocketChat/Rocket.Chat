@@ -7,15 +7,14 @@ import type { DropResult } from 'react-beautiful-dnd';
 import { context, updatePayloadAction, actionPreviewAction } from '../../../../Context';
 import generateActionPreview from '../../../../Payload/actionPreview/generateActionPreview';
 import type { Block } from '../../../Draggable/DraggableList';
-import BannerSurface from './BannerSurface';
-import MessageSurface from './MessageSurface';
-import ModalSurface from './ModalSurface';
-import ContextualBarSurface from './ContextualBarSurface';
+import DraggableList from '../../../Draggable/DraggableList';
 import { reorder } from './Reorder';
+import SurfaceRender from './SurfaceRender';
+import { SurfaceOptions } from './constant';
 
 const Surface: FC = () => {
 	const {
-		state: { screens, surface, activeScreen },
+		state: { screens, activeScreen },
 		dispatch,
 	} = useContext(context);
 	const [uniqueBlocks, setUniqueBlocks] = useState<{
@@ -58,12 +57,6 @@ const Surface: FC = () => {
 		setUniqueBlocks({ block: newBlocks, isChangeByDnd: true });
 	};
 
-	const surfaceRender: { [key: number]: any } = {
-		'1': () => <MessageSurface blocks={uniqueBlocks.block} onDragEnd={onDragEnd} />,
-		'2': () => <BannerSurface blocks={uniqueBlocks.block} onDragEnd={onDragEnd} />,
-		'3': () => <ModalSurface blocks={uniqueBlocks.block} onDragEnd={onDragEnd} />,
-		'4': () => <ContextualBarSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
-	};
 	return (
 		<Box padding='20px'>
 			<UiKitContext.Provider
@@ -80,7 +73,9 @@ const Surface: FC = () => {
 					appId: 'core',
 				}}
 			>
-				{surfaceRender[surface]()}{' '}
+				<SurfaceRender type={screens[activeScreen].surface}>
+					<DraggableList surface={SurfaceOptions.Modal} blocks={uniqueBlocks.block} onDragEnd={onDragEnd} />
+				</SurfaceRender>
 			</UiKitContext.Provider>
 		</Box>
 	);

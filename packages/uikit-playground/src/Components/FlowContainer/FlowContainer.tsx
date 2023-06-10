@@ -29,7 +29,7 @@ const FlowContainer = () => {
     id: screen.id,
     type: 'custom',
     position: { x: 0, y: 0 },
-    data: screen.payload,
+    data: screen,
   }));
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);

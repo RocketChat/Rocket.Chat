@@ -1,12 +1,13 @@
 import { useContext } from 'react';
 
+import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
 import { context } from '../../Context';
 import type { actionPreviewType } from '../../Context/initialState';
 import container from './container';
 
 const generateActionPreview = (type: string, data: actionPreviewType) => {
   const {
-    state: { user, surface, screens, activeScreen },
+    state: { user, screens, activeScreen },
   } = useContext(context);
 
   const actionPreview: actionPreviewType = {
@@ -14,7 +15,8 @@ const generateActionPreview = (type: string, data: actionPreviewType) => {
     user,
     api_app_id: '',
     token: '',
-    container: container[surface - 1],
+    container:
+      container[screens[activeScreen].surface || SurfaceOptions.Message],
     trigger_id: '',
     team: null,
     enterprise: null,

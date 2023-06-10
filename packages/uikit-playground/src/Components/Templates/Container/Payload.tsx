@@ -59,7 +59,7 @@ const Payload = ({ payload }: { payload: readonly LayoutBlock[] }) => {
               </Message.Header>
               <Message.Body>
                 {payload.map((element) => (
-                  <RenderPayload surface={1} payload={[element]} index={1} />
+                  <RenderPayload payload={[element]} />
                 ))}
               </Message.Body>
             </Message.Container>

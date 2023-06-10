@@ -1,19 +1,23 @@
+import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
+
 type containerType = {
-  type: string;
-  text: string;
+  [key: number]: {
+    type: string,
+    text: string,
+  },
 };
-const container: containerType[] = [
-  {
+const container: containerType = {
+  [SurfaceOptions.Message]: {
     type: 'message',
     text: 'The contents of the original message where the action originated',
   },
-  {
+  [SurfaceOptions.Banner]: {
     type: 'banner',
     text: '',
   },
-  {
+  [SurfaceOptions.Modal]: {
     type: 'modal',
     text: '',
   },
-];
+};
 export default container;

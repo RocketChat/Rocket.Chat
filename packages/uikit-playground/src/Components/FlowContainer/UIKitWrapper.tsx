@@ -1,11 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import renderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import type { docType } from '../../Context/initialState';
+import RenderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import SurfaceRender from '../Preview/Display/Surface/SurfaceRender';
 
-const UIKitWrapper = ({ id, data }) => {
+const UIKitWrapper = ({ id, data }: { id: string, data: docType }) => {
   console.log(data, id);
-  return <Box>{renderPayload({ index: 0, surface: 1, payload: data })}</Box>;
+  return (
+    <Box>
+      <SurfaceRender type={data.surface}>
+        <RenderPayload payload={data.payload} surface={data.surface} />
+      </SurfaceRender>
+    </Box>
+  );
 };
 
 export default UIKitWrapper;

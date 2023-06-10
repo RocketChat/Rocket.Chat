@@ -1,11 +1,8 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import DraggableList from '../../../Draggable/DraggableList';
-import type { DraggableListProps } from '../../../Draggable/DraggableList';
-import { SurfaceOptions } from './constant';
-
-const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
+const MessageSurface = ({ children }: { children: ReactNode }) => (
   <Message clickable>
     <Message.LeftContainer>
       <Avatar
@@ -32,13 +29,7 @@ const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
         <Message.Role>Owner</Message.Role>
         <Message.Timestamp>12:00 PM</Message.Timestamp>
       </Message.Header>
-      <Message.Body>
-        <DraggableList
-          surface={SurfaceOptions.message}
-          blocks={blocks}
-          onDragEnd={onDragEnd}
-        />
-      </Message.Body>
+      <Message.Body>{children}</Message.Body>
     </Message.Container>
     <Message.Toolbox.Wrapper>
       <Message.Toolbox>

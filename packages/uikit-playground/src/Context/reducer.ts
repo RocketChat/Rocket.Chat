@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
 import type { initialStateType } from './initialState';
 
@@ -22,7 +23,17 @@ const reducer = (state: initialStateType, action: actionType) => {
     case 'navMenuToggle':
       return { ...state, navMenuToggle: action.payload };
     case 'surface':
-      return { ...state, surface: action.payload };
+      return {
+        ...state,
+        screens: {
+          ...state.screens,
+          [state.activeScreen]: {
+            ...state.screens[state.activeScreen],
+            surface: action.payload,
+            changedByEditor: false,
+          },
+        },
+      };
     case 'updatePayload':
       return {
         ...state,
@@ -56,6 +67,7 @@ const reducer = (state: initialStateType, action: actionType) => {
           ...state.screens,
           [id]: {
             id,
+            surface: SurfaceOptions.Message,
             name: action?.payload || 'default',
             payload: [],
             changedByEditor: true,
@@ -72,6 +84,7 @@ const reducer = (state: initialStateType, action: actionType) => {
         screens: {
           ...state.screens,
           [id]: {
+            ...state.screens[action.payload.id],
             id,
             name: action?.payload.name || 'default',
             payload: state.screens[action.payload.id].payload,
