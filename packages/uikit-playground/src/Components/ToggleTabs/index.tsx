@@ -1,17 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Tabs } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useContext } from 'react';
 
-import { context } from '../../../Context';
-import { tabsToggleAction } from '../../../Context/action';
-
-const TabChange: FC<{ tabsItem: string[] }> = ({ tabsItem }) => {
-  const {
-    state: { tabsToggle },
-    dispatch,
-  } = useContext(context);
-
+const ToggleTabs: FC<{
+  tabsItem: string[],
+  onChange: (index: number) => void,
+  selectedTab: number,
+}> = ({ tabsItem, onChange, selectedTab }) => {
   const disableBorder = css`
     border-left: none !important;
     border-right: none !important;
@@ -24,8 +19,8 @@ const TabChange: FC<{ tabsItem: string[] }> = ({ tabsItem }) => {
       {tabsItem.map((item: string, index: number) => (
         <Tabs.Item
           key={index}
-          selected={tabsToggle === index}
-          onClick={() => dispatch(tabsToggleAction(index))}
+          selected={selectedTab === index}
+          onClick={() => onChange(index)}
           className={disableBorder}
           children={item}
         />
@@ -34,4 +29,4 @@ const TabChange: FC<{ tabsItem: string[] }> = ({ tabsItem }) => {
   );
 };
 
-export default TabChange;
+export default ToggleTabs;

@@ -1,4 +1,5 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import DraggableList from '../../../Draggable/DraggableList';
 import type { DraggableListProps } from '../../../Draggable/DraggableList';
@@ -23,10 +24,8 @@ const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
     </Message.LeftContainer>
     <Message.Container>
       <Message.Header>
-        <Message.NameContainer>
-          <Message.Name>Haylie George</Message.Name>{' '}
-          <Message.Username>@haylie.george</Message.Username>
-        </Message.NameContainer>
+        <Message.Name>Haylie George</Message.Name>
+        <Message.Username>@haylie.george</Message.Username>
         <Message.Role>Admin</Message.Role>
         <Message.Role>User</Message.Role>
         <Message.Role>Owner</Message.Role>

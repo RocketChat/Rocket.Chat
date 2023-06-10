@@ -6,6 +6,7 @@ import {
   UiKitContextualBar as uiKitContextualBar,
 } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import React from 'react';
 
 import DeleteElementBtn from './DeleteElementBtn';
 import ElementWrapper from './ElementWrapper';
@@ -15,11 +16,11 @@ const RenderPayload = ({
   payload,
   surface,
 }: {
-  index: number;
-  payload: readonly LayoutBlock[];
-  surface: number;
+  index: number,
+  payload: readonly LayoutBlock[],
+  surface: number,
 }) => {
-  const uiKitRender: { [key: number]: () => unknown } = {
+  const uiKitRender: { [key: number]: any } = {
     '1': () => uiKitMessage(payload),
     '2': () => uiKitBanner(payload),
     '3': () => uiKitModal(payload),

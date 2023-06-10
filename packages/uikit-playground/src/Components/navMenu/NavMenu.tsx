@@ -1,10 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
-import { context } from '../../Context';
-import { navMenuToggleAction } from '../../Context/action';
+import { context, navMenuToggleAction } from '../../Context';
 import Menu from './Menu';
 
 const NavMenu: FC = () => {

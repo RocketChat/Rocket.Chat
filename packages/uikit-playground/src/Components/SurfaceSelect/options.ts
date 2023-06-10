@@ -1,4 +1,4 @@
-type SelectOption = readonly [value: string, label: string, selected?: boolean];
+type SelectOption = [value: string, label: string, selected?: boolean]
 
 const options: SelectOption[] = [
   ['1', 'Message Preview'],

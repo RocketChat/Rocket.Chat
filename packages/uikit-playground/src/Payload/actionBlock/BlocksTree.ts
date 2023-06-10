@@ -1,4 +1,4 @@
-import type { Item } from '../Components/DropDown/types';
+import type { Item } from '../../Components/DropDown/types';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,

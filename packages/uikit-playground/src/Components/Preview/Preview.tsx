@@ -1,10 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 
-import { context } from '../../Context';
-import { tabsToggleAction } from '../../Context/action';
+import { context, previewTabsToggleAction } from '../../Context';
 import NavPanel from './NavPanel';
 import Wrapper from './Wrapper';
 
@@ -15,7 +14,7 @@ const Preview: FC = () => {
   } = useContext(context);
 
   useEffect(() => {
-    dispatch(tabsToggleAction(0));
+    dispatch(previewTabsToggleAction(0));
   }, [isTablet, dispatch]);
 
   return (

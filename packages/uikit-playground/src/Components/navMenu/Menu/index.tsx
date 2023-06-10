@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
+import React from 'react';
 
 import SurfaceSelect from '../../SurfaceSelect';
 import MenuItem from './MenuItem';

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Icon } from '@rocket.chat/fuselage';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
-import { context } from '../../../../Context';
-import { docAction } from '../../../../Context/action';
+import { context, docAction } from '../../../../Context';
 
 const Display = ({ elementIndex }: { elementIndex: number }) => {
   const { state, dispatch } = useContext(context);

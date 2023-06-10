@@ -5,7 +5,7 @@ import type { ReactElement, ReactNode } from 'react';
 const ElementWrapper = ({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode,
 }): ReactElement => (
   <Box
     children={children}

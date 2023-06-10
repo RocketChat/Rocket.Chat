@@ -1,9 +1,8 @@
 import { Select } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
-import { context } from '../../Context';
-import { surfaceAction } from '../../Context/action';
+import { context, surfaceAction } from '../../Context';
 import options from './options';
 
 const SurfaceSelect: FC = () => {
@@ -15,7 +14,7 @@ const SurfaceSelect: FC = () => {
     <Select
       options={options}
       value={`${surface}`}
-      placeholder='Surface'
+      placeholder={'Surface'}
       onChange={(e) => {
         dispatch(surfaceAction(parseInt(e)));
       }}

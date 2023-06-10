@@ -73,7 +73,7 @@ export default function useCodeMirror(extensions?: Extension[], doc?: string) {
     });
 
     return () => view.current?.destroy();
-  }, [doc, element, extensions, updateListener]);
+  }, [element]);
 
   return { editor, changes, setValue };
 }

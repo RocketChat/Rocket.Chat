@@ -1,6 +1,6 @@
 type action = {
-  type: 'sidebarToggle';
-  payload: boolean;
+  type: string,
+  payload: boolean,
 };
 
 export const sidebarToggleAction = (payload: boolean): action => ({

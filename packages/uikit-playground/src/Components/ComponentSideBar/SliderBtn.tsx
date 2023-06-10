@@ -1,10 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 
-import { context } from '../../Context';
-import { sidebarToggleAction } from '../../Context/action';
+import { context, sidebarToggleAction } from '../../Context';
 
 const SliderBtn: FC = () => {
   const {
@@ -49,6 +48,7 @@ const SliderBtn: FC = () => {
         transition: var(--animation-default);
       `;
 
+  // eslint-disable-next-line no-nested-ternary
   const toggleStyle = !isMobile
     ? css`
         left: 0px;

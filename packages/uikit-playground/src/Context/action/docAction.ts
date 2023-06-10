@@ -1,11 +1,11 @@
 import type { docType } from '../initialState';
 
-export type DocAction = {
-  type: 'doc';
-  payload: docType;
+type action = {
+  type: string,
+  payload: docType,
 };
 
-export const docAction = (payload: docType): DocAction => ({
+export const docAction = (payload: docType): action => ({
   type: 'doc',
   payload,
 });

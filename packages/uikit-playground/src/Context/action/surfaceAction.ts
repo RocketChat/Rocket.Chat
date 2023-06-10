@@ -1,6 +1,6 @@
 type action = {
-  type: 'surface';
-  payload: number;
+  type: string,
+  payload: number,
 };
 
 export const surfaceAction = (payload: number): action => ({

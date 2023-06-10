@@ -1,6 +1,6 @@
 type action = {
-  type: 'isTablet';
-  payload: boolean;
+  type: string,
+  payload: boolean,
 };
 
 export const isTabletAction = (payload: boolean): action => ({

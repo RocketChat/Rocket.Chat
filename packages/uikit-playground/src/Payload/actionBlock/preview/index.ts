@@ -116,6 +116,6 @@ export const previewWithImageAndUrl: readonly LayoutBlock[] = [
         },
       ],
     },
-    // externalUrl: "https://rocket.chat",
+    // externalUrl: 'https://rocket.chat',
   },
 ];

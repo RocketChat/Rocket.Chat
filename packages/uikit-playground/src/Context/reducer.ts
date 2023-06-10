@@ -1,12 +1,8 @@
-import type { DocAction } from './action/docAction';
 import type { initialStateType } from './initialState';
 
-type ActionType =
-  | DocAction
-  | { type: 'navMenuToogle' | 'surface' | 'editorToggle'; payload: number }
-  | { type: 'isMobile' | 'isTablet' | 'sidebarToggle' | 'navMenuToggle'; payload: boolean }
+type actionType = { type: string; payload: any };
 
-const reducer = (state: initialStateType, action: ActionType) => {
+const reducer = (state: initialStateType, action: actionType) => {
   switch (action.type) {
     case 'isMobile':
       return { ...state, isMobile: action.payload };
@@ -14,8 +10,10 @@ const reducer = (state: initialStateType, action: ActionType) => {
       return { ...state, isTablet: action.payload };
     case 'sidebarToggle':
       return { ...state, sideBarToggle: action.payload };
+    case 'previewToggle':
+      return { ...state, previewTabsToggle: action.payload };
     case 'editorToggle':
-      return { ...state, tabsToggle: action.payload };
+      return { ...state, editorTabsToggle: action.payload };
     case 'navMenuToggle':
       return { ...state, navMenuToggle: action.payload };
     case 'surface':
@@ -28,8 +26,13 @@ const reducer = (state: initialStateType, action: ActionType) => {
           changedByEditor: action.payload.changedByEditor === undefined,
         },
       };
+    case 'actionPreview':
+      return { ...state, actionPreview: action.payload };
+    case 'user':
+      return { ...state, user: action.payload };
     default:
       return state;
   }
 };
+
 export default reducer;
