@@ -4,8 +4,8 @@ import type { FC } from 'react';
 import React, { useContext } from 'react';
 
 import { context, templatesToggleAction } from '../../Context';
-import Container from './Container';
 import { templates } from '../../utils/templates';
+import Container from './Container';
 
 const Templates: FC = () => {
   const {

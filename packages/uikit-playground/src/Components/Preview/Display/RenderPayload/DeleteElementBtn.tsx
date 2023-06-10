@@ -8,12 +8,13 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
   const { state, dispatch } = useContext(context);
 
   const deleteElement = () => {
-    const {
-      doc: { payload },
-    } = state;
+    const { screens, activeScreen } = state;
     // @ts-ignore
+    const payload = [...screens[activeScreen].payload];
     payload.splice(elementIndex, 1);
-    dispatch(updatePayloadAction({ payload: [...payload], changedByEditor: false }));
+    dispatch(
+      updatePayloadAction({ payload: [...payload], changedByEditor: false })
+    );
   };
   return (
     <div
@@ -35,7 +36,7 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
       className={'closeBtn'}
       onClick={deleteElement}
     >
-      <Icon name='cross' size='x20' />
+      <Icon name="cross" size="x20" />
     </div>
   );
 };

@@ -3,11 +3,11 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import React, { useRef, useMemo } from 'react';
 
-interface ThumbnailRendererProps {
+interface ThumbnailProps {
   of: ReactNode;
 }
 
-const ThumbnailRenderer: React.FC<ThumbnailRendererProps> = ({ of }) => {
+const Thumbnail: React.FC<ThumbnailProps> = ({ of }) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
 
@@ -38,4 +38,4 @@ const ThumbnailRenderer: React.FC<ThumbnailRendererProps> = ({ of }) => {
   );
 };
 
-export default ThumbnailRenderer;
+export default Thumbnail;

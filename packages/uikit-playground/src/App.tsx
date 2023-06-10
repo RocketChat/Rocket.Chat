@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import './cssVariables.css';
 import { ToastBarProvider } from '@rocket.chat/fuselage-toastbar';
@@ -5,10 +6,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { HomeLayout } from './Components/Routes/HomeLayout';
 import { ProtectedLayout } from './Components/Routes/ProtectedLayout';
+import FlowDiagram from './Pages/FlowDiagram';
 import Playground from './Pages/Playground';
 import SignInToWorkspace from './Pages/SignInSignUp';
 import routes from './Routes/Routes';
-import React from 'react';
+
 
 function App() {
   return (
@@ -36,6 +38,7 @@ function App() {
               path={`/${routes.signup}`}
               element={<SignInToWorkspace route={routes.signup} />}
             />
+            <Route path={`/${routes.flow}`} element={<FlowDiagram />} />
             <Route path={`*`} element={<Playground />} />
           </Route>
           <Route element={<ProtectedLayout />}>

@@ -3,12 +3,13 @@ import React from 'react';
 
 import DraggableList from '../../../Draggable/DraggableList';
 import type { DraggableListProps } from '../../../Draggable/DraggableList';
+import { SurfaceOptions } from './constant';
 
 const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
   <Message clickable>
     <Message.LeftContainer>
       <Avatar
-        url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
+        url="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
               IyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAA
               AAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAg
@@ -18,7 +19,7 @@ const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
               eX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef
               6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkB
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
-              UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
+              UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
         size={'x36'}
       />
     </Message.LeftContainer>
@@ -32,14 +33,18 @@ const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
         <Message.Timestamp>12:00 PM</Message.Timestamp>
       </Message.Header>
       <Message.Body>
-        <DraggableList surface={1} blocks={blocks} onDragEnd={onDragEnd} />
+        <DraggableList
+          surface={SurfaceOptions.message}
+          blocks={blocks}
+          onDragEnd={onDragEnd}
+        />
       </Message.Body>
     </Message.Container>
     <Message.Toolbox.Wrapper>
       <Message.Toolbox>
-        <Message.Toolbox.Item icon='quote' />
-        <Message.Toolbox.Item icon='clock' />
-        <Message.Toolbox.Item icon='thread' />
+        <Message.Toolbox.Item icon="quote" />
+        <Message.Toolbox.Item icon="clock" />
+        <Message.Toolbox.Item icon="thread" />
       </Message.Toolbox>
     </Message.Toolbox.Wrapper>
   </Message>

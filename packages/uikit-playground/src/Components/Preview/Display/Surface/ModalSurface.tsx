@@ -13,19 +13,24 @@ import React from 'react';
 
 import DraggableList from '../../../Draggable/DraggableList';
 import type { DraggableListProps } from '../../../Draggable/DraggableList';
+import { SurfaceOptions } from './constant';
 
 const ModalSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
   <Modal>
     <ModalHeader>
-      <ModalThumb url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
+      <ModalThumb url="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" />
       <ModalTitle>Modal Header</ModalTitle>
       <ModalClose />
     </ModalHeader>
     <ModalContent>
-      <DraggableList surface={3} blocks={blocks} onDragEnd={onDragEnd} />
+      <DraggableList
+        surface={SurfaceOptions.Modal}
+        blocks={blocks}
+        onDragEnd={onDragEnd}
+      />
     </ModalContent>
     <ModalFooter>
-      <ButtonGroup align='end'>
+      <ButtonGroup align="end">
         <Button>Cancel</Button>
         <Button primary>Submit</Button>
       </ButtonGroup>

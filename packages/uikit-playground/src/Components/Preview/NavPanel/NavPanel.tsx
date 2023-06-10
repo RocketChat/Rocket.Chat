@@ -33,7 +33,7 @@ const NavPanel: FC = () => {
 			`}
 		>
 			<Box display='flex' flexGrow={0} pis={'5px'}>
-				<SurfaceSelect />
+				{!isMobile && <SurfaceSelect />}
 				<Button mis='10px' small onClick={() => dispatch(templatesToggleAction(true))}>
 					Templates
 				</Button>

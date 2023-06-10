@@ -14,12 +14,13 @@ const ElementWrapper = ({
       box-sizing: border-box;
       outline: 1px solid transparent;
       height: fit-content;
-      padding: 0 8px;
       align-items: center;
       transition: var(--animation-fast);
+      padding: 0 8px;
+
       &:hover {
-        padding: 8px;
         border-radius: 4px;
+        padding: 8px;
         outline: var(--elements-border);
         transition: var(--animation-fast);
         box-shadow: 0px 0px 8px 1px #ddd;
@@ -28,9 +29,11 @@ const ElementWrapper = ({
           visibility: visible !important;
         }
       }
+
       &:active {
-        padding: 8px;
         background-color: #fff;
+        padding: 8px;
+        transition: var(--animation-fast);
         outline: var(--elements-border);
         box-shadow: 0px 0px 8px 1px #ddd;
       }
