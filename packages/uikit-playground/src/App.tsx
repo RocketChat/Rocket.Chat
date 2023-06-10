@@ -8,8 +8,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Playground />} />
-        <Route path='*' element={<Playground />} />
+        <Route path="/" element={<Playground />} />
+        <Route path="*" element={<Playground />} />
       </Routes>
     </BrowserRouter>
   );

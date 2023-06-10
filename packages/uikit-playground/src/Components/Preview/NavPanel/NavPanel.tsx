@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import React, { useContext } from 'react';
 
-import { context, previewTabsToggleAction } from '../../../Context';
+import { context, previewTabsToggleAction, templatesToggleAction } from '../../../Context';
 import SurfaceSelect from '../../SurfaceSelect';
 import ToggleTabs from '../../ToggleTabs';
 
@@ -32,8 +32,11 @@ const NavPanel: FC = () => {
 				user-select: none;
 			`}
 		>
-			<Box flexGrow={0} pis={'5px'}>
+			<Box display='flex' flexGrow={0} pis={'5px'}>
 				<SurfaceSelect />
+				<Button mis='10px' small onClick={() => dispatch(templatesToggleAction(true))}>
+					Templates
+				</Button>
 			</Box>
 			{isTablet && <ToggleTabs tabsItem={tabsItem} onChange={toggleTabsHandler} selectedTab={previewTabsToggle} />}
 		</Box>

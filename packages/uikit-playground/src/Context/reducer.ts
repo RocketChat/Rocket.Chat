@@ -1,6 +1,6 @@
 import type { initialStateType } from './initialState';
 
-type actionType = { type: string; payload: any };
+type actionType = { type: string, payload: any };
 
 const reducer = (state: initialStateType, action: actionType) => {
   switch (action.type) {
@@ -14,6 +14,8 @@ const reducer = (state: initialStateType, action: actionType) => {
       return { ...state, previewTabsToggle: action.payload };
     case 'editorToggle':
       return { ...state, editorTabsToggle: action.payload };
+    case 'templatesToggle':
+      return { ...state, templatesToggle: action.payload };
     case 'navMenuToggle':
       return { ...state, navMenuToggle: action.payload };
     case 'surface':

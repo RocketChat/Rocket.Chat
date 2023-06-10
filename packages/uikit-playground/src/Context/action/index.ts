@@ -8,3 +8,4 @@ export { docAction } from './docAction';
 export { surfaceAction } from './surfaceAction';
 export { actionPreviewAction } from './actionPreviewAction';
 export { userAction } from './userAction';
+export { templatesToggleAction } from './templatesToggleAction';

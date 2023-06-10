@@ -6,6 +6,7 @@ import { useEffect, useContext } from 'react';
 import ComponentSideBar from '../Components/ComponentSideBar';
 import NavBar from '../Components/NavBar';
 import Preview from '../Components/Preview';
+import Templates from '../Components/TemplatesModal';
 import NavMenu from '../Components/navMenu';
 import { context, isMobileAction, isTabletAction } from '../Context';
 
@@ -29,20 +30,22 @@ const Playground: FC = () => {
   }, [isTablet, dispatch]);
 
   return (
-    <Box
-      display={'flex'}
-      width={'100%'}
-      height={'100%'}
-      flexDirection={'column'}
-      overflow='hidden'
-      bg={'var(--primaryBackgroundColor)'}
-    >
-      <NavBar />
-
-      {navMenuToggle && <NavMenu />}
-      <Box width={'100%'} flexGrow={1} position={'relative'} zIndex={0}>
-        <ComponentSideBar />
-        <Preview />
+    <Box position="relative" width={'100%'} height={'100%'}>
+      <Templates />
+      <Box
+        display={'flex'}
+        width={'100%'}
+        height={'100%'}
+        flexDirection={'column'}
+        overflow="hidden"
+        bg={'var(--primaryBackgroundColor)'}
+      >
+        <NavBar />
+        {navMenuToggle && <NavMenu />}
+        <Box width={'100%'} flexGrow={1} position={'relative'} zIndex={0}>
+          <ComponentSideBar />
+          <Preview />
+        </Box>
       </Box>
     </Box>
   );
