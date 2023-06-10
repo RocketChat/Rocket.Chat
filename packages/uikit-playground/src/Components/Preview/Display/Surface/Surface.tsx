@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import React, { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
-import { context, docAction, actionPreviewAction } from '../../../../Context';
+import { context, updatePayloadAction, actionPreviewAction } from '../../../../Context';
 import generateActionPreview from '../../../../Payload/actionPreview/generateActionPreview';
 import type { Block } from '../../../Draggable/DraggableList';
 import BannerSurface from './BannerSurface';
@@ -15,31 +15,34 @@ import { reorder } from './Reorder';
 
 const Surface: FC = () => {
 	const {
-		state: {
-			doc: { payload },
-			surface,
-		},
+		state: { screens, surface, activeScreen },
 		dispatch,
 	} = useContext(context);
 	const [uniqueBlocks, setUniqueBlocks] = useState<{
 		block: Block[];
 		isChangeByDnd: boolean;
 	}>({
-		block: payload.map((block, i) => ({ id: `${i}`, payload: block })),
+		block: screens[activeScreen]?.payload.map((block, i) => ({
+			id: `${i}`,
+			payload: block,
+		})),
 		isChangeByDnd: false,
 	});
 	const preview = generateActionPreview('Action Block', {});
 	useEffect(() => {
 		setUniqueBlocks({
-			block: payload.map((block, i) => ({ id: `${i}`, payload: block })),
+			block: screens[activeScreen]?.payload.map((block, i) => ({
+				id: `${i}`,
+				payload: block,
+			})),
 			isChangeByDnd: false,
 		});
-	}, [payload]);
+	}, [screens[activeScreen]?.payload]);
 
 	useEffect(() => {
 		if (uniqueBlocks.isChangeByDnd) {
 			dispatch(
-				docAction({
+				updatePayloadAction({
 					payload: uniqueBlocks.block.map((block) => block.payload),
 					changedByEditor: false,
 				}),

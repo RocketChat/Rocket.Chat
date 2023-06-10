@@ -4,7 +4,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import json5 from 'json5';
 import { useEffect, useContext } from 'react';
 
-import { docAction, context } from '../../Context';
+import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 
@@ -13,10 +13,13 @@ type CodeMirrorProps = {
 };
 
 const CodeEditor = ({ extensions }: CodeMirrorProps) => {
-  const { state, dispatch } = useContext(context);
+  const {
+    state: { screens, activeScreen },
+    dispatch,
+  } = useContext(context);
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    json5.stringify(state.doc.payload, undefined, 4)
+    json5.stringify(screens[activeScreen].payload, undefined, 4)
   );
   const debounceValue = useDebouncedValue(changes?.value, 1500);
 
@@ -25,13 +28,13 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
       try {
         const parsedCode = json5.parse(changes.value);
         dispatch(
-          docAction({
+          updatePayloadAction({
             payload: parsedCode,
             changedByEditor: false,
           })
         );
 
-        dispatch(docAction({ payload: parsedCode }));
+        dispatch(updatePayloadAction({ payload: parsedCode }));
       } catch (e) {
         // do nothing
       }
@@ -52,14 +55,14 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
   }, [debounceValue]);
 
   useEffect(() => {
-    if (!state.doc.changedByEditor) {
-      setValue(JSON.stringify(state.doc.payload, undefined, 4), {});
+    if (!screens[activeScreen].changedByEditor) {
+      setValue(JSON.stringify(screens[activeScreen].payload, undefined, 4), {});
     }
-  }, [state.doc.payload]);
+  }, [screens[activeScreen].payload]);
 
   return (
     <>
-      <Box display='grid' height='100%' width={'100%'} ref={editor} />
+      <Box display="grid" height="100%" width={'100%'} ref={editor} />
     </>
   );
 };

@@ -2,7 +2,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { useContext } from 'react';
 
-import { context, docAction } from '../../../../Context';
+import { context, updatePayloadAction } from '../../../../Context';
 
 const Display = ({ elementIndex }: { elementIndex: number }) => {
   const { state, dispatch } = useContext(context);
@@ -13,7 +13,7 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
     } = state;
     // @ts-ignore
     payload.splice(elementIndex, 1);
-    dispatch(docAction({ payload: [...payload], changedByEditor: false }));
+    dispatch(updatePayloadAction({ payload: [...payload], changedByEditor: false }));
   };
   return (
     <div

@@ -6,7 +6,7 @@ import container from './container';
 
 const generateActionPreview = (type: string, data: actionPreviewType) => {
   const {
-    state: { user, surface, doc },
+    state: { user, surface, screens, activeScreen },
   } = useContext(context);
 
   const actionPreview: actionPreviewType = {
@@ -14,7 +14,7 @@ const generateActionPreview = (type: string, data: actionPreviewType) => {
     user,
     api_app_id: '',
     token: '',
-    container: container[surface-1],
+    container: container[surface - 1],
     trigger_id: '',
     team: null,
     enterprise: null,
@@ -23,7 +23,7 @@ const generateActionPreview = (type: string, data: actionPreviewType) => {
     ...data,
   };
   if (type === 'View Submission') {
-    actionPreview.view = doc.payload;
+    actionPreview.view = screens[activeScreen].payload;
   }
   return actionPreview;
 };

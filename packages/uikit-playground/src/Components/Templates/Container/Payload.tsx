@@ -3,14 +3,14 @@ import { Box, Message, Avatar, Button } from '@rocket.chat/fuselage';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import React, { useContext } from 'react';
 
-import { context, templatesToggleAction, docAction } from '../../../Context';
+import { context, templatesToggleAction, updatePayloadAction } from '../../../Context';
 import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
 
 const Payload = ({ payload }: { payload: readonly LayoutBlock[] }) => {
   const { dispatch } = useContext(context);
   const clickHandler = () => {
     dispatch(templatesToggleAction(false));
-    dispatch(docAction({ payload, changedByEditor: false }));
+    dispatch(updatePayloadAction({ payload, changedByEditor: false }));
   };
   return (
     <>

@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Label, Chevron } from '@rocket.chat/fuselage';
 import React, { useState, useContext } from 'react';
 
-import { context, docAction } from '../../Context';
+import { context, updatePayloadAction } from '../../Context';
 import ItemsIcon from './ItemsIcon';
 import { itemStyle, labelStyle } from './itemsStyle';
 import type { ItemProps } from './types';
@@ -16,8 +16,8 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 		toggleItemOpen(!isOpen);
 		payload &&
 			dispatch(
-				docAction({
-					payload: [...state.doc.payload, payload[0]],
+				updatePayloadAction({
+					payload: [...state.screens[state.activeScreen].payload, payload[0]],
 					changedByEditor: false,
 				}),
 			);

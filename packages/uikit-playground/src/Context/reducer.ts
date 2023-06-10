@@ -1,6 +1,9 @@
+import _ from 'lodash';
+
+import getUniqueId from '../utils/getUniqueId';
 import type { initialStateType } from './initialState';
 
-type actionType = { type: string, payload: any };
+type actionType = { type: string, payload?: any };
 
 const reducer = (state: initialStateType, action: actionType) => {
   switch (action.type) {
@@ -20,18 +23,79 @@ const reducer = (state: initialStateType, action: actionType) => {
       return { ...state, navMenuToggle: action.payload };
     case 'surface':
       return { ...state, surface: action.payload };
-    case 'doc':
+    case 'updatePayload':
       return {
         ...state,
-        doc: {
-          payload: action.payload.payload,
-          changedByEditor: action.payload.changedByEditor === undefined,
+        screens: {
+          ...state.screens,
+          [state.activeScreen]: {
+            ...state.screens[state.activeScreen],
+            payload: action.payload.payload,
+            changedByEditor: action.payload.changedByEditor === undefined,
+          },
         },
       };
     case 'actionPreview':
       return { ...state, actionPreview: action.payload };
     case 'user':
       return { ...state, user: action.payload };
+    case 'openCreateNewScreen':
+      return { ...state, openCreateNewScreen: action.payload };
+    case 'activeScreen':
+      return {
+        ...state,
+        screens: _.cloneDeep(state.screens),
+        openCreateNewScreen: false,
+        activeScreen: action.payload,
+      };
+    case 'createNewScreen': {
+      const id = getUniqueId();
+      return {
+        ...state,
+        screens: {
+          ...state.screens,
+          [id]: {
+            id,
+            name: action?.payload || 'default',
+            payload: [],
+            changedByEditor: true,
+          },
+        },
+        openCreateNewScreen: false,
+        activeScreen: id,
+      };
+    }
+    case 'duplicateScreen': {
+      const id = getUniqueId();
+      return {
+        ...state,
+        screens: {
+          ...state.screens,
+          [id]: {
+            id,
+            name: action?.payload.name || 'default',
+            payload: state.screens[action.payload.id].payload,
+            changedByEditor: true,
+          },
+        },
+        activeScreen: id,
+      };
+    }
+    case 'deleteScreen': {
+      const screens = _.cloneDeep(state.screens);
+      delete screens[action.payload];
+      if (state.activeScreen === action.payload) {
+        return {
+          ...state,
+          screens,
+          activeScreen: Object.keys(screens)[0],
+        };
+      }
+      return {
+        ...state,
+        screens,
+      };
+    }
     default:
       return state;
   }

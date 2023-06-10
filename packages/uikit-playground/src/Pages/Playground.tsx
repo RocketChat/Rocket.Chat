@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
 import ComponentSideBar from '../Components/ComponentSideBar';
+import CreateNewScreenContainer from '../Components/CreateNewScreen/CreateNewScreenContainer';
 import NavBar from '../Components/NavBar';
 import Preview from '../Components/Preview';
 import Templates from '../Components/Templates';
@@ -31,6 +32,7 @@ const Playground: FC = () => {
 
   return (
     <Box position="relative" width={'100%'} height={'100%'}>
+      <CreateNewScreenContainer />
       <Templates />
       <Box
         display={'flex'}
