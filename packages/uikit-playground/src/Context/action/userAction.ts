@@ -1,11 +1,12 @@
 import type { userType } from '../initialState';
+import { ActionTypes } from '../reducer';
 
-type action = {
-  type: string,
+export type UserAction = {
+  type: ActionTypes.User,
   payload: userType,
 };
 
-export const userAction = (payload: userType): action => ({
-  type: 'user',
+export const userAction = (payload: userType): UserAction => ({
+  type: ActionTypes.User,
   payload,
 });

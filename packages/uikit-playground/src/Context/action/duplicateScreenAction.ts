@@ -1,12 +1,14 @@
-type action = {
-  type: string,
+import { ActionTypes } from "../reducer";
+
+export type DuplicateScreenAction = {
+  type: ActionTypes.DuplicateScreen,
   payload: { id: string, name?: string },
 };
 
 export const duplicateScreenAction = (payload: {
   id: string,
   name?: string,
-}): action => ({
-  type: 'duplicateScreen',
+}): DuplicateScreenAction => ({
+  type: ActionTypes.DuplicateScreen,
   payload,
 });

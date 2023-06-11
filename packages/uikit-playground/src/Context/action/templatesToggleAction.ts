@@ -1,9 +1,11 @@
-type action = {
-  type: string,
+import { ActionTypes } from "../reducer";
+
+export type TemplatesToggleAction = {
+  type: ActionTypes.TemplatesToggle,
   payload: boolean,
 };
 
-export const templatesToggleAction = (payload: boolean): action => ({
-  type: 'templatesToggle',
+export const templatesToggleAction = (payload: boolean): TemplatesToggleAction => ({
+  type: ActionTypes.TemplatesToggle,
   payload,
 });

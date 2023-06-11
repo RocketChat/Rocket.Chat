@@ -17,19 +17,8 @@ function App() {
   return (
     <ToastBarProvider>
       <BrowserRouter>
-        {/* <Routes>
-          <Route path={`/${routes.home}`} element={<Playground />} />
-          <Route
-            path={`/${routes.login}`}
-            element={<SignInToWorkspace route={routes.login} />}
-          />
-          <Route
-            path={`/${routes.signup}`}
-            element={<SignInToWorkspace route={routes.signup} />}
-          />
-          <Route path="*" element={<Playground />} />
-        </Routes> */}
         <Routes>
+        <Route path={`/`} element={<Playground />} />
           <Route element={<HomeLayout />}>
             <Route
               path={`/${routes.login}`}
@@ -40,7 +29,6 @@ function App() {
               element={<SignInToWorkspace route={routes.signup} />}
             />
             <Route path={`/${routes.flow}`} element={<FlowDiagram />} />
-            <Route path={`*`} element={<Playground />} />
           </Route>
           <Route element={<ProtectedLayout />}>
             <Route path={`/${routes.home}`} element={<Playground />} />
