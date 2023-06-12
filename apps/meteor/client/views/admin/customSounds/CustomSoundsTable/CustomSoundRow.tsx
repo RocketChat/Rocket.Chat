@@ -3,8 +3,8 @@ import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
-import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
+import { GenericTableCell } from '../../../../components/GenericTable/V2/GenericTableCell';
+import { GenericTableRow } from '../../../../components/GenericTable/V2/GenericTableRow';
 
 type CustomSoundRowProps = {
 	onClick: (soundId: string) => () => void;

@@ -164,11 +164,7 @@ const MonitorsTable = () => {
 				</>
 			)}
 			{isSuccess && data?.total === 0 && (
-				<GenericNoResults
-					icon='baloon-exclamation'
-					title={t('No_monitors_found')}
-					description={t('No_monitors_found_description')}
-				></GenericNoResults>
+				<GenericNoResults icon='baloon-exclamation' title={t('No_monitors_found')} description={t('No_monitors_found_description')} />
 			)}
 			{isError && (
 				<States>

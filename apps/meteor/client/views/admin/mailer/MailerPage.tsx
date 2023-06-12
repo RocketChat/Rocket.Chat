@@ -1,19 +1,16 @@
-import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { SyntheticEvent, ReactElement } from 'react';
+import type { SyntheticEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
-import type { sendMailObject } from './MailerRoute';
+import { useSendMail } from './useSendMail';
 
-type MailerProps = {
-	sendMail: ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
-};
-
-export function Mailer({ sendMail }: MailerProps): ReactElement {
+const MailerPage = () => {
 	const t = useTranslation();
+	const sendMail = useSendMail();
 
 	const [fromEmail, setFromEmail] = useState<{ value: string; error?: string }>({ value: '' });
 	const [dryRun, setDryRun] = useState(false);
@@ -31,7 +28,6 @@ export function Mailer({ sendMail }: MailerProps): ReactElement {
 							sendMail({ fromEmail, dryRun, query, subject, emailBody });
 						}}
 					>
-						<Icon name='send' size='x20' mie='x8' />
 						{t('Send_email')}
 					</Button>
 				</ButtonGroup>
@@ -107,4 +103,6 @@ export function Mailer({ sendMail }: MailerProps): ReactElement {
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
-}
+};
+
+export default MailerPage;

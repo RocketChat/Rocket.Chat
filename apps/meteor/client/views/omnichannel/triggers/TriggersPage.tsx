@@ -1,26 +1,27 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { Contextualbar, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';
-import TriggersTableContainer from './TriggersTableContainer';
+import TriggersTable from './TriggersTable';
 
-const MonitorsPage = () => {
+const TriggersPage = () => {
 	const t = useTranslation();
-
+	const id = useRouteParameter('id');
+	const context = useRouteParameter('context');
+	const router = useRoute('omnichannel-triggers');
 	const canViewTriggers = usePermission('view-livechat-triggers');
 
-	const router = useRoute('omnichannel-triggers');
+	const reload = useRef(() => null);
 
-	const reload = useRef(() => {});
-
-	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
+	const handleReload = useCallback(() => {
+		reload.current();
+	}, []);
 
 	const handleAdd = useMutableCallback(() => {
 		router.push({ context: 'new' });
@@ -38,28 +39,24 @@ const MonitorsPage = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Livechat_Triggers')}>
-					<Button onClick={handleAdd}>
-						<Icon name='plus' /> {t('New')}
-					</Button>
+					<Button onClick={handleAdd}>{t('New')}</Button>
 				</Page.Header>
 				<Page.Content>
-					<TriggersTableContainer reloadRef={reload} />
+					<TriggersTable reload={reload} />
 				</Page.Content>
 			</Page>
 			{context && (
 				<Contextualbar>
 					<ContextualbarHeader>
-						{t('Trigger')}
+						<ContextualbarTitle>{t('Trigger')}</ContextualbarTitle>
 						<ContextualbarClose onClick={handleCloseContextualbar} />
 					</ContextualbarHeader>
-					<ContextualbarScrollableContent>
-						{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={reload.current} />}
-						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
-					</ContextualbarScrollableContent>
+					{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={handleReload} />}
+					{context === 'new' && <NewTriggerPage onSave={handleReload} />}
 				</Contextualbar>
 			)}
 		</Page>
 	);
 };
 
-export default MonitorsPage;
+export default TriggersPage;

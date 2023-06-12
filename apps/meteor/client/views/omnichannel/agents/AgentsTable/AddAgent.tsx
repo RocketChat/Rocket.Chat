@@ -4,8 +4,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import UserAutoComplete from '../../../components/UserAutoComplete';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import UserAutoComplete from '../../../../components/UserAutoComplete';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 
 type AddAgentProps = {
 	reload: () => void;
@@ -36,7 +36,7 @@ const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
 	};
 
 	return (
-		<Box display='flex' alignItems='center' pi='24px'>
+		<Box display='flex' alignItems='center'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>

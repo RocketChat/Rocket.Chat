@@ -4,9 +4,9 @@ import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.ch
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import GenericModal from '../../../components/GenericModal';
-import { GenericTableCell } from '../../../components/GenericTable';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import GenericModal from '../../../../components/GenericModal';
+import { GenericTableCell } from '../../../../components/GenericTable';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 
 type RemoveAgentButtonProps = {
 	_id: string;
