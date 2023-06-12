@@ -1,0 +1,1 @@
+# @diegosampaio/release-action
