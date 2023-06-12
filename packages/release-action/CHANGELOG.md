@@ -1,1 +1,1 @@
-# @diegosampaio/release-action
+# @rocket.chat/release-action

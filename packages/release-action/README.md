@@ -1,1 +1,1 @@
-# changeset-action
+# release-action
