@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import type { ElementType, ReactNode } from 'react';
 import React from 'react';
 
+import { createSearchParams } from '../../lib/router';
 import { navigate } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
@@ -61,7 +62,7 @@ const registerLazyComponentRoute = (
 		oldRoute?.route?.name &&
 			navigate({
 				pathname: FlowRouter.path(oldRoute.route.name, oldRoute.params),
-				search: `?${new URLSearchParams(oldRoute.queryParams).toString()}`,
+				search: `?${createSearchParams(oldRoute.queryParams).toString()}`,
 			});
 	};
 

@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
+import { createSearchParams } from '../../../lib/router';
 import { navigate } from '../../providers/RouterProvider';
 import { RoomManager } from '../RoomManager';
 import { goToRoomById } from './goToRoomById';
@@ -29,7 +30,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 					rid: message.rid,
 					name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
 				}),
-				search: `?${new URLSearchParams({
+				search: `?${createSearchParams({
 					...queryParams,
 					msg: message._id,
 				}).toString()}`,

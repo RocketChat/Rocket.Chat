@@ -45,3 +45,5 @@ export function matchPath<ParamKey extends string = string>(pattern: PathPattern
 		pattern,
 	};
 }
+
+export const createSearchParams = (init?: string[][] | Record<string, string> | string | URLSearchParams) => new URLSearchParams(init);

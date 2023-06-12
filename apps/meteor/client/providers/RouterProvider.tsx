@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import type { FC } from 'react';
 import React from 'react';
 
+import { createSearchParams } from '../../lib/router';
 import { createSubscription } from '../lib/createSubscription';
 
 const queryRoutePath = (
@@ -44,13 +45,13 @@ export const navigate = (
 
 	const {
 		pathname = FlowRouter.current().path,
-		search = new URLSearchParams(FlowRouter.current().queryParams).toString(),
+		search = createSearchParams(FlowRouter.current().queryParams).toString(),
 		hash,
 	} = toOrDelta;
 	const { replace } = options || {};
 
 	const pathDef = pathname ?? FlowRouter.current().path;
-	const queryParams = search ? Object.fromEntries(new URLSearchParams(search).entries()) : FlowRouter.current().queryParams;
+	const queryParams = search ? Object.fromEntries(createSearchParams(search).entries()) : FlowRouter.current().queryParams;
 
 	const fn = () => {
 		FlowRouter.go(pathDef, undefined, queryParams);
@@ -75,7 +76,7 @@ const pushRoute = (
 	navigate(
 		{
 			pathname: FlowRouter.path(name, parameters),
-			search: `?${new URLSearchParams(queryParams).toString()}`,
+			search: `?${createSearchParams(queryParams).toString()}`,
 		},
 		{ replace: false },
 	);
@@ -91,7 +92,7 @@ const replaceRoute = (
 	navigate(
 		{
 			pathname: FlowRouter.path(name, parameters),
-			search: `?${new URLSearchParams(queryParams).toString()}`,
+			search: `?${createSearchParams(queryParams).toString()}`,
 		},
 		{ replace: true },
 	);

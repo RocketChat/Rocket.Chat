@@ -14,7 +14,7 @@ import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { generatePath } from '../../../../lib/router';
+import { createSearchParams, generatePath } from '../../../../lib/router';
 import { navigate } from '../../../../client/providers/RouterProvider';
 
 declare global {
@@ -121,7 +121,7 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						}),
-						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
 					});
 				case 'c':
 					return navigate({
@@ -132,7 +132,7 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						}),
-						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
 					});
 				case 'p':
 					return navigate({
@@ -143,7 +143,7 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						}),
-						search: `?${new URLSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
 					});
 			}
 		};
