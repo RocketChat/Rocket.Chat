@@ -19,19 +19,11 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
 
 	if (mention === 'all') {
-		return (
-			<Message.Mention tag='@' variant='relevant'>
-				all
-			</Message.Mention>
-		);
+		return <Message.Highlight variant='relevant'>all</Message.Highlight>;
 	}
 
 	if (mention === 'here') {
-		return (
-			<Message.Mention tag='@' variant='relevant'>
-				here
-			</Message.Mention>
-		);
+		return <Message.Highlight variant='relevant'>here</Message.Highlight>;
 	}
 
 	if (!resolved) {
@@ -39,8 +31,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	}
 
 	return (
-		<Message.Mention
-			tag='@'
+		<Message.Highlight
 			variant={resolved._id === uid ? 'critical' : 'other'}
 			title={resolved.username || resolved.name}
 			clickable
@@ -48,7 +39,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			data-uid={resolved._id}
 		>
 			{(showRealName ? resolved.name : resolved.username) ?? mention}
-		</Message.Mention>
+		</Message.Highlight>
 	);
 };
 
