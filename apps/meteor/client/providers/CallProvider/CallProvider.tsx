@@ -21,7 +21,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
-	useRoute,
+	useNavigate,
 	useUser,
 	useSetting,
 	useEndpoint,
@@ -31,7 +31,6 @@ import {
 	useSetModal,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-// import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -89,7 +88,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const result = useVoipClient();
 	const user = useUser();
-	const homeRoute = useRoute('home');
+	const navigate = useNavigate();
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
@@ -111,14 +110,14 @@ export const CallProvider: FC = ({ children }) => {
 					token: roomInfo.v.token || '',
 					options: { comment: data?.comment, tags: data?.tags },
 				}));
-			homeRoute.push({});
+			navigate('/home');
 
 			const queueAggregator = result.voipClient?.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.callEnded();
 			}
 		},
-		[homeRoute, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
+		[navigate, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
 	);
 
 	const openWrapUpModal = useCallback((): void => {

@@ -5,7 +5,7 @@ export { ConnectionStatusContext, ConnectionStatusContextValue } from './Connect
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
-export { RouterContext, RouterContextValue } from './RouterContext';
+export { RouterContext, RouterContextValue, RouterPaths } from './RouterContext';
 export { ServerContext, ServerContextValue } from './ServerContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
@@ -46,6 +46,7 @@ export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
+export { useNavigate } from './hooks/useNavigate';
 export { usePermission } from './hooks/usePermission';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';

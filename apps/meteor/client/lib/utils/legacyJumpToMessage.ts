@@ -4,8 +4,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
+import { navigate } from '../../providers/RouterProvider';
 import { RoomManager } from '../RoomManager';
-import { navigate } from '../router';
 import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */

@@ -1,5 +1,37 @@
 import { createContext } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface RouterPaths {
+	'/': '/';
+	'/home': '/home';
+}
+
+type Pathname = RouterPaths[keyof RouterPaths];
+type Search = string;
+type Hash = string;
+
+type Path = {
+	pathname: Pathname;
+	search: Search;
+	hash: Hash;
+};
+
+// type To = Pathname | Partial<Path>;
+
+type RelativeRoutingType = 'route' | 'path';
+
+export type NavigateFunction = {
+	(
+		to: Pathname | Partial<Path>,
+		options?: {
+			replace?: boolean;
+			state?: any;
+			relative?: RelativeRoutingType;
+		},
+	): void;
+	(delta: number): void;
+};
+
 export type RouteName = string;
 
 export type RouteParameters = Record<string, string>;
@@ -19,6 +51,7 @@ export type RouterContextValue = {
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
+	navigate: NavigateFunction;
 	pushRoute: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -45,6 +78,7 @@ export type RouterContextValue = {
 export const RouterContext = createContext<RouterContextValue>({
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
+	navigate: () => undefined,
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],

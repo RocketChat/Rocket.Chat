@@ -2,12 +2,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
-	useRoute,
 	useUserId,
 	useSetting,
 	usePermission,
 	useMethod,
 	useTranslation,
+	useNavigate,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -61,7 +61,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	const hideTeam = useMethod('hideRoom');
 
-	const router = useRoute('home');
+	const navigate = useNavigate();
 
 	const canDelete = usePermission('delete-team', room._id);
 	const canEdit = usePermission('edit-team-channel', room._id);
@@ -75,7 +75,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			try {
 				await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
 				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-				router.push({});
+				navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -97,7 +97,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 					...(roomsToLeave.length && { rooms: roomsToLeave }),
 				});
 				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
-				router.push({});
+				navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -112,7 +112,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		const hide = async () => {
 			try {
 				await hideTeam(room._id);
-				router.push({});
+				navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

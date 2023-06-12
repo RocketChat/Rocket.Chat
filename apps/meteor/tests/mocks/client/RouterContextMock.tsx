@@ -25,11 +25,12 @@ type RouteTuple = [name: string, parameters?: Record<string, string>, queryStrin
 type RouterContextMockProps = {
 	children?: ReactNode;
 	initialRoute?: RouteTuple;
+	navigate?: (toOrDelta: string | number | { pathname?: string; search?: string; hash?: string }) => void;
 	pushRoute?: (...args: RouteTuple) => void;
 	replaceRoute?: (...args: RouteTuple) => void;
 };
 
-const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
 	const currentRoute = useSubscribableState(initialRoute ?? (['home'] as RouteTuple));
 
 	return (
@@ -42,6 +43,7 @@ const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: 
 				return {
 					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
+					navigate: navigate ?? (() => undefined),
 					pushRoute: (
 						name: string,
 						parameters?: Record<string, string>,
@@ -66,7 +68,7 @@ const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: 
 					setQueryString: () => undefined,
 					getRoutePath: () => '/',
 				};
-			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, pushRoute, replaceRoute])}
+			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, navigate, pushRoute, replaceRoute])}
 		>
 			{children}
 		</RouterContext.Provider>

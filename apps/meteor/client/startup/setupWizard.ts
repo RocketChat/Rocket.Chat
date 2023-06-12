@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { hasRole } from '../../app/authorization/client';
 import { settings } from '../../app/settings/client';
-import { navigate } from '../lib/router';
+import { navigate } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

@@ -25,11 +25,7 @@ const AppLayout = (): ReactElement => {
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
-	return (
-		<>
-			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
-		</>
-	);
+	return <Suspense fallback={<PageLoading />}>{layout}</Suspense>;
 };
 
 export default AppLayout;

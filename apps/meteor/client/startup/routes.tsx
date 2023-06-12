@@ -9,8 +9,8 @@ import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
-import { navigate } from '../lib/router';
 import { dispatchToastMessage } from '../lib/toast';
+import { navigate } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
@@ -37,6 +37,16 @@ const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizat
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 
 FlowRouter.wait();
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'/': '/';
+		'/home': '/home';
+		'/directory': '/directory';
+		'/directory/:tab?': `/directory/${'users' | 'channels' | 'teams' | 'external'}`;
+	}
+}
 
 FlowRouter.route('/', {
 	name: 'index',
@@ -266,7 +276,7 @@ FlowRouter.route('/oauth/error/:error', {
 
 FlowRouter.notFound = {
 	action: (): void => {
-		appLayout.render(<NotFoundPage />);
+		appLayout.renderStandalone(<NotFoundPage />);
 	},
 };
 

@@ -150,7 +150,7 @@ class ReadMessage extends Emitter {
 					$gt: lastReadRecord.ts,
 				},
 				'u._id': {
-					$ne: Meteor.userId(),
+					$ne: Meteor.userId() ?? undefined,
 				},
 			},
 			{

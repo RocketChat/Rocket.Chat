@@ -28,16 +28,16 @@ describe('views/notFound/NotFoundPage', () => {
 	context('"Return to home" button', () => {
 		context('when clicked', () => {
 			it('should go back on history', async () => {
-				const pushRoute = spy();
+				const navigate = spy();
 				render(
-					<RouterContextMock pushRoute={pushRoute}>
+					<RouterContextMock navigate={navigate}>
 						<NotFoundPage />
 					</RouterContextMock>,
 				);
 				const button = screen.getByRole('button', { name: 'Homepage' });
 
 				userEvent.click(button);
-				await waitFor(() => expect(pushRoute).to.have.been.called.with('home'));
+				await waitFor(() => expect(navigate).to.have.been.called.with('/home'));
 			});
 		});
 	});

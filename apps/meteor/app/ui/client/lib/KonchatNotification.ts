@@ -15,7 +15,7 @@ import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { generatePath } from '../../../../lib/router';
-import { navigate } from '../../../../client/lib/router';
+import { navigate } from '../../../../client/providers/RouterProvider';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

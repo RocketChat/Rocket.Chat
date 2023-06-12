@@ -2,6 +2,19 @@ import { lazy } from 'react';
 
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'/account': '/account';
+		'/account/preferences': '/account/preferences';
+		'/account/profile': '/account/profile';
+		'/account/security': '/account/security';
+		'/account/integrations': '/account/integrations';
+		'/account/tokens': '/account/tokens';
+		'/account/omnichannel': '/account/omnichannel';
+	}
+}
+
 export const registerAccountRoute = createRouteGroup(
 	'account',
 	'/account',

@@ -2,6 +2,17 @@ import { lazy } from 'react';
 
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'/admin': '/admin';
+		'/admin/import': '/admin/import';
+		'/admin/import/new': '/admin/import/new';
+		'/admin/import/prepare': '/admin/import/prepare';
+		'/admin/import/progress': '/admin/import/progress';
+	}
+}
+
 export const registerAdminRoute = createRouteGroup(
 	'admin',
 	'/admin',

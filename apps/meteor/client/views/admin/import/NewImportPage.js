@@ -14,10 +14,11 @@ import {
 	UrlInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useSetting, useEndpoint, useTranslation, useNavigate } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import { Importers } from '../../../../app/importer/client/index';
+import { generatePath } from '../../../../lib/router';
 import Page from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
@@ -34,27 +35,25 @@ function NewImportPage() {
 
 	const maxFileSize = useSetting('FileUpload_MaxFileSize');
 
-	const importHistoryRoute = useRoute('admin-import');
-	const newImportRoute = useRoute('admin-import-new');
-	const prepareImportRoute = useRoute('admin-import-prepare');
+	const navigate = useNavigate();
 
 	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
 	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
 		if (importerKey && !importer) {
-			newImportRoute.replace();
+			navigate('/admin/import/new', { replace: true });
 		}
-	}, [importer, importerKey, newImportRoute]);
+	}, [importer, importerKey, navigate]);
 
 	const formatMemorySize = useFormatMemorySize();
 
 	const handleBackToImportsButtonClick = () => {
-		importHistoryRoute.push();
+		navigate('/admin/import');
 	};
 
 	const handleImporterKeyChange = (importerKey) => {
-		newImportRoute.replace({ importerKey });
+		navigate(generatePath('/admin/import/new/:importerKey', { importerKey }), { replace: true });
 	};
 
 	const handleFileTypeChange = (fileType) => {
@@ -106,7 +105,7 @@ function NewImportPage() {
 						}),
 				),
 			);
-			prepareImportRoute.push();
+			navigate('/admin/import/prepare');
 		} finally {
 			setLoading(false);
 		}
@@ -124,7 +123,7 @@ function NewImportPage() {
 		try {
 			await downloadPublicImportFile({ importerKey, fileUrl });
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			prepareImportRoute.push();
+			navigate('/admin/import/prepare');
 		} catch (error) {
 			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {
@@ -144,7 +143,7 @@ function NewImportPage() {
 		try {
 			await downloadPublicImportFile({ importerKey, fileUrl: filePath });
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			prepareImportRoute.push();
+			navigate('/admin/import/prepare');
 		} catch (error) {
 			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {

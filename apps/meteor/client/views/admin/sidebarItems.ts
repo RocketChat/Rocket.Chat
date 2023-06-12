@@ -21,7 +21,7 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		href: 'admin-import',
+		href: '/admin/import',
 		i18nLabel: 'Import',
 		icon: 'import',
 		permissionGranted: (): boolean => hasPermission('run-import'),

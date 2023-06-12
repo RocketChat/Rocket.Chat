@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission, useNavigate } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../../../components/GenericModal';
@@ -11,7 +11,7 @@ export const useRoomDelete = (room: IRoom, resetState?: () => void) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const router = useRoute('home');
+	const navigate = useNavigate();
 
 	const hasPermissionToDelete = usePermission(room.t === 'c' ? 'delete-c' : 'delete-p', room._id);
 	const canDelete = isRoomFederated(room) ? false : hasPermissionToDelete;
@@ -27,7 +27,7 @@ export const useRoomDelete = (room: IRoom, resetState?: () => void) => {
 					return resetState();
 				}
 
-				router.push({});
+				navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

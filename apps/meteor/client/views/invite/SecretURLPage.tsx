@@ -1,17 +1,17 @@
-import { useUserId, useRoute } from '@rocket.chat/ui-contexts';
+import { useUserId, useNavigate } from '@rocket.chat/ui-contexts';
 import RegistrationPageRouter from '@rocket.chat/web-ui-registration';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
 const SecretURLPage = (): ReactElement | null => {
 	const uid = useUserId();
-	const homeRouter = useRoute('home');
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (uid) {
-			homeRouter.replace();
+			navigate('/home');
 		}
-	}, [uid, homeRouter]);
+	}, [uid, navigate]);
 
 	if (uid) {
 		return null;

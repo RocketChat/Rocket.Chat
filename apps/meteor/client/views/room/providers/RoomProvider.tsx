@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { usePermission, useRoute, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { usePermission, useStream, useUserId, useNavigate } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -49,12 +49,12 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [subscribeToRoom, rid, queryClient, room]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const homeRoute = useRoute('home');
+	const navigate = useNavigate();
 	useEffect(() => {
 		if (isSuccess && !room) {
-			homeRoute.push();
+			navigate('/home');
 		}
-	}, [isSuccess, room, homeRoute]);
+	}, [isSuccess, room, navigate]);
 
 	// TODO: Review the necessity of this effect when we move away from cached collections
 	useEffect(() => {
@@ -68,7 +68,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			queryClient.removeQueries(['rooms', { reference: room._id, type: 'l' }]);
 			queryClient.removeQueries(['/v1/rooms.info', room._id]);
 		}
-	}, [homeRoute, isLivechatAdmin, queryClient, userId, room]);
+	}, [isLivechatAdmin, queryClient, userId, room]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 

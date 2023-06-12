@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { navigate } from '../lib/router';
+import { navigate } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.afterFlush(() => {

@@ -10,7 +10,7 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
-import { navigate } from '../lib/router';
+import { navigate } from '../providers/RouterProvider';
 import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
 
 const commands = {

@@ -6,7 +6,7 @@ import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { navigate } from '../../../client/lib/router';
+import { navigate } from '../../../client/providers/RouterProvider';
 
 Meteor.startup(() => {
 	MessageAction.addButton({

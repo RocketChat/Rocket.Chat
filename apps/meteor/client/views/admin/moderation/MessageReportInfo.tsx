@@ -9,7 +9,7 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
-import { navigate } from '../../../lib/router';
+import { navigate } from '../../../providers/RouterProvider';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();

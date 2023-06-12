@@ -10,7 +10,7 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useNavigate,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
@@ -38,7 +38,7 @@ export const useQuickActions = (
 	getAction: (id: string) => void;
 } => {
 	const setModal = useSetModal();
-	const homeRoute = useRoute('home');
+	const navigate = useNavigate();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -166,14 +166,14 @@ export const useQuickActions = (
 			try {
 				await forwardChat(transferData);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				homeRoute.push();
+				navigate('/home');
 				LegacyRoomManager.close(room.t + rid);
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, homeRoute, t],
+		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, navigate, t],
 	);
 
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
@@ -213,7 +213,7 @@ export const useQuickActions = (
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
 		onSuccess: () => {
 			LegacyRoomManager.close(room.t + rid);
-			homeRoute.push();
+			navigate('/home');
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });

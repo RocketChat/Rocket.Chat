@@ -6,7 +6,6 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
-import { navigate } from '../lib/router';
 
 const queryRoutePath = (
 	name: Parameters<RouterContextValue['queryRoutePath']>[0],
@@ -19,6 +18,52 @@ const queryRouteUrl = (
 	parameters: Parameters<RouterContextValue['queryRouteUrl']>[1],
 	queryStringParameters: Parameters<RouterContextValue['queryRouteUrl']>[2],
 ): ReturnType<RouterContextValue['queryRouteUrl']> => createSubscription(() => FlowRouter.url(name, parameters, queryStringParameters));
+
+export const navigate = (
+	toOrDelta:
+		| string
+		| {
+				pathname?: string;
+				search?: string;
+				hash?: string;
+		  }
+		| number,
+	options?: {
+		replace?: boolean;
+	},
+) => {
+	if (typeof toOrDelta === 'number') {
+		window.history.go(toOrDelta);
+		return;
+	}
+
+	if (typeof toOrDelta === 'string') {
+		navigate({ pathname: toOrDelta }, options);
+		return;
+	}
+
+	const {
+		pathname = FlowRouter.current().path,
+		search = new URLSearchParams(FlowRouter.current().queryParams).toString(),
+		hash,
+	} = toOrDelta;
+	const { replace } = options || {};
+
+	const pathDef = pathname ?? FlowRouter.current().path;
+	const queryParams = search ? Object.fromEntries(new URLSearchParams(search).entries()) : FlowRouter.current().queryParams;
+
+	const fn = () => {
+		FlowRouter.go(pathDef, undefined, queryParams);
+		if (hash) location.hash = hash;
+	};
+
+	if (replace) {
+		FlowRouter.withReplaceState(fn);
+		return;
+	}
+
+	fn();
+};
 
 const pushRoute = (
 	name: Parameters<RouterContextValue['pushRoute']>[0],
@@ -85,6 +130,7 @@ const getRoutePath = (name: string, parameters?: Record<string, string>, querySt
 const contextValue = {
 	queryRoutePath,
 	queryRouteUrl,
+	navigate,
 	pushRoute,
 	replaceRoute,
 	queryRouteParameter,

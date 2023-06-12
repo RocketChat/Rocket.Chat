@@ -5,9 +5,9 @@ import { Tracker } from 'meteor/tracker';
 import type { ElementType, ReactNode } from 'react';
 import React from 'react';
 
+import { navigate } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
-import { navigate } from './router';
 
 let oldRoute: Current;
 

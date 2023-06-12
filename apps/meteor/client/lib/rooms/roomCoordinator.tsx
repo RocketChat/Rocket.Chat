@@ -16,10 +16,10 @@ import type {
 	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
+import { navigate } from '../../providers/RouterProvider';
 import RoomOpener from '../../views/room/RoomOpener';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
 import { appLayout } from '../appLayout';
-import { navigate } from '../router';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {

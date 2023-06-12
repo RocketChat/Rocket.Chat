@@ -24,7 +24,7 @@ import {
 	useRole,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useNavigate,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
@@ -134,7 +134,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
 	const saveData = useRef({});
-	const router = useRoute('home');
+	const navigate = useNavigate();
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
@@ -277,7 +277,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
-			router.push({});
+			navigate('/home');
 		};
 
 		setModal(

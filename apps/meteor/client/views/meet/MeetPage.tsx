@@ -1,7 +1,6 @@
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
 import { useRouteParameter, useQueryStringParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { FC } from 'react';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -11,7 +10,7 @@ import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
 import './styles.css';
 
-const MeetPage: FC = () => {
+const MeetPage = () => {
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
@@ -66,12 +65,15 @@ const MeetPage: FC = () => {
 		}
 		setupCallForAgent();
 	}, [setupCallForAgent, setupCallForVisitor, visitorToken]);
+
 	if (status === null) {
-		return <PageLoading></PageLoading>;
+		return <PageLoading />;
 	}
+
 	if (!isRoomMember) {
-		return <NotFoundPage></NotFoundPage>;
+		return <NotFoundPage />;
 	}
+
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>

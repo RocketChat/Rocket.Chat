@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useUserId, useUser, useSetting, useRole } from '@rocket.chat/ui-contexts';
+import { useUserId, useUser, useSetting, useRole, useNavigate } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 export const useRouteLock = (): boolean => {
@@ -8,7 +8,7 @@ export const useRouteLock = (): boolean => {
 	const userId = useUserId();
 	const user = useDebouncedValue(useUser(), 100);
 	const hasAdminRole = useRole('admin');
-	const homeRoute = useRoute('home');
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (!setupWizardState) {
@@ -26,12 +26,12 @@ export const useRouteLock = (): boolean => {
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;
 
 		if (mustRedirect) {
-			homeRoute.replace();
+			navigate('/home');
 			return;
 		}
 
 		setLocked(false);
-	}, [homeRoute, setupWizardState, userId, user, hasAdminRole, locked]);
+	}, [navigate, setupWizardState, userId, user, hasAdminRole, locked]);
 
 	return locked;
 };

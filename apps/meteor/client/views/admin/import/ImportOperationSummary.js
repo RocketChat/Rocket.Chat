@@ -1,5 +1,5 @@
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useNavigate, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import {
@@ -55,17 +55,16 @@ function ImportOperationSummary({
 
 	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [valid, status]);
 
-	const prepareImportRoute = useRoute('admin-import-prepare');
-	const importProgressRoute = useRoute('admin-import-progress');
+	const navigate = useNavigate();
 
 	const handleClick = () => {
 		if (canContinue) {
-			prepareImportRoute.push();
+			navigate('/admin/import/prepare');
 			return;
 		}
 
 		if (canCheckProgress) {
-			importProgressRoute.push();
+			navigate('/admin/import/progress');
 		}
 	};
 

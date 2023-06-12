@@ -2,6 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
@@ -13,7 +14,7 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { navigate } from '../../../../client/lib/router';
+import { navigate } from '../../../../client/providers/RouterProvider';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -178,7 +179,7 @@ const computation = Tracker.autorun(() => {
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
 					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
-						const query: Mongo.Query<IMessage> = { rid, ts };
+						const query: Mongo.Selector<IMessage> = { rid, ts };
 						if (excludePinned) {
 							query.pinned = { $ne: true };
 						}
