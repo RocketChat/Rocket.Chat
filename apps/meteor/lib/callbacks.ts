@@ -205,6 +205,15 @@ type ChainedCallbackSignatures = {
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
+	'livechat.onAgentAssignmentFailed': (params: {
+		inquiry: {
+			_id: string;
+			rid: string;
+			status: string;
+		};
+		room: IOmnichannelRoom;
+		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
 };
 
 export type Hook =
@@ -234,7 +243,6 @@ export type Hook =
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.offlineMessage'
-	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
 	| 'loginPageStateChange'
