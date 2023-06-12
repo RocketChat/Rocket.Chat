@@ -71,6 +71,7 @@ export interface RestClientInterface {
 			abort?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 			error?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 		},
+		options?: Omit<RequestInit, 'method'>,
 	): XMLHttpRequest;
 
 	getCredentials():

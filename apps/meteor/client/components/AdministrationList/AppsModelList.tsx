@@ -12,9 +12,10 @@ type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
 	appsManagementAllowed?: boolean;
 	onDismiss: () => void;
+	showMarketplace?: boolean;
 };
 
-const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, showMarketplace, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
@@ -26,24 +27,28 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
 				<>
-					<ListItem
-						role='listitem'
-						icon='store'
-						text={t('Marketplace')}
-						onClick={() => {
-							marketplaceRoute.push({ context: 'explore', page });
-							onDismiss();
-						}}
-					/>
-					<ListItem
-						role='listitem'
-						icon='circle-arrow-down'
-						text={t('Installed')}
-						onClick={() => {
-							marketplaceRoute.push({ context: 'installed', page });
-							onDismiss();
-						}}
-					/>
+					{showMarketplace && (
+						<>
+							<ListItem
+								role='listitem'
+								icon='store'
+								text={t('Marketplace')}
+								onClick={() => {
+									marketplaceRoute.push({ context: 'explore', page });
+									onDismiss();
+								}}
+							/>
+							<ListItem
+								role='listitem'
+								icon='circle-arrow-down'
+								text={t('Installed')}
+								onClick={() => {
+									marketplaceRoute.push({ context: 'installed', page });
+									onDismiss();
+								}}
+							/>
+						</>
+					)}
 
 					{appsManagementAllowed && (
 						<>

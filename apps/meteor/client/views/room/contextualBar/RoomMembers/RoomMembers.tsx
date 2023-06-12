@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
@@ -97,23 +97,15 @@ const RoomMembers = ({
 			</ContextualbarHeader>
 			<ContextualbarContent p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
-							<TextInput
-								placeholder={t('Search_by_username')}
-								value={text}
-								ref={inputRef}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={(value): void => setType(value as 'online' | 'all')}
-								value={type}
-								options={options}
-							/>
-						</Margins>
+					<TextInput
+						placeholder={t('Search_by_username')}
+						value={text}
+						ref={inputRef}
+						onChange={setText}
+						addon={<Icon name='magnifier' size='x20' />}
+					/>
+					<Box w='x144' mis='x8'>
+						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 					</Box>
 				</Box>
 
