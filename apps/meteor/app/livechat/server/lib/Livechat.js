@@ -1055,6 +1055,8 @@ export const Livechat = {
 			});
 		}
 
+		// TODO: these kind of actions should be on events instead of here
+		await LivechatDepartmentAgents.enableAgentsByDepartmentId(_id);
 		return LivechatDepartmentRaw.unarchiveDepartment(_id);
 	},
 
@@ -1069,6 +1071,7 @@ export const Livechat = {
 			});
 		}
 
+		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
 		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 
