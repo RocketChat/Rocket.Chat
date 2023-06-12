@@ -142,7 +142,9 @@ const ThreadList: VFC = () => {
 								value={searchText}
 								onChange={handleSearchTextChange}
 							/>
-							<Select flexGrow={0} width={110} options={typeOptions} value={type} onChange={handleTypeChange} />
+							<Box w='x144'>
+								<Select options={typeOptions} value={type} onChange={handleTypeChange} />
+							</Box>
 						</Margins>
 					</Box>
 				</Box>

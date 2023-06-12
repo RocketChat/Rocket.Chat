@@ -45,7 +45,7 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 					<Field>
 						<Field.Label>{t('Method')}</Field.Label>
 						<Field.Row>
-							<Select value={type} onChange={(value): void => setType(value)} placeholder={t('Type')} options={exportOptions} />
+							<Select value={type} onChange={setType} placeholder={t('Type')} options={exportOptions} />
 						</Field.Row>
 					</Field>
 				</FieldGroup>

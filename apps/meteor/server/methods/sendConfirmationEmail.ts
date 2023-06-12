@@ -10,7 +10,7 @@ Meteor.methods<ServerMethods>({
 	async sendConfirmationEmail(to) {
 		check(to, String);
 
-		methodDeprecationLogger.warn('sendConfirmationEmail will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
 
 		const email = to.trim();
 
