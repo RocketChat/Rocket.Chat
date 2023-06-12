@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeDepartment'(_id) {
-		methodDeprecationLogger.warn('livechat:removeDepartment will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:removeDepartment', '7.0.0');
 
 		check(_id, String);
 

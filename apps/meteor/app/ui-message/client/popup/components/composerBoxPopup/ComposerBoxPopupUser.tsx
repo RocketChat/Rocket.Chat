@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import { OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.chat/fuselage';
 
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import ReactiveUserStatus from '../../../../../../client/components/UserStatus/ReactiveUserStatus';
@@ -42,8 +42,16 @@ const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, 
 				</OptionContent>
 			)}
 
-			{outside && <OptionColumn>{t('Not_in_channel')}</OptionColumn>}
-			{suggestion && <OptionColumn>{t('Suggestion_from_recent_messages')}</OptionColumn>}
+			{outside && (
+				<OptionColumn>
+					<OptionInput>{t('Not_in_channel')}</OptionInput>
+				</OptionColumn>
+			)}
+			{suggestion && (
+				<OptionColumn>
+					<OptionInput>{t('Suggestion_from_recent_messages')}</OptionInput>
+				</OptionColumn>
+			)}
 		</>
 	);
 };
