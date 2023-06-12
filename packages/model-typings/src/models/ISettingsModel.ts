@@ -10,8 +10,6 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 
 	findOneNotHiddenById(_id: string): Promise<ISetting | null>;
 
-	findOneNotSecretById(_id: string): Promise<ISetting | null>;
-
 	findByIds(_id?: string[] | string): FindCursor<ISetting>;
 
 	updateValueById(

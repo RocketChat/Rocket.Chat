@@ -36,15 +36,6 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.findOne(query);
 	}
 
-	findOneNotSecretById(_id: string): Promise<ISetting | null> {
-		const query = {
-			_id,
-			secret: { $ne: true },
-		};
-
-		return this.findOne(query);
-	}
-
 	findByIds(_id: string[] | string = []): FindCursor<ISetting> {
 		if (typeof _id === 'string') {
 			_id = [_id];

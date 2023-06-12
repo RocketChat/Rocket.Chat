@@ -7,7 +7,7 @@ export class AppSettingsConverter {
 	}
 
 	async convertById(settingId) {
-		const setting = await Settings.findOneNotSecretById(settingId);
+		const setting = await Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}
