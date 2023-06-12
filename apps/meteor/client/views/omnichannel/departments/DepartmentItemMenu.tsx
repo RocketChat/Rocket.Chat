@@ -30,6 +30,7 @@ const DepartmentItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedA
 	const handleArchiveDepartment = useMutableCallback(async () => {
 		await archiveDepartment();
 		handlePageDepartmentsReload();
+		queryClient.removeQueries(['/v1/livechat/department/:_id', dep._id]);
 		dispatchToast({ type: 'success', message: t('Department_archived') });
 	});
 
