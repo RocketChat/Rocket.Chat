@@ -14,6 +14,8 @@ const ToolBoxAction = forwardRef<HTMLButtonElement, any>(function ToolBoxAction(
 			key={id}
 			icon={icon}
 			tiny
+			position='relative'
+			overflow='visible'
 			{...(tooltip ? { 'data-tooltip': tooltip, 'title': '' } : { title })}
 			{...props}
 		/>
