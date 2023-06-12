@@ -64,6 +64,7 @@ function ContactTable(): ReactElement {
 			}),
 	);
 
+	// should update the local state
 	const { reload, ...result } = useEndpointData('/v1/livechat/visitors.search', { params: query });
 
 	return (
