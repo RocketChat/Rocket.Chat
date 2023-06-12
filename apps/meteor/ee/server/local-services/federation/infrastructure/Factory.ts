@@ -15,7 +15,7 @@ import type { RocketChatMessageAdapter } from '../../../../../server/services/fe
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import type { PersistentQueue } from '../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
-import { RocketChatQueueAdapterEE } from './rocket-chat/adapters/Queue';
+import { RocketChatQueueAdapter as RocketChatQueueAdapterEE } from '../../../../../server/services/federation/infrastructure/queue/RocketChatQueueAdapter';
 
 export class FederationFactoryEE extends FederationFactory {
 	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: PersistentQueue): IFederationBridgeEE {

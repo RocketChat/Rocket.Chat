@@ -20,7 +20,7 @@ import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/servic
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import type { RocketChatQueueAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Queue';
+import type { RocketChatQueueAdapter as RocketChatQueueAdapterEE } from '../../../../../../../server/services/federation/infrastructure/queue/RocketChatQueueAdapter';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(
