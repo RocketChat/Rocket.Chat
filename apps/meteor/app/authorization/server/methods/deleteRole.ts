@@ -5,7 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { DeleteResult } from 'mongodb';
 
 import { hasPermissionAsync } from '../functions/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -42,7 +42,12 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			apiDeprecationLogger.warn(`Calling authorization:deleteRole with role names will be deprecated in future versions of Rocket.Chat`);
+			methodDeprecationLogger.deprecatedParameterUsage(
+				'authorization:deleteRole',
+				'role',
+				'7.0.0',
+				({ parameter, method, version }) => `Calling ${method} with ${parameter} names is deprecated and will be removed ${version}`,
+			);
 		}
 
 		if (role.protected) {

@@ -1,22 +1,21 @@
-import { Box, Callout, Message, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, Callout, Message } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
 import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarFooter } from '../../../components/Contextualbar';
+import GenericNoResults from '../../../components/GenericNoResults';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
+// TODO: Missing Error State
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
 	const t = useTranslation();
-
-	const moderationRoute = useRoute('moderation-console');
-
-	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
-
 	const dispatchToastMessage = useToastMessageDispatch();
+	const moderationRoute = useRoute('moderation-console');
+	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const {
 		data: userMessages,
@@ -37,7 +36,6 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	);
 
 	// opens up the 'reports' tab when the user clicks on a user in the 'users' tab
-
 	const handleClick = useMutableCallback((id): void => {
 		moderationRoute.push({
 			context: 'reports',
@@ -95,12 +93,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							/>
 						</Box>
 					))}
-				{isSuccessUserMessages && userMessages.messages.length === 0 && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
+				{isSuccessUserMessages && userMessages.messages.length === 0 && <GenericNoResults />}
 			</Box>
 			<ContextualbarFooter display='flex'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
