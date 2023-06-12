@@ -1,18 +1,14 @@
-import { QueueWorker as queueService } from '@rocket.chat/core-services';
-
-import type { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
+import { RocketChatQueueAdapter } from './RocketChatQueueAdapter';
+import { isEnterprise } from '../../../../../ee/app/license/server';
 
 export class PersistentQueue {
-	private instance: any;
+	private queueAdapter: RocketChatQueueAdapter;
 
-	public setHandler(handler: (event: AbstractMatrixEvent) => Promise<void>, concurrency: number): void {
-		this.instance = fastq.promise(handler, concurrency);
+	constructor() {
+		this.queueAdapter = new RocketChatQueueAdapter();
 	}
 
 	public addToQueue(task: Record<string, any>): void {
-		if (!this.instance) {
-			throw new Error('You need to set the handler first');
-		}
-		this.instance.push(task).catch(console.error);
+		this.queueAdapter.enqueueJob(`federation${isEnterprise() ? '-enterprise' : ''}.handleMatrixEvent`, task).catch(console.error);
 	}
 }

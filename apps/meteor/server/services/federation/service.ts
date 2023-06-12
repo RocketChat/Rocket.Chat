@@ -1,7 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
 
-import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
+import type { PersistentQueue } from './infrastructure/queue/PersistentQueue';
 import type { IFederationBridge } from './domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -11,6 +11,7 @@ import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapter
 import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
+import type { MatrixEventsHandler } from './infrastructure/matrix/handlers';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 import { FederationFactory } from './infrastructure/Factory';
@@ -18,7 +19,7 @@ import { FederationFactory } from './infrastructure/Factory';
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
 
-	private internalQueueInstance: InMemoryQueue;
+	private internalQueueInstance: PersistentQueue;
 
 	private internalSettingsAdapter: RocketChatSettingsAdapter;
 
@@ -35,6 +36,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	private internalMessageAdapter: RocketChatMessageAdapter;
 
 	private internalNotificationAdapter: RocketChatNotificationAdapter;
+
+	private federationEventsHandler: MatrixEventsHandler;
 
 	private isRunning = false;
 
@@ -54,7 +57,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	constructor(
 		federationBridge: IFederationBridge,
-		internalQueueInstance: InMemoryQueue,
+		internalQueueInstance: PersistentQueue,
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
 		super();
@@ -136,10 +139,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		);
 	}
 
-	private async noop(): Promise<void> {
-		// noop
-	}
-
 	private async setupEventHandlersForExternalEvents(): Promise<void> {
 		const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 			this.internalRoomAdapter,
@@ -167,13 +166,16 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalSettingsAdapter,
 			this.bridge,
 		);
-		const federationEventsHandler = FederationFactory.buildFederationEventHandler(
+		this.federationEventsHandler = FederationFactory.buildFederationEventHandler(
 			federationRoomServiceReceiver,
 			federationMessageServiceReceiver,
 			federationUserServiceReceiver,
 			this.internalSettingsAdapter,
 		);
-		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
+	}
+
+	protected getFederationEventsHandler(): MatrixEventsHandler {
+		return this.federationEventsHandler;
 	}
 
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -225,10 +227,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected async cleanUpSettingObserver(): Promise<void> {
 		this.cancelSettingsObserver();
 		this.isRunning = false;
-	}
-
-	protected async cleanUpHandlers(): Promise<void> {
-		this.internalQueueInstance.setHandler(this.noop.bind(this), this.PROCESSING_CONCURRENCY);
 	}
 }
 
@@ -290,7 +288,6 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 	private async stopFederation(): Promise<void> {
 		FederationFactory.removeAllListeners();
 		await this.bridge.stop();
-		await super.cleanUpHandlers();
 	}
 
 	public async stopped(): Promise<void> {

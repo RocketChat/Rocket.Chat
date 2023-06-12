@@ -2,6 +2,7 @@ import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.
 import type { IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from '@rocket.chat/core-services';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
+import type { AbstractMatrixEvent } from '../../../../server/services/federation/infrastructure/matrix/definitions/AbstractMatrixEvent';
 import type { FederationUserServiceEE } from './application/UserService';
 import { FederationSearchPublicRoomsInputDto } from './application/room/sender/input/RoomInputDto';
 import type { RocketChatRoomAdapterEE } from './infrastructure/rocket-chat/adapters/Room';
@@ -125,7 +126,6 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 	private async stopFederation(): Promise<void> {
 		await this.bridge.stop();
 		FederationFactoryEE.removeAllListeners();
-		await super.cleanUpHandlers();
 	}
 
 	public async created(): Promise<void> {
@@ -196,6 +196,10 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		await this.internalRoomServiceSenderEE.joinExternalPublicRoom(
 			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
 		);
+	}
+
+	public async handleMatrixEvent(event: AbstractMatrixEvent): Promise<void> {
+		await this.getFederationEventsHandler().handleEvent(event);
 	}
 
 	static async createFederationService(): Promise<FederationServiceEE> {
