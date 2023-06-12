@@ -9,7 +9,7 @@ registerOmnichannelRoute('/monitors', {
 
 registerOmnichannelRoute('/sla-policies/:context?/:id?', {
 	name: 'omnichannel-sla-policies',
-	component: lazy(() => import('./slaPolicies/SlasRoute')),
+	component: lazy(() => import('./slaPolicies/SlaRoute')),
 });
 
 registerOmnichannelRoute('/priorities/:context?/:id?', {

@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getPasswordPolicy(params) {
-		methodDeprecationLogger.warn('getPasswordPolicy is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('getPasswordPolicy', '7.0.0');
 
 		check(params, { token: String });
 
