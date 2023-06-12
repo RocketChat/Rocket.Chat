@@ -1,4 +1,4 @@
-name: Publish Release
+name: Publish Final Release
 
 on:
   push:
@@ -26,10 +26,10 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Cut release
+      - name: Publish final release
         uses: ./packages/release-action
         with:
-          action: cut
+          action: publish-final
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

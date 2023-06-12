@@ -3,7 +3,7 @@ import path from 'path';
 
 import * as core from '@actions/core';
 
-import { cutFinalRelease } from './cutFinalRelease';
+import { publishRelease } from './publishRelease';
 import { setupGitUser } from './gitUtils';
 import { bumpNextVersion } from './bumpNextVersion';
 import { startPatchRelease } from './startPatchRelease';
@@ -37,8 +37,10 @@ import { startPatchRelease } from './startPatchRelease';
 	// TODO this could be configurable
 	const mainPackagePath = path.join(cwd, 'apps', 'meteor');
 
-	if (action === 'cut') {
-		await cutFinalRelease({ githubToken, mainPackagePath });
+	if (action === 'publish-final') {
+		await publishRelease({ githubToken, exitCandidate: true, mainPackagePath });
+	} else if (action === 'publish') {
+		await publishRelease({ githubToken, baseRef, mainPackagePath });
 	} else if (action === 'bump') {
 		await bumpNextVersion({ githubToken, mainPackagePath });
 	} else if (action === 'patch') {

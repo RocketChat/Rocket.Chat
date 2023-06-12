@@ -9,13 +9,17 @@ import { setupOctokit } from './setupOctokit';
 import { getChangelogEntry, updateVersionPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 
-export async function cutFinalRelease({
+export async function publishRelease({
 	githubToken,
 	mainPackagePath,
+	exitCandidate = false,
+	baseRef,
 	cwd = process.cwd(),
 }: {
 	githubToken: string;
 	mainPackagePath: string;
+	baseRef?: string;
+	exitCandidate?: boolean;
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
@@ -23,27 +27,34 @@ export async function cutFinalRelease({
 	// TODO do this only if publishing to npm
 	await createNpmFile();
 
-	let preRelease = false;
-	try {
-		fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
-
-		preRelease = true;
-	} catch (e) {
-		// nothing to do, not a pre release
+	if (baseRef) {
+		await exec('git', ['checkout', baseRef]);
 	}
 
-	if (preRelease) {
-		// finish release candidate
-		await exec('yarn', ['changeset', 'pre', 'exit']);
+	if (exitCandidate) {
+		let preRelease = false;
+		try {
+			fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
+
+			preRelease = true;
+		} catch (e) {
+			// nothing to do, not a pre release
+		}
+
+		if (preRelease) {
+			// finish release candidate
+			await exec('yarn', ['changeset', 'pre', 'exit']);
+		}
 	}
 
-	// bump version of all packages to rc
+	// bump version of all packages
 	await exec('yarn', ['changeset', 'version']);
 
 	// TODO if main package has no changes, throw error
 
 	// get version from main package
 	const mainPackageJsonPath = path.join(mainPackagePath, 'package.json');
+
 	// eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires
 	const { version: newVersion } = require(mainPackageJsonPath);
 
