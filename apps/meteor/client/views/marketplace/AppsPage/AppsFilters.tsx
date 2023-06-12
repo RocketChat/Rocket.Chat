@@ -47,7 +47,7 @@ const AppsFilters = ({
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
-	const shouldFiltersStack = ['xs', 'sm', 'md'].some((size) => breakpoints.includes(size));
+	const shouldFiltersStack = !breakpoints.includes('lg');
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
