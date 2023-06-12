@@ -85,7 +85,11 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				const user = Meteor.user();
+				if (!user) {
+					return;
+				}
+				await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -129,7 +133,7 @@ export class OTRRoom implements IOTRRoom {
 		this._keyPair = null;
 		this._exportedPublicKey = {};
 		this._sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this._roomId);
+		void sdk.call('deleteOldOTRMessages', this._roomId);
 	}
 
 	async generateKeyPair(): Promise<void> {
@@ -159,7 +163,7 @@ export class OTRRoom implements IOTRRoom {
 			this._exportedPublicKey = await exportKey(this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
-			Meteor.call('deleteOldOTRMessages', this._roomId);
+			void sdk.call('deleteOldOTRMessages', this._roomId);
 		} catch (e) {
 			this.setState(OtrRoomState.ERROR);
 			throw e;

@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getNextAgent'({ token, department }) {
-		methodDeprecationLogger.warn('livechat:getNextAgent will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:getNextAgent', '7.0.0');
 		check(token, String);
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
