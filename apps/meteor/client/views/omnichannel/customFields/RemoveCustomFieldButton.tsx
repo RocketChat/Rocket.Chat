@@ -1,45 +1,40 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { GenericTableCell } from '../../../components/GenericTable';
 
-function RemoveCustomFieldButton({ _id, reload }) {
-	const removeCustomField = useMethod('livechat:removeCustomField');
+const RemoveCustomFieldButton = ({ _id, reload }: { _id: ILivechatCustomField['_id']; reload: () => void }) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-
-	const handleRemoveClick = useMutableCallback(async () => {
-		try {
-			await removeCustomField(_id);
-		} catch (error) {
-			console.log(error);
-		}
-		reload();
-	});
+	const removeCustomField = useMethod('livechat:removeCustomField');
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
 		const onDeleteAgent = async () => {
 			try {
-				await handleRemoveClick();
+				await removeCustomField(_id);
 				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
+				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal();
 			}
-			setModal();
 		};
 
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
-}
+};
 
 export default RemoveCustomFieldButton;
