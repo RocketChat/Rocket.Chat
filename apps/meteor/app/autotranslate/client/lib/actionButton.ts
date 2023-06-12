@@ -23,6 +23,7 @@ Meteor.startup(() => {
 				icon: 'language',
 				label: 'Translate',
 				context: ['message', 'message-mobile', 'threads'],
+				type: 'interaction',
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
@@ -57,6 +58,7 @@ Meteor.startup(() => {
 				icon: 'language',
 				label: 'View_original',
 				context: ['message', 'message-mobile', 'threads'],
+				type: 'interaction',
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
