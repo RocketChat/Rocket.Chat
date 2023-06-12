@@ -34,7 +34,8 @@ import { startPatchRelease } from './startPatchRelease';
 
 	const cwd = process.cwd();
 
-	const mainPackagePath = path.join(cwd, 'apps', 'backend');
+	// TODO this could be configurable
+	const mainPackagePath = path.join(cwd, 'apps', 'meteor');
 
 	if (action === 'cut') {
 		await cutFinalRelease({ githubToken, mainPackagePath });
