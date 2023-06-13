@@ -8,6 +8,7 @@ import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
+import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 const AddUser = ({ onReload, ...props }) => {
 	const t = useTranslation();
@@ -16,12 +17,13 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const getRoleData = useEndpoint('GET', '/v1/roles.list');
 
-	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
-
 	const { data } = useQuery(['roles'], async () => {
 		const roles = await getRoleData();
 		return roles;
 	});
+
+	const isSmtpEnabled = useSmtpConfig();
+
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -134,7 +136,15 @@ const AddUser = ({ onReload, ...props }) => {
 	);
 
 	return (
-		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
+		<UserForm
+			errors={errors}
+			formValues={values}
+			formHandlers={handlers}
+			availableRoles={availableRoles}
+			append={append}
+			isSmtpEnabled={isSmtpEnabled}
+			{...props}
+		/>
 	);
 };
 

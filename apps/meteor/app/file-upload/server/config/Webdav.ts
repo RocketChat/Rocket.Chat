@@ -6,8 +6,7 @@ import '../../ufs/Webdav/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, _req, res) {
-	this.store
-		.getReadStream(file._id, file)
+	(await this.store.getReadStream(file._id, file))
 		.on('error', () => {
 			SystemLogger.error('An error ocurred when fetching the file');
 			res.writeHead(503);
@@ -20,7 +19,7 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 };
 
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
-	this.store.getReadStream(file._id, file).pipe(out);
+	(await this.store.getReadStream(file._id, file)).pipe(out);
 };
 
 const WebdavUploads = new FileUploadClass({

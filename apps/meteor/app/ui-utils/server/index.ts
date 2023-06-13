@@ -1,2 +1,2 @@
 export { MessageTypes } from '../lib/MessageTypes';
-export { Message } from '../lib/Message';
+export { Message } from './Message';

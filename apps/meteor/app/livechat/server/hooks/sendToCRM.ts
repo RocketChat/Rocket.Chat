@@ -5,6 +5,7 @@ import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 type AdditionalFields =
@@ -111,6 +112,7 @@ async function sendToCRM(
 				msg: message.msg || JSON.stringify(message.blocks),
 				...(message.blocks && message.blocks.length > 0 ? { blocks: message.blocks } : {}),
 				ts: message.ts,
+				rid: message.rid,
 				...(isEditedMessage(message) && { editedAt: message.editedAt }),
 				...(message.u.username !== postData.visitor.username && { agentId: message.u._id }),
 				...(isOmnichannelNavigationMessage(message) && { navigation: message.navigation }),
@@ -119,17 +121,18 @@ async function sendToCRM(
 			};
 
 			const { u } = message;
-			postData.messages.push(await normalizeMessageFileUpload({ u, ...msg }));
+			postData.messages.push({ ...(await normalizeMessageFileUpload({ u, ...msg })), ...{ _updatedAt: message._updatedAt } });
 		}
 	}
 
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = Livechat.sendRequest(responseData);
+	const response = await LivechatTyped.sendRequest(responseData);
 
-	if (response?.data?.data) {
-		await LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
+	if (response) {
+		const responseData = await response.text();
+		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
 	}
 
 	return room;

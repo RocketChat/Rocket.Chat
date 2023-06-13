@@ -94,7 +94,7 @@ async function afterCreateRoom(roomOwner, room) {
 
 		await doAfterCreateRoom(room, users, subscriptions);
 	} catch (err) {
-		deleteRoom(room._id);
+		await deleteRoom(room._id);
 
 		clientLogger.error({ msg: 'afterCreateRoom => Could not create federated room:', err });
 	}

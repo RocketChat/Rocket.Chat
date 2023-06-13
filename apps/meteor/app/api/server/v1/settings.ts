@@ -70,8 +70,8 @@ API.v1.addRoute(
 	'settings.oauth',
 	{ authRequired: false },
 	{
-		get() {
-			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+		async get() {
+			const oAuthServicesEnabled = await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
@@ -213,9 +213,9 @@ API.v1.addRoute(
 	'service.configurations',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			return API.v1.success({
-				configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
+				configurations: await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync(),
 			});
 		},
 	},

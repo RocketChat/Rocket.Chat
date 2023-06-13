@@ -7,7 +7,7 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
+import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useFileInput } from '../../hooks/useFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 import RoomAvatar from './RoomAvatar';

@@ -13,45 +13,59 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const takeInquiry = async (
+	userId: string,
+	inquiryId: string,
+	options?: { clientAction: boolean; forwardingToDepartment?: boolean },
+): Promise<void> => {
+	if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'livechat:takeInquiry',
+		});
+	}
+
+	const inquiry = await LivechatInquiry.findOneById(inquiryId);
+
+	if (!inquiry) {
+		throw new Meteor.Error('error-not-found', 'Inquiry not found', {
+			method: 'livechat:takeInquiry',
+		});
+	}
+
+	if (inquiry.status === 'taken') {
+		throw new Meteor.Error('error-inquiry-taken', 'Inquiry already taken', {
+			method: 'livechat:takeInquiry',
+		});
+	}
+
+	const user = await Users.findOneOnlineAgentById(userId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	if (!user) {
+		throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
+			method: 'livechat:takeInquiry',
+		});
+	}
+
+	const agent = {
+		agentId: user._id,
+		username: user.username,
+	};
+
+	try {
+		await RoutingManager.takeInquiry(inquiry, agent, options);
+	} catch (e: any) {
+		throw new Meteor.Error(e.message);
+	}
+};
+
 Meteor.methods<ServerMethods>({
 	async 'livechat:takeInquiry'(inquiryId, options) {
 		const uid = Meteor.userId();
-		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		if (!uid) {
+			throw new Meteor.Error('error-not-allowed', 'Invalid User', {
 				method: 'livechat:takeInquiry',
 			});
 		}
 
-		const inquiry = await LivechatInquiry.findOneById(inquiryId);
-
-		if (!inquiry) {
-			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
-				method: 'livechat:takeInquiry',
-			});
-		}
-
-		if (inquiry.status === 'taken') {
-			throw new Meteor.Error('error-inquiry-taken', 'Inquiry already taken', {
-				method: 'livechat:takeInquiry',
-			});
-		}
-
-		const user = await Users.findOneOnlineAgentById(uid, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
-		if (!user) {
-			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
-				method: 'livechat:takeInquiry',
-			});
-		}
-
-		const agent = {
-			agentId: user._id,
-			username: user.username,
-		};
-
-		try {
-			await RoutingManager.takeInquiry(inquiry, agent, options);
-		} catch (e: any) {
-			throw new Meteor.Error(e.message);
-		}
+		return takeInquiry(uid, inquiryId, options);
 	},
 });

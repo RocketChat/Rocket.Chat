@@ -1,2 +1,2 @@
-import '../lib/rocketchat';
+import './lib';
 import './callbacks';

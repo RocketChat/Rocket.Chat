@@ -8,6 +8,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
+import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 const getInitialValue = (data) => ({
 	roles: data.roles,
@@ -29,6 +30,8 @@ function EditUser({ data, roles, onReload, ...props }) {
 
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
+
+	const isSmtpEnabled = useSmtpConfig();
 
 	const validationKeys = {
 		name: (name) =>
@@ -150,6 +153,7 @@ function EditUser({ data, roles, onReload, ...props }) {
 			availableRoles={availableRoles}
 			prepend={prepend}
 			append={append}
+			isSmtpEnabled={isSmtpEnabled}
 			{...props}
 		/>
 	);

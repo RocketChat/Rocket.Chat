@@ -8,8 +8,8 @@ import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 Meteor.startup(() => {
 	// Reload rooms after login
 	let currentUsername: string | undefined = undefined;
-	Tracker.autorun(async () => {
-		const user = await Meteor.userAsync();
+	Tracker.autorun(() => {
+		const user = Meteor.user();
 		if (currentUsername === undefined && (user ? user.username : undefined)) {
 			currentUsername = user?.username;
 			LegacyRoomManager.closeAllRooms();

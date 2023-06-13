@@ -88,6 +88,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 			msg={msg ?? ''}
 			handleFollowButton={handleToggleFollowButtonClick}
 			onClick={handleListItemClick}
+			emoji={thread?.emoji}
 		/>
 	);
 };

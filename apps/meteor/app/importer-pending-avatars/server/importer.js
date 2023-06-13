@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
+import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 
 export class PendingAvatarImporter extends Base {
 	async prepareFileCount() {
@@ -9,7 +9,7 @@ export class PendingAvatarImporter extends Base {
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const users = await Users.findAllUsersWithPendingAvatar();
-		const fileCount = users.count();
+		const fileCount = await users.count();
 
 		if (fileCount === 0) {
 			await super.updateProgress(ProgressStep.DONE);
@@ -23,7 +23,7 @@ export class PendingAvatarImporter extends Base {
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
-		Meteor.defer(() => {
+		setImmediate(() => {
 			this.startImport(fileData);
 		});
 
@@ -42,14 +42,12 @@ export class PendingAvatarImporter extends Base {
 							return;
 						}
 
-						await Meteor.runAsUser(_id, async () => {
-							try {
-								await Meteor.callAsync('setAvatarFromService', url, undefined, 'url');
-								await Users.updateOne({ _id }, { $unset: { _pendingAvatarUrl: '' } });
-							} catch (error) {
-								this.logger.warn(`Failed to set ${name}'s avatar from url ${url}`);
-							}
-						});
+						try {
+							await setAvatarFromServiceWithValidation(_id, url, undefined, 'url');
+							await Users.updateOne({ _id }, { $unset: { _pendingAvatarUrl: '' } });
+						} catch (error) {
+							this.logger.warn(`Failed to set ${name}'s avatar from url ${url}`);
+						}
 					} finally {
 						await this.addCountCompleted(1);
 					}

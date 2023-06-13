@@ -49,7 +49,7 @@ callbacks.add(
 		if (msgEmails || msgPhones) {
 			await LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
 
-			callbacks.run('livechat.leadCapture', room);
+			await callbacks.run('livechat.leadCapture', room);
 		}
 
 		return message;

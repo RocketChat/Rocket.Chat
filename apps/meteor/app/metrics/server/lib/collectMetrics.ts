@@ -54,7 +54,7 @@ const setPrometheusData = async (): Promise<void> => {
 	}
 
 	metrics.version.set({ version: statistics.version }, 1);
-	metrics.migration.set(getControl().version);
+	metrics.migration.set((await getControl()).version);
 	metrics.instanceCount.set(statistics.instanceCount);
 	metrics.oplogEnabled.set({ enabled: `${statistics.oplogEnabled}` }, 1);
 
@@ -125,8 +125,8 @@ app.use('/', (_req, res) => {
 
 const server = http.createServer(app);
 
-let timer: number;
-let resetTimer: number;
+let timer: NodeJS.Timeout;
+let resetTimer: NodeJS.Timeout;
 let defaultMetricsInitiated = false;
 let gcStatsInitiated = false;
 const was = {
@@ -155,7 +155,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 		if (was.enabled) {
 			SystemLogger.info('Disabling Prometheus');
 			server.close();
-			Meteor.clearInterval(timer);
+			clearInterval(timer);
 		}
 		Object.assign(was, is);
 		return;
@@ -169,12 +169,12 @@ const updatePrometheusConfig = async (): Promise<void> => {
 			host: process.env.BIND_IP || '0.0.0.0',
 		});
 
-		timer = Meteor.setInterval(setPrometheusData, 5000);
+		timer = setInterval(setPrometheusData, 5000);
 	}
 
-	Meteor.clearInterval(resetTimer);
+	clearInterval(resetTimer);
 	if (is.resetInterval) {
-		resetTimer = Meteor.setInterval(() => {
+		resetTimer = setInterval(() => {
 			client.register
 				.getMetricsAsArray()
 				.then((metrics) => {

@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 
 		// update sound
 		if (soundData.newFile) {
-			RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
+			await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 		}
 
 		if (soundData.name !== soundData.previousName) {

@@ -7,7 +7,7 @@ import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
-import { APIClient } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 export interface IAppAccountBoxItem extends IUIActionButton {
 	name: string;
@@ -33,7 +33,7 @@ class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
 	public setStatus(status: UserStatus, statusText?: string): any {
-		return APIClient.post('/v1/users.setStatus', { status, message: statusText });
+		return sdk.rest.post('/v1/users.setStatus', { status, message: statusText });
 	}
 
 	public async addItem(newItem: IAppAccountBoxItem): Promise<void> {

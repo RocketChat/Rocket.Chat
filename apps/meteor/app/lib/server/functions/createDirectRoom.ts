@@ -1,16 +1,16 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import type { MatchKeysAndValues } from 'mongodb';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
+import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Meteor } from 'meteor/meteor';
+import type { MatchKeysAndValues } from 'mongodb';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 const generateSubscription = (
 	fname: string,
@@ -50,7 +50,7 @@ export async function createDirectRoom(
 	if (members.length > (settings.get<number>('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
-	callbacks.run('beforeCreateDirectRoom', members);
+	await callbacks.run('beforeCreateDirectRoom', members);
 
 	const membersUsernames: string[] = members
 		.map((member) => {
@@ -71,7 +71,7 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room =
+	const room: IRoom | null =
 		uids.length === 2
 			? await Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
 			: await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
@@ -159,7 +159,7 @@ export async function createDirectRoom(
 	if (isNewRoom) {
 		const insertedRoom = await Rooms.findOneById(rid);
 
-		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
+		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
 		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}

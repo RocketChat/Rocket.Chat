@@ -6,7 +6,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "^8.29.0",
 		"mongodb": "^4.12.1",
-		"prettier": "^2.7.1",
+		"prettier": "~2.8.7",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {

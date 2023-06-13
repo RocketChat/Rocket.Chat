@@ -34,7 +34,7 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
+		await callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
@@ -57,18 +57,11 @@ export const addUserToRoom = async function (
 
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
-		callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
+		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 		// Keep the current event
-		callbacks.run('beforeJoinRoom', userToBeAdded, room);
+		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
-	await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
-		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
-
-		throw error;
-	});
 
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
@@ -107,12 +100,12 @@ export const addUserToRoom = async function (
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		process.nextTick(function () {
+		process.nextTick(async function () {
 			// Add a new event, with an optional inviter
-			callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
+			await callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 			// Keep the current event
-			callbacks.run('afterJoinRoom', userToBeAdded, room);
+			await callbacks.run('afterJoinRoom', userToBeAdded, room);
 
 			void Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});

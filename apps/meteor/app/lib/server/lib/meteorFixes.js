@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import { Settings } from '@rocket.chat/models';
 
@@ -25,7 +24,7 @@ const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
  * to STEADY and force the query again to refresh the data and flush the _writesToCommitWhenWeReachSteady callbacks.
  */
 
-Meteor.setInterval(() => {
+setInterval(() => {
 	if (debug) {
 		console.log('Checking for stucked observers');
 	}

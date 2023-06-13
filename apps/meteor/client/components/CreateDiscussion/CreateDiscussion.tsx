@@ -2,7 +2,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -68,7 +68,10 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	};
 
 	return (
-		<Modal>
+		<Modal
+			data-qa='create-discussion-modal'
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Discussion_title')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -159,7 +162,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty || createDiscussionMutation.isLoading} onClick={handleSubmit(handleCreate)}>
+					<Button type='submit' primary disabled={!isDirty || createDiscussionMutation.isLoading}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

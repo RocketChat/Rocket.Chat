@@ -6,7 +6,7 @@ export interface IMessageService {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IUser, '_id' | 'username'>,
+		user: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage['_id']>;
 }

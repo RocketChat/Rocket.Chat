@@ -29,7 +29,7 @@ callbacks.add(
 		}
 
 		if (message.file) {
-			message = await normalizeMessageFileUpload(message);
+			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
 		const now = new Date();

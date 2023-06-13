@@ -1,4 +1,5 @@
-import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 export const useSeatsCap = ():
 	| {
@@ -7,15 +8,17 @@ export const useSeatsCap = ():
 			reload: () => void;
 	  }
 	| undefined => {
-	const { value, reload } = useEndpointData('/v1/licenses.maxActiveUsers');
+	const fetch = useEndpoint('GET', '/v1/licenses.maxActiveUsers');
 
-	if (!value) {
+	const result = useQuery(['/v1/licenses.maxActiveUsers'], () => fetch());
+
+	if (!result.isSuccess) {
 		return undefined;
 	}
 
 	return {
-		activeUsers: value.activeUsers,
-		maxActiveUsers: value.maxActiveUsers ?? Number.POSITIVE_INFINITY,
-		reload,
+		activeUsers: result.data.activeUsers,
+		maxActiveUsers: result.data.maxActiveUsers ?? Number.POSITIVE_INFINITY,
+		reload: () => result.refetch(),
 	};
 };

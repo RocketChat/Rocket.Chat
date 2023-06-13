@@ -4,8 +4,11 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { createVisitor, createLivechatRoom } from '../../../data/livechat/rooms';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createVisitor, createLivechatRoom, makeAgentUnavailable } from '../../../data/livechat/rooms';
+import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
 import { updateSetting } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', function () {
 	this.retries(0);
@@ -101,6 +104,66 @@ describe('LIVECHAT - Utils', function () {
 			expect(customField).to.have.property('label', customFieldName);
 
 			await deleteCustomField(customFieldName);
+		});
+		(IS_EE ? it : it.skip)('should return online as true if there is at least one agent online', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('online', true);
+		});
+		(IS_EE ? it : it.skip)('should return online as false if there is no agent online', async () => {
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			await makeAgentUnavailable(agent.credentials);
+
+			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('online', false);
+		});
+		(IS_EE ? it : it.skip)('should return online as true if bot is online and there is no agent online', async () => {
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			await makeAgentUnavailable(agent.credentials);
+
+			const botUser = await createBotAgent();
+			await addOrRemoveAgentFromDepartment(department._id, { agentId: botUser.user._id, username: botUser.user.username as string }, true);
+
+			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			expect(body).to.have.property('config');
+
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await makeAgentUnavailable(botUser.credentials);
+		});
+		it('should return a guest if there exists a guest with the same token', async () => {
+			const guest = await createVisitor();
+			const { body } = await request.get(api(`livechat/config?token=${guest.token}`)).set(credentials);
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('guest');
+			expect(body.config.guest).to.have.property('name', guest.name);
+		});
+		it('should not return a guest if there exists a guest with the same token but the guest is not online', async () => {
+			const token = getRandomVisitorToken();
+
+			const { body } = await request.get(api(`livechat/config?token=${token}`)).set(credentials);
+			expect(body).to.have.property('config');
+			expect(body.config).to.not.have.property('guest');
+		});
+		it('should return no online room if visitor is not chatting with an agent', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request.get(api(`livechat/config?token=${visitor.token}`)).set(credentials);
+			expect(body).to.have.property('config');
+			expect(body.config).to.not.have.property('room');
+		});
+		it('should return online room if visitor is already chatting with an agent', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const { body } = await request.get(api(`livechat/config?token=${newVisitor.token}`)).set(credentials);
+
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('room');
+			expect(body.config.room).to.have.property('_id', newRoom._id);
 		});
 	});
 

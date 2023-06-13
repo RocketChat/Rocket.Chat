@@ -14,6 +14,7 @@ import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
@@ -103,7 +104,7 @@ API.v1.addRoute(
 			}
 
 			if (message.file) {
-				message = await normalizeMessageFileUpload(message);
+				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
 			if (!message) {
@@ -146,7 +147,7 @@ API.v1.addRoute(
 			}
 
 			if (message?.file) {
-				message = await normalizeMessageFileUpload(message);
+				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
 			if (!message) {
@@ -265,8 +266,7 @@ API.v1.addRoute(
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				// @ts-expect-error -- Typings on registerGuest are wrong
-				const visitorId = await Livechat.registerGuest(guest);
+				const visitorId = await LivechatTyped.registerGuest(guest);
 				visitor = await LivechatVisitors.findOneById(visitorId);
 			}
 

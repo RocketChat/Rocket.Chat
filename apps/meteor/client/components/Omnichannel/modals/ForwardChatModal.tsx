@@ -94,7 +94,7 @@ const ForwardChatModal = ({
 	}, [register]);
 
 	return (
-		<Modal {...props} is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />} {...props}>
 			<Modal.Header>
 				<Modal.Icon name='baloon-arrow-top-right' />
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>

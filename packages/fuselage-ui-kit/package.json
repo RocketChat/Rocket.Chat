@@ -54,7 +54,7 @@
     "react-dom": "*"
   },
   "devDependencies": {
-    "@rocket.chat/apps-engine": "~1.30.0",
+    "@rocket.chat/apps-engine": "1.39.1",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "next",
@@ -70,10 +70,10 @@
     "@storybook/builder-webpack5": "~6.5.15",
     "@storybook/manager-webpack5": "~6.5.15",
     "@storybook/react": "~6.5.15",
-    "@storybook/source-loader": "~6.5.15",
+    "@storybook/source-loader": "~6.5.16",
     "@storybook/theming": "~6.5.15",
     "@tanstack/react-query": "^4.16.1",
-    "@types/react": "~17.0.48",
+    "@types/react": "~17.0.57",
     "@types/react-dom": "~17.0.17",
     "babel-loader": "~8.2.5",
     "cross-env": "^7.0.3",
@@ -81,7 +81,7 @@
     "lint-staged": "~12.3.3",
     "normalize.css": "^8.0.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "~2.5.1",
+    "prettier": "~2.8.7",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
@@ -89,7 +89,11 @@
     "webpack": "~5.68.0"
   },
   "dependencies": {
+    "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "next",
     "tslib": "^2.3.1"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

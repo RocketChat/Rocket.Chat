@@ -50,7 +50,7 @@ const CustomField = <T extends FieldValues>({
 			name={name}
 			control={control}
 			defaultValue={defaultValue ?? ''}
-			rules={{ required: t('The_field_is_required', label || name) }}
+			rules={{ required: required && t('The_field_is_required', label || name) }}
 			render={({ field, formState: { errors } }) => (
 				<Field>
 					<Field.Label>
