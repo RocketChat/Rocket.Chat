@@ -56,9 +56,9 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 				}
 			}
 
-			await createDirectMessage([roomUser.username], user._id);
+			const { rid } = await createDirectMessage([roomUser.username], user._id);
 
-			return Rooms.findOneDirectRoomContainingAllUserIDs([user._id, roomUser._id]);
+			return Rooms.findOneById(rid);
 		}
 	} else {
 		// Otherwise, we'll treat this as a channel or group.
