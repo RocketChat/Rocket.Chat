@@ -42,6 +42,10 @@ test.describe('Omnichannel contact info', () => {
 			await poLiveChat.sendMessage(newUser, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			// This gives time for the queue to pick up the message
+			// Queue runs each 5 secs, there's a possibility of this conversation to be placed just after
+			// A queue run, and so the following test would fail as the convo is not yet on agents hands
+			await page.waitForTimeout(5000);
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
