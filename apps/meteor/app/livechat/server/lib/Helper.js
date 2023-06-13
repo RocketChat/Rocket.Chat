@@ -6,17 +6,17 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatP
 import { api, Message } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
-	Users as UsersRaw,
 	LivechatInquiry,
 	LivechatRooms,
 	LivechatDepartment,
 	Subscriptions,
-	Users,
 	Rooms,
+	Users,
 } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -293,7 +293,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	}
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
@@ -302,10 +302,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	for await (let agent of onlineAgents) {
-		if (agent.agentId) {
-			agent = await UsersRaw.findOneById(agent.agentId);
-		}
+	for await (const agent of onlineAgents) {
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
 		await sendNotification({
 			// fake a subscription in order to make use of the function defined above
@@ -514,7 +511,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	await Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
@@ -537,7 +534,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 
 export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
-		return Livechat.online(guest.department);
+		return LivechatTyped.online(guest.department);
 	}
 
 	const { agentId } = agent;
