@@ -35,7 +35,7 @@ export type MessageActionContext =
 	| 'federated'
 	| 'videoconf'
 	| 'search';
-type MessageActionType = 'communication' | 'interaction' | 'duplication' | 'management';
+type MessageActionType = 'communication' | 'interaction' | 'duplication' | 'apps' | 'management';
 type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser | undefined;

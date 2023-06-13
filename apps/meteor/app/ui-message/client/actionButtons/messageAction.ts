@@ -16,6 +16,7 @@ export const onAdded = (button: IUIActionButton): void =>
 		icon: '' as any,
 		label: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as any,
 		context: button.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred'],
+		type: 'apps',
 		condition({ room }) {
 			return applyButtonFilters(button, room);
 		},

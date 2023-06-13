@@ -1,4 +1,4 @@
-import { MessageToolboxItem, Option, OptionDivider, Box } from '@rocket.chat/fuselage';
+import { MessageToolboxItem, Option, OptionDivider, Box, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, UIEvent, ReactElement } from 'react';
 import React, { useState, Fragment, useRef } from 'react';
@@ -40,6 +40,8 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		[key: string]: MessageActionConfigOption[];
 	};
 
+	// console.log({ groupOptions });
+
 	return (
 		<>
 			<MessageToolboxItem
@@ -56,6 +58,7 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 					<ToolboxDropdown reference={ref} {...props}>
 						{Object.entries(groupOptions).map(([, options], index, arr) => (
 							<Fragment key={index}>
+								{options[0].type === 'apps' && <OptionTitle>Apps</OptionTitle>}
 								{options.map((option) => (
 									<Option
 										variant={option.variant}
