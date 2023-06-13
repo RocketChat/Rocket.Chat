@@ -8,7 +8,8 @@ import { isEnterprise } from '../../../license/server/license';
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (
 		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept: any) => dept.agentId);
+	).map((dept) => dept.agentId);
+
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
 			'livechat-agent',
@@ -17,7 +18,8 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 			},
 			{ projection: { _id: 1 } },
 		).toArray()
-	).map((user: any) => user._id);
+	).map((user) => user._id);
+
 	return agentIdsWithoutDepartment;
 };
 
@@ -29,16 +31,17 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 		await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, {
 			projection: { _id: 1 },
 		}).toArray()
-	).map((dept: any) => dept._id);
+	).map((dept) => dept._id);
 	return (
 		await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
 			projection: { agentId: 1 },
 		}).toArray()
-	).map((dept: any) => dept.agentId);
+	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
-	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+export const openBusinessHour = async (businessHour: ILivechatBusinessHour): Promise<void> => {
+	const agentIds = await getAgentIdsToHandle(businessHour);
+
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
