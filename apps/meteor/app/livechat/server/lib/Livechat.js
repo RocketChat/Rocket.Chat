@@ -224,7 +224,7 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return Object.assign(sendMessage(guest, message, room), {
+		return Object.assign(await sendMessage(guest, message, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});

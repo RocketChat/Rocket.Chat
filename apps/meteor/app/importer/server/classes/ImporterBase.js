@@ -66,6 +66,7 @@ export class Base {
 			this.logger.debug('Found existing import operation');
 			this.importRecord = this.importRecordParam;
 			this.progress.step = this.importRecord.status;
+			this.reloadCount();
 		} else {
 			this.logger.debug('Starting new import operation');
 			const importId = (
