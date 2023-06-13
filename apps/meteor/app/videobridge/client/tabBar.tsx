@@ -58,7 +58,7 @@ addAction('start-call', ({ room }) => {
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
 
-	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username)) && canStartCall;
+	const enableOption = enabled && canStartCall && (!user?.username || !room.muted?.includes(user.username));
 
 	const groups = useStableArray(
 		[
