@@ -139,8 +139,6 @@ export class AppThreadsConverter {
 	}
 
 	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>) {
-
-
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
