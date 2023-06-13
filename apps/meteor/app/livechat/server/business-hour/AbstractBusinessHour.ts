@@ -7,13 +7,14 @@ import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
 import { businessHourLogger } from '../lib/logger';
+import { filterBusinessHoursThatMustBeOpened } from './Helper';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
-	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
+	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
 	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
 	onStartBusinessHours(): Promise<void>;
@@ -59,11 +60,22 @@ export abstract class AbstractBusinessHourBehavior {
 
 	async onNewAgentCreated(agentId: string): Promise<void> {
 		businessHourLogger.debug(`Executing onNewAgentCreated for agentId: ${agentId}`);
-		const status = (await this.allowAgentChangeServiceStatus(agentId))
-			? ILivechatAgentStatus.AVAILABLE
-			: ILivechatAgentStatus.NOT_AVAILABLE;
-		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${status}`);
-		await Users.setLivechatStatusIf(agentId, status);
+
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			businessHourLogger.debug(`No default business hour found for agentId: ${agentId}`);
+			return;
+		}
+
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
+		if (!businessHourToOpen.length) {
+			businessHourLogger.debug(`No business hour to open found for agentId: ${agentId}`);
+			return;
+		}
+
+		await this.UsersRepository.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
+
+		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
 	}
 }
 

@@ -878,9 +878,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
@@ -1009,6 +1006,23 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	removeAllBusinessHoursFromUserByUserId(userId) {
+		const query = {
+			_id: userId,
+			openBusinessHours: {
+				$exists: true,
+			},
+		};
+
+		const update = {
+			$unset: {
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	resetTOTPById(userId) {

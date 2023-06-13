@@ -1,16 +1,11 @@
 import moment from 'moment';
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import {
-	filterBusinessHoursThatMustBeOpened,
-	filterBusinessHoursThatMustBeOpenedByDay,
-} from '../../../../../app/livechat/server/business-hour/Helper';
+import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
-import { bhLogger } from '../lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -85,7 +80,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return openBusinessHour(businessHour);
 	}
 
-	async onAddAgentToDepartment(options: Record<string, any> = {}): Promise<any> {
+	async onAddAgentToDepartment(options: { departmentId: string; agentsId: string[] }): Promise<any> {
 		const { departmentId, agentsId } = options;
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
 			projection: { businessHourId: 1 },
