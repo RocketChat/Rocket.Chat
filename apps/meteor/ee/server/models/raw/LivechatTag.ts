@@ -27,8 +27,8 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 	}
 
 	async createOrUpdateTag(
-		_id: string,
-		{ name, description }: { name: string; description: string },
+		_id: string | undefined,
+		{ name, description }: { name: string; description?: string },
 		departments: string[] = [],
 	): Promise<ILivechatTag> {
 		const record = {

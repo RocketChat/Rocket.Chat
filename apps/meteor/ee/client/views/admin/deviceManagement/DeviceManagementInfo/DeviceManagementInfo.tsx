@@ -10,6 +10,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarTitle,
 } from '../../../../../../client/components/Contextualbar';
 import InfoPanel from '../../../../../../client/components/InfoPanel';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
@@ -37,7 +38,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	return (
 		<Contextualbar>
 			<ContextualbarHeader>
-				{t('Device_Info')}
+				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
