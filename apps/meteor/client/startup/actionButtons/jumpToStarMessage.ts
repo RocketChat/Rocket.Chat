@@ -23,6 +23,6 @@ Meteor.startup(() => {
 			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 });
