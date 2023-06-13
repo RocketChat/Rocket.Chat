@@ -1,8 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -20,7 +20,7 @@ import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -38,7 +38,7 @@ type RoomMembersProps = {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	renderRow?: (props: ComponentProps<typeof RoomMembersRow>) => ReactElement | null;
 	reload: () => void;
 };
@@ -66,7 +66,6 @@ const RoomMembers = ({
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const loadMore = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -78,15 +77,13 @@ const RoomMembers = ({
 
 	const loadMoreMembers = useDebouncedCallback(
 		() => {
-			if (members.length >= total) {
-				return;
-			}
-
-			loadMore(members.length);
+			loadMoreItems();
 		},
 		300,
-		[loadMore, members],
+		[loadMoreItems, members],
 	);
+
+	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 
 	return (
 		<>
@@ -146,7 +143,9 @@ const RoomMembers = ({
 								data={members}
 								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
+								itemContent={(index, data): ReactElement => (
+									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
+								)}
 							/>
 						</Box>
 					</>

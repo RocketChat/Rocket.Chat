@@ -32,7 +32,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	};
 
 	return (
-		<Box display='flex' alignItems='center' pi='x24'>
+		<Box display='flex' alignItems='center'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
