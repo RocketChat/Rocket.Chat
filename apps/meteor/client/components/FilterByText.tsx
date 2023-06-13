@@ -41,7 +41,7 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 
 	return (
 		<Box mb='x16' mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Box mi='x4'>
+			<Box mi='x4' display='flex' flexGrow={1}>
 				<TextInput
 					placeholder={placeholder ?? t('Search')}
 					ref={inputRef}
