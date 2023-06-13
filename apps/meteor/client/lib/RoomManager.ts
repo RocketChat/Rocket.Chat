@@ -99,7 +99,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 	}
 
 	close(rid: IRoom['_id']): void {
-		if (!this.rooms.has(rid)) {
+		if (this.rooms.has(rid)) {
 			this.rooms.delete(rid);
 			this.emit('closed', rid);
 		}

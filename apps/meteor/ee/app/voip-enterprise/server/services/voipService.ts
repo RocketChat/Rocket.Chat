@@ -5,7 +5,7 @@ import { OmnichannelVoipService } from '../../../../../server/services/omnichann
 import { overwriteClassOnLicense } from '../../../license/server';
 import { calculateOnHoldTimeForRoom } from '../lib/calculateOnHoldTimeForRoom';
 
-overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
+await overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
 	async getRoomClosingData(
 		_originalFn: (
 			closer: ILivechatVisitor | ILivechatAgent,

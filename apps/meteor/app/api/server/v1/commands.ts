@@ -218,7 +218,7 @@ API.v1.addRoute(
 
 			const { triggerId } = body;
 
-			const result = await slashCommands.run(cmd, params, message, triggerId);
+			const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
 
 			return API.v1.success({ result });
 		},

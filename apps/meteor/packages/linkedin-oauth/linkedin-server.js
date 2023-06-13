@@ -1,4 +1,4 @@
-import { HTTP } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -20,11 +20,12 @@ const getImage = (profilePicture) => {
 };
 
 // Request for email, returns array
-const getEmails = function (accessToken) {
+const getEmails = async function (accessToken) {
 	const url = encodeURI(
 		`https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))&oauth2_access_token=${accessToken}`,
 	);
-	const response = HTTP.get(url).data;
+	const data = await fetch(url);
+	const response = await data.json();
 	const emails = [];
 	for (const element of response.elements) {
 		emails.push(element['handle~'].emailAddress);
@@ -45,22 +46,24 @@ const isJSON = function (str) {
 // returns an object containing:
 // - accessToken
 // - expiresIn: lifetime of token in seconds
-const getTokenResponse = function (query) {
-	const config = ServiceConfiguration.configurations.findOne({ service: 'linkedin' });
+const getTokenResponse = async function (query) {
+	const config = await ServiceConfiguration.configurations.findOneAsync({ service: 'linkedin' });
 	if (!config) throw new ServiceConfiguration.ConfigError('Service not configured');
 
 	let responseContent;
 	try {
 		// Request an access token
-		responseContent = HTTP.post('https://api.linkedin.com/uas/oauth2/accessToken', {
-			params: {
+		const request = await fetch('https://api.linkedin.com/uas/oauth2/accessToken', {
+			method: 'POST',
+			body: JSON.stringify({
 				grant_type: 'authorization_code',
 				client_id: config.clientId,
 				client_secret: OAuth.openSecret(config.secret),
 				code: query.code,
 				redirect_uri: OAuth._redirectUri('linkedin', config),
-			},
-		}).content;
+			}),
+		});
+		responseContent = await request.text();
 	} catch (err) {
 		throw new Error(`Failed to complete OAuth handshake with Linkedin. ${err.message}`);
 	}
@@ -86,21 +89,22 @@ const getTokenResponse = function (query) {
 };
 
 // Request available fields from r_liteprofile
-const getIdentity = function (accessToken) {
+const getIdentity = async function (accessToken) {
 	try {
 		const url = encodeURI(
 			`https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))&oauth2_access_token=${accessToken}`,
 		);
-		return HTTP.get(url).data;
+		const request = await fetch(url);
+		return request.json();
 	} catch (err) {
 		throw new Error(`Failed to fetch identity from Linkedin. ${err.message}`);
 	}
 };
 
-OAuth.registerService('linkedin', 2, null, (query) => {
-	const response = getTokenResponse(query);
+OAuth.registerService('linkedin', 2, null, async (query) => {
+	const response = await getTokenResponse(query);
 	const { accessToken } = response;
-	const identity = getIdentity(accessToken);
+	const identity = await getIdentity(accessToken);
 
 	const { id, firstName, lastName, profilePicture } = identity;
 
@@ -108,7 +112,7 @@ OAuth.registerService('linkedin', 2, null, (query) => {
 		throw new Error('Linkedin did not provide an id');
 	}
 
-	const emails = getEmails(accessToken);
+	const emails = await getEmails(accessToken);
 
 	const fields = {
 		linkedinId: id,

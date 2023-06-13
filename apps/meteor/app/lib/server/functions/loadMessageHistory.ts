@@ -14,7 +14,8 @@ export async function loadMessageHistory({
 	showThreadMessages = true,
 	offset = 0,
 }: {
-	userId: string;
+	// userId is undefined if user is reading anonymously
+	userId?: string;
 	rid: string;
 	end: Date | undefined;
 	limit?: number;
@@ -47,7 +48,7 @@ export async function loadMessageHistory({
 				showThreadMessages,
 		  ).toArray()
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
-	const messages = normalizeMessagesForUser(records, userId);
+	const messages = await normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
 

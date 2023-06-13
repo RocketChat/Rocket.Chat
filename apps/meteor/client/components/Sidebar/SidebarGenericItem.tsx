@@ -9,9 +9,9 @@ type SidebarGenericItemProps = {
 	featured?: boolean;
 	children: ReactNode;
 	customColors?: {
-		default: typeof colors[string];
-		hover: typeof colors[string];
-		active: typeof colors[string];
+		default: (typeof colors)[string];
+		hover: (typeof colors)[string];
+		active: (typeof colors)[string];
 	};
 	externalUrl?: boolean;
 };

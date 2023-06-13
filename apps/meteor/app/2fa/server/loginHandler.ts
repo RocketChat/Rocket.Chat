@@ -15,7 +15,7 @@ const isCredentialWithError = (credential: any): credential is { error: Error } 
 };
 
 Accounts.registerLoginHandler('totp', function (options) {
-	if (!options.totp || !options.totp.code) {
+	if (!options.totp?.code) {
 		return;
 	}
 
@@ -30,7 +30,7 @@ callbacks.add(
 			throw new Meteor.Error('verify-email', 'E-mail verified');
 		}
 
-		if (login.type === 'resume' || login.type === 'proxy') {
+		if (login.type === 'resume' || login.type === 'proxy' || (login.type === 'password' && login.methodName === 'resetPassword')) {
 			return login;
 		}
 		// CAS login doesn't yet support 2FA.

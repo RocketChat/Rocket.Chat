@@ -69,7 +69,7 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });
@@ -112,7 +112,7 @@ API.v1.addRoute(
 			}
 
 			const endpointDetails = await Voip.getRegistrationInfo({ extension });
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });

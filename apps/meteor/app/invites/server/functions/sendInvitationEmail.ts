@@ -43,7 +43,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 
 	for await (const email of validEmails) {
 		try {
-			Mailer.send({
+			await Mailer.send({
 				to: email,
 				from: settings.get('From_Email'),
 				subject,

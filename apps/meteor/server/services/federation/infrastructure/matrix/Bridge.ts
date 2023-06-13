@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
@@ -14,9 +15,11 @@ import { RoomMembershipChangedEventType } from './definitions/events/RoomMembers
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
-import { fetch } from '../../../../lib/http/fetch';
+import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
 
 let MatrixUserInstance: any;
+
+const DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS = 180000;
 
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
@@ -77,7 +80,19 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async joinRoom(externalRoomId: string, externalUserId: string, viaServers?: string[]): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId, viaServers);
+		try {
+			await this.bridgeInstance
+				.getIntent(externalUserId)
+				.matrixClient.doRequest(
+					'POST',
+					`/_matrix/client/v3/join/${externalRoomId}`,
+					{ server_name: viaServers },
+					{},
+					DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
+				);
+		} catch (e) {
+			throw new Error('Error joining Matrix room');
+		}
 	}
 
 	public async getRoomHistoricalJoinEvents(
@@ -101,6 +116,38 @@ export class MatrixBridge implements IFederationBridge {
 				...event,
 				sender: roomCreator,
 			}));
+	}
+
+	public async getRoomData(
+		externalUserId: string,
+		externalRoomId: string,
+	): Promise<{ creator: { id: string; username: string }; name: string; joinedMembers: string[] } | undefined> {
+		const includeEvents = ['join'];
+		const excludeEvents = ['leave', 'ban'];
+		const members = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.getRoomMembers(externalRoomId, undefined, includeEvents as any[], excludeEvents as any[]);
+
+		const joinedMembers = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getJoinedRoomMembers(externalRoomId);
+
+		const oldestFirst = members.sort((a, b) => a.timestamp - b.timestamp).shift();
+		if (!oldestFirst) {
+			return;
+		}
+
+		const roomName = await this.getRoomName(externalRoomId, externalUserId);
+		if (!roomName) {
+			return;
+		}
+
+		return {
+			creator: {
+				id: oldestFirst.sender,
+				username: formatExternalUserIdToInternalUsernameFormat(oldestFirst.sender),
+			},
+			joinedMembers,
+			name: roomName,
+		};
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
@@ -227,7 +274,7 @@ export class MatrixBridge implements IFederationBridge {
 			throw new Error('Not able to download the file');
 		}
 
-		return response.body;
+		return response.body as unknown as ReadableStream;
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {

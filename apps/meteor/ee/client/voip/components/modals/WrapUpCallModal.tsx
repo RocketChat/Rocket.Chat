@@ -1,4 +1,4 @@
-import { Button, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
@@ -45,7 +45,7 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Wrap_up_the_call')}</Modal.Title>
 				<Modal.Close onClick={closeModal} />

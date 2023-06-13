@@ -1,16 +1,15 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC, ReactElement } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
-import { AsyncStatePhase } from '../../../../client/lib/asyncState';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponseFilter from './CannedResponseFilter';
@@ -55,8 +54,12 @@ const CannedResponsesRoute: FC = () => {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const query = useMemo(
-		() => ({
+	const queryClient = useQueryClient();
+
+	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
+
+	const { data } = useQuery(['canned-responses', '/v1/canned-responses', debouncedText], () =>
+		getCannedResponses({
 			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
 			...(sharing && { scope: sharing }),
@@ -64,8 +67,13 @@ const CannedResponsesRoute: FC = () => {
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing],
 	);
+
+	const { data: totalData, isInitialLoading: totalDataLoading } = useQuery(['canned-responses', '/v1/canned-responses'], () =>
+		getCannedResponses({}),
+	);
+
+	const reload = useMutableCallback(() => queryClient.invalidateQueries(['canned-responses', '/v1/canned-responses']));
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 	const context = useRouteParameter('context');
@@ -103,9 +111,6 @@ const CannedResponsesRoute: FC = () => {
 		}),
 		[t],
 	);
-
-	const { value: data, reload } = useEndpointData('/v1/canned-responses', { params: query });
-	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('/v1/canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
@@ -172,26 +177,26 @@ const CannedResponsesRoute: FC = () => {
 				<Table.Cell withTruncatedText>{getTime(_createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
 				{!(scope === 'global' && isMonitor && !isManager) && (
-					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={reload} />
 				)}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor, isManager],
+		[getTime, onRowClick, reload, defaultOptions, isMonitor, isManager],
 	);
 
 	if (context === 'edit' && id) {
-		return <CannedResponseEditWithData reload={reload} totalDataReload={totalDataReload} cannedResponseId={id} />;
+		return <CannedResponseEditWithData reload={reload} totalDataReload={reload} cannedResponseId={id} />;
 	}
 
 	if (context === 'new') {
-		return <CannedResponseNew reload={reload} totalDataReload={totalDataReload} />;
+		return <CannedResponseNew reload={reload} totalDataReload={reload} />;
 	}
 
 	if (!canViewCannedResponses) {
 		return <NotAuthorizedPage />;
 	}
 
-	if (totalDataPhase === AsyncStatePhase.LOADING) {
+	if (totalDataLoading) {
 		return <PageSkeleton></PageSkeleton>;
 	}
 
@@ -214,6 +219,7 @@ const CannedResponsesRoute: FC = () => {
 			renderRow={renderRow}
 			title={t('Canned_Responses')}
 			totalCannedResponses={totalData?.total || 0}
+			busy={text !== debouncedText}
 		></CannedResponsesPage>
 	);
 };

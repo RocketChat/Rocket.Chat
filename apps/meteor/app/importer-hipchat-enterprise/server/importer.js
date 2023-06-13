@@ -285,60 +285,46 @@ export class HipChatEnterpriseImporter extends Base {
 		let messageCount = 0;
 
 		const promise = new Promise((resolve, reject) => {
-			this.extract.on(
-				'entry',
-				Meteor.bindEnvironment((header, stream, next) => {
-					this.logger.debug(`new entry from import file: ${header.name}`);
-					if (!header.name.endsWith('.json')) {
-						stream.resume();
-						return next();
-					}
-
-					const info = this.path.parse(header.name);
-					let pos = 0;
-					let data = Buffer.allocUnsafe(header.size);
-
-					stream.on(
-						'data',
-						Meteor.bindEnvironment((chunk) => {
-							data.fill(chunk, pos, pos + chunk.length);
-							pos += chunk.length;
-						}),
-					);
-
-					stream.on(
-						'end',
-						Meteor.bindEnvironment(async () => {
-							this.logger.info(`Processing the file: ${header.name}`);
-							const newMessageCount = await this.prepareFile(info, data, header.name);
-
-							messageCount += newMessageCount;
-							await super.updateRecord({ 'count.messages': messageCount });
-							await super.addCountToTotal(newMessageCount);
-
-							data = undefined;
-
-							this.logger.debug('next import entry');
-							next();
-						}),
-					);
-
-					stream.on('error', () => next());
+			this.extract.on('entry', (header, stream, next) => {
+				this.logger.debug(`new entry from import file: ${header.name}`);
+				if (!header.name.endsWith('.json')) {
 					stream.resume();
-				}),
-			);
+					return next();
+				}
+
+				const info = this.path.parse(header.name);
+				let pos = 0;
+				let data = Buffer.allocUnsafe(header.size);
+
+				stream.on('data', (chunk) => {
+					data.fill(chunk, pos, pos + chunk.length);
+					pos += chunk.length;
+				});
+
+				stream.on('end', async () => {
+					this.logger.info(`Processing the file: ${header.name}`);
+					const newMessageCount = await this.prepareFile(info, data, header.name);
+
+					messageCount += newMessageCount;
+					await super.updateRecord({ 'count.messages': messageCount });
+					await super.addCountToTotal(newMessageCount);
+
+					data = undefined;
+
+					this.logger.debug('next import entry');
+					next();
+				});
+
+				stream.on('error', () => next());
+				stream.resume();
+			});
 
 			this.extract.on('error', (err) => {
 				this.logger.error({ msg: 'extract error:', err });
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
-			this.extract.on(
-				'finish',
-				Meteor.bindEnvironment(() => {
-					resolve();
-				}),
-			);
+			this.extract.on('finish', resolve);
 
 			const rs = fs.createReadStream(fullFilePath);
 			const gunzip = this.zlib.createGunzip();

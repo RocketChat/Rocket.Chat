@@ -304,12 +304,29 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findOneByImportId(_id, options) {
+		return this.findOne({ importIds: _id }, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
 
 		const query = { username };
+
+		return this.findOne(query, options);
+	}
+
+	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+
+		const query = {
+			'username': expression,
+			'services.ldap': {
+				$exists: false,
+			},
+		};
 
 		return this.findOne(query, options);
 	}
@@ -1187,12 +1204,28 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
+	}
+
 	findActiveUsersEmail2faEnable(options) {
 		const query = {
 			'active': true,
 			'services.email2fa.enabled': true,
 		};
 		return this.find(query, options);
+	}
+
+	countActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
 	}
 
 	setAsFederated(uid) {
@@ -1275,6 +1308,12 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		);
+	}
+
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
 	}
 
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
@@ -1467,6 +1506,15 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countAgents() {
+		// TODO: Create class Agent
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	// 2
@@ -1859,6 +1907,17 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+		const query = {
+			'email.address': emailAddress.trim().toLowerCase(),
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneAdmin(userId, options) {
 		const query = { roles: { $in: ['admin'] }, _id: userId };
 
@@ -1975,6 +2034,12 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByUsernames(usernames, options) {
+		const query = { username: { $in: usernames } };
+
+		return this.find(query, options);
+	}
+
 	findByUsernamesIgnoringCase(usernames, options) {
 		const query = {
 			username: {
@@ -2081,7 +2146,7 @@ export class UsersRaw extends BaseRaw {
 
 	async getLastLogin(options = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
-		const [user] = await this.findOne({}, options);
+		const user = await this.findOne({}, options);
 		return user?.lastLogin;
 	}
 
@@ -2634,10 +2699,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 
@@ -2758,7 +2823,21 @@ export class UsersRaw extends BaseRaw {
 
 	// here
 	getActiveLocalUserCount() {
-		return this.col.countDocuments({ active: true, federated: false, isRemote: false });
+		return Promise.all([
+			this.col.countDocuments({
+				active: true,
+				type: {
+					$nin: ['app'],
+				},
+				roles: { $ne: ['guest'] },
+			}),
+			this.col.countDocuments({ federated: true, active: true }),
+			this.col.countDocuments({
+				isRemote: true,
+				active: true,
+				roles: { $ne: ['guest'] },
+			}),
+		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {

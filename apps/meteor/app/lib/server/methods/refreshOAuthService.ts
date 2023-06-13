@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		ServiceConfiguration.configurations.remove({});
+		await ServiceConfiguration.configurations.removeAsync({});
 
 		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},

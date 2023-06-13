@@ -26,7 +26,7 @@ const BusinessHoursRouter = () => {
 				type: 'default',
 			});
 		}
-	}, [isSingleBH, router]);
+	}, [isSingleBH, router, context, type]);
 
 	if (context === 'edit' || isSingleBH) {
 		return type ? <EditBusinessHoursPage type={type} id={id} /> : null;

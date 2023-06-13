@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 const connect = Npm.require('connect');
@@ -18,11 +17,9 @@ const responseHeaders = {
 
 // Register as a middleware
 WebApp.connectHandlers.use(
-	Meteor.bindEnvironment(
-		connectRoute(function (router) {
-			connectRouter = router;
-		}),
-	),
+	connectRoute(function (router) {
+		connectRouter = router;
+	}),
 );
 
 function setHeaders(res, headers) {

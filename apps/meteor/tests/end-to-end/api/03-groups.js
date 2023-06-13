@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
@@ -650,6 +650,22 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.property('groups').and.to.be.an('array');
 			})
 			.end(done);
+	});
+
+	it('/groups.list should return a list of zero length if not a member of any group', async () => {
+		const user = await createUser();
+		const newCreds = await login(user.username, password);
+		request
+			.get(api('groups.list'))
+			.set(newCreds)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count').and.to.equal(0);
+				expect(res.body).to.have.property('total').and.to.equal(0);
+				expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
+			});
 	});
 
 	describe('[/groups.online]', () => {

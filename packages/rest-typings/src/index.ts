@@ -44,6 +44,7 @@ import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
 import type { FederationEndpoints } from './v1/federation';
+import type { ModerationEndpoints } from './v1/moderation';
 import type { AuthEndpoints } from './v1/auth';
 import type { DefaultEndpoints } from './default';
 
@@ -51,6 +52,7 @@ import type { DefaultEndpoints } from './default';
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,
+		ModerationEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
 		CommandsEndpoints,
@@ -225,6 +227,10 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
+export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
+export * from './v1/oauthapps/OAuthAppsGetParamsGET';
+export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
+export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -239,6 +245,7 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/moderation';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';

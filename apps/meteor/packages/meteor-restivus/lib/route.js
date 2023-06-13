@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { ironRouterSendErrorToResponse } from './iron-router-error-to-response';
 import { JsonRoutes } from './json-routes';
@@ -231,7 +231,7 @@ export class Route {
 			const userSelector = {};
 			userSelector._id = auth.userId;
 			userSelector[this.api._config.auth.token] = auth.token;
-			auth.user = await Meteor.users.findOneAsync(userSelector);
+			auth.user = await Users.findOne(userSelector);
 		}
 		if (auth.error) {
 			return {
@@ -304,7 +304,7 @@ export class Route {
 			minimumDelayInMilliseconds = 500;
 			randomMultiplierBetweenOneAndTwo = 1 + Math.random();
 			delayInMilliseconds = minimumDelayInMilliseconds * randomMultiplierBetweenOneAndTwo;
-			return Meteor.setTimeout(sendResponse, delayInMilliseconds);
+			return setTimeout(sendResponse, delayInMilliseconds);
 		}
 		return sendResponse();
 	}

@@ -22,7 +22,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const registrationInfo = retrieveRegistrationStatus();
+			const registrationInfo = await retrieveRegistrationStatus();
 
 			if (registrationInfo.workspaceRegistered) {
 				return API.v1.failure('Workspace is already registered');
@@ -116,7 +116,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const registrationStatus = retrieveRegistrationStatus();
+			const registrationStatus = await retrieveRegistrationStatus();
 
 			return API.v1.success({ registrationStatus });
 		},

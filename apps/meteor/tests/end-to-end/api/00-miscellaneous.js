@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
-import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
+import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage } from '@rocket.chat/core-typings';
@@ -12,7 +11,7 @@ import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
+export const processDirectEmail = async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -122,4 +121,4 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	};
 
 	return sendMessage(user, message, roomInfo);
-});
+};

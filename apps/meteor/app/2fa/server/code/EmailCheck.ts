@@ -1,5 +1,4 @@
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -8,6 +7,7 @@ import { Users } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import { i18n } from '../../../../server/lib/i18n';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name = 'email';
@@ -31,12 +31,12 @@ export class EmailCheck implements ICodeCheck {
 		return this.getUserVerifiedEmails(user).length > 0;
 	}
 
-	private send2FAEmail(address: string, random: string, user: IUser): void {
+	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = (s: string): string => TAPi18n.__(s, { lng: language });
+		const t = (s: string): string => i18n.t(s, { lng: language });
 
-		Mailer.send({
+		await Mailer.send({
 			to: address,
 			from: settings.get('From_Email'),
 			subject: 'Authentication code',
@@ -103,8 +103,8 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 		await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
-		for (const address of emails) {
-			this.send2FAEmail(address, random, user);
+		for await (const address of emails) {
+			await this.send2FAEmail(address, random, user);
 		}
 	}
 

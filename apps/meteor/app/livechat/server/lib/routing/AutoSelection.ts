@@ -26,7 +26,7 @@ class AutoSelection implements IRoutingMethod {
 	}
 
 	async getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
-		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', undefined, {
+		const extraQuery = await callbacks.run('livechat.applySimultaneousChatRestrictions', undefined, {
 			...(department ? { departmentId: department } : {}),
 		});
 		if (department) {

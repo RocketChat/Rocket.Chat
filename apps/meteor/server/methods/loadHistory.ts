@@ -40,24 +40,24 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		const room = await Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}
 
-		if (!fromId || !(await canAccessRoomAsync(room, { _id: fromId }))) {
+		// this checks the Allow Anonymous Read setting, so no need to check again
+		if (!(await canAccessRoomAsync(room, fromId ? { _id: fromId } : undefined))) {
 			return false;
 		}
 
-		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
+		// if fromId is undefined and it passed the previous check, the user is reading anonymously
+		if (!fromId) {
+			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages });
+		}
+
 		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
-		if (
-			room.t === 'c' &&
-			!canAnonymous &&
-			!canPreview &&
-			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))
-		) {
+		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))) {
 			return false;
 		}
 
