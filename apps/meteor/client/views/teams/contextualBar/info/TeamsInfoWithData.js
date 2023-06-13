@@ -18,7 +18,7 @@ import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
-import DeleteTeamModal from './Delete';
+import DeleteTeamModal from './DeleteTeam';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 

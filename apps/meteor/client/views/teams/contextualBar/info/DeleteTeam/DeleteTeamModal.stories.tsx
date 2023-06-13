@@ -3,8 +3,8 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import DeleteTeamModal from '.';
-import StepOne from './StepOne';
-import StepTwo from './StepTwo';
+import StepOne from './DeleteTeamChannels';
+import StepTwo from './DeleteTeamConfirmation';
 
 export default {
 	title: 'Teams/Contextual Bar/DeleteTeamModal',
