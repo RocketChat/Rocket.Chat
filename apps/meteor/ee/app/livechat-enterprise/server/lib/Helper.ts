@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { Document } from 'mongodb';
-import type { ILivechatInquiryRecord, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 
 import { memoizeDebounce } from './debounceByParams';
 import { settings } from '../../../../../app/settings/server';
@@ -31,12 +31,6 @@ type QueueInfo = {
 	statistics: Document;
 	numberMostRecentChats: number;
 };
-
-type InquiryWithExtraData = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & {
-	position: number;
-	defaultAgent?: { username: string; agentId: string };
-};
-
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
@@ -106,10 +100,14 @@ const normalizeQueueInfo = async ({
 	return { spot, message, estimatedWaitTimeSeconds };
 };
 
-export const dispatchInquiryPosition = async (inquiry: InquiryWithExtraData, queueInfo?: QueueInfo) => {
+export const dispatchInquiryPosition = async (inquiry: Omit<InquiryWithAgentInfo, 'v'>, queueInfo?: QueueInfo) => {
 	const { position, department } = inquiry;
+	// Avoid broadcasting if no position was determined
+	if (position === undefined) {
+		return;
+	}
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = (inquiry: InquiryWithExtraData) => {
+	const propagateInquiryPosition = (inquiry: Omit<InquiryWithAgentInfo, 'v'>) => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
@@ -146,7 +144,7 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithExtraData) => {
+export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithAgentInfo) => {
 	const queue = department || 'Public';
 	helperLogger.debug(`Processing items on queue ${queue}`);
 
