@@ -40,8 +40,6 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		[key: string]: MessageActionConfigOption[];
 	};
 
-	// console.log({ groupOptions });
-
 	return (
 		<>
 			<MessageToolboxItem

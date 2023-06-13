@@ -199,7 +199,7 @@ Meteor.startup(async function () {
 			}
 			return true;
 		},
-		order: 6,
+		order: 7,
 		group: 'menu',
 	});
 
