@@ -29,16 +29,21 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 // This will need to be moved when we create the microservices
 api.registerService(new AppsEngineService(db));
+api.registerService(new AppsConverterService());
+api.registerService(new AppsApiService());
+api.registerService(new AppsManagerService());
+api.registerService(new AppsStatisticsService());
+api.registerService(new AppsVideoManagerService());
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {
 	api.registerService(new InstanceService());
 
-	api.registerService(new AppsConverterService());
-	api.registerService(new AppsApiService());
-	api.registerService(new AppsManagerService());
-	api.registerService(new AppsStatisticsService());
-	api.registerService(new AppsVideoManagerService());
+	// api.registerService(new AppsConverterService());
+	// api.registerService(new AppsApiService());
+	// api.registerService(new AppsManagerService());
+	// api.registerService(new AppsStatisticsService());
+	// api.registerService(new AppsVideoManagerService());
 }
 
 let federationService: FederationService;
