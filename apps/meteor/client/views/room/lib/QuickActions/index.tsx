@@ -37,4 +37,5 @@ export enum QuickActionsEnum {
 	TranscriptPDF = 'rocket-transcript-pdf',
 	CloseChat = 'rocket-close-chat',
 	OnHoldChat = 'rocket-on-hold-chat',
+	VerifyUser = 'rocket-verify-user',
 }

@@ -397,16 +397,6 @@ class LivechatClass {
 			}, timeout * 4);
 		}
 	}
-
-	async verificationProcess(roomId: string) {
-		const room = await LivechatRooms.findOneById(roomId);
-		const user = await Users.findOneById('rocket.cat');
-		const message = {
-			msg: 'hi',
-			groupable: false,
-		};
-		await sendMessage(user, message, room);
-	}
 }
 
 export const Livechat = new LivechatClass();

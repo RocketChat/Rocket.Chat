@@ -77,7 +77,15 @@ export const useQuickActions = (
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
+	const verifyUser = useMethod('livechat:verifyUser');
 
+	const handleVerifyUser = useCallback(async () => {
+		try {
+			await verifyUser(rid);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [dispatchToastMessage, rid, verifyUser]);
 	const handleRequestTranscript = useCallback(
 		async (email: string, subject: string) => {
 			try {
@@ -294,6 +302,9 @@ export const useQuickActions = (
 				);
 				setOnHoldModalActive(true);
 				break;
+			case QuickActionsEnum.VerifyUser:
+				handleVerifyUser();
+				break;
 			default:
 				break;
 		}
@@ -314,6 +325,7 @@ export const useQuickActions = (
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const canVerifyUser = usePermission('enable-livechat-verification-process');
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
@@ -331,6 +343,8 @@ export const useQuickActions = (
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
+			case QuickActionsEnum.VerifyUser:
+				return !!roomOpen && canVerifyUser;
 			default:
 				break;
 		}
