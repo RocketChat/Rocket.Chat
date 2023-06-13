@@ -125,9 +125,9 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
-	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | true>;
+	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
 	saveRoomById(
-		data: { _id: string; topic: string; tags: string[]; livechatData: unknown } & Record<string, unknown>,
+		data: { _id: string; topic: string; tags: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
 	): Promise<UpdateResult | undefined>;
 	findById(_id: string, fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
 	findByIds(ids: string[], fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
@@ -149,7 +149,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndEmailThread(
 		visitorToken: string,
-		emailThread: string,
+		emailThread: string[],
 		options: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
@@ -185,27 +185,27 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		message: IMessage,
 		analyticsData?: Record<string, string | number | Date>,
 	): Promise<UpdateResult>;
-	getTotalConversationsBetweenDate(t: string, date: string, data?: { departmentId: string }): Promise<number>;
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
-		t: string,
-		date: string,
+		t: 'l',
+		date: { gte: Date; lt: Date },
 		data?: { departmentId: string },
 	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
-		date: string,
+		date: { gte: Date; lt: Date },
 		data?: { departmentId: string },
 		extraQuery?: Document,
 	): AggregationCursor<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsBetweenDate(
-		date: string,
+		date: { gte: Date; lt: Date },
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
 	findOpenByAgent(userId: string): FindCursor<IOmnichannelRoom>;
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
-	updateVisitorStatus(token: string, status: IVisitor['status']): Promise<UpdateResult>;
+	updateVisitorStatus(token: string, status: IVisitor['status']): Promise<UpdateResult | Document>;
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
