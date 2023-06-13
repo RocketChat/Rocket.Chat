@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
 import {
@@ -57,7 +57,7 @@ API.v1.addRoute('livechat/room', {
 				return API.v1.success({ room, newRoom: false });
 			}
 
-			let agent;
+			let agent: SelectedAgent | undefined;
 			const agentObj = agentId && (await findAgent(agentId));
 			if (agentObj) {
 				if (isAgentWithInfo(agentObj)) {
