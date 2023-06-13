@@ -143,7 +143,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId: any): any;
 
-	isAgentWithinBusinessHours(agentId: any): Promise<any>;
+	isAgentWithinBusinessHours(agentId: string): Promise<boolean>;
 
 	removeBusinessHoursFromAllUsers(): any;
 

@@ -984,15 +984,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return (
-			(await this.find({
-				_id: agentId,
-				openBusinessHours: {
-					$exists: true,
-					$not: { $size: 0 },
-				},
-			}).count()) > 0
-		);
+		const query = {
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+		return (await this.col.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {

@@ -133,85 +133,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(deletedDepartment, agentsIds, options);
 	}
 
-	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
-		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
-			projection: {
-				workHours: 1,
-				timezone: 1,
-				type: 1,
-				active: 1,
-			},
-		});
-		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
-		if (!openedBusinessHours.length) {
-			bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found`);
-			return false;
-		}
-
-		const agentDepartments = await LivechatDepartmentAgents.find(
-			{ departmentEnabled: true, agentId },
-			{ projection: { agentId: 1, departmentId: 1 } },
-		).toArray();
-
-		if (agentDepartments.length) {
-			// check if any one these departments have a opened business hour linked to it
-			const departments = await LivechatDepartment.findInIds(
-				agentDepartments.map(({ departmentId }) => departmentId),
-				{ projection: { _id: 1, businessHourId: 1 } },
-			).toArray();
-
-			const departmentsWithActiveBH = departments.filter(
-				({ businessHourId }) => businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1,
-			);
-
-			if (!departmentsWithActiveBH.length) {
-				bhLogger.debug(
-					`No opened business hour found for any of the departments connected to the agent with id: ${agentId}. Now, checking if the default business hour can be used`,
-				);
-
-				// check if this agent has any departments that is connected to any non-default business hour
-				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
-				const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
-					// check if business hour is active
-					return businessHourId && allActiveBusinessHoursForEntireWeek.findIndex(({ _id }) => _id === businessHourId) !== -1;
-				});
-				if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
-					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
-					if (isDefaultBHActive?._id) {
-						await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
-
-						bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
-						return true;
-					}
-					bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. Found default business hour to be inactive`);
-				}
-				return false;
-			}
-
-			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
-			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
-
-			bhLogger.debug(
-				`Business hour status recheck passed for agentId: ${agentId}. Found following business hours to be active:`,
-				activeBusinessHoursForAgent,
-			);
-			return true;
-		}
-
-		// check if default businessHour is active
-		const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
-		if (isDefaultBHActive?._id) {
-			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
-
-			bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
-			return true;
-		}
-
-		bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found`);
-
-		return false;
+	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
