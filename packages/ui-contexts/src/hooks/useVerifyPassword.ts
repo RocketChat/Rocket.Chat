@@ -1,13 +1,13 @@
 import { usePasswordPolicy } from './usePasswordPolicy';
 
-export const useVerifyPassword = (password: string | undefined) => {
+export const useVerifyPassword = (password?: string) => {
 	const { data, isLoading } = usePasswordPolicy();
 
 	if (isLoading) return;
 
 	if (!data?.enabled || password === undefined) return;
 
-	const handleRepeatingChars = (maxRepeatingChars: number | undefined) => {
+	const handleRepeatingChars = (maxRepeatingChars?: number | undefined) => {
 		const repeatingCharsHash = {} as Record<string, number>;
 
 		for (let i = 0; i < password.length; i++) {
@@ -25,8 +25,8 @@ export const useVerifyPassword = (password: string | undefined) => {
 	};
 
 	const passwordVerificationsTemplate: Record<string, (lengthCriteria?: number) => boolean> = {
-		'get-password-policy-minLength': (minLength: number | undefined) => Boolean(minLength && password.length >= minLength),
-		'get-password-policy-maxLength': (maxLength: number | undefined) => Boolean(maxLength && password.length <= maxLength),
+		'get-password-policy-minLength': (minLength?: number) => Boolean(minLength && password.length >= minLength),
+		'get-password-policy-maxLength': (maxLength?: number) => Boolean(maxLength && password.length <= maxLength),
 		'get-password-policy-forbidRepeatingCharactersCount': handleRepeatingChars,
 		'get-password-policy-mustContainAtLeastOneLowercase': () => /[a-z]/.test(password),
 		'get-password-policy-mustContainAtLeastOneUppercase': () => /[A-Z]/.test(password),
@@ -34,7 +34,7 @@ export const useVerifyPassword = (password: string | undefined) => {
 		'get-password-policy-mustContainAtLeastOneSpecialCharacter': () => /[^A-Za-z0-9\s]/.test(password),
 	};
 
-	const passwordVerifications = {} as Record<string, { isValid: boolean; limit: number | undefined }>;
+	const passwordVerifications = {} as Record<string, { isValid: boolean; limit?: number }>;
 
 	data?.policy.forEach((currentPolicy) => {
 		if (!Array.isArray(currentPolicy)) return;

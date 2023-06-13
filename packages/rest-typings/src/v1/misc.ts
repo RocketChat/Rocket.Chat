@@ -213,7 +213,7 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicyReset': {
 		GET: (params: PwGetPolicyReset) => {
 			enabled: boolean;
-			policy: [name: string, value?: Record<string, number>][];
+			policy: [name: string, options?: Record<string, unknown>][];
 		};
 	};
 

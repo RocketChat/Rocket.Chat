@@ -31,7 +31,6 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { i18n } from '../../../../server/lib/i18n';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { deprecationWarning } from '../helpers/deprecationWarning';
 
 /**
  * @openapi
@@ -411,9 +410,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			apiDeprecationLogger.warn(
-				'pw.getPolicyReset is deprecated and will be removed in future versions of Rocket.Chat. Use pw.getPolicy instead.',
-			);
+			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -427,13 +424,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			return API.v1.success(
-				deprecationWarning({
-					endpoint: 'livechat/room.transfer',
-					versionWillBeRemoved: '7.0',
-					response: passwordPolicy.getPasswordPolicy(),
-				}),
-			);
+			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
 );
