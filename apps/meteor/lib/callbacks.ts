@@ -90,6 +90,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 }
 
 /**
