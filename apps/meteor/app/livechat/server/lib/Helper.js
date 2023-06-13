@@ -299,7 +299,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 		return;
 	}
 
-	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
+	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	for await (let agent of onlineAgents) {

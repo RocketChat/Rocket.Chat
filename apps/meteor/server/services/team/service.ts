@@ -475,7 +475,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		if (room.teamDefault) {
 			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
 
-			teamMembers.records.map((m) => addUserToRoom(room._id, m.user, user));
+			for await (const m of teamMembers.records) {
+				await addUserToRoom(room._id, m.user, user);
+			}
 		}
 
 		return {

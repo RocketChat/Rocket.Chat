@@ -10,7 +10,7 @@ import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
-import { PriorityVerticalBar } from './PriorityVerticalBar';
+import PriorityList from './PriorityList';
 
 type PrioritiesPageProps = {
 	priorityId: string;
@@ -59,7 +59,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 
-	const onVerticalBarClose = (): void => {
+	const onContextualbarClose = (): void => {
 		prioritiesRoute.push({});
 	};
 
@@ -88,7 +88,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 			</Page>
 
 			{context === 'edit' && (
-				<PriorityVerticalBar priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onVerticalBarClose} />
+				<PriorityList priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onContextualbarClose} />
 			)}
 		</Page>
 	);

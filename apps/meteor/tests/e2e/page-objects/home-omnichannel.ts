@@ -33,8 +33,8 @@ export class HomeOmnichannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
-	get btnVerticalBarClose(): Locator {
-		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
 	get btnCurrentChats(): Locator {

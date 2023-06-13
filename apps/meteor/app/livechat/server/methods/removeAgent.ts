@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeAgent'(username) {
-		methodDeprecationLogger.warn('livechat:removeAgent will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:removeAgent', '7.0.0');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

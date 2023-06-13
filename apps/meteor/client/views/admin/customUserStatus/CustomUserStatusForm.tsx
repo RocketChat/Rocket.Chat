@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 
 type CustomUserStatusFormProps = {
 	onClose: () => void;
@@ -86,7 +86,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	];
 
 	return (
-		<VerticalBar.ScrollableContent>
+		<ContextualbarScrollableContent>
 			<FieldGroup is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
@@ -130,7 +130,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					</Field>
 				)}
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

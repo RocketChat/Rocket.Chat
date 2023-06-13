@@ -81,7 +81,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
@@ -120,7 +120,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
 	});
 });
 

@@ -1,22 +1,21 @@
-import { Box, Callout, Message, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, Callout, Message } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarFooter } from '../../../components/Contextualbar';
+import GenericNoResults from '../../../components/GenericNoResults';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
+// TODO: Missing Error State
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
 	const t = useTranslation();
-
-	const moderationRoute = useRoute('moderation-console');
-
-	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
-
 	const dispatchToastMessage = useToastMessageDispatch();
+	const moderationRoute = useRoute('moderation-console');
+	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const {
 		data: userMessages,
@@ -37,7 +36,6 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	);
 
 	// opens up the 'reports' tab when the user clicks on a user in the 'users' tab
-
 	const handleClick = useMutableCallback((id): void => {
 		moderationRoute.push({
 			context: 'reports',
@@ -71,10 +69,10 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Moderation_Message_context_header', { displayName })}</VerticalBar.Text>
-				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Moderation_Message_context_header', { displayName })}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => moderationRoute.push({})} />
+			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && (
 					<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
@@ -95,16 +93,11 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							/>
 						</Box>
 					))}
-				{isSuccessUserMessages && userMessages.messages.length === 0 && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
+				{isSuccessUserMessages && userMessages.messages.length === 0 && <GenericNoResults />}
 			</Box>
-			<VerticalBar.Footer display='flex'>
+			<ContextualbarFooter display='flex'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

@@ -15,7 +15,6 @@ services:
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
-      - 'WEBHOOK_TEST_URL=host.docker.internal:10000'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
