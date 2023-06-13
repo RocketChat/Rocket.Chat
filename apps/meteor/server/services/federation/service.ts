@@ -11,6 +11,7 @@ import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapter
 import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
+import type { AbstractMatrixEvent } from './infrastructure/matrix/definitions/AbstractMatrixEvent';
 import type { MatrixEventsHandler } from './infrastructure/matrix/handlers';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
@@ -312,6 +313,10 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
+	}
+
+	public async handleMatrixEvent(event: AbstractMatrixEvent): Promise<void> {
+		await this.getFederationEventsHandler().handleEvent(event);
 	}
 
 	static async createFederationService(): Promise<FederationService> {
