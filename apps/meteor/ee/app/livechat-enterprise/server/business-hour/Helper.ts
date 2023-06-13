@@ -13,11 +13,10 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const departmentIds = (await LivechatDepartment.findNotArchived({ projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 
 	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find(
+		await LivechatDepartmentAgents.col.distinct('agentId',
 			{ departmentEnabled: true, departmentId: { $in: departmentIds } },
-			{ projection: { agentId: 1 } },
-		).toArray()
-	).map((dept: any) => dept.agentId);
+		)
+	);
 
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(

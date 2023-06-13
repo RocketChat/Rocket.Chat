@@ -339,7 +339,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
 		const query = {
-			$or: [{ archived: { $exists: false } }, { archived: false }],
+			$or: [{ archived: { $ne: false } }],
 		};
 
 		return this.find(query, options);
