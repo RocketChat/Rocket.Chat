@@ -16,6 +16,7 @@ import type {
 	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
 	LivechatDepartmentDTO,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 
 import { hasLicense } from '../../../license/server/license';
@@ -386,7 +387,7 @@ const queueWorker: QueueWorker = {
 				return;
 			}
 
-			const result = await processWaitingQueue(queue, nextInquiry);
+			const result = await processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
 				await LivechatInquiry.unlock(nextInquiry._id);
