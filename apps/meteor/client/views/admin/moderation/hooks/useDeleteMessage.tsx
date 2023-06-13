@@ -16,9 +16,11 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 		mutationFn: deleteMessage,
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
+			setModal();
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			dispatchToastMessage({ type: 'success', message: t('Deleted') });
+			await handleDismissMessage.mutateAsync({ msgId: mid });
 		},
 	});
 
@@ -30,16 +32,15 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
 		},
+		onSettled: () => {
+			onChange();
+			queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+			setModal();
+		},
 	});
 
 	const onDeleteAll = async () => {
 		await handleDeleteMessages.mutateAsync({ msgId: mid, roomId: rid, asUser: true });
-		await handleDismissMessage.mutateAsync({ msgId: mid });
-		onChange();
-		// onReload();
-
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
-		setModal();
 	};
 
 	const confirmDeletMessage = (): void => {

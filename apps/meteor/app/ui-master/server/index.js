@@ -150,15 +150,15 @@ injectIntoBody(
 	You need to enable JavaScript to run this app.
 </noscript>
 <div id="react-root">
-	<div class="page-loading">
-		<div class="loading-animation">
-			<div class="bounce bounce1"></div>
-			<div class="bounce bounce2"></div>
-			<div class="bounce bounce3"></div>
+	<div class="page-loading" role="alert" aria-busy="true" aria-live="polite" aria-label="loading">
+		<div class="loading__animation">
+			<div class="loading__animation__bounce"></div>
+			<div class="loading__animation__bounce"></div>
+			<div class="loading__animation__bounce"></div>
 		</div>
 	</div>
 </div>
 `,
 );
 
-injectIntoBody('icons', Assets.getText('public/icons.svg'));
+injectIntoBody('icons', await Assets.getTextAsync('public/icons.svg'));

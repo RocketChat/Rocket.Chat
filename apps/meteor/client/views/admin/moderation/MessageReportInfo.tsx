@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarHeader, ContextualbarBack, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -59,11 +59,11 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Back onClick={() => window.history.go(-1)} />
-				<VerticalBar.Text>{t('Report')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={() => moderationRoute.push({})} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarBack onClick={() => window.history.go(-1)} />
+				<ContextualbarTitle>{t('Report')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => moderationRoute.push({})} />
+			</ContextualbarHeader>
 			{isSuccessReportsByMessage && reportsByMessage?.reports && (
 				<Box display='flex' flexDirection='column' width='full' height='full' overflowX='hidden' overflowY='auto'>
 					{reports.map((report) => (

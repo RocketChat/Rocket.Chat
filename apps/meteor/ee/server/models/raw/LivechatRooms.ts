@@ -6,7 +6,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, UpdateOptions, Filter, UpdateFilter } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -37,7 +37,6 @@ declare module '@rocket.chat/model-typings' {
 	}
 }
 
-// @ts-expect-error - Model is in JS, and types are getting weird :)
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, trash);
@@ -130,7 +129,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			open: true,
 			slaId,
@@ -160,7 +159,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			open: true,
 			priorityId,
@@ -267,30 +266,34 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(query, update);
 	}
 
-	find(...args: Parameters<LivechatRoomsRaw['find']>) {
+	find(...args: Parameters<LivechatRoomsRaw['find']>): FindCursor<IOmnichannelRoom> {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.find', query: restrictedQuery });
-		return super.find(restrictedQuery, ...restArgs);
+		return super.find<IOmnichannelRoom>(restrictedQuery, ...restArgs);
 	}
 
-	findPaginated(...args: Parameters<LivechatRoomsRaw['findPaginated']>) {
+	findPaginated(...args: Parameters<LivechatRoomsRaw['findPaginated']>): any {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.findPaginated', query: restrictedQuery });
-		return super.findPaginated(restrictedQuery, ...restArgs);
+		return super.findPaginated<IOmnichannelRoom>(restrictedQuery, ...restArgs);
 	}
 
 	/** @deprecated Use updateOne or updateMany instead */
-	update(...args: Parameters<LivechatRoomsRaw['update']>) {
+	update(...args: Parameters<LivechatRoomsRaw['update']>): ReturnType<LivechatRoomsRaw['update']> {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.update', query: restrictedQuery });
 		return super.update(restrictedQuery, ...restArgs);
 	}
 
-	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']> & { bypassUnits?: boolean }) {
-		const [query, update, opts, extraOpts] = args;
+	updateOne(
+		query: Filter<IOmnichannelRoom>,
+		update: UpdateFilter<IOmnichannelRoom>,
+		opts?: UpdateOptions,
+		extraOpts?: { bypassUnits?: boolean },
+	): ReturnType<LivechatRoomsRaw['updateOne']> {
 		if (extraOpts?.bypassUnits) {
 			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
 			// So the solution now is to pass a bypassUnits flag to the updateOne method which prevents checking
@@ -303,7 +306,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.updateOne(restrictedQuery, update, opts);
 	}
 
-	updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {
+	updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>): ReturnType<LivechatRoomsRaw['updateMany']> {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateMany', query: restrictedQuery });

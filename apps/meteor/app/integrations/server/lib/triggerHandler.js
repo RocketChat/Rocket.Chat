@@ -3,8 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import moment from 'moment';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -18,6 +16,7 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
 import { httpCall } from '../../../../server/lib/http/call';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 class RocketChatIntegrationHandler {
 	constructor() {
@@ -229,6 +228,16 @@ class RocketChatIntegrationHandler {
 	}
 
 	buildSandbox(store = {}) {
+		const httpAsync = async (method, url, options) => {
+			try {
+				return {
+					result: await httpCall(method, url, options),
+				};
+			} catch (error) {
+				return { error };
+			}
+		};
+
 		const sandbox = {
 			scriptTimeout(reject) {
 				return setTimeout(() => reject('timed out'), 3000);
@@ -237,7 +246,6 @@ class RocketChatIntegrationHandler {
 			s,
 			console,
 			moment,
-			Fiber,
 			Promise,
 			Store: {
 				set: (key, val) => {
@@ -246,15 +254,10 @@ class RocketChatIntegrationHandler {
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {
-				try {
-					// Need to review how we will handle this, possible breaking change on removing fibers
-					return {
-						result: Promise.await(httpCall(method, url, options)),
-					};
-				} catch (error) {
-					return { error };
-				}
+				// TODO: deprecate, track and alert
+				return deasyncPromise(httpAsync(method, url, options));
 			},
+			// TODO: Export fetch as the non deprecated method
 		};
 
 		Object.keys(Models)
@@ -357,20 +360,26 @@ class RocketChatIntegrationHandler {
 				sandbox,
 			});
 
-			const scriptResult = vm.run(`
-				new Promise((resolve, reject) => {
-					Fiber(() => {
-						scriptTimeout(reject);
-						try {
-							resolve(script[method](params))
-						} catch(e) {
-							reject(e);
-						}
-					}).run();
-				}).catch((error) => { throw new Error(error); });
-			`);
+			const result = await new Promise((resolve, reject) => {
+				process.nextTick(async () => {
+					try {
+						const scriptResult = await vm.run(`
+							new Promise((resolve, reject) => {
+								scriptTimeout(reject);
+								try {
+									resolve(script[method](params))
+								} catch(e) {
+									reject(e);
+								}
+							}).catch((error) => { throw new Error(error); });
+						`);
 
-			const result = Future.fromPromise(scriptResult).wait();
+						resolve(scriptResult);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
 
 			outgoingLogger.debug({
 				msg: `Script method "${method}" result of the Integration "${integration.name}" is:`,

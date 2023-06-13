@@ -1,6 +1,7 @@
+import type { Readable } from 'stream';
+
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
-import type { Templates } from '@rocket.chat/pdf-worker';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
@@ -16,7 +17,7 @@ import {
 	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -136,12 +137,18 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
 
+		// Make the whole process sync when running on test mode
+		// This will prevent the usage of timeouts on the tests of this functionality :)
+		if (process.env.TEST_MODE) {
+			await this.workOnPdf({ details: { ...details, from: this.name } });
+			return;
+		}
+
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
-			template: 'omnichannel-transcript',
-			details: { userId: details.userId, rid: details.rid, from: this.name },
+			details: { ...details, from: this.name },
 		});
 	}
 
@@ -174,7 +181,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			if (!message.attachments || !message.attachments.length) {
+			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
 					_id: message._id,
@@ -279,7 +286,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
+	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		if (!this.shouldWork) {
 			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
 			return;
@@ -323,7 +330,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				translations,
 			};
 
-			await this.doRender({ template, data, details });
+			await this.doRender({ data, details });
 		} catch (error) {
 			await this.pdfFailed({ details, e: error as Error });
 		} finally {
@@ -331,37 +338,32 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
-		const buf: Uint8Array[] = [];
-		let outBuff = Buffer.alloc(0);
+	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
-		const stream = await this.worker.renderToStream({ template, data });
-		stream.on('data', (chunk) => {
-			buf.push(chunk);
-		});
-		stream.on('end', () => {
-			outBuff = Buffer.concat(buf);
+		const stream = await this.worker.renderToStream({ data });
+		const outBuff = await streamToBuffer(stream as Readable);
 
-			return uploadService
-				.uploadFile({
-					userId: details.userId,
-					buffer: outBuff,
-					details: {
-						// transcript_{company-name)_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
-							data.visitor?.name || data.visitor?.username || 'Visitor'
-						}.pdf`,
-						type: 'application/pdf',
-						rid: details.rid,
-						// Rocket.cat is the goat
-						userId: 'rocket.cat',
-						size: outBuff.length,
-					},
-				})
-				.then((file) => this.pdfComplete({ details, file }))
-				.catch((e) => this.pdfFailed({ details, e }));
-		});
+		try {
+			const file = await uploadService.uploadFile({
+				userId: details.userId,
+				buffer: outBuff,
+				details: {
+					// transcript_{company-name)_{date}_{hour}.pdf
+					name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						data.visitor?.name || data.visitor?.username || 'Visitor'
+					}.pdf`,
+					type: 'application/pdf',
+					rid: details.rid,
+					// Rocket.cat is the goat
+					userId: 'rocket.cat',
+					size: outBuff.length,
+				},
+			});
+			await this.pdfComplete({ details, file });
+		} catch (e: any) {
+			this.pdfFailed({ details, e });
+		}
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {

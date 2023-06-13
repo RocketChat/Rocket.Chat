@@ -13,13 +13,13 @@ class Search extends ServiceClassInternal {
 	constructor() {
 		super();
 
-		this.onEvent('watch.users', async ({ clientAction, data, id }) => {
+		this.onEvent('watch.users', async ({ clientAction, id, ...rest }) => {
 			if (clientAction === 'removed') {
 				searchEventService.promoteEvent('user.delete', id, undefined);
 				return;
 			}
 
-			const user = data ?? (await Users.findOneById(id));
+			const user = ('data' in rest && rest.data) || (await Users.findOneById(id));
 			searchEventService.promoteEvent('user.save', id, user);
 		});
 

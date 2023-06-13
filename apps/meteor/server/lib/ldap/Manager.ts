@@ -126,7 +126,7 @@ export class LDAPManager {
 		}
 
 		const { attribute: idAttribute, value: id } = uniqueId;
-		const username = this.getLdapUsername(ldapUser) || usedUsername || id || undefined;
+		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const emails = this.getLdapEmails(ldapUser, username);
 		const name = this.getLdapName(ldapUser) || undefined;
 
@@ -428,7 +428,8 @@ export class LDAPManager {
 			return user;
 		}
 
-		return UsersRaw.findOneByUsername(slugifiedUsername);
+		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {

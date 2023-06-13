@@ -27,7 +27,6 @@ export async function findAdminRooms({
 	const name = filter?.trim();
 	const discussion = types?.includes('discussions');
 	const includeTeams = types?.includes('teams');
-	const showOnlyTeams = types.length === 1 && types.includes('teams');
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type): type is RoomType => !typesToRemove.includes(type)) : [];
 	const options: FindOptions<IRoom> = {
@@ -36,14 +35,7 @@ export async function findAdminRooms({
 		limit: count,
 	};
 
-	let result;
-	if (name && showTypes.length) {
-		result = Rooms.findByNameOrFnameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
-	} else if (showTypes.length) {
-		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
-	} else {
-		result = Rooms.findByNameOrFnameContaining(name, discussion, includeTeams, showOnlyTeams, options);
-	}
+	const result = Rooms.findByNameOrFnameContainingAndTypes(name, showTypes, discussion, includeTeams, options);
 
 	const { cursor, totalCount } = result;
 

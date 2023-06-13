@@ -1,4 +1,5 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
@@ -23,10 +24,11 @@ import type {
 	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
-	AtLeast,
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
+	AtLeast,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -53,7 +55,7 @@ export type EventSignatures = {
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
 	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
-	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
+	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
 	'notify.webdav'(
 		uid: string,
 		data:
@@ -82,16 +84,21 @@ export type EventSignatures = {
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
-	'room.avatarUpdate'(room: Partial<IRoom>): void;
+	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
 	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
-	'user.deleted'(user: Partial<IUser>): void;
+	'user.deleted'(user: Pick<IUser, '_id'>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
-	'user.nameChanged'(user: Partial<IUser>): void;
+	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
-	'user.roleUpdate'(update: Record<string, any>): void;
+	'user.roleUpdate'(update: {
+		type: 'added' | 'removed' | 'changed';
+		_id: string;
+		u?: { _id: IUser['_id']; username: IUser['username']; name?: IUser['name'] };
+		scope?: string;
+	}): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'user.video-conference'(data: {
@@ -107,19 +114,102 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
-	'watch.messages'(data: { clientAction: ClientAction; message: Partial<IMessage> }): void;
-	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
-	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
-	'watch.subscriptions'(data: { clientAction: ClientAction; subscription: Partial<ISubscription> }): void;
-	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
+	'watch.messages'(data: { clientAction: ClientAction; message: IMessage }): void;
+	'watch.roles'(
+		data:
+			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }
+			| {
+					clientAction: 'removed';
+					role: {
+						_id: string;
+						name: string;
+					};
+			  },
+	): void;
+	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> | IRoom }): void;
+	'watch.subscriptions'(
+		data:
+			| {
+					clientAction: 'updated' | 'inserted';
+					subscription: Pick<
+						ISubscription,
+						| 't'
+						| 'ts'
+						| 'ls'
+						| 'lr'
+						| 'name'
+						| 'fname'
+						| 'rid'
+						| 'code'
+						| 'f'
+						| 'u'
+						| 'open'
+						| 'alert'
+						| 'roles'
+						| 'unread'
+						| 'prid'
+						| 'userMentions'
+						| 'groupMentions'
+						| 'archived'
+						| 'audioNotificationValue'
+						| 'desktopNotifications'
+						| 'mobilePushNotifications'
+						| 'emailNotifications'
+						| 'desktopPrefOrigin'
+						| 'mobilePrefOrigin'
+						| 'emailPrefOrigin'
+						| 'unreadAlert'
+						| '_updatedAt'
+						| 'blocked'
+						| 'blocker'
+						| 'autoTranslate'
+						| 'autoTranslateLanguage'
+						| 'disableNotifications'
+						| 'hideUnreadStatus'
+						| 'hideMentionStatus'
+						| 'muteGroupMentions'
+						| 'ignored'
+						| 'E2EKey'
+						| 'E2ESuggestedKey'
+						| 'tunread'
+						| 'tunreadGroup'
+						| 'tunreadUser'
+
+						// Omnichannel fields
+						| 'department'
+						| 'v'
+						| 'onHold'
+					>;
+			  }
+			| {
+					clientAction: 'removed';
+					subscription: {
+						_id: string;
+						u?: Pick<IUser, '_id' | 'username' | 'name'>;
+						rid?: string;
+					};
+			  },
+	): void;
+	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: ILivechatInquiryRecord; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
-	'watch.users'(data: {
-		clientAction: ClientAction;
-		data?: undefined | Partial<IUser>;
-		diff?: undefined | Record<string, any>;
-		unset?: undefined | Record<string, number>;
-		id: string;
-	}): void;
+	'watch.users'(
+		data: {
+			id: string;
+		} & (
+			| {
+					clientAction: 'inserted';
+					data: IUser;
+			  }
+			| {
+					clientAction: 'removed';
+			  }
+			| {
+					clientAction: 'updated';
+					diff: Record<string, number>;
+					unset: Record<string, number>;
+			  }
+		),
+	): void;
 	'watch.loginServiceConfiguration'(data: { clientAction: ClientAction; data: Partial<ILoginServiceConfiguration>; id: string }): void;
 	'watch.instanceStatus'(data: {
 		clientAction: ClientAction;
@@ -151,7 +241,6 @@ export type EventSignatures = {
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: {
 		clientAction: ClientAction;
@@ -163,7 +252,7 @@ export type EventSignatures = {
 	'apps.removed'(appId: string): void;
 	'apps.updated'(appId: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
-	'apps.settingUpdated'(appId: string, setting: ISetting): void;
+	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;
 	'command.disabled'(command: string): void;
 	'command.updated'(command: string): void;

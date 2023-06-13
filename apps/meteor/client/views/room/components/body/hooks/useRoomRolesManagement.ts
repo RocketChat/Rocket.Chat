@@ -1,4 +1,4 @@
-import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
@@ -52,36 +52,25 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 
 	useEffect(
 		() =>
-			subscribeToNotifyLoggedIn(
-				'roles-change',
-				({
-					type,
-					...role
-				}: {
-					type: 'added' | 'removed' | 'changed';
-					_id: IRole['_id'];
-					u: {
-						_id: IUser['_id'];
-						username: IUser['username'];
-						name: IUser['name'];
-					};
-					scope?: IRoom['_id'];
-				}) => {
-					if (!role.scope) {
-						return;
-					}
+			subscribeToNotifyLoggedIn('roles-change', ({ type, ...role }) => {
+				if (!role.scope) {
+					return;
+				}
 
-					switch (type) {
-						case 'added':
-							RoomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
-							break;
+				if (!role.u?._id) {
+					return;
+				}
 
-						case 'removed':
-							RoomRoles.update({ 'rid': role.scope, 'u._id': role.u._id }, { $pull: { roles: role._id } });
-							break;
-					}
-				},
-			),
+				switch (type) {
+					case 'added':
+						RoomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
+						break;
+
+					case 'removed':
+						RoomRoles.update({ 'rid': role.scope, 'u._id': role.u._id }, { $pull: { roles: role._id } });
+						break;
+				}
+			}),
 		[subscribeToNotifyLoggedIn],
 	);
 

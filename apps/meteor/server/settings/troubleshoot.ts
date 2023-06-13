@@ -4,7 +4,7 @@ export const createTroubleshootSettings = () =>
 	settingsRegistry.addGroup('Troubleshoot', async function () {
 		await this.add('Troubleshoot_Disable_Notifications', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Notifications_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Notifications_Alert',
 		});
 
 		// this settings will let clients know in case presence has been disabled
@@ -16,32 +16,32 @@ export const createTroubleshootSettings = () =>
 
 		await this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
 			enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 		});
 
 		await this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
 		});
 		await this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
 		});
 		await this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
 		});
 		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Statistics_Generator_Alert',
 		});
 		await this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
 		});
 		await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
 			type: 'boolean',
-			alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
+			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 		});
 	});
