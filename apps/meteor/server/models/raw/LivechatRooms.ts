@@ -1,5 +1,28 @@
+import type {
+	Db,
+	Collection,
+	IndexDescription,
+	Document,
+	Filter,
+	FindOptions,
+	UpdateFilter,
+	SortDirection,
+	FindCursor,
+	UpdateResult,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Settings } from '@rocket.chat/models';
+import type {
+	IOmnichannelRoom,
+	RocketChatRecordDeleted,
+	IOmnichannelRoomClosingInfo,
+	DeepWritable,
+	ISetting,
+	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
@@ -8,13 +31,13 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 /**
  * @extends BaseRaw<ILivechatRoom>
  */
-export class LivechatRoomsRaw extends BaseRaw {
-	constructor(db, trash) {
+export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, 'room', trash);
 	}
 
 	// move indexes from constructor to here using IndexDescription as type
-	modelIndexes() {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { open: 1 }, sparse: true },
 			{ key: { departmentId: 1 }, sparse: true },
@@ -47,9 +70,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 		];
 	}
 
-	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
-		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers = { $match: {} };
+	getQueueMetrics({
+		departmentId,
+		agentId,
+		includeOfflineAgents,
+		options = {},
+	}: {
+		departmentId?: string;
+		agentId?: string;
+		includeOfflineAgents?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
+		const matchUsers: Document = { $match: {} };
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
@@ -128,7 +161,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (Object.keys(matchUsers.$match)) {
 			firstParams.push(matchUsers);
 		}
-		const sort = { $sort: options.sort || { chats: -1 } };
+		const sort: Document = { $sort: options.sort || { chats: -1 } };
 		const pagination = [sort];
 
 		if (options.offset) {
@@ -149,8 +182,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	async findAllNumberOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'metrics.visitorInactivity': {
@@ -178,8 +223,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const sort: Document = { $sort: options.sort || { name: 1 } };
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -193,14 +238,26 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	async findPercentageOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: {
 					_id: null,
@@ -214,6 +271,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 								$and: [
 									{ $ifNull: ['$metrics.visitorInactivity', false] },
 									{
+										// TODO: move these calls to outside model
 										$gte: ['$metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')],
 									},
 								],
@@ -253,15 +311,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageOfChatDurationTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
 			},
 		};
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: {
 					_id: null,
@@ -282,8 +352,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const sort: Document = { $sort: options.sort || { name: 1 } };
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -297,15 +367,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageWaitingTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 				waitingResponse: { $ne: true },
 			},
 		};
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: {
 					_id: null,
@@ -328,8 +410,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const sort: Document = { $sort: options.sort || { name: 1 } };
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -343,8 +425,22 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllRooms({
+		start,
+		end,
+		answered,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		answered?: boolean;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -353,7 +449,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (answered !== undefined) {
 			match.$match.waitingResponse = { [answered ? '$ne' : '$eq']: true };
 		}
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: {
 					_id: null,
@@ -371,8 +467,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const sort: Document = { $sort: options.sort || { name: 1 } };
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -386,8 +482,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start) },
@@ -416,7 +524,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -430,8 +538,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
-		const match = {
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -519,7 +637,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				numberOfTransferredRooms: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind];
+		const firstParams: Document[] = [match, departmentsLookup, departmentsUnwind];
 		if (departmentId && departmentId !== 'undefined') {
 			firstParams.push({
 				$match: {
@@ -528,7 +646,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [
+		const params: Document[] = [
 			...firstParams,
 			departmentsGroup,
 			departmentsProject,
@@ -549,8 +667,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllOpenChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'metrics.chatDuration': {
 				$exists: false,
@@ -574,11 +692,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
-	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllClosedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'metrics.chatDuration': {
 				$exists: true,
@@ -588,11 +706,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
-	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllQueuedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			servedBy: { $exists: false },
 			open: true,
@@ -601,11 +719,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
-	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy.username': { $exists: true },
@@ -638,8 +756,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy.username': { $exists: true },
@@ -663,8 +781,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'open': { $exists: false },
@@ -685,8 +803,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				open: true,
@@ -731,8 +849,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				open: { $exists: false },
@@ -777,8 +895,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	calculateResponseTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateResponseTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -820,8 +938,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	calculateReactionTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateReactionTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -863,8 +981,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	calculateDurationTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateDurationTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
@@ -907,8 +1025,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageOfServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: string;
+		onlyCount?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
@@ -940,7 +1070,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -954,24 +1084,40 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findByVisitorId(visitorId, options) {
-		const query = {
+	findByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v._id': visitorId,
 		};
 		return this.find(query, options);
 	}
 
-	findPaginatedByVisitorId(visitorId, options) {
-		const query = {
+	findPaginatedByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v._id': visitorId,
 		};
 		return this.findPaginated(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, source, options = {} }) {
-		const match = {
+	findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		searchText,
+		open,
+		served,
+		onlyCount = false,
+		source,
+		options = {},
+	}: {
+		visitorId: string;
+		searchText?: string;
+		open?: boolean;
+		served?: boolean;
+		onlyCount?: boolean;
+		source?: string;
+		options?: { sort?: { [k: string]: number }; skip?: number; limit?: number };
+	}) {
+		const match: Document = {
 			$match: {
 				'v._id': visitorId,
 				...(open !== undefined && { open: { $exists: open } }),
@@ -993,7 +1139,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$match: { 'messages.msg': { $regex: `.*${escapeRegExp(searchText)}.*` } },
 		};
 
-		const params = [match, lookup];
+		const params: Document[] = [match, lookup];
 
 		if (matchMessages) {
 			params.push(matchMessages);
@@ -1057,29 +1203,33 @@ export class LivechatRoomsRaw extends BaseRaw {
 		roomIds,
 		onhold,
 		options = {},
+	}: {
+		agents?: string[];
+		roomName?: string;
+		departmentId?: string;
+		open?: boolean;
+		served?: boolean;
+		createdAt?: { start?: Date; end?: Date };
+		closedAt?: { start?: Date; end?: Date };
+		tags?: string[];
+		customFields?: Record<string, string>;
+		visitorId?: string;
+		roomIds?: string[];
+		onhold?: boolean;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 	}) {
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
+			...(agents && {
+				$or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }],
+			}),
+			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
+			...(served !== undefined && { servedBy: { $exists: served } }),
+			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
 		};
-		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-		}
-		if (roomName) {
-			query.fname = new RegExp(escapeRegExp(roomName), 'i');
-		}
-		if (departmentId && departmentId !== 'undefined') {
-			query.departmentId = departmentId;
-		}
-		if (open !== undefined) {
-			query.open = { $exists: open };
-			query.onHold = { $ne: true };
-		}
-		if (served !== undefined) {
-			query.servedBy = { $exists: served };
-		}
-		if (visitorId && visitorId !== 'undefined') {
-			query['v._id'] = visitorId;
-		}
+
 		if (createdAt) {
 			query.ts = {};
 			if (createdAt.start) {
@@ -1125,8 +1275,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		});
 	}
 
-	getOnHoldConversationsBetweenDate(from, to, departmentId) {
-		const query = {
+	getOnHoldConversationsBetweenDate(from: Date, to: Date, departmentId?: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			onHold: {
 				$exists: true,
 				$eq: true,
@@ -1141,11 +1291,21 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.departmentId = departmentId;
 		}
 
-		return this.find(query).count();
+		return this.col.countDocuments(query);
 	}
 
-	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
-		const match = {
+	findAllServiceTimeByAgent({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		onlyCount?: boolean;
+		options?: { sort?: { [key: string]: number }; offset?: number; count?: number };
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy._id': { $exists: true },
@@ -1172,7 +1332,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -1186,8 +1346,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageServiceTimeByAgents({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		onlyCount?: boolean;
+		options?: { sort?: { [key: string]: number }; offset?: number; count?: number };
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy._id': { $exists: true },
@@ -1219,7 +1389,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -1233,7 +1403,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	setDepartmentByRoomId(roomId, departmentId) {
+	setDepartmentByRoomId(roomId: string, departmentId: string) {
 		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
@@ -1241,7 +1411,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find({ t: 'l', open: true });
 	}
 
-	setAutoTransferOngoingById(roomId) {
+	setAutoTransferOngoingById(roomId: string) {
 		const query = {
 			_id: roomId,
 		};
@@ -1254,7 +1424,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	unsetAutoTransferOngoingById(roomId) {
+	unsetAutoTransferOngoingById(roomId: string) {
 		const query = {
 			_id: roomId,
 		};
@@ -1267,7 +1437,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setAutoTransferredAtById(roomId) {
+	setAutoTransferredAtById(roomId: string) {
 		const query = {
 			_id: roomId,
 		};
@@ -1326,7 +1496,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
 	// And refactoring it could take time
-	setTranscriptRequestedPdfById(rid) {
+	setTranscriptRequestedPdfById(rid: string) {
 		return this.updateOne(
 			{
 				_id: rid,
@@ -1335,13 +1505,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				$set: { pdfTranscriptRequested: true },
 			},
 			{},
+			// @ts-expect-error - extra arg not on base types
 			{
 				bypassUnits: true,
 			},
 		);
 	}
 
-	unsetTranscriptRequestedPdfById(rid) {
+	unsetTranscriptRequestedPdfById(rid: string) {
 		return this.updateOne(
 			{
 				_id: rid,
@@ -1350,13 +1521,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				$unset: { pdfTranscriptRequested: 1 },
 			},
 			{},
+			// @ts-expect-error - extra arg not on base types
 			{
 				bypassUnits: true,
 			},
 		);
 	}
 
-	setPdfTranscriptFileIdById(rid, fileId) {
+	setPdfTranscriptFileIdById(rid: string, fileId: string) {
 		return this.updateOne(
 			{
 				_id: rid,
@@ -1365,13 +1537,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				$set: { pdfTranscriptFileId: fileId },
 			},
 			{},
+			// @ts-expect-error - extra arg not on base types
 			{
 				bypassUnits: true,
 			},
 		);
 	}
 
-	setEmailTranscriptRequestedByRoomId(roomId, transcriptInfo) {
+	setEmailTranscriptRequestedByRoomId(roomId: string, transcriptInfo: NonNullable<IOmnichannelRoom['transcriptRequest']>) {
 		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
 
 		return this.updateOne(
@@ -1392,7 +1565,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	unsetEmailTranscriptRequestedByRoomId(roomId) {
+	unsetEmailTranscriptRequestedByRoomId(roomId: string) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1406,7 +1579,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	closeRoomById(roomId, closeInfo) {
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
 
 		return this.updateOne(
@@ -1431,12 +1604,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	bulkRemoveDepartmentAndUnitsFromRooms(departmentId) {
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string) {
 		return this.updateMany({ departmentId }, { $unset: { departmentId: 1, departmentAncestors: 1 } });
 	}
 
-	findOneByIdOrName(_idOrName, options) {
-		const query = {
+	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelRoom>) {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			$or: [
 				{
@@ -1451,8 +1624,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	updateSurveyFeedbackById(_id, surveyFeedback) {
-		const query = {
+	updateSurveyFeedbackById(_id: string, surveyFeedback: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id,
 		};
 
@@ -1465,14 +1638,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	async updateDataByToken(token, key, value, overwrite = true) {
-		const query = {
+	async updateDataByToken(token: string, key: string, value: any, overwrite = true) {
+		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
 		};
 
 		if (!overwrite) {
 			const room = await this.findOne(query, { projection: { livechatData: 1 } });
+			if (!room) {
+				return false;
+			}
 			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
 				return true;
 			}
@@ -1487,9 +1663,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	async saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
-		const setData = { ...extra };
-		const unsetData = {};
+	async saveRoomById({
+		_id,
+		topic,
+		tags,
+		livechatData,
+		...extra
+	}: {
+		_id: string;
+		topic?: string;
+		tags?: string[];
+		livechatData?: Record<string, any>;
+	} & Record<string, any>) {
+		const setData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$set']> = { ...extra };
+		const unsetData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$unset']> = {};
 
 		if (topic != null) {
 			const trimmedTopic = topic.trim();
@@ -1526,7 +1713,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 
-		const update = {};
+		const update: UpdateFilter<IOmnichannelRoom> = {};
 
 		if (Object.keys(setData).length > 0) {
 			update.$set = setData;
@@ -1543,14 +1730,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	findById(_id, fields) {
-		const options = {};
+	findById(_id: string, fields: FindOptions<IOmnichannelRoom>['projection']) {
+		const options: FindOptions<IOmnichannelRoom> = {};
 
 		if (fields) {
 			options.projection = fields;
 		}
 
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			_id,
 		};
@@ -1558,14 +1745,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByIds(ids, fields) {
-		const options = {};
+	findByIds(ids: string[], fields: FindOptions<IOmnichannelRoom>['projection']) {
+		const options: FindOptions<IOmnichannelRoom> = {};
 
 		if (fields) {
 			options.projection = fields;
 		}
 
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			_id: { $in: ids },
 		};
@@ -1573,14 +1760,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByIdAndVisitorToken(_id, visitorToken, fields) {
-		const options = {};
+	findOneByIdAndVisitorToken(_id: string, visitorToken: string, fields: FindOptions<IOmnichannelRoom>['projection']) {
+		const options: FindOptions<IOmnichannelRoom> = {};
 
 		if (fields) {
 			options.projection = fields;
 		}
 
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			_id,
 			'v.token': visitorToken,
@@ -1589,8 +1776,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
-		const query = {
+	findOneByVisitorTokenAndEmailThread(visitorToken: string, emailThread: string[], options: FindOptions<IOmnichannelRoom>) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
@@ -1599,8 +1786,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
-		const query = {
+	findOneByVisitorTokenAndEmailThreadAndDepartment(
+		visitorToken: string,
+		emailThread: string[],
+		departmentId: string,
+		options: FindOptions<IOmnichannelRoom>,
+	) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			'$or': [
@@ -1613,8 +1805,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
-		const query = {
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken: string, emailThread: string[], options: FindOptions<IOmnichannelRoom>) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
@@ -1624,8 +1816,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	updateEmailThreadByRoomId(roomId, threadIds) {
-		const query = {
+	updateEmailThreadByRoomId(roomId: string, threadIds: string[]) {
+		const query: Filter<IOmnichannelRoom> = {
 			$addToSet: {
 				'email.thread': threadIds,
 			},
@@ -1634,8 +1826,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, query);
 	}
 
-	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
-		const query = {
+	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			'closedAt': { $exists: true },
@@ -1646,14 +1838,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorToken(visitorToken, fields) {
-		const options = {};
+	findOneByVisitorToken(visitorToken: string, fields: FindOptions<IOmnichannelRoom>['projection']) {
+		const options: FindOptions<IOmnichannelRoom> = {};
 
 		if (fields) {
 			options.projection = fields;
 		}
 
-		const query = {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 		};
@@ -1662,12 +1854,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 	}
 
 	async updateRoomCount() {
-		const query = {
+		const query: Filter<ISetting> = {
 			_id: 'Livechat_Room_Count',
 		};
 
-		const update = {
+		const update: UpdateFilter<ISetting> = {
 			$inc: {
+				// @ts-expect-error - Caused by `OnlyFieldsOfType` on mongo which excludes `SettingValue` from $inc
 				value: 1,
 			},
 		};
@@ -1676,8 +1869,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return livechatCount.value;
 	}
 
-	findOpenByVisitorToken(visitorToken, options) {
-		const query = {
+	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
@@ -1686,8 +1879,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneOpenByVisitorToken(visitorToken, options) {
-		const query = {
+	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
@@ -1696,22 +1889,25 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorTokenAndDepartmentIdAndSource(visitorToken, departmentId, source, options) {
-		const query = {
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
+		visitorToken: string,
+		departmentId: string,
+		source?: string,
+		options: FindOptions<IOmnichannelRoom> = {},
+	) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
+			...(source && { 'source.type': source }),
 		};
-		if (source) {
-			query['source.type'] = source;
-		}
 
 		return this.findOne(query, options);
 	}
 
-	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
-		const query = {
+	findOpenByVisitorTokenAndDepartmentId(visitorToken: string, departmentId: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
@@ -1721,8 +1917,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken) {
-		const query = {
+	findByVisitorToken(visitorToken: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 		};
@@ -1730,8 +1926,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query);
 	}
 
-	findByVisitorIdAndAgentId(visitorId, agentId, options) {
-		const query = {
+	findByVisitorIdAndAgentId(visitorId?: string, agentId?: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...(visitorId && { 'v._id': visitorId }),
 			...(agentId && { 'servedBy._id': agentId }),
@@ -1740,8 +1936,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
-		const query = {
+	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'_id': roomId,
 			'open': true,
@@ -1751,8 +1947,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findClosedRooms(departmentIds, options) {
-		const query = {
+	findClosedRooms(departmentIds?: string[], options: FindOptions<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			open: { $exists: false },
 			closedAt: { $exists: true },
@@ -1762,7 +1958,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId, response) {
+	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1783,7 +1979,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	setNotResponseByRoomId(roomId) {
+	setNotResponseByRoomId(roomId: string) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1800,7 +1996,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	setAgentLastMessageTs(roomId) {
+	setAgentLastMessageTs(roomId: string) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1814,40 +2010,43 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	saveAnalyticsDataByRoomId(room, message, analyticsData) {
-		const update = {
-			$set: {},
+	saveAnalyticsDataByRoomId(room: IOmnichannelRoom, message: IMessage, analyticsData: Record<string, string | number | Date>) {
+		const update: DeepWritable<UpdateFilter<IOmnichannelRoom>> = {
+			$set: {
+				...(analyticsData && {
+					'metrics.response.avg': analyticsData.avgResponseTime,
+				}),
+				...(analyticsData?.firstResponseTime && {
+					'metrics.reaction.fd': analyticsData.firstReactionDate,
+					'metrics.reaction.ft': analyticsData.firstReactionTime,
+					'metrics.response.fd': analyticsData.firstResponseDate,
+					'metrics.response.ft': analyticsData.firstResponseTime,
+				}),
+			},
+			$inc: {
+				...(analyticsData && {
+					'metrics.response.total': 1,
+					'metrics.response.tt': analyticsData.responseTime as number,
+					'metrics.reaction.tt': analyticsData.reactionTime as number,
+				}),
+			},
 		};
 
-		if (analyticsData) {
-			update.$set['metrics.response.avg'] = analyticsData.avgResponseTime;
-
-			update.$inc = {};
-			update.$inc['metrics.response.total'] = 1;
-			update.$inc['metrics.response.tt'] = analyticsData.responseTime;
-			update.$inc['metrics.reaction.tt'] = analyticsData.reactionTime;
-		}
-
-		if (analyticsData && analyticsData.firstResponseTime) {
-			update.$set['metrics.response.fd'] = analyticsData.firstResponseDate;
-			update.$set['metrics.response.ft'] = analyticsData.firstResponseTime;
-			update.$set['metrics.reaction.fd'] = analyticsData.firstReactionDate;
-			update.$set['metrics.reaction.ft'] = analyticsData.firstReactionTime;
-		}
-
 		// livechat analytics : update last message timestamps
-		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
-		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
+		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (message.token) {
 			// update visitor timestamp, only if its new inquiry and not continuing message
 			if (agentLastReply >= visitorLastQuery) {
 				// if first query, not continuing query from visitor
-				update.$set['metrics.v.lq'] = message.ts;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				update.$set!['metrics.v.lq'] = message.ts;
 			}
 		} else if (visitorLastQuery > agentLastReply) {
 			// update agent timestamp, if first response, not continuing
-			update.$set['metrics.servedBy.lr'] = message.ts;
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			update.$set!['metrics.servedBy.lr'] = message.ts;
 		}
 
 		return this.updateOne(
@@ -1859,8 +2058,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
-		const query = {
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
@@ -1872,8 +2071,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.countDocuments(query);
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
-		const query = {
+	getAnalyticsMetricsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+		const query: Filter<IOmnichannelRoom> = {
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
@@ -1887,8 +2086,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		});
 	}
 
-	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
-		return this.col.aggregate(
+	getAnalyticsMetricsBetweenDateWithMessages(
+		t: string,
+		date: { gte: Date; lt: Date },
+		{ departmentId }: { departmentId?: string } = {},
+		extraQuery: Document = {},
+	) {
+		return this.col.aggregate<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>(
 			[
 				{
 					$match: {
@@ -1964,8 +2168,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	getAnalyticsBetweenDate(date, { departmentId } = {}) {
-		return this.col.aggregate(
+	getAnalyticsBetweenDate(date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+		return this.col.aggregate<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>(
 			[
 				{
 					$match: {
@@ -2042,8 +2246,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	findOpenByAgent(userId) {
-		const query = {
+	findOpenByAgent(userId: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'servedBy._id': userId,
@@ -2052,8 +2256,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query);
 	}
 
-	changeAgentByRoomId(roomId, newAgent) {
-		const query = {
+	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string; ts?: Date }) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2074,8 +2278,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	changeDepartmentIdByRoomId(roomId, departmentId) {
-		const query = {
+	changeDepartmentIdByRoomId(roomId: string, departmentId: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2085,11 +2289,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 
-		this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 
-	saveCRMDataByRoomId(roomId, crmData) {
-		const query = {
+	saveCRMDataByRoomId(roomId: string, crmData: unknown) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2102,14 +2306,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token, status) {
-		const query = {
+	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
 			't': 'l',
 		};
 
-		const update = {
+		const update: UpdateFilter<IOmnichannelRoom> = {
 			$set: {
 				'v.status': status,
 			},
@@ -2118,8 +2322,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	removeAgentByRoomId(roomId) {
-		const query = {
+	removeAgentByRoomId(roomId: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2131,8 +2335,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	removeByVisitorToken(token) {
-		const query = {
+	removeByVisitorToken(token: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': token,
 		};
@@ -2140,8 +2344,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.deleteMany(query);
 	}
 
-	removeById(_id) {
-		const query = {
+	removeById(_id: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id,
 			t: 'l',
 		};
@@ -2149,7 +2353,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.deleteOne(query);
 	}
 
-	setVisitorLastMessageTimestampByRoomId(roomId, lastMessageTs) {
+	setVisitorLastMessageTimestampByRoomId(roomId: string, lastMessageTs: Date) {
 		const query = {
 			_id: roomId,
 		};
@@ -2162,7 +2366,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: number) {
 		const query = {
 			_id: roomId,
 		};
@@ -2175,8 +2379,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	changeVisitorByRoomId(roomId, { _id, username, token }) {
-		const query = {
+	changeVisitorByRoomId(roomId: string, { _id, username, token }: { _id: string; username: string; token: string }) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2191,8 +2395,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	unarchiveOneById(roomId) {
-		const query = {
+	unarchiveOneById(roomId: string) {
+		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
 		};
@@ -2209,5 +2413,76 @@ export class LivechatRoomsRaw extends BaseRaw {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	setOnHoldByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unsetOnHoldByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	setSlaForRoomById(
+		_roomId: string,
+		_sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+	): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	removeSlaFromRoomById(_roomId: string): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	bulkRemoveSlaFromRoomsById(_slaId: string): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	findOpenBySlaId(_slaId: string, _options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	async setPriorityByRoomId(_roomId: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	async unsetPriorityByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	findOpenRoomsByPriorityId(_priorityId: string): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	setPredictedVisitorAbandonmentByRoomId(_rid: string, _willBeAbandonedAt: Date): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	findAbandonedOpenRooms(_date: Date): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	async unsetPredictedVisitorAbandonmentByRoomId(_roomId: string): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	async associateRoomsWithDepartmentToUnit(_departments: string[], _unitId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async removeUnitAssociationFromRooms(_unitId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
 	}
 }
