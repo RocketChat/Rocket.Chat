@@ -8,16 +8,6 @@ import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusines
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
-const cronJobDayDict: Record<string, number> = {
-	Sunday: 0,
-	Monday: 1,
-	Tuesday: 2,
-	Wednesday: 3,
-	Thursday: 4,
-	Friday: 5,
-	Saturday: 6,
-};
-
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
 
@@ -143,12 +133,21 @@ export class BusinessHourManager {
 		await Promise.all(finish.map(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback)));
 	}
 
-	private async scheduleCronJob(items: string[], day: string, type: string, job: (day: string, hour: string) => void): Promise<void> {
+	private async scheduleCronJob(
+		items: string[],
+		day: string,
+		type: 'open' | 'close',
+		job: (day: string, hour: string) => void,
+	): Promise<void> {
 		await Promise.all(
 			items.map((hour) => {
-				const jobName = `${day}/${hour}/${type}`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
+				let time = moment(hour, 'HH:mm').day(day);
+				if (type === 'close') {
+					// Business hours are closed at the end of the hour, so we need to add 1 minute to the time
+					time = time.add(1, 'minute');
+				}
+				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
+				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
 				this.addToCache(jobName);
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),
