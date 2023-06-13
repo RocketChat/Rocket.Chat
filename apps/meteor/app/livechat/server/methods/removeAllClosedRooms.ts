@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 import { callbacks } from '../../../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {

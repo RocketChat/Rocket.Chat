@@ -40,7 +40,6 @@ declare module '@rocket.chat/model-typings' {
 	}
 }
 
-// @ts-expect-error Type 'LivechatRoomsRawEE' is not assignable to type 'ILivechatRoomsModel'.
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, trash);
@@ -138,7 +137,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom> {
 		const query = {
-			t: 'l',
+			t: 'l' as const,
 			open: true,
 			slaId,
 			...extraQuery,
