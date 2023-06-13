@@ -847,6 +847,8 @@ export const Livechat = {
 
 		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
 			await Users.setOperator(user._id, true);
+			await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
+
 			// TODO: to be called also when the user is updated/created
 			callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
