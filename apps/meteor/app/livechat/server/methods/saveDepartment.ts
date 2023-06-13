@@ -10,7 +10,18 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		'livechat:saveDepartment': (
 			_id: string | null,
-			departmentData: Partial<ILivechatDepartment>,
+			departmentData: {
+				enabled: boolean;
+				name: string;
+				description?: string;
+				showOnRegistration: boolean;
+				email: string;
+				showOnOfflineForm: boolean;
+				requestTagBeforeClosingChat?: boolean;
+				chatClosingTags?: string[];
+				fallbackForwardDepartment?: string;
+				departmentsAllowedToForward?: string[];
+			},
 			departmentAgents?:
 				| {
 						agentId: string;
