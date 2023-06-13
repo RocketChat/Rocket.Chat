@@ -23,7 +23,7 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	return agentIdsWithoutDepartment;
 };
 
-const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
+const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
 		return getAllAgentIdsWithoutDepartment();
 	}
@@ -39,14 +39,14 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: ILivechatBusinessHour): Promise<void> => {
+export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
 	const agentIds = await getAgentIdsToHandle(businessHour);
 
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
+export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();

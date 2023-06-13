@@ -245,7 +245,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return options;
 	}
 
-	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {
+	private async openBusinessHour(businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> {
 		return openBusinessHour(businessHour);
 	}
 
@@ -260,7 +260,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
-	private async closeBusinessHour(businessHour: Record<string, any>): Promise<void> {
+	private async closeBusinessHour(businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> {
 		await closeBusinessHour(businessHour);
 	}
 }
