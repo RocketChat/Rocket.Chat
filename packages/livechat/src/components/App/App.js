@@ -117,6 +117,9 @@ export class App extends Component {
 			dispatchRestore();
 		}
 		Triggers.callbacks.emit('chat-opened-by-visitor');
+		if (!store.state.minimized && store.state.unread) {
+			store.setState({ lastReadMessageId: store.state.messages[store.state.messages.length - 1]._id, unread: null });
+		}
 	};
 
 	handleOpenWindow = () => {

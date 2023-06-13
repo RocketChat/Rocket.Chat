@@ -11,7 +11,8 @@ import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } fro
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
-import { Consumer } from '../../store';
+import { Consumer, store } from '../../store';
+// import store from '../../store';
 import Chat from './component';
 
 class ChatContainer extends Component {
@@ -338,6 +339,7 @@ class ChatContainer extends Component {
 			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
 				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
 				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
+				store.setState({ lastUnreadMessageId: null });
 			}
 		}
 
