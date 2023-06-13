@@ -12165,6 +12165,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prettier@npm:^2":
+  version: 2.7.3
+  resolution: "@types/prettier@npm:2.7.3"
+  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
+  languageName: node
+  linkType: hard
+
 "@types/prettier@npm:^2.1.5, @types/prettier@npm:^2.6.3":
   version: 2.6.3
   resolution: "@types/prettier@npm:2.6.3"
@@ -33567,6 +33574,7 @@ __metadata:
     "@changesets/cli": ^2.26.1
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
+    "@types/prettier": ^2
     husky: ^7.0.4
     turbo: latest
   languageName: unknown
