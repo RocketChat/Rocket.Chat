@@ -28,7 +28,6 @@ const OAuthAppsPage = (): ReactElement => {
 					)}
 					{!context && (
 						<Button primary alignSelf='flex-end' onClick={(): void => router.push({ context: 'new' })}>
-							<Icon name='plus' />
 							{t('New_Application')}
 						</Button>
 					)}
