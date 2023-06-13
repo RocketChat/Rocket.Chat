@@ -327,7 +327,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								placeholder={t('Create_a_password')}
 							/>
 						</Field.Row>
-						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
 						<Field.Row mbs='x4'>
 							<PasswordInput
 								autoComplete='off'
@@ -337,10 +336,14 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								onChange={handleConfirmationPassword}
 								addon={<Icon name='key' size='x20' />}
 								placeholder={t('Confirm_password')}
+								disabled={!allowPasswordChange}
 							/>
 						</Field.Row>
+						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
 						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
-						{passwordVerifications && <PasswordVerifier password={password} passwordVerifications={passwordVerifications} />}
+						{passwordVerifications && allowPasswordChange && (
+							<PasswordVerifier password={password} passwordVerifications={passwordVerifications} />
+						)}
 					</Field>
 				),
 				[
