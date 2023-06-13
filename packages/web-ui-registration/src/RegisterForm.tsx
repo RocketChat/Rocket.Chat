@@ -92,6 +92,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								})}
 								error={errors.name && t('registration.component.form.requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
+								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								id='name'
 							/>
 						</Field.Row>
@@ -139,7 +140,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
-								placeholder={passwordPlaceholder}
+								placeholder={passwordPlaceholder || t('Create_a_password')}
 							/>
 						</Field.Row>
 						{requiresPasswordConfirmation && (
@@ -153,7 +154,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
-									placeholder={passwordConfirmationPlaceholder}
+									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 								/>
 							</Field.Row>
 						)}

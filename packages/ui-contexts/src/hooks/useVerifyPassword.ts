@@ -7,7 +7,7 @@ export const useVerifyPassword = (password?: string) => {
 
 	if (!data?.enabled || password === undefined) return;
 
-	const handleRepeatingChars = (maxRepeatingChars?: number | undefined) => {
+	const handleRepeatingChars = (maxRepeatingChars?: number) => {
 		const repeatingCharsHash = {} as Record<string, number>;
 
 		for (let i = 0; i < password.length; i++) {
