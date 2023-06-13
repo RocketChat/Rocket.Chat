@@ -17,6 +17,7 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -108,10 +109,7 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (
-		agent: { agentId: string; username: string },
-		visitor?: ILivechatVisitor,
-	) => { agentId: string; username: string };
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
