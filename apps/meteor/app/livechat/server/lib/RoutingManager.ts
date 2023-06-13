@@ -10,6 +10,7 @@ import type {
 	IRoutingMethodConstructor,
 	RoutingMethodConfig,
 	SelectedAgent,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 
 import {
@@ -39,17 +40,20 @@ type Routing = {
 	getConfig(): RoutingMethodConfig | undefined;
 	getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined>;
 	delegateInquiry(
-		inquiry: ILivechatInquiryRecord,
+		inquiry: InquiryWithAgentInfo,
 		agent?: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: boolean },
-	): Promise<IOmnichannelRoom | null>;
-	assignAgent(inquiry: ILivechatInquiryRecord, agent: SelectedAgent): Promise<ILivechatInquiryRecord>;
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+	): Promise<IOmnichannelRoom | null | void>;
+	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
 	takeInquiry(
-		inquiry: ILivechatInquiryRecord,
+		inquiry: Omit<
+			ILivechatInquiryRecord,
+			'estimatedInactivityCloseTimeAt' | 'message' | 't' | 'source' | 'estimatedWaitingTimeQueue' | 'priorityWeight' | '_updatedAt'
+		>,
 		agent: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: boolean },
-	): Promise<IOmnichannelRoom | null>;
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+	): Promise<IOmnichannelRoom | null | void>;
 	transferRoom(
 		room: IOmnichannelRoom,
 		guest: ILivechatVisitor,
@@ -244,12 +248,16 @@ export const RoutingManager: Routing = {
 
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
-			const cbRoom = await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			const cbRoom = await callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', {
+				inquiry,
+				room,
+				options,
+			});
 			return cbRoom;
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
-		const inq = await this.assignAgent(inquiry, agent);
+		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
