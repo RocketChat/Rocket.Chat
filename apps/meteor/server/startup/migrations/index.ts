@@ -31,4 +31,5 @@ import './v294';
 import './v295';
 import './v296';
 import './v297';
+import './v298';
 import './xrun';
