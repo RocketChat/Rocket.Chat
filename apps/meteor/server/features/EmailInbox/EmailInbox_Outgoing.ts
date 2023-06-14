@@ -1,6 +1,5 @@
 import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
@@ -13,13 +12,14 @@ import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
+import { i18n } from '../../lib/i18n';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
 const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => TAPi18n.__(s, { lng: language });
+const t = (s: string): string => i18n.t(s, { lng: language });
 
 // TODO: change these messages with room notifications
 const sendErrorReplyMessage = async (error: string, options: any) => {

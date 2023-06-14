@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
@@ -94,7 +94,7 @@ function ChatInfo({ id, route }) {
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p='x24'>
 				<Margins block='x4'>
 					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
@@ -171,14 +171,14 @@ function ChatInfo({ id, route }) {
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onEditClick}>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 }

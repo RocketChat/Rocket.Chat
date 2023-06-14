@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
@@ -10,6 +9,7 @@ import { settings } from '../../settings/server';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { unarchiveRoom } from '../../lib/server';
+import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
 	command: 'unarchive',
@@ -38,7 +38,7 @@ slashCommands.add({
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -54,7 +54,7 @@ slashCommands.add({
 
 		if (!room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_already_Unarchived', {
+				msg: i18n.t('Channel_already_Unarchived', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -66,7 +66,7 @@ slashCommands.add({
 		await unarchiveRoom(room._id, user);
 
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-			msg: TAPi18n.__('Channel_Unarchived', {
+			msg: i18n.t('Channel_Unarchived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
 				lng: settings.get('Language') || 'en',

@@ -48,7 +48,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (user.services?.password && trim(user.services.password.bcrypt)) {
-			const result = Accounts._checkPassword(user as Meteor.User, {
+			const result = await Accounts._checkPasswordAsync(user as Meteor.User, {
 				digest: password.toLowerCase(),
 				algorithm: 'sha-256',
 			});

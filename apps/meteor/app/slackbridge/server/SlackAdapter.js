@@ -15,6 +15,7 @@ import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarch
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
+import { executeSetReaction } from '../../reactions/server/setReaction';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {
@@ -373,9 +374,7 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`unset${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Removing reaction from Slack');
-				await Meteor.runAsUser(rocketUser._id, () => {
-					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
-				});
+				await executeSetReaction(rocketUser._id, rocketReaction, rocketMsg._id);
 			}
 		}
 	}
@@ -419,9 +418,7 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`set${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Adding reaction from Slack');
-				await Meteor.runAsUser(rocketUser._id, () => {
-					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
-				});
+				await executeSetReaction(rocketUser._id, rocketReaction, rocketMsg._id);
 			}
 		}
 	}

@@ -3,7 +3,6 @@ import type { ServerResponse } from 'http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
@@ -17,6 +16,7 @@ import type { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { i18n } from '../../../utils/lib/i18n';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -154,8 +154,7 @@ export class SAML {
 			}
 
 			if (userObject.language) {
-				const languages = TAPi18n.getLanguages();
-				if (languages[userObject.language]) {
+				if (i18n.languages?.includes(userObject.language)) {
 					newUser.language = userObject.language;
 				}
 			}

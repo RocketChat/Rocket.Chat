@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
@@ -117,9 +116,7 @@ export class RocketChatUserAdapter {
 	}
 
 	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {
-		await Meteor.runAsUser(federatedUser.getInternalId(), async () => {
-			await setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
-		});
+		await setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
 	}
 
 	public async updateFederationAvatar(internalUserId: string, externalAvatarUrl: string): Promise<void> {

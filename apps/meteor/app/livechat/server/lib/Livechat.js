@@ -7,7 +7,6 @@ import util from 'util';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import UAParser from 'ua-parser-js';
 import {
 	LivechatVisitors,
@@ -45,6 +44,7 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('Livechat');
 
@@ -78,7 +78,7 @@ export const Livechat = {
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
 			const botAgents = await Livechat.getBotAgents(department);
-			const onlineBots = botAgents.count();
+			const onlineBots = await botAgents.count();
 			Livechat.logger.debug(`Found ${onlineBots} online`);
 			if (onlineBots > 0) {
 				return true;
@@ -155,7 +155,7 @@ export const Livechat = {
 			}
 
 			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			if (onlineAgents && onlineAgents.length) {
+			if (onlineAgents && (await onlineAgents.count())) {
 				return dept;
 			}
 		}
@@ -224,7 +224,7 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return Object.assign(sendMessage(guest, message, room), {
+		return Object.assign(await sendMessage(guest, message, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
@@ -423,7 +423,7 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
 					}
 				}
 				customFields[field._id] = value;
@@ -483,7 +483,7 @@ export const Livechat = {
 		if (customField.regexp !== undefined && customField.regexp !== '') {
 			const regexp = new RegExp(customField.regexp);
 			if (!regexp.test(value)) {
-				throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: key }));
+				throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: key }));
 			}
 		}
 
@@ -565,7 +565,7 @@ export const Livechat = {
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
-						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
 					}
 				}
 				customFields[field._id] = value;

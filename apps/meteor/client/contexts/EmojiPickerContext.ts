@@ -4,6 +4,9 @@ type EmojiPickerContextValue = {
 	open: (ref: Element, callback: (emoji: string) => void) => void;
 	isOpen: boolean;
 	close: () => void;
+	emojiToPreview: { emoji: string; name: string } | null;
+	handlePreview: (emoji: string, name: string) => void;
+	handleRemovePreview: () => void;
 };
 
 export const EmojiPickerContext = createContext<EmojiPickerContextValue | undefined>(undefined);
@@ -16,4 +19,14 @@ const useEmojiPickerContext = (): EmojiPickerContextValue => {
 	return context;
 };
 
-export const useEmojiPicker = () => useEmojiPickerContext();
+export const useEmojiPicker = () => ({
+	open: useEmojiPickerContext().open,
+	isOpen: useEmojiPickerContext().isOpen,
+	close: useEmojiPickerContext().close,
+});
+
+export const usePreviewEmoji = () => ({
+	emojiToPreview: useEmojiPickerContext().emojiToPreview,
+	handlePreview: useEmojiPickerContext().handlePreview,
+	handleRemovePreview: useEmojiPickerContext().handleRemovePreview,
+});

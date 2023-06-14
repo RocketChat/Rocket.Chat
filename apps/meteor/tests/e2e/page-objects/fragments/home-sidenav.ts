@@ -35,6 +35,10 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	getSidebarItemByName(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	}
+
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();

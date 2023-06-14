@@ -17,6 +17,7 @@
 @import 'imports/components/modal.css';
 @import 'imports/components/messages.css';
 @import 'imports/components/emoji.css';
+@import 'imports/components/loading.css';
 
 /* Legacy theming */
 @import 'imports/general/theme_old.css';

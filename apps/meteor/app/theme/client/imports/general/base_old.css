@@ -824,9 +824,25 @@
 	flex-grow: 1;
 }
 
-.full-page,
 .page-loading {
-	background-color: var(--rc-color-primary);
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	display: flex;
+
+	text-align: center;
+
+	background-color: var(--page-loading-background-light);
+
+	align-items: center;
+	justify-content: center;
+
+	@media (prefers-color-scheme: dark) {
+		background: var(--page-loading-background-dark);
+	}
 }
 
 .rc-old.full-page {
@@ -998,10 +1014,10 @@
 .rc-old .highlight-text {
 	padding: 0 2px 2px;
 
-	color: var(--rcx-color-font-pure-black, #2f343d);
+	color: var(--rcx-color-font-pure-white, #ffffff);
 
 	border-radius: var(--border-radius);
-	background-color: var(--rcx-color-status-background-info, #d1ebfe);
+	background-color: var(--rcx-color-badge-background-level-4, #f5455c);
 }
 
 @keyframes zoomIn {

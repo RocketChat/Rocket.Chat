@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
+import { i18n } from '../../../server/lib/i18n';
+import { hideRoomMethod } from '../../../server/methods/hideRoom';
 
 /*
  * Hide is a named function that will replace /hide commands
@@ -35,7 +35,7 @@ slashCommands.add({
 
 			const [type] = room;
 
-			const roomObject =
+			const roomObject: IRoom | null =
 				type === '#'
 					? await Rooms.findOneByName(strippedRoom)
 					: await Rooms.findOne({
@@ -44,16 +44,16 @@ slashCommands.add({
 					  });
 			if (!roomObject) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-					msg: TAPi18n.__('Channel_doesnt_exist', {
+					msg: i18n.t('Channel_doesnt_exist', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
 					}),
 				});
 			}
-			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-					msg: TAPi18n.__('error-logged-user-not-in-room', {
+					msg: i18n.t('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
@@ -61,13 +61,13 @@ slashCommands.add({
 				});
 				return;
 			}
-			rid = roomObject._id;
+			rid = roomObject?._id || message.rid;
 		}
 		try {
-			await Meteor.callAsync('hideRoom', rid);
+			await hideRoomMethod(userId, rid);
 		} catch (error: any) {
 			await api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
-				msg: TAPi18n.__(error, { lng }),
+				msg: i18n.t(error, { lng }),
 			});
 		}
 	},

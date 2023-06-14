@@ -1,7 +1,6 @@
 import stripHtml from 'string-strip-html';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -17,11 +16,12 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
+import { i18n } from '../../lib/i18n';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => TAPi18n.__(s, { lng: language });
+const t = (s: string): string => i18n.t(s, { lng: language });
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
 	logger.debug(`Attempt to register a guest for ${email} on department: ${department}`);

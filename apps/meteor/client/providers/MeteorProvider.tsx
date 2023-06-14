@@ -32,15 +32,15 @@ const MeteorProvider: FC = ({ children }) => (
 					<TranslationProvider>
 						<SessionProvider>
 							<TooltipProvider>
-								<EmojiPickerProvider>
-									<ToastMessagesProvider>
-										<LayoutProvider>
-											<AvatarUrlProvider>
-												<CustomSoundProvider>
-													<UserProvider>
-														<DeviceProvider>
-															<ModalProvider>
-																<AuthorizationProvider>
+								<ToastMessagesProvider>
+									<LayoutProvider>
+										<AvatarUrlProvider>
+											<CustomSoundProvider>
+												<UserProvider>
+													<DeviceProvider>
+														<ModalProvider>
+															<AuthorizationProvider>
+																<EmojiPickerProvider>
 																	<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>
 																			<ActionManagerProvider>
@@ -52,15 +52,15 @@ const MeteorProvider: FC = ({ children }) => (
 																			</ActionManagerProvider>
 																		</UserPresenceProvider>
 																	</OmnichannelRoomIconProvider>
-																</AuthorizationProvider>
-															</ModalProvider>
-														</DeviceProvider>
-													</UserProvider>
-												</CustomSoundProvider>
-											</AvatarUrlProvider>
-										</LayoutProvider>
-									</ToastMessagesProvider>
-								</EmojiPickerProvider>
+																</EmojiPickerProvider>
+															</AuthorizationProvider>
+														</ModalProvider>
+													</DeviceProvider>
+												</UserProvider>
+											</CustomSoundProvider>
+										</AvatarUrlProvider>
+									</LayoutProvider>
+								</ToastMessagesProvider>
 							</TooltipProvider>
 						</SessionProvider>
 					</TranslationProvider>

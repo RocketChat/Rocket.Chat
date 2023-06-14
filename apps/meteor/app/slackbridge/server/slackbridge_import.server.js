@@ -1,11 +1,11 @@
 import { Match } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { SlackBridge } from './slackbridge';
 import { msgStream } from '../../lib/server';
 import { slashCommands } from '../../utils/server';
+import { i18n } from '../../../server/lib/i18n';
 
 async function SlackBridgeImport({ command, params, message, userId }) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
@@ -21,7 +21,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 		rid: message.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
-		msg: TAPi18n.__(
+		msg: i18n.t(
 			'SlackBridge_start',
 			{
 				postProcess: 'sprintf',
@@ -40,7 +40,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__(
+						msg: i18n.t(
 							'SlackBridge_error',
 							{
 								postProcess: 'sprintf',
@@ -55,7 +55,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__(
+						msg: i18n.t(
 							'SlackBridge_finish',
 							{
 								postProcess: 'sprintf',
@@ -73,7 +73,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 			rid: message.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
-			msg: TAPi18n.__(
+			msg: i18n.t(
 				'SlackBridge_error',
 				{
 					postProcess: 'sprintf',

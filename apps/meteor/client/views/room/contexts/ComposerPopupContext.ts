@@ -34,7 +34,7 @@ export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: numb
 		closeOnEsc: true,
 		triggerAnywhere: true,
 		suffix: ' ',
-		prefix: partial.trigger ?? ' ',
+		prefix: partial.prefix ?? partial.trigger ?? ' ',
 		getValue: (item) => item._id,
 		...partial,
 	};

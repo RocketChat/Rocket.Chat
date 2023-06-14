@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -46,8 +46,8 @@ const AppsFilters = ({
 	const t = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
-
-	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
+	const breakpoints = useBreakpoints();
+	const shouldFiltersStack = !breakpoints.includes('lg');
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
@@ -58,6 +58,8 @@ const AppsFilters = ({
 		requested: t('Search_Requested_Apps'),
 		private: t('Search_Private_apps'),
 	};
+
+	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
 		<Box pi='x24'>
@@ -73,6 +75,7 @@ const AppsFilters = ({
 						mie={hasFilterStackMargin}
 						mbs={hasNotFilterStackMargin}
 						mbe={hasNotFilterStackMargin}
+						{...fixFiltersSize}
 					/>
 				)}
 				<RadioDropDown
@@ -81,6 +84,7 @@ const AppsFilters = ({
 					mie={hasFilterStackMargin}
 					mbs={shouldFiltersStack && isPrivateAppsPage ? 'x8' : ''}
 					mbe={hasNotFilterStackMargin}
+					{...fixFiltersSize}
 				/>
 				{!isPrivateAppsPage && (
 					<CategoryDropDown
@@ -91,7 +95,7 @@ const AppsFilters = ({
 						mbe={hasNotFilterStackMargin}
 					/>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} {...fixFiltersSize} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>

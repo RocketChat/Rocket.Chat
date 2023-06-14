@@ -19,7 +19,6 @@ import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import RoomOpener from '../../views/room/RoomOpener';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
 import { appLayout } from '../appLayout';
-import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
@@ -211,7 +210,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 						</MainLayout>,
 					);
 				},
-				triggersExit: [roomExit],
 			});
 		}
 	}

@@ -1,11 +1,10 @@
 import { Button, ButtonGroup, Icon, Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
+import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import Page from '../../../../components/Page';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -37,7 +36,7 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 
 	const fetchHistory = useEndpoint('GET', '/v1/integrations.history');
 
-	const queryKey = ['integrations/history', id, itemsPerPage, current];
+	const queryKey = useMemo(() => ['integrations/history', id, itemsPerPage, current], [id, itemsPerPage, current]);
 
 	const queryClient = useQueryClient();
 
@@ -45,7 +44,7 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 
 	const { data, isLoading, refetch } = useQuery(
 		queryKey,
-		async (): Promise<HistoryData> => {
+		async () => {
 			const result = fetchHistory(query);
 			setMounted(true);
 			return result;
@@ -72,60 +71,44 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		router.push({});
 	};
 
-	const handleDataChange = useMutableCallback(
-		({
-			data,
-			type,
-			diff,
-			id,
-		}: {
-			id: string;
-			type: 'inserted' | 'updated' | 'removed';
-			diff: Partial<HistoryData['history'][number]>;
-			data: HistoryData['history'][number];
-		}) => {
-			if (type === 'inserted') {
-				setTotal((total) => total + 1);
-				queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
-					if (!oldData || !data) {
-						return;
-					}
-					return {
-						...oldData,
-						history: [data].concat(oldData.history),
-						total: oldData.total + 1,
-					};
-				});
-			}
-
-			if (type === 'updated') {
-				queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
-					if (!oldData) {
-						return;
-					}
-					const index = oldData.history.findIndex(({ _id }) => _id === id);
-					if (index === -1) {
-						return;
-					}
-					Object.assign(oldData.history[index], diff);
-					return { ...oldData };
-				});
-				return;
-			}
-
-			if (type === 'removed') {
-				refetch();
-			}
-		},
-	);
-
 	useEffect(() => {
 		if (mounted) {
-			integrationHistoryStreamer.on(id, handleDataChange);
-		}
+			return sdk.stream('integrationHistory', [id], (integration) => {
+				if (integration.type === 'inserted') {
+					setTotal((total) => total + 1);
+					queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
+						if (!oldData || !integration.data) {
+							return;
+						}
+						return {
+							...oldData,
+							history: [integration.data as unknown as HistoryData['history'][number]].concat(oldData.history),
+							total: oldData.total + 1,
+						};
+					});
+				}
 
-		return () => integrationHistoryStreamer.removeListener(id, handleDataChange);
-	}, [handleDataChange, id, mounted]);
+				if (integration.type === 'updated') {
+					queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
+						if (!oldData) {
+							return;
+						}
+						const index = oldData.history.findIndex(({ _id }) => _id === id);
+						if (index === -1) {
+							return;
+						}
+						Object.assign(oldData.history[index], integration.diff);
+						return { ...oldData };
+					});
+					return;
+				}
+
+				if (integration.type === 'removed') {
+					refetch();
+				}
+			}).stop;
+		}
+	}, [id, mounted, queryClient, queryKey, refetch]);
 
 	return (
 		<Page flexDirection='column' {...props}>

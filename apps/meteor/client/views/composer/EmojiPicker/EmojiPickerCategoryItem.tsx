@@ -1,6 +1,6 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
 import type { EmojiCategory } from '../../../../app/emoji/client';
@@ -10,44 +10,59 @@ type EmojiPickerCategoryItemProps = {
 	index: number;
 	active: boolean;
 	handleGoToCategory: (categoryIndex: number) => void;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
+
+const mapCategoryIcon = (category: string) => {
+	switch (category) {
+		case 'people':
+			return 'emoji';
+
+		case 'nature':
+			return 'leaf';
+
+		case 'food':
+			return 'burger';
+
+		case 'activity':
+			return 'ball';
+
+		case 'travel':
+			return 'airplane';
+
+		case 'objects':
+			return 'percentage';
+
+		case 'symbols':
+			return 'lamp-bulb';
+
+		case 'flags':
+			return 'flag';
+
+		case 'rocket':
+			return 'rocket';
+
+		default:
+			return 'clock';
+	}
 };
 
-const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory }: EmojiPickerCategoryItemProps) => {
+const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, ...props }: EmojiPickerCategoryItemProps) => {
 	const t = useTranslation();
 
-	const style = css`
-		cursor: pointer;
-		&:hover {
-			border-block-end-color: ${Palette.stroke['stroke-light']};
-		}
-		&:focus {
-			border: 1px solid ${Palette.stroke['stroke-dark']};
-			border-radius: 0.5rem;
-		}
-	`;
+	const icon = mapCategoryIcon(category.key);
 
 	return (
-		<Box
-			tabIndex={0}
+		<IconButton
 			role='tab'
-			is='li'
-			display='flex'
-			justifyContent='center'
-			flexGrow={1}
-			pb='x4'
-			borderBlockEndStyle='solid'
-			borderBlockEndWidth={1}
-			key={category.key}
-			className={[active && 'active', category.key, style].filter(Boolean)}
+			pressed={active}
 			title={t(category.i18n)}
+			className={category.key}
+			small
 			aria-label={t(category.i18n)}
 			onClick={() => handleGoToCategory(index)}
-		>
-			<i
-				style={{ fontSize: '20px', ...(active && { color: Palette.statusColor['status-font-on-info'].toString() }) }}
-				className={`category-icon icon-${category.key}`}
-			></i>
-		</Box>
+			icon={icon}
+			{...props}
+		/>
 	);
 };
 

@@ -17,6 +17,7 @@ type CannedResponsesPageProps = {
 	renderFilter?: (props: any) => ReactElement;
 	renderRow?: (props: any) => ReactElement;
 	totalCannedResponses: number;
+	busy?: boolean;
 };
 
 const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
@@ -28,6 +29,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	renderRow,
 	renderFilter,
 	totalCannedResponses,
+	busy,
 }) => {
 	const t = useTranslation();
 
@@ -66,6 +68,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 						total={data?.total}
 						setParams={setParams}
 						params={params}
+						aria-busy={busy}
 					/>
 				)}
 			</Page.Content>

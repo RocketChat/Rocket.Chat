@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
@@ -8,6 +7,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
+import { i18n } from '../../../../server/lib/i18n';
 
 callbacks.add(
 	'beforeSaveMessage',
@@ -27,12 +27,13 @@ callbacks.add(
 			) {
 				// Get the language of the user for the error notification.
 				const { language } = (await Users.findOneById(message.u._id)) || {};
-				const action = TAPi18n.__('Notify_all_in_this_room', {}, language);
+				const action = i18n.t('Notify_all_in_this_room', { lng: language });
 
 				// Add a notification to the chat, informing the user that this
 				// action is not allowed.
 				void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
-					msg: TAPi18n.__('error-action-not-allowed', { action }, language),
+					// TODO: i18n
+					msg: i18n.t('error-action-not-allowed', { action } as any, language),
 				});
 
 				// Also throw to stop propagation of 'sendMessage'.

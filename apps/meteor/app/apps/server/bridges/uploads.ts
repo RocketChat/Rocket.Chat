@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
@@ -6,6 +5,8 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { sendFileLivechatMessage } from '../../../livechat/server/methods/sendFileLivechatMessage';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -51,15 +52,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		details.type = determineFileType(buffer, details.name);
 
-		return Meteor.runAsUser(details.userId, async () => {
-			const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
-			this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-			if (details.visitorToken) {
-				await Meteor.callAsync('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-			} else {
-				await Meteor.callAsync('sendFileMessage', details.rid, null, uploadedFile);
-			}
-			return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
-		});
+		const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
+		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
+		if (details.visitorToken) {
+			await sendFileLivechatMessage({ roomId: details.rid, visitorToken: details.visitorToken, file: uploadedFile });
+		} else {
+			await sendFileMessage(details.userId, { roomId: details.rid, file: uploadedFile });
+		}
+		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}
 }

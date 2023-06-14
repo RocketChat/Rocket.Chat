@@ -24,7 +24,7 @@ export const createPickerEmojis = (
 
 	return mappedCategories;
 };
-console.log(emoji);
+
 export const createEmojiList = (
 	category: string,
 	actualTone: number | null,
@@ -76,6 +76,10 @@ export const getCategoriesList = () => {
 			}
 		}
 	}
+
+	const rocketPosition = categoriesList.findIndex((category) => category.key === CUSTOM_CATEGORY);
+	const rocketCategory = categoriesList.splice(rocketPosition, 1)[0];
+	categoriesList.push(rocketCategory);
 
 	return categoriesList;
 };
