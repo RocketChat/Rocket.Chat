@@ -159,7 +159,7 @@ export const RoutingManager: Routing = {
 		const room = await LivechatRooms.findOneById(rid);
 
 		if (user) {
-			await Message.saveSystemMessage('command', rid, 'connected', user));
+			await Message.saveSystemMessage('command', rid, 'connected', user);
 		}
 
 		await dispatchAgentDelegated(rid, agent.agentId);
