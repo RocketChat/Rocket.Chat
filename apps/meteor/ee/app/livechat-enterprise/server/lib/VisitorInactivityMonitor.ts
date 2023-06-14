@@ -5,8 +5,9 @@ import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { schedulerLogger } from './logger';
 import { i18n } from '../../../../../server/lib/i18n';
+import { callbacks } from '../../../../../lib/callbacks';
+import { schedulerLogger } from './logger';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
@@ -141,8 +142,9 @@ export class VisitorInactivityMonitor {
 			return;
 		}
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					this.logger.debug(`Closing room ${room._id}`);
