@@ -14,6 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -94,6 +95,7 @@ const getInitialValues = ({ department, agents, allowedToForwardData }: InitialV
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
+	const queryClient = useQueryClient();
 
 	const {
 		useEeNumberInput = () => null,
@@ -197,6 +199,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			} else {
 				await saveDepartmentInfo(id ?? null, payload, agentList);
 			}
+			queryClient.invalidateQueries(['/v1/livechat/department/:_id', id]);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			departmentsRoute.push({});
 		} catch (error) {
