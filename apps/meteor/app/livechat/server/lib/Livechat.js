@@ -285,7 +285,8 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = await Users.findOneById(userId);
 
-		const openChats = LivechatRooms.findOpenByAgent(userId);
+		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {});
+		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 		const promises = [];
 		await openChats.forEach((room) => {
 			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
@@ -635,7 +636,8 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		const cursor = LivechatRooms.findByVisitorToken(token);
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
 			await FileUpload.removeFilesByRoomId(room._id);
 			await Messages.removeByRoomId(room._id);
