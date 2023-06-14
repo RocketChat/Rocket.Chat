@@ -82,10 +82,13 @@ export const useQuickActions = (
 	const handleVerifyUser = useCallback(async () => {
 		try {
 			await verifyUser(rid);
+			// const visitorEmail = await getVisitorEmail();
+			// console.log(visitorEmail);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, rid, verifyUser]);
+
 	const handleRequestTranscript = useCallback(
 		async (email: string, subject: string) => {
 			try {

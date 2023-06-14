@@ -48,7 +48,6 @@ addAction(QuickActionsEnum.VerifyUser, {
 	groups: ['live'],
 	id: QuickActionsEnum.VerifyUser,
 	title: 'Verify_User',
-	icon: 'balloon-close-top-right',
+	icon: 'shield-alt',
 	order: 6,
-	color: 'danger',
 });
