@@ -46,6 +46,9 @@
 		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
 			"cache": false
+		},
+		"@rocket.chat/apps-engine-service#build": {
+			"dependsOn": ["^build"]
 		}
 	}
 }
