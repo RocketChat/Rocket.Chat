@@ -12,6 +12,7 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
+import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
@@ -41,7 +42,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				delete guest.department;
 				return guest;
 			}
-			await Livechat.setDepartmentForGuest({ token: guest.token, department });
+			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneById(guest._id, {});
 		}
 		return guest;
@@ -51,15 +52,11 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		msg: 'Creating a new Omnichannel guest for visitor with email',
 		email,
 	});
-	const userId = await Livechat.registerGuest({
+	const userId = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,
 		department,
-		phone: undefined,
-		username: undefined,
-		connectionData: undefined,
-		id: undefined,
 	});
 
 	const newGuest = await LivechatVisitors.findOneById(userId);

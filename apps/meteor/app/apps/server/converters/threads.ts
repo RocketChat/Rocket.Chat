@@ -138,11 +138,7 @@ export class AppThreadsConverter {
 		return (await transformMappedData(msgObj, map)) as unknown as AppsEngineMessage;
 	}
 
-	async _convertAttachmentsToApp(attachments: ExcludeUndefined<IMessage['attachments']>) {
-		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
-			return undefined;
-		}
-
+	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>) {
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
@@ -165,7 +161,7 @@ export class AppThreadsConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment: ExcludeUndefined<IMessage['attachments']>[number]) => {
+			author: (attachment: NonNullable<IMessage['attachments']>[number]) => {
 				if (!('author_name' in attachment)) {
 					return;
 				}
@@ -178,7 +174,7 @@ export class AppThreadsConverter {
 
 				return { name, link, icon };
 			},
-			title: (attachment: ExcludeUndefined<IMessage['attachments']>[number]) => {
+			title: (attachment: NonNullable<IMessage['attachments']>[number]) => {
 				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
@@ -187,7 +183,7 @@ export class AppThreadsConverter {
 
 				return { value, link, displayDownloadLink };
 			},
-			timestamp: (attachment: ExcludeUndefined<IMessage['attachments']>[number]) => {
+			timestamp: (attachment: NonNullable<IMessage['attachments']>[number]) => {
 				const result = attachment.ts ? new Date(attachment.ts) : undefined;
 				delete attachment.ts;
 				return result;
@@ -197,7 +193,3 @@ export class AppThreadsConverter {
 		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
 	}
 }
-
-// exclude undefined values
-
-type ExcludeUndefined<T> = T extends undefined ? never : T;
