@@ -11,6 +11,13 @@ import {
 	LivechatUnit,
 } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type {
+	IOmnichannelBusinessUnit,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+	LivechatDepartmentDTO,
+	InquiryWithAgentInfo,
+} from '@rocket.chat/core-typings';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
@@ -26,7 +33,7 @@ import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 
 export const LivechatEnterprise = {
-	async addMonitor(username) {
+	async addMonitor(username: string) {
 		check(username, String);
 
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
@@ -44,7 +51,7 @@ export const LivechatEnterprise = {
 		return false;
 	},
 
-	async removeMonitor(username) {
+	async removeMonitor(username: string) {
 		check(username, String);
 
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
@@ -66,7 +73,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	async removeUnit(_id) {
+	async removeUnit(_id: string) {
 		check(_id, String);
 
 		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
@@ -78,7 +85,12 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(
+		_id: string | null,
+		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
+		unitMonitors: { monitorId: string; username: string },
+		unitDepartments: { departmentId: string }[],
+	) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {
@@ -103,7 +115,7 @@ export const LivechatEnterprise = {
 			}),
 		]);
 
-		let ancestors = [];
+		let ancestors: string[] = [];
 		if (_id) {
 			const unit = await LivechatUnit.findOneById(_id);
 			if (!unit) {
@@ -112,13 +124,13 @@ export const LivechatEnterprise = {
 				});
 			}
 
-			ancestors = unit.ancestors;
+			ancestors = unit.ancestors || [];
 		}
 
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
 	},
 
-	async removeTag(_id) {
+	async removeTag(_id: string) {
 		check(_id, String);
 
 		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
@@ -130,7 +142,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.removeById(_id);
 	},
 
-	async saveTag(_id, tagData, tagDepartments) {
+	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[]) {
 		check(_id, Match.Maybe(String));
 
 		check(tagData, {
@@ -143,9 +155,9 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	async saveSLA(_id, slaData) {
+	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
+		const exists = _id && (await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes));
 		if (exists) {
 			throw new Error('error-duplicated-sla');
 		}
@@ -165,7 +177,7 @@ export const LivechatEnterprise = {
 		return sla;
 	},
 
-	async removeSLA(_id) {
+	async removeSLA(_id: string) {
 		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
 		if (!sla) {
 			throw new Error(`SLA with id ${_id} not found`);
@@ -179,7 +191,7 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	async placeRoomOnHold(room, comment, onHoldBy) {
+	async placeRoomOnHold(room: IOmnichannelRoom, comment: string, onHoldBy: { _id: string; username?: string; name?: string }) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
@@ -196,7 +208,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	async releaseOnHoldChat(room) {
+	async releaseOnHoldChat(room: IOmnichannelRoom) {
 		const { _id: roomId, onHold } = room;
 		if (!roomId || !onHold) {
 			return;
@@ -211,10 +223,17 @@ export const LivechatEnterprise = {
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
 	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
 	 */
-	async saveDepartment(_id, departmentData, departmentAgents) {
+	async saveDepartment(
+		_id: string | null,
+		departmentData: LivechatDepartmentDTO,
+		departmentAgents?: {
+			upsert?: { agentId: string; count?: number; order?: number }[];
+			remove?: { agentId: string; count?: number; order?: number };
+		},
+	) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id && (await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }));
+		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }) : null;
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -231,7 +250,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const defaultValidations = {
+		const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
 			enabled: Boolean,
 			name: String,
 			description: Match.Optional(String),
@@ -302,7 +321,18 @@ export const LivechatEnterprise = {
 const DEFAULT_RACE_TIMEOUT = 5000;
 let queueDelayTimeout = DEFAULT_RACE_TIMEOUT;
 
-const queueWorker = {
+type QueueWorker = {
+	running: boolean;
+	queues: (string | undefined)[];
+	start(): Promise<void>;
+	stop(): Promise<void>;
+	getActiveQueues(): Promise<(string | undefined)[]>;
+	nextQueue(): Promise<string | undefined>;
+	execute(): Promise<void>;
+	checkQueue(queue: string | undefined): Promise<void>;
+};
+
+const queueWorker: QueueWorker = {
 	running: false,
 	queues: [],
 	async start() {
@@ -326,7 +356,7 @@ const queueWorker = {
 	},
 	async getActiveQueues() {
 		// undefined = public queue(without department)
-		return [undefined].concat(await LivechatInquiry.getDistinctQueuedDepartments());
+		return ([undefined] as (undefined | string)[]).concat(await LivechatInquiry.getDistinctQueuedDepartments({}));
 	},
 	async nextQueue() {
 		if (!this.queues.length) {
@@ -357,7 +387,7 @@ const queueWorker = {
 				return;
 			}
 
-			const result = await processWaitingQueue(queue, nextInquiry);
+			const result = await processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
 				await LivechatInquiry.unlock(nextInquiry._id);
@@ -368,7 +398,7 @@ const queueWorker = {
 				err: e,
 			});
 		} finally {
-			this.execute();
+			void this.execute();
 		}
 	},
 };
@@ -376,7 +406,7 @@ const queueWorker = {
 let omnichannelIsEnabled = false;
 function shouldQueueStart() {
 	if (!omnichannelIsEnabled) {
-		queueWorker.stop();
+		void queueWorker.stop();
 		return;
 	}
 
@@ -387,16 +417,16 @@ function shouldQueueStart() {
 		} queue`,
 	);
 
-	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+	void (routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop());
 }
 
 RoutingManager.startQueue = shouldQueueStart;
 
-settings.watch('Livechat_enabled', (enabled) => {
+settings.watch<boolean>('Livechat_enabled', (enabled) => {
 	omnichannelIsEnabled = enabled;
-	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+	void (omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop());
 });
 
-settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {
+settings.watch<number>('Omnichannel_queue_delay_timeout', (timeout) => {
 	queueDelayTimeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 });
