@@ -6,6 +6,7 @@ import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { i18n } from '../../../../../server/lib/i18n';
+import { callbacks } from '../../../../../lib/callbacks';
 import { schedulerLogger } from './logger';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 
@@ -141,8 +142,9 @@ export class VisitorInactivityMonitor {
 			return;
 		}
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					this.logger.debug(`Closing room ${room._id}`);

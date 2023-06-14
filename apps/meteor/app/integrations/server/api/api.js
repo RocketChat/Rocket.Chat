@@ -276,6 +276,10 @@ async function executeIntegrationRest() {
 		return API.v1.success();
 	}
 
+	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.integration.overrideDestinationChannelEnabled) {
+		return API.v1.failure('overriding destination channel is disabled for this integration');
+	}
+
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
