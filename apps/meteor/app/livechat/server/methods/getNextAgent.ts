@@ -6,6 +6,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { callbacks } from '../../../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,7 +23,8 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.method('livechat:getNextAgent', '7.0.0');
 		check(token, String);
 
-		const room = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const room = await LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery).toArray();
 
 		if (room && room.length > 0) {
 			return;
