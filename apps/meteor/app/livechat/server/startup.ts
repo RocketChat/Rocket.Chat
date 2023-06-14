@@ -11,7 +11,7 @@ import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivity
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Livechat } from './lib/LivechatTyped';
+import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 import { i18n } from '../../../server/lib/i18n';
