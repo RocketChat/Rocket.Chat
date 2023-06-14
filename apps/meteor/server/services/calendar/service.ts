@@ -177,7 +177,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		const defaultPattern = '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
-		const pattern = (settings.get<string>('Outlook_Calendar_MeetingUrl_Regex') || defaultPattern).trim();
+		const pattern = (settings.get<string>('Calendar_MeetingUrl_Regex') || defaultPattern).trim();
 
 		if (!pattern) {
 			return;

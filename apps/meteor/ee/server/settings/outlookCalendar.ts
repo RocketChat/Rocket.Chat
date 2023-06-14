@@ -27,7 +27,7 @@ export function addSettings(): void {
 				});
 
 				await this.add(
-					'Outlook_Calendar_MeetingUrl_Regex',
+					'Calendar_MeetingUrl_Regex',
 					'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
 					{
 						type: 'string',
