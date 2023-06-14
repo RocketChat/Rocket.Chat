@@ -29,7 +29,6 @@ export * from './IIntegrationHistory';
 export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
-export * from './ICronJobs';
 export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
@@ -128,5 +127,9 @@ export * from './search';
 export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
+export * from './ICronHistoryItem';
 
 export * from './migrations/IControl';
+export * from './ICustomOAuthConfig';
+
+export * from './IModerationReport';

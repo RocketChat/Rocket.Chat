@@ -1,6 +1,7 @@
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUser, IRoom, VideoConference, ISetting } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
@@ -10,18 +11,18 @@ import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
-const STATUS_MAP: { [k: string]: number } = {
+const STATUS_MAP = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
 	[UserStatus.BUSY]: 3,
-};
+} as const;
 
 const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
 	updated: 'changed',
 	removed: 'removed',
-};
+} as const;
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
@@ -61,10 +62,16 @@ export class ListenersModule {
 
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
-				...message,
+				u: {
+					_id: 'rocket.cat',
+					username: 'rocket.cat',
+				},
+				private: true,
 				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
+				_updatedAt: new Date(),
+				...message,
 			});
 		});
 
@@ -127,14 +134,16 @@ export class ListenersModule {
 
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
-			if (!status) {
+			if (!status || !username) {
 				return;
 			}
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+			const statusChanged = (STATUS_MAP as any)[status] as 0 | 1 | 2 | 3;
+
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, statusChanged, statusText, name, roles]);
 
 			if (_id) {
-				notifications.sendPresence(_id, [username, STATUS_MAP[status], statusText]);
+				notifications.sendPresence(_id, username, statusChanged, statusText);
 			}
 		});
 
@@ -159,12 +168,6 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
-		service.onEvent('message.update', ({ message }) => {
-			if (message.rid) {
-				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
-			}
-		});
-
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;
@@ -177,7 +180,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
-			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
+			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
@@ -185,11 +188,11 @@ export class ListenersModule {
 				type: clientAction,
 				...role,
 			};
-			notifications.streamRoles.emitWithoutBroadcast('roles', payload);
+			notifications.streamRoles.emitWithoutBroadcast('roles', payload as any);
 		});
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			const type = minimongoChangeMap[clientAction];
+			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
 					_id: inquiry._id,
@@ -256,7 +259,7 @@ export class ListenersModule {
 				properties: setting.properties,
 				enterprise: setting.enterprise,
 				requiredOnWizard: setting.requiredOnWizard,
-			};
+			} as ISetting;
 
 			if (setting.public === true) {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
@@ -269,23 +272,24 @@ export class ListenersModule {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
-			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, room as IOmnichannelRoom);
 		});
 
-		service.onEvent('watch.users', ({ clientAction, data, diff, unset, id }): void => {
-			switch (clientAction) {
+		service.onEvent('watch.users', (event): void => {
+			switch (event.clientAction) {
 				case 'updated':
-					notifications.notifyUserInThisInstance(id, 'userData', {
-						diff,
-						unset,
-						type: clientAction,
+					notifications.notifyUserInThisInstance(event.id, 'userData', {
+						id: event.id,
+						diff: event.diff,
+						unset: event.unset,
+						type: 'updated',
 					});
 					break;
 				case 'inserted':
-					notifications.notifyUserInThisInstance(id, 'userData', { data, type: clientAction });
+					notifications.notifyUserInThisInstance(event.id, 'userData', { id: event.id, data: event.data, type: 'inserted' });
 					break;
 				case 'removed':
-					notifications.notifyUserInThisInstance(id, 'userData', { id, type: clientAction });
+					notifications.notifyUserInThisInstance(event.id, 'userData', { id: event.id, type: 'removed' });
 					break;
 			}
 		});
@@ -406,7 +410,7 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', { appId, status });
 		});
 
-		service.onEvent('apps.settingUpdated', (appId: string, setting: ISetting) => {
+		service.onEvent('apps.settingUpdated', (appId: string, setting: AppsSetting) => {
 			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting });
 		});
 

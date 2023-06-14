@@ -14,50 +14,57 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const addOutgoingIntegration = async (userId: string, integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> => {
+	check(
+		integration,
+		Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			channel: String,
+			alias: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			script: Match.Maybe(String),
+			urls: Match.Maybe([String]),
+			event: Match.Maybe(String),
+			triggerWords: Match.Maybe([String]),
+			avatar: Match.Maybe(String),
+			token: Match.Maybe(String),
+			impersonateUser: Match.Maybe(Boolean),
+			retryCount: Match.Maybe(Number),
+			retryDelay: Match.Maybe(String),
+			retryFailedCalls: Match.Maybe(Boolean),
+			runOnEdits: Match.Maybe(Boolean),
+			targetRoom: Match.Maybe(String),
+			triggerWordAnywhere: Match.Maybe(Boolean),
+		}),
+	);
+
+	if (
+		!userId ||
+		(!(await hasPermissionAsync(userId, 'manage-outgoing-integrations')) &&
+			!(await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')))
+	) {
+		throw new Meteor.Error('not_authorized');
+	}
+
+	const integrationData = await validateOutgoingIntegration(integration, userId);
+
+	const result = await Integrations.insertOne(integrationData);
+	integrationData._id = result.insertedId;
+
+	return integrationData;
+};
+
 Meteor.methods<ServerMethods>({
 	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
 		const { userId } = this;
-
-		check(
-			integration,
-			Match.ObjectIncluding({
-				type: String,
-				name: String,
-				enabled: Boolean,
-				username: String,
-				channel: String,
-				alias: Match.Maybe(String),
-				emoji: Match.Maybe(String),
-				scriptEnabled: Boolean,
-				script: Match.Maybe(String),
-				urls: Match.Maybe([String]),
-				event: Match.Maybe(String),
-				triggerWords: Match.Maybe([String]),
-				avatar: Match.Maybe(String),
-				token: Match.Maybe(String),
-				impersonateUser: Match.Maybe(Boolean),
-				retryCount: Match.Maybe(Number),
-				retryDelay: Match.Maybe(String),
-				retryFailedCalls: Match.Maybe(Boolean),
-				runOnEdits: Match.Maybe(Boolean),
-				targetRoom: Match.Maybe(String),
-				triggerWordAnywhere: Match.Maybe(Boolean),
-			}),
-		);
-
-		if (
-			!userId ||
-			(!(await hasPermissionAsync(userId, 'manage-outgoing-integrations')) &&
-				!(await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')))
-		) {
-			throw new Meteor.Error('not_authorized');
+		if (!userId) {
+			throw new Meteor.Error('Invalid User');
 		}
 
-		const integrationData = await validateOutgoingIntegration(integration, userId);
-
-		const result = await Integrations.insertOne(integrationData);
-		integrationData._id = result.insertedId;
-
-		return integrationData;
+		return addOutgoingIntegration(userId, integration);
 	},
 });

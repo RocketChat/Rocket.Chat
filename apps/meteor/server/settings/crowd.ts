@@ -1,5 +1,13 @@
 import { settingsRegistry } from '../../app/settings/server';
 
+export const crowdIntervalValuesToCronMap: Record<string, string> = {
+	every_10_minutes: '*/10 * * * *',
+	every_30_minutes: '*/30 * * * *',
+	every_1_hour: '0 * * * *',
+	every_6_hours: '0 */6 * * *',
+	every_12_hours: '0 */12 * * *',
+};
+
 export const createCrowdSettings = () =>
 	settingsRegistry.addGroup('AtlassianCrowd', async function () {
 		const enableQuery = { _id: 'CROWD_Enable', value: true };
@@ -25,8 +33,30 @@ export const createCrowdSettings = () =>
 			enableQuery,
 			i18nLabel: 'Sync_Users',
 		});
-		await this.add('CROWD_Sync_Interval', 'Every 60 mins', {
-			type: 'string',
+		await this.add('CROWD_Sync_Interval', 'every_1_hour', {
+			type: 'select',
+			values: [
+				{
+					key: 'every_10_minutes',
+					i18nLabel: 'every_10_minutes',
+				},
+				{
+					key: 'every_30_minutes',
+					i18nLabel: 'every_30_minutes',
+				},
+				{
+					key: 'every_1_hour',
+					i18nLabel: 'every_hour',
+				},
+				{
+					key: 'every_6_hours',
+					i18nLabel: 'every_six_hours',
+				},
+				{
+					key: 'every_12_hours',
+					i18nLabel: 'every_12_hours',
+				},
+			],
 			enableQuery: enableSyncQuery,
 			i18nLabel: 'Sync_Interval',
 			i18nDescription: 'Crowd_sync_interval_Description',

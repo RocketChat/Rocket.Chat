@@ -30,21 +30,21 @@ const GroupingList = function GroupingList(): ReactElement {
 					role='listitem'
 					icon='flag'
 					text={t('Unread')}
-					input={<CheckBox pis='x24' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />}
+					input={<CheckBox mi='x16' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='star'
 					text={t('Favorites')}
-					input={<CheckBox pis='x24' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />}
+					input={<CheckBox mi='x16' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='group-by-type'
 					text={t('Types')}
-					input={<CheckBox pis='x24' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />}
+					input={<CheckBox mi='x16' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />}
 				/>
 			</ul>
 		</>

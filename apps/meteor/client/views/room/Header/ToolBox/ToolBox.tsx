@@ -13,7 +13,7 @@ import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/Toolbox
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />
+	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
 type ToolBoxProps = {
@@ -76,7 +76,6 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	// }, [visibleActions.length, open]);
 
 	// TODO: Create helper for render Actions
-	// TODO: Add proper Vertical Divider Component
 
 	return (
 		<>
@@ -87,7 +86,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					title: t(title),
 					className,
 					index,
-					info: id === tab?.id,
+					pressed: id === tab?.id,
 					action,
 					key: id,
 					disabled,
@@ -106,7 +105,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					title: t(title),
 					className,
 					index,
-					info: id === tab?.id,
+					pressed: id === tab?.id,
 					action,
 					key: id,
 					disabled,

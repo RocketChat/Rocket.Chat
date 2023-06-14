@@ -53,7 +53,11 @@ export interface IRoom extends IRocketChatRecord {
 
 	streamingOptions?: {
 		id?: string;
-		type: string;
+		type?: string;
+		url?: string;
+		thumbnail?: string;
+		isAudioOnly?: boolean;
+		message?: string;
 	};
 
 	prid?: string;
@@ -123,6 +127,8 @@ export const isPublicTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isT
 export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid;
 export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
+
+export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';

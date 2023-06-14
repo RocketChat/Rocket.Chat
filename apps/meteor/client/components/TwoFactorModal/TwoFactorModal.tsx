@@ -17,6 +17,7 @@ export type OnConfirm = (code: string, method: Method) => void;
 type TwoFactorModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	invalidAttempt?: boolean;
 } & (
 	| {
 			method: 'totp' | 'password';
@@ -27,7 +28,7 @@ type TwoFactorModalProps = {
 	  }
 );
 
-const TwoFactorModal = ({ onConfirm, onClose, ...props }: TwoFactorModalProps): ReactElement => {
+const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps): ReactElement => {
 	const logoutOtherSessions = useEndpoint('POST', '/v1/users.logoutOtherClients');
 
 	const confirm = (code: any, method: Method): void => {
@@ -35,17 +36,17 @@ const TwoFactorModal = ({ onConfirm, onClose, ...props }: TwoFactorModalProps): 
 		logoutOtherSessions();
 	};
 	if (props.method === Method.TOTP) {
-		return <TwoFactorTotp onConfirm={confirm} onClose={onClose} />;
+		return <TwoFactorTotp onConfirm={confirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}
 
 	if (props.method === Method.EMAIL) {
 		const { emailOrUsername } = props;
 
-		return <TwoFactorEmail onConfirm={confirm} onClose={onClose} emailOrUsername={emailOrUsername} />;
+		return <TwoFactorEmail onConfirm={confirm} onClose={onClose} emailOrUsername={emailOrUsername} invalidAttempt={invalidAttempt} />;
 	}
 
 	if (props.method === Method.PASSWORD) {
-		return <TwoFactorPassword onConfirm={confirm} onClose={onClose} />;
+		return <TwoFactorPassword onConfirm={confirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}
 
 	throw new Error('Invalid Two Factor method');

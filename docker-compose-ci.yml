@@ -110,7 +110,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   queue-worker-service:
     platform: linux/amd64
     build:
@@ -126,7 +126,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   omnichannel-transcript-service:
     platform: linux/amd64
     build:
@@ -135,6 +135,7 @@ services:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
+      - TEST_MODE=true
       - MONGO_URL=${MONGO_URL}
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info

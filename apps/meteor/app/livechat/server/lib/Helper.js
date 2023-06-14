@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
@@ -7,17 +6,17 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatP
 import { api, Message } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
-	Users as UsersRaw,
 	LivechatInquiry,
 	LivechatRooms,
 	LivechatDepartment,
 	Subscriptions,
-	Users,
 	Rooms,
+	Users,
 } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -27,6 +26,7 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('LivechatHelper');
 
@@ -293,19 +293,16 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	}
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
 	}
 
-	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
+	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	for await (let agent of onlineAgents) {
-		if (agent.agentId) {
-			agent = await UsersRaw.findOneById(agent.agentId);
-		}
+	for await (const agent of onlineAgents) {
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
 		await sendNotification({
 			// fake a subscription in order to make use of the function defined above
@@ -331,8 +328,8 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
 	}
@@ -482,9 +479,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = await LivechatDepartment.findOneById(departmentId);
-		if (!department?.fallbackForwardDepartment) {
+		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
-			return false;
+			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
@@ -514,7 +511,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	await Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
@@ -537,7 +534,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 
 export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
-		return Livechat.online(guest.department);
+		return LivechatTyped.online(guest.department);
 	}
 
 	const { agentId } = agent;

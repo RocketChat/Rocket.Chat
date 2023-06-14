@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import { Messages, EmojiCustom, Rooms } from '@rocket.chat/models';
+import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -12,6 +11,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
+import { i18n } from '../../../server/lib/i18n';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -42,7 +42,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username as string) !== -1) {
-		throw new Meteor.Error('error-not-allowed', TAPi18n.__('You_have_been_muted', {}, user.language), {
+		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
 			rid: room._id,
 		});
 	}
@@ -108,8 +108,8 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 }
 
-export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
-	const user = (await Meteor.userAsync()) as IUser | null;
+export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
+	const user = await Users.findOneById(userId);
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
@@ -147,7 +147,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			await executeSetReaction(reaction, messageId, shouldReact);
+			await executeSetReaction(uid, reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {

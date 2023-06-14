@@ -92,6 +92,9 @@ export interface IUserServices {
 		refreshToken: string;
 		serverURL: string;
 	};
+	dolphin?: {
+		NickName?: string;
+	};
 }
 
 export interface IUserEmail {
@@ -190,16 +193,17 @@ export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && 
 export type IUserDataEvent = {
 	id: unknown;
 } & (
-	| ({
+	| {
 			type: 'inserted';
-	  } & IUser)
+			data: IUser;
+	  }
 	| {
 			type: 'removed';
 	  }
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<keyof IUser, boolean | 0 | 1>;
+			unset: Record<string, number>;
 	  }
 );
 

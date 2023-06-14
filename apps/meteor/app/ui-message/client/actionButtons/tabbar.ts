@@ -2,7 +2,7 @@ import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { addAction, deleteAction } from '../../../../client/views/room/lib/Toolbox';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
-import { t } from '../../../utils/client';
+import { t } from '../../../utils/lib/i18n';
 import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 

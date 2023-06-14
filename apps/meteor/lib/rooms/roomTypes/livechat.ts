@@ -7,8 +7,8 @@ export function getLivechatRoomType(_coordinator: RoomCoordinator): IRoomTypeCon
 		route: {
 			name: 'live',
 			path: '/live/:id/:tab?/:context?',
-			link({ rid }): Record<string, string> {
-				return { id: rid || '', tab: 'room-info' };
+			link({ rid, tab }): Record<string, string> {
+				return { id: rid || '', tab: tab ?? 'room-info' };
 			},
 		},
 	};

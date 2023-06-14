@@ -15,14 +15,17 @@ export type AuthorizationContextValue = {
 	queryPermission(
 		permission: string | ObjectId,
 		scope?: string | ObjectId,
+		scopedRoles?: IRole['_id'][],
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	queryAtLeastOnePermission(
 		permission: (string | ObjectId)[],
 		scope?: string | ObjectId,
+		scopedRoles?: IRole['_id'][],
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	queryAllPermissions(
 		permission: (string | ObjectId)[],
 		scope?: string | ObjectId,
+		scopedRoles?: IRole['_id'][],
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	queryRole(role: string | ObjectId): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	roleStore: RoleStore;

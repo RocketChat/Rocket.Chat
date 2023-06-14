@@ -34,28 +34,28 @@ function ViewModeList(): ReactElement {
 					role='listitem'
 					icon='extended-view'
 					text={t('Extended')}
-					input={<RadioButton pis='x24' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
+					input={<RadioButton mi='x16' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='medium-view'
 					text={t('Medium')}
-					input={<RadioButton pis='x24' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
+					input={<RadioButton mi='x16' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='condensed-view'
 					text={t('Condensed')}
-					input={<RadioButton pis='x24' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
+					input={<RadioButton mi='x16' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
 					icon='user-rounded'
 					text={t('Avatars')}
-					input={<ToggleSwitch pis='x24' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
+					input={<ToggleSwitch mie='x16' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
 				/>
 			</ul>
 		</>

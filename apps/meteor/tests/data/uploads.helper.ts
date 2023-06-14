@@ -2,7 +2,7 @@ import type { Response } from 'supertest';
 import { expect } from 'chai';
 
 import { api, request, credentials } from './api-data.js';
-import { password } from './user.js';
+import { password } from './user';
 import { createUser, login } from './users.helper';
 import { imgURL } from './interactions.js';
 import { updateSetting } from './permissions.helper';

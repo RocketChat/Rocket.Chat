@@ -1,7 +1,6 @@
 import https from 'https';
 import http from 'http';
 
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
 
@@ -48,12 +47,12 @@ export class PendingFileImporter extends Base {
 		let currentSize = 0;
 		let nextSize = 0;
 
-		const waitForFiles = () => {
+		const waitForFiles = async () => {
 			if (count + 1 < maxFileCount && currentSize + nextSize < maxFileSize) {
 				return;
 			}
 
-			Meteor.wrapAsync((callback) => {
+			return new Promise((resolve) => {
 				const handler = setInterval(() => {
 					if (count + 1 >= maxFileCount) {
 						return;
@@ -64,9 +63,9 @@ export class PendingFileImporter extends Base {
 					}
 
 					clearInterval(handler);
-					callback();
+					resolve();
 				}, 1000);
-			})();
+			});
 		};
 
 		const completeFile = async (details) => {
@@ -109,7 +108,7 @@ export class PendingFileImporter extends Base {
 					const reportProgress = this.reportProgress.bind(this);
 
 					nextSize = details.size;
-					waitForFiles();
+					await waitForFiles();
 					count++;
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);

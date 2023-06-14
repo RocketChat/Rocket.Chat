@@ -164,10 +164,7 @@ export const useQuickActions = (
 			}
 
 			try {
-				const result = await forwardChat(transferData);
-				if (!result) {
-					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
-				}
+				await forwardChat(transferData);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				homeRoute.push();
 				LegacyRoomManager.close(room.t + rid);
