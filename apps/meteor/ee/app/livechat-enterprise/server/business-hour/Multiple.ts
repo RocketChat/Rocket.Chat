@@ -132,6 +132,27 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(deletedDepartment, agentsIds, options);
 	}
 
+	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
+		if (!department.businessHourId) {
+			return;
+		}
+		// Get business hour
+		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
+		if (!businessHour) {
+			return;
+		}
+		// Check if i'm the only department on this business hour
+		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourId(businessHour._id));
+
+		// If i'm the only one, close the business hour
+		if (imTheOnlyOne) {
+			await closeBusinessHour(businessHour);
+		}
+
+		// Then remove me from the BH
+		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
+	}
+
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		const isWithinBushinessHours = await this.UsersRepository.isAgentWithinBusinessHours(agentId);
 		if (isWithinBushinessHours) {
@@ -233,7 +254,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			}
 			// TODO: We're doing a full fledged aggregation with lookups and getting the whole array just for getting the length? :(
 			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
-				// eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}

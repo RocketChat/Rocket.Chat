@@ -123,6 +123,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	countByBusinessHourId(businessHourId: string): Promise<number> {
+		const query = { businessHourId };
+		return this.col.countDocuments(query);
+	}
+
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId, enabled: true };
 		return this.find(query, options);
@@ -344,6 +349,49 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	getBusinessHoursWithDepartmentStatuses(): Promise<
+		{
+			_id: string;
+			enabledDepartments: string[];
+			disabledDepartments: string[];
+		}[]
+	> {
+		return this.col
+			.aggregate<{ _id: string; enabledDepartments: string[]; disabledDepartments: string[] }>([
+				{
+					$match: {
+						businessHourId: {
+							$exists: true,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$businessHourId',
+						enabledDepartments: {
+							$push: {
+								$cond: {
+									if: { $eq: ['$enabled', true] },
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+						disabledDepartments: {
+							$push: {
+								$cond: {
+									if: { $eq: ['$enabled', false] },
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+					},
+				},
+			])
+			.toArray();
 	}
 }
 

@@ -2,11 +2,12 @@ import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
-import { Users } from '@rocket.chat/models';
+import { LivechatDepartment, Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -36,6 +37,7 @@ export class BusinessHourManager {
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
+		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();
 	}
 
@@ -44,6 +46,36 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
+	}
+
+	async cleanupDisabledDepartmentReferences(): Promise<void> {
+		// Get business hours with departments enabled and disabled
+		const bhWithDepartments = await LivechatDepartment.getBusinessHoursWithDepartmentStatuses();
+
+		if (!bhWithDepartments.length) {
+			// If there are no bh, skip
+			return;
+		}
+
+		for await (const { _id: businessHourId, enabledDepartments, disabledDepartments } of bhWithDepartments) {
+			if (!disabledDepartments.length) {
+				continue;
+			}
+
+			// If there are no enabled departments, close the business hour
+			const allDepsAreDisabled = enabledDepartments.length === 0 && disabledDepartments.length > 0;
+			if (allDepsAreDisabled) {
+				const businessHour = await this.getBusinessHour(businessHourId, LivechatBusinessHourTypes.CUSTOM);
+				if (!businessHour) {
+					continue;
+				}
+				await closeBusinessHour(businessHour);
+				
+			}
+
+			// Remove business hour from disabled departments
+			await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(disabledDepartments, businessHourId);
+		}
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
@@ -114,6 +146,12 @@ export class BusinessHourManager {
 			this.behavior.onAddAgentToDepartment.bind(this),
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-save-agent-department',
+		);
+		callbacks.add(
+			'livechat.afterDepartmentDisabled',
+			this.behavior.onDepartmentDisabled.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-department-disabled',
 		);
 	}
 
