@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
@@ -20,7 +20,11 @@ const useSubscribableState = <T,>(initialState: T | (() => T)) => {
 	return { get, set, subscribe };
 };
 
-type RouteTuple = [name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>];
+type RouteTuple = [
+	name: Parameters<ContextType<typeof RouterContext>['pushRoute']>[0],
+	parameters: Parameters<ContextType<typeof RouterContext>['pushRoute']>[1],
+	queryStringParameters?: Record<string, string>,
+];
 
 type RouterContextMockProps = {
 	children?: ReactNode;
@@ -31,7 +35,7 @@ type RouterContextMockProps = {
 };
 
 const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
-	const currentRoute = useSubscribableState(initialRoute ?? (['home'] as RouteTuple));
+	const currentRoute = useSubscribableState(initialRoute ?? (['home', undefined, undefined] as RouteTuple));
 
 	return (
 		<RouterContext.Provider
@@ -44,20 +48,12 @@ const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replac
 					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
 					navigate: navigate ?? (() => undefined),
-					pushRoute: (
-						name: string,
-						parameters?: Record<string, string>,
-						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-					) => {
+					pushRoute: (name, parameters, queryStringParameters) => {
 						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
 						setCurrentRoute([name, parameters, queryParams]);
 						pushRoute?.(name, parameters, queryParams);
 					},
-					replaceRoute: (
-						name: string,
-						parameters?: Record<string, string>,
-						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-					) => {
+					replaceRoute: (name, parameters, queryStringParameters) => {
 						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
 						setCurrentRoute([name, parameters, queryParams]);
 						replaceRoute?.(name, parameters, queryParams);

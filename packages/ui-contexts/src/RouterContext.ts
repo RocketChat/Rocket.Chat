@@ -1,18 +1,18 @@
 import { createContext } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface RouterPaths {
+interface Paths {
 	index: {
-		pathname: '/';
 		pattern: '/';
+		pathname: '/';
 	};
 	home: {
-		pathname: '/home';
 		pattern: '/home';
+		pathname: '/home';
 	};
 }
 
-type Pathname = RouterPaths[keyof RouterPaths]['pathname'];
+type Pathname = Paths[keyof Paths]['pathname'];
 type Search = string;
 type Hash = string;
 
@@ -38,7 +38,7 @@ export type NavigateFunction = {
 	(delta: number): void;
 };
 
-export type RouteName = string;
+export type RouteName = keyof Paths;
 
 export type RouteParameters = Record<string, string>;
 
@@ -47,6 +47,7 @@ export type QueryStringParameters = Record<string, string>;
 export type RouteGroupName = string;
 
 export type RouterContextValue = {
+	navigate: NavigateFunction;
 	queryRoutePath: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -57,7 +58,6 @@ export type RouterContextValue = {
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
-	navigate: NavigateFunction;
 	pushRoute: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -82,9 +82,9 @@ export type RouterContextValue = {
 };
 
 export const RouterContext = createContext<RouterContextValue>({
+	navigate: () => undefined,
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
-	navigate: () => undefined,
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
@@ -98,3 +98,5 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 });
+
+export type { Paths as RouterPaths };

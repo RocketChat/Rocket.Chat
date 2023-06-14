@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import type { QueryStringParameters, RouteParameters } from '../RouterContext';
+import type { QueryStringParameters, RouteName, RouteParameters } from '../RouterContext';
 import { RouterContext } from '../RouterContext';
 
 type Route = {
@@ -15,7 +15,7 @@ type Route = {
 	) => void;
 };
 
-export const useRoute = (name: string): Route => {
+export const useRoute = (name: RouteName): Route => {
 	const { queryRoutePath, queryRouteUrl, pushRoute, replaceRoute } = useContext(RouterContext);
 
 	return useMemo<Route>(

@@ -22,7 +22,7 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 export type AccountBoxItem = {
 	name: TranslationKey;
 	icon: ComponentProps<typeof Icon>['name'];
-	href: RouterPaths[keyof RouterPaths];
+	href: RouterPaths[keyof RouterPaths]['pathname'];
 	sideNav?: string;
 	condition: () => boolean;
 };

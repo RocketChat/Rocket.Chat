@@ -1,4 +1,4 @@
-import type { RouterContextValue } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue, RouterPaths } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
@@ -7,18 +7,6 @@ import React from 'react';
 
 import { createSearchParams } from '../../lib/router';
 import { createSubscription } from '../lib/createSubscription';
-
-const queryRoutePath = (
-	name: Parameters<RouterContextValue['queryRoutePath']>[0],
-	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
-): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
-
-const queryRouteUrl = (
-	name: Parameters<RouterContextValue['queryRouteUrl']>[0],
-	parameters: Parameters<RouterContextValue['queryRouteUrl']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRouteUrl']>[2],
-): ReturnType<RouterContextValue['queryRouteUrl']> => createSubscription(() => FlowRouter.url(name, parameters, queryStringParameters));
 
 export const navigate = (
 	toOrDelta:
@@ -43,19 +31,11 @@ export const navigate = (
 		return;
 	}
 
-	const {
-		pathname = FlowRouter.current().path,
-		search = createSearchParams(FlowRouter.current().queryParams).toString(),
-		hash,
-	} = toOrDelta;
+	const { pathname = FlowRouter.current().path, search = '', hash = '' } = toOrDelta;
 	const { replace } = options || {};
 
-	const pathDef = pathname ?? FlowRouter.current().path;
-	const queryParams = search ? Object.fromEntries(createSearchParams(search).entries()) : FlowRouter.current().queryParams;
-
 	const fn = () => {
-		FlowRouter.go(pathDef, undefined, queryParams);
-		if (hash) location.hash = hash;
+		FlowRouter.go(pathname + search + hash);
 	};
 
 	if (replace) {
@@ -65,6 +45,18 @@ export const navigate = (
 
 	fn();
 };
+
+const queryRoutePath = (
+	name: Parameters<RouterContextValue['queryRoutePath']>[0],
+	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
+	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
+): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
+
+const queryRouteUrl = (
+	name: Parameters<RouterContextValue['queryRouteUrl']>[0],
+	parameters: Parameters<RouterContextValue['queryRouteUrl']>[1],
+	queryStringParameters: Parameters<RouterContextValue['queryRouteUrl']>[2],
+): ReturnType<RouterContextValue['queryRouteUrl']> => createSubscription(() => FlowRouter.url(name, parameters, queryStringParameters));
 
 const pushRoute = (
 	name: Parameters<RouterContextValue['pushRoute']>[0],
@@ -98,13 +90,9 @@ const replaceRoute = (
 	);
 };
 
-const queryRouteParameter = (
-	name: Parameters<RouterContextValue['replaceRoute']>[0],
-): ReturnType<RouterContextValue['queryRouteParameter']> => createSubscription(() => FlowRouter.getParam(name));
+const queryRouteParameter = (name: string) => createSubscription(() => FlowRouter.getParam(name));
 
-const queryQueryStringParameter = (
-	name: Parameters<RouterContextValue['queryQueryStringParameter']>[0],
-): ReturnType<RouterContextValue['queryQueryStringParameter']> => createSubscription(() => FlowRouter.getQueryParam(name));
+const queryQueryStringParameter = (name: string) => createSubscription(() => FlowRouter.getQueryParam(name));
 
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
@@ -125,7 +113,7 @@ const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Reco
 	FlowRouter.setQueryParams(paramsOrFn);
 };
 
-const getRoutePath = (name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) =>
+const getRoutePath = (name: keyof RouterPaths, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) =>
 	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
 
 const contextValue = {

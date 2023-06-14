@@ -6,7 +6,7 @@ import React from 'react';
 
 export const BackButton = ({ routeName }: { routeName?: string }): ReactElement => {
 	const t = useTranslation();
-	const [route = '', params] = useCurrentRoute();
+	const [route = 'home', params] = useCurrentRoute();
 	const router = useRoute(route);
 
 	const back = useMutableCallback(() => {

@@ -1,9 +1,10 @@
 import type { IconProps } from '@rocket.chat/fuselage';
+import type { RouterPaths } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 export type Item = {
 	i18nLabel: string;
-	href?: string;
+	href?: RouterPaths[keyof RouterPaths]['pathname'] | `https://go.rocket.chat/i/${string}`;
 	icon?: IconProps['name'];
 	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: () => boolean;
@@ -16,6 +17,9 @@ export type Item = {
 export type SidebarDivider = { divider: boolean; i18nLabel: string };
 export type SidebarItem = Item | SidebarDivider;
 export const isSidebarItem = (item: SidebarItem): item is Item => !('divider' in item);
+
+export const isGoRocketChatLink = (link: string): link is `https://go.rocket.chat/i/${string}` =>
+	link.startsWith('https://go.rocket.chat/i/');
 
 export const createSidebarItems = (
 	initialItems: SidebarItem[] = [],

@@ -15,7 +15,7 @@ import CannedResponseList from './CannedResponseList';
 export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	const room = useRoom();
 	const [name] = useCurrentRoute();
-	const channelRoute = useRoute(name || '');
+	const channelRoute = useRoute(name || 'live');
 	const setModal = useSetModal();
 
 	const options = useCannedResponseFilterOptions() as [string, string][];

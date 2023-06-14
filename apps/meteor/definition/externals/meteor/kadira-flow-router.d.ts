@@ -130,7 +130,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		group<TGroupName extends GroupName>(options: GroupOptions<TGroupName>): Group<TGroupName>;
 
-		path(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string | string[]>): string;
+		path(pathDef: RouteName, fields?: Record<string, string>, queryParams?: Record<string, string | string[]>): string;
 
 		url(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string | string[]>): string;
 

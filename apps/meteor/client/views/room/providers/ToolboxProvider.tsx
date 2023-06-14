@@ -22,7 +22,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	const { listen, actions } = useToolboxActions(room);
 
 	const [routeName, params, queryStringParams] = useCurrentRoute();
-	const router = useRoute(routeName || '');
+	const router = useRoute(routeName ?? 'home');
 
 	const tab = params?.tab;
 	const context = params?.context;
