@@ -1,17 +1,41 @@
-import { SelectLegacy } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { forwardRef } from 'react';
 
 import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefinitions';
 
-const RadioDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentProps<typeof SelectLegacy>> & { group: RadioDropDownGroup }>(
-	function SortDropDownAnchor(props, ref) {
-		const { group } = props;
+type RadioDropdownAnchorProps = {
+	onClick: (forcedValue?: React.SetStateAction<boolean> | undefined) => void;
+	group: RadioDropDownGroup;
+} & Omit<ComponentProps<typeof Button>, 'onClick'>;
 
-		const selectedFilter = group?.items.find((item) => item.checked)?.label;
+const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor({ onClick, group, ...props }, ref) {
+	const selected = group?.items.find((item) => item.checked)?.label;
 
-		return <SelectLegacy ref={ref} placeholder={selectedFilter} options={[]} onChange={(): number => 0} color='hint' {...props} />;
-	},
-);
+	return (
+		<Box
+			is={Button}
+			ref={ref}
+			onClick={onClick as any}
+			display='flex'
+			alignItems='center'
+			justifyContent='space-between'
+			borderColor='light'
+			borderWidth='x1'
+			borderRadius='x4'
+			bg='light'
+			color='secondary-info'
+			fontScale='p2'
+			minWidth='x144'
+			h='x40'
+			flexGrow={1}
+			flexShrink={1}
+			{...props}
+		>
+			{selected}
+			<Icon name='chevron-down' size='x20' />
+		</Box>
+	);
+});
 
 export default RadioDownAnchor;

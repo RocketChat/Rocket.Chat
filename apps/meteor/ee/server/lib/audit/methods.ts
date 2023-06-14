@@ -11,6 +11,7 @@ import { hasPermissionAsync } from '../../../../app/authorization/server/functio
 import { updateCounter } from '../../../../app/statistics/server';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
+import { callbacks } from '../../../../lib/callbacks';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
@@ -43,9 +44,15 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			projection: { _id: 1 },
-		}).toArray();
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
+			visitor,
+			agent,
+			{
+				projection: { _id: 1 },
+			},
+			extraQuery,
+		).toArray();
 		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: i18n.t('Omnichannel') } : undefined;
 	}
 };
