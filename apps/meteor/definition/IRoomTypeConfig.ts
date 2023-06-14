@@ -11,12 +11,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { ComponentProps } from 'react';
 import type { Icon } from '@rocket.chat/fuselage';
+import type { RouterPaths } from '@rocket.chat/ui-contexts';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
 
-export interface IRoomTypeRouteConfig {
-	name: string;
-	path?: string;
+export interface IRoomTypeRouteConfig<TRouteName extends keyof RouterPaths> {
+	name: TRouteName;
+	path?: RouterPaths[TRouteName]['pattern'];
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
@@ -56,7 +57,7 @@ export const UiTextContext = {
 
 export interface IRoomTypeConfig {
 	identifier: string;
-	route?: IRoomTypeRouteConfig;
+	route?: IRoomTypeRouteConfig<keyof RouterPaths>;
 }
 
 export interface IRoomTypeClientConfig extends IRoomTypeConfig {

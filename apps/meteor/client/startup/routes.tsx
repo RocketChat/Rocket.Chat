@@ -41,10 +41,84 @@ FlowRouter.wait();
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface RouterPaths {
-		'/': '/';
-		'/home': '/home';
-		'/directory': '/directory';
-		'/directory/:tab?': `/directory/${'users' | 'channels' | 'teams' | 'external'}`;
+		'index': {
+			pathname: '/';
+			pattern: '/';
+		};
+		'login': {
+			pathname: '/login';
+			pattern: '/login';
+		};
+		'meet': {
+			pathname: `/meet/${string}`;
+			pattern: '/meet/:rid';
+		};
+		'home': {
+			pathname: '/home';
+			pattern: '/home';
+		};
+		'directory': {
+			pathname: `/directory${`/${'users' | 'channels' | 'teams' | 'external'}` | ''}`;
+			pattern: '/directory/:tab?';
+		};
+		'omnichannel-directory': {
+			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}${
+				| `/${string}`
+				| ''}`;
+			pattern: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?';
+		};
+		'livechat-queue': {
+			pathname: '/livechat-queue';
+			pattern: '/livechat-queue';
+		};
+		'terms-of-service': {
+			pathname: '/terms-of-service';
+			pattern: '/terms-of-service';
+		};
+		'privacy-policy': {
+			pathname: '/privacy-policy';
+			pattern: '/privacy-policy';
+		};
+		'legal-notice': {
+			pathname: '/legal-notice';
+			pattern: '/legal-notice';
+		};
+		'register-secret-url': {
+			pathname: `/register/${string}`;
+			pattern: '/register/:hash';
+		};
+		'invite': {
+			pathname: `/invite/${string}`;
+			pattern: '/invite/:hash';
+		};
+		'conference': {
+			pathname: `/conference/${string}`;
+			pattern: '/conference/:id';
+		};
+		'setup-wizard': {
+			pathname: `/setup-wizard${`/${string}` | ''}`;
+			pattern: '/setup-wizard/:step?';
+		};
+		'mailer-unsubscribe': {
+			pathname: `/mailer/unsubscribe/${string}/${string}`;
+			pattern: '/mailer/unsubscribe/:_id/:createdAt';
+		};
+		'tokenLogin': {
+			pathname: `/login-token/${string}`;
+			pattern: '/login-token/:token';
+		};
+		'resetPassword': {
+			pathname: `/reset-password/${string}`;
+			pattern: '/reset-password/:token';
+		};
+		'oauth/authorize': {
+			pathname: `/oauth/authorize`;
+			pattern: '/oauth/authorize';
+		};
+		'oauth/error': {
+			pathname: `/oauth/error/${string}`;
+			pattern: '/oauth/error/:error';
+		};
 	}
 }
 

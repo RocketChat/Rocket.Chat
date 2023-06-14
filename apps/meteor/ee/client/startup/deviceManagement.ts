@@ -5,13 +5,27 @@ import { registerAccountRoute, registerAccountSidebarItem, unregisterSidebarItem
 import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarItem } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'device-management': {
+			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/device-management/:context?/:id?';
+		};
+		'manage-devices': {
+			pathname: '/account/manage-devices';
+			pattern: '/account/manage-devices';
+		};
+	}
+}
+
 const [registerAdminRouter, unregisterAdminRouter] = registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../views/admin/deviceManagement/DeviceManagementAdminRoute')),
 	ready: false,
 });
 
-const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/manage-devices/', {
+const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/manage-devices', {
 	name: 'manage-devices',
 	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementAccountPage')),
 });

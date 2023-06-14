@@ -5,6 +5,16 @@ import { hasAllPermission } from '../../../app/authorization/client';
 import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarItem } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'engagement-dashboard': {
+			pattern: '/admin/engagement-dashboard/:tab?';
+			pathname: `/admin/engagement-dashboard${`/${string}` | ''}`;
+		};
+	}
+}
+
 const [registerRoute, unregisterRoute] = registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
 	component: lazy(() => import('../views/admin/engagementDashboard/EngagementDashboardRoute')),

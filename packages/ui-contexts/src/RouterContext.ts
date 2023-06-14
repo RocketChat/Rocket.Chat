@@ -2,11 +2,17 @@ import { createContext } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface RouterPaths {
-	'/': '/';
-	'/home': '/home';
+	index: {
+		pathname: '/';
+		pattern: '/';
+	};
+	home: {
+		pathname: '/home';
+		pattern: '/home';
+	};
 }
 
-type Pathname = RouterPaths[keyof RouterPaths];
+type Pathname = RouterPaths[keyof RouterPaths]['pathname'];
 type Search = string;
 type Hash = string;
 
@@ -16,13 +22,13 @@ type Path = {
 	hash: Hash;
 };
 
-// type To = Pathname | Partial<Path>;
+type To = Pathname | Partial<Path>;
 
 type RelativeRoutingType = 'route' | 'path';
 
 export type NavigateFunction = {
 	(
-		to: Pathname | Partial<Path>,
+		to: To,
 		options?: {
 			replace?: boolean;
 			state?: any;

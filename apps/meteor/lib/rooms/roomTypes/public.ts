@@ -1,6 +1,16 @@
 import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	export interface RouterPaths {
+		channel: {
+			pathname: `/channel/${string}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/channel/:name/:tab?/:context?';
+		};
+	}
+}
+
 export function getPublicRoomType(_coordinator: RoomCoordinator): IRoomTypeConfig {
 	return {
 		identifier: 'c',

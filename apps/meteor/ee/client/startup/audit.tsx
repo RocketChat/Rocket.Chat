@@ -11,7 +11,21 @@ import { onToggledFeature } from '../lib/onToggledFeature';
 const AuditPage = lazy(() => import('../views/audit/AuditPage'));
 const AuditLogPage = lazy(() => import('../views/audit/AuditLogPage'));
 
-let auditRoute = FlowRouter.route('/audit', { name: 'audit-home' });
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'audit-home': {
+			pathname: '/audit';
+			pattern: '/audit/:tab?';
+		};
+		'audit-log': {
+			pathname: '/audit-log';
+			pattern: '/audit-log';
+		};
+	}
+}
+
+let auditRoute = FlowRouter.route('/audit/:tab?', { name: 'audit-home' });
 let auditLogRoute = FlowRouter.route('/audit-log', { name: 'audit-log' });
 
 const registerRoutes = () => {

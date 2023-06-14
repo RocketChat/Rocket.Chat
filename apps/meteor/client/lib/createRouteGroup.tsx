@@ -1,4 +1,15 @@
-import type { Context, Current, Group, RouteOptions } from 'meteor/kadira:flow-router';
+import type { RouterPaths } from '@rocket.chat/ui-contexts';
+import type {
+	Context,
+	Current,
+	Group,
+	GroupName,
+	GroupPrefix,
+	RouteName,
+	RouteNamesOf,
+	RouteOptions,
+	TrimPrefix,
+} from 'meteor/kadira:flow-router';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
@@ -12,18 +23,18 @@ import { appLayout } from './appLayout';
 
 let oldRoute: Current;
 
-const registerLazyComponentRoute = (
-	routeGroup: Group,
+const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName extends RouteNamesOf<TGroupName>>(
+	routeGroup: Group<TGroupName>,
 	RouterComponent: ElementType<{
 		children?: ReactNode;
 	}>,
-	path: string,
+	path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 	{
 		component: RouteComponent,
 		props,
 		ready = true,
 		...rest
-	}: RouteOptions & {
+	}: RouteOptions<TRouteName> & {
 		component: ElementType;
 		props?: Record<string, unknown>;
 		ready?: boolean;
@@ -84,42 +95,58 @@ const registerLazyComponentRoute = (
 	return [(): void => enabled.set(true), (): void => enabled.set(false)];
 };
 
-export const createRouteGroup = (
-	name: string,
-	prefix: string,
+export const createRouteGroup = <TGroupName extends GroupName>(
+	name: TGroupName,
+	prefix: GroupPrefix<TGroupName>,
 	RouterComponent: ElementType<{
 		children?: ReactNode;
 	}>,
 ): {
+	(path: '/' | '', options: RouteOptions<`${TGroupName}-index`>): [register: () => void, unregister: () => void];
 	(
-		path: string,
-		options: RouteOptions & {
+		path: '/' | '',
+		options: RouteOptions<`${TGroupName}-index`> & {
 			component: ElementType;
 			props?: Record<string, unknown>;
 			ready?: boolean;
 		},
 	): [register: () => void, unregister: () => void];
-	(path: string, options: RouteOptions): void;
+	<TRouteName extends RouteNamesOf<TGroupName>>(
+		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		options: RouteOptions<TRouteName> & {
+			component: ElementType;
+			props?: Record<string, unknown>;
+			ready?: boolean;
+		},
+	): [register: () => void, unregister: () => void];
+	<TRouteName extends RouteNamesOf<TGroupName>>(
+		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		options: RouteOptions<TRouteName>,
+	): void;
 } => {
 	const routeGroup = FlowRouter.group({
 		name,
 		prefix,
 	});
 
-	function registerRoute(
-		path: string,
-		options: RouteOptions & {
+	function registerRoute(path: '/' | '', options: RouteOptions<`${TGroupName}-index`>): [register: () => void, unregister: () => void];
+	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
+		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		options: RouteOptions<TRouteName> & {
 			component: ElementType;
 			props?: Record<string, unknown>;
 			ready?: boolean;
 		},
 	): [register: () => void, unregister: () => void];
-	function registerRoute(path: string, options: RouteOptions): void;
-	function registerRoute(
-		path: string,
+	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
+		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		options: RouteOptions<TRouteName>,
+	): void;
+	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
+		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options:
-			| RouteOptions
-			| (RouteOptions & {
+			| RouteOptions<TRouteName>
+			| (RouteOptions<TRouteName> & {
 					component: ElementType;
 					props?: Record<string, unknown>;
 					ready?: boolean;
@@ -148,7 +175,7 @@ export const createRouteGroup = (
 
 Tracker.autorun(
 	(() => {
-		let oldName: string;
+		let oldName: RouteName | undefined;
 		return () => {
 			const name = FlowRouter.getRouteName();
 			if (oldName !== name) {

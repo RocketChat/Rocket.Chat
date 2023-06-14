@@ -2,6 +2,28 @@ import { lazy } from 'react';
 
 import { registerOmnichannelRoute } from '../../../client/views/omnichannel/routes';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface RouterPaths {
+		'omnichannel-monitors': {
+			pattern: '/omnichannel/monitors';
+			pathname: '/omnichannel/monitors';
+		};
+		'omnichannel-sla-policies': {
+			pattern: '/omnichannel/sla-policies/:context?/:id?';
+			pathname: `/omnichannel/sla-policies${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-priorities': {
+			pattern: '/omnichannel/priorities/:context?/:id?';
+			pathname: `/omnichannel/priorities${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-canned-responses': {
+			pattern: '/omnichannel/canned-responses/:context?/:id?';
+			pathname: `/omnichannel/canned-responses${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+	}
+}
+
 registerOmnichannelRoute('/monitors', {
 	name: 'omnichannel-monitors',
 	component: lazy(() => import('./monitors/MonitorsPageContainer')),
