@@ -1,14 +1,16 @@
-import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../sidebar/SidebarPortal';
+import NotFoundPage from '../notFound/NotFoundPage';
 import MarketPlaceSidebar from './MarketplaceSidebar';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
 	const currentContext = useRouteParameter('context') || 'all';
 	const marketplaceRoute = useRoute('marketplace');
+	const canAccessMarketplace = useAtLeastOnePermission(['access-marketplace', 'manage-apps']);
 
 	useEffect(() => {
 		const initialize = async () => {
@@ -22,6 +24,10 @@ const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement
 
 		initialize();
 	}, [currentContext, marketplaceRoute]);
+
+	if (!canAccessMarketplace) {
+		return <NotFoundPage />;
+	}
 
 	return children ? (
 		<>

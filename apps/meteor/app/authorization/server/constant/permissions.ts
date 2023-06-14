@@ -4,6 +4,7 @@
 // 2. admin, moderator, and user roles should not be deleted as they are referenced in the code.
 export const permissions = [
 	{ _id: 'access-permissions', roles: ['admin'] },
+	{ _id: 'access-marketplace', roles: ['admin', 'user'] },
 	{ _id: 'access-setting-permissions', roles: ['admin'] },
 	{ _id: 'add-oauth-service', roles: ['admin'] },
 	{ _id: 'add-user-to-joined-room', roles: ['admin', 'owner', 'moderator'] },
