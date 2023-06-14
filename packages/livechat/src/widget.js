@@ -138,6 +138,7 @@ const createWidget = (url) => {
 		smallScreen = matches;
 		updateWidgetStyle(widget.dataset.state === 'opened');
 		callHook('setExpanded', smallScreen);
+		callHook('setParentUrl', window.location.href);
 	};
 
 	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
@@ -318,6 +319,10 @@ function minimizeWidget() {
 	callHook('minimizeWidget');
 }
 
+function setParentUrl(url) {
+	callHook('setParentUrl', url);
+}
+
 function initialize(params) {
 	for (const method in params) {
 		if (!params.hasOwnProperty(method)) {
@@ -366,6 +371,9 @@ function initialize(params) {
 				continue;
 			case 'agent':
 				setAgent(params[method]);
+				continue;
+			case 'parentUrl':
+				setParentUrl(params[method]);
 				continue;
 			default:
 				continue;
@@ -457,6 +465,7 @@ window.RocketChat.livechat = {
 	minimizeWidget,
 	setBusinessUnit,
 	clearBusinessUnit,
+	setParentUrl,
 
 	// callbacks
 	onChatMaximized(fn) {

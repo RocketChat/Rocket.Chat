@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -28,7 +29,7 @@ type RoomFilters = {
 	text: string;
 };
 
-const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -239,12 +240,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					/>
 				</>
 			)}
-			{isSuccess && data && data.rooms.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isSuccess && data && data.rooms.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

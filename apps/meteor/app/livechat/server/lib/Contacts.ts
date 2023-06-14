@@ -4,6 +4,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../utils/lib/i18n';
 
@@ -125,7 +126,8 @@ export const Contacts = {
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
 
-		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}).toArray();
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}, extraQuery).toArray();
 
 		if (rooms?.length) {
 			for await (const room of rooms) {
