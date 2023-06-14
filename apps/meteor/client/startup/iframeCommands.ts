@@ -1,4 +1,4 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
@@ -6,6 +6,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../app/settings/client';
 import { AccountBox } from '../../app/ui-utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
@@ -69,8 +70,11 @@ const commands = {
 	async 'logout'() {
 		const user = Meteor.user();
 		Meteor.logout(() => {
+			if (!user) {
+				return;
+			}
 			void callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
+			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return FlowRouter.go('home');
 		});
 	},

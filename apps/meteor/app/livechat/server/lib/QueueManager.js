@@ -73,7 +73,13 @@ export const QueueManager = {
 		await queueInquiry(room, inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
-		return LivechatRooms.findOneById(rid);
+		const newRoom = await LivechatRooms.findOneById(rid);
+		if (!newRoom) {
+			logger.error(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
+
+		return newRoom;
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
