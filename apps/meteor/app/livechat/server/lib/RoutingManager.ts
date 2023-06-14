@@ -305,7 +305,7 @@ export const RoutingManager: Routing = {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;
 			}
-			// @ts-expect-error - File changed to TS in other PR, expecting error for now
+			// @ts-expect-error - File still in JS, expecting error for now on `u` types
 			void removeAgentFromSubscription(roomId, u);
 		});
 	},
