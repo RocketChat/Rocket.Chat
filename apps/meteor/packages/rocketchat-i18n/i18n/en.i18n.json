@@ -3810,6 +3810,7 @@
   "Outgoing_WebHook_Description": "Get data out of Rocket.Chat in real-time.",
   "Output_format": "Output format",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Override URL to which files are uploaded. This url also used for downloads unless a CDN is given",
+  "Override_Destination_Channel": "Allow to overwrite destination channel in the body parameters",
   "Owner": "Owner",
   "Play": "Play",
   "Page_not_exist_or_not_permission": "The page does not exist or you may not have access permission",
