@@ -70,7 +70,6 @@ export class BusinessHourManager {
 					continue;
 				}
 				await closeBusinessHour(businessHour);
-				
 			}
 
 			// Remove business hour from disabled departments
