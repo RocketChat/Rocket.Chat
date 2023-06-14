@@ -1,0 +1,68 @@
+name: Start new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Release type
+        default: next
+        required: true
+        options:
+        - next
+        - patch
+        - publish
+      base-ref:
+        description: Base version
+        default: master
+        required: false
+
+jobs:
+  new-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+      # with:
+      #   ref: ${{ github.event.inputs.base-ref }}
+
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - run: yarn install
+
+    - name: Build
+      run: yarn build
+
+    - name: Start next release
+      if: ${{ github.event.inputs.name == 'next' }}
+      uses: ./packages/release-action
+      with:
+        action: bump
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Start patch release
+      if: ${{ github.event.inputs.name == 'patch' }}
+      uses: ./packages/release-action
+      with:
+        action: patch
+        base-ref: ${{ github.event.inputs.base-ref }}
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish release
+      if: ${{ github.event.inputs.name == 'publish' }}
+      uses: ./packages/release-action
+      with:
+        action: publish
+        base-ref: ${{ github.event.inputs.base-ref }}
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
