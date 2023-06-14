@@ -7,6 +7,9 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  HUSKY: 0
+
 jobs:
   release:
     name: Release
@@ -32,6 +35,5 @@ jobs:
         with:
           action: publish-final
         env:
-          HUSKY: 0
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
