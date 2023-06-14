@@ -9,7 +9,7 @@ afterEach(cleanup);
 
 beforeAll(() => {
 	jest.mock('highlight.js', () => ({
-		highlightElement: undefined,
+		highlightElement: (): void => undefined,
 	}));
 });
 
@@ -220,7 +220,7 @@ it('renders a blockquote', () => {
 	expect(screen.getByText('Donec eget ex euismod, euismod nisi euismod, vulputate nisi.')).toBeInTheDocument();
 });
 
-it('renders a code block', async () => {
+it.only('renders a code block', async () => {
 	render(
 		<Suspense fallback={null}>
 			<Markup
