@@ -13,7 +13,6 @@ const calendarEventDeletePropsSchema: JSONSchemaType<CalendarEventDeleteProps> =
 	properties: {
 		eventId: {
 			type: 'string',
-			nullable: false,
 		},
 	},
 	required: ['eventId'],
