@@ -12,12 +12,10 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{
-				key: { startTime: -1, uid: 1 },
-				unique: false,
+				key: { startTime: -1, uid: 1, externalId: 1 },
 			},
 			{
 				key: { reminderTime: -1, notificationSent: 1 },
-				unique: false,
 			},
 		];
 	}
