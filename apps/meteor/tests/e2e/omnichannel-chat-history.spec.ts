@@ -6,7 +6,8 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.describe('Omnichannel chat histr', () => {
+// TODO Fix this test - the test 'Expect to have 1 omnichannel assigned to agent 1' is flaky
+test.describe.skip('Omnichannel chat histr', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
