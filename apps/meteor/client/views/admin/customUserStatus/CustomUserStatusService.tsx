@@ -16,7 +16,7 @@ import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-context
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useActiveConnections } from './hooks/useActiveConnections';
 
@@ -55,7 +55,7 @@ const CustomUserStatusService = () => {
 
 	return (
 		<>
-			<VerticalBar.Content display='flex' flexDirection='column' justifyContent='space-between' color='default'>
+			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
 				<div>
 					<Box display='flex' justifyContent='space-between' mb='x16'>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
@@ -102,15 +102,15 @@ const CustomUserStatusService = () => {
 						</>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 			{!license?.isEnterprise && (
-				<VerticalBar.Footer borderBlockStartWidth='default' borderBlockColor='extra-light'>
+				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
 						<Button primary width='100%' is='a' href='https://www.rocket.chat/enterprise' target='_blank'>
 							{t('More_about_Enterprise_Edition')}
 						</Button>
 					</ButtonGroup>
-				</VerticalBar.Footer>
+				</ContextualbarFooter>
 			)}
 		</>
 	);

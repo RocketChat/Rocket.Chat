@@ -15,9 +15,9 @@ const AppRoot = (): ReactElement => (
 		{createPortal(
 			<>
 				<meta charSet='utf-8' />
-				<meta http-equiv='content-type' content='text/html; charset=utf-8' />
-				<meta http-equiv='expires' content='-1' />
-				<meta http-equiv='X-UA-Compatible' content='IE=edge' />
+				<meta httpEquiv='content-type' content='text/html; charset=utf-8' />
+				<meta httpEquiv='expires' content='-1' />
+				<meta httpEquiv='X-UA-Compatible' content='IE=edge' />
 				<meta name='fragment' content='!' />
 				<meta name='distribution' content='global' />
 				<meta

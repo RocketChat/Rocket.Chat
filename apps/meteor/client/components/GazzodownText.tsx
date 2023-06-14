@@ -46,6 +46,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+	const useEmoji = Boolean(useUserPreference('useEmojis'));
 
 	const chat = useChat();
 
@@ -106,11 +107,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				detectEmoji,
 				highlightRegex,
 				markRegex,
-				convertAsciiToEmoji,
 				resolveUserMention,
 				onUserMentionClick,
 				resolveChannelMention,
 				onChannelMentionClick,
+				convertAsciiToEmoji,
+				useEmoji,
 			}}
 		>
 			{children}

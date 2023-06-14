@@ -102,13 +102,13 @@ async function saveUserProfile(
 		// Should be the last check to prevent error when trying to check password for users without password
 		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
 			// don't let user change to same password
-			if (user && compareUserPassword(user, { plain: settings.newPassword })) {
+			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			if (user?.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});

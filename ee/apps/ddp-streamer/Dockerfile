@@ -16,6 +16,9 @@ COPY ./packages/core-typings/dist packages/core-typings/dist
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
 
+COPY ./packages/ui-contexts/package.json packages/ui-contexts/package.json
+COPY ./packages/ui-contexts/dist packages/ui-contexts/dist
+
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
 

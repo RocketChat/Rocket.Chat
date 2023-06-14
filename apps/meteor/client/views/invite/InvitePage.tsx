@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { APIClient } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 
@@ -36,7 +36,7 @@ const InvitePage = (): ReactElement => {
 			}
 
 			try {
-				const { valid } = await APIClient.post('/v1/validateInviteToken', { token });
+				const { valid } = await sdk.rest.post('/v1/validateInviteToken', { token });
 
 				return valid;
 			} catch (error) {
@@ -61,7 +61,7 @@ const InvitePage = (): ReactElement => {
 				}
 
 				try {
-					const result = await APIClient.post('/v1/useInviteToken', { token });
+					const result = await sdk.rest.post('/v1/useInviteToken', { token });
 
 					if (!result.room.name) {
 						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
