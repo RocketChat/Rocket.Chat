@@ -39,7 +39,7 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const query = useMemo(
 		() => ({
-			viewAll: 'true',
+			viewAll: 'true' as const,
 			fields: JSON.stringify({ name: 1 }),
 			text: filter,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
