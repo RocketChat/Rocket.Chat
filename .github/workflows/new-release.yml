@@ -17,6 +17,9 @@ on:
         default: master
         required: false
 
+env:
+  HUSKY: 0
+
 jobs:
   new-release:
     runs-on: ubuntu-latest
@@ -32,6 +35,8 @@ jobs:
         node-version: 14.21.3
         cache-modules: true
         install: true
+
+    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
     - name: Build
       run: yarn build
