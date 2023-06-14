@@ -6,6 +6,7 @@ import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { callbacks } from '../../../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -57,8 +58,9 @@ Meteor.methods<ServerMethods>({
 			},
 		});
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery).toArray();
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {
