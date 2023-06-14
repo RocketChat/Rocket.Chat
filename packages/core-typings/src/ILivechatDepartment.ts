@@ -20,3 +20,16 @@ export interface ILivechatDepartment {
 	// extra optional fields
 	[k: string]: any;
 }
+
+export type LivechatDepartmentDTO = {
+	enabled: boolean;
+	name: string;
+	description?: string | undefined;
+	showOnRegistration: boolean;
+	email: string;
+	showOnOfflineForm: boolean;
+	requestTagBeforeClosingChat?: boolean | undefined;
+	chatClosingTags?: string[] | undefined;
+	fallbackForwardDepartment?: string | undefined;
+	departmentsAllowedToForward?: string[] | undefined;
+};
