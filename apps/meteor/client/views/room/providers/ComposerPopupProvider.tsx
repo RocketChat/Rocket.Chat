@@ -154,6 +154,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 					trigger: ':',
 					title: t('Emoji'),
+					triggerLength: 2,
 					getItemsFromLocal: async (filter: string) => {
 						const exactFinalTone = new RegExp('^tone[1-5]:*$');
 						const colorBlind = new RegExp('tone[1-5]:*$');

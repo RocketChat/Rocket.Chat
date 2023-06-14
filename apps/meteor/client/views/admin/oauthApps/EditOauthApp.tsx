@@ -63,19 +63,12 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp({ appId: data._id });
-
-			const handleClose = (): void => {
-				setModal();
-				close();
-			};
-
-			setModal(() => (
-				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
-					{t('Your_entry_has_been_deleted')}
-				</GenericModal>
-			));
+			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setModal(null);
 		}
 	}, [data._id, close, deleteApp, dispatchToastMessage, setModal, t]);
 
@@ -84,8 +77,8 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 			<GenericModal
 				variant='danger'
 				onConfirm={onDeleteConfirm}
-				onCancel={(): void => setModal(undefined)}
-				onClose={(): void => setModal(undefined)}
+				onCancel={(): void => setModal(null)}
+				onClose={(): void => setModal(null)}
 				confirmText={t('Delete')}
 			>
 				{t('Application_delete_warning')}

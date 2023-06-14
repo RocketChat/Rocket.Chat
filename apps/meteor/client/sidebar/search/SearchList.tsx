@@ -235,9 +235,15 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = (selectedElement.current?.parentElement?.previousSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.previousSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		} else {
-			nextSelectedElement = (selectedElement.current?.parentElement?.nextSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.nextSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		}
 
 		if (nextSelectedElement) {
