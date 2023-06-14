@@ -14,7 +14,7 @@ test.describe('engagement-dashboard', () => {
 		});
 
 		test('expect to show 4 fallback errors components inside widget at Users Tab', async ({ page }) => {
-			await expect(page.locator('role=tab[name="Users"]')).toHaveAttribute('aria-selected');
+			await expect(page.locator('role=tab[name="Users"][selected]')).toBeVisible();
 
 			await page.waitForSelector('[data-qa="EngagementDashboardCardErrorBoundary"]');
 			await expect(page.locator('[data-qa="EngagementDashboardCardErrorBoundary"]')).toHaveCount(4);
@@ -22,7 +22,7 @@ test.describe('engagement-dashboard', () => {
 
 		test('expect to show 2 fallback errors components inside widget at Messages Tab', async ({ page }) => {
 			await page.locator('role=tab[name="Messages"]').click();
-			await expect(page.locator('role=tab[name="Messages"]')).toHaveAttribute('aria-selected');
+			await expect(page.locator('role=tab[name="Messages"][selected]')).toBeVisible();
 
 			await page.waitForSelector('[data-qa="EngagementDashboardCardErrorBoundary"]');
 			await expect(page.locator('[data-qa="EngagementDashboardCardErrorBoundary"]')).toHaveCount(2);
@@ -30,7 +30,7 @@ test.describe('engagement-dashboard', () => {
 
 		test('expect to show a fallback error component inside widget at Channels Tab', async ({ page }) => {
 			await page.locator('role=tab[name="Channels"]').click();
-			await expect(page.locator('role=tab[name="Channels"]')).toHaveAttribute('aria-selected');
+			await expect(page.locator('role=tab[name="Channels"][selected]')).toBeVisible();
 
 			await page.waitForSelector('[data-qa="EngagementDashboardCardErrorBoundary"]');
 			await expect(page.locator('[data-qa="EngagementDashboardCardErrorBoundary"]')).toBeVisible();
