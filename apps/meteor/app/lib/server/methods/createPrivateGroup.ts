@@ -27,6 +27,7 @@ export const createPrivateGroupMethod = async (
 	readOnly = false,
 	customFields = {},
 	extraData = {},
+	excludeSelf = false,
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
@@ -50,7 +51,7 @@ export const createPrivateGroupMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
-	return createRoom('p', name, user.username, members, readOnly, {
+	return createRoom('p', name, user.username, members, excludeSelf, readOnly, {
 		customFields,
 		...extraData,
 	});
