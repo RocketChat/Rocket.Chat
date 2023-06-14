@@ -26,7 +26,7 @@ const EmailInboxPage = (): ReactElement => {
 					)}
 					{!context && (
 						<Button primary onClick={(): void => emailInboxRoute.push({ context: 'new' })}>
-							<Icon name='plus' /> {t('New_Email_Inbox')}
+							{t('New_Email_Inbox')}
 						</Button>
 					)}
 				</Page.Header>

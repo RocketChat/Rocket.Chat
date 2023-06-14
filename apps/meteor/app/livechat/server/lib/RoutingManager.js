@@ -196,7 +196,8 @@ export const RoutingManager = {
 
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
-			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			const cbRoom = await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			return cbRoom;
 		}
 
 		await LivechatInquiry.takeInquiry(_id);

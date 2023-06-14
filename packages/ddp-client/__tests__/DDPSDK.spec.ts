@@ -23,7 +23,7 @@ const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F =>
 };
 
 beforeEach(async () => {
-	server = new WS('ws://localhost:1234');
+	server = new WS('ws://localhost:1234/websocket');
 });
 
 afterEach(() => {
@@ -59,6 +59,7 @@ it('should handle a stream of messages', async () => {
 	expect(cb).toBeCalledTimes(3);
 
 	expect(cb).toHaveBeenNthCalledWith(1, 1);
+	sdk.connection.close();
 });
 
 it('should ignore messages other from changed', async () => {
@@ -82,6 +83,7 @@ it('should ignore messages other from changed', async () => {
 	fireStreamRemove(server, streamName, streamParams);
 
 	expect(cb).toBeCalledTimes(0);
+	sdk.connection.close();
 });
 
 it('should handle streams after reconnect', async () => {
@@ -115,7 +117,7 @@ it('should handle streams after reconnect', async () => {
 	server.close();
 	WS.clean();
 
-	server = new WS('ws://localhost:1234');
+	server = new WS('ws://localhost:1234/websocket');
 
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
@@ -123,7 +125,7 @@ it('should handle streams after reconnect', async () => {
 	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
 
 	// the client should reconnect and resubscribe
-	await handleSubscription(server, result.id, streamName, streamParams);
+	await Promise.all([handleSubscription(server, result.id, streamName, streamParams), jest.advanceTimersByTimeAsync(1000)]);
 
 	fire(server, streamName, streamParams);
 	await jest.advanceTimersByTimeAsync(1000);
@@ -131,6 +133,7 @@ it('should handle streams after reconnect', async () => {
 	expect(cb).toBeCalledTimes(6);
 
 	jest.useRealTimers();
+	sdk.connection.close();
 });
 
 it('should handle an unsubscribe stream after reconnect', async () => {
@@ -166,7 +169,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	server.close();
 	WS.clean();
-	server = new WS('ws://localhost:1234');
+	server = new WS('ws://localhost:1234/websocket');
 
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
@@ -192,6 +195,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();
 	sdk.connection.close();
+	sdk.connection.close();
 });
 
 it('should create and connect to a stream', async () => {
@@ -215,7 +219,7 @@ describe('Method call and Disconnection cases', () => {
 
 		server.close();
 		WS.clean();
-		server = new WS('ws://localhost:1234');
+		server = new WS('ws://localhost:1234/websocket');
 
 		const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 		const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
@@ -249,7 +253,7 @@ describe('Method call and Disconnection cases', () => {
 
 		server.close();
 		WS.clean();
-		server = new WS('ws://localhost:1234');
+		server = new WS('ws://localhost:1234/websocket');
 
 		const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 		const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
@@ -264,5 +268,6 @@ describe('Method call and Disconnection cases', () => {
 		expect(result).toBe(1);
 
 		jest.useRealTimers();
+		sdk.connection.close();
 	});
 });

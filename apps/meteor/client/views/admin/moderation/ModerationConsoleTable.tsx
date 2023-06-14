@@ -1,4 +1,4 @@
-import { Pagination, Field, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, Field } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -6,6 +6,7 @@ import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableLoadingTable,
@@ -18,6 +19,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import DateRangePicker from './helpers/DateRangePicker';
 
+// TODO: Missing error state
 const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
@@ -162,12 +164,7 @@ const ModerationConsoleTable: FC = () => {
 					/>
 				</>
 			)}
-			{isSuccess && data.reports.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isSuccess && data.reports.length === 0 && <GenericNoResults />}
 		</>
 	);
 };
