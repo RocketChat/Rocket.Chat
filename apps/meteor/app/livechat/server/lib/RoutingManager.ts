@@ -158,7 +158,9 @@ export const RoutingManager: Routing = {
 		const user = await Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);
 
-		user && (await Message.saveSystemMessage('command', rid, 'connected', user));
+		if (user) {
+			await Message.saveSystemMessage('command', rid, 'connected', user));
+		}
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
