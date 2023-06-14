@@ -15,13 +15,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v3
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
         with:
-          node-version: 16
-
-      - name: Install Dependencies
-        run: yarn
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
 
       - name: Build
         run: yarn build
