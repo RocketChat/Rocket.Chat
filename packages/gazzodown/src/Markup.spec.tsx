@@ -7,6 +7,12 @@ import Markup from './Markup';
 
 afterEach(cleanup);
 
+beforeAll(() => {
+	jest.mock('highlight.js', () => ({
+		highlightElement: undefined,
+	}));
+});
+
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);
 	expect(container).toBeEmptyDOMElement();
@@ -215,11 +221,6 @@ it('renders a blockquote', () => {
 });
 
 it('renders a code block', async () => {
-	beforeAll(() => {
-		jest.mock('highlight.js', () => ({
-			highlightElement: undefined,
-		}));
-	});
 	render(
 		<Suspense fallback={null}>
 			<Markup
