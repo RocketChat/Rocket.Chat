@@ -215,6 +215,11 @@ it('renders a blockquote', () => {
 });
 
 it('renders a code block', async () => {
+	beforeAll(() => {
+		jest.mock('highlight.js', () => ({
+			highlightElement: undefined,
+		}));
+	});
 	render(
 		<Suspense fallback={null}>
 			<Markup
