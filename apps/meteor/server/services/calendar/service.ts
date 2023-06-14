@@ -8,6 +8,9 @@ import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
+import { Logger } from '../../lib/logger/Logger';
+
+const logger = new Logger('Calendar');
 
 const defaultMinutesForNotifications = 5;
 
@@ -174,9 +177,24 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		const defaultPattern = '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
-		const pattern = settings.get<string>('Outlook_Calendar_MeetingUrl_Regex') || defaultPattern;
+		const pattern = (settings.get<string>('Outlook_Calendar_MeetingUrl_Regex') || defaultPattern).trim();
 
-		const regex = new RegExp(pattern, 'im');
+		if (!pattern) {
+			return;
+		}
+
+		const regex: RegExp | undefined = (() => {
+			try {
+				return new RegExp(pattern, 'im');
+			} catch {
+				logger.error('Failed to parse regular expression for meeting url.');
+			}
+		})();
+
+		if (!regex) {
+			return;
+		}
+
 		const results = description.match(regex);
 		if (!results) {
 			return;
