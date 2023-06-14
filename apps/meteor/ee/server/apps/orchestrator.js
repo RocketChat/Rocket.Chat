@@ -20,6 +20,7 @@ import {
 } from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { canEnableApp } from '../../app/license/server/license';
+import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -62,6 +63,7 @@ export class AppServerOrchestrator {
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
+		this._converters.set('threads', new AppThreadsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 
