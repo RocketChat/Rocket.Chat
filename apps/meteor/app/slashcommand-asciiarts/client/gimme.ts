@@ -1,15 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { sdk } from '../../utils/client/lib/SDKClient';
 /*
  * Gimme is a named function that will replace /gimme commands
  * @param {Object} message - The message object
  */
 async function Gimme({ message, params }: SlashCommandCallbackParams<'gimme'>): Promise<void> {
 	const msg = message;
-	msg.msg = `༼ つ ◕_◕ ༽つ ${params}`;
-	await Meteor.callAsync('sendMessage', msg);
+	await sdk.call('sendMessage', { ...msg, msg: `༼ つ ◕_◕ ༽つ ${params}` });
 }
 
 slashCommands.add({
