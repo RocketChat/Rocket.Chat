@@ -31,6 +31,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			meetingUrl,
 			reminderMinutesBeforeStart: minutes,
 			reminderTime,
+			notificationSent: false,
 		};
 
 		const insertResult = await CalendarEvent.insertOne(insertData);
@@ -49,7 +50,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
 		const reminderTime = reminderMinutesBeforeStart ? this.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
-		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid'> = {
+		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid' | 'notificationSent'> = {
 			startTime,
 			subject,
 			description,
@@ -64,6 +65,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		if (!event) {
 			const insertResult = await CalendarEvent.insertOne({
 				uid,
+				notificationSent: false,
 				...updateData,
 			});
 

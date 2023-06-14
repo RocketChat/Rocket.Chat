@@ -75,7 +75,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 				reminderTime: {
 					$gt: new Date(),
 				},
-				$or: [{ notificationSent: false }, { notificationSent: { $exists: false } }],
+				notificationSent: false,
 			},
 			{
 				sort: {
@@ -101,7 +101,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					$gte: notificationTime,
 					$lt: maxDate,
 				},
-				$or: [{ notificationSent: false }, { notificationSent: { $exists: false } }],
+				notificationSent: false,
 			},
 			{
 				sort: {
