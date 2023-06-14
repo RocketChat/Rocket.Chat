@@ -4,6 +4,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { isEnterprise } from '../../../license/server/license';
+import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (
@@ -40,14 +41,22 @@ const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_i
 };
 
 export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
+	businessHourLogger.debug(`Opening business hour ${businessHour._id}`);
 	const agentIds = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug(`Opening business hour ${businessHour._id} for ${agentIds.length} agents`, {
+		agentIds,
+	});
 
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
+	businessHourLogger.debug(`Closing business hour ${businessHour._id}`);
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug(`Closing business hour ${businessHour._id} for ${agentIds.length} agents`, {
+		agentIds,
+	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };

@@ -6,6 +6,7 @@ import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/b
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
+import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -35,6 +36,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			},
 		});
 		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+		businessHourLogger.debug(`Starting Multiple Business Hours. ${businessHoursToOpen.length} business hours will be opened.`, {
+			businessHoursToOpen,
+		});
 		for (const businessHour of businessHoursToOpen) {
 			void this.openBusinessHour(businessHour);
 		}

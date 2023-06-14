@@ -7,6 +7,7 @@ import { Users } from '@rocket.chat/models';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { businessHourLogger } from '../lib/logger';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -25,6 +26,7 @@ export class BusinessHourManager {
 
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
+		businessHourLogger.debug('Cron jobs created, setting up callbacks');
 		this.setupCallbacks();
 		await this.behavior.onStartBusinessHours();
 	}

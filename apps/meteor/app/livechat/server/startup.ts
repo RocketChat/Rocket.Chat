@@ -11,7 +11,7 @@ import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivity
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Livechat } from './lib/Livechat';
+import { Livechat } from './lib/LivechatTyped';
 import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 import { i18n } from '../../../server/lib/i18n';
@@ -62,10 +62,14 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
+		Livechat.logger.debug(`Changing business hour type to ${value}`);
 		if (value) {
-			return businessHourManager.startManager();
+			await businessHourManager.startManager();
+			Livechat.logger.debug(`Business hour manager started`);
+			return;
 		}
-		return businessHourManager.stopManager();
+		await businessHourManager.stopManager();
+		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', function (value) {
