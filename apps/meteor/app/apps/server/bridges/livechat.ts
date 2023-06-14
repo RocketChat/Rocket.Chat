@@ -10,11 +10,14 @@ import type {
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { SelectedAgent } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Livechat } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppLivechatBridge extends LivechatBridge {
@@ -25,11 +28,11 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected isOnline(departmentId?: string): boolean {
 		// This function will be converted to sync inside the apps-engine code
 		// TODO: Track Deprecation
-		return deasyncPromise(Livechat.isOnline(departmentId));
+		return deasyncPromise(LivechatTyped.online(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
-		return Livechat.isOnline(departmentId);
+		return LivechatTyped.online(departmentId);
 	}
 
 	protected async createMessage(message: ILivechatMessage, appId: string): Promise<string> {
@@ -83,10 +86,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			label?: string;
 		};
 
-		let agentRoom;
+		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
 			const user = await Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user?._id, username: user?.username });
+			if (!user) {
+				throw new Error(`The agent with id "${agent.id}" was not found.`);
+			}
+			agentRoom = { agentId: user._id, username: user.username };
 		}
 
 		const result = await Livechat.getRoom({
@@ -136,10 +142,12 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let result;
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+
 		if (departmentId) {
-			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}, extraQuery).toArray();
 		} else {
-			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}, extraQuery).toArray();
 		}
 
 		const promisedRooms = result.map(async (room) => this.orch.getConverters()?.get('rooms').convertRoom(room));
@@ -156,19 +164,12 @@ export class AppLivechatBridge extends LivechatBridge {
 			token: visitor.token,
 			email: '',
 			connectionData: undefined,
-			phone: { number: '' },
 			id: visitor.id,
+			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
+			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		if (visitor.visitorEmails?.length) {
-			registerData.email = visitor.visitorEmails[0].address;
-		}
-
-		if (visitor.phone?.length) {
-			registerData.phone = { number: visitor.phone[0].phoneNumber };
-		}
-
-		return Livechat.registerGuest(registerData);
+		return LivechatTyped.registerGuest(registerData);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
