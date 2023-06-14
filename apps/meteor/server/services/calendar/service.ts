@@ -142,7 +142,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async sendCurrentNotifications(date: Date): Promise<void> {
 		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
 
-		// eslint-disable-next-line no-unreachable-loop
 		for await (const event of events) {
 			await this.sendEventNotification(event);
 
