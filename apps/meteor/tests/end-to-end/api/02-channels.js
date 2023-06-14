@@ -1137,6 +1137,7 @@ describe('[Channels]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdChannel.name}`,
 									},
 									userCredentials,
