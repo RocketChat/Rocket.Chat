@@ -29,5 +29,5 @@ export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () 
 		dispatchToastMessage({ type: 'success', message: t('Outlook_authentication_disabled') });
 	};
 
-	return { authEnabled, canSync, handleDisableAuth };
+	return { authEnabled, canSync, handleDisableAuth, handleCheckCredentials };
 };

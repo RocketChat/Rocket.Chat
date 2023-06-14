@@ -31,7 +31,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
-	const { authEnabled, canSync } = useOutlookAuthentication({ onChangeRoute });
+	const { authEnabled, canSync, handleCheckCredentials } = useOutlookAuthentication({ onChangeRoute });
 
 	const syncOutlookEvents = useSyncOutlookEvents();
 
@@ -56,6 +56,14 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 
 				dispatchToastMessage({ type: 'success', message: t('Outlook_Sync_Success') });
 				refetch();
+
+				try {
+					if (!authEnabled) {
+						handleCheckCredentials();
+					}
+				} catch {
+					// Ignore error when checking if the credentials were saved.
+				}
 			} catch (error: any) {
 				if (error && typeof error === 'object' && error.message === 'abort') {
 					return;
