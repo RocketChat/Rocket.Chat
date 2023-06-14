@@ -64,5 +64,6 @@ jobs:
         action: publish
         base-ref: ${{ github.event.inputs.base-ref }}
       env:
+        HUSKY: 0
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
