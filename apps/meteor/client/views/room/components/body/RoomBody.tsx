@@ -44,6 +44,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
@@ -210,6 +211,8 @@ const RoomBody = (): ReactElement => {
 	);
 
 	const retentionPolicy = useRetentionPolicy(room);
+
+	useGoToHomeOnRemoved(room, user?._id);
 
 	useEffect(() => {
 		callbacks.add(
