@@ -962,6 +962,7 @@ describe('[Groups]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdGroup.name}`,
 									},
 									userCredentials,
