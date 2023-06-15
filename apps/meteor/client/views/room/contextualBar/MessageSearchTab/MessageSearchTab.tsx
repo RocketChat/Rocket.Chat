@@ -2,11 +2,13 @@ import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
-import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
+import {
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarIcon,
+} from '../../../../components/Contextualbar';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import MessageSearch from './components/MessageSearch';
 import MessageSearchForm from './components/MessageSearchForm';
@@ -26,12 +28,12 @@ const MessageSearchTab = () => {
 
 	return (
 		<>
-			<VerticalBarHeader>
-				<VerticalBarIcon name='magnifier' />
-				<VerticalBarText>{t('Search_Messages')}</VerticalBarText>
-				<VerticalBarClose onClick={handleCloseButtonClick} />
-			</VerticalBarHeader>
-			<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='magnifier' />
+				<ContextualbarTitle>{t('Search_Messages')}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleCloseButtonClick} />
+			</ContextualbarHeader>
+			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{providerQuery.isSuccess && (
 					<>
 						<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} />
@@ -43,7 +45,7 @@ const MessageSearchTab = () => {
 						{t('Search_current_provider_not_active')}
 					</Callout>
 				)}
-			</VerticalBarContent>
+			</ContextualbarContent>
 		</>
 	);
 };

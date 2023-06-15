@@ -1,4 +1,3 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
@@ -9,6 +8,7 @@ import { settings } from '../../../../app/settings/server';
 import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { mime } from '../../../../app/utils/lib/mimeTypes';
 import { SystemLogger } from '../../../lib/logger/system';
+import { i18n } from '../../../lib/i18n';
 
 type VoxtelesysData = {
 	from: string;
@@ -113,14 +113,14 @@ export class Voxtelesys implements ISMSProvider {
 
 			let reason;
 			if (!this.fileUploadEnabled) {
-				reason = TAPi18n.__('FileUpload_Disabled', { lng });
+				reason = i18n.t('FileUpload_Disabled', { lng });
 			} else if (size > MAX_FILE_SIZE) {
-				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
 			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
-				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
+				reason = i18n.t('File_type_is_not_accepted', { lng });
 			}
 
 			if (reason) {

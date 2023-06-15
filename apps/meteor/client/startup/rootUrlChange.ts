@@ -4,7 +4,8 @@ import { Tracker } from 'meteor/tracker';
 import { hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { t } from '../../app/utils/lib/i18n';
 import UrlChangeModal from '../components/UrlChangeModal';
 import { imperativeModal } from '../lib/imperativeModal';
 import { dispatchToastMessage } from '../lib/toast';
@@ -34,7 +35,7 @@ Meteor.startup(() => {
 		if (window.__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
 			const confirm = (): void => {
 				imperativeModal.close();
-				Meteor.call('saveSetting', 'Site_Url', currentUrl, () => {
+				void sdk.call('saveSetting', 'Site_Url', currentUrl).then(() => {
 					dispatchToastMessage({ type: 'success', message: t('Saved') });
 				});
 			};

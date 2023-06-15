@@ -25,9 +25,15 @@ Meteor.methods<ServerMethods>({
 
 		const rs = RocketChatFile.bufferToStream(file);
 		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.extension}`);
-		const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
-		ws.on('end', () => setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500));
 
-		rs.pipe(ws);
+		return new Promise((resolve) => {
+			const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
+			ws.on('end', () => {
+				setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500);
+				resolve();
+			});
+
+			rs.pipe(ws);
+		});
 	},
 });

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
@@ -18,6 +17,9 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
+import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
+import { i18n } from '../../../../server/lib/i18n';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -35,7 +37,7 @@ Meteor.startup(() => {
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
-		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const subject = i18n.t('Accounts_Admin_Email_Approval_Needed_Subject_Default');
 		const siteName = settings.get('Site_Name');
 
 		return `[${siteName}] ${subject}`;
@@ -46,7 +48,7 @@ Accounts.emailTemplates.userToActivate = {
 			? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default'
 			: 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		return Mailer.replace(TAPi18n.__(email), {
+		return Mailer.replace(i18n.t(email), {
 			name: escapeHTML(options.name),
 			email: escapeHTML(options.email),
 			reason: escapeHTML(options.reason),
@@ -61,14 +63,14 @@ Accounts.emailTemplates.userActivated = {
 		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
-		return `[${siteName}] ${TAPi18n.__(subject)}`;
+		return `[${siteName}] ${i18n.t(subject)}`;
 	},
 
 	html({ active, name, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return Mailer.replace(TAPi18n.__(`Accounts_Email_${action}`), {
+		return Mailer.replace(i18n.t(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
 		});
 	},
@@ -194,7 +196,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 	if (!user.active) {
 		const destinations = [];
 		const usersInRole = await Roles.findUsersInRole('admin');
-		await usersInRole.toArray().forEach((adminUser) => {
+		await usersInRole.forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${adminUser.name}<${email.address}>`);
@@ -269,9 +271,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
-			});
+			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
 		}
 
 		if (user.type !== 'visitor') {
@@ -281,17 +281,13 @@ const insertUserDocAsync = async function (options, user) {
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			Object.keys(avatarSuggestions).some((service) => {
+			for await (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function () {
-						return Promise.await(Meteor.callAsync('setAvatarFromService', avatarData.blob, '', service));
-					});
-					return true;
+					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
+					break;
 				}
-
-				return false;
-			});
+			}
 		}
 	}
 

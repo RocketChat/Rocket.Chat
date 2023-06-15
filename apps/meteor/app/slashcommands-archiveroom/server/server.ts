@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
@@ -8,6 +7,7 @@ import { Users, Rooms } from '@rocket.chat/models';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
+import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
 	command: 'archive',
@@ -36,7 +36,7 @@ slashCommands.add({
 
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -52,7 +52,7 @@ slashCommands.add({
 
 		if (room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Duplicate_archived_channel_name', {
+				msg: i18n.t('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -64,7 +64,7 @@ slashCommands.add({
 		await archiveRoom(room._id, user);
 
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-			msg: TAPi18n.__('Channel_Archived', {
+			msg: i18n.t('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
 				lng: settings.get('Language') || 'en',

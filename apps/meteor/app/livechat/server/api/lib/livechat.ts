@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
@@ -8,15 +7,17 @@ import type {
 	ILivechatTrigger,
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	OmnichannelSourceType,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
+import { i18n } from '../../../../../server/lib/i18n';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
-	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
+	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
@@ -104,11 +105,11 @@ export function getRoom({
 	extraParams,
 }: {
 	guest: ILivechatVisitor;
-	rid?: string;
-	roomInfo?: {
-		source?: { type: OmnichannelSourceType; id?: string; alias?: string; label?: string; sidebarIcon?: string; defaultIcon?: string };
+	rid: string;
+	roomInfo: {
+		source?: IOmnichannelRoom['source'];
 	};
-	agent?: { agentId?: string; username?: string };
+	agent?: SelectedAgent;
 	extraParams?: Record<string, any>;
 }): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
 	const token = guest?.token;
@@ -121,7 +122,7 @@ export function getRoom({
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
+	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
 export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
@@ -173,12 +174,12 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 					{
 						actionLinksAlignment: 'flex-start',
 						i18nLabel: 'Join_call',
-						label: TAPi18n.__('Join_call'),
+						label: i18n.t('Join_call'),
 						method_id: 'joinLivechatWebRTCCall',
 					},
 					{
 						i18nLabel: 'End_call',
-						label: TAPi18n.__('End_call'),
+						label: i18n.t('End_call'),
 						method_id: 'endLivechatWebRTCCall',
 						danger: true,
 					},

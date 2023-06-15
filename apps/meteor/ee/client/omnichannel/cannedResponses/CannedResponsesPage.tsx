@@ -1,4 +1,4 @@
-import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
@@ -17,6 +17,7 @@ type CannedResponsesPageProps = {
 	renderFilter?: (props: any) => ReactElement;
 	renderRow?: (props: any) => ReactElement;
 	totalCannedResponses: number;
+	busy?: boolean;
 };
 
 const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
@@ -28,6 +29,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	renderRow,
 	renderFilter,
 	totalCannedResponses,
+	busy,
 }) => {
 	const t = useTranslation();
 
@@ -44,7 +46,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 			<Page.Header title={title}>
 				<ButtonGroup>
 					<Button onClick={handleClick} title={t('New_Canned_Response')}>
-						<Icon name='plus' /> {t('New')}
+						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
@@ -66,6 +68,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 						total={data?.total}
 						setParams={setParams}
 						params={params}
+						aria-busy={busy}
 					/>
 				)}
 			</Page.Content>

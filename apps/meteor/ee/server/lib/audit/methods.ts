@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -11,6 +10,7 @@ import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/mo
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { i18n } from '../../../../server/lib/i18n';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
@@ -46,7 +46,7 @@ const getRoomInfoByAuditParams = async ({
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			projection: { _id: 1 },
 		}).toArray();
-		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') } : undefined;
+		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: i18n.t('Omnichannel') } : undefined;
 	}
 };
 
@@ -90,7 +90,7 @@ Meteor.methods<ServerMethods>({
 			projection: { _id: 1 },
 		}).toArray();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
-		const name = TAPi18n.__('Omnichannel');
+		const name = i18n.t('Omnichannel');
 
 		const query: Filter<IMessage> = {
 			rid: { $in: rids },

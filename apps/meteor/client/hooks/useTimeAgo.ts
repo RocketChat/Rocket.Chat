@@ -2,6 +2,8 @@ import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useCallback } from 'react';
 
+import { t } from '../../app/utils/lib/i18n';
+
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 
 export const useTimeAgo = (): ((time: Date | number | string) => string) => {
@@ -11,7 +13,7 @@ export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 	return useCallback(
 		(time) =>
 			moment(time).calendar(null, { sameDay: format, lastDay: `[Yesterday at] ${format}`, lastWeek: `dddd ${format}`, sameElse: 'LL' }),
-		[],
+		[format],
 	);
 };
 
@@ -23,7 +25,7 @@ export const useShortTimeAgo = (): ((time: Date | string | number) => string) =>
 		(time) =>
 			moment(time).calendar(null, {
 				sameDay: format,
-				lastDay: '[Yesterday]',
+				lastDay: `[${t('Yesterday')}]`,
 				lastWeek: 'dddd',
 				sameElse(now) {
 					/*

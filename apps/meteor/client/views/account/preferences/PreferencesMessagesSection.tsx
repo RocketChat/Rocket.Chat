@@ -89,9 +89,9 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
-			[0 as any, t('Default')], // TO DO: update SelectOption type to accept number as first item
-			[1, t('12_Hour')],
-			[2, t('24_Hour')],
+			['0', t('Default')], // TO DO: update SelectOption type to accept number as first item
+			['1', t('12_Hour')],
+			['2', t('24_Hour')],
 		],
 		[t],
 	);
@@ -106,8 +106,6 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 	);
 
 	commitRef.current.messages = commit;
-
-	// TODO: Weird behaviour when saving clock mode, and then changing it.
 
 	return (
 		<Accordion.Item title={t('Messages')} {...props}>
@@ -144,7 +142,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 						<Field>
 							<Field.Label>{t('Message_TimeFormat')}</Field.Label>
 							<Field.Row>
-								<Select value={clockMode} onChange={handleClockMode} options={timeFormatOptions} />
+								<Select value={clockMode.toString()} onChange={handleClockMode} options={timeFormatOptions} />
 							</Field.Row>
 						</Field>
 					),

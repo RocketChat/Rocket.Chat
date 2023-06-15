@@ -13,6 +13,7 @@ import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,7 +36,7 @@ export type NotificationEvent = {
 		name?: string;
 		message?: {
 			msg: string;
-			t: string;
+			t?: string;
 		};
 	};
 };
@@ -62,6 +63,9 @@ class KonchatNotification {
 
 		const { rid } = notification.payload;
 
+		if (!rid) {
+			return;
+		}
 		const message = await onClientMessageReceived({
 			rid,
 			msg: notification.text,
@@ -86,12 +90,14 @@ class KonchatNotification {
 		}
 
 		if (n.addEventListener) {
-			n.addEventListener('reply', ({ response }) =>
-				Meteor.call('sendMessage', {
-					_id: Random.id(),
-					rid,
-					msg: response,
-				}),
+			n.addEventListener(
+				'reply',
+				({ response }) =>
+					void sdk.call('sendMessage', {
+						_id: Random.id(),
+						rid,
+						msg: response,
+					}),
 			);
 		}
 
@@ -194,14 +200,14 @@ class KonchatNotification {
 
 		try {
 			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				CustomSounds.play(sub.audioNotificationValue, {
+				void CustomSounds.play(sub.audioNotificationValue, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 				return;
 			}
 
-			if (newMessageNotification !== 'none') {
-				CustomSounds.play(newMessageNotification, {
+			if (newMessageNotification && newMessageNotification !== 'none') {
+				void CustomSounds.play(newMessageNotification, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 				});
 			}

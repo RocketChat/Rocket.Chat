@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import DOMPurify from 'dompurify';
 
-import { APIClient } from '../../../../../app/utils/client';
+import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 
 const OmnichannelRoomIcon = new (class extends Emitter {
 	icons = new Map<string, string>();
@@ -19,7 +19,9 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 			return `${appId}-${icon}`;
 		}
 		// TODO: update the apps icons to send JSON instead of a string. This will allow us to use APIClient.get()
-		APIClient.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
+
+		sdk.rest
+			.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
 			.then((response: any) => {
 				response.text().then((text: any) => {
 					this.icons.set(

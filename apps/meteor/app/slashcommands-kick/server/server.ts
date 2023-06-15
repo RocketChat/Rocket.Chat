@@ -1,12 +1,12 @@
 // Kick is a named function that will replace /kick commands
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
+import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
+import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
 	command: 'kick',
@@ -22,7 +22,7 @@ slashCommands.add({
 
 		if (kickedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
+				msg: i18n.t('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],
 					lng,
@@ -32,7 +32,8 @@ slashCommands.add({
 		}
 
 		const { rid } = message;
-		await Meteor.callAsync('removeUserFromRoom', { rid, username });
+
+		await removeUserFromRoomMethod(userId, { rid, username });
 	},
 	options: {
 		description: 'Remove_someone_from_room',

@@ -22,7 +22,6 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 	const boundingRect = innerContainer.getBoundingClientRect();
 
 	const { style } = usePosition(reference, target, {
-		watch: true,
 		placement: 'bottom-end',
 		container: innerContainer,
 	});

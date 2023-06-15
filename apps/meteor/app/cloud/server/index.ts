@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
@@ -15,26 +15,19 @@ const licenseCronName = 'Cloud Workspace Sync';
 Meteor.startup(async function () {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync: boolean;
-	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', (value) => {
+	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', async (value) => {
 		if (TroubleshootDisableWorkspaceSync === value) {
 			return;
 		}
 		TroubleshootDisableWorkspaceSync = value;
 
 		if (value) {
-			return SyncedCron.remove(licenseCronName);
+			return cronJobs.remove(licenseCronName);
 		}
 
 		setImmediate(() => syncWorkspace());
-
-		SyncedCron.add({
-			name: licenseCronName,
-			schedule(parser) {
-				// Every 12 hours
-				return parser.cron('0 */12 * * *');
-			},
-			// @ts-expect-error - Check type after removing syncedcron :)
-			job: syncWorkspace,
+		await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
+			await syncWorkspace();
 		});
 	});
 

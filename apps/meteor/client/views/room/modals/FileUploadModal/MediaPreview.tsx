@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState, memo } from 'react';
@@ -67,12 +67,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	}
 
 	if (fileType === FilePreviewType.AUDIO) {
-		return (
-			<Box is='audio' w='full' controls>
-				<source src={url} type={file.type} />
-				{t('Browser_does_not_support_audio_element')}
-			</Box>
-		);
+		return <AudioPlayer src={url} />;
 	}
 
 	throw new Error('Wrong props provided for MediaPreview');

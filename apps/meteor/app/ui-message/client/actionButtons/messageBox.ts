@@ -5,7 +5,7 @@ import { ChatRoom } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 import { triggerActionButtonAction } from '../ActionManager';
-import { t } from '../../../utils/client';
+import { t } from '../../../utils/lib/i18n';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { asReactiveSource } from '../../../../client/lib/tracker';

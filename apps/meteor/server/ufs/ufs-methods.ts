@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { IUpload } from '@rocket.chat/core-typings';
 
-import { UploadFS } from '.';
+import { UploadFS } from './ufs';
 
 export async function ufsComplete(fileId: string, storeName: string): Promise<IUpload> {
 	check(fileId, String);

@@ -8,6 +8,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
@@ -127,6 +128,19 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
+
+		return true;
+	}
+
+	protected async deactivate(userId: IUser['id'], confirmRelinquish: boolean, appId: string): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is deactivating a user.`);
+
+		if (!userId) {
+			throw new Error('Invalid user id');
+		}
+		const convertedUser = await this.orch.getConverters()?.get('users').convertById(userId);
+
+		await setUserActiveStatus(convertedUser.id, false, confirmRelinquish);
 
 		return true;
 	}

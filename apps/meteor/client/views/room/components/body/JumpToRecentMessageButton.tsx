@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement, UIEvent } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 
@@ -16,20 +16,19 @@ const buttonStyle = css`
 	z-index: 2;
 	bottom: 8px;
 	left: 50%;
-
-	cursor: pointer;
 	user-select: none;
 	transform: translate(-50%, 0);
-
 	text-align: center;
-
 	border-radius: 20px;
+	cursor: pointer;
 
 	&.not {
-		animation: fadeout 1s linear forwards;
+		visibility: hidden;
 	}
 
-	background-color: ${Palette.status['status-background-info']};
+	&.clicked {
+		animation: fadeout 1s linear forwards;
+	}
 
 	@keyframes fadeout {
 		50% {
@@ -45,15 +44,21 @@ const buttonStyle = css`
 `;
 
 const JumpToRecentMessageButton = ({ visible, onClick, text }: JumpToRecentMessageButtonProps): ReactElement => {
+	const [clicked, setClicked] = useState(false);
+
 	return (
 		<Box
 			is='button'
 			fontScale='c2'
 			minWidth='x130'
+			bg='status-background-info'
 			h='x30'
 			pi='x16'
-			className={[buttonStyle, !visible && 'not'].filter(isTruthy)}
-			onClick={onClick}
+			className={[buttonStyle, !visible && 'not', clicked && 'clicked'].filter(isTruthy)}
+			onClick={(e) => {
+				onClick(e);
+				setClicked(true);
+			}}
 		>
 			{text}
 			<Icon name='arrow-down' size='x16' />

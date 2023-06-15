@@ -138,8 +138,8 @@ export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<Livech
 );
 
 type LivechatDepartmentDepartmentIdAgentsPOST = {
-	upsert: string[];
-	remove: string[];
+	upsert: { agentId: string; username: string; count: number; order: number }[];
+	remove: { agentId: string; username: string; count: number; order: number }[];
 };
 
 const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
@@ -3314,7 +3314,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
 	};
 	'/v1/livechat/triggers': {
-		GET: (params: GETLivechatTriggersParams) => { triggers: WithId<ILivechatTrigger>[] };
+		GET: (params: GETLivechatTriggersParams) => PaginatedResult<{ triggers: WithId<ILivechatTrigger>[] }>;
 	};
 	'/v1/livechat/triggers/:_id': {
 		GET: () => { trigger: ILivechatTrigger | null };
@@ -3340,7 +3340,7 @@ export type OmnichannelEndpoints = {
 		GET: () => { settings: ISetting[] };
 	};
 	'/v1/livechat/upload/:rid': {
-		POST: () => IMessage & { newRoom: boolean; showConnecting: boolean };
+		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
 	};
 	'/v1/livechat/inquiries.list': {
 		GET: (params: GETLivechatInquiriesListParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
+import generator from 'generate-password';
 
 class PasswordPolicy {
 	constructor({
@@ -158,10 +159,14 @@ class PasswordPolicy {
 
 	_generatePassword() {
 		const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
-		return new Array(length)
-			.fill()
-			.map(() => String.fromCharCode(Math.random() * 86 + 40))
-			.join('');
+		return generator.generate({
+			length,
+			...(this.mustContainAtLeastOneNumber && { numbers: true }),
+			...(this.mustContainAtLeastOneSpecialCharacter && { symbols: true }),
+			...(this.mustContainAtLeastOneLowercase && { lowercase: true }),
+			...(this.mustContainAtLeastOneUppercase && { uppercase: true }),
+			strict: true,
+		});
 	}
 }
 

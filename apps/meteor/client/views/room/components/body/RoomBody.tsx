@@ -44,7 +44,9 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
@@ -210,6 +212,8 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
+	useGoToHomeOnRemoved(room, user?._id);
+
 	useEffect(() => {
 		callbacks.add(
 			'streamNewMessage',
@@ -291,7 +295,7 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		count && setUnreadCount(count);
+		setUnreadCount(count);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
@@ -403,9 +407,9 @@ const RoomBody = (): ReactElement => {
 				sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-
-			wrapper.addEventListener('scroll', handleWrapperScroll);
 		};
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
@@ -414,6 +418,8 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [room._id, sendToBottom]);
+
+	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -563,7 +569,10 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
+							<div
+								ref={messagesBoxRef}
+								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
+							>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}

@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -30,13 +31,13 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
-		methodDeprecationLogger.warn('livechat:registerGuest will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:registerGuest', '7.0.0');
 
 		if (!token) {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'livechat:registerGuest' });
 		}
 
-		const userId = await Livechat.registerGuest.call(this, {
+		const userId = await LivechatTyped.registerGuest.call(this, {
 			token,
 			name,
 			email,

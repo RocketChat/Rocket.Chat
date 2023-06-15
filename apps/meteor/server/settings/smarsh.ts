@@ -2,6 +2,13 @@ import moment from 'moment-timezone';
 
 import { settingsRegistry } from '../../app/settings/server';
 
+export const smarshIntervalValuesToCronMap: Record<string, string> = {
+	every_30_seconds: '*/30 * * * * *',
+	every_30_minutes: '*/30 * * * *',
+	every_1_hours: '0 * * * *',
+	every_6_hours: '0 */6 * * *',
+};
+
 export const createSmarshSettings = () =>
 	settingsRegistry.addGroup('Smarsh', async function addSettings() {
 		await this.add('Smarsh_Enabled', false, {

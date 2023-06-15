@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { muteUserInRoom } from '../../../server/methods/muteUserInRoom';
+import { i18n } from '../../../server/lib/i18n';
 
 /*
  * Mute is a named function that will replace /mute commands
@@ -22,7 +22,7 @@ slashCommands.add({
 		const mutedUser = await Users.findOneByUsernameIgnoringCase(username);
 		if (mutedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
+				msg: i18n.t('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],
 					lng: settings.get('Language') || 'en',
@@ -30,7 +30,7 @@ slashCommands.add({
 			});
 		}
 
-		await Meteor.callAsync('muteUserInRoom', {
+		await muteUserInRoom(userId, {
 			rid: message.rid,
 			username,
 		});

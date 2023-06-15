@@ -1,7 +1,7 @@
 {
   "500": "आंतरिक सर्वर त्रुटि",
-  "__username__is_no_longer__role__defined_by__user_by_": "__username__ is no longer __role__ by __user_by__",
-  "__username__was_set__role__by__user_by_": "__username__ was set __role__ by __user_by__",
+  "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is no longer {{role}} by {{user_by}}",
+  "__username__was_set__role__by__user_by_": "{{username}} was set {{role}} by {{user_by}}",
   "@username": "@यूज़रनेम",
   "@username_message": "@यूज़रनेम<message> ",
   "#channel": "#चैनल",

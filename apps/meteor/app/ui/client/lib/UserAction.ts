@@ -161,7 +161,7 @@ export const UserAction = new (class {
 			return;
 		}
 
-		Notifications.unRoom(rid, USER_ACTIVITY, rooms.get(rid));
+		Notifications.unRoom(rid, USER_ACTIVITY);
 		rooms.delete(rid);
 	}
 
