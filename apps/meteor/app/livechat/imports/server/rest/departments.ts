@@ -1,6 +1,7 @@
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -59,7 +60,7 @@ API.v1.addRoute(
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department, agents);
+			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
 
 			if (department) {
 				return API.v1.success({
