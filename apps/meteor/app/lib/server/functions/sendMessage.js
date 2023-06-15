@@ -1,9 +1,10 @@
 import { Match, check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import { Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -216,22 +217,20 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (Apps && Apps.isLoaded()) {
-		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
-		if (prevent) {
-			return;
-		}
+	const prevent = await Apps.triggerEvent(AppEvents.IPreMessageSentPrevent, message);
+	if (prevent) {
+		return;
+	}
 
-		let result;
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentExtend', message);
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentModify', result);
+	let result;
+	result = await Apps.triggerEvent(AppEvents.IPreMessageSentExtend, message);
+	result = await Apps.triggerEvent(AppEvents.IPreMessageSentModify, result);
 
-		if (typeof result === 'object') {
-			message = Object.assign(message, result);
+	if (typeof result === 'object') {
+		message = Object.assign(message, result);
 
-			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			await validateMessage(message, room, user);
-		}
+		// Some app may have inserted malicious/invalid values in the message, let's check it again
+		await validateMessage(message, room, user);
 	}
 
 	cleanupMessageObject(message);
@@ -264,11 +263,9 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			message._id = result.insertedId;
 		}
 
-		if (Apps && Apps.isLoaded()) {
-			// This returns a promise, but it won't mutate anything about the message
-			// so, we don't really care if it is successful or fails
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
-		}
+		// This returns a promise, but it won't mutate anything about the message
+		// so, we don't really care if it is successful or fails
+		void Apps.triggerEvents(AppEvents.IPostMessageSent, message);
 
 		/*
 		Defer other updates as their return is not interesting to the user

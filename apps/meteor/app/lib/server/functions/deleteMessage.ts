@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { api, Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../../ee/server/apps';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
@@ -32,10 +32,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	const bridges = Apps?.isLoaded() && Apps.getBridges();
 
-	if (deletedMsg && bridges) {
-		const prevent = await bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg);
+	if (deletedMsg) {
+		const prevent = await Apps.triggerEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
@@ -88,7 +87,5 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
-	if (bridges) {
-		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
-	}
+	void Apps.triggerEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
 }

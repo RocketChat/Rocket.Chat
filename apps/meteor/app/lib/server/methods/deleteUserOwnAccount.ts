@@ -4,10 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import { Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
 import { deleteUser } from '../functions';
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 declare module '@rocket.chat/ui-contexts' {

@@ -4,6 +4,8 @@ import _ from 'underscore';
 import Gravatar from 'gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import * as Mailer from '../../../mailer/server/api';
 import { getRoles } from '../../../authorization/server';
@@ -17,7 +19,6 @@ import { checkEmailAvailability, setUserAvatar, setEmail } from '.';
 import { setStatusText } from './setStatusText';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { callbacks } from '../../../../lib/callbacks';
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { trim } from '../../../../lib/utils/stringUtils';
 

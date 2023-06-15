@@ -2,10 +2,10 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Apps } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
 export const removeUserFromRoom = async function (
