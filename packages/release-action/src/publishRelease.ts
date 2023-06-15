@@ -3,6 +3,7 @@ import path from 'path';
 
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
+import * as core from '@actions/core';
 
 import { createNpmFile } from './createNpmFile';
 import { setupOctokit } from './setupOctokit';
@@ -71,17 +72,20 @@ export async function publishRelease({
 	const releaseBody = changelogEntry.content;
 
 	// update root package.json
+	core.info('bump main package.json version');
 	updateVersionPackageJson(cwd, newVersion);
 
 	await exec('git', ['add', '.']);
 	await exec('git', ['commit', '-m', newVersion]);
 
+	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
 	await exec('yarn', ['changeset', 'publish']);
 
 	await exec('git', ['push', '--follow-tags']);
 
+	core.info('create release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
