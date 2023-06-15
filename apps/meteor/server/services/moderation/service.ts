@@ -1,54 +1,74 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IModerationService } from '@rocket.chat/core-services';
 import { Permissions, Roles, Users } from '@rocket.chat/models';
-import type { IRole } from '@rocket.chat/core-typings';
 
 import { createOrUpdateProtectedRoleAsync } from '../../lib/roles/createOrUpdateProtectedRole';
+import { explorerPermissions as explorerExplicitPermissions, novicePermissions, trustRoles } from '../../../app/moderation/lib/permissions';
+import { Logger } from '../../lib/logger/Logger';
 
 export class ModerationService extends ServiceClassInternal implements IModerationService {
 	protected name = 'moderation';
 
-	async resetUserRoles(roles: string[]): Promise<void> {
-		const usersInRole = await Users.findUsersInRoles(roles, undefined, { projection: { _id: 1 } }).toArray();
+	private logger = new Logger('Moderation');
 
-		const usersToRemove = usersInRole.map((user) => user._id);
-
-		// remove the roles from the users
-
-		for await (const roleId of roles) {
-			const role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
-
-			if (!role) {
-				continue;
-			}
-
-			await Users.removeRolesByUserIds(usersToRemove, [roleId]);
+	async removeTrustRoles(): Promise<void> {
+		const role = await Roles.findOneById(trustRoles[0], { projection: { _id: 1 } });
+		if (!role) {
+			return;
 		}
-
-		// remove the roles
-		const rolePromises = roles.map(async (roleName) => {
-			const role = await Roles.findOneById(roleName);
-			if (role) {
-				await Roles.removeById(role._id);
-			}
-		});
-		await Promise.all(rolePromises);
+		// remove all role mentions from user records that have it
+		// TODO: move to models
+		try {
+			await Users.updateMany({ roles: { $in: trustRoles } }, { $pullAll: { roles: trustRoles as unknown as string[] } });
+			await Permissions.updateMany({ roles: { $in: trustRoles } }, { $pullAll: { roles: trustRoles as unknown as string[] } });
+			await Roles.deleteMany({ _id: { $in: trustRoles } });
+		} catch (e) {
+			this.logger.error('failed to remove trust roles completely', e);
+		}
 	}
 
-	async addPermissionsToRole(roleName: string, permissions: string[]): Promise<void> {
+	async addTrustRoles(): Promise<void> {
+		// all roles exist at the same time, if one exists, the others do too
+		// TODO: depending on how this method is called, this check may not be necessary
+		const role = await Roles.findOneById(trustRoles[0], { projection: { _id: 1 } });
+		if (role) {
+			return;
+		}
 		try {
-			// create the role if it doesn't exist
-			await createOrUpdateProtectedRoleAsync(roleName, {
-				name: roleName,
-				scope: 'Users',
-				description: roleName,
-				mandatory2fa: false,
-			});
+			await Promise.all(
+				trustRoles.map((id) =>
+					createOrUpdateProtectedRoleAsync(id, {
+						name: id,
+						scope: 'Users',
+					}),
+				),
+			);
+		} catch (e) {
+			this.logger.error('failed to create trust roles', e);
+			return;
+		}
 
-			// add the permissions to the role
-			await Permissions.updateMany({ _id: { $in: permissions }, roles: { $ne: roleName } }, { $addToSet: { roles: roleName } });
-		} catch (error) {
-			console.error(`Error adding permissions to role ${roleName}: ${error}`);
+		try {
+			await Promise.all([
+				/*
+				 * explorer has all permissions novice does
+				 * and more, so we write to the same records only once
+				 */
+				Permissions.updateMany(
+					{
+						_id: { $in: novicePermissions },
+					},
+					{ $addToSet: { roles: { $each: trustRoles as unknown as string[] } } },
+				),
+				Permissions.updateMany(
+					{
+						_id: { $in: explorerExplicitPermissions },
+					},
+					{ $addToSet: { roles: 'explorer' } },
+				),
+			]);
+		} catch (e) {
+			this.logger.error('failed to set permissions to trust roles', e);
 		}
 	}
 }

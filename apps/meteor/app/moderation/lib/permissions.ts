@@ -1,6 +1,6 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 
-export const novice: IPermission['_id'][] = [
+export const novicePermissions: IPermission['_id'][] = [
 	'view-joined-room',
 	'preview-c-room',
 	'leave-c',
@@ -9,8 +9,8 @@ export const novice: IPermission['_id'][] = [
 	'view-history',
 ];
 
-export const explorer: IPermission['_id'][] = [
-	...novice,
+// permissions over novice set
+export const explorerPermissions: IPermission['_id'][] = [
 	'view-d-room',
 	'view-c-room',
 	'mention-all',
@@ -22,13 +22,5 @@ export const explorer: IPermission['_id'][] = [
 	'edit-own-message',
 ];
 
-export const DEFAULT_TRUST_ROLES = [
-	{
-		_id: 'novice',
-		permission: novice,
-	},
-	{
-		_id: 'explorer',
-		permission: explorer,
-	},
-];
+// each successive role adds to the previous one, order matters
+export const trustRoles = ['novice', 'explorer'] as const;

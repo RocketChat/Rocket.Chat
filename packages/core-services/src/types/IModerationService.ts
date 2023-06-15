@@ -1,7 +1,6 @@
 export interface IModerationService {
-	// 	protected name = 'moderation';
-	// resets the roles of all users
-	resetUserRoles(roles: string[]): Promise<void>;
-	// adds permissions to a role
-	addPermissionsToRole(roleName: string, permissions: string[]): Promise<void>;
+	// adds the novice and explorer roles
+	addTrustRoles(): Promise<void>;
+	// removes the novice and explorer roles
+	removeTrustRoles(): Promise<void>;
 }

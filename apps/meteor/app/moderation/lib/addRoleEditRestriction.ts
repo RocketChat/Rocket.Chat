@@ -1,8 +1,8 @@
 import { AuthorizationUtils } from '../../authorization/lib';
-import { explorer, novice } from './permissions';
+import { explorerPermissions, novicePermissions } from './permissions';
 
 export const addRoleEditRestriction = () => {
-	AuthorizationUtils.addRolePermissionWhiteList('novice', novice);
+	AuthorizationUtils.addRolePermissionWhiteList('novice', novicePermissions);
 
-	AuthorizationUtils.addRolePermissionWhiteList('explorer', explorer);
+	AuthorizationUtils.addRolePermissionWhiteList('explorer', novicePermissions.concat(explorerPermissions));
 };

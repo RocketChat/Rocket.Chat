@@ -92,24 +92,6 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	/**
-	 * @param {string[]} uids the list of user ids to add roles to
-	 * @param {IRole['_id']} roles the list of role ids to add
-	 */
-	addRolesByUserIds(uids, roles) {
-		const query = {
-			_id: { $in: uids },
-		};
-
-		const update = {
-			$addToSet: {
-				roles: { $each: roles },
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
-	/**
 	 * @param {IRole['_id'][]} roles list of role ids
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
@@ -1110,24 +1092,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.updateOne(query, update);
-	}
-
-	/**
-	 * @param {string[]} uids the list of user ids to remove roles from
-	 * @param {IRole['_id']} roles the list of role ids to remove
-	 */
-	removeRolesByUserIds(uids, roles) {
-		const query = {
-			_id: { $in: uids },
-		};
-
-		const update = {
-			$pullAll: {
-				roles,
-			},
-		};
-
-		return this.updateMany(query, update);
 	}
 
 	async isUserInRoleScope(uid) {

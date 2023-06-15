@@ -391,7 +391,7 @@ export const createGeneralSettings = () =>
 			await this.add('Trust_Roles', false, {
 				type: 'boolean',
 				i18nDescription: 'Trust_Roles_Description',
-				public: true,
+				public: false,
 			});
 		});
 	});

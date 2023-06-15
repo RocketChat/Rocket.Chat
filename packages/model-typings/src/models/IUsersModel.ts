@@ -14,7 +14,6 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-	addRolesByUserIds(uids: IUser['_id'][], roles: IRole['_id'][]): Promise<Document | UpdateResult>;
 	findUsersInRoles<T = IUser>(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<T>;
 	findPaginatedUsersInRoles<T = IUser>(roles: IRole['_id'][], options?: any): FindPaginated<FindCursor<T>>;
 	findOneByUsername<T = IUser>(username: string, options?: any): Promise<T>;
@@ -158,8 +157,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-
-	removeRolesByUserIds(uids: IUser['_id'][], roles: IRole['_id'][]): Promise<Document | UpdateResult>;
 
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
