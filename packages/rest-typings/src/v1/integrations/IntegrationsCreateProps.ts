@@ -8,6 +8,7 @@ export type IntegrationsCreateProps =
 			type: 'webhook-incoming';
 			username: string;
 			channel: string;
+			overrideDestinationChannelEnabled: boolean;
 			scriptEnabled: boolean;
 			script?: string;
 			name: string;
@@ -64,6 +65,10 @@ const integrationsCreateSchema = {
 					nullable: false,
 				},
 				scriptEnabled: {
+					type: 'boolean',
+					nullable: false,
+				},
+				overrideDestinationChannelEnabled: {
 					type: 'boolean',
 					nullable: false,
 				},
