@@ -1,5 +1,5 @@
 import type { IServerInfo, IStats, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Callout, Grid, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -46,10 +46,10 @@ const InformationPage = memo(function InformationPage({
 				{canViewStatistics && (
 					<ButtonGroup>
 						<Button type='button' onClick={onClickDownloadInfo}>
-							<Icon name='download' /> {t('Download_Info')}
+							{t('Download_Info')}
 						</Button>
 						<Button primary type='button' onClick={onClickRefreshButton}>
-							<Icon name='reload' /> {t('Refresh')}
+							{t('Refresh')}
 						</Button>
 					</ButtonGroup>
 				)}
