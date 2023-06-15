@@ -24,6 +24,7 @@ export const createRoom = async <T extends RoomType>(
 	name: T extends 'd' ? undefined : string,
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
+	excludeSelf?: boolean,
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
@@ -65,7 +66,7 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (owner.username && !members.includes(owner.username)) {
+	if (!excludeSelf && owner.username && !members.includes(owner.username)) {
 		members.push(owner.username);
 	}
 
