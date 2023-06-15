@@ -36,8 +36,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			},
 		});
 		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
-		businessHourLogger.debug(`Starting Multiple Business Hours. ${businessHoursToOpen.length} business hours will be opened.`, {
-			businessHoursToOpen,
+		businessHourLogger.debug({
+			msg: 'Starting Multiple Business Hours',
+			totalBusinessHoursToOpen: businessHoursToOpen.length,
+			top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
 		});
 		for (const businessHour of businessHoursToOpen) {
 			void this.openBusinessHour(businessHour);
