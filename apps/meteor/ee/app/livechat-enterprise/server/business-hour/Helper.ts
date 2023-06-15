@@ -41,9 +41,8 @@ const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_i
 };
 
 export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
-	businessHourLogger.debug(`Opening business hour ${businessHour._id}`);
 	const agentIds = await getAgentIdsToHandle(businessHour);
-	businessHourLogger.debug(`Opening business hour ${businessHour._id} for ${agentIds.length} agents`, {
+	businessHourLogger.debug({ msg: 'Opening business hour', businessHour: businessHour._id, agents: agentIds.length })
 		agentIds,
 	});
 
@@ -52,7 +51,6 @@ export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour,
 };
 
 export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
-	businessHourLogger.debug(`Closing business hour ${businessHour._id}`);
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	businessHourLogger.debug(`Closing business hour ${businessHour._id} for ${agentIds.length} agents`, {
 		agentIds,
