@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/authorization-service",
 	"private": true,
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Rocket.Chat Authorization service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
