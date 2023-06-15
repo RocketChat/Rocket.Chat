@@ -77,7 +77,9 @@ const CannedResponseList: FC<{
 								addon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
-							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
+							<Box w='x144'>
+								<Select onChange={setType} value={type} options={options} />
+							</Box>
 						</Margins>
 					</Box>
 				</Box>

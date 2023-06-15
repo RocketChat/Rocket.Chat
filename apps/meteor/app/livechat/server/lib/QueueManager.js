@@ -14,7 +14,7 @@ export const saveQueueInquiry = async (inquiry) => {
 	await callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
-export const queueInquiry = async (room, inquiry, defaultAgent) => {
+export const queueInquiry = async (inquiry, defaultAgent) => {
 	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
@@ -70,10 +70,16 @@ export const QueueManager = {
 
 		await LivechatRooms.updateRoomCount();
 
-		await queueInquiry(room, inquiry, agent);
+		await queueInquiry(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
-		return LivechatRooms.findOneById(rid);
+		const newRoom = await LivechatRooms.findOneById(rid);
+		if (!newRoom) {
+			logger.error(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
+
+		return newRoom;
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
@@ -120,7 +126,7 @@ export const QueueManager = {
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 
-		await queueInquiry(room, inquiry, defaultAgent);
+		await queueInquiry(inquiry, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;

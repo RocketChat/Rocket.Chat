@@ -41,6 +41,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import type { IModerationService } from './types/IModerationService';
 
@@ -114,6 +115,7 @@ export {
 	ITranslationService,
 	IMessageService,
 	ISettingsService,
+	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IModerationService,
 };
@@ -149,6 +151,7 @@ export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationSer
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const Moderation = proxifyWithWait<IModerationService>('moderation');
+export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

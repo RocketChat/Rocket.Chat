@@ -35,7 +35,7 @@ function SortModeList(): ReactElement {
 					role='listitem'
 					icon='sort-az'
 					text={t('Name')}
-					input={<RadioButton mi='x16' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
+					input={<RadioButton mi='x16' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
 			{isOmnichannelEnabled && <OmnichannelSortingDisclaimer id='sortByList' />}
