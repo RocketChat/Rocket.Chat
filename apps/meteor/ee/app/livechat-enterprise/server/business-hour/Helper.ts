@@ -36,8 +36,10 @@ const getAllAgentIdsWithDepartmentNotConnectedToBusinessHour = async (): Promise
 };
 
 const getAllAgentIdsForDefaultBusinessHour = async (): Promise<string[]> => {
-	const withoutDepartment = await getAllAgentIdsWithoutDepartment();
-	const withDepartmentNotConnectedToBusinessHour = await getAllAgentIdsWithDepartmentNotConnectedToBusinessHour();
+	const [withoutDepartment, withDepartmentNotConnectedToBusinessHour] = await Promise.all([
+		getAllAgentIdsWithoutDepartment(),
+		getAllAgentIdsWithDepartmentNotConnectedToBusinessHour(),
+	]);
 
 	return [...new Set([...withoutDepartment, ...withDepartmentNotConnectedToBusinessHour])];
 };
