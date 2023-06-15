@@ -136,7 +136,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return this.sendCurrentNotifications(date);
 		}
 
-		await cronJobs.add('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
+		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
 	}
 
 	public async sendCurrentNotifications(date: Date): Promise<void> {
