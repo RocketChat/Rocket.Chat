@@ -27,7 +27,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER });
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
 		if (typeof tx === 'string') {
 			this.transporter = new Transporters.NATS({ url: tx });
 			this.isTransporterTCP = false;
