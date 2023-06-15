@@ -101,7 +101,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 	const getSpotlight = useMethod('spotlight');
 
 	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type],
+		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id }) => _id)],
 		async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
@@ -235,9 +235,15 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = (selectedElement.current?.parentElement?.previousSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.previousSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		} else {
-			nextSelectedElement = (selectedElement.current?.parentElement?.nextSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.nextSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		}
 
 		if (nextSelectedElement) {
