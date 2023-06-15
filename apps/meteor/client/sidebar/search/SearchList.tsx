@@ -101,7 +101,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 	const getSpotlight = useMethod('spotlight');
 
 	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type],
+		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id }) => _id)],
 		async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
