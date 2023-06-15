@@ -288,6 +288,8 @@ describe('[Channels]', function () {
 						_id: testUser._id,
 						username: testUser.username,
 					};
+
+					res.body.online.sort((a, b) => a.username.localeCompare(b.username));
 					expect(res.body.online).to.deep.include(expected);
 				});
 		});
