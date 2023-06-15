@@ -122,7 +122,7 @@ export const createRoom = async <T extends RoomType>(
 
 	const eventResult = await Apps.triggerEvent(AppEvents.IPreRoomCreateModify, await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp));
 
-	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
+	if (eventResult && typeof eventResult === 'object' && delete (eventResult as any)._USERNAMES) {
 		Object.assign(roomProps, eventResult);
 	}
 
