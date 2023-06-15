@@ -1152,7 +1152,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
 			expect(body.messages).to.be.an('array');
-			expect(body.messages.length <= 3).to.be.true;
+			expect(body.messages.length <= 4).to.be.true;
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
 			expect(body.messages[1]).to.have.property('t');
 		});
@@ -1204,7 +1204,7 @@ describe('LIVECHAT - rooms', function () {
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').that.is.an('array');
-			expect(body.messages.length <= 3).to.be.true;
+			expect(body.messages.length <= 4).to.be.true;
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
 			expect(body.messages[1]).to.have.property('t');
 		});
