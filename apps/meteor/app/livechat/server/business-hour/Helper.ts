@@ -19,7 +19,7 @@ export const filterBusinessHoursThatMustBeOpened = async (
 					.some((hour) => {
 						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}`, 'dddd:HH:mm');
 						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}`, 'dddd:HH:mm');
-						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
+						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(localTimeFinish);
 					}),
 		)
 		.map((businessHour) => ({
