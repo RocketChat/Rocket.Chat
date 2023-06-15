@@ -143,11 +143,7 @@ export class BusinessHourManager {
 	): Promise<void> {
 		await Promise.all(
 			items.map((hour) => {
-				let time = moment(hour, 'HH:mm').day(day);
-				if (type === 'close') {
-					// Business hours are closed at the end of the hour, so we need to add 1 minute to the time
-					time = time.add(1, 'minute');
-				}
+				const time = moment(hour, 'HH:mm').day(day);
 				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
 				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
 				this.addToCache(jobName);
