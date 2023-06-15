@@ -159,7 +159,7 @@ export const RoutingManager: Routing = {
 		const room = await LivechatRooms.findOneById(rid);
 
 		if (user) {
-			await Message.saveSystemMessage('command', rid, 'connected', user);
+			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
 		}
 
 		await dispatchAgentDelegated(rid, agent.agentId);
@@ -230,7 +230,7 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
 		}
