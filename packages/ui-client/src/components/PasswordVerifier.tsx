@@ -46,7 +46,7 @@ export const PasswordVerifier = ({ password, passwordVerifications }: PasswordVe
 	return (
 		<Box display='flex' flexDirection='column' mbs='x8'>
 			<Box mbe='x8' fontScale='c2'>
-				{t('Your_Password_must_have')}
+				{t('Password_must_have')}
 			</Box>
 			<Box display='flex' flexWrap='wrap'>
 				{handleRenderPasswordVerification(passwordVerifications)}
