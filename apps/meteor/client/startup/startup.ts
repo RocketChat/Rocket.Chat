@@ -9,6 +9,7 @@ import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
+import 'hljs9/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import * as banners from '../lib/banners';
