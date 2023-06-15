@@ -9,7 +9,6 @@ export type Item = {
 	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: () => boolean;
 	pathSection?: string;
-	pathGroup?: string;
 	name?: string;
 	externalUrl?: boolean;
 	badge?: () => ReactElement;

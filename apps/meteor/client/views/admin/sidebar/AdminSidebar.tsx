@@ -14,7 +14,7 @@ const AdminSidebar: FC = () => {
 
 	const currentRoute = useCurrentRoute();
 	const [currentRouteName, currentRouteParams, currentQueryStringParams] = currentRoute;
-	const currentPath = useRoutePath(currentRouteName || '', currentRouteParams, currentQueryStringParams);
+	const currentPath = useRoutePath(currentRouteName ?? 'home', currentRouteParams, currentQueryStringParams);
 
 	// TODO: uplift this provider
 	return (

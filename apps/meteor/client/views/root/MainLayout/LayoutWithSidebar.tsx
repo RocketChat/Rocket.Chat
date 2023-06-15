@@ -9,10 +9,10 @@ import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
+	const [currentRouteName, currentParameters] = useCurrentRoute();
 
 	const modal = useCurrentModal();
-	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
+	const currentRoutePath = useRoutePath(currentRouteName ?? 'home', currentParameters);
 	const channelRoute = useRoute('channel');
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');

@@ -16,7 +16,7 @@ const MarketplaceSidebar = (): ReactElement => {
 
 	const currentRoute = useCurrentRoute();
 	const [currentRouteName, currentRouteParams, currentQueryStringParams] = currentRoute;
-	const currentPath = useRoutePath(currentRouteName ?? '', currentRouteParams, currentQueryStringParams);
+	const currentPath = useRoutePath(currentRouteName ?? 'home', currentRouteParams, currentQueryStringParams);
 
 	return (
 		<SettingsProvider privileged>
