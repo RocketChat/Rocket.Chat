@@ -21,7 +21,8 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	executeSlashCommandPreview(command, preview) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSlashCommandPreview',
 			});
@@ -46,6 +47,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
+		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId, userId);
 	},
 });
