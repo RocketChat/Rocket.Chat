@@ -144,6 +144,23 @@ services:
     depends_on:
       - nats
 
+  apps-engine-service:
+    platform: linux/amd64
+    build:
+      dockerfile: ee/apps/apps-engine/Dockerfile
+      args:
+        SERVICE: apps-engine
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/apps-engine-service:${DOCKER_TAG}
+    environment:
+      - TEST_MODE=true
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
   nats:
     image: nats:2.6-alpine
 
