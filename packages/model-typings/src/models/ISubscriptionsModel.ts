@@ -90,6 +90,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 
+	setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+	unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+
 	updateUnreadAlertById(_id: string, unreadAlert: ISubscription['unreadAlert']): Promise<UpdateResult>;
 	updateNotificationsPrefById(
 		_id: string,
