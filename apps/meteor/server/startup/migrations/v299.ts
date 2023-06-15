@@ -6,11 +6,11 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 299,
 	async up() {
-		const customOauthServices = await Settings.find({ _id: /Accounts_OAuth_Custom-[^-]+$/im }).toArray();
+		const customOauthServices = await Settings.find({ _id: /Accounts_OAuth_Custom-[^-]+$/ }, { projection: { _id: 1 } }).toArray();
 		const serviceNames = customOauthServices.map(({ _id }) => _id.replace('Accounts_OAuth_Custom-', ''));
 
-		serviceNames.forEach(async (serviceName) => {
-			await settingsRegistry.add(`Accounts_OAuth_Custom-${serviceName}-merge_users_distinct_services`, '', {
+		for await (const serviceName of serviceNames) {
+			await settingsRegistry.add(`Accounts_OAuth_Custom-${serviceName}-merge_users_distinct_services`, false, {
 				type: 'boolean',
 				group: 'OAuth',
 				section: `Custom OAuth: ${serviceName}`,
@@ -22,6 +22,6 @@ addMigration({
 				},
 				persistent: true,
 			});
-		});
+		}
 	},
 });
