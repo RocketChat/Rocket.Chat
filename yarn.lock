@@ -3439,7 +3439,7 @@ __metadata:
 "@esbuild/android-arm64@npm:0.17.18":
   version: 0.17.18
   resolution: "@esbuild/android-arm64@npm:0.17.18"
-  conditions: os=android & cpu=arm64
+  checksum: ec47777acf96ffe5e36426e5c5715f74e154ddd2a4b2fcd12748250d7b3ded51c5a1a8a5f896f1524e52d3abf4b302aad0b2f30ac23b4efc41de2d01e359a34a
   languageName: node
   linkType: hard
 
@@ -9577,7 +9577,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
-    "@rocket.chat/ui-contexts": "workspace:~"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
@@ -9695,7 +9695,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
-    "@rocket.chat/ui-contexts": "workspace:~"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
