@@ -8,7 +8,7 @@ import { i18n } from '../../../server/lib/i18n';
 callbacks.add(
 	'beforeAddedToRoom',
 	async ({ user }) => {
-		if (user.roles.includes('guest')) {
+		if (user.roles?.includes('guest')) {
 			const totalSubscriptions = await Subscriptions.countByUserId(user._id);
 
 			if (totalSubscriptions >= getMaxRoomsPerGuest()) {
