@@ -29,7 +29,7 @@ export class OAuthEEManager {
 						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
 						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {
-							const createdRoom = await createRoom('c', channel, channelsAdmin, [], false);
+							const createdRoom = await createRoom('c', channel, channelsAdmin, [], false, false);
 							if (!createdRoom?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
