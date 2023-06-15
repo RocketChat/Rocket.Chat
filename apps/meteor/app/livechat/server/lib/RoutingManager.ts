@@ -64,7 +64,7 @@ type Routing = {
 		},
 	): Promise<boolean>;
 	delegateAgent(agent: SelectedAgent, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
-	removeAllRoomSubscriptions(room: IOmnichannelRoom, ignoreUser?: { _id: string }): Promise<void>;
+	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 };
 
 export const RoutingManager: Routing = {
