@@ -17,7 +17,6 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/handleNextAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
-import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';

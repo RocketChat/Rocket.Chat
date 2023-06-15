@@ -93,7 +93,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	private async loadFromCache() {
-		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date }>(this.name);
+		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
 
 		if (!data) {
 			return false;
@@ -105,6 +105,11 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 		if (data.records.length <= 0) {
 			return false;
+		}
+
+		// updatedAt may be a Date or a string depending on the used localForage backend
+		if (!(data.updatedAt instanceof Date)) {
+			data.updatedAt = new Date(data.updatedAt);
 		}
 
 		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedCollection.MAX_CACHE_TIME) {

@@ -82,8 +82,9 @@ export const useThreadMainMessageQuery = (
 	useEffect(() => {
 		return () => {
 			unsubscribeRef.current?.();
+			unsubscribeRef.current = undefined;
 		};
-	}, []);
+	}, [tmid]);
 
 	return useQuery(
 		['rooms', room._id, 'threads', tmid, 'main-message'] as const,
@@ -96,17 +97,17 @@ export const useThreadMainMessageQuery = (
 				throw new Error('Invalid main message');
 			}
 
-			unsubscribeRef.current?.();
-
-			unsubscribeRef.current = subscribeToMessage(mainMessage, {
-				onMutate: () => {
-					queryClient.invalidateQueries(queryKey, { exact: true });
-				},
-				onDelete: () => {
-					onDelete?.();
-					queryClient.invalidateQueries(queryKey, { exact: true });
-				},
-			});
+			unsubscribeRef.current =
+				unsubscribeRef.current ||
+				subscribeToMessage(mainMessage, {
+					onMutate: () => {
+						queryClient.invalidateQueries(queryKey, { exact: true });
+					},
+					onDelete: () => {
+						onDelete?.();
+						queryClient.invalidateQueries(queryKey, { exact: true });
+					},
+				});
 
 			return mainMessage;
 		},
