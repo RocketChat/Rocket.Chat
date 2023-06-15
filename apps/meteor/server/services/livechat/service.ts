@@ -21,7 +21,7 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 
 	async getRoom(props: {
 		guest: ILivechatVisitor;
-		rid?: string;
+		rid: string;
 		roomInfo?: {
 			source?: {
 				type: OmnichannelSourceType;
@@ -32,11 +32,11 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 				defaultIcon?: string;
 			};
 		};
-		agent?: { agentId?: string; username?: string };
+		agent?: { agentId: string; username?: string };
 		extraParams?: Record<string, any>;
 	}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
 		const { guest, rid, roomInfo, agent, extraParams } = props;
-		return LivechatTyped.getRoom(guest, { rid, msg: undefined }, { source: roomInfo?.source }, agent, extraParams);
+		return LivechatTyped.getRoom(guest, { rid, msg: '' }, { source: roomInfo?.source }, agent, extraParams);
 	}
 
 	async closeRoom(props: CloseRoomParams): Promise<void> {
