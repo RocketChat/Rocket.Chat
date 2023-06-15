@@ -9,14 +9,14 @@ export const {
 } = createSidebarItems([
 	{
 		href: 'admin-info',
-		i18nLabel: 'Info',
+		i18nLabel: 'Workspace',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
 		icon: 'shield-alt',
 		href: 'moderation-console',
-		i18nLabel: 'Moderation console',
+		i18nLabel: 'Moderation',
 		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
@@ -52,7 +52,7 @@ export const {
 	},
 	{
 		href: 'admin-view-logs',
-		i18nLabel: 'View_Logs',
+		i18nLabel: 'Logs',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},
@@ -65,7 +65,7 @@ export const {
 	{
 		icon: 'discover',
 		href: 'federation-dashboard',
-		i18nLabel: 'Federation Dashboard',
+		i18nLabel: 'Federation',
 		permissionGranted: (): boolean => hasPermission('view-federation-data'),
 	},
 	{
@@ -94,9 +94,9 @@ export const {
 			]),
 	},
 	{
-		icon: 'discover',
+		icon: 'login',
 		href: 'admin-oauth-apps',
-		i18nLabel: 'OAuth Apps',
+		i18nLabel: 'Third_party_login',
 		permissionGranted: (): boolean => hasAllPermission('manage-oauth-apps'),
 	},
 	{

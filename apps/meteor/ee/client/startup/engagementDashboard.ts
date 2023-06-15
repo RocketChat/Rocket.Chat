@@ -16,7 +16,7 @@ onToggledFeature('engagement-dashboard', {
 		Meteor.startup(() => {
 			registerAdminSidebarItem({
 				href: '/admin/engagement-dashboard',
-				i18nLabel: 'Engagement Dashboard',
+				i18nLabel: 'Engagement',
 				icon: 'file-keynote',
 				permissionGranted: () => hasAllPermission('view-engagement-dashboard'),
 			});
