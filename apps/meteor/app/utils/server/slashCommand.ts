@@ -18,8 +18,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		console.log('stub slashCommand started', command);
-
 		return slashCommands.run({
 			command: command.cmd,
 			params: command.params,
