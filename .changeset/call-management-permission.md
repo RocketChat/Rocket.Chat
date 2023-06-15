@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
 fix: Permission to start conference calls was not being considered
