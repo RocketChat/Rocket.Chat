@@ -15,7 +15,6 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { navigate } from '../../../../client/providers/RouterProvider';
-import { createSearchParams } from '../../../../lib/router';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -99,8 +98,9 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			}
 			const route = subscription.t === 'c' ? 'channel' : 'group';
 			navigate({
-				pathname: FlowRouter.path(route, { name: subscription.name }),
-				search: `?${createSearchParams(FlowRouter.current().queryParams).toString()}`,
+				pattern: route,
+				params: { name: subscription.name },
+				search: FlowRouter.current().queryParams,
 			});
 		}
 

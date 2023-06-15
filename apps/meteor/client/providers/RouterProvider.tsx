@@ -5,7 +5,6 @@ import { Tracker } from 'meteor/tracker';
 import type { FC } from 'react';
 import React from 'react';
 
-import { createSearchParams } from '../../lib/router';
 import { createSubscription } from '../lib/createSubscription';
 
 export const navigate = (
@@ -15,6 +14,16 @@ export const navigate = (
 				pathname?: string;
 				search?: string;
 				hash?: string;
+		  }
+		| {
+				pathname: string;
+				search?: Record<string, string>;
+				hash?: undefined;
+		  }
+		| {
+				pattern: string;
+				params: Record<string, string>;
+				search?: Record<string, string>;
 		  }
 		| number,
 	options?: {
@@ -28,6 +37,34 @@ export const navigate = (
 
 	if (typeof toOrDelta === 'string') {
 		navigate({ pathname: toOrDelta }, options);
+		return;
+	}
+
+	if ('pattern' in toOrDelta) {
+		const { pattern, params, search } = toOrDelta;
+		const { replace } = options || {};
+		const fn = () => FlowRouter.go(pattern, params, search);
+
+		if (replace) {
+			FlowRouter.withReplaceState(fn);
+		} else {
+			fn();
+		}
+
+		return;
+	}
+
+	if ('pathname' in toOrDelta && toOrDelta.pathname !== undefined && typeof toOrDelta.search === 'object') {
+		const { pathname, search } = toOrDelta;
+		const { replace } = options || {};
+		const fn = () => FlowRouter.go(pathname, undefined, search);
+
+		if (replace) {
+			FlowRouter.withReplaceState(fn);
+		} else {
+			fn();
+		}
+
 		return;
 	}
 
@@ -65,13 +102,11 @@ const pushRoute = (
 ): ReturnType<RouterContextValue['pushRoute']> => {
 	const queryParams =
 		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
-	navigate(
-		{
-			pathname: FlowRouter.path(name, parameters),
-			search: `?${createSearchParams(queryParams).toString()}`,
-		},
-		{ replace: false },
-	);
+	navigate({
+		pathname: name,
+		params: parameters,
+		search: queryParams,
+	});
 };
 
 const replaceRoute = (
@@ -83,8 +118,9 @@ const replaceRoute = (
 		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
 	navigate(
 		{
-			pathname: FlowRouter.path(name, parameters),
-			search: `?${createSearchParams(queryParams).toString()}`,
+			pathname: name,
+			params: parameters,
+			search: queryParams,
 		},
 		{ replace: true },
 	);

@@ -143,8 +143,9 @@ FlowRouter.route('/', {
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/') as [routeName: keyof RouterPaths, routeParam: string];
 						navigate({
-							pathname: FlowRouter.path(room[0], { name: room[1] }),
-							search: `?${new URLSearchParams(FlowRouter.current().queryParams).toString()}`,
+							pattern: room[0],
+							params: { name: room[1] },
+							search: FlowRouter.current().queryParams,
 						});
 					} else {
 						navigate('/home');

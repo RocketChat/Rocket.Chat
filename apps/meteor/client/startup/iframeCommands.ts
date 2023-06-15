@@ -8,7 +8,6 @@ import { settings } from '../../app/settings/client';
 import { AccountBox } from '../../app/ui-utils/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
-import { createSearchParams } from '../../lib/router';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { navigate } from '../providers/RouterProvider';
@@ -29,7 +28,7 @@ const commands = {
 		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
 		navigate({
 			pathname: newPath,
-			search: `?${createSearchParams({ ...FlowRouter.current().queryParams, ...newParams }).toString()}`,
+			search: { ...FlowRouter.current().queryParams, ...newParams },
 		});
 	},
 

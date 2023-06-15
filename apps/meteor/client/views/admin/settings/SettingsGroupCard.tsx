@@ -1,7 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Card } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -27,14 +26,6 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 	const t = useTranslation();
 	const router = useRoute('admin-settings');
 
-	const handleOpenGroup = useMutableCallback(() => {
-		if (id) {
-			router.push({
-				group: id,
-			});
-		}
-	});
-
 	return (
 		<Card data-qa-id={id}>
 			<Card.Title>{t(title)}</Card.Title>
@@ -44,7 +35,9 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 				</Box>
 			</Card.Body>
 			<Card.Footer>
-				<Button onClick={handleOpenGroup}>{t('Open')}</Button>
+				<Button is='a' href={router.getPath({ group: id })}>
+					{t('Open')}
+				</Button>
 			</Card.Footer>
 		</Card>
 	);

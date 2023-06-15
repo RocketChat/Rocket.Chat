@@ -29,7 +29,14 @@ type RouteTuple = [
 type RouterContextMockProps = {
 	children?: ReactNode;
 	initialRoute?: RouteTuple;
-	navigate?: (toOrDelta: string | number | { pathname?: string; search?: string; hash?: string }) => void;
+	navigate?: (
+		toOrDelta:
+			| string
+			| number
+			| { pathname?: string; search?: string; hash?: string }
+			| { pattern: string; params: Record<string, string>; search?: Record<string, string> }
+			| { pathname: string; search?: Record<string, string> },
+	) => void;
 	pushRoute?: (...args: RouteTuple) => void;
 	replaceRoute?: (...args: RouteTuple) => void;
 };

@@ -17,7 +17,6 @@ import type {
 	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { createSearchParams } from '../../../lib/router';
 import { navigate } from '../../providers/RouterProvider';
 import RoomOpener from '../../views/room/RoomOpener';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
@@ -91,8 +90,9 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 
 		navigate({
-			pathname: FlowRouter.path(config.route.name, routeData),
-			search: `?${createSearchParams(queryParams).toString()}`,
+			pattern: config.route.path ?? '/home',
+			params: routeData,
+			search: queryParams,
 		});
 	}
 

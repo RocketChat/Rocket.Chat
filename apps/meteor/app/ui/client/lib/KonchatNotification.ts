@@ -14,7 +14,6 @@ import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { createSearchParams, generatePath } from '../../../../lib/router';
 import { navigate } from '../../../../client/providers/RouterProvider';
 
 declare global {
@@ -114,36 +113,39 @@ class KonchatNotification {
 			switch (notification.payload?.type) {
 				case 'd':
 					return navigate({
-						pathname: generatePath('/direct/:rid/:tab?/:context?', {
+						pattern: '/direct/:rid/:tab?/:context?',
+						params: {
 							rid: notification.payload.rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						}),
-						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						},
+						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
 					});
 				case 'c':
 					return navigate({
-						pathname: generatePath('/channel/:name/:tab?/:context?', {
+						pattern: '/channel/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						}),
-						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						},
+						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
 					});
 				case 'p':
 					return navigate({
-						pathname: generatePath('/group/:name/:tab?/:context?', {
+						pattern: '/group/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
-						}),
-						search: `?${createSearchParams({ ...FlowRouter.current().queryParams, jump: notification.payload._id }).toString()}`,
+						},
+						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
 					});
 			}
 		};

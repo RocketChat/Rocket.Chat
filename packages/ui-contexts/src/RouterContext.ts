@@ -22,7 +22,18 @@ type Path = {
 	hash: Hash;
 };
 
-type To = Pathname | Partial<Path>;
+type To =
+	| Pathname
+	| Partial<Path>
+	| {
+			pattern: Paths[keyof Paths]['pattern'];
+			params: Record<string, string>;
+			search?: Record<string, string>;
+	  }
+	| {
+			pathname: Paths[keyof Paths]['pathname'];
+			search?: Record<string, string>;
+	  };
 
 type RelativeRoutingType = 'route' | 'path';
 
