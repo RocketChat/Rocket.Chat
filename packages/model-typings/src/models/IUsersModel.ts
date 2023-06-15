@@ -126,10 +126,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: string[], agentId: string): Promise<UpdateResult | Document>;
 
 	addBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
-	makeAgentsWithinBusinessHourAvailable(agentIds: string[]): Promise<UpdateResult | Document>;
+
+	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 

@@ -173,7 +173,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			).toArray();
 
 			const departmentsWithActiveBH = departments.filter(
-				({ businessHourId }) => businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1,
+				(dept): dept is ILivechatDepartment & Required<Pick<ILivechatDepartment, 'businessHourId'>> =>
+					!!dept.businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === dept.businessHourId) !== -1,
 			);
 
 			if (!departmentsWithActiveBH.length) {
@@ -191,6 +192,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 					if (isDefaultBHActive?._id) {
 						await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
+						await this.UsersRepository.makeAgentsWithinBusinessHourAvailable([agentId]);
 
 						bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
 						return true;
@@ -202,6 +204,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
 			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
+			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable([agentId]);
 
 			bhLogger.debug(
 				`Business hour status recheck passed for agentId: ${agentId}. Found following business hours to be active:`,
@@ -214,6 +217,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 		if (isDefaultBHActive?._id) {
 			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
+			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable([agentId]);
 
 			bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
 			return true;

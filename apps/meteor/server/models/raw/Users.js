@@ -842,9 +842,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -860,9 +857,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -886,9 +880,9 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	makeAgentsWithinBusinessHourAvailable(agentIds = []) {
+	makeAgentsWithinBusinessHourAvailable(agentIds) {
 		const query = {
-			_id: { $in: agentIds },
+			...(agentIds && { _id: { $in: agentIds } }),
 			roles: 'livechat-agent',
 			// Exclude away users
 			status: 'online',
@@ -926,9 +920,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
