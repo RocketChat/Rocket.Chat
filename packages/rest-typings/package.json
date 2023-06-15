@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "0.0.1",
+	"version": "6.2.6",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -25,11 +25,12 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "^1.32.0",
+		"@rocket.chat/apps-engine": "1.39.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-kit": "next",
-		"ajv": "^8.11.0"
+		"ajv": "^8.11.0",
+		"ajv-formats": "^2.1.1"
 	},
 	"volta": {
 		"extends": "../../package.json"

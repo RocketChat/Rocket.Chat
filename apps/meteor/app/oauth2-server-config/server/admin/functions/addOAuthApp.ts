@@ -12,7 +12,7 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
-	const user = await Users.findOne(uid, { projection: { username: 1 } });
+	const user = await Users.findOneById(uid, { projection: { username: 1 } });
 
 	if (!user?.username) {
 		// TODO: username is required, but not always present

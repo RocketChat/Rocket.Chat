@@ -1,7 +1,7 @@
 {
   "500": "অভ্যন্তরীণ সার্ভারের ত্রুটি",
-  "__count__empty_rooms_will_be_removed_automatically": null,
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": null,
+  "__count__empty_rooms_will_be_removed_automatically": "_কাউন্ট_শূন্যস্থানসমূহ স্বয়ংক্রিয়ভাবে সরানো হবে।",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "_কাউন্ট_শূন্যস্থানসমূহ স্বয়ংক্রিয়ভাবে সরানো হবে:<br/>_স্থান_",
   "@username": "@ইউজারনেইম",
   "@username_message": "@ইউজারনেইম<message>",
   "#channel": "#channel",

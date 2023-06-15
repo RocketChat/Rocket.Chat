@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -82,6 +83,37 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('inquiry');
 				});
 		});
+
+		it('should get an inquiry by room id', async () => {
+			await createAgent();
+			const visitor = await createVisitor();
+			await makeAgentAvailable();
+			const room = await createLivechatRoom(visitor.token);
+			const inquiry = await fetchInquiry(room._id);
+			await request
+				.get(api(`livechat/inquiries.getOne?roomId=${room._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('inquiry');
+					expect(res.body.inquiry).to.have.property('_id', inquiry._id);
+					expect(res.body.inquiry).to.have.property('rid', room._id);
+					expect(res.body.inquiry).to.have.property('ts');
+					expect(res.body.inquiry.ts).to.be.a('string');
+					expect(res.body.inquiry).to.have.property('status', 'queued');
+					expect(res.body.inquiry).to.have.property('name', visitor.name);
+					expect(res.body.inquiry).to.have.property('t', 'l');
+					expect(res.body.inquiry).to.have.property('priorityWeight');
+					expect(res.body.inquiry).to.have.property('estimatedWaitingTimeQueue');
+					expect(res.body.inquiry.source).to.have.property('type', 'api');
+					expect(res.body.inquiry).to.have.property('_updatedAt');
+					expect(res.body.inquiry).to.have.property('queuedAt');
+					expect(res.body.inquiry).to.have.property('v').and.be.an('object');
+					expect(res.body.inquiry.v).to.have.property('_id', visitor._id);
+				});
+		});
 	});
 
 	describe('POST livechat/inquiries.take', () => {
@@ -139,12 +171,10 @@ describe('LIVECHAT - inquiries', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					// TODO has this worked before?
-					// expect(res.body).to.have.property('inquiry');
-					// expect(res.body.inquiry).to.have.property('servedBy');
-					// expect(res.body.inquiry.servedBy).to.have.property('_id', agent._id);
-					// expect(res.body.inquiry.source.type).to.equal('api');
 				});
+			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
+			expect(inquiry2.source.type).to.equal('api');
+			expect(inquiry2.status).to.equal('taken');
 		}).timeout(5000);
 	});
 
@@ -156,7 +186,7 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return an array of inquiries', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			await request
-				.get(api('livechat/inquiries.queued'))
+				.get(api('livechat/inquiries.queuedForUser'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -166,6 +196,20 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				});
+		});
+		it('should validate all returned inquiries are queued', async () => {
+			await request
+				.get(api('livechat/inquiries.queuedForUser'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect(async (res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.inquiries).to.be.an('array');
+					for (const inquiry of res.body.inquiries) {
+						expect(inquiry).to.have.property('status', 'queued');
+					}
 				});
 		});
 	});

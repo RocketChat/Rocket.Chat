@@ -342,7 +342,7 @@ describe('SAML', () => {
 			it('should reject a xml with multiple responses', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(duplicatedSamlResponse, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML responses');
+					expect(err).to.be.an('error');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});

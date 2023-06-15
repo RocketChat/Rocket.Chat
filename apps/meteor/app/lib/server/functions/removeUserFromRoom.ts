@@ -3,9 +3,8 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Message, Team } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -14,7 +13,7 @@ export const removeUserFromRoom = async function (
 	user: IUser,
 	options?: { byUser: Pick<IUser, '_id' | 'username'> },
 ): Promise<void> {
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		return;
@@ -30,7 +29,7 @@ export const removeUserFromRoom = async function (
 		throw error;
 	}
 
-	callbacks.run('beforeLeaveRoom', user, room);
+	await callbacks.run('beforeLeaveRoom', user, room);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
 		projection: { _id: 1 },
@@ -66,7 +65,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	// TODO: CACHE: maybe a queue?
-	callbacks.run('afterLeaveRoom', user, room);
+	await callbacks.run('afterLeaveRoom', user, room);
 
 	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };

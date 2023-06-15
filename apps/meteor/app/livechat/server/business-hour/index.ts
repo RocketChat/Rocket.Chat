@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { BusinessHourManager } from './BusinessHourManager';
 import { SingleBusinessHourBehavior } from './Single';
-import { cronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { callbacks } from '../../../../lib/callbacks';
 import { DefaultBusinessHour } from './Default';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);
 
-Meteor.startup(() => {
-	const { BusinessHourBehaviorClass } = callbacks.run('on-business-hour-start', {
+Meteor.startup(async () => {
+	const { BusinessHourBehaviorClass } = await callbacks.run('on-business-hour-start', {
 		BusinessHourBehaviorClass: SingleBusinessHourBehavior,
 	});
 	businessHourManager.registerBusinessHourBehavior(new BusinessHourBehaviorClass());

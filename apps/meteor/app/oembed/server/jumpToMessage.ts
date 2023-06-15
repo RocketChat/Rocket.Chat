@@ -2,20 +2,20 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
-const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
+const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
-		if (deep < settings.get<number>('Message_QuoteChainLimit')) {
-			attachments.attachments?.map((msg) => recursiveRemove(msg, deep + 1));
+		if (deep < quoteChainLimit - 1) {
+			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
 		} else {
 			delete attachments.attachments;
 		}
@@ -29,7 +29,12 @@ const validateAttachmentDeepness = (message: IMessage): IMessage => {
 		return message;
 	}
 
-	message.attachments = message.attachments?.map((attachment) => recursiveRemove(attachment));
+	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
+	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
+		delete message.attachments;
+	}
+
+	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
 
 	return message;
 };
@@ -43,9 +48,6 @@ callbacks.add(
 		}
 
 		const currentUser = await Users.findOneById(msg.u._id);
-		if (!currentUser) {
-			return msg;
-		}
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
@@ -75,9 +77,12 @@ callbacks.add(
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
-			const room = Rooms.findOneById(jumpToMessage.rid);
+			const room = await Rooms.findOneById<IOmnichannelRoom>(jumpToMessage.rid);
+			if (!room) {
+				continue;
+			}
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || (await canAccessRoomAsync(room, currentUser));
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await canAccessRoomAsync(room, currentUser)));
 			if (!canAccessRoomForUser) {
 				continue;
 			}
@@ -89,7 +94,11 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
+			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+
+			msg.attachments.push(
+				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
+			);
 			item.ignoreParse = true;
 		}
 

@@ -59,7 +59,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
-				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length ? (
+				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length ? (
 					paginatedAppRequests.data.data.map((request) => (
 						<AppRequestItem
 							key={request.id}
@@ -77,7 +77,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					</States>
 				)}
 			</Box>
-			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length && (
+			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length && (
 				<Pagination
 					divider
 					count={paginatedAppRequests.data.meta.total}

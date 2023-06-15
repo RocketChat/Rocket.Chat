@@ -137,7 +137,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.list': {
-		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
 			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
 		}>;
 	};

@@ -4,4 +4,5 @@ export interface IMatrixBridgedUser extends IRocketChatRecord {
 	uid: string;
 	mui: string;
 	remote: boolean;
+	fromServer?: string;
 }

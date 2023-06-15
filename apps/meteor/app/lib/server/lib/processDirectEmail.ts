@@ -1,10 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, Users } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -13,7 +11,7 @@ import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
+export const processDirectEmail = async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -61,7 +59,12 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 		return;
 	}
 
-	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
+	const roomInfo = await Rooms.findOneById(prevMessage.rid);
+
+	if (!roomInfo) {
+		// room doesn't exist anymore
+		return;
+	}
 
 	const room = await canAccessRoomAsync(roomInfo, user);
 	if (!room) {
@@ -118,4 +121,4 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	};
 
 	return sendMessage(user, message, roomInfo);
-});
+};

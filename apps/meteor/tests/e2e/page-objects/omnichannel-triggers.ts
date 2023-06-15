@@ -13,7 +13,7 @@ export class OmnichannelTriggers {
 	}
 
 	get btnNew(): Locator {
-		return this.page.locator('text= New');
+		return this.page.locator('text=New');
 	}
 
 	get Name(): Locator {

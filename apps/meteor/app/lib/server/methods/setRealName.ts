@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setRealName(name) {
+	async setRealName(name) {
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
 		}
 
-		if (!setRealName(Meteor.userId(), name)) {
+		if (!(await setRealName(Meteor.userId(), name))) {
 			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', {
 				method: 'setRealName',
 			});

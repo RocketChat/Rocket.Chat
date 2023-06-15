@@ -3,9 +3,9 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { FileUpload } from '../../app/file-upload/server';
-import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
@@ -41,19 +41,19 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
+			user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
 		} else {
 			user = await Meteor.userAsync();
 		}
 
-		if (user == null) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
 				method: 'resetAvatar',
 			});
 		}
 
-		FileUpload.getStore('Avatars').deleteByName(user.username);
-		Users.unsetAvatarData(user._id);
+		await FileUpload.getStore('Avatars').deleteByName(user.username);
+		await Users.unsetAvatarData(user._id);
 		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
 	},
 });

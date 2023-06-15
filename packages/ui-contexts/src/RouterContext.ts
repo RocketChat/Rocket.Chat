@@ -19,11 +19,15 @@ export type RouterContextValue = {
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
-	pushRoute: (name: RouteName, parameters: RouteParameters | undefined, queryStringParameters: QueryStringParameters | undefined) => void;
+	pushRoute: (
+		name: RouteName,
+		parameters: RouteParameters | undefined,
+		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
+	) => void;
 	replaceRoute: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
-		queryStringParameters: QueryStringParameters | undefined,
+		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 	) => void;
 	queryRouteParameter: (name: string) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 	queryQueryStringParameter: (

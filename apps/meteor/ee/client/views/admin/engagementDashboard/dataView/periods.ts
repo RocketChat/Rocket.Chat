@@ -41,9 +41,9 @@ const periods = [
 	},
 ] as const;
 
-export type Period = typeof periods[number];
+export type Period = (typeof periods)[number];
 
-export const getPeriod = (key: typeof periods[number]['key']): Period => {
+export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
@@ -54,7 +54,7 @@ export const getPeriod = (key: typeof periods[number]['key']): Period => {
 };
 
 export const getPeriodRange = (
-	key: typeof periods[number]['key'],
+	key: (typeof periods)[number]['key'],
 	utc = false,
 ): {
 	start: Date;

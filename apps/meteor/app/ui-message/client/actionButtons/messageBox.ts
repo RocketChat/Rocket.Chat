@@ -1,11 +1,11 @@
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { Rooms } from '../../../models/client';
+import { ChatRoom } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 import { triggerActionButtonAction } from '../ActionManager';
-import { t } from '../../../utils/client';
+import { t } from '../../../utils/lib/i18n';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { asReactiveSource } from '../../../../client/lib/tracker';
@@ -20,7 +20,7 @@ export const onAdded = (button: IUIActionButton): void =>
 		condition() {
 			return applyButtonFilters(
 				button,
-				Rooms.findOne(
+				ChatRoom.findOne(
 					asReactiveSource(
 						(cb) => RoomManager.on('changed', cb),
 						() => RoomManager.opened,
@@ -28,12 +28,13 @@ export const onAdded = (button: IUIActionButton): void =>
 				),
 			);
 		},
-		action() {
+		action(params) {
 			void triggerActionButtonAction({
-				rid: RoomManager.opened,
+				rid: params.rid,
+				tmid: params.tmid,
 				actionId: button.actionId,
 				appId: button.appId,
-				payload: { context: button.context },
+				payload: { context: button.context, message: params.chat.composer?.text },
 			});
 		},
 	});

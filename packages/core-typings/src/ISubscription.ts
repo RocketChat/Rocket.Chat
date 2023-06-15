@@ -51,6 +51,7 @@ export interface ISubscription extends IRocketChatRecord {
 	desktopNotifications?: 'all' | 'mentions' | 'nothing';
 	mobilePushNotifications?: 'all' | 'mentions' | 'nothing';
 	emailNotifications?: 'all' | 'mentions' | 'nothing';
+	userHighlights?: string[];
 	blocked?: unknown;
 	blocker?: unknown;
 	autoTranslate?: boolean;

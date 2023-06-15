@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -68,16 +69,20 @@ const InvitesPage = (): ReactElement => {
 	const notSmall = useMediaQuery('(min-width: 768px)');
 
 	const headers = useMemo(
-		() => [
-			<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>,
-			notSmall && [
-				<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell w='20%'>{t('Expiration')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell w='10%'>{t('Uses')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell w='10%'>{t('Uses_left')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell />,
-			],
-		],
+		() => (
+			<>
+				<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
+				{notSmall && (
+					<>
+						<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell w='20%'>{t('Expiration')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell w='10%'>{t('Uses')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell w='10%'>{t('Uses_left')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell />
+					</>
+				)}
+			</>
+		),
 		[notSmall, t],
 	);
 
@@ -94,7 +99,6 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-
 					{isSuccess && data && data.length > 0 && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
@@ -106,14 +110,7 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-
-					{isSuccess && data && data.length === 0 && (
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_results_found')}</StatesTitle>
-						</States>
-					)}
-
+					{isSuccess && data && data.length === 0 && <GenericNoResults />}
 					{isError && (
 						<States>
 							<StatesIcon name='warning' variation='danger' />

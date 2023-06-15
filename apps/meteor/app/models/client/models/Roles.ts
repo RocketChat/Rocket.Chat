@@ -50,8 +50,6 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 
 	public declare _collection: MinimongoCollection<IRole>['_collection'];
 
-	public declare direct: MinimongoCollection<IRole>['direct'];
-
 	public declare queries: MinimongoCollection<IRole>['queries'];
 }
 

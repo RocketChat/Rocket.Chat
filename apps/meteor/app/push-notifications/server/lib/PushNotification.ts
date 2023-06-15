@@ -128,11 +128,11 @@ class PushNotification {
 			throw new Error('Message sender not found');
 		}
 
-		let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+		let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 		if (message.mentions && Object.keys(message.mentions).length > 0 && settings.get('UI_Use_Real_Name')) {
 			notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 		}
-		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+		notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
 		const pushData = await getPushData({
 			room,

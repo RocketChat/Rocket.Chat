@@ -15,7 +15,7 @@ const hoverStyle = css`
 `;
 
 const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
-	const displayName = useUserDisplayName(user);
+	const displayName = useUserDisplayName(user || {});
 	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 
 	return (
@@ -30,7 +30,7 @@ const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 			className={hoverStyle}
 		>
 			<Box>
-				<UserAvatar username={user.username || ''} size='x24' />
+				<UserAvatar username={user?.username || ''} size='x24' />
 				<Box is='span' mis='x8'>
 					{displayName}
 				</Box>

@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -28,7 +29,7 @@ type RoomFilters = {
 	text: string;
 };
 
-const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -38,7 +39,7 @@ const roomTypeI18nMap = {
 	discussion: 'Discussion',
 } as const;
 
-const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
+const getRoomType = (room: IRoom): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
 	if (room.teamMain) {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
@@ -175,9 +176,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	);
 
 	const renderRow = useCallback(
-		(room) => {
+		(room: IRoom) => {
 			const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
-			const icon = roomCoordinator.getIcon(room);
+			const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
 			const roomName = getRoomDisplayName(room);
 
 			return (
@@ -187,7 +188,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 							<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 							<Box display='flex' style={style} mi='x8'>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-									{icon && <Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />}
+									{icon && <Icon mi='x2' name={icon} fontScale='p2m' color='hint' />}
 									<Box fontScale='p2m' style={style} color='default' qa-room-name={roomName}>
 										{roomName}
 									</Box>
@@ -239,12 +240,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					/>
 				</>
 			)}
-			{isSuccess && data && data.rooms.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isSuccess && data && data.rooms.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

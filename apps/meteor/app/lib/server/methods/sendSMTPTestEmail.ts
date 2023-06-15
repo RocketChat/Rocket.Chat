@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 		try {
-			Mailer.send({
+			await Mailer.send({
 				to: user.emails[0].address,
 				from: settings.get('From_Email'),
 				subject: 'SMTP Test Email',

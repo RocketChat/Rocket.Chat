@@ -1,8 +1,7 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import { useStream, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../../../contexts/RoomContext';
 import type { ComposerMessageProps } from '../ComposerMessage';
@@ -12,30 +11,18 @@ import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
 const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
-	const { queuedAt, servedBy, _id, open, onHold } = useOmnichannelRoom();
+	const { servedBy, queuedAt, open, onHold } = useOmnichannelRoom();
+	const userId = useUserId();
 
 	const isSubscribed = useUserIsSubscribed();
-	const [isInquired, setIsInquired] = useState(() => !servedBy && queuedAt);
-	const [isOpen, setIsOpen] = useState(() => open);
-
-	const subscribeToRoom = useStream('room-data');
 
 	const t = useTranslation();
 
-	useEffect(
-		() =>
-			subscribeToRoom(_id, (entry: IOmnichannelRoom) => {
-				setIsInquired(!entry.servedBy && entry.queuedAt);
-				setIsOpen(entry.open);
-			}),
-		[_id, subscribeToRoom],
-	);
+	const isInquired = !servedBy && queuedAt;
 
-	useEffect(() => {
-		setIsInquired(!servedBy && queuedAt);
-	}, [queuedAt, servedBy, _id]);
+	const isSameAgent = servedBy?._id === userId;
 
-	if (!isOpen) {
+	if (!open) {
 		return (
 			<footer className='rc-message-box footer'>
 				<MessageFooterCallout>{t('This_conversation_is_already_closed')}</MessageFooterCallout>
@@ -51,7 +38,7 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 		return <ComposerOmnichannelInquiry />;
 	}
 
-	if (!isSubscribed) {
+	if (!isSubscribed && !isSameAgent) {
 		return <ComposerOmnichannelJoin />;
 	}
 

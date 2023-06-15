@@ -77,7 +77,7 @@ export class AppApisBridge extends ApiBridge {
 		if (router[method] instanceof Function) {
 			router[method](
 				routePath,
-				Meteor.bindEnvironment(authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired })),
+				authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired }),
 				Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)),
 			);
 		}

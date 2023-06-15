@@ -9,6 +9,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
+import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 type ShareMessageProps = {
@@ -61,8 +62,10 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
 
+	const displayName = useUserDisplayName(message.u);
+
 	const attachment = {
-		author_name: message.u?.username,
+		author_name: String(displayName),
 		author_link: '',
 		author_icon: avatarUrl,
 		message_link: '',

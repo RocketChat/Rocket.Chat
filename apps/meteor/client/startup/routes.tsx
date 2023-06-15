@@ -2,12 +2,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
 import MainLayout from '../views/root/MainLayout';
@@ -52,15 +52,15 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(async () => {
-					const user = (await Meteor.userAsync()) as IUser | null;
+				setTimeout(async () => {
+					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
 					} else {
 						FlowRouter.go('home');
 					}
-				});
+				}, 0);
 				c.stop();
 			}
 		});
@@ -81,13 +81,13 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			const result = await sdk.rest.get(`/v1/livechat/visitor/${queryParams.token}`);
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
 			}
 
-			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Visitor_does_not_exist') });
+			dispatchToastMessage({ type: 'error', message: t('Visitor_does_not_exist') });
 			return;
 		}
 

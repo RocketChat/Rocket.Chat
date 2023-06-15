@@ -11,19 +11,19 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import ComposerBoxPopup from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../../../../../../../app/ui-message/client/popup/components/composerBoxPopupPreview/ComposerBoxPopupPreview';
 import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
+import { useEnablePopupPreview } from '../../../../../../../app/ui-message/client/popup/hooks/useEnablePopupPreview';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -41,6 +41,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -108,15 +109,16 @@ const MessageBox = ({
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
+	const chat = useChat();
+	const t = useTranslation();
+	const room = useUserRoom(rid);
+	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
-
-	const t = useTranslation();
-
-	const chat = useChat();
 
 	if (!chat) {
 		throw new Error('Chat context not found');
@@ -150,17 +152,13 @@ const MessageBox = ({
 			return;
 		}
 
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
-			return;
-		}
-
-		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+		const ref = messageComposerRef.current as HTMLElement;
+		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
-		const text = chat?.composer?.text ?? '';
-		chat?.composer?.clear();
+		const text = chat.composer?.text ?? '';
+		chat.composer?.clear();
 
 		onSend?.({
 			value: text,
@@ -181,14 +179,14 @@ const MessageBox = ({
 
 			event.preventDefault();
 			if (!isSending) {
-				chat?.composer?.insertNewLine();
+				chat.composer?.insertNewLine();
 				return false;
 			}
 			handleSendMessage();
 			return false;
 		}
 
-		if (chat?.composer && handleFormattingShortcut(event, [...formattingButtons], chat?.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
 			return;
 		}
 
@@ -198,13 +196,13 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				if (chat?.currentEditing) {
+				if (chat.currentEditing) {
 					event.preventDefault();
 					event.stopPropagation();
 
-					chat?.currentEditing.reset().then((reset) => {
+					chat.currentEditing.reset().then((reset) => {
 						if (!reset) {
-							chat?.currentEditing?.cancel();
+							chat.currentEditing?.cancel();
 						}
 					});
 
@@ -335,19 +333,20 @@ const MessageBox = ({
 		select,
 		commandsRef,
 		callbackRef: c,
+		filter,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
+	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+
 	return (
 		<>
-			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
+			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
-			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
-
-			{popup && !popup.preview && (
+			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}
 			{/*
@@ -370,7 +369,7 @@ const MessageBox = ({
 			)}
 
 			{readOnly && (
-				<Box mbe='x4'>
+				<Box mbe='x4' display='flex'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
@@ -380,12 +379,12 @@ const MessageBox = ({
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
-					aria-label={t('Message')}
+					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
 					onChange={setTyping}
 					style={textAreaStyle}
-					placeholder={t('Message')}
+					placeholder={composerPlaceholder}
 					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}

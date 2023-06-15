@@ -1,8 +1,7 @@
 import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
@@ -44,7 +43,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 
 	parseUrlsInMessage(message);
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
 
@@ -63,7 +62,11 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		},
 	);
 
-	const room = Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid);
+
+	if (!room) {
+		return;
+	}
 
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
@@ -71,10 +74,10 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(async function () {
+	setImmediate(async function () {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
-			callbacks.run('afterSaveMessage', msg, room, user._id);
+			await callbacks.run('afterSaveMessage', msg, room, user._id);
 		}
 	});
 };

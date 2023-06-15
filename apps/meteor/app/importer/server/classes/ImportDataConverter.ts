@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ObjectId } from 'mongodb';
 import type {
@@ -13,15 +12,19 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
-import { ImportData, Rooms as RoomsRaw, Users, Subscriptions } from '@rocket.chat/models';
+import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { Rooms } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -49,6 +52,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
+	skipNewUsers?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -80,6 +84,7 @@ export class ImportDataConverter {
 		this._options = options || {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
+			skipNewUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -282,15 +287,15 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? Accounts.createUser({
+			? await Accounts.createUserAsync({
 					email: userData.emails[0],
 					password,
 			  })
-			: Accounts.createUser({
+			: await Accounts.createUserAsync({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,
-			  });
+			  } as any);
 
 		const user = await Users.findOneById(userId, {});
 		if (!user) {
@@ -339,6 +344,10 @@ export class ImportDataConverter {
 
 				let existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
+					await this.skipRecord(_id);
+					continue;
+				}
+				if (!existingUser && this._options.skipNewUsers) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -512,7 +521,7 @@ export class ImportDataConverter {
 
 		// If the importId was not found, check if we have a room with that name
 		const roomName = await getValidRoomName(importId.trim(), undefined, { allowDuplicates: true });
-		const room = await RoomsRaw.findOneByNonValidatedName(roomName, { projection: { name: 1 } });
+		const room = await Rooms.findOneByNonValidatedName(roomName, { projection: { name: 1 } });
 		if (room?.name) {
 			this.addRoomToCache(importId, room._id);
 			this.addRoomNameToCache(importId, room.name);
@@ -622,7 +631,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					await insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
@@ -638,7 +647,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await RoomsRaw.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
@@ -646,17 +655,15 @@ export class ImportDataConverter {
 		}
 	}
 
-	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
+	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
 		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
-			Meteor.runAsUser(startedByUserId, () => {
-				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
-			});
+			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
 
-		this.updateRoomId(room._id, roomData);
+		await this.updateRoomId(room._id, roomData);
 	}
 
 	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
@@ -677,7 +684,7 @@ export class ImportDataConverter {
 			},
 		};
 
-		const room = await RoomsRaw.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			return this.addRoomToCache(importId, room._id);
 		}
@@ -697,7 +704,7 @@ export class ImportDataConverter {
 			},
 		};
 
-		const room = await RoomsRaw.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			if (!this._roomCache.has(importId)) {
 				this.addRoomToCache(importId, room._id);
@@ -773,7 +780,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	updateRoomId(_id: string, roomData: IImportChannel): void {
+	async updateRoomId(_id: string, roomData: IImportChannel): Promise<void> {
 		const set = {
 			ts: roomData.ts,
 			topic: roomData.topic,
@@ -795,7 +802,7 @@ export class ImportDataConverter {
 		}
 
 		if (roomUpdate.$set || roomUpdate.$addToSet) {
-			Rooms.update({ _id: roomData._id }, roomUpdate);
+			await Rooms.updateOne({ _id: roomData._id }, roomUpdate);
 		}
 	}
 
@@ -839,21 +846,28 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, () => {
-				const roomInfo =
-					roomData.t === 'd'
-						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+			let roomInfo;
+			if (roomData.t === 'd') {
+				roomInfo = await createDirectMessage(members, startedByUserId, true);
+			} else {
+				if (!roomData.name) {
+					return;
+				}
+				if (roomData.t === 'p') {
+					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+				} else {
+					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+				}
+			}
 
-				roomData._id = roomInfo.rid;
-			});
+			roomData._id = roomInfo.rid;
 		} catch (e) {
 			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);
 			throw e;
 		}
 
-		this.updateRoomId(roomData._id as 'string', roomData);
+		await this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
 	async convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Promise<Array<string>> {
@@ -890,7 +904,7 @@ export class ImportDataConverter {
 
 	async findExistingRoom(data: IImportChannel): Promise<IRoom | null> {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
-			const room = await RoomsRaw.findOneById('GENERAL', {});
+			const room = await Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general
 			if (!room) {
 				throw new Error('importer-channel-general-not-found');
@@ -905,7 +919,7 @@ export class ImportDataConverter {
 				throw new Error('importer-channel-missing-users');
 			}
 
-			return RoomsRaw.findDirectRoomContainingAllUsernames(users, {});
+			return Rooms.findDirectRoomContainingAllUsernames(users, {});
 		}
 
 		if (!data.name) {
@@ -913,7 +927,7 @@ export class ImportDataConverter {
 		}
 
 		const roomName = await getValidRoomName(data.name.trim(), undefined, { allowDuplicates: true });
-		return RoomsRaw.findOneByNonValidatedName(roomName, {});
+		return Rooms.findOneByNonValidatedName(roomName, {});
 	}
 
 	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
@@ -943,7 +957,7 @@ export class ImportDataConverter {
 				const existingRoom = await this.findExistingRoom(data);
 
 				if (existingRoom) {
-					this.updateRoom(existingRoom, data, startedByUserId);
+					await this.updateRoom(existingRoom, data, startedByUserId);
 				} else {
 					await this.insertRoom(data, startedByUserId);
 				}
@@ -962,7 +976,7 @@ export class ImportDataConverter {
 	}
 
 	async archiveRoomById(rid: string) {
-		await RoomsRaw.archiveById(rid);
+		await Rooms.archiveById(rid);
 		await Subscriptions.archiveByRoomId(rid);
 	}
 

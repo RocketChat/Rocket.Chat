@@ -1043,6 +1043,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
+	setHiddenByIds(ids: string[], hidden: boolean): Promise<Document | UpdateResult> {
+		if (hidden == null) {
+			hidden = true;
+		}
+		const query = { _id: { $in: ids } };
+
+		const update: UpdateFilter<IMessage> = {
+			$set: {
+				_hidden: hidden,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult> {
 		const query = { _id };
 
@@ -1068,6 +1083,33 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	setAsDeletedByIdsAndUser(ids: string[], user: IMessage['u']): Promise<Document | UpdateResult> {
+		const query = { _id: { $in: ids } };
+
+		const update: UpdateFilter<IMessage> = {
+			$set: {
+				msg: '',
+				t: 'rm',
+				urls: [],
+				mentions: [],
+				attachments: [],
+				reactions: {},
+				editedAt: new Date(),
+				editedBy: {
+					_id: user._id,
+					username: user.username,
+				},
+			},
+			$unset: {
+				md: 1,
+				blocks: 1,
+				tshow: 1,
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 
 	setPinnedByIdAndUserId(
@@ -1221,7 +1263,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IMessage['u'], '_id' | 'username' | 'name'>,
 		unread?: boolean,
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>> {
@@ -1233,6 +1275,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			u: {
 				_id: user._id,
 				username: user.username,
+				name: user.name,
 			},
 			groupable: false as const,
 			...(unread && { unread: true }),
@@ -1311,8 +1354,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount;
 
-			// decrease message count
-			await Rooms.decreaseMessageCountById(rid, count);
+			if (count) {
+				// decrease message count
+				await Rooms.decreaseMessageCountById(rid, count);
+			}
 
 			return count;
 		}
@@ -1334,8 +1379,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			})
 		).deletedCount;
 
-		// decrease message count
-		await Rooms.decreaseMessageCountById(rid, count);
+		if (count) {
+			// decrease message count
+			await Rooms.decreaseMessageCountById(rid, count);
+		}
 
 		return count;
 	}

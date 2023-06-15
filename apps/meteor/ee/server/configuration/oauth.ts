@@ -54,7 +54,7 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 	}
 }
 
-onLicense('oauth-enterprise', () => {
+await onLicense('oauth-enterprise', () => {
 	callbacks.add('afterProcessOAuthUser', async (auth: IOAuthUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
 		const settings = getOAuthSettings(auth.serviceName);

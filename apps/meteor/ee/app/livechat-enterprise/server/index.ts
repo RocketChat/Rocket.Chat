@@ -17,7 +17,6 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/handleNextAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
-import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';
@@ -30,7 +29,7 @@ import { onLicense } from '../../license/server';
 import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
-onLicense('livechat-enterprise', async () => {
+await onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
 	await import('./startup');

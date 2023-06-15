@@ -3,10 +3,17 @@ import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarScrollableContent,
+	ContextualbarBack,
+	ContextualbarIcon,
+	ContextualbarClose,
+	ContextualbarTitle,
+} from '../../../../../components/Contextualbar';
 import InfoPanel from '../../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
-import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
@@ -61,13 +68,13 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled' />}
-				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
+				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p='x24'>
 				<InfoPanel>
 					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={room} />
@@ -134,7 +141,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						)}
 					</InfoPanel.Section>
 				</InfoPanel>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };

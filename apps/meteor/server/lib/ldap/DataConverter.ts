@@ -30,8 +30,17 @@ export class LDAPDataConverter extends VirtualDataConverter {
 			return;
 		}
 
-		// Search by email and username
-		return super.findExistingUser(data);
+		if (data.emails.length) {
+			const emailUser = await Users.findOneWithoutLDAPByEmailAddress(data.emails[0], {});
+
+			if (emailUser) {
+				return emailUser;
+			}
+		}
+
+		if (data.username) {
+			return Users.findOneWithoutLDAPByUsernameIgnoringCase(data.username);
+		}
 	}
 
 	static async convertSingleUser(userData: IImportUser, options?: IConverterOptions): Promise<void> {

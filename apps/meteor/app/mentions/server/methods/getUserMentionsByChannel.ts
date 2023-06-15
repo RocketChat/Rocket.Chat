@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -31,7 +30,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
 		}
 
-		const room = Rooms.findOneById(roomId);
+		const room = await Rooms.findOneById(roomId);
 
 		if (!room || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
