@@ -8,7 +8,7 @@ import { Livechat } from '../../../app/livechat/server';
 
 export class LivechatService extends ServiceClassInternal implements ILivechatService {
 	async isOnline(department?: string, skipNoAgentSetting?: boolean, skipFallbackCheck?: boolean): Promise<boolean> {
-		return Livechat.online(department, skipNoAgentSetting, skipFallbackCheck);
+		return LivechatTyped.online(department, skipNoAgentSetting, skipFallbackCheck);
 	}
 
 	async sendMessage(props: { guest: IVisitor; message: IMessage; roomInfo: Record<string, unknown>; agent: string }): Promise<any> {
@@ -35,7 +35,8 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 		agent?: { agentId?: string; username?: string };
 		extraParams?: Record<string, any>;
 	}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
-		return Livechat.getRoom(props);
+		const { guest, rid, roomInfo, agent, extraParams } = props;
+		return LivechatTyped.getRoom(guest, { rid, msg: undefined }, { source: roomInfo?.source }, agent, extraParams);
 	}
 
 	async closeRoom(props: CloseRoomParams): Promise<void> {
@@ -53,7 +54,7 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 		connectionData?: string;
 		status?: string;
 	}): Promise<string> {
-		return Livechat.registerGuest(props as any);
+		return LivechatTyped.registerGuest(props as any);
 	}
 
 	transferVisitor(
