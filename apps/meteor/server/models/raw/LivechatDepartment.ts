@@ -123,8 +123,8 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
-	countByBusinessHourId(businessHourId: string): Promise<number> {
-		const query = { businessHourId };
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
+		const query = { businessHourId, _id: { $ne: departmentId } };
 		return this.col.countDocuments(query);
 	}
 

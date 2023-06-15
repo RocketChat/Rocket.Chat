@@ -141,8 +141,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!businessHour) {
 			return;
 		}
-		// Check if i'm the only department on this business hour
-		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourId(businessHour._id));
+		// Check if i'm the only department on this business hour, excluding myself
+		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourIdExcludingDepartmentId(businessHour._id, department._id));
 
 		// If i'm the only one, close the business hour
 		if (imTheOnlyOne) {

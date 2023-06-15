@@ -14,7 +14,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	): FindCursor<ILivechatDepartment>;
 
 	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-	countByBusinessHourId(businessHourId: string): Promise<number>;
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number>;
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 
