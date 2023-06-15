@@ -9,6 +9,7 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getTransporter } from './getTransporter';
+import { getLogger } from './getLogger';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
@@ -26,7 +27,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT });
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER });
 		if (typeof tx === 'string') {
 			this.transporter = new Transporters.NATS({ url: tx });
 			this.isTransporterTCP = false;
@@ -78,6 +79,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
+
+			...getLogger(process.env),
 		});
 
 		this.broker.createService({
