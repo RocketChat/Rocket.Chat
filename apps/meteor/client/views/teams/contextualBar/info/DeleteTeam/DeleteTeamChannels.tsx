@@ -36,8 +36,8 @@ const DeleteTeamChannels = ({
 		>
 			<Box withRichContent mbe='x16'>
 				<Box is='span' color='status-font-on-danger' fontWeight='bold'>
-					{t('Team_Delete_Channel_modal_content_danger')}
-				</Box>{' '}
+					{t('Team_Delete_Channel_modal_content_danger')}{' '}
+				</Box>
 				{t('Teams_delete_team_Warning')}
 			</Box>
 			<Box>

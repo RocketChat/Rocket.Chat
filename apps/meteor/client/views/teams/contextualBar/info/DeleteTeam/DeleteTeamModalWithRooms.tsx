@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +10,7 @@ import DeleteTeamModal from './DeleteTeamModal';
 
 type DeleteTeamModalWithRoomsProps = {
 	teamId: string;
-	onConfirm: (roomIds: string[]) => void;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => Promise<void>;
 	onCancel: () => void;
 };
 

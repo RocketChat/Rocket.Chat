@@ -8,7 +8,7 @@ import RoomLinkList from './RoomLinkList';
 type DeleteTeamConfirmationProps = {
 	deletedRooms: { [key: string]: Serialized<IRoom> };
 	keptRooms: { [key: string]: Serialized<IRoom> };
-	onConfirm: (roomIds: string[]) => void;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => Promise<void>;
 	onReturn?: () => void;
 	onCancel: () => void;
 };
@@ -20,7 +20,6 @@ const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, 
 	return (
 		<GenericModal
 			variant='danger'
-			icon='trash'
 			title={t('Deleting')}
 			onConfirm={() => onConfirm(roomIds)}
 			onCancel={onReturn}

@@ -20,22 +20,23 @@ const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onT
 
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
 
-	// const getSortedChannels = () => {
-	// 	if (rooms) {
-	// 		const sortedRooms = [...rooms];
-	// 		const [sortBy, sortOrder] = sort;
-	// 		if (sortBy === 'name') {
-	// 			sortedRooms.sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0));
-	// 		}
-	// 		if (sortBy === 'usersCount') {
-	// 			sortedRooms.sort((a, b) => a.usersCount - b.usersCount);
-	// 		}
-	// 		if (sortOrder === 'desc') {
-	// 			return sortedRooms?.reverse();
-	// 		}
-	// 		return sortedRooms;
-	// 	}
-	// };
+	const getSortedChannels = () => {
+		if (rooms) {
+			const sortedRooms = [...rooms];
+			if (sortBy === 'name') {
+				sortedRooms.sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0));
+			}
+			if (sortBy === 'usersCount') {
+				sortedRooms.sort((a, b) => a.usersCount - b.usersCount);
+			}
+			if (sortDirection === 'desc') {
+				return sortedRooms?.reverse();
+			}
+			return sortedRooms;
+		}
+	};
+
+	const sortedRooms = getSortedChannels();
 
 	const checked = rooms.length === selectedRoomsLength;
 	const indeterminate = rooms.length > selectedRoomsLength && selectedRoomsLength > 0;
@@ -60,14 +61,12 @@ const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onT
 		</>
 	);
 
-	// const result = getSortedChannels();
-
 	return (
 		<Box display='flex' flexDirection='column' height='x200' mbs='x24'>
 			<GenericTable>
 				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>
-					{rooms?.map((room) => (
+					{sortedRooms?.map((room) => (
 						<ChannelDeletionTableRow room={room} key={room._id} onChange={onChangeRoomSelection} selected={!!selectedRooms[room._id]} />
 					))}
 				</GenericTableBody>
