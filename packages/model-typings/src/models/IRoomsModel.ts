@@ -32,25 +32,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
 		types: Array<IRoom['t']>,
-		discussion: boolean,
-		teams: boolean,
-		showOnlyTeams: boolean,
-		options?: FindOptions<IRoom>,
-	): FindPaginated<FindCursor<IRoom>>;
-
-	findByTypes(
-		types: Array<IRoom['t']>,
-		discussion: boolean,
-		teams: boolean,
-		onlyTeams: boolean,
-		options?: FindOptions<IRoom>,
-	): FindPaginated<FindCursor<IRoom>>;
-
-	findByNameOrFnameContaining(
-		name: NonNullable<IRoom['name']>,
-		discussion: boolean,
-		teams: boolean,
-		onlyTeams: boolean,
+		discussion?: boolean,
+		teams?: boolean,
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
