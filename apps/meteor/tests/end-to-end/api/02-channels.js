@@ -2,11 +2,12 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -48,6 +49,66 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	describe('[/channels.create]', () => {
+		let guestUser;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+		});
+		after(async () => {
+			await deleteUser(guestUser);
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					room = res.body.group;
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(1);
+						});
+				});
+		});
+	});
 	describe('[/channels.info]', () => {
 		let testChannel = {};
 		let channelMessage = {};
@@ -1137,6 +1198,7 @@ describe('[Channels]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdChannel.name}`,
 									},
 									userCredentials,
