@@ -3439,7 +3439,7 @@ __metadata:
 "@esbuild/android-arm64@npm:0.17.18":
   version: 0.17.18
   resolution: "@esbuild/android-arm64@npm:0.17.18"
-  conditions: os=android & cpu=arm64
+  checksum: ec47777acf96ffe5e36426e5c5715f74e154ddd2a4b2fcd12748250d7b3ded51c5a1a8a5f896f1524e52d3abf4b302aad0b2f30ac23b4efc41de2d01e359a34a
   languageName: node
   linkType: hard
 
@@ -8022,9 +8022,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/apps-engine@npm:1.40.0-alpha.266":
-  version: 1.40.0-alpha.266
-  resolution: "@rocket.chat/apps-engine@npm:1.40.0-alpha.266"
+"@rocket.chat/apps-engine@npm:1.40.0-alpha.275":
+  version: 1.40.0-alpha.275
+  resolution: "@rocket.chat/apps-engine@npm:1.40.0-alpha.275"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -8036,7 +8036,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 5176cd8f365b0249cf9d6882e26eea0e0503d37d86d27018541ee9d34dd95feb10456192d64f2c7827c4051b651d76039c8b1a9e46e6e541f62f9991c950c5be
+  checksum: 77a4ad45c409397a7a8b1ef4ee2db67af75aa7a1f8a078cc59bc69681e8338ed90a110dfc279a46dc84d6bc93e4e43880ec1620a73837a6a9dcccbe055a51212
   languageName: node
   linkType: hard
 
@@ -8773,7 +8773,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.40.0-alpha.266
+    "@rocket.chat/apps-engine": 1.40.0-alpha.275
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -9577,7 +9577,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
-    "@rocket.chat/ui-contexts": "workspace:~"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
@@ -9695,7 +9695,7 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/icons": next
-    "@rocket.chat/ui-contexts": "workspace:~"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
