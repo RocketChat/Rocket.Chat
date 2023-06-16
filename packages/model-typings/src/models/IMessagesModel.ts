@@ -94,6 +94,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): FindCursor<IMessage>;
 
 	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
+
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
@@ -187,7 +188,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
 
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult>;
+	setAsDeletedByIdsAndUser(_ids: string[], user: IMessage['u']): Promise<Document | UpdateResult>;
 	setHiddenById(_id: string, hidden: boolean): Promise<UpdateResult>;
+	setHiddenByIds(_ids: string[], hidden: boolean): Promise<Document | UpdateResult>;
 	setPinnedByIdAndUserId(
 		_id: string,
 		pinnedBy: Pick<IUser, '_id' | 'username'> | undefined,

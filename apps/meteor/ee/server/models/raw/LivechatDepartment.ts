@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
 import { LivechatUnit } from '@rocket.chat/models';
@@ -16,7 +16,6 @@ declare module '@rocket.chat/model-typings' {
 			options: FindOptions<ILivechatDepartment>,
 		): Promise<UpdateResult>;
 		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
-		createOrUpdateDepartment(id: string, data: ILivechatDepartment): Promise<ILivechatDepartment>;
 		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
 		findEnabledWithAgentsAndBusinessUnit(
 			businessUnit: string,
@@ -54,10 +53,8 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.col.deleteOne(query);
 	}
 
-	createOrUpdateDepartment(id: string, data: ILivechatDepartment): Promise<ILivechatDepartment> {
-		data.type = 'd';
-
-		return super.createOrUpdateDepartment(id, data);
+	createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO): Promise<ILivechatDepartment> {
+		return super.createOrUpdateDepartment(_id, { ...data, type: 'd' });
 	}
 
 	removeParentAndAncestorById(id: string): Promise<UpdateResult | Document> {

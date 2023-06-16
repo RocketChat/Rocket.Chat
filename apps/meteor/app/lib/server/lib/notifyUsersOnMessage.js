@@ -24,7 +24,7 @@ function messageContainsHighlight(message, highlights) {
 	});
 }
 
-export function getMentions(message) {
+export async function getMentions(message) {
 	const {
 		mentions,
 		u: { _id: senderId },
@@ -46,7 +46,7 @@ export function getMentions(message) {
 
 	const filteredMentions = userMentions.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id)).map(({ _id }) => _id);
 
-	const mentionIds = callbacks.run('beforeGetMentions', filteredMentions, {
+	const mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, {
 		userMentions,
 		otherMentions,
 		message,
@@ -107,7 +107,7 @@ const getUnreadSettingCount = (roomType) => {
 async function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
-		const { toAll, toHere, mentionIds } = getMentions(message);
+		const { toAll, toHere, mentionIds } = await getMentions(message);
 
 		const userIds = new Set(mentionIds);
 

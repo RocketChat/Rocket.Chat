@@ -9,6 +9,10 @@ export class HomeContent {
 		this.page = page;
 	}
 
+	get channelHeader(): Locator {
+		return this.page.locator('main header');
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -39,6 +43,10 @@ export class HomeContent {
 
 	get btnJoinRoom(): Locator {
 		return this.page.locator('//button[contains(text(), "Join")]');
+	}
+
+	async openRoomInfo(): Promise<void> {
+		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
 
 	async joinRoom(): Promise<void> {
@@ -148,8 +156,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="menu-more-actions"]');
 	}
 
+	get userCard(): Locator {
+		return this.page.locator('[data-qa="UserCard"]');
+	}
+
 	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
+		return this.userCard.locator('a');
 	}
 
 	get btnContactInformation(): Locator {
@@ -192,10 +204,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
-	async pickEmoji(emoji: string, section = 'icon-people') {
+	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tablist >> role=tab[name="${section}"]`).click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
 	async dragAndDropFile(): Promise<void> {

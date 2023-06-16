@@ -47,6 +47,7 @@ export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
+export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
@@ -86,7 +87,7 @@ export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
-export { StreamerEvents } from './ServerContext/streams';
+export { StreamerEvents, StreamNames, StreamKeys, StreamerConfigs, StreamerConfig, StreamerCallbackArgs } from './ServerContext/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -22,7 +22,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.38.2",
+		"@rocket.chat/apps-engine": "1.39.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/message-parser": "next",

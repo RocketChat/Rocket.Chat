@@ -41,6 +41,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
@@ -52,6 +53,8 @@ export { LocalBroker } from './LocalBroker';
 export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
+
+export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
 
 export {
 	AutoUpdateRecord,
@@ -66,8 +69,6 @@ export {
 	ICreateRoomParams,
 	IDeviceManagementService,
 	IEnterpriseSettings,
-	IFederationService,
-	IFederationServiceEE,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -113,6 +114,7 @@ export {
 	ITranslationService,
 	IMessageService,
 	ISettingsService,
+	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 };
 
@@ -146,6 +148,7 @@ export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
+export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

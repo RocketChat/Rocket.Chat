@@ -21,7 +21,7 @@ test.describe.serial('emoji', () => {
 
 	test('expect pick and send grinning emoji', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.pickEmoji('emoji-grinning');
+		await poHomeChannel.content.pickEmoji('grinning');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');

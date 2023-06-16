@@ -47,7 +47,7 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		callbacks.run('beforeReadMessages', thread.rid, user._id);
+		await callbacks.run('beforeReadMessages', thread.rid, user._id);
 		await readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = await Messages.findVisibleThreadByThreadId(tmid, {

@@ -107,18 +107,16 @@ class PushClass {
 	async sendGatewayPush(gateway, service, token, notification, tries = 0) {
 		notification.uniqueId = this.options.uniqueId;
 
-		const data = {
+		const options = {
+			method: 'POST',
 			body: {
 				token,
 				options: notification,
 			},
+			...(token && this.options.getAuthorization && { headers: { Authorization: await this.options.getAuthorization() } }),
 		};
 
-		if (token && this.options.getAuthorization) {
-			data.headers.Authorization = await this.options.getAuthorization();
-		}
-
-		const result = await fetch(`${gateway}/push/${service}/send`, { ...data, method: 'POST' });
+		const result = await fetch(`${gateway}/push/${service}/send`, options);
 		const response = await result.text();
 
 		if (result.status === 406) {

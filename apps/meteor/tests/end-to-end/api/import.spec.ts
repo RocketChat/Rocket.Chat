@@ -3,7 +3,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createUser, login, deleteUser } from '../../data/users.helper.js';
-import { password } from '../../data/user.js';
+import { password } from '../../data/user';
 
 describe('Imports', function () {
 	this.retries(0);

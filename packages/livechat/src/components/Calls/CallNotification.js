@@ -8,7 +8,7 @@ import constants from '../../lib/constants';
 import store from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
-import { createClassName, getAvatarUrl, isMobileDevice } from '../helpers';
+import { createClassName, getAvatarUrl, getConnectionBaseUrl, isMobileDevice } from '../helpers';
 import { CallStatus } from './CallStatus';
 import styles from './styles.scss';
 
@@ -17,7 +17,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 
 	const callInNewTab = async () => {
 		const { token } = store.state;
-		const url = `${Livechat.client.host}/meet/${rid}?token=${token}`;
+		const url = `${getConnectionBaseUrl()}/meet/${rid}?token=${token}`;
 		await dispatch({
 			ongoingCall: {
 				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,

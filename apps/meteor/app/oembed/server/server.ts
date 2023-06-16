@@ -93,7 +93,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		throw new Error('invalid/unsafe port');
 	}
 
-	const data = callbacks.run('oembed:beforeGetUrlContent', {
+	const data = await callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
 		parsedUrl,
 	});

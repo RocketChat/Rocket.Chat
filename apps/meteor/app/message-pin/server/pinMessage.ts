@@ -9,7 +9,7 @@ import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
@@ -110,7 +110,7 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
@@ -200,7 +200,7 @@ Meteor.methods<ServerMethods>({
 			_id: userId,
 			username: me.username,
 		};
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!room) {

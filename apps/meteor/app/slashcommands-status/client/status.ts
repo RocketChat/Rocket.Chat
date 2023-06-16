@@ -1,18 +1,18 @@
-import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 slashCommands.add({
 	command: 'status',
-	callback: async function Status(_command, params): Promise<void> {
-		const userId = Meteor.userId();
+	callback: async function Status({ params, userId }: SlashCommandCallbackParams<'status'>): Promise<void> {
 		if (!userId) {
 			return;
 		}
 
 		try {
-			await Meteor.callAsync('setUserStatus', null, params);
+			await sdk.call('setUserStatus', undefined, params);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

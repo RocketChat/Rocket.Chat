@@ -4,6 +4,8 @@ import React from 'react';
 
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
 
-const CustomSoundProvider: FC = ({ children }) => <CustomSoundContext.Provider children={children} value={CustomSounds} />;
+const CustomSoundProvider: FC = ({ children }) => {
+	return <CustomSoundContext.Provider children={children} value={CustomSounds} />;
+};
 
 export default CustomSoundProvider;

@@ -21,9 +21,44 @@ export class ResponseParser {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${xml}`);
 
-		const doc = new xmldom.DOMParser().parseFromString(xml, 'text/xml');
+		let error: Error | null = null;
+
+		const doc = new xmldom.DOMParser({
+			errorHandler: {
+				fatalError: (e: any) => {
+					if (e instanceof Error) {
+						error = e;
+						return;
+					}
+
+					if (typeof e === 'string') {
+						error = new Error(e);
+						return;
+					}
+
+					error = new Error();
+				},
+				error: (e: Error) => {
+					if (e instanceof Error) {
+						error = e;
+						return;
+					}
+
+					if (typeof e === 'string') {
+						error = new Error(e);
+						return;
+					}
+
+					error = new Error();
+				},
+			},
+		}).parseFromString(xml, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
+		}
+
+		if (error) {
+			return callback(error, null, false);
 		}
 
 		const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');

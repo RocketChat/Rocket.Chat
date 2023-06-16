@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { i18n } from '../../../server/lib/i18n';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -46,7 +46,7 @@ Accounts.registerLoginHandler('saml', async function (loginRequest) {
 		}
 
 		if (errorCode) {
-			const localizedMessage = TAPi18n.__(errorCode);
+			const localizedMessage = i18n.t(errorCode);
 			if (localizedMessage && localizedMessage !== errorCode) {
 				message = localizedMessage;
 			}

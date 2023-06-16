@@ -5,7 +5,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
-import fiber from 'fibers';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
 
@@ -99,11 +98,7 @@ const middleware = function (req, res, next) {
 
 // Listen to incoming OAuth http requests
 WebApp.connectHandlers.use(function (req, res, next) {
-	// Need to create a fiber since we're using synchronous http calls and nothing
-	// else is wrapping this in a fiber automatically
-	fiber(function () {
-		middleware(req, res, next);
-	}).run();
+	middleware(req, res, next);
 });
 
 /*

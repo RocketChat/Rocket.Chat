@@ -27,7 +27,7 @@ import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 
-import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
+import { setUpdatedAt } from './setUpdatedAt';
 
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'

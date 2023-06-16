@@ -77,8 +77,8 @@ const configure = _.debounce(function () {
 			credentials: {
 				client_email: accessId,
 				private_key: secret,
-				projectId,
 			},
+			projectId,
 		},
 		bucket,
 		URLExpiryTimeSpan,

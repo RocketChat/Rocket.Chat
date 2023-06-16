@@ -8,6 +8,56 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+
+export const setAvatarFromServiceWithValidation = async (
+	userId: string,
+	dataURI: string,
+	contentType?: string,
+	service?: string,
+	targetUserId?: string,
+): Promise<void> => {
+	if (!dataURI) {
+		throw new Meteor.Error('error-invalid-data', 'Invalid dataURI', {
+			method: 'setAvatarFromService',
+		});
+	}
+
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'setAvatarFromService',
+		});
+	}
+
+	if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'setAvatarFromService',
+		});
+	}
+
+	let user: IUser | null;
+
+	if (targetUserId && targetUserId !== userId) {
+		if (!(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
+			throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
+				method: 'setAvatarFromService',
+			});
+		}
+
+		user = await Users.findOneById(targetUserId, { projection: { _id: 1, username: 1 } });
+	} else {
+		user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
+	}
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
+			method: 'setAvatarFromService',
+		});
+	}
+
+	return setUserAvatar(user, dataURI, contentType, service);
+};
 
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,

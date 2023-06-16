@@ -10,10 +10,10 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
-	const cachedLicenseReturn = () => {
+	const cachedLicenseReturn = async () => {
 		const license = currentLicense?.value as string;
 		if (license) {
-			callbacks.run('workspaceLicenseChanged', license);
+			await callbacks.run('workspaceLicenseChanged', license);
 		}
 
 		return { updated: false, license };
@@ -62,7 +62,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 	await Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
 
-	callbacks.run('workspaceLicenseChanged', remoteLicense.license);
+	await callbacks.run('workspaceLicenseChanged', remoteLicense.license);
 
 	return { updated: true, license: remoteLicense.license };
 }

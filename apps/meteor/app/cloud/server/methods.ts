@@ -35,7 +35,7 @@ declare module '@rocket.chat/ui-contexts' {
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
 		'cloud:checkUserLoggedIn': () => boolean;
-		'cloud:logout': () => boolean | '';
+		'cloud:logout': () => Promise<boolean | string>;
 	}
 }
 

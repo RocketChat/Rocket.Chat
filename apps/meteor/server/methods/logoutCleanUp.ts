@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 		check(user, Object);
 
 		setImmediate(() => {
-			callbacks.run('afterLogoutCleanUp', user);
+			void callbacks.run('afterLogoutCleanUp', user);
 		});
 
 		// App IPostUserLogout event hook
