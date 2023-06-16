@@ -6,7 +6,7 @@ import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orches
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';

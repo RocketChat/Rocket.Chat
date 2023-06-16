@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import IframeModal from '../IframeModal';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 
 export const useOpenIncompatibleModal = () => {
 	const setModal = useSetModal();
