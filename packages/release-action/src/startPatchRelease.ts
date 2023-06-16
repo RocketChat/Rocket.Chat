@@ -38,6 +38,7 @@ export async function startPatchRelease({
 	// TODO check if branch exists
 	await exec('git', ['checkout', '-b', newBranch]);
 
+	core.info('bump main package.json version');
 	updateVersionPackageJson(cwd, newVersion);
 
 	await exec('git', ['add', '.']);
@@ -57,5 +58,7 @@ export async function startPatchRelease({
 			body: '',
 			...github.context.repo,
 		});
+	} else {
+		core.info('no pull request created: patch is not for current version');
 	}
 }

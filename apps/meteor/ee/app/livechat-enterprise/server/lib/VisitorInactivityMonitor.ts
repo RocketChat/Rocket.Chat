@@ -1,10 +1,10 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { OmnichannelEEService } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { LivechatEnterprise } from './LivechatEnterprise';
 import { i18n } from '../../../../../server/lib/i18n';
 import { callbacks } from '../../../../../lib/callbacks';
 import { schedulerLogger } from './logger';
@@ -123,7 +123,7 @@ export class VisitorInactivityMonitor {
 		const comment = i18n.t('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
 		const result = await Promise.allSettled([
-			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
+			OmnichannelEEService.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
 		this.logger.debug(`Room ${room._id} placed on hold`);
