@@ -73,7 +73,7 @@ export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 	}
 };
 
-export const isDefaultBusinessHourIsOpenedRightNow = async (): Promise<boolean> => {
+export const isDefaultBusinessHourOpenedRightNow = async (): Promise<boolean> => {
 	const activeDefaultBusinessHour = await getDefaultBusinessHourOpenedRightNow();
 	return !!activeDefaultBusinessHour;
 };

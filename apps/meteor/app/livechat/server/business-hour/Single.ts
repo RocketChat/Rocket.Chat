@@ -2,7 +2,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
-import { isDefaultBusinessHourIsOpenedRightNow, openBusinessHourDefault } from './Helper';
+import { isDefaultBusinessHourOpenedRightNow, openBusinessHourDefault } from './Helper';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
@@ -29,7 +29,7 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	}
 
 	async allowStartNewConversation(): Promise<boolean> {
-		return isDefaultBusinessHourIsOpenedRightNow();
+		return isDefaultBusinessHourOpenedRightNow();
 	}
 
 	afterSaveBusinessHours(): Promise<void> {

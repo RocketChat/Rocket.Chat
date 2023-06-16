@@ -9,7 +9,7 @@ import {
 	filterBusinessHoursThatMustBeOpened,
 	filterBusinessHoursThatMustBeOpenedByDay,
 	isBusinessHourOpenedRightNow,
-	isDefaultBusinessHourIsOpenedRightNow,
+	isDefaultBusinessHourOpenedRightNow,
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
@@ -279,7 +279,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async allowStartNewConversation(departmentId?: string): Promise<boolean> {
 		if (!departmentId) {
 			bhLogger.debug(`No departmentId provided. Checking if default business hour is online now`);
-			return isDefaultBusinessHourIsOpenedRightNow();
+			return isDefaultBusinessHourOpenedRightNow();
 		}
 
 		type LivechatDepartmentWithBusinessHour = ILivechatDepartment & Required<Pick<ILivechatDepartment, 'businessHourId'>>;
@@ -291,7 +291,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		if (!bhLinkedToDepartment.length) {
 			bhLogger.debug(`No business hour found for departmentId: ${departmentId}. Checking if default business hour is online now`);
-			return isDefaultBusinessHourIsOpenedRightNow();
+			return isDefaultBusinessHourOpenedRightNow();
 		}
 
 		bhLogger.debug(`Found business hour for departmentId: ${departmentId}. Checking if it is online now`);
