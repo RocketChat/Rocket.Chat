@@ -3,8 +3,7 @@ import { lazy } from 'react';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'account-index': {
 			pathname: '/account';
 			pattern: '/account';

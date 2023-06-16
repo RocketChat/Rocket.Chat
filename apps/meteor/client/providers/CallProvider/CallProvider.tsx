@@ -21,7 +21,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
-	useNavigate,
+	useRouter,
 	useUser,
 	useSetting,
 	useEndpoint,
@@ -88,7 +88,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const result = useVoipClient();
 	const user = useUser();
-	const navigate = useNavigate();
+	const router = useRouter();
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
@@ -110,14 +110,14 @@ export const CallProvider: FC = ({ children }) => {
 					token: roomInfo.v.token || '',
 					options: { comment: data?.comment, tags: data?.tags },
 				}));
-			navigate('/home');
+			router.navigate('/home');
 
 			const queueAggregator = result.voipClient?.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.callEnded();
 			}
 		},
-		[navigate, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
+		[router, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
 	);
 
 	const openWrapUpModal = useCallback((): void => {

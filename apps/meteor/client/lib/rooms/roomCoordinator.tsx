@@ -1,6 +1,6 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { RouterPaths } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
@@ -167,7 +167,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return true;
 	}
 
-	private validateRoute<TRouteName extends keyof RouterPaths>(route: IRoomTypeRouteConfig<TRouteName>): void {
+	private validateRoute<TRouteName extends keyof IRouterPaths>(route: IRoomTypeRouteConfig<TRouteName>): void {
 		const { name, path, link } = route;
 
 		if (typeof name !== 'string' || name.length === 0) {

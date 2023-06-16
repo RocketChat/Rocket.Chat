@@ -1,5 +1,5 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { LayoutContext, useNavigate, useQueryStringParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useRouter, useQueryStringParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -16,7 +16,7 @@ const LayoutProvider: FC = ({ children }) => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
 
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	return (
 		<LayoutContext.Provider
@@ -31,7 +31,7 @@ const LayoutProvider: FC = ({ children }) => {
 						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
-						close: () => (isEmbedded ? setIsCollapsed(true) : navigate('/home')),
+						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
 					size: {
 						sidebar: '240px',
@@ -42,7 +42,7 @@ const LayoutProvider: FC = ({ children }) => {
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, navigate],
+				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router],
 			)}
 		/>
 	);

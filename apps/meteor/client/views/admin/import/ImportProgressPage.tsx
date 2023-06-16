@@ -1,6 +1,6 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useNavigate } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 
@@ -17,7 +17,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
 
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const getImportProgress = useEndpoint('GET', '/v1/getImportProgress');
@@ -42,23 +42,23 @@ const ImportProgressPage = function ImportProgressPage() {
 			refetchInterval: 1000,
 			onSuccess: ({ valid, status }) => {
 				if (!valid) {
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (status === 'importer_done') {
 					dispatchToastMessage({ type: 'success', message: t('Importer_done') });
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (!(ImportingStartedStates as string[]).includes(status)) {
-					navigate('/admin/import/prepare');
+					router.navigate('/admin/import/prepare');
 				}
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				navigate('/admin/import');
+				router.navigate('/admin/import');
 			},
 		},
 	);
@@ -81,13 +81,13 @@ const ImportProgressPage = function ImportProgressPage() {
 							type: 'success',
 							message: t(message),
 						});
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 
 				case 'importer_import_failed':
 				case 'importer_import_cancelled':
 					t.has(message) && handleError(message);
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 
 				default:
@@ -113,7 +113,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			onSuccess: (progress) => {
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
-					navigate('/admin/import/prepare');
+					router.navigate('/admin/import/prepare');
 					return;
 				}
 
@@ -129,7 +129,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				navigate('/admin/import');
+				router.navigate('/admin/import');
 			},
 		},
 	);

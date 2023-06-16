@@ -4,8 +4,7 @@ import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'admin-index': {
 			pathname: '/admin';
 			pattern: '/admin';

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useNavigate } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
@@ -19,7 +19,7 @@ function ImportHistoryPage() {
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', '/v1/getLatestImportOperations');
 
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	const currentOperation = useQuery(
 		['ImportHistoryPage', 'currentOperation'],
@@ -50,7 +50,7 @@ function ImportHistoryPage() {
 	}, [latestOperations.isSuccess, latestOperations.data]);
 
 	const handleNewImportClick = () => {
-		navigate('/admin/import/new');
+		router.navigate('/admin/import/new');
 	};
 
 	const downloadPendingFilesResult = useMutation({
@@ -68,7 +68,7 @@ function ImportHistoryPage() {
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
-			navigate('/admin/import/progress');
+			router.navigate('/admin/import/progress');
 		},
 	});
 
@@ -87,7 +87,7 @@ function ImportHistoryPage() {
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
-			navigate('/admin/import/progress');
+			router.navigate('/admin/import/progress');
 		},
 	});
 

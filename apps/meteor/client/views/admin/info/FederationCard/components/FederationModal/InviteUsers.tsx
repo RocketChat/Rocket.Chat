@@ -1,14 +1,14 @@
 import { Box, ButtonGroup, Button, Banner } from '@rocket.chat/fuselage';
-import { useNavigate, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement } from 'react';
 import React from 'react';
 
 const InviteUsers: FC<{ onClose: () => void }> = ({ onClose }): ReactElement => {
 	const t = useTranslation();
-	const navigate = useNavigate();
+	const router = useRouter();
 	const handleDirectory = (): void => {
 		onClose();
-		navigate('/directory/users');
+		router.navigate('/directory/users');
 	};
 
 	return (

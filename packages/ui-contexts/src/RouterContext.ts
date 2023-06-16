@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-interface Paths {
+export interface IRouterPaths {
 	index: {
 		pattern: '/';
 		pathname: '/';
@@ -12,44 +11,25 @@ interface Paths {
 	};
 }
 
-type Pathname = Paths[keyof Paths]['pathname'];
-type Search = string;
-type Hash = string;
-
-type Path = {
-	pathname: Pathname;
-	search: Search;
-	hash: Hash;
-};
+export type RouterPathName = keyof IRouterPaths;
+export type RouterPathPattern = IRouterPaths[keyof IRouterPaths]['pattern'];
+type Pathname = IRouterPaths[keyof IRouterPaths]['pathname'];
 
 type To =
 	| Pathname
-	| Partial<Path>
 	| {
-			pattern: Paths[keyof Paths]['pattern'];
+			pattern: RouterPathPattern;
 			params: Record<string, string>;
 			search?: Record<string, string>;
 	  }
 	| {
-			pathname: Paths[keyof Paths]['pathname'];
+			pathname: Pathname;
 			search?: Record<string, string>;
 	  };
 
 type RelativeRoutingType = 'route' | 'path';
 
-export type NavigateFunction = {
-	(
-		to: To,
-		options?: {
-			replace?: boolean;
-			state?: any;
-			relative?: RelativeRoutingType;
-		},
-	): void;
-	(delta: number): void;
-};
-
-export type RouteName = keyof Paths;
+export type RouteName = keyof IRouterPaths;
 
 export type RouteParameters = Record<string, string>;
 
@@ -58,7 +38,18 @@ export type QueryStringParameters = Record<string, string>;
 export type RouteGroupName = string;
 
 export type RouterContextValue = {
-	navigate: NavigateFunction;
+	getRoutePath<TPathPattern extends RouterPathPattern>(
+		pattern: TPathPattern,
+		parameters?: Record<string, string>,
+		search?: Record<string, string>,
+	): string;
+	getRoutePath<TRouteName extends RouterPathName>(
+		name: TRouteName,
+		parameters?: Record<string, string>,
+		search?: Record<string, string>,
+	): string;
+	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
+	navigate(delta: number): void;
 	queryRoutePath: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -89,10 +80,12 @@ export type RouterContextValue = {
 	];
 	setQueryString(parameters: Record<string, string | null>): void;
 	setQueryString(fn: (parameters: Record<string, string>) => Record<string, string>): void;
-	getRoutePath(nameOrPathDef: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>): string;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
+	getRoutePath: () => {
+		throw new Error('not implemented');
+	},
 	navigate: () => undefined,
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
@@ -105,9 +98,4 @@ export const RouterContext = createContext<RouterContextValue>({
 		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
 	],
 	setQueryString: () => undefined,
-	getRoutePath: () => {
-		throw new Error('not implemented');
-	},
 });
-
-export type { Paths as RouterPaths };

@@ -3,8 +3,7 @@ import { lazy } from 'react';
 import { registerOmnichannelRoute } from '../../../client/views/omnichannel/routes';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'omnichannel-monitors': {
 			pattern: '/omnichannel/monitors';
 			pathname: '/omnichannel/monitors';

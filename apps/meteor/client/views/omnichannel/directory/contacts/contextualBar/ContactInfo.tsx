@@ -1,6 +1,6 @@
 import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { RouterPaths } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -23,7 +23,7 @@ import { FormSkeleton } from '../../components/FormSkeleton';
 type ContactInfoProps = {
 	id: string;
 	rid?: string;
-	route?: keyof RouterPaths;
+	route?: keyof IRouterPaths;
 };
 
 const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProps) => {

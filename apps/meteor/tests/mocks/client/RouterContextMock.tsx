@@ -52,9 +52,10 @@ const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replac
 				const setCurrentRoute = currentRoute.set;
 
 				return {
+					getRoutePath: () => '/',
+					navigate: navigate ?? (() => undefined),
 					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
-					navigate: navigate ?? (() => undefined),
 					pushRoute: (name, parameters, queryStringParameters) => {
 						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
 						setCurrentRoute([name, parameters, queryParams]);
@@ -69,7 +70,6 @@ const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replac
 					queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
 					queryCurrentRoute: () => [subscribeToCurrentRoute, getCurrentRoute],
 					setQueryString: () => undefined,
-					getRoutePath: () => '/',
 				};
 			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, navigate, pushRoute, replaceRoute])}
 		>

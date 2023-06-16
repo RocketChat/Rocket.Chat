@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useNavigate, useLayout, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useLayout, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -54,7 +54,7 @@ type UserDropdownProps = {
 
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
-	const navigate = useNavigate();
+	const router = useRouter();
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
@@ -80,7 +80,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	});
 
 	const handleMyAccount = useMutableCallback(() => {
-		navigate('/account');
+		router.navigate('/account');
 		onClose();
 	});
 

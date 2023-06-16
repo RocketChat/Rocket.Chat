@@ -1,4 +1,4 @@
-import { useNavigate, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouter, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
@@ -31,7 +31,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 	const [routeName] = useCurrentRoute();
 
 	const upgradeRoute = useRoute('upgrade');
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	useEffect(() => {
 		if (routeName !== 'admin-index') {
@@ -50,8 +50,8 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 			return;
 		}
 
-		navigate(defaultRoutePath, { replace: true });
-	}, [upgradeRoute, routeName, tabType, trialEndDate, isLoading, navigate]);
+		router.navigate(defaultRoutePath, { replace: true });
+	}, [upgradeRoute, routeName, tabType, trialEndDate, isLoading, router]);
 
 	return (
 		<AdministrationLayout>

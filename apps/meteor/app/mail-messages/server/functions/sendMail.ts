@@ -8,7 +8,7 @@ import { Users } from '@rocket.chat/models';
 import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer/server/api';
-import { generatePath } from '../../../../lib/router';
+import { generatePath } from '../../../../lib/utils/generatePath';
 
 export const sendMail = async function ({
 	from,

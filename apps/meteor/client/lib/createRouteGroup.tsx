@@ -1,4 +1,4 @@
-import type { RouterPaths } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import type {
 	Context,
 	Current,
@@ -27,7 +27,7 @@ const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName ext
 	RouterComponent: ElementType<{
 		children?: ReactNode;
 	}>,
-	path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+	path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 	{
 		component: RouteComponent,
 		props,
@@ -112,7 +112,7 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 		},
 	): [register: () => void, unregister: () => void];
 	<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options: RouteOptions<TRouteName> & {
 			component: ElementType;
 			props?: Record<string, unknown>;
@@ -120,7 +120,7 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 		},
 	): [register: () => void, unregister: () => void];
 	<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options: RouteOptions<TRouteName>,
 	): void;
 } => {
@@ -131,7 +131,7 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 
 	function registerRoute(path: '/' | '', options: RouteOptions<`${TGroupName}-index`>): [register: () => void, unregister: () => void];
 	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options: RouteOptions<TRouteName> & {
 			component: ElementType;
 			props?: Record<string, unknown>;
@@ -139,11 +139,11 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 		},
 	): [register: () => void, unregister: () => void];
 	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options: RouteOptions<TRouteName>,
 	): void;
 	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<RouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
+		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 		options:
 			| RouteOptions<TRouteName>
 			| (RouteOptions<TRouteName> & {

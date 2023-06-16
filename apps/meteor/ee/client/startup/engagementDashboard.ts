@@ -6,8 +6,7 @@ import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarIte
 import { onToggledFeature } from '../lib/onToggledFeature';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'engagement-dashboard': {
 			pattern: '/admin/engagement-dashboard/:tab?';
 			pathname: `/admin/engagement-dashboard${`/${string}` | ''}`;

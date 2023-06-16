@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { RouterPaths } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
@@ -40,8 +40,7 @@ const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 FlowRouter.wait();
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'index': {
 			pathname: '/';
 			pattern: '/';
@@ -141,7 +140,7 @@ FlowRouter.route('/', {
 				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
-						const room = user.defaultRoom.split('/') as [routeName: keyof RouterPaths, routeParam: string];
+						const room = user.defaultRoom.split('/') as [routeName: keyof IRouterPaths, routeParam: string];
 						navigate({
 							pattern: room[0],
 							params: { name: room[1] },

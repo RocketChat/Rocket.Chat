@@ -12,8 +12,7 @@ const AuditPage = lazy(() => import('../views/audit/AuditPage'));
 const AuditLogPage = lazy(() => import('../views/audit/AuditLogPage'));
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'audit-home': {
 			pathname: '/audit';
 			pattern: '/audit/:tab?';

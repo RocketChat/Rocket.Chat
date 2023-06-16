@@ -1,4 +1,4 @@
-import type { RouterContextValue, RouterPaths } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue, RouterPathPattern, RouterPathName } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
@@ -6,6 +6,12 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
+
+const getRoutePath = (
+	patternOrName: RouterPathPattern | RouterPathName,
+	parameters?: Record<string, string>,
+	search?: Record<string, string>,
+): string => Tracker.nonreactive(() => FlowRouter.path(patternOrName, parameters, search));
 
 export const navigate = (
 	toOrDelta:
@@ -103,8 +109,8 @@ const pushRoute = (
 	const queryParams =
 		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
 	navigate({
-		pathname: name,
-		params: parameters,
+		pattern: name,
+		params: parameters ?? {},
 		search: queryParams,
 	});
 };
@@ -118,8 +124,8 @@ const replaceRoute = (
 		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
 	navigate(
 		{
-			pathname: name,
-			params: parameters,
+			pattern: name,
+			params: parameters ?? {},
 			search: queryParams,
 		},
 		{ replace: true },
@@ -149,20 +155,17 @@ const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Reco
 	FlowRouter.setQueryParams(paramsOrFn);
 };
 
-const getRoutePath = (name: keyof RouterPaths, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) =>
-	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
-
 const contextValue = {
+	getRoutePath,
+	navigate,
 	queryRoutePath,
 	queryRouteUrl,
-	navigate,
 	pushRoute,
 	replaceRoute,
 	queryRouteParameter,
 	queryQueryStringParameter,
 	queryCurrentRoute,
 	setQueryString,
-	getRoutePath,
 };
 
 const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;

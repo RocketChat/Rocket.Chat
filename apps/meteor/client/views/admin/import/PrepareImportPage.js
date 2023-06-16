@@ -1,6 +1,6 @@
 import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation, useStream, useNavigate } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -48,7 +48,7 @@ function PrepareImportPage() {
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
 
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	const getImportFileData = useEndpoint('GET', '/v1/getImportFileData');
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
@@ -71,13 +71,13 @@ function PrepareImportPage() {
 
 				if (!data) {
 					handleError(t('Importer_not_setup'));
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (data.step) {
 					handleError(t('Failed_To_Load_Import_Data'));
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
@@ -88,7 +88,7 @@ function PrepareImportPage() {
 				setProgressRate(null);
 			} catch (error) {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				navigate('/admin/import');
+				router.navigate('/admin/import');
 			}
 		};
 
@@ -100,12 +100,12 @@ function PrepareImportPage() {
 				);
 
 				if (!operation.valid) {
-					navigate('/admin/import/new');
+					router.navigate('/admin/import/new');
 					return;
 				}
 
 				if (ImportingStartedStates.includes(operation.status)) {
-					navigate('/admin/import/progress');
+					router.navigate('/admin/import/progress');
 					return;
 				}
 
@@ -121,28 +121,28 @@ function PrepareImportPage() {
 
 				if (ImportingErrorStates.includes(operation.status)) {
 					handleError(t('Import_Operation_Failed'));
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (operation.status === ProgressStep.DONE) {
-					navigate('/admin/import');
+					router.navigate('/admin/import');
 					return;
 				}
 
 				handleError(t('Unknown_Import_State'));
-				navigate('/admin/import');
+				router.navigate('/admin/import');
 			} catch (error) {
 				handleError(t('Failed_To_Load_Import_Data'));
-				navigate('/admin/import');
+				router.navigate('/admin/import');
 			}
 		};
 
 		loadCurrentOperation();
-	}, [getCurrentImportOperation, getImportFileData, handleError, navigate, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
+	}, [getCurrentImportOperation, getImportFileData, handleError, router, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
 
 	const handleBackToImportsButtonClick = () => {
-		navigate('/admin/import');
+		router.navigate('/admin/import');
 	};
 
 	const handleStartButtonClick = async () => {
@@ -150,10 +150,10 @@ function PrepareImportPage() {
 
 		try {
 			await startImport({ input: { users, channels } });
-			navigate('/admin/import/progress');
+			router.navigate('/admin/import/progress');
 		} catch (error) {
 			handleError(error, t('Failed_To_Start_Import'));
-			navigate('/admin/import');
+			router.navigate('/admin/import');
 		}
 	};
 

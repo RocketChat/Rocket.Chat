@@ -1,5 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useCurrentRoute, useNavigate, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useCurrentRoute, useRouter, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
@@ -17,7 +17,7 @@ const DirectoryPage = (): ReactElement => {
 	const federationEnabled = useSetting('FEDERATION_Enabled');
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab') as TabName | undefined;
-	const navigate = useNavigate();
+	const router = useRouter();
 
 	useEffect(() => {
 		if (routeName !== 'directory') {
@@ -25,11 +25,11 @@ const DirectoryPage = (): ReactElement => {
 		}
 
 		if (!tab || (tab === 'external' && !federationEnabled)) {
-			navigate(`/directory/${defaultTab}`, { replace: true });
+			router.navigate(`/directory/${defaultTab}`, { replace: true });
 		}
-	}, [routeName, navigate, tab, federationEnabled, defaultTab]);
+	}, [routeName, router, tab, federationEnabled, defaultTab]);
 
-	const handleTabClick = useCallback((tab: TabName) => () => navigate(`/directory/${tab}`), [navigate]);
+	const handleTabClick = useCallback((tab: TabName) => () => router.navigate(`/directory/${tab}`), [router]);
 
 	return (
 		<Page>

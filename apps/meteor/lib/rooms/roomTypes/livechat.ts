@@ -2,8 +2,7 @@ import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	export interface RouterPaths {
+	export interface IRouterPaths {
 		live: {
 			pathname: `/live/${string}${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/live/:id/:tab?/:context?';

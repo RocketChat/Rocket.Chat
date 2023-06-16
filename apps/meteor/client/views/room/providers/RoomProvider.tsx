@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { usePermission, useStream, useUserId, useNavigate } from '@rocket.chat/ui-contexts';
+import { usePermission, useStream, useUserId, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -49,12 +49,12 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [subscribeToRoom, rid, queryClient, room]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const navigate = useNavigate();
+	const router = useRouter();
 	useEffect(() => {
 		if (isSuccess && !room) {
-			navigate('/home');
+			router.navigate('/home');
 		}
-	}, [isSuccess, room, navigate]);
+	}, [isSuccess, room, router]);
 
 	// TODO: Review the necessity of this effect when we move away from cached collections
 	useEffect(() => {

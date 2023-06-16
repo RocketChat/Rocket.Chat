@@ -6,8 +6,7 @@ import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarIte
 import { onToggledFeature } from '../lib/onToggledFeature';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface RouterPaths {
+	interface IRouterPaths {
 		'device-management': {
 			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/device-management/:context?/:id?';
