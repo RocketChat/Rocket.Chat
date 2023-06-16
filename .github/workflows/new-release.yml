@@ -28,6 +28,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        token: ${{ secrets.CI_PAT }}
 
     - name: Setup NodeJS
       uses: ./.github/actions/setup-node
@@ -48,7 +49,7 @@ jobs:
         action: bump
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
 
     - name: Start patch release
       if: ${{ github.event.inputs.name == 'patch' }}
@@ -58,7 +59,7 @@ jobs:
         base-ref: ${{ github.event.inputs.base-ref }}
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
 
     - name: Publish release
       if: ${{ github.event.inputs.name == 'publish' }}
@@ -68,4 +69,4 @@ jobs:
         base-ref: ${{ github.event.inputs.base-ref }}
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
