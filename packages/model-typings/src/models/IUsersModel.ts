@@ -231,7 +231,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): Promise<IUser | null>;
 
-	findBotAgents(usernameList: string[]): FindCursor<IUser>;
+	findBotAgents(usernameList?: string[]): FindCursor<IUser>;
 	removeAllRoomsByUserId(userId: string): Promise<UpdateResult>;
 	removeRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
 	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
@@ -244,8 +244,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IPersonalAccessToken | null>;
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
-	checkOnlineAgents(agentId: string): Promise<boolean>;
-	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
+	checkOnlineAgents(agentId?: string): Promise<boolean>;
+	findOnlineAgents(agentId?: string): FindCursor<ILivechatAgent>;
 	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
 	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
