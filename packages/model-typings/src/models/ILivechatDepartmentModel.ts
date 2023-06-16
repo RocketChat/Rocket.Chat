@@ -61,8 +61,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	getBusinessHoursWithDepartmentStatuses(): Promise<
 		{
 			_id: string;
-			enabledDepartments: string[];
-			disabledDepartments: string[];
+			validDepartments: string[];
+			invalidDepartments: string[];
 		}[]
 	>;
 }

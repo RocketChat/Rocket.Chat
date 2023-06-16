@@ -51,4 +51,8 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	onDepartmentDisabled(): Promise<void> {
 		return Promise.resolve();
 	}
+
+	onDepartmentArchived(): Promise<void> {
+		return Promise.resolve();
+	}
 }

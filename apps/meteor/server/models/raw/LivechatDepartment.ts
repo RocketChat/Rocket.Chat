@@ -354,12 +354,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	getBusinessHoursWithDepartmentStatuses(): Promise<
 		{
 			_id: string;
-			enabledDepartments: string[];
-			disabledDepartments: string[];
+			validDepartments: string[];
+			invalidDepartments: string[];
 		}[]
 	> {
 		return this.col
-			.aggregate<{ _id: string; enabledDepartments: string[]; disabledDepartments: string[] }>([
+			.aggregate<{ _id: string; validDepartments: string[]; invalidDepartments: string[] }>([
 				{
 					$match: {
 						businessHourId: {
@@ -370,19 +370,30 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				{
 					$group: {
 						_id: '$businessHourId',
-						enabledDepartments: {
+						validDepartments: {
 							$push: {
 								$cond: {
-									if: { $eq: ['$enabled', true] },
+									if: {
+										$or: [
+											{
+												$eq: ['$enabled', true],
+											},
+											{
+												$ne: ['$archived', true],
+											},
+										],
+									},
 									then: '$_id',
 									else: '$$REMOVE',
 								},
 							},
 						},
-						disabledDepartments: {
+						invalidDepartments: {
 							$push: {
 								$cond: {
-									if: { $eq: ['$enabled', false] },
+									if: {
+										$or: [{ $eq: ['$enabled', false] }, { $eq: ['$archived', true] }],
+									},
 									then: '$_id',
 									else: '$$REMOVE',
 								},

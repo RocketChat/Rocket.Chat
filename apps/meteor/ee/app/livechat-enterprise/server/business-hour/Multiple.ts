@@ -153,6 +153,17 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
 	}
 
+	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
+		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
+
+		if (!dbDepartment) {
+			return;
+		}
+
+		console.log(this.onDepartmentDisabled);
+		return this.onDepartmentDisabled(dbDepartment);
+	}
+
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		const isWithinBushinessHours = await this.UsersRepository.isAgentWithinBusinessHours(agentId);
 		if (isWithinBushinessHours) {

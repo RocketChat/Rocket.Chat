@@ -755,6 +755,7 @@ export const Livechat = {
 			});
 		}
 
+		void callbacks.run('livechat.afterDepartmentArchived', { department });
 		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 

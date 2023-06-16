@@ -57,13 +57,13 @@ export class BusinessHourManager {
 			return;
 		}
 
-		for await (const { _id: businessHourId, enabledDepartments, disabledDepartments } of bhWithDepartments) {
-			if (!disabledDepartments.length) {
+		for await (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
+			if (!invalidDepartments.length) {
 				continue;
 			}
 
 			// If there are no enabled departments, close the business hour
-			const allDepsAreDisabled = enabledDepartments.length === 0 && disabledDepartments.length > 0;
+			const allDepsAreDisabled = validDepartments.length === 0 && invalidDepartments.length > 0;
 			if (allDepsAreDisabled) {
 				const businessHour = await this.getBusinessHour(businessHourId, LivechatBusinessHourTypes.CUSTOM);
 				if (!businessHour) {
@@ -73,7 +73,7 @@ export class BusinessHourManager {
 			}
 
 			// Remove business hour from disabled departments
-			await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(disabledDepartments, businessHourId);
+			await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(invalidDepartments, businessHourId);
 		}
 	}
 
@@ -152,12 +152,22 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-disabled',
 		);
+		// TODO: Binding the correct "this" for the context of onDepartmentArchived. Should we do the same for other callbacks?
+		callbacks.add(
+			'livechat.afterDepartmentArchived',
+			this.behavior.onDepartmentArchived.bind(this.behavior),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-department-archived',
+		);
+		
 	}
 
 	private removeCallbacks(): void {
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove('livechat.afterDepartmentDisabled', 'business-hour-livechat-on-department-disabled');
+		callbacks.remove('livechat.afterDepartmentArchived', 'business-hour-livechat-on-department-archived');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
