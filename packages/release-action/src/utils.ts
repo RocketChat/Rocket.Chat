@@ -58,12 +58,12 @@ export function getChangelogEntry(changelog: string, version: string) {
 	};
 }
 
-export async function readPackageJson(cwd) {
+export async function readPackageJson(cwd: string) {
 	const filePath = path.resolve(cwd, 'package.json');
 	return JSON.parse(await readFile(filePath, 'utf-8'));
 }
 
-async function getUpdateFilesList(cwd): Promise<string[]> {
+async function getUpdateFilesList(cwd: string): Promise<string[]> {
 	const file = await readPackageJson(cwd);
 	if (!file.houston) {
 		return [];
@@ -77,7 +77,7 @@ async function getUpdateFilesList(cwd): Promise<string[]> {
 	return houston.updateFiles;
 }
 
-export async function bumpFileVersions(cwd, oldVersion, newVersion) {
+export async function bumpFileVersions(cwd: string, oldVersion: string, newVersion: string) {
 	const files = await getUpdateFilesList(cwd);
 
 	await Promise.all(
