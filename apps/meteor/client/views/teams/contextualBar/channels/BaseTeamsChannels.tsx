@@ -95,7 +95,9 @@ const BaseTeamsChannels = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select flexGrow={0} width='110px' onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+							<Box w='x144'>
+								<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+							</Box>
 						</Margins>
 					</Box>
 				</Box>

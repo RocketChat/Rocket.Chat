@@ -21,7 +21,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
-		methodDeprecationLogger.warn('livechat:loadHistory will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:loadHistory', '7.0.0');
 
 		if (!token || typeof token !== 'string') {
 			return;

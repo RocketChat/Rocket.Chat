@@ -7,11 +7,11 @@ import localforage from 'localforage';
 
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { call } from '../../../../client/lib/utils/call';
 import { CachedCollectionManager } from './CachedCollectionManager';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { isTruthy } from '../../../../lib/isTruthy';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
 
@@ -34,7 +34,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
-export class CachedCollection<T extends object, U = T> extends Emitter<{ changed: T; removed: T }> {
+export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
@@ -93,7 +93,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 	}
 
 	private async loadFromCache() {
-		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date }>(this.name);
+		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
 
 		if (!data) {
 			return false;
@@ -105,6 +105,11 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 		if (data.records.length <= 0) {
 			return false;
+		}
+
+		// updatedAt may be a Date or a string depending on the used localForage backend
+		if (!(data.updatedAt instanceof Date)) {
+			data.updatedAt = new Date(data.updatedAt);
 		}
 
 		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedCollection.MAX_CACHE_TIME) {
@@ -147,13 +152,13 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	private async callLoad() {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`);
+		const data = await sdk.call(`${this.name}/get`);
 		return data as unknown as U[];
 	}
 
 	private async callSync(updatedSince: Date) {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`, updatedSince);
+		const data = await sdk.call(`${this.name}/get`, updatedSince);
 		return data as unknown as { update: U[]; remove: U[] };
 	}
 
@@ -234,6 +239,9 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				await this.collection.removeAsync(newRecord._id);
 			} else {
 				const { _id } = newRecord;
+				if (!_id) {
+					return;
+				}
 				await this.collection.upsertAsync({ _id } as Mongo.Selector<T>, newRecord);
 			}
 			await this.save();

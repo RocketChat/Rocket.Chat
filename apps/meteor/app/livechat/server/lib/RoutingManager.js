@@ -106,7 +106,7 @@ export const RoutingManager = {
 		const user = await Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);
 
-		await Message.saveSystemMessage('command', rid, 'connected', user);
+		await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
@@ -176,7 +176,7 @@ export const RoutingManager = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
 		}
@@ -196,7 +196,8 @@ export const RoutingManager = {
 
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
-			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			const cbRoom = await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			return cbRoom;
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
