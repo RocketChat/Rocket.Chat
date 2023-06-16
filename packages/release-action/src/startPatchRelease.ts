@@ -1,18 +1,15 @@
-import path from 'path';
-
 import semver from 'semver';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 import * as core from '@actions/core';
 
 import { setupOctokit } from './setupOctokit';
-import { updateVersionPackageJson } from './utils';
+import { readPackageJson } from './utils';
 
 export async function startPatchRelease({
 	githubToken,
 	baseRef,
 	mainPackagePath,
-	cwd = process.cwd(),
 }: {
 	baseRef: string;
 	mainPackagePath: string;
@@ -24,9 +21,7 @@ export async function startPatchRelease({
 	await exec('git', ['checkout', baseRef]);
 
 	// get version from main package
-	const mainPackageJsonPath = path.join(mainPackagePath, 'package.json');
-	// eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires
-	const { version } = require(mainPackageJsonPath);
+	const { version } = await readPackageJson(mainPackagePath);
 
 	const newVersion = semver.inc(version, 'patch');
 	if (!newVersion) {
@@ -38,8 +33,9 @@ export async function startPatchRelease({
 	// TODO check if branch exists
 	await exec('git', ['checkout', '-b', newBranch]);
 
-	core.info('bump main package.json version');
-	updateVersionPackageJson(cwd, newVersion);
+	// create empty changeset to have something to commit. the changeset file will be removed later in the process
+	core.info('create empty changeset');
+	await exec('yarn', ['changeset', 'add', '--empty']);
 
 	await exec('git', ['add', '.']);
 	await exec('git', ['commit', '-m', newVersion]);
