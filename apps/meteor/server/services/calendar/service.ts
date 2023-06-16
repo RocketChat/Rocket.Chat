@@ -17,7 +17,7 @@ const defaultMinutesForNotifications = 5;
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime'>): Promise<ICalendarEvent['_id']> {
+	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
 
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
@@ -40,7 +40,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return insertResult.insertedId;
 	}
 
-	public async import(data: InsertionModel<ICalendarEvent>): Promise<ICalendarEvent['_id']> {
+	public async import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']> {
 		const { externalId } = data;
 		if (!externalId) {
 			return this.create(data);
