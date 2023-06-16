@@ -40,8 +40,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		if (this.isTransporterTCP) {
 			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
 				if (clientAction === 'removed') {
-					(this.broker.transit?.tx as any).nodes.disconnected(data._id, false);
-					(this.broker.transit?.tx as any).nodes.nodes.delete(data._id);
+					(this.broker.transit?.tx as any).nodes.disconnected(data?._id, false);
+					(this.broker.transit?.tx as any).nodes.nodes.delete(data?._id);
 					return;
 				}
 
