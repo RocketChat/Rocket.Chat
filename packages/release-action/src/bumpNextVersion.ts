@@ -55,6 +55,7 @@ export async function bumpNextVersion({
 	const newBranch = `release-${finalVersion}`;
 
 	// update root package.json
+	core.info('bump main package.json version');
 	updateVersionPackageJson(cwd, newVersion);
 
 	// TODO check if branch exists
@@ -63,6 +64,7 @@ export async function bumpNextVersion({
 	await exec('git', ['add', '.']);
 	await exec('git', ['commit', '-m', newVersion]);
 
+	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
 	await exec('yarn', ['changeset', 'publish']);
@@ -80,8 +82,11 @@ export async function bumpNextVersion({
 			body: prBody,
 			...github.context.repo,
 		});
+	} else {
+		core.info('no pull request created: release is not the first candidate');
 	}
 
+	core.info('create release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,

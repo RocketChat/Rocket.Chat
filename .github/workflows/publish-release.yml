@@ -7,6 +7,9 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  HUSKY: 0
+
 jobs:
   release:
     name: Release
@@ -15,13 +18,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v3
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
         with:
-          node-version: 16
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
 
-      - name: Install Dependencies
-        run: yarn
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build
         run: yarn build
