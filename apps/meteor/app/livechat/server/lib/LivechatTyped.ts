@@ -344,7 +344,7 @@ class LivechatClass {
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
 		const isBusinessHourActiveAndOpen = await businessHourManager.allowStartNewConversation(department);
 		this.logger.debug({
-			msg: 'Check if business hour is active and open to start a new conversation',
+			msg: 'Checked if business hour is active and open to start a new conversation',
 			department,
 			isBusinessHourActiveAndOpen,
 		});

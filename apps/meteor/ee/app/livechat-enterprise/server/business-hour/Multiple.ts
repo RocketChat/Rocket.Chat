@@ -282,20 +282,20 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return isDefaultBusinessHourOpenedRightNow();
 		}
 
-		type LivechatDepartmentWithBusinessHour = ILivechatDepartment & Required<Pick<ILivechatDepartment, 'businessHourId'>>;
-
-		// Note: This works on the assumption that only an active business hour can be linked to a department
-		const bhLinkedToDepartment: LivechatDepartmentWithBusinessHour[] = await LivechatDepartment.findByBusinessHourId(departmentId, {
+		const department = await LivechatDepartment.findOneById(departmentId, {
 			projection: { businessHourId: 1 },
-		}).toArray();
+		});
+		if (!department) {
+			throw new Error(`Department not found for departmentId: ${departmentId}`);
+		}
 
-		if (!bhLinkedToDepartment.length) {
+		if (!department?.businessHourId) {
 			bhLogger.debug(`No business hour found for departmentId: ${departmentId}. Checking if default business hour is online now`);
 			return isDefaultBusinessHourOpenedRightNow();
 		}
 
 		bhLogger.debug(`Found business hour for departmentId: ${departmentId}. Checking if it is online now`);
 
-		return isBusinessHourOpenedRightNow(bhLinkedToDepartment[0].businessHourId);
+		return isBusinessHourOpenedRightNow(department.businessHourId);
 	}
 }
