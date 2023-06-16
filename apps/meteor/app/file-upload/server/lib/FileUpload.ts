@@ -20,6 +20,8 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { NextFunction } from 'connect';
 import type { OptionalId } from 'mongodb';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
@@ -27,7 +29,6 @@ import { mime } from '../../../utils/lib/mimeTypes';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
-import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';

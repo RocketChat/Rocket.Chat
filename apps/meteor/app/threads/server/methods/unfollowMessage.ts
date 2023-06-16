@@ -3,12 +3,13 @@ import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { unfollow } from '../functions';
-import { Apps, AppEvents } from '../../../../ee/server/apps/orchestrator';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

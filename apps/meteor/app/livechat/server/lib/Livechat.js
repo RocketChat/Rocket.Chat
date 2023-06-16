@@ -20,7 +20,8 @@ import {
 	Rooms,
 	Users,
 } from '@rocket.chat/models';
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, VideoConf, api, Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
@@ -36,7 +37,6 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';

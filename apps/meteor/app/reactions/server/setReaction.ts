@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { api, Apps } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
@@ -10,7 +11,6 @@ import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { i18n } from '../../../server/lib/i18n';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {

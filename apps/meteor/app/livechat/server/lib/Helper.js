@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Apps } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
 	LivechatInquiry,
@@ -13,6 +13,7 @@ import {
 	Rooms,
 	Users,
 } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Livechat } from './Livechat';
@@ -21,7 +22,6 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
