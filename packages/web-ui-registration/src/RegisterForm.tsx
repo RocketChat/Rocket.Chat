@@ -1,7 +1,7 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useVerifyPassword } from '@rocket.chat/ui-contexts';
+import { useSetting, useVerifyPassword, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
@@ -20,6 +20,7 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
+// eslint-disable-next-line complexity
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
@@ -33,6 +34,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
 		register,
@@ -64,6 +67,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
+					}
+					if (/error-too-many-requests/.test(error.error)) {
+						dispatchToastMessage({ type: 'error', message: error.error });
+					}
+					if (/error-user-is-not-activated/.test(error.error)) {
+						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
+						setLoginRoute('login');
 					}
 				},
 			},
