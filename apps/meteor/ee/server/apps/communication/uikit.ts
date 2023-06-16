@@ -283,7 +283,7 @@ const appsRoutes =
 					triggerId,
 					rid,
 					mid,
-					payload: { context },
+					payload: { context, message: msgText },
 				} = req.body;
 
 				const room = await orch.getConverters()?.get('rooms').convertById(rid);
@@ -300,6 +300,7 @@ const appsRoutes =
 					message,
 					payload: {
 						context,
+						...(msgText && { message: msgText }),
 					},
 				};
 
