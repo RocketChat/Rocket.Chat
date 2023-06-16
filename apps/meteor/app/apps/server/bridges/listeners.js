@@ -71,19 +71,19 @@ export class AppListenerBridge {
 	async messageEvent(inte, message, ...payload) {
 		const msg = await this.orch.getConverters().get('messages').convertMessage(message);
 
-		const params = (() => {
+		const params = await (async () => {
 			switch (inte) {
 				case AppInterface.IPostMessageDeleted:
 					const [userDeleted] = payload;
 					return {
+						user: await this.orch.getConverters().get('users').convertToApp(userDeleted),
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
 					};
 				case AppInterface.IPostMessageReacted:
 					const [userReacted, reaction, isReacted] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userReacted),
+						user: await this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
 						isReacted,
 					};
@@ -91,28 +91,28 @@ export class AppListenerBridge {
 					const [userFollowed, isUnfollow] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
+						user: await this.orch.getConverters().get('users').convertToApp(userFollowed),
 						isUnfollow,
 					};
 				case AppInterface.IPostMessagePinned:
 					const [userPinned, isUnpinned] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userPinned),
+						user: await this.orch.getConverters().get('users').convertToApp(userPinned),
 						isUnpinned,
 					};
 				case AppInterface.IPostMessageStarred:
 					const [userStarred, isStarred] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userStarred),
+						user: await this.orch.getConverters().get('users').convertToApp(userStarred),
 						isStarred,
 					};
 				case AppInterface.IPostMessageReported:
 					const [userReported, reason] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userReported),
+						user: await this.orch.getConverters().get('users').convertToApp(userReported),
 						reason,
 					};
 				default:
@@ -131,22 +131,22 @@ export class AppListenerBridge {
 	async roomEvent(inte, room, ...payload) {
 		const rm = await this.orch.getConverters().get('rooms').convertRoom(room);
 
-		const params = (() => {
+		const params = await (async () => {
 			switch (inte) {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
 					const [joiningUser, invitingUser] = payload;
 					return {
 						room: rm,
-						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
-						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
+						joiningUser: await this.orch.getConverters().get('users').convertToApp(joiningUser),
+						invitingUser: await this.orch.getConverters().get('users').convertToApp(invitingUser),
 					};
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
 					const [leavingUser] = payload;
 					return {
 						room: rm,
-						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
+						leavingUser: await this.orch.getConverters().get('users').convertToApp(leavingUser),
 					};
 				default:
 					return rm;
@@ -170,7 +170,7 @@ export class AppListenerBridge {
 					.getListenerManager()
 					.executeListener(inte, {
 						room: await this.orch.getConverters().get('rooms').convertRoom(data.room),
-						agent: this.orch.getConverters().get('users').convertToApp(data.user),
+						agent: await this.orch.getConverters().get('users').convertToApp(data.user),
 					});
 			case AppInterface.IPostLivechatRoomTransferred:
 				const converter = data.type === LivechatTransferEventType.AGENT ? 'users' : 'departments';
@@ -206,12 +206,12 @@ export class AppListenerBridge {
 		switch (inte) {
 			case AppInterface.IPostUserLoggedIn:
 			case AppInterface.IPostUserLogout:
-				context = this.orch.getConverters().get('users').convertToApp(data.user);
+				context = await this.orch.getConverters().get('users').convertToApp(data.user);
 				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 			case AppInterface.IPostUserStatusChanged:
 				const { currentStatus, previousStatus } = data;
 				context = {
-					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					user: await this.orch.getConverters().get('users').convertToApp(data.user),
 					currentStatus,
 					previousStatus,
 				};
@@ -221,11 +221,11 @@ export class AppListenerBridge {
 			case AppInterface.IPostUserUpdated:
 			case AppInterface.IPostUserDeleted:
 				context = {
-					user: this.orch.getConverters().get('users').convertToApp(data.user),
-					performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+					user: await this.orch.getConverters().get('users').convertToApp(data.user),
+					performedBy: await this.orch.getConverters().get('users').convertToApp(data.performedBy),
 				};
 				if (inte === AppInterface.IPostUserUpdated) {
-					context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+					context.previousData = await this.orch.getConverters().get('users').convertToApp(data.previousUser);
 				}
 				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 		}

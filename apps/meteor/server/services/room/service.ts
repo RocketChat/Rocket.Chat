@@ -1,9 +1,11 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { ServiceClassInternal, Authorization } from '@rocket.chat/core-services';
-import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, IRoomService, ICreateDiscussionParams } from '@rocket.chat/core-services';
 
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { addUserToRoom as meteorAddUserToRoom } from '../../../app/lib/server/functions';
+import { create as createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
@@ -47,5 +49,37 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return true;
+	}
+
+	async addUserToRoom(
+		rid: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | unknown> {
+		return meteorAddUserToRoom(rid, user, inviter, silenced);
+	}
+
+	async createDiscussion(params: ICreateDiscussionParams): Promise<IRoom> {
+		const { parentRoomId, parentMessageId, creatorId, name, members = [], encrypted, reply } = params;
+
+		const user = await Users.findOneById(creatorId, {
+			projection: { username: 1 },
+		});
+
+		if (!user || !user.username) {
+			throw new Error('User not found');
+		}
+
+		// TODO: convert `createDiscussion` function to "raw" and move to here
+		return createDiscussion({
+			prid: parentRoomId,
+			pmid: parentMessageId,
+			t_name: name,
+			users: members,
+			user,
+			encrypted,
+			reply,
+		});
 	}
 }

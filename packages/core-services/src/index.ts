@@ -24,7 +24,13 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
+import type {
+	IRoomService,
+	ICreateRoomParams,
+	ISubscriptionExtraData,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
+} from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
@@ -47,6 +53,7 @@ import { AppFabricationFulfillment, IAppsManagerService } from './types/IAppsMan
 import { IAppsStatisticsService, AppsStatisticsResult } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import { IAppsConverterService } from './types/IAppsConverterService';
+import { ILivechatService, CloseRoomParams } from './types/ILivechatService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -129,6 +136,10 @@ export {
 	ISettingsService,
 	IOmnichannelIntegrationService,
 	IRequestWithPrivateHash,
+	ILivechatService,
+	CloseRoomParams,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -166,6 +177,7 @@ export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
+export const Livechat = proxifyWithWait<ILivechatService>('livechat');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

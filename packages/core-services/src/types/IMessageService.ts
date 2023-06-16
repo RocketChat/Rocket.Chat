@@ -1,7 +1,9 @@
-import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
-	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
+	sendMessage(userId: string, message: AtLeast<IMessage, 'rid'>): Promise<IMessage>;
+	updateMessage(message: IMessage, editor: IUser): Promise<void>;
+	deleteMessage(message: IMessage, user: IUser): Promise<void>;
 	saveSystemMessage<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,

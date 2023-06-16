@@ -1,16 +1,25 @@
-import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 
+import { updateMessage, deleteMessage } from '../../../app/lib/server';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { settings } from '../../../app/settings/server';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
 
-	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
-		return executeSendMessage(fromId, { rid, msg });
+	async sendMessage(userId: string, message: AtLeast<IMessage, 'rid'>): Promise<IMessage> {
+		return executeSendMessage(userId, message);
+	}
+
+	async updateMessage(message: IMessage, editor: IUser): Promise<void> {
+		return updateMessage(message, editor);
+	}
+
+	async deleteMessage(message: IMessage, user: IUser): Promise<void> {
+		return deleteMessage(message, user);
 	}
 
 	async saveSystemMessage<T = IMessage>(

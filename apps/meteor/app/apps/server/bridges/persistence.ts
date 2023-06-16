@@ -15,7 +15,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		await this.orch.getPersistenceModel().remove({ appId });
 	}
 
-	protected async create(data: object, appId: string): Promise<string> {
+	protected async create(data: Record<string, unknown>, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is storing a new object in their persistence.`, data);
 
 		if (typeof data !== 'object') {
@@ -25,7 +25,11 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return this.orch.getPersistenceModel().insertOne({ appId, data });
 	}
 
-	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
+	protected async createWithAssociations(
+		data: Record<string, unknown>,
+		associations: Array<RocketChatAssociationRecord>,
+		appId: string,
+	): Promise<string> {
 		this.orch.debugLog(
 			`The App ${appId} is storing a new object in their persistence that is associated with some models.`,
 			data,
