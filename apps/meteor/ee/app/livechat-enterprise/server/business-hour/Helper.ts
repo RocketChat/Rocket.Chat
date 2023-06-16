@@ -28,10 +28,9 @@ const getAllAgentIdsWithDepartmentNotConnectedToBusinessHour = async (): Promise
 		}).toArray()
 	).map((dept) => dept._id);
 
-	const agentIdsWithDepartmentNotConnectedToBusinessHour = await LivechatDepartmentAgents.col.distinct('agentId', {
-		departmentId: { $in: activeDepartmentsWithoutBusinessHour },
-	});
-
+	const agentIdsWithDepartmentNotConnectedToBusinessHour = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(
+		activeDepartmentsWithoutBusinessHour,
+	);
 	return agentIdsWithDepartmentNotConnectedToBusinessHour;
 };
 
