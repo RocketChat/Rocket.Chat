@@ -1,7 +1,7 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useAccountsCustomFields, useSetting } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,6 +38,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const {
 		register,
 		handleSubmit,
@@ -68,13 +70,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
 					}
-
+					if (/error-too-many-requests/.test(error.error)) {
+						dispatchToastMessage({ type: 'error', message: error.error });
+					}
+					if (/error-user-is-not-activated/.test(error.error)) {
+						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
+						setLoginRoute('login');
+					}
 					if (error.error === 'error-user-registration-custom-field') {
 						setServerError(error.message);
-					}
-
-					if (error.error.includes('error-too-many-requests')) {
-						setServerError(error.error);
 					}
 				},
 			},
@@ -114,9 +118,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
+									pattern: {
+										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										message: t('registration.component.form.invalidEmail'),
+									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.requiredField')}
+								error={errors.email && t('registration.component.form.invalidEmail')}
 								name='email'
 								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'
