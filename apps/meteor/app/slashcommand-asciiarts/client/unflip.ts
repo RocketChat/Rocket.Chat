@@ -16,5 +16,6 @@ slashCommands.add({
 	options: {
 		description: 'Slash_TableUnflip_Description',
 		params: 'your_message_optional',
+		clientOnly: true,
 	},
 });

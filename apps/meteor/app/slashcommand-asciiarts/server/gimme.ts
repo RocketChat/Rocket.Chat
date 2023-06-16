@@ -19,5 +19,6 @@ slashCommands.add({
 	options: {
 		description: 'Slash_Gimme_Description',
 		params: 'your_message_optional',
+		clientOnly: true,
 	},
 });
