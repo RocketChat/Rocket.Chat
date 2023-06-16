@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/release-action",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"build": "tsc",
