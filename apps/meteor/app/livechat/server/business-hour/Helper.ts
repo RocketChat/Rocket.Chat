@@ -5,6 +5,9 @@ import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 
+const currentDay = moment().format('dddd');
+
+// huh... y is this async?
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
@@ -39,11 +42,8 @@ export const filterBusinessHoursThatMustBeOpenedByDay = async (
 	);
 };
 
-export const openBusinessHourDefault = async (): Promise<void> => {
-	await Users.removeBusinessHoursFromAllUsers();
-	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
-	const day = currentTime.format('dddd');
-	const activeBusinessHours = await LivechatBusinessHours.findDefaultActiveAndOpenBusinessHoursByDay(day, {
+const getDefaultBusinessHourOpenedRightNow = async (): Promise<ILivechatBusinessHour | undefined> => {
+	const activeBusinessHours = await LivechatBusinessHours.findDefaultActiveAndOpenBusinessHoursByDay(currentDay, {
 		projection: {
 			workHours: 1,
 			timezone: 1,
@@ -51,8 +51,19 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 			active: 1,
 		},
 	});
-	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
-	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
+	const businessHoursToOpenIds = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+	if (!businessHoursToOpenIds.length) {
+		return;
+	}
+
+	return activeBusinessHours[0];
+};
+
+export const openBusinessHourDefault = async (): Promise<void> => {
+	const activeDefaultBusinessHour = await getDefaultBusinessHourOpenedRightNow();
+	if (activeDefaultBusinessHour) {
+		await Users.openAgentsBusinessHoursByBusinessHourId([activeDefaultBusinessHour._id]);
+	}
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
@@ -60,4 +71,18 @@ export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 	if ((await LivechatBusinessHours.col.countDocuments({ type: LivechatBusinessHourTypes.DEFAULT })) === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
+};
+
+export const isDefaultBusinessHourIsOpenedRightNow = async (): Promise<boolean> => {
+	const activeDefaultBusinessHour = await getDefaultBusinessHourOpenedRightNow();
+	return !!activeDefaultBusinessHour;
+};
+
+export const isBusinessHourOpenedRightNow = async (businessHourId: string): Promise<boolean> => {
+	const businessHour = await LivechatBusinessHours.findOneById(businessHourId);
+	if (!businessHour) {
+		throw new Error(`Business hour not found for id: ${businessHourId}`);
+	}
+
+	return (await filterBusinessHoursThatMustBeOpenedByDay([businessHour], currentDay)).length > 0;
 };

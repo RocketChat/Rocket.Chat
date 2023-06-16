@@ -39,6 +39,7 @@ import { validateEmail } from './Helper';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
 import { i18n } from '../../../../server/lib/i18n';
+import { businessHourManager } from '../business-hour';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -341,6 +342,16 @@ class LivechatClass {
 	}
 
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
+		const isBusinessHourActiveAndOpen = await businessHourManager.allowStartNewConversation(department);
+		this.logger.debug({
+			msg: 'Check if business hour is active and open to start a new conversation',
+			department,
+			isBusinessHourActiveAndOpen,
+		});
+		if (!isBusinessHourActiveAndOpen) {
+			return false;
+		}
+
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
 		}

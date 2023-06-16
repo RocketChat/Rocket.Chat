@@ -8,6 +8,8 @@ import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server
 import {
 	filterBusinessHoursThatMustBeOpened,
 	filterBusinessHoursThatMustBeOpenedByDay,
+	isBusinessHourOpenedRightNow,
+	isDefaultBusinessHourIsOpenedRightNow,
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
@@ -272,5 +274,28 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	private async closeBusinessHour(businessHour: Record<string, any>): Promise<void> {
 		await closeBusinessHour(businessHour);
+	}
+
+	async allowStartNewConversation(departmentId?: string): Promise<boolean> {
+		if (!departmentId) {
+			bhLogger.debug(`No departmentId provided. Checking if default business hour is online now`);
+			return isDefaultBusinessHourIsOpenedRightNow();
+		}
+
+		type LivechatDepartmentWithBusinessHour = ILivechatDepartment & Required<Pick<ILivechatDepartment, 'businessHourId'>>;
+
+		// Note: This works on the assumption that only an active business hour can be linked to a department
+		const bhLinkedToDepartment: LivechatDepartmentWithBusinessHour[] = await LivechatDepartment.findByBusinessHourId(departmentId, {
+			projection: { businessHourId: 1 },
+		}).toArray();
+
+		if (!bhLinkedToDepartment.length) {
+			bhLogger.debug(`No business hour found for departmentId: ${departmentId}. Checking if default business hour is online now`);
+			return isDefaultBusinessHourIsOpenedRightNow();
+		}
+
+		bhLogger.debug(`Found business hour for departmentId: ${departmentId}. Checking if it is online now`);
+
+		return isBusinessHourOpenedRightNow(bhLinkedToDepartment[0].businessHourId);
 	}
 }

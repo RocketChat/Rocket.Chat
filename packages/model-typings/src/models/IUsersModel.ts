@@ -124,7 +124,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusByAppId(appId: any, status: any): any;
 
-	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds: string): Promise<Document | UpdateResult>;
 
 	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
 
