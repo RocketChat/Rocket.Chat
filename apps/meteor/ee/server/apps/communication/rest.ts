@@ -799,7 +799,7 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/versions`, { headers });
+						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
 
