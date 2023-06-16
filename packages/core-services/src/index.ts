@@ -47,6 +47,7 @@ import { AppFabricationFulfillment, IAppsManagerService } from './types/IAppsMan
 import { IAppsStatisticsService, AppsStatisticsResult } from './types/IAppsStatisticsService';
 import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import { IAppsConverterService } from './types/IAppsConverterService';
+import type { ISlashCommandService } from './types/ISlashCommandService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -129,6 +130,7 @@ export {
 	ISettingsService,
 	IOmnichannelIntegrationService,
 	IRequestWithPrivateHash,
+	ISlashCommandService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -166,6 +168,7 @@ export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
+export const SlashCommandService = proxifyWithWait<ISlashCommandService>('slashcommand');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
