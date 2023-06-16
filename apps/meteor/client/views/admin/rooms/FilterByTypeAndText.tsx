@@ -4,17 +4,17 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState, useEffect } from 'react';
 
-const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const [text, setText] = useState('');
 	const [types, setTypes] = useState({
-		d: false,
-		c: false,
-		p: false,
-		l: false,
-		discussions: false,
-		teams: false,
+		d: true,
+		c: true,
+		p: true,
+		l: true,
+		discussions: true,
+		teams: true,
 	});
 
 	const t = useTranslation();

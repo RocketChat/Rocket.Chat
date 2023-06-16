@@ -109,9 +109,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
+									pattern: {
+										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										message: t('registration.component.form.invalidEmail'),
+									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.requiredField')}
+								error={errors.email && t('registration.component.form.invalidEmail')}
 								name='email'
 								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'

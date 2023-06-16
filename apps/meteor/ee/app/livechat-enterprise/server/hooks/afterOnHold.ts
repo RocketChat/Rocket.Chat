@@ -1,3 +1,5 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
@@ -6,7 +8,7 @@ import { i18n } from '../../../../../server/lib/i18n';
 
 let autoCloseOnHoldChatTimeout = 0;
 
-const handleAfterOnHold = async (room: any = {}): Promise<any> => {
+const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<any> => {
 	const { _id: rid } = room;
 	if (!rid) {
 		cbLogger.debug('Skipping callback. No room provided');
@@ -24,7 +26,7 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 		i18n.t('Closed_automatically_because_chat_was_onhold_for_seconds', {
 			onHoldTime: autoCloseOnHoldChatTimeout,
 		});
-	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, closeComment);
+	await AutoCloseOnHoldScheduler.scheduleRoom(rid, autoCloseOnHoldChatTimeout, closeComment);
 };
 
 settings.watch<number>('Livechat_auto_close_on_hold_chats_timeout', (value) => {
