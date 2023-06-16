@@ -1,13 +1,12 @@
-import { Random } from '@rocket.chat/random';
+import { v4 as uuid } from 'uuid';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Presence } from '@rocket.chat/core-services';
+import { User as UserService, Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
 
-import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { getUserCreatedByApp, deleteUser } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 
 export class AppUserBridge extends UserBridge {
@@ -32,7 +31,7 @@ export class AppUserBridge extends UserBridge {
 		this.orch.debugLog(`The App ${appId} is getting its assigned user`);
 
 		if (!appId) {
-			return;
+			throw new Error('No appId provided');
 		}
 
 		const user = await Users.findOneByAppId(appId, {});
@@ -60,10 +59,10 @@ export class AppUserBridge extends UserBridge {
 
 	protected async create(userDescriptor: Partial<IUser>, appId: string, options?: IUserCreationOptions): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is requesting to create a new user.`);
-		const user = this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
+		const user = await this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
 
 		if (!user._id) {
-			user._id = Random.id();
+			user._id = uuid();
 		}
 
 		if (!user.createdAt) {
@@ -73,14 +72,14 @@ export class AppUserBridge extends UserBridge {
 		switch (user.type) {
 			case 'bot':
 			case 'app':
-				if (!(await checkUsernameAvailability(user.username))) {
+				if (!(await UserService.checkUsernameAvailability(user.username))) {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
 				await Users.insertOne(user);
 
 				if (options?.avatarUrl) {
-					await setUserAvatar(user, options.avatarUrl, '', 'local');
+					await UserService.setUserAvatar({ user, dataURI: options.avatarUrl, contentType: '', service: 'local' });
 				}
 
 				break;
@@ -101,7 +100,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
-			await deleteUser(user.id);
+			await UserService.deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);
 		}
