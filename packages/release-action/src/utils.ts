@@ -61,6 +61,6 @@ export function getChangelogEntry(changelog: string, version: string) {
 export function updateVersionPackageJson(cwd = process.cwd(), newVersion: string) {
 	const rootPackageJsonPath = path.resolve(cwd, 'package.json');
 	const content = fs.readFileSync(rootPackageJsonPath, 'utf8');
-	const updatedContent = content.replace(/'version': '.*',$/m, `'version': '${newVersion}',`);
+	const updatedContent = content.replace(/"version": ".*",$/m, `"version": "${newVersion}",`);
 	fs.writeFileSync(rootPackageJsonPath, updatedContent);
 }
