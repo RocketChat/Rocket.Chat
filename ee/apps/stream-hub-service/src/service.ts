@@ -3,6 +3,7 @@ import polka from 'polka';
 import { api } from '@rocket.chat/core-services';
 
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
+import { enterpriseAdapter } from '../../../../apps/meteor/ee/app/license/server/license';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 3035;
 
 	registerServiceModels(db, trash);
 
+	api.setEnterpriseAdapter(enterpriseAdapter);
 	api.setBroker(broker);
 
 	// need to import service after models are registered

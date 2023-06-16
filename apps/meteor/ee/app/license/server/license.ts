@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { Apps } from '@rocket.chat/core-services';
+import type { IEnterpriseAdapter } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Users } from '@rocket.chat/models';
 
@@ -360,7 +361,7 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -465,3 +466,8 @@ export async function overwriteClassOnLicense(license: BundleFeature, original: 
 		});
 	});
 }
+
+export const enterpriseAdapter: IEnterpriseAdapter = {
+	hasModuleEnabled: hasLicense,
+	onModuleEnabled: onLicense,
+};

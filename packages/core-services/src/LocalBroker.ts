@@ -32,7 +32,7 @@ export class LocalBroker implements IBroker {
 		return this.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
+	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((eventName) => {

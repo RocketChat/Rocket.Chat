@@ -47,7 +47,7 @@ export interface IServiceMetrics {
 
 export interface IBroker {
 	metrics?: IServiceMetrics;
-	destroyService(service: IServiceClass): void;
+	destroyService(service: IServiceClass): Promise<void>;
 	createService(service: IServiceClass, serviceDependencies?: string[]): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;

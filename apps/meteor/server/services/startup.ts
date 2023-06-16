@@ -27,8 +27,11 @@ import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
 import { Logger } from '../lib/logger/Logger';
+import { enterpriseAdapter } from '../../ee/app/license/server/license';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+api.setEnterpriseAdapter(enterpriseAdapter);
 
 api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());

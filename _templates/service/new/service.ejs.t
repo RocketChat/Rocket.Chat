@@ -8,6 +8,7 @@ import { api } from '@rocket.chat/core-services';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
+import { enterpriseAdapter } from '../../../../apps/meteor/ee/app/license/server/license';
 
 const PORT = process.env.PORT || <%= h.random() %>;
 
@@ -18,6 +19,7 @@ const PORT = process.env.PORT || <%= h.random() %>;
 
 	registerServiceModels(db, trash);
 
+	api.setEnterpriseAdapter(enterpriseAdapter);
 	api.setBroker(broker);
 
 	// need to import service after models are registered

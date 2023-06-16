@@ -47,6 +47,7 @@ import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegra
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
+export { IEnterpriseAdapter } from './lib/Api';
 export { EventSignatures } from './Events';
 export { LocalBroker } from './LocalBroker';
 

@@ -35,7 +35,7 @@ void (async () => {
 await onLicense('federation', async () => {
 	const federationServiceEE = new FederationServiceEE();
 	if (federationService) {
-		api.destroyService(federationService);
+		await api.destroyService(federationService);
 	}
 	api.registerService(federationServiceEE);
 });

@@ -6,6 +6,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
+import { enterpriseAdapter } from '../../../../apps/meteor/ee/app/license/server/license';
 
 const PORT = process.env.PORT || 3036;
 
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 3036;
 
 	registerServiceModels(db, trash);
 
+	api.setEnterpriseAdapter(enterpriseAdapter);
 	api.setBroker(broker);
 
 	// need to import service after models are registered
