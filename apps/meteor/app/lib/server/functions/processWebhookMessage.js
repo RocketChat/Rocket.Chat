@@ -33,8 +33,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 				});
 				break;
 			default:
-                channelValue = channelType + channelValue;
-                console.log('channelValue', channelValue)
+				channelValue = channelType + channelValue;
 
 				// Try to find the room by id or name if they didn't include the prefix.
 				room = await getRoomByNameOrIdWithOptionToJoin({
