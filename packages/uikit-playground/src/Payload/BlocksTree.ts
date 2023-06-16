@@ -12,6 +12,13 @@ import {
   actionWithMultiStaticSelect,
   actionWithDatePicker,
   actionWithLinearScale,
+  actionWithToggleSwitch,
+  actionWithRadioButton,
+  actionWithCheckbox,
+  actionWithCallout,
+  actionWithToastBar,
+  actionWithTimePicker,
+  actionWithTabNavigation,
 } from './action';
 import {
   contextWithPlainText,
@@ -96,9 +103,37 @@ const BlocksTree: Item = [
         payload: actionWithDatePicker,
       },
       {
+        label: 'time Picker',
+        payload: actionWithTimePicker,
+      },
+      {
         label: 'linear scale',
         payload: actionWithLinearScale,
       },
+      {
+        label: 'toggle switch',
+        payload: actionWithToggleSwitch,
+      },
+      {
+        label: 'radio buttons',
+        payload: actionWithRadioButton,
+      },
+      {
+        label: 'checkbox',
+        payload: actionWithCheckbox,
+      },
+      {
+        label: 'callout',
+        payload: actionWithCallout,
+      },
+      {
+        label: 'toast bar',
+        payload: actionWithToastBar,
+      },
+      {
+        label: 'tab navigation',
+        payload: actionWithTabNavigation,
+      }
     ],
   },
   {
