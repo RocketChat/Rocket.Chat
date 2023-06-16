@@ -11,6 +11,8 @@ import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getTransporter } from './getTransporter';
 import { getLogger } from './getLogger';
 
+const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
+
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
@@ -83,6 +85,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			...getLogger(process.env),
 		});
 
+		if ((this.broker.transit?.tx as any)?.nodes?.localNode) {
+			(this.broker.transit?.tx as any).nodes.localNode.ipList = [hostIP];
+		}
+
 		this.broker.createService({
 			name: 'matrix',
 			events: {
@@ -109,7 +115,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		await this.broker.start();
 
 		const instance = {
-			host: process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost',
+			host: hostIP,
 			port: String(process.env.PORT).trim(),
 			tcpPort: (this.broker.transit?.tx as any)?.nodes?.localNode?.port,
 			os: {
