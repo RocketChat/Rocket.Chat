@@ -159,7 +159,6 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-archived',
 		);
-		
 	}
 
 	private removeCallbacks(): void {
