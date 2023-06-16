@@ -3,8 +3,9 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Apps } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -12,7 +13,6 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
 
 const recursiveRemove = (msg: MessageAttachment, deep = 1) => {

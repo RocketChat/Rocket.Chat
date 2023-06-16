@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import {
 	createLivechatSubscription,
@@ -15,7 +16,6 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
 
@@ -111,7 +111,7 @@ export const RoutingManager = {
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		Apps.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 

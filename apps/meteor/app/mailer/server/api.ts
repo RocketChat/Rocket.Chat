@@ -6,10 +6,11 @@ import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
-import { Apps } from '../../../ee/server/apps';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
@@ -169,7 +170,7 @@ export const sendNoWrap = async ({
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
-	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
+	const eventResult = await Apps.triggerEvent(AppEvents.IPreEmailSent, { email });
 
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
