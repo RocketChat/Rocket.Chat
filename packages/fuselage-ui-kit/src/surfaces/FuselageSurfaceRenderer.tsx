@@ -19,6 +19,13 @@ import MultiStaticSelectElement from '../elements/MultiStaticSelectElement';
 import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import ToggleSwitchElement from '../elements/ToggleSwitchElement';
+import RadioButtonElement from '../elements/RadioButtonElement';
+import CheckboxElement from '../elements/CheckboxElement';
+import CalloutElement from '../elements/CalloutElement';
+import ToastBarElement from '../elements/ToastBarElement';
+import TimePickerElement from '../elements/TimePickerElement';
+import TabNavigationElement from '../elements/TabNavigationElement';
 
 export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
@@ -355,6 +362,146 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
 
     return (
       <LinearScaleElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  toggle_switch(
+    block: UiKit.ToggleSwitchElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <ToggleSwitchElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  radio_button(
+    block: UiKit.RadioButtonElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <RadioButtonElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  checkbox(
+    block: UiKit.CheckboxElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <CheckboxElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  callout(
+    block: UiKit.CalloutElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <CalloutElement
+        key={index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  toast_bar(
+    block: UiKit.ToastBarElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <ToastBarElement
+        key={index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  time_picker(
+    block: UiKit.TimePickerElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <TimePickerElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  tab_navigation(
+    block: UiKit.TabNavigationElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <TabNavigationElement
         key={block.actionId || index}
         block={block}
         context={context}
