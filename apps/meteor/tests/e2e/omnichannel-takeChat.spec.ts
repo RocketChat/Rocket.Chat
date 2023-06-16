@@ -55,7 +55,7 @@ test.describe('omnichannel-takeChat', () => {
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
 		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
 
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent.poHomeChannel.sidenav.openChat(newVisitor.name, false);
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});

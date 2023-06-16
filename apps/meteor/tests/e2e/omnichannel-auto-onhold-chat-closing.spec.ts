@@ -54,7 +54,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	});
 
 	test('expect on-hold chat to be closed automatically in 5 seconds', async () => {
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent.poHomeChannel.sidenav.openChat(newVisitor.name, false);
 		await agent.poHomeChannel.content.sendMessage('this_is_a_test_message_from_agent');
 
 		await agent.poHomeChannel.content.btnOnHold.click();

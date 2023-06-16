@@ -44,7 +44,7 @@ test.describe('Omnichannel chat histr', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name, false);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
@@ -62,7 +62,7 @@ test.describe('Omnichannel chat histr', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name, false);
 		});
 
 		await test.step('Expect to be able to see conversation history', async () => {

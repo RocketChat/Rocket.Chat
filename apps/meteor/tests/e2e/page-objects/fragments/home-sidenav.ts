@@ -64,10 +64,14 @@ export class HomeSidenav {
 		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
 	}
 
-	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+	async openChat(name: string, search = true): Promise<void> {
+		if (search) {
+			await this.page.locator('role=navigation >> role=button[name=Search]').click();
+			await this.page.locator('role=search >> role=searchbox').type(name);
+			await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		} else {
+			await this.getSidebarItemByName(name).click();
+		}
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
