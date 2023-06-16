@@ -144,7 +144,7 @@ export const createRoom = async <T extends RoomType>(
 	} else {
 		for await (const username of [...new Set(members)]) {
 			const member = await Users.findOneByUsername(username, {
-				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
 			});
 			if (!member) {
 				continue;
@@ -152,6 +152,7 @@ export const createRoom = async <T extends RoomType>(
 
 			try {
 				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 			} catch (error) {
 				continue;
 			}
