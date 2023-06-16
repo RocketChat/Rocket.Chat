@@ -953,6 +953,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
+	countByUserId(userId: string): Promise<number> {
+		const query = { 'u._id': userId };
+
+		return this.col.countDocuments(query);
+	}
+
 	countByRoomId(roomId: string): Promise<number> {
 		const query = {
 			rid: roomId,
