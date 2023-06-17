@@ -74,24 +74,24 @@
     "@storybook/source-loader": "~6.5.16",
     "@storybook/theming": "~6.5.16",
     "@tanstack/react-query": "^4.16.1",
-    "@types/react": "~17.0.57",
-    "@types/react-dom": "~17.0.17",
+    "@types/react": "~17.0.62",
+    "@types/react-dom": "~17.0.20",
     "babel-loader": "~8.2.5",
     "cross-env": "^7.0.3",
     "eslint": "~8.38.0",
     "normalize.css": "^8.0.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "~2.8.7",
+    "prettier": "~2.8.8",
     "react-docgen-typescript-plugin": "~1.0.5",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
-    "tslib": "^2.5.0",
+    "tslib": "^2.5.3",
     "typescript": "~5.0.4"
   },
   "dependencies": {
     "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "next",
-    "tslib": "^2.5.0"
+    "tslib": "^2.5.3"
   },
   "volta": {
     "extends": "../../package.json"

@@ -621,7 +621,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				t: 'rm',
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.name.fullName(),
 				}),
 			});
 
@@ -718,7 +718,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				editedBy: createFakeUser(),
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.name.fullName(),
 				}),
 			});
 
@@ -740,7 +740,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				u: createFakeUser<Required<IUser>>({
 					_id: 'internalUserId',
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.name.fullName(),
 				}),
 			});
 
