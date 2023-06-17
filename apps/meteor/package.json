@@ -206,7 +206,7 @@
 		"@babel/runtime": "~7.22.5",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
-		"@google-cloud/storage": "^6.9.5",
+		"@google-cloud/storage": "^6.11.0",
 		"@kaciras/deasync": "^1.0.3",
 		"@nivo/bar": "0.80.0",
 		"@nivo/core": "0.80.0",

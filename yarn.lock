@@ -5196,9 +5196,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/storage@npm:^6.9.5":
-  version: 6.9.5
-  resolution: "@google-cloud/storage@npm:6.9.5"
+"@google-cloud/storage@npm:^6.11.0":
+  version: 6.11.0
+  resolution: "@google-cloud/storage@npm:6.11.0"
   dependencies:
     "@google-cloud/paginator": ^3.0.7
     "@google-cloud/projectify": ^3.0.0
@@ -5217,8 +5217,7 @@ __metadata:
     retry-request: ^5.0.0
     teeny-request: ^8.0.0
     uuid: ^8.0.0
-    xdg-basedir: ^4.0.0
-  checksum: eff663cc44ee553fbd2f62b67ef422783f29210c67f55c86c13e63a40c36f3c9b78e076b2a08bb6a74a9fdc452de9240aac91e0fa11c3a4f782416a230d88b74
+  checksum: 4183c0ad3b271e0c22b3aa01e9942590ae64b984efa142a787b96379baaf4c05a2ebdbb6015c8ea189951df251d57f4f35c6a28b920922828cc89d3e4147d1a1
   languageName: node
   linkType: hard
 
@@ -10068,7 +10067,7 @@ __metadata:
     "@bugsnag/js": ~7.20.2
     "@bugsnag/plugin-react": ~7.19.0
     "@faker-js/faker": ~8.0.2
-    "@google-cloud/storage": ^6.9.5
+    "@google-cloud/storage": ^6.11.0
     "@kaciras/deasync": ^1.0.3
     "@nivo/bar": 0.80.0
     "@nivo/core": 0.80.0
@@ -41999,13 +41998,6 @@ __metadata:
   version: 3.0.0
   resolution: "xdg-basedir@npm:3.0.0"
   checksum: 60d613dcb09b1198c70cb442979825531c605ac7861a8a6131304207d2962020dbb23660ac7e1be324fb9e4111a51a6206d875148d3e98df47a7d1869fa1515f
-  languageName: node
-  linkType: hard
-
-"xdg-basedir@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "xdg-basedir@npm:4.0.0"
-  checksum: 0073d5b59a37224ed3a5ac0dd2ec1d36f09c49f0afd769008a6e9cd3cd666bd6317bd1c7ce2eab47e1de285a286bad11a9b038196413cd753b79770361855f3c
   languageName: node
   linkType: hard
 
