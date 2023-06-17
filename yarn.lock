@@ -9346,7 +9346,7 @@ __metadata:
     uuid: ^8.3.2
     vm2: ^3.9.19
     webdav: ^4.11.2
-    xml-crypto: ~2.1.5
+    xml-crypto: ~3.1.0
     xml-encryption: ~3.0.2
     xml2js: ~0.5.0
     yaqrcode: ^0.2.1
@@ -14362,14 +14362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.7.9":
-  version: 0.7.10
-  resolution: "@xmldom/xmldom@npm:0.7.10"
-  checksum: faeb5efd208f25643e469b9807b4b1bfe4f9c19540f0a24b4bb1c748cee6ee44ec441048820f9100987d1ee075f2e2bfc28e535cae5024d4566bb62b0a42be13
-  languageName: node
-  linkType: hard
-
-"@xmldom/xmldom@npm:^0.8.5":
+"@xmldom/xmldom@npm:0.8.7, @xmldom/xmldom@npm:^0.8.5":
   version: 0.8.7
   resolution: "@xmldom/xmldom@npm:0.8.7"
   checksum: 593d4429c2281ee7799adcb6ff8604b68cf30ce0721537e3e380287b423e67c7ac197d90987f932b4fd3febc409ded8435706e7f90fbba6e22e08740477341d1
@@ -40854,13 +40847,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-crypto@npm:~2.1.5":
-  version: 2.1.5
-  resolution: "xml-crypto@npm:2.1.5"
+"xml-crypto@npm:~3.1.0":
+  version: 3.1.0
+  resolution: "xml-crypto@npm:3.1.0"
   dependencies:
-    "@xmldom/xmldom": ^0.7.9
+    "@xmldom/xmldom": 0.8.7
     xpath: 0.0.32
-  checksum: 387ed6aa812f9ea7fb33385bd3e934042152ee9a97870f28ebfa5c7931eee23a7a2d36ca35916fbe5eadd65163ce9483db661cf3f569c9177773e8efa1acfa37
+  checksum: 86f1c7b6b42364b2a48aa3a0970996c16a9733a0ffda461f5504acc5bc92e37eb6ed2ea9587c72651db2617f8596fbbc1d25afbca2504c115d9b44a9c54bc2ad
   languageName: node
   linkType: hard
 

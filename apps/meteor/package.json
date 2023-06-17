@@ -421,7 +421,7 @@
 		"uuid": "^8.3.2",
 		"vm2": "^3.9.19",
 		"webdav": "^4.11.2",
-		"xml-crypto": "~2.1.5",
+		"xml-crypto": "~3.1.0",
 		"xml-encryption": "~3.0.2",
 		"xml2js": "~0.5.0",
 		"yaqrcode": "^0.2.1"
