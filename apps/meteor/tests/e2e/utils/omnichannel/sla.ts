@@ -7,7 +7,7 @@ import { expect } from '../test';
 export const generateRandomSLAData = (): Omit<IOmnichannelServiceLevelAgreements, '_updatedAt' | '_id'> => ({
 	name: faker.name.firstName(),
 	description: faker.lorem.sentence(),
-	dueTimeInMinutes: faker.datatype.number({ min: 10, max: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE }),
+	dueTimeInMinutes: faker.number.int({ min: 10, max: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE }),
 });
 
 export const createSLA = async (api: BaseTest['api']): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updated'>> => {

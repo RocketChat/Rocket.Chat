@@ -21,7 +21,7 @@ test.describe.serial('settings-account-profile', () => {
 
 	// FIXME: solve test intermitencies
 	test.skip('expect update profile with new name/username', async ({ page }) => {
-		const newName = faker.name.fullName();
+		const newName = faker.person.fullName();
 		const newUsername = faker.internet.userName(newName);
 
 		await page.goto('/account/profile');

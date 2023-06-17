@@ -800,7 +800,7 @@ describe('LIVECHAT - visitors', function () {
 		it('should create a new contact', async () => {
 			const token = getRandomVisitorToken();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
-				name: faker.name.fullName(),
+				name: faker.person.fullName(),
 				token,
 			});
 			expect(res.body).to.have.property('success', true);
@@ -812,7 +812,7 @@ describe('LIVECHAT - visitors', function () {
 			expect(contact._id).to.equal(contactId);
 		});
 		it('should update an existing contact', async () => {
-			const name = faker.name.fullName();
+			const name = faker.person.fullName();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
 				name,
 				token: contact.token,
@@ -826,9 +826,9 @@ describe('LIVECHAT - visitors', function () {
 			expect(contact.name).to.equal(name);
 		});
 		it('should change the contact name, email and phone', async () => {
-			const name = faker.name.fullName();
+			const name = faker.person.fullName();
 			const email = faker.internet.email().toLowerCase();
-			const phone = faker.phone.phoneNumber();
+			const phone = faker.phone.number();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
 				name,
 				email,

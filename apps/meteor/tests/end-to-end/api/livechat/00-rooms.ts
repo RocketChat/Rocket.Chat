@@ -1747,7 +1747,7 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.priorities).to.have.length.greaterThan(0);
 				});
 			priorities = response.body.priorities;
-			const rnd = faker.datatype.number({ min: 0, max: priorities.length - 1 });
+			const rnd = faker.number.int({ min: 0, max: priorities.length - 1 });
 			chosenPriority = priorities[rnd];
 		});
 		it('should prioritize the room', async () => {
