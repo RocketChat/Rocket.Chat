@@ -14,8 +14,8 @@
 		"test": "jest"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.21.8",
-		"@babel/preset-env": "~7.21.5",
+		"@babel/core": "~7.22.5",
+		"@babel/preset-env": "~7.22.5",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@typescript-eslint/eslint-plugin": "~5.58.0",
 		"@typescript-eslint/parser": "~5.58.0",

@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.21.8",
+		"@babel/core": "~7.22.5",
 		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "next",
@@ -18,7 +18,7 @@
 		"@storybook/manager-webpack4": "~6.5.16",
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "~0.0.13",
-		"@types/babel__core": "^7.1.20",
+		"@types/babel__core": "~7.20.1",
 		"@types/jest": "~29.5.2",
 		"eslint": "~8.38.0",
 		"eslint-plugin-react": "~7.32.2",

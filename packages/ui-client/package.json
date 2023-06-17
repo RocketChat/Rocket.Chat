@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.21.8",
+		"@babel/core": "~7.22.5",
 		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/fuselage": "next",
 		"@rocket.chat/fuselage-hooks": "next",
@@ -19,7 +19,7 @@
 		"@storybook/manager-webpack4": "~6.5.16",
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "~0.0.13",
-		"@types/babel__core": "^7.1.20",
+		"@types/babel__core": "~7.20.1",
 		"@types/jest": "~29.5.2",
 		"@types/react": "~17.0.62",
 		"@types/react-dom": "~17.0.20",
