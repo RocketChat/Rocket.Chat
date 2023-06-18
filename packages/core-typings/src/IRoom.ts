@@ -88,6 +88,7 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+	verficationStatus?: string;
 
 	/* @deprecated */
 	federated?: boolean;
@@ -198,6 +199,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	livechatData: any;
 	queuedAt?: Date;
+
+	verficationStatus: string;
 
 	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 

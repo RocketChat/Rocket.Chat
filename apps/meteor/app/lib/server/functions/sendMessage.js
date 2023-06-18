@@ -1,5 +1,5 @@
 import { Match, check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
+import { Messages, LivechatRooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -10,6 +10,8 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { setVisitorEmail } from './setVisitorsEmail';
+import { verifyVisitor } from './verifyVisitor';
 
 /**
  * IMPORTANT
@@ -269,13 +271,22 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			// so, we don't really care if it is successful or fails
 			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
-
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
+		if (room.t === 'l' && room.verficationStatus === 'isListeningToEmail') {
+			await setVisitorEmail(room.v._id, message.msg);
+			await LivechatRooms.saveRoomById({
+				_id: room._id,
+				verficationStatus: 'off',
+				topic: '',
+				tags: [],
+			});
+			await verifyVisitor(room._id);
+		}
 		return message;
 	}
 };
