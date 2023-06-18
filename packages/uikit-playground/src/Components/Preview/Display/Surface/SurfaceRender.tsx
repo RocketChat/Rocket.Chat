@@ -7,11 +7,11 @@ import ModalSurface from './ModalSurface';
 import { SurfaceOptions } from './constant';
 
 const SurfaceRender = ({
-  type,
+  type = SurfaceOptions.Message,
   children,
 }: {
-  type: SurfaceOptions,
-  children: ReactNode,
+  type?: SurfaceOptions;
+  children: ReactNode;
 }) => (
   <>
     {SurfaceOptions.Message === type && (

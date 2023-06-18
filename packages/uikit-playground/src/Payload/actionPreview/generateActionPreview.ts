@@ -1,22 +1,30 @@
-import { useContext } from 'react';
-
 import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
-import { context } from '../../Context';
-import type { actionPreviewType } from '../../Context/initialState';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import type {
+  actionPreviewType,
+  initialStateType,
+} from '../../Context/initialState';
 import container from './container';
 
-const generateActionPreview = (type: string, data: actionPreviewType) => {
-  const {
-    state: { user, screens, activeScreen },
-  } = useContext(context);
-
+const generateActionPreview = ({
+  type,
+  data,
+  surface,
+  payload,
+  user,
+}: {
+  type: string;
+  data: actionPreviewType;
+  surface: SurfaceOptions;
+  payload: readonly LayoutBlock[];
+  user: initialStateType['user'];
+}) => {
   const actionPreview: actionPreviewType = {
     type,
     user,
     api_app_id: '',
     token: '',
-    container:
-      container[screens[activeScreen].surface || SurfaceOptions.Message],
+    container: container[surface || SurfaceOptions.Message],
     trigger_id: '',
     team: null,
     enterprise: null,
@@ -25,7 +33,7 @@ const generateActionPreview = (type: string, data: actionPreviewType) => {
     ...data,
   };
   if (type === 'View Submission') {
-    actionPreview.view = screens[activeScreen].payload;
+    actionPreview.view = payload;
   }
   return actionPreview;
 };

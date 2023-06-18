@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { useOutsideClick, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import React, { useContext, useRef } from 'react';
+import { useContext, useRef } from 'react';
 
 import { context } from '../../Context';
 import {
@@ -13,7 +13,7 @@ import ScreenThumbnail from './ScreenThumbnail';
 
 const CreateNewScreenContainer = () => {
   const {
-    state: { screens, openCreateNewScreen },
+    state: { projects, screens, activeProject, openCreateNewScreen },
     dispatch,
   } = useContext(context);
   const ref = useRef(null);
@@ -56,13 +56,18 @@ const CreateNewScreenContainer = () => {
             align-items: center;
           `}
         >
-          {Object.values(screens).map((screen, i) => (
-            <ScreenThumbnail
-              screen={screen}
-              key={i}
-              disableDelete={Object.keys(screens).length <= 1}
-            />
-          ))}
+          {projects[activeProject]?.screens
+            .map((id) => screens[id])
+            .map((screen, i) => (
+              <ScreenThumbnail
+                screen={screen}
+                key={i}
+                disableDelete={
+                  projects[activeProject]?.screens.map((id) => screens[id])
+                    .length <= 1
+                }
+              />
+            ))}
           <Icon
             onClick={createNewScreenhandler}
             size="60px"

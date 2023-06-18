@@ -3,13 +3,7 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
 
-export type docType = {
-  payload: readonly LayoutBlock[];
-  id: string;
-  name: string;
-  surface: SurfaceOptions;
-  changedByEditor?: boolean;
-};
+export type idType = string;
 
 export type userType = {
   id: string;
@@ -41,25 +35,38 @@ export type actionPreviewType = {
 };
 
 export type ScreensType = {
-  [key: string]: docType
-}
+  [key: idType]: {
+    payload: readonly LayoutBlock[];
+    id: idType;
+    name: string;
+    surface: SurfaceOptions;
+    actionPreview: actionPreviewType;
+    changedByEditor?: boolean;
+  };
+};
+
+export type ProjectsType = {
+  [key: idType]: { id: idType; name: string; screens: idType[] };
+};
 
 export type initialStateType = {
   isMobile: boolean;
   isTablet: boolean;
   sideBarToggle: boolean;
-  templatesToggle: boolean,
+  templatesToggle: boolean;
   previewTabsToggle: number;
   editorTabsToggle: number;
   navMenuToggle: boolean;
-  activeScreen: string;
+  projects: ProjectsType;
   screens: ScreensType;
-  actionPreview: actionPreviewType;
+  activeProject: string;
+  activeScreen: string;
   openCreateNewScreen: boolean;
   user: userType;
 };
 
-const initialPageId = getUniqueId();
+const initialProjectId = getUniqueId();
+const initialScreenId = getUniqueId();
 
 export const initialState: initialStateType = {
   isMobile: false,
@@ -69,10 +76,24 @@ export const initialState: initialStateType = {
   previewTabsToggle: 0,
   editorTabsToggle: 0,
   navMenuToggle: false,
-  screens: {[initialPageId] : { id: initialPageId, name: 'default1', payload: [], surface: SurfaceOptions.Message, changedByEditor: true },
-},
-  activeScreen: initialPageId,
-  actionPreview: {},
+  activeProject: initialProjectId,
+  activeScreen: initialScreenId,
   openCreateNewScreen: false,
+  projects: {
+    [initialProjectId]: {
+      id: initialProjectId,
+      name: 'Project1',
+      screens: [initialScreenId],
+    },
+  },
+  screens: {
+    [initialScreenId]: {
+      payload: [],
+      id: initialScreenId,
+      name: 'Screen1',
+      surface: SurfaceOptions.Message,
+      actionPreview: {},
+    },
+  },
   user: null,
 };

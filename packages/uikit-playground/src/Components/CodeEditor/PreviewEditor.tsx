@@ -6,20 +6,25 @@ import { context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 
 type CodeMirrorProps = {
-  extensions?: Extension[],
+  extensions?: Extension[];
 };
 
 const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
-  const { state } = useContext(context);
+  const {
+    state: { screens, activeScreen },
+  } = useContext(context);
   const { editor, setValue } = useCodeMirror(extensions, `{}`);
 
   useEffect(() => {
-    setValue(JSON.stringify(state.actionPreview, undefined, 4), {});
-  }, [state.actionPreview]);
+    setValue(
+      JSON.stringify(screens[activeScreen]?.actionPreview, undefined, 4),
+      {}
+    );
+  }, [screens[activeScreen]?.actionPreview]);
 
   return (
     <>
-      <Box display='grid' height='100%' width={'100%'} ref={editor} />
+      <Box display="grid" height="100%" width={'100%'} ref={editor} />
     </>
   );
 };

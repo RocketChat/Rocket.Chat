@@ -9,7 +9,7 @@ import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 
 type CodeMirrorProps = {
-  extensions?: Extension[],
+  extensions?: Extension[];
 };
 
 const BlockEditor = ({ extensions }: CodeMirrorProps) => {
@@ -17,9 +17,10 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
     state: { screens, activeScreen },
     dispatch,
   } = useContext(context);
+
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    JSON.stringify(screens[activeScreen].payload, undefined, 4)
+    JSON.stringify(screens[activeScreen]?.payload, undefined, 4)
   );
   const debounceValue = useDebouncedValue(changes?.value, 1500);
 
@@ -48,13 +49,16 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   }, [debounceValue]);
 
   useEffect(() => {
-    if (!screens[activeScreen].changedByEditor) {
-      setValue(JSON.stringify(screens[activeScreen].payload, undefined, 4), {});
+    if (!screens[activeScreen]?.changedByEditor) {
+      setValue(
+        JSON.stringify(screens[activeScreen]?.payload, undefined, 4),
+        {}
+      );
     }
-  }, [screens[activeScreen].payload]);
+  }, [screens[activeScreen]?.payload]);
 
   useEffect(() => {
-    setValue(JSON.stringify(screens[activeScreen].payload, undefined, 4), {});
+    setValue(JSON.stringify(screens[activeScreen]?.payload, undefined, 4), {});
   }, [activeScreen]);
 
   return (
