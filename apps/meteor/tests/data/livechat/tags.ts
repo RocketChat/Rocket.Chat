@@ -11,7 +11,7 @@ export const saveTags = (): Promise<ILivechatTag> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveTag',
-					params: [undefined, { name: faker.name.firstName(), description: faker.lorem.sentence() }, []],
+					params: [undefined, { name: faker.person.firstName(), description: faker.lorem.sentence() }, []],
 					id: '101',
 					msg: 'method',
 				}),

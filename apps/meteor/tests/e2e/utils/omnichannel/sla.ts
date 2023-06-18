@@ -5,7 +5,7 @@ import type { BaseTest } from '../test';
 import { expect } from '../test';
 
 export const generateRandomSLAData = (): Omit<IOmnichannelServiceLevelAgreements, '_updatedAt' | '_id'> => ({
-	name: faker.name.firstName(),
+	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
 	dueTimeInMinutes: faker.number.int({ min: 10, max: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE }),
 });

@@ -11,15 +11,15 @@ const ERROR = {
 };
 
 const INITIAL_SLA = {
-	name: faker.name.firstName(),
+	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.random.numeric(),
+	estimatedWaitTime: faker.string.numeric(),
 };
 
 const EDITED_SLA = {
-	name: faker.name.firstName(),
+	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.random.numeric(),
+	estimatedWaitTime: faker.string.numeric(),
 };
 
 test.skip(!IS_EE, 'Omnichannel SLA Policies > Enterprise Only');

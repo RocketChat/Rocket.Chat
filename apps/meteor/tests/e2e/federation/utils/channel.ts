@@ -38,7 +38,7 @@ export const createChannelAndInviteRemoteUserToCreateLocalUser = async ({
 	};
 	closePageAfterCreation?: boolean;
 }): Promise<string> => {
-	const channelName = faker.datatype.uuid();
+	const channelName = faker.string.uuid();
 
 	await doLoginAndGoToHome(page, server);
 
@@ -66,7 +66,7 @@ export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 		matrixServerName: string;
 	};
 }): Promise<string> => {
-	const groupName = faker.datatype.uuid();
+	const groupName = faker.string.uuid();
 
 	await doLoginAndGoToHome(page, server);
 

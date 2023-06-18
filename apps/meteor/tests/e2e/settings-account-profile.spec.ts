@@ -10,7 +10,7 @@ test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 
-	const token = faker.random.alpha(10);
+	const token = faker.string.alpha(10);
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);

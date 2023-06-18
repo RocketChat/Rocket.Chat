@@ -21,5 +21,5 @@ export const createBotAgent = async (): Promise<{
     };
 }
 
-export const getRandomVisitorToken = (): string => faker.random.alphaNumeric(17);
+export const getRandomVisitorToken = (): string => faker.string.alphanumeric(17);
 

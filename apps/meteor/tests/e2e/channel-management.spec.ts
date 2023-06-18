@@ -114,7 +114,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('expect "readOnlyChannel" to show join button', async () => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);

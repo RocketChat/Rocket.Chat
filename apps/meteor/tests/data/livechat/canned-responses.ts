@@ -6,9 +6,9 @@ import type { DummyResponse } from './utils';
 export const createCannedResponse = (): Promise<Partial<IOmnichannelCannedResponse>> =>
 	new Promise((resolve, reject) => {
         const response = {
-            shortcut: `${faker.random.word()}-${Date.now()}`,
+            shortcut: `${faker.lorem.word()}-${Date.now()}`,
             scope: 'user',
-            tags: [faker.random.word()],
+            tags: [faker.lorem.word()],
             text: faker.lorem.sentence(),
         };
 		return request

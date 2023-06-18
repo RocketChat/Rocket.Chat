@@ -11,7 +11,7 @@ export const createTrigger = (name: string): Promise<boolean> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveTrigger',
-					params: [{ name, description: faker.lorem.sentence(), enabled: true, runOnce: faker.datatype.boolean(), actions: [{ name: 'send-message', params: { msg: faker.lorem.sentence(), name: faker.name.firstName(), sender: faker.helpers.arrayElement(['queue', 'custom']) } }], conditions: [{ name: faker.lorem.word(), value: faker.number.int() }] }],
+					params: [{ name, description: faker.lorem.sentence(), enabled: true, runOnce: faker.datatype.boolean(), actions: [{ name: 'send-message', params: { msg: faker.lorem.sentence(), name: faker.person.firstName(), sender: faker.helpers.arrayElement(['queue', 'custom']) } }], conditions: [{ name: faker.lorem.word(), value: faker.number.int() }] }],
 					id: '101',
 					msg: 'method',
 				}),

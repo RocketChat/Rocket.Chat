@@ -4,7 +4,7 @@ import * as constants from '../config/constants';
 import type { API } from './test';
 
 export async function registerUser(api: API): Promise<string> {
-	const username = faker.datatype.uuid();
+	const username = faker.string.uuid();
 
 	await api.post('/users.register', {
 		username,

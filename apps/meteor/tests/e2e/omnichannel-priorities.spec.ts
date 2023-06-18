@@ -5,7 +5,7 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelPriorities } from './page-objects/omnichannel-priorities';
 import { test, expect } from './utils/test';
 
-const PRIORITY_NAME = faker.name.firstName();
+const PRIORITY_NAME = faker.person.firstName();
 
 const ERROR = {
 	fieldNameRequired: 'The field Name is required.',
