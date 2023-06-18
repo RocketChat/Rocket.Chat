@@ -7,7 +7,7 @@ import * as github from '@actions/github';
 
 import { setupOctokit } from './setupOctokit';
 import { createNpmFile } from './createNpmFile';
-import { getChangelogEntry, updateVersionPackageJson } from './utils';
+import { getChangelogEntry, bumpFileVersions, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 
 export async function bumpNextVersion({
@@ -27,6 +27,8 @@ export async function bumpNextVersion({
 	// TODO need to check if there is any change to 'main package', if not, there is no need to enter rc
 	// and instead a normal release of the other packages should be done
 
+	const { version: currentVersion } = await readPackageJson(cwd);
+
 	// start release candidate
 	await exec('yarn', ['changeset', 'pre', 'enter', 'rc']);
 
@@ -34,9 +36,7 @@ export async function bumpNextVersion({
 	await exec('yarn', ['changeset', 'version']);
 
 	// get version from main package
-	const mainPackageJsonPath = path.join(mainPackagePath, 'package.json');
-	// eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires
-	const { version: newVersion } = require(mainPackageJsonPath);
+	const { version: newVersion } = await readPackageJson(mainPackagePath);
 
 	const mainPackageChangelog = path.join(mainPackagePath, 'CHANGELOG.md');
 
@@ -55,7 +55,8 @@ export async function bumpNextVersion({
 	const newBranch = `release-${finalVersion}`;
 
 	// update root package.json
-	updateVersionPackageJson(cwd, newVersion);
+	core.info('update version in all files to new');
+	await bumpFileVersions(cwd, currentVersion, newVersion);
 
 	// TODO check if branch exists
 	await exec('git', ['checkout', '-b', newBranch]);
@@ -63,9 +64,12 @@ export async function bumpNextVersion({
 	await exec('git', ['add', '.']);
 	await exec('git', ['commit', '-m', newVersion]);
 
+	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
-	await exec('yarn', ['changeset', 'publish']);
+	await exec('yarn', ['changeset', 'publish', '--no-git-tag']);
+
+	await exec('git', ['tag', newVersion]);
 
 	await exec('git', ['push', '--force', '--follow-tags', 'origin', `HEAD:refs/heads/${newBranch}`]);
 
@@ -80,8 +84,11 @@ export async function bumpNextVersion({
 			body: prBody,
 			...github.context.repo,
 		});
+	} else {
+		core.info('no pull request created: release is not the first candidate');
 	}
 
+	core.info('create release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
