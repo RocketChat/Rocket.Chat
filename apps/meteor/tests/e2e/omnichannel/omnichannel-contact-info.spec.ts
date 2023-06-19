@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test } from '../utils/test';
 
-test.describe('omnichannel-transcript', () => {
+test.describe('Omnichannel contact info', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
+
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
 			name: faker.person.firstName(),
@@ -35,7 +35,7 @@ test.describe('omnichannel-transcript', () => {
 		await agent.page.close();
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
+	test('Receiving a message from visitor, and seeing its information', async ({ page }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();
@@ -48,18 +48,9 @@ test.describe('omnichannel-transcript', () => {
 			await agent.poHomeChannel.sidenav.getSidebarItemByName(newUser.name).click();
 		});
 
-		await test.step('Expect to be able to send transcript to email', async () => {
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptToEmail.click();
-			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
-		});
-
-		await test.step('Expect to be not able send transcript as PDF', async () => {
-			test.skip(!IS_EE, 'Enterprise Only');
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
-			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
+		await test.step('Expect to be see contact information and edit', async () => {
+			await agent.poHomeChannel.content.btnContactInformation.click();
+			await agent.poHomeChannel.content.btnContactEdit.click();
 		});
 	});
 });

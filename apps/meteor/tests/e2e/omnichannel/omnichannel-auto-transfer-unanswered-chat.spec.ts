@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	test.skip(!IS_EE, 'Enterprise Only');

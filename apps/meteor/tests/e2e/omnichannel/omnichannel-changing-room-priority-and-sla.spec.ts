@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { ADMIN_CREDENTIALS, IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { getPriorityByi18nLabel } from './utils/omnichannel/priority';
-import { createSLA } from './utils/omnichannel/sla';
-import { test, expect } from './utils/test';
+import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { getPriorityByi18nLabel } from '../utils/omnichannel/priority';
+import { createSLA } from '../utils/omnichannel/sla';
+import { test, expect } from '../utils/test';
 
 const getRoomId = (page: Page): string => {
 	// url is of the form: http://localhost:3000/live/:rid/room-info

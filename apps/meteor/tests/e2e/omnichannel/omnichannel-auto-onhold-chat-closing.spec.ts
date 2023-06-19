@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
@@ -54,7 +54,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	});
 
 	test('expect on-hold chat to be closed automatically in 5 seconds', async () => {
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name, false);
+		await agent.poHomeChannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 		await agent.poHomeChannel.content.sendMessage('this_is_a_test_message_from_agent');
 
 		await agent.poHomeChannel.content.btnOnHold.click();

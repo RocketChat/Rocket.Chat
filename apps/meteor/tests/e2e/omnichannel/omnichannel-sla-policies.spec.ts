@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from './config/constants';
-import { Users } from './fixtures/userStates';
-import { OmnichannelSlaPolicies } from './page-objects/omnichannel-sla-policies';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelSlaPolicies } from '../page-objects/omnichannel-sla-policies';
+import { test, expect } from '../utils/test';
 
 const ERROR = {
 	nameRequired: 'The field Name is required.',
