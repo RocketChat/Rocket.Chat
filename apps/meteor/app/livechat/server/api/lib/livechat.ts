@@ -1,23 +1,23 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
 	ILivechatTrigger,
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	OmnichannelSourceType,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
+import { i18n } from '../../../../../server/lib/i18n';
 
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
-	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
+	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
@@ -30,21 +30,25 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 	}));
 }
 
-export function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
+async function findDepartments(
+	businessUnit?: string,
+): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
 	// TODO: check this function usage
-	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-		_id: 1,
-		name: 1,
-		showOnRegistration: 1,
-		showOnOfflineForm: 1,
-	})
-		.fetch()
-		.map(({ _id, name, showOnRegistration, showOnOfflineForm }: ILivechatDepartment) => ({
-			_id,
-			name,
-			showOnRegistration,
-			showOnOfflineForm,
-		}));
+	return (
+		await (
+			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
+				_id: 1,
+				name: 1,
+				showOnRegistration: 1,
+				showOnOfflineForm: 1,
+			})
+		).toArray()
+	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+		_id,
+		name,
+		showOnRegistration,
+		showOnOfflineForm,
+	}));
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -59,7 +63,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
-export function findRoom(token: string, rid?: string): IOmnichannelRoom {
+export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -76,9 +80,9 @@ export function findRoom(token: string, rid?: string): IOmnichannelRoom {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token: string, departmentId?: string): IOmnichannelRoom | undefined {
+export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
 	const options = {
-		fields: {
+		projection: {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
@@ -86,9 +90,10 @@ export function findOpenRoom(token: string, departmentId?: string): IOmnichannel
 		},
 	};
 
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 	const rooms = departmentId
-		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch()
-		: LivechatRooms.findOpenByVisitorToken(token, options).fetch();
+		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options, extraQuery).toArray()
+		: await LivechatRooms.findOpenByVisitorToken(token, options, extraQuery).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
@@ -101,11 +106,11 @@ export function getRoom({
 	extraParams,
 }: {
 	guest: ILivechatVisitor;
-	rid?: string;
-	roomInfo?: {
-		source?: { type: OmnichannelSourceType; id?: string; alias?: string; label?: string; sidebarIcon?: string; defaultIcon?: string };
+	rid: string;
+	roomInfo: {
+		source?: IOmnichannelRoom['source'];
 	};
-	agent?: { agentId?: string; username?: string };
+	agent?: SelectedAgent;
 	extraParams?: Record<string, any>;
 }): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
 	const token = guest?.token;
@@ -118,10 +123,10 @@ export function getRoom({
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
+	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {
+export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 
@@ -134,9 +139,9 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
+	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
 	const triggers = await findTriggers();
-	const departments = findDepartments(businessUnit);
+	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {
@@ -170,12 +175,12 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 					{
 						actionLinksAlignment: 'flex-start',
 						i18nLabel: 'Join_call',
-						label: TAPi18n.__('Join_call'),
+						label: i18n.t('Join_call'),
 						method_id: 'joinLivechatWebRTCCall',
 					},
 					{
 						i18nLabel: 'End_call',
-						label: TAPi18n.__('End_call'),
+						label: i18n.t('End_call'),
 						method_id: 'endLivechatWebRTCCall',
 						danger: true,
 					},
@@ -214,6 +219,6 @@ export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> 
 }
 
 // TODO: please forgive me for this. Still finding the good types for these callbacks
-export function onCheckRoomParams(params: any): any {
+export function onCheckRoomParams(params: any): Promise<unknown> {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

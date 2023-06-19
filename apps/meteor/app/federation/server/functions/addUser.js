@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { FederationServers } from '@rocket.chat/models';
+import { FederationServers, Users } from '@rocket.chat/models';
 
 import * as federationErrors from './errors';
-import { Users } from '../../../models/server';
 import { getUserByUsername } from '../handler';
 
 export async function addUser(query) {
@@ -20,7 +19,7 @@ export async function addUser(query) {
 
 	try {
 		// Create the local user
-		userId = Users.create(user);
+		userId = await Users.create(user);
 
 		// Refresh the servers list
 		await FederationServers.refreshServers();

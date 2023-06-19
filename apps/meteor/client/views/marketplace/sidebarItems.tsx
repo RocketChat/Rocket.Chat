@@ -1,24 +1,8 @@
-import { Badge, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { hasPermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
-import { useAppRequestStats } from './hooks/useAppRequestStats';
-
-const MarketplaceRequestBadge = () => {
-	const requestSeatsResult = useAppRequestStats();
-
-	if (requestSeatsResult.isLoading)
-		return requestSeatsResult.fetchStatus !== 'idle' ? <Skeleton variant='rect' height='x16' width='x16' /> : null;
-
-	if (requestSeatsResult.isError) return null;
-
-	if (!requestSeatsResult.data.data.totalUnseen) {
-		return null;
-	}
-
-	return <Badge variant='primary'>{requestSeatsResult.data.data.totalUnseen}</Badge>;
-};
+import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 
 export const {
 	registerSidebarItem: registerMarketplaceSidebarItem,
@@ -27,38 +11,43 @@ export const {
 	subscribeToSidebarItems: subscribeToMarketplaceSidebarItems,
 } = createSidebarItems([
 	{
-		href: 'marketplace/explore/list',
+		href: 'marketplace/explore',
 		icon: 'compass',
 		i18nLabel: 'Explore',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: 'marketplace/enterprise/list',
+		href: 'marketplace/enterprise',
 		icon: 'lightning',
 		i18nLabel: 'Enterprise',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: 'marketplace/installed/list',
+		href: 'marketplace/installed',
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: 'marketplace/requested/list',
+		href: 'marketplace/requested',
 		icon: 'cube',
 		i18nLabel: 'Requested',
 		badge: () => <MarketplaceRequestBadge />,
 		permissionGranted: (): boolean => hasPermission('manage-apps'),
 	},
 	{
-		href: 'marketplace/private/list',
+		href: 'marketplace/private',
 		icon: 'lock',
 		i18nLabel: 'Private_Apps',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
-	{ divider: true, i18nLabel: 'marketplace/private/list' },
+	{ divider: true, i18nLabel: 'marketplace/private', permissionGranted: (): boolean => hasPermission('access-marketplace') },
 	{
 		href: 'https://go.rocket.chat/i/developing-an-app',
 		icon: 'new-window',
 		i18nLabel: 'Documentation',
 		externalUrl: true,
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
-	{ divider: true, i18nLabel: 'marketplace/Documentation' },
+	{ divider: true, i18nLabel: 'marketplace/Documentation', permissionGranted: (): boolean => hasPermission('access-marketplace') },
 ]);

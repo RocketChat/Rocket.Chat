@@ -60,25 +60,26 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const removeCustomOauthFactory =
 		(id: string): (() => void) =>
 		(): void => {
-			const close = (): void => setModal(null);
+			const handleConfirm = async (): Promise<void> => {
+				try {
+					await removeOAuthService(id);
+					dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				} finally {
+					setModal(null);
+				}
+			};
+
 			setModal(
 				<GenericModal
-					onClose={close}
-					onCancel={close}
+					onClose={() => setModal(null)}
+					onCancel={() => setModal(null)}
 					title={t('Are_you_sure')}
 					variant='danger'
 					confirmText={t('Yes_delete_it')}
-					onConfirm={async (): Promise<void> => {
-						try {
-							await removeOAuthService(id);
-							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						} finally {
-							setModal(null);
-						}
-					}}
-				></GenericModal>,
+					onConfirm={handleConfirm}
+				/>,
 			);
 		};
 

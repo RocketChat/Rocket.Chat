@@ -1,13 +1,14 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import EmailConfirmationForm from './EmailConfirmationForm';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -32,11 +33,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const {
 		register,
 		handleSubmit,
 		setError,
 		watch,
+		getValues,
+		clearErrors,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
 
@@ -45,7 +50,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			{ pass: password, ...formData },
 			{
 				onError: (error: any) => {
-					if (error.errorType === 'error-invalid-email') {
+					if ([error.error, error.errorType].includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
 					}
 					if (error.errorType === 'error-user-already-exists') {
@@ -59,10 +64,21 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
 					}
+					if (/error-too-many-requests/.test(error.error)) {
+						dispatchToastMessage({ type: 'error', message: error.error });
+					}
+					if (/error-user-is-not-activated/.test(error.error)) {
+						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
+						setLoginRoute('login');
+					}
 				},
 			},
 		);
 	};
+
+	if (errors.email?.type === 'invalid-email') {
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
+	}
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
@@ -93,9 +109,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('email', {
 									required: true,
+									pattern: {
+										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										message: t('registration.component.form.invalidEmail'),
+									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.requiredField')}
+								error={errors.email && t('registration.component.form.invalidEmail')}
 								name='email'
 								aria-invalid={errors.email ? 'true' : undefined}
 								id='email'

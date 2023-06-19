@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationAdmin } from '../../page-objects/admin';
@@ -12,7 +12,7 @@ import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 test.describe.parallel('Federation - Admin Panel - Rooms', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
-	const channelName = faker.datatype.uuid();
+	const channelName = faker.string.uuid();
 	let poFederationAdmin: FederationAdmin;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
@@ -67,11 +67,11 @@ test.describe.parallel('Federation - Admin Panel - Rooms', () => {
 		await expect(poFederationAdmin.roomsInputTopic).not.toBeDisabled();
 		await expect(poFederationAdmin.roomsInputFavorite).not.toBeDisabled();
 
-		await expect(poFederationAdmin.roomsInputDescription).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputAnnouncement).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputPrivate).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputReadOnly).toBeDisabled();
-		await expect(poFederationAdmin.roomsInputArchived).toBeDisabled();
+		await expect(poFederationAdmin.roomsInputDescription).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputAnnouncement).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputPrivate).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputReadOnly).not.toBeVisible();
+		await expect(poFederationAdmin.roomsInputArchived).not.toBeVisible();
 		await expect(poFederationAdmin.roomsInputDefault).toBeDisabled();
 		await expect(poFederationAdmin.roomsInputFeatured).toBeDisabled();
 		await expect(poFederationAdmin.roomsBtnDelete).toBeDisabled();

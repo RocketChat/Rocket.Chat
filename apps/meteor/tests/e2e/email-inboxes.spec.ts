@@ -21,7 +21,7 @@ test.describe.serial('email-inboxes', () => {
 
 	test('expect create an email inbox', async () => {
 		await poAdminEmailInboxes.btnNewEmailInbox.click();
-		const name = faker.name.firstName();
+		const name = faker.person.firstName();
 		await poAdminEmailInboxes.inputName.type(name);
 		await poAdminEmailInboxes.inputEmail.type(email);
 
@@ -43,7 +43,7 @@ test.describe.serial('email-inboxes', () => {
 	});
 
 	test('expect delete an email inbox', async () => {
-		await poAdminEmailInboxes.findEmailInbox(email).click();
+		await poAdminEmailInboxes.itemRow(email).click();
 		await poAdminEmailInboxes.btnDelete.click();
 		await poUtils.btnModalConfirmDelete.click();
 		await expect(poUtils.toastBarSuccess).toBeVisible();

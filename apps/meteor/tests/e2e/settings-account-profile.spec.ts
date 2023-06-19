@@ -10,7 +10,7 @@ test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 
-	const token = faker.random.alpha(10);
+	const token = faker.string.alpha(10);
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -21,7 +21,7 @@ test.describe.serial('settings-account-profile', () => {
 
 	// FIXME: solve test intermitencies
 	test.skip('expect update profile with new name/username', async ({ page }) => {
-		const newName = faker.name.findName();
+		const newName = faker.person.fullName();
 		const newUsername = faker.internet.userName(newName);
 
 		await page.goto('/account/profile');

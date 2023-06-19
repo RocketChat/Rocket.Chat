@@ -74,7 +74,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		).toContainText('Not possible to edit a federated user');
 	});
 
-	test('expect not to have the kebab menu enable, since there should not be any menu option enabled for federated users', async ({
+	test('expect not to have the kebab menu enabled, since there should not be any menu option enabled for federated users', async ({
 		page,
 	}) => {
 		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
@@ -88,7 +88,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		apiServer2,
 	}) => {
 		const before = parseInt(
-			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
 		const newUserFromServer2 = await registerUser(apiServer2);
 		const page2 = await browser.newPage();
@@ -101,7 +101,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 			server: constants.RC_SERVER_1,
 		});
 		const after = parseInt(
-			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
 		expect(before).toEqual(after);
 		await page2.close();
@@ -113,7 +113,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		apiServer1,
 	}) => {
 		const before = parseInt(
-			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
 		const newUserFromServer1 = await registerUser(apiServer1);
 		const page2 = await browser.newPage();
@@ -125,11 +125,12 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 			fullUsernameFromServer: fullUsernameFromServer1,
 			server: constants.RC_SERVER_1,
 		});
+		await page.reload();
 		const after = parseInt(
-			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
 		expect(before).not.toEqual(after);
-		expect(before + 1).toEqual(after);
+		expect(before - 1).toEqual(after);
 		await page2.close();
 	});
 });

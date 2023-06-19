@@ -6,8 +6,16 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import {
+	ContextualbarSkeleton,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarEmptyContent,
+} from '../../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../../components/VerticalBar';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 import VideoConfListItem from './VideoConfListItem';
 
@@ -29,18 +37,18 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 	});
 
 	if (loading) {
-		return <VerticalBar.Skeleton />;
+		return <ContextualbarSkeleton />;
 	}
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='phone' />
-				<VerticalBar.Text>{t('Calls')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='phone' />
+				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 
-			<VerticalBar.Content paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0} ref={ref}>
 				{(total === 0 || error) && (
 					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
 						{error && (
@@ -51,11 +59,11 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 							</States>
 						)}
 						{!error && total === 0 && (
-							<States>
-								<StatesIcon name='video' />
-								<StatesTitle>{t('No_history')}</StatesTitle>
-								<StatesSubtitle>{t('There_is_no_video_conference_history_in_this_room')}</StatesSubtitle>
-							</States>
+							<ContextualbarEmptyContent
+								icon='phone'
+								title={t('No_history')}
+								subtitle={t('There_is_no_video_conference_history_in_this_room')}
+							/>
 						)}
 					</Box>
 				)}
@@ -75,7 +83,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						/>
 					</Box>
 				)}
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		</>
 	);
 };

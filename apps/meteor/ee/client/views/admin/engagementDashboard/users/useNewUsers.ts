@@ -4,10 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { Period } from '../dataView/periods';
 import { getPeriodRange } from '../dataView/periods';
 
-export type UseNewUsersOptions = { period: Period['key']; utc: boolean };
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useNewUsers = ({ period, utc }: UseNewUsersOptions) => {
+export const useNewUsers = ({ period, utc }: { period: Period['key']; utc: boolean }) => {
 	const getNewUsers = useEndpoint('GET', '/v1/engagement-dashboard/users/new-users');
 
 	return useQuery(

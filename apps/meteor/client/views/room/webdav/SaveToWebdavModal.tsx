@@ -61,9 +61,12 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 				const fileData = new Uint8Array(arrayBuffer);
 
 				try {
+					if (!title) {
+						throw new Error('File name is required');
+					}
 					const response = await uploadFileToWebdav(accountId, fileData, title);
 					if (!response.success) {
-						return dispatchToastMessage({ type: 'error', message: t(response.message) });
+						throw new Error(response.message ? t(response.message) : 'Error uploading file');
 					}
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
@@ -78,7 +81,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(handleSaveFile)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSaveFile)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Save_To_Webdav')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />

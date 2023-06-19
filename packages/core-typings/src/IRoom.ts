@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage } from './IMessage';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 import type { IVisitor } from './IInquiry';
@@ -36,7 +36,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: string[];
+	// TODO: this boolean might be an accident
+	sysMes?: MessageTypesValues[] | boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -52,7 +53,11 @@ export interface IRoom extends IRocketChatRecord {
 
 	streamingOptions?: {
 		id?: string;
-		type: string;
+		type?: string;
+		url?: string;
+		thumbnail?: string;
+		isAudioOnly?: boolean;
+		message?: string;
 	};
 
 	prid?: string;
@@ -63,7 +68,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamDefault?: boolean;
 	open?: boolean;
 
-	autoTranslateLanguage: string;
+	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;
 	unread?: number;
 	alert?: boolean;
@@ -86,8 +91,18 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	/* @deprecated */
+	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+}
+
+export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
+	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
+
+export interface IRoomWithJoinCode extends IRoom {
+	joinCodeRequired: true;
+	joinCode: string;
 }
 
 export interface IRoomFederated extends IRoom {
@@ -112,6 +127,8 @@ export const isPublicTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isT
 export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid;
 export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
+
+export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
@@ -222,11 +239,21 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
-	pdfFileId?: string;
+	pdfTranscriptFileId?: string;
 
 	metrics?: {
 		serviceTimeDuration?: number;
 		chatDuration?: number;
+		v?: {
+			lq: Date;
+		};
+		servedBy?: {
+			lr: Date;
+		};
+		response?: {
+			tt: number;
+			total: number;
+		};
 	};
 
 	// Both fields are being used for the auto transfer feature for unanswered chats
@@ -275,7 +302,7 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 	chatDuration: number;
 };
 
-export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 

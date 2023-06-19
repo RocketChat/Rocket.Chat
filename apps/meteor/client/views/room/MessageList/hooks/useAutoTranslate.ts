@@ -2,6 +2,8 @@ import type { IMessage, ISubscription, ITranslatedMessage } from '@rocket.chat/c
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
+import { AutoTranslate } from '../../../../../app/autotranslate/client';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 
@@ -13,8 +15,10 @@ export type AutoTranslateOptions = {
 
 export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOptions => {
 	const autoTranslateSettingEnabled = Boolean(useSetting('AutoTranslate_Enabled'));
-	const autoTranslateEnabled = Boolean(autoTranslateSettingEnabled && subscription?.autoTranslateLanguage && subscription?.autoTranslate);
-	const autoTranslateLanguage = autoTranslateEnabled ? subscription?.autoTranslateLanguage : undefined;
+	const isSubscriptionEnabled = autoTranslateSettingEnabled && subscription?.autoTranslateLanguage && subscription?.autoTranslate;
+	const isLivechatRoom = useMemo(() => subscription && roomCoordinator.isLivechatRoom(subscription?.t), [subscription]);
+	const autoTranslateEnabled = Boolean(isSubscriptionEnabled || isLivechatRoom);
+	const autoTranslateLanguage = autoTranslateEnabled && subscription ? AutoTranslate.getLanguage(subscription.rid) : undefined;
 
 	const showAutoTranslate = useCallback(
 		(message: IMessage): boolean => {

@@ -7,13 +7,14 @@ import localforage from 'localforage';
 
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { call } from '../../../../client/lib/utils/call';
 import { CachedCollectionManager } from './CachedCollectionManager';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { isTruthy } from '../../../../lib/isTruthy';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
-type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
@@ -33,7 +34,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
-export class CachedCollection<T extends object, U = T> extends Emitter<{ changed: T; removed: T }> {
+export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
@@ -70,16 +71,16 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 		CachedCollectionManager.register(this);
 
 		if (!userRelated) {
-			this.init();
+			void this.init();
 			return;
 		}
 
 		CachedCollectionManager.onLogin(() => {
-			this.init();
+			void this.init();
 		});
 	}
 
-	protected get eventName() {
+	protected get eventName(): `${Name}-changed` {
 		return `${this.name}-changed`;
 	}
 
@@ -92,7 +93,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 	}
 
 	private async loadFromCache() {
-		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date }>(this.name);
+		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
 
 		if (!data) {
 			return false;
@@ -104,6 +105,11 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 		if (data.records.length <= 0) {
 			return false;
+		}
+
+		// updatedAt may be a Date or a string depending on the used localForage backend
+		if (!(data.updatedAt instanceof Date)) {
+			data.updatedAt = new Date(data.updatedAt);
 		}
 
 		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedCollection.MAX_CACHE_TIME) {
@@ -146,13 +152,13 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	private async callLoad() {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`);
+		const data = await sdk.call(`${this.name}/get`);
 		return data as unknown as U[];
 	}
 
 	private async callSync(updatedSince: Date) {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`, updatedSince);
+		const data = await sdk.call(`${this.name}/get`, updatedSince);
 		return data as unknown as { update: U[]; remove: U[] };
 	}
 
@@ -169,7 +175,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 			}
 
 			const { _id } = newRecord;
-			this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
 			this.emit('changed', newRecord as any); // TODO: investigate why this is needed
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
@@ -193,13 +199,13 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	private async loadFromServerAndPopulate() {
 		await this.loadFromServer();
-		this.save();
+		await this.save();
 	}
 
 	save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
 		const data = this.collection.find().fetch();
-		localforage.setItem(this.name, {
+		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
@@ -210,7 +216,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	clearCacheOnLogout() {
 		if (this.userRelated === true) {
-			this.clearCache();
+			void this.clearCache();
 		}
 	}
 
@@ -221,7 +227,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 	}
 
 	async setupListener() {
-		Notifications[this.eventType](this.eventName, (action: 'removed' | 'changed', record: any) => {
+		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
 			const newRecord = this.handleReceived(record, action);
 
@@ -233,9 +239,12 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				this.collection.remove(newRecord._id);
 			} else {
 				const { _id } = newRecord;
-				this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+				if (!_id) {
+					return;
+				}
+				this.collection.upsert({ _id } as any, newRecord);
 			}
-			this.save();
+			await this.save();
 		});
 	}
 
@@ -246,7 +255,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 			if (!(await this.sync())) {
 				return this.trySync(delay);
 			}
-			this.save();
+			await this.save();
 		}, delay);
 	}
 
@@ -269,15 +278,15 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				const action = 'changed';
 				const newRecord = this.handleSync(record, action);
 
-				if (!hasId(newRecord) || !hasUpdatedAt(newRecord)) {
+				if (!hasId(newRecord)) {
 					continue;
 				}
 
-				const actionTime = newRecord._updatedAt;
+				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+						this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -302,7 +311,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.direct.remove({ _id } as Mongo.Selector<T>);
+						this.collection.remove({ _id } as Mongo.Selector<T>);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -344,7 +353,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 		}
 
 		CachedCollectionManager.onLogin(async () => {
-			this.setupListener();
+			await this.setupListener();
 		});
 	}
 }

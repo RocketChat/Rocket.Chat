@@ -1,13 +1,15 @@
-import { OptionTitle } from '@rocket.chat/fuselage';
+import { OptionTitle, OptionDivider } from '@rocket.chat/fuselage';
 import { useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import React from 'react';
 
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import ListItem from '../../../components/Sidebar/ListItem';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CreateChannelWithData from '../CreateChannel';
 import CreateDirectMessage from '../CreateDirectMessage';
 import CreateTeam from '../CreateTeam';
+import MatrixFederationSearch from '../MatrixFederationSearch';
 import { useCreateRoomModal } from '../hooks/useCreateRoomModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -32,6 +34,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 	const createTeam = useCreateRoomModal(CreateTeam);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const searchFederatedRooms = useCreateRoomModal(MatrixFederationSearch);
+
+	const { data } = useIsEnterprise();
+	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
 
 	return (
 		<>
@@ -39,9 +45,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 			<ul>
 				{canCreateChannel && (
 					<ListItem
+						role='listitem'
 						icon='hashtag'
 						text={t('Channel')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createChannel(e);
 							closeList();
 						}}
@@ -49,9 +56,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{canCreateTeam && (
 					<ListItem
+						role='listitem'
 						icon='team'
 						text={t('Team')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createTeam(e);
 							closeList();
 						}}
@@ -59,9 +67,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{canCreateDirectMessages && (
 					<ListItem
+						role='listitem'
 						icon='balloon'
 						text={t('Direct_Messages')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createDirectMessage(e);
 							closeList();
 						}}
@@ -69,13 +78,28 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{discussionEnabled && canCreateDiscussion && (
 					<ListItem
+						role='listitem'
 						icon='discussion'
 						text={t('Discussion')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createDiscussion(e);
 							closeList();
 						}}
 					/>
+				)}
+				{isMatrixEnabled && (
+					<>
+						<OptionDivider />
+						<OptionTitle>{t('Explore')}</OptionTitle>
+						<ListItem
+							icon='magnifier'
+							text={t('Federation_Search_federated_rooms')}
+							onClick={(e: MouseEvent<HTMLElement>): void => {
+								searchFederatedRooms(e);
+								closeList();
+							}}
+						/>
+					</>
 				)}
 			</ul>
 		</>

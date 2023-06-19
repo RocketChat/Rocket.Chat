@@ -1,5 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatInquiry, LivechatPriority, LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import type { ILivechatPriority, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -96,10 +97,18 @@ export const removePriorityFromRoom = async (rid: string, user: Required<Pick<IU
 	]);
 };
 
-export const addPriorityChangeHistoryToRoom = async (
+const addPriorityChangeHistoryToRoom = async (
 	roomId: string,
 	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
 	priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
 ) => {
-	await Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, user, priority);
+	await Message.saveSystemMessage('omnichannel_priority_change_history', roomId, '', user, {
+		priorityData: {
+			definedBy: {
+				_id: user._id,
+				username: user.username,
+			},
+			...(priority && { priority }),
+		},
+	});
 };

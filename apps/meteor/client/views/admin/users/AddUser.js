@@ -4,9 +4,11 @@ import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
+import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 const AddUser = ({ onReload, ...props }) => {
 	const t = useTranslation();
@@ -15,12 +17,13 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const getRoleData = useEndpoint('GET', '/v1/roles.list');
 
-	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
-
 	const { data } = useQuery(['roles'], async () => {
 		const roles = await getRoleData();
 		return roles;
 	});
+
+	const isSmtpEnabled = useSmtpConfig();
+
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -55,9 +58,11 @@ const AddUser = ({ onReload, ...props }) => {
 		validationKeys[key] && validationKeys[key](value, values);
 	};
 
+	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
+
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
 		{
-			roles: [],
+			roles: defaultUserRoles,
 			name: '',
 			username: '',
 			statusText: '',
@@ -131,7 +136,15 @@ const AddUser = ({ onReload, ...props }) => {
 	);
 
 	return (
-		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
+		<UserForm
+			errors={errors}
+			formValues={values}
+			formHandlers={handlers}
+			availableRoles={availableRoles}
+			append={append}
+			isSmtpEnabled={isSmtpEnabled}
+			{...props}
+		/>
 	);
 };
 

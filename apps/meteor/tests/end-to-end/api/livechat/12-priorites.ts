@@ -8,11 +8,17 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
-import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
+import {
+	createAgent,
+	createVisitor,
+	createLivechatRoom,
+	bulkCreateLivechatRooms,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -24,14 +30,13 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
-			.then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
 	this.afterAll(async () => {
-		addPermissions({
+		await addPermissions({
 			'manage-livechat-priorities': ['admin', 'livechat-manager'],
 			'manage-livechat-sla': ['admin', 'livechat-manager'],
 			'view-l-room': ['admin', 'livechat-manager', 'livechat-agent'],
@@ -118,8 +123,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(sla._id);
-			const deleteResponse = deleteSLA(sla._id);
-			expect(deleteResponse).to.not.be.rejected;
+			await deleteSLA(sla._id);
 		});
 		// PUT
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
@@ -247,15 +251,15 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if inquiry is not queued', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await takeInquiry(room._id);
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
 
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
-					roomId: room._id,
+					roomId,
 					sla: '123',
 				})
 				.expect('Content-Type', 'application/json')
@@ -326,7 +330,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 	describe('livechat/priorities/:priorityId', () => {
 		let priority: ILivechatPriority;
-		const name = faker.random.word();
+		const name = faker.lorem.word();
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
@@ -396,7 +400,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body.priorities[pos]).to.have.property('i18n', priority.i18n);
 		});
 		it('should edit a priority with a PUT', async () => {
-			const newName = faker.random.word();
+			const newName = faker.lorem.word();
 			const response = await request
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
@@ -416,7 +420,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(newPriorityResponse.body).to.have.property('name', newName);
 		});
 		it('should fail to edit a priority with a PUT if using too many parameters', async () => {
-			const newName = faker.random.word();
+			const newName = faker.lorem.word();
 			const response = await request
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
@@ -431,7 +435,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body?.error).to.contain('invalid-params');
 		});
 		it('should fail to edit a priority with a PUT if using an object as name', async () => {
-			const newName = faker.random.word();
+			const newName = faker.lorem.word();
 			const response = await request
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
@@ -460,7 +464,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.put(api('livechat/priorities/123'))
 				.set(credentials)
 				.send({
-					name: faker.random.word(),
+					name: faker.lorem.word(),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
@@ -491,7 +495,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
 			// change name of first priority to a random name
-			const newName = faker.random.word();
+			const newName = faker.lorem.word();
 			await request
 				.put(api(`livechat/priorities/${priorities[0]._id}`))
 				.set(credentials)
@@ -515,7 +519,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
 			// change name of first priority to a random name
-			const newNameLowercase = faker.random.word().toLowerCase();
+			const newNameLowercase = faker.lorem.word().toLowerCase();
 			await request
 				.put(api(`livechat/priorities/${priorities[0]._id}`))
 				.set(credentials)
@@ -552,7 +556,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 			priority = priorities[0];
 
-			priority.name = faker.random.word();
+			priority.name = faker.lorem.word();
 			const responseChange = await request
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)

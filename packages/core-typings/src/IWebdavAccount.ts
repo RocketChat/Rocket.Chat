@@ -3,8 +3,8 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 export interface IWebdavAccount extends IRocketChatRecord {
 	userId: string;
 	serverURL: string;
-	username: string;
-	password: string;
+	username?: string;
+	password?: string;
 	name: string;
 }
 
@@ -14,10 +14,10 @@ export type IWebdavAccountPayload = Pick<IWebdavAccount, 'serverURL' | 'username
 
 export type IWebdavNode = {
 	basename: string;
-	etag: string;
+	etag: string | null;
 	filename: string;
 	lastmod: string;
-	mime: string;
+	mime?: string;
 	size: number;
 	type: 'file' | 'directory';
 };

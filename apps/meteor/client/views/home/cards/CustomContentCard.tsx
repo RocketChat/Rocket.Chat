@@ -40,21 +40,25 @@ const CustomContentCard = (): ReactElement | null => {
 	const isEnterprise = data?.isEnterprise;
 	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
+	const userVisibilityTooltipText = isCustomContentVisible ? t('Now_Its_Visible_For_Everyone') : t('Now_Its_Visible_Only_For_Admins');
+
+	let customContentOnlyTooltipText = t('It_Will_Hide_All_Other_Content_Blocks_In_The_Homepage');
+	if (willNotShowCustomContent) {
+		customContentOnlyTooltipText = t('Action_Available_After_Custom_Content_Added_And_Visible');
+	} else if (isCustomContentOnly) {
+		customContentOnlyTooltipText = t('It_Will_Show_All_Other_Content_Blocks_In_The_Homepage');
+	}
+
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
-				<Card.Title>
+				<Box display='flex' mbe='x12'>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
-						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x16' />
+						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
-				</Card.Title>
-				<Box
-					mb='x8'
-					role='status'
-					color='info'
-					aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}
-				>
+				</Box>
+				<Box mb='x8' role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
 				<Card.FooterWrapper>
@@ -64,7 +68,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
-							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
+							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
@@ -73,7 +77,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={willNotShowCustomContent || !isEnterprise}
-							title={t('It_Will_Hide_All_Other_White_Blocks_In_The_Homepage')}
+							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
@@ -88,7 +92,7 @@ const CustomContentCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb='x8' color='info'>
+				<Box mb='x8'>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

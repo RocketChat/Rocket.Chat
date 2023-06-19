@@ -50,12 +50,12 @@ on:
         required: true
         type: string
     secrets:
-      TURBO_TEAM:
-        required: true
       CR_USER:
         required: true
       CR_PAT:
         required: true
+      QASE_API_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -80,7 +80,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.9.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
@@ -95,6 +95,23 @@ jobs:
           install: true
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Start httpbin container and wait for it to be ready
+        run: |
+          docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
+          i=0
+          while [ $i -lt 10 ]; do
+            if curl -s -o /dev/null http://localhost:10000; then
+              echo "httpbin is running"
+              break
+            fi
+            i=$((i + 1))
+            sleep 5
+          done
+          if [ $i -eq 10 ]; then
+            echo "Failed to verify httpbin is running"
+            exit 1
+          fi
 
       - name: yarn build
         run: yarn build
@@ -197,9 +214,10 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
+          WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
-          for i in $(seq 1 5); do
+          for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
@@ -225,6 +243,8 @@ jobs:
         env:
           E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
@@ -236,7 +256,7 @@ jobs:
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
-        if: inputs.type == 'ui' && failure()
+        if: failure()
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage

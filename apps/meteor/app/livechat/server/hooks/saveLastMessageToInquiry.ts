@@ -7,13 +7,8 @@ import { RoutingManager } from '../lib/RoutingManager';
 
 callbacks.add(
 	'afterSaveMessage',
-	(message, room) => {
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
-		// skip callback if message was edited
-		if (isEditedMessage(message)) {
+	async (message, room) => {
+		if (!isOmnichannelRoom(room) || isEditedMessage(message) || message.t) {
 			return message;
 		}
 
@@ -26,7 +21,7 @@ callbacks.add(
 			return message;
 		}
 
-		Promise.await(LivechatInquiry.setLastMessageByRoomId(room._id, message));
+		await LivechatInquiry.setLastMessageByRoomId(room._id, message);
 
 		return message;
 	},

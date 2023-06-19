@@ -8,6 +8,7 @@ import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
 import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
+import { filterAppsByEnterprise } from '../helpers/filterAppsByEnterprise';
 import { filterAppsByFree } from '../helpers/filterAppsByFree';
 import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
@@ -34,6 +35,7 @@ export const useFilteredApps = ({
 	itemsPerPage: number;
 	categories?: string[];
 	purchaseType?: string;
+	isEnterpriseOnly?: boolean;
 	sortingMethod?: string;
 	status?: string;
 	context?: string;
@@ -51,11 +53,11 @@ export const useFilteredApps = ({
 		let shouldShowSearchText = true;
 
 		const sortingMethods: Record<string, () => App[]> = {
-			mrr: () =>
+			urf: () =>
 				filtered.sort(
 					(firstApp, secondApp) => (secondApp?.appRequestStats?.totalUnseen || 0) - (firstApp?.appRequestStats?.totalUnseen || 0),
 				),
-			lrr: () =>
+			url: () =>
 				filtered.sort(
 					(firstApp, secondApp) => (firstApp?.appRequestStats?.totalUnseen || 0) - (secondApp?.appRequestStats?.totalUnseen || 0),
 				),
@@ -75,8 +77,14 @@ export const useFilteredApps = ({
 			filtered = sortingMethods[sortingMethod]();
 		}
 
+		const filterByPurchaseType: Record<string, () => App[]> = {
+			paid: () => filtered.filter(filterAppsByPaid),
+			enterprise: () => filtered.filter(filterAppsByEnterprise),
+			free: () => filtered.filter(filterAppsByFree),
+		};
+
 		if (purchaseType && purchaseType !== 'all') {
-			filtered = purchaseType === 'paid' ? filtered.filter(filterAppsByPaid) : filtered.filter(filterAppsByFree);
+			filtered = filterByPurchaseType[purchaseType]();
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}

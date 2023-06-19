@@ -17,10 +17,10 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { useUserData } from '../../../hooks/useUserData';
-import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../lib/presence';
 import {
 	useIsSelecting,
@@ -36,9 +36,10 @@ import { useMessageListShowRealName, useMessageListShowUsername } from '../list/
 
 type SystemMessageProps = {
 	message: IMessage;
+	showUserAvatar: boolean;
 };
 
-const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -65,7 +66,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 			data-system-message-type={message.t}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
@@ -110,7 +111,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} file={message.file} />
+						<Attachments attachments={message.attachments} />
 					</MessageSystemBlock>
 				)}
 				{message.actionLinks?.length && (

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import $ from 'jquery';
 
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -10,8 +9,6 @@ import { formattingButtons } from './messageBoxFormatting';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
-		$(input).trigger(evt);
-
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;
@@ -21,7 +18,14 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.dispatchEvent(event);
 	};
 
-	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; recordingVideo: void; formatting: void }>();
+	const emitter = new Emitter<{
+		quotedMessagesUpdate: void;
+		editing: void;
+		recording: void;
+		recordingVideo: void;
+		formatting: void;
+		mircophoneDenied: void;
+	}>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -60,7 +64,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		}
 
 		if (selection) {
-			if (!document.execCommand || !document.execCommand('insertText', false, text)) {
+			if (!document.execCommand?.('insertText', false, text)) {
 				input.value = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
 				focus();
 			}
@@ -167,6 +171,21 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		];
 	})();
 
+	const [isMicrophoneDenied, setIsMicrophoneDenied] = (() => {
+		let isMicrophoneDenied = false;
+
+		return [
+			{
+				get: () => isMicrophoneDenied,
+				subscribe: (callback: () => void) => emitter.on('mircophoneDenied', callback),
+			},
+			(value: boolean) => {
+				isMicrophoneDenied = value;
+				emitter.emit('mircophoneDenied');
+			},
+		];
+	})();
+
 	const setEditingMode = (editing: boolean): void => {
 		setEditing(editing);
 	};
@@ -213,7 +232,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 				input.selectionStart = selectionStart - startPattern.length;
 				input.selectionEnd = selectionEnd + endPattern.length;
 
-				if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
+				if (!document.execCommand?.('insertText', false, selectedText)) {
 					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 				}
 
@@ -227,7 +246,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 			}
 		}
 
-		if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
+		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
 			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
 		}
 
@@ -251,7 +270,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
 		const textAreaTxt = input.value;
 
-		if (!document.execCommand || !document.execCommand('insertText', false, text)) {
+		if (!document.execCommand?.('insertText', false, text)) {
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
@@ -317,5 +336,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		dismissAllQuotedMessages,
 		quotedMessages,
 		formatters,
+		isMicrophoneDenied,
+		setIsMicrophoneDenied,
 	};
 };

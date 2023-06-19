@@ -1,11 +1,13 @@
-import { appTokensCollection } from '../../../app/push/server/push';
+import { AppsTokens } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 273,
 	async up() {
 		try {
-			return appTokensCollection.rawCollection().dropIndex('userId_1');
+			await AppsTokens.col.dropIndex('userId_1');
+			return;
 		} catch (error: unknown) {
 			console.warn('Error dropping index for _raix_push_app_tokens, continuing...');
 			console.warn(error);

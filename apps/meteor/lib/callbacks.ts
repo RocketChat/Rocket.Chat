@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
@@ -17,14 +16,16 @@ import type {
 	OEmbedUrlContent,
 	Username,
 	IOmnichannelRoom,
+	ILivechatTag,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -37,7 +38,8 @@ enum CallbackPriority {
  *
  * TODO: move those to event-based systems
  */
-type EventLikeCallbackSignatures = {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface EventLikeCallbackSignatures {
 	'afterActivateUser': (user: IUser) => void;
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
@@ -49,6 +51,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
+	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -57,7 +60,7 @@ type EventLikeCallbackSignatures = {
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
+	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: { agentId: string; username: string }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
@@ -78,7 +81,16 @@ type EventLikeCallbackSignatures = {
 	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
-};
+	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
+	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterValidateLogin': (login: { user: IUser }) => void;
+	'afterJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+}
 
 /**
  * Callbacks that are supposed to be composed like a chain.
@@ -86,20 +98,48 @@ type EventLikeCallbackSignatures = {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
+	'livechat.beforeRoom': (
+		roomInfo: Record<string, unknown>,
+		extraData?: Record<string, unknown> & { sla?: string },
+	) => Record<string, unknown>;
+	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
+
+	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
+		options: T,
+	) => Promise<T>;
+
+	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
+
+	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
+
+	'livechat.saveInfo': (
+		newRoom: IOmnichannelRoom,
+		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
+	) => IOmnichannelRoom;
+
+	'livechat.onCheckRoomApiParams': (params: Record<string, unknown>) => Record<string, unknown>;
+
+	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
+
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
-	'livechat:afterOnHold': (room: IRoom) => IRoom;
-	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
+	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		room: IRoom;
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
-	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
-		servedBy: unknown;
-		oldServedBy: unknown;
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
+	}) => {
+		rid: IRoom['_id'];
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
 	};
 	'livechat.afterForwardChatToDepartment': (params: {
 		rid: IRoom['_id'];
@@ -116,16 +156,28 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
+	'livechat.beforeDelegateAgent': (
+		agent: {
+			agentId: string;
+			username: string;
+		},
+		params?: { department?: string },
+	) =>
+		| {
+				agentId: string;
+				username: string;
+		  }
+		| null
+		| undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
+	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
-	'livechat.saveInfo': (newRoom: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => IOmnichannelRoom;
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
 		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
@@ -147,52 +199,51 @@ type ChainedCallbackSignatures = {
 		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
+	'livechat.beforeListTags': () => ILivechatTag[];
+	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'beforeSendMessageNotifications': (message: string) => string;
+	'livechat.onAgentAssignmentFailed': (params: {
+		inquiry: {
+			_id: string;
+			rid: string;
+			status: string;
+		};
+		room: IOmnichannelRoom;
+		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
 };
 
-type Hook =
+export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
-	| 'afterRoomNameChange'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
-	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
 	| 'archiveRoom'
 	| 'beforeActivateUser'
-	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
-	| 'beforeJoinRoom'
-	| 'beforeLeaveRoom'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSaveMessage'
-	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
-	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
-	| 'livechat.beforeListTags'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
-	| 'livechat.checkDefaultAgentOnNewRoom'
+	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
-	| 'livechat.leadCapture'
-	| 'livechat.newRoom'
 	| 'livechat.offlineMessage'
-	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
-	| 'livechat.onLoadForwardDepartmentRestrictions'
-	| 'livechat.saveInfo'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'onCreateUser'
@@ -216,10 +267,11 @@ type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet';
+	| 'userStatusManuallySet'
+	| 'test';
 
 type Callback = {
-	(item: unknown, constant?: unknown): unknown;
+	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: Hook;
 	id: string;
 	priority: CallbackPriority;
@@ -230,7 +282,7 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-class Callbacks {
+export class Callbacks {
 	private logger: Logger | undefined = undefined;
 
 	private trackCallback: CallbackTracker | undefined = undefined;
@@ -239,7 +291,7 @@ class Callbacks {
 
 	private callbacks = new Map<Hook, Callback[]>();
 
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
+	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
 
 	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
 
@@ -254,42 +306,34 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
+	private runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
 		const stopTracking = this.trackCallback?.(callback);
 
-		try {
-			return callback(item, constant);
-		} finally {
-			stopTracking?.();
-		}
+		return Promise.resolve(callback(item, constant)).finally(stopTracking);
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			async (item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
-		const identity = <TItem>(item: TItem): TItem => item;
+		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			async (item: unknown, constant?: unknown): Promise<unknown> =>
+				next(await curr(item, constant), constant);
 
 		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
-			try {
-				return fn(item, constant);
-			} finally {
-				stopTracking?.();
-			}
+			return fn(item, constant).finally(() => stopTracking?.());
 		};
 	}
 
@@ -300,9 +344,9 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				Meteor.defer(() => {
-					this.runOne(callback, item, constant);
-				});
+				setTimeout(() => {
+					void this.runOne(callback, item, constant);
+				}, 0);
 			}
 
 			return item;
@@ -348,7 +392,7 @@ class Callbacks {
 		id?: string,
 	): void;
 
-	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = getRandomId()): void {
+	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = Random.id()): void {
 		const callbacks = this.getCallbacks(hook);
 
 		if (callbacks.some((cb) => cb.id === id)) {
@@ -384,9 +428,9 @@ class Callbacks {
 	run<THook extends keyof ChainedCallbackSignatures>(
 		hook: THook,
 		...args: Parameters<ChainedCallbackSignatures[THook]>
-	): ReturnType<ChainedCallbackSignatures[THook]>;
+	): Promise<ReturnType<ChainedCallbackSignatures[THook]>>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -396,8 +440,8 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
+		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown): Promise<unknown> => item);
 		return runner(item, constant);
 	}
 
@@ -415,8 +459,27 @@ class Callbacks {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks();
+
+		return {
+			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
+			remove: (id) => callbacks.remove(hook as any, id),
+			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+		};
+	}
 }
 
+/**
+ * Callback hooks provide an easy way to add extra steps to common operations.
+ * @deprecated
+ */
+type Cb<I, R, C = undefined> = {
+	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
+	remove: (id: string) => void;
+	run: (item: I, constant?: C) => Promise<R>;
+};
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated

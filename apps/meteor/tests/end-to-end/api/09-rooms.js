@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
@@ -6,7 +9,7 @@ import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
-import { createUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
@@ -76,7 +79,24 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
+		let user;
+		let userCredentials;
+
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_ProtectFiles', true);
+		});
+
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
@@ -124,6 +144,9 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+
+		let fileNewUrl;
+		let fileOldUrl;
 		it('upload a file to room', (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -138,8 +161,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
 				})
 				.end(done);
+		});
+
+		it('should be able to get the file', async () => {
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should be able to get the file when no access to the room', async () => {
+			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file when no access to the room if setting blocks', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileNewUrl).set(userCredentials).expect(403);
+			await request.get(fileOldUrl).set(userCredentials).expect(403);
+		});
+
+		it('should be able to get the file if member and setting blocks outside access', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file without credentials', async () => {
+			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
+			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
+		});
+
+		it('should be able to get the file without credentials if setting allows', async () => {
+			await updateSetting('FileUpload_ProtectFiles', false);
+			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 	});
 
@@ -1245,6 +1303,29 @@ describe('[Rooms]', function () {
 		});
 	});
 	describe('/rooms.adminRooms', () => {
+		const suffix = `test-${Date.now()}`;
+		const fnameRoom = `Ελληνικά-${suffix}`;
+		const nameRoom = `Ellinika-${suffix}`;
+		const discussionRoomName = `${nameRoom}-discussion`;
+
+		let testGroup;
+
+		before((done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
+					testGroup = res.body.group;
+					request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: discussionRoomName,
+						})
+						.end(done);
+				});
+			});
+		});
+
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
 				request
@@ -1287,6 +1368,115 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: fnameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', false).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: nameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should filter by only rooms types', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0].t).to.be.equal('p');
+					expect(res.body.rooms.find((room) => room.name === nameRoom)).to.exist;
+					expect(res.body.rooms.find((room) => room.name === discussionRoomName)).to.not.exist;
+				})
+				.end(done);
+		});
+		it('should filter by only name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should filter by type and name at the same query', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should return an empty array when filter by wrong type and correct room name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['c'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(0);
 				})
 				.end(done);
 		});
@@ -1400,6 +1590,71 @@ describe('[Rooms]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.saveRoomSettings', () => {
+		let testChannel;
+		const randomString = `randomString${Date.now()}`;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		it('should update the room settings', (done) => {
+			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					roomAvatar: imageDataUri,
+					featured: true,
+					roomName: randomString,
+					roomTopic: randomString,
+					roomAnnouncement: randomString,
+					roomDescription: randomString,
+					roomType: 'p',
+					readOnly: true,
+					reactWhenReadOnly: true,
+					default: true,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		it('should have reflected on rooms.info', (done) => {
+			request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('name', randomString);
+					expect(res.body.room).to.have.property('topic', randomString);
+					expect(res.body.room).to.have.property('announcement', randomString);
+					expect(res.body.room).to.have.property('description', randomString);
+					expect(res.body.room).to.have.property('t', 'p');
+					expect(res.body.room).to.have.property('featured', true);
+					expect(res.body.room).to.have.property('ro', true);
+					expect(res.body.room).to.have.property('default', true);
+					expect(res.body.room).to.have.property('favorite', true);
+					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
 		});

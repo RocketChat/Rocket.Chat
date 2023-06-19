@@ -7,29 +7,20 @@ import type { Icon } from '@rocket.chat/fuselage';
 import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { Messages, Rooms, Subscriptions } from '../../../models/client';
+import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-import { APIClient } from '../../../utils/client';
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
-		const { message } = await APIClient.get('/v1/chat.getMessage', { msgId });
+		const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 		return message;
 	} catch {
 		return null;
 	}
-};
-
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
 };
 
 type MessageActionGroup = 'message' | 'menu';
@@ -63,6 +54,7 @@ export type MessageActionConfig = {
 	order?: number;
 	/* @deprecated */
 	color?: string;
+	role?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (
@@ -101,7 +93,7 @@ export const MessageAction = new (class {
 	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
-		if (!config || !config.id) {
+		if (!config?.id) {
 			return;
 		}
 
@@ -203,7 +195,7 @@ export const MessageAction = new (class {
 		if (!msg) {
 			throw new Error('message-not-found');
 		}
-		const roomData = Rooms.findOne({
+		const roomData = ChatRoom.findOne({
 			_id: msg.rid,
 		});
 
@@ -212,7 +204,7 @@ export const MessageAction = new (class {
 		}
 
 		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomCoordinator.getURL(roomData.t, subData || roomData);
+		const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
 		return `${roomURL}?msg=${msgId}`;
 	}
 })();

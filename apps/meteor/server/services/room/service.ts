@@ -20,12 +20,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, {
 			projection: { username: 1 },
 		});
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Error('User not found');
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user.username, members, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user.username, members, false, readOnly, extraData, options) as unknown as IRoom;
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {

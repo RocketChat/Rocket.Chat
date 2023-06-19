@@ -1,4 +1,4 @@
-FROM node:14.21.2-alpine
+FROM node:14.21.3-alpine
 
 ARG SERVICE
 
@@ -6,6 +6,9 @@ WORKDIR /app
 
 COPY ./ee/packages/presence/package.json ee/packages/presence/package.json
 COPY ./ee/packages/presence/dist ee/packages/presence/dist
+
+COPY ./packages/agenda/package.json packages/agenda/package.json
+COPY ./packages/agenda/dist packages/agenda/dist
 
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist

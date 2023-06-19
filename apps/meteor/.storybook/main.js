@@ -21,6 +21,9 @@ module.exports = {
 			},
 		},
 	],
+	typescript: {
+		reactDocgen: 'react-docgen-typescript-plugin',
+	},
 	webpackFinal: async (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 

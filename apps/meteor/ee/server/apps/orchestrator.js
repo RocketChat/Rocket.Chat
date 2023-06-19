@@ -2,9 +2,9 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
+import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
@@ -20,6 +20,7 @@ import {
 } from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { canEnableApp } from '../../app/license/server/license';
+import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -47,8 +48,8 @@ export class AppServerOrchestrator {
 		}
 
 		this._model = AppsModel;
-		this._logModel = new AppsLogsModel();
-		this._persistModel = new AppsPersistenceModel();
+		this._logModel = AppLogs;
+		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
@@ -62,6 +63,7 @@ export class AppServerOrchestrator {
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
+		this._converters.set('threads', new AppThreadsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 
@@ -166,13 +168,30 @@ export class AppServerOrchestrator {
 			.get()
 			// We reduce everything to a promise chain so it runs sequentially
 			.reduce(
-				(control, app) => control.then(async () => (await canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
+				(control, app) =>
+					control.then(async () => {
+						const canEnable = await canEnableApp(app.getStorageItem());
+
+						if (canEnable) {
+							return this.getManager().loadOne(app.getID());
+						}
+
+						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
+					}),
 				Promise.resolve(),
 			);
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
 		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+	}
+
+	async disableApps() {
+		await this.getManager()
+			.get()
+			.forEach((app) => {
+				this.getManager().disable(app.getID());
+			});
 	}
 
 	async unload() {
@@ -225,9 +244,9 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settingsRegistry.addGroup('General', function () {
-	this.section('Apps', function () {
-		this.add('Apps_Logs_TTL', '30_days', {
+void settingsRegistry.addGroup('General', async function () {
+	await this.section('Apps', async function () {
+		await this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
 			values: [
 				{
@@ -248,7 +267,7 @@ settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Logs_TTL_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+		await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [
 				{
@@ -265,7 +284,7 @@ settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+		await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
 			type: 'string',
 			public: true,
 			enableQuery: {
@@ -293,7 +312,7 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Logs_TTL', (value) => {
+settings.watch('Apps_Logs_TTL', async (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}
@@ -318,11 +337,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	const model = Apps._logModel;
 
-	model.resetTTLIndex(expireAfterSeconds);
-});
-
-Meteor.startup(function _appServerOrchestrator() {
-	Apps.initialize();
-
-	Apps.load();
+	await model.resetTTLIndex(expireAfterSeconds);
 });

@@ -13,7 +13,7 @@ import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginServices from './LoginServices';
 
-type LoginErrors =
+export type LoginErrors =
 	| 'error-user-is-not-activated'
 	| 'error-invalid-email'
 	| 'error-login-blocked-for-ip'
@@ -62,7 +62,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
-				setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+				setError('email', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
 			}
 
 			if ('error' in error && error.error !== 403) {
@@ -77,12 +77,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	});
 
 	if (errors.email?.type === 'invalid-email') {
-		return (
-			<EmailConfirmationForm
-				onBackToLogin={() => clearErrors('email')}
-				email={getValues('username')?.includes('@') ? getValues('username') : undefined}
-			/>
-		);
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
 
 	return (
@@ -204,7 +199,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Footer>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isLoading} />
+			<LoginServices disabled={loginMutation.isLoading} setError={setErrorOnSubmit} />
 		</Form>
 	);
 };

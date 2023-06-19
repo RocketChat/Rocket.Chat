@@ -5,7 +5,7 @@ import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { cbLogger } from '../lib/logger';
-import { Livechat } from '../../../../../app/livechat/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const validateMaxChats = async ({
 	agent,
@@ -32,7 +32,7 @@ const validateMaxChats = async ({
 	}
 	const { agentId } = agent;
 
-	if (!Livechat.checkOnlineAgents(null, agent)) {
+	if (!(await Livechat.checkOnlineAgents(undefined, agent))) {
 		cbLogger.debug('Callback with error. provided agent is not online');
 		throw new Error('Provided agent is not online');
 	}
@@ -42,7 +42,7 @@ const validateMaxChats = async ({
 		return agent;
 	}
 
-	if (allowAgentSkipQueue(agent)) {
+	if (await allowAgentSkipQueue(agent)) {
 		cbLogger.debug(`Callback success. Agent ${agent.agentId} can skip queue`);
 		return agent;
 	}
@@ -66,9 +66,10 @@ const validateMaxChats = async ({
 	}
 
 	const { queueInfo: { chats = 0 } = {} } = user;
-	if (parseInt(maxNumberSimultaneousChat, 10) <= chats) {
+	const maxChats = typeof maxNumberSimultaneousChat === 'number' ? maxNumberSimultaneousChat : parseInt(maxNumberSimultaneousChat, 10);
+	if (maxChats <= chats) {
 		cbLogger.debug('Callback with error. Agent reached max amount of simultaneous chats');
-		callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
+		await callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
 		throw new Error('error-max-number-simultaneous-chats-reached');
 	}
 
@@ -76,9 +77,4 @@ const validateMaxChats = async ({
 	return agent;
 };
 
-callbacks.add(
-	'livechat.checkAgentBeforeTakeInquiry',
-	({ agent, inquiry, options }) => Promise.await(validateMaxChats({ agent, inquiry, options })),
-	callbacks.priority.MEDIUM,
-	'livechat-before-take-inquiry',
-);
+callbacks.add('livechat.checkAgentBeforeTakeInquiry', validateMaxChats, callbacks.priority.MEDIUM, 'livechat-before-take-inquiry');

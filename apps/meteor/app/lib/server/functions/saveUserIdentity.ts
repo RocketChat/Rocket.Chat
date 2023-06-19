@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import type { IMessage } from '@rocket.chat/core-typings';
-import { VideoConference } from '@rocket.chat/models';
+import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -14,15 +11,7 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export function saveUserIdentity({
-	_id,
-	name: rawName,
-	username: rawUsername,
-}: { _id: string } & (
-	| { name: string; username: string }
-	| { name: string; username?: undefined }
-	| { username: string; name?: undefined }
-)) {
+export async function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name?: string; username?: string }) {
 	if (!_id) {
 		return false;
 	}
@@ -30,7 +19,10 @@ export function saveUserIdentity({
 	const name = String(rawName).trim();
 	const username = String(rawUsername).trim();
 
-	const user = Users.findOneById(_id);
+	const user = await Users.findOneById(_id);
+	if (!user) {
+		return false;
+	}
 
 	const previousUsername = user.username;
 	const previousName = user.name;
@@ -42,14 +34,14 @@ export function saveUserIdentity({
 			return false;
 		}
 
-		if (!_setUsername(_id, username, user)) {
+		if (!(await _setUsername(_id, username, user))) {
 			return false;
 		}
 		user.username = username;
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!_setRealName(_id, name, user)) {
+		if (!(await _setRealName(_id, name, user))) {
 			return false;
 		}
 	}
@@ -57,40 +49,43 @@ export function saveUserIdentity({
 	// if coming from old username, update all references
 	if (previousUsername) {
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
-			Messages.updateAllUsernamesByUserId(user._id, username);
-			Messages.updateUsernameOfEditByUserId(user._id, username);
-			Messages.findByMention(previousUsername).forEach(function (msg: IMessage) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
-			});
-			Rooms.replaceUsername(previousUsername, username);
-			Rooms.replaceMutedUsername(previousUsername, username);
-			Rooms.replaceUsernameOfUserByUserId(user._id, username);
-			Subscriptions.setUserUsernameByUserId(user._id, username);
+			await Messages.updateAllUsernamesByUserId(user._id, username);
+			await Messages.updateUsernameOfEditByUserId(user._id, username);
 
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+			const cursor = Messages.findByMention(previousUsername);
+			for await (const msg of cursor) {
+				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
+				await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			}
+
+			await Rooms.replaceUsername(previousUsername, username);
+			await Rooms.replaceMutedUsername(previousUsername, username);
+			await Rooms.replaceUsernameOfUserByUserId(user._id, username);
+			await Subscriptions.setUserUsernameByUserId(user._id, username);
+
+			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
-			const previousFile = Promise.await(fileStore.model.findOneByName(previousUsername));
-			const file = Promise.await(fileStore.model.findOneByName(username));
+			const previousFile = await fileStore.model.findOneByName(previousUsername);
+			const file = await fileStore.model.findOneByName(username);
 			if (file) {
-				fileStore.model.deleteFile(file._id);
+				await fileStore.model.deleteFile(file._id);
 			}
 			if (previousFile) {
-				fileStore.model.updateFileNameById(previousFile._id, username);
+				await fileStore.model.updateFileNameById(previousFile._id, username);
 			}
 		}
 
 		// update other references if either the name or username has changed
 		if (usernameChanged || nameChanged) {
 			// update name and fname of 1-on-1 direct messages
-			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+			await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
 			// update name and fname of group direct messages
-			updateGroupDMsName(user);
+			await updateGroupDMsName(user);
 
 			// update name and username of users on video conferences
-			Promise.await(VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName));
+			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
 		}
 	}
 

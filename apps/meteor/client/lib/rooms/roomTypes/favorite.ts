@@ -7,8 +7,17 @@ import { roomCoordinator } from '../roomCoordinator';
 
 export const FavoriteRoomType = getFavoriteRoomType(roomCoordinator);
 
-roomCoordinator.add(FavoriteRoomType, {
-	condition(): boolean {
-		return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
+roomCoordinator.add(
+	{
+		...FavoriteRoomType,
+		label: 'Favorites',
 	},
-});
+	{
+		condition(): boolean {
+			return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
+		},
+		getIcon() {
+			return 'star';
+		},
+	},
+);

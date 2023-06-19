@@ -35,7 +35,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
+	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
@@ -52,7 +52,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setGuest('');
 		setServedBy('all');
 		setStatus('all');
-		setDepartment({ value: 'all', label: t('All') });
+		setDepartment('all');
 		setFrom('');
 		setTo('');
 		setTags([]);
@@ -75,7 +75,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			guest,
 			servedBy,
 			status,
-			department: department?.value && department.value !== 'all' ? department.value : '',
+			department: department && department !== 'all' ? department : '',
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
@@ -115,7 +115,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Guest')}</Label>
-					<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} data-qa='current-chats-guest' />
+					<TextInput placeholder={t('Guest')} onChange={handleGuest} value={guest} data-qa='current-chats-guest' />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column' data-qa='current-chats-servedBy'>
 					<Label mb='x4'>{t('Served_By')}</Label>
@@ -123,38 +123,15 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
-					<Select
-						flexShrink={0}
-						options={statusOptions}
-						value={status}
-						onChange={handleStatus}
-						placeholder={t('Status')}
-						data-qa='current-chats-status'
-					/>
+					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} data-qa='current-chats-status' />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('From')}</Label>
-					<InputBox
-						type='date'
-						flexShrink={0}
-						placeholder={t('From')}
-						onChange={handleFrom}
-						value={from}
-						data-qa='current-chats-from'
-						color='default'
-					/>
+					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} data-qa='current-chats-from' color='default' />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('To')}</Label>
-					<InputBox
-						type='date'
-						flexShrink={0}
-						placeholder={t('To')}
-						onChange={handleTo}
-						value={to}
-						data-qa='current-chats-to'
-						color='default'
-					/>
+					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' color='default' />
 				</Box>
 
 				<RemoveAllClosed

@@ -9,15 +9,14 @@ import he from 'he';
 import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
 import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
-import { OEmbedCache } from '@rocket.chat/models';
+import { Messages, OEmbedCache } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Logger } from '../../logger/server';
-import { Messages } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { Info } from '../../utils/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const log = new Logger('OEmbed');
 //  Detect encoding
@@ -94,7 +93,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		throw new Error('invalid/unsafe port');
 	}
 
-	const data = callbacks.run('oembed:beforeGetUrlContent', {
+	const data = await callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
 		parsedUrl,
 	});
@@ -125,10 +124,9 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 
 	let totalSize = 0;
 	const chunks = [];
-	// @ts-expect-error from https://github.com/microsoft/TypeScript/issues/39051
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
-		chunks.push(chunk);
+		chunks.push(chunk as Buffer);
 
 		if (totalSize > sizeLimit) {
 			log.warn({ msg: 'OEmbed request size exceeded', url });
@@ -139,7 +137,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
 	return {
-		// @ts-expect-error - fetch types are kinda weird
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
@@ -324,10 +321,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 			}
 		}
 		if (attachments.length) {
-			Messages.setMessageAttachments(message._id, attachments);
+			await Messages.setMessageAttachments(message._id, attachments);
 		}
 		if (changed === true) {
-			Messages.setUrlsById(message._id, message.urls);
+			await Messages.setUrlsById(message._id, message.urls);
 		}
 	}
 	return message;
@@ -345,12 +342,7 @@ const OEmbed: {
 
 settings.watch('API_Embed', function (value) {
 	if (value) {
-		return callbacks.add(
-			'afterSaveMessage',
-			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
-			callbacks.priority.LOW,
-			'API_Embed',
-		);
+		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

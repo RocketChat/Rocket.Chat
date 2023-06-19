@@ -1,13 +1,14 @@
-import { Session } from 'meteor/session';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { Rooms } from '../../../models/client';
+import { ChatRoom } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 import { triggerActionButtonAction } from '../ActionManager';
-import { t } from '../../../utils/client';
+import { t } from '../../../utils/lib/i18n';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
+import { RoomManager } from '../../../../client/lib/RoomManager';
+import { asReactiveSource } from '../../../../client/lib/tracker';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
@@ -17,14 +18,23 @@ export const onAdded = (button: IUIActionButton): void =>
 		id: getIdForActionButton(button),
 		// icon: button.icon || '',
 		condition() {
-			return applyButtonFilters(button, Rooms.findOne(Session.get('openedRoom')));
+			return applyButtonFilters(
+				button,
+				ChatRoom.findOne(
+					asReactiveSource(
+						(cb) => RoomManager.on('changed', cb),
+						() => RoomManager.opened,
+					),
+				),
+			);
 		},
-		action() {
-			triggerActionButtonAction({
-				rid: Session.get('openedRoom'),
+		action(params) {
+			void triggerActionButtonAction({
+				rid: params.rid,
+				tmid: params.tmid,
 				actionId: button.actionId,
 				appId: button.appId,
-				payload: { context: button.context },
+				payload: { context: button.context, message: params.chat.composer?.text },
 			});
 		},
 	});

@@ -12,10 +12,10 @@ import {
 	useTranslation,
 	useRoute,
 } from '@rocket.chat/ui-contexts';
-import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
+import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
+import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -164,13 +164,10 @@ export const useQuickActions = (
 			}
 
 			try {
-				const result = await forwardChat(transferData);
-				if (!result) {
-					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
-				}
+				await forwardChat(transferData);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				homeRoute.push();
-				RoomManager.close(room.t + rid);
+				LegacyRoomManager.close(room.t + rid);
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -203,20 +200,19 @@ export const useQuickActions = (
 						  }
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
-				homeRoute.push();
-				RoomManager.close(room.t + rid);
+				LivechatInquiry.remove({ rid });
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, homeRoute, room.t, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
 		onSuccess: () => {
-			Session.set('openedRoom', null);
+			LegacyRoomManager.close(room.t + rid);
 			homeRoute.push();
 		},
 		onError: (error) => {

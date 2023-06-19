@@ -1,8 +1,11 @@
+import type { Readable } from 'stream';
+
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
-import type { Templates } from '@rocket.chat/pdf-worker';
+import { parse } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
-import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import {
 	ServiceClass,
 	Upload as uploadService,
@@ -14,7 +17,7 @@ import {
 	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -29,8 +32,11 @@ type WorkDetailsWithSource = WorkDetails & {
 	from: string;
 };
 
-type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
+type Quote = { name: string; ts?: Date; md: Root };
+
+type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
+	quotes: (Quote | undefined)[];
 };
 
 type WorkerData = {
@@ -38,7 +44,7 @@ type WorkerData = {
 	visitor: ILivechatVisitor | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
-	messages: MessageWithFiles[];
+	messages: MessageData[];
 	timezone: string;
 	dateFormat: string;
 	timeAndDateFormat: string;
@@ -118,7 +124,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('room-still-open');
 		}
 
-		if (!room.servedBy || !room.v) {
+		if (!room.v) {
 			throw new Error('improper-room-state');
 		}
 
@@ -131,33 +137,85 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
 
+		// Make the whole process sync when running on test mode
+		// This will prevent the usage of timeouts on the tests of this functionality :)
+		if (process.env.TEST_MODE) {
+			await this.workOnPdf({ details: { ...details, from: this.name } });
+			return;
+		}
+
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
-			template: 'omnichannel-transcript',
-			details: { userId: details.userId, rid: details.rid, from: this.name },
+			details: { ...details, from: this.name },
 		});
 	}
 
-	private async getFiles(userId: string, messages: IMessage[]): Promise<MessageWithFiles[]> {
-		const messagesWithFiles: MessageWithFiles[] = [];
+	private getQuotesFromMessage(message: IMessage): Quote[] {
+		const quotes: Quote[] = [];
+
+		if (!message.attachments) {
+			return quotes;
+		}
+
+		for (const attachment of message.attachments) {
+			if (isQuoteAttachment(attachment)) {
+				const { text, author_name: name, md, ts } = attachment;
+
+				if (text) {
+					quotes.push({
+						name,
+						md: md ?? parse(text),
+						ts,
+					});
+				}
+
+				quotes.push(...this.getQuotesFromMessage({ attachments: attachment.attachments } as IMessage));
+			}
+		}
+
+		return quotes;
+	}
+
+	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
+		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			if (!message.attachments || !message.attachments.length) {
+			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
-				messagesWithFiles.push({ _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg, md: message.md });
+				messagesData.push({
+					_id: message._id,
+					files: [],
+					quotes: [],
+					ts: message.ts,
+					u: message.u,
+					msg: message.msg,
+					md: message.md,
+				});
 				continue;
 			}
-
 			const files = [];
+			const quotes = [];
 
 			for await (const attachment of message.attachments) {
-				if (isFileAttachment(attachment) && attachment.type !== 'file') {
-					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+				if (isQuoteAttachment(attachment)) {
+					quotes.push(...this.getQuotesFromMessage(message));
+					continue;
+				}
+
+				if (!isFileAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${(attachment as any).type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
 					continue;
 				}
-				if (isFileAttachment(attachment) && isFileImageAttachment(attachment) && !this.worker.isMimeTypeValid(attachment.image_type)) {
+				if (!isFileImageAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+					// ignore other types of attachments
+					files.push({ name: attachment.title, buffer: null });
+					continue;
+				}
+
+				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
 					files.push({ name: attachment.title, buffer: null });
@@ -201,22 +259,22 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
 			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 			// Remove nulls from final array
-			messagesWithFiles.push({ _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts });
+			messagesData.push({
+				_id: message._id,
+				msg,
+				u: message.u,
+				files: files.filter(Boolean),
+				quotes,
+				ts: message.ts,
+				md: message.md,
+			});
 		}
 
-		return messagesWithFiles;
+		return messagesData;
 	}
 
 	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
-		const keys: string[] = [
-			'Agent',
-			'Date',
-			'Customer',
-			'Omnichannel_Agent',
-			'Time',
-			'Chat_transcript',
-			'This_attachment_is_not_supported',
-		];
+		const keys: string[] = ['Agent', 'Date', 'Customer', 'Not_assigned', 'Time', 'Chat_transcript', 'This_attachment_is_not_supported'];
 
 		return Promise.all(
 			keys.map(async (key) => {
@@ -228,7 +286,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
+	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		if (!this.shouldWork) {
 			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
 			return;
@@ -251,7 +309,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
-			const messagesFiles = await this.getFiles(details.userId, messages);
+			const messagesData = await this.getMessagesData(details.userId, messages);
 
 			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
 				settingsService.get<string>('Site_Name'),
@@ -265,14 +323,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				agent,
 				closedAt: room.closedAt,
 				siteName,
-				messages: messagesFiles,
+				messages: messagesData,
 				dateFormat,
 				timeAndDateFormat,
 				timezone,
 				translations,
 			};
 
-			await this.doRender({ template, data, details });
+			await this.doRender({ data, details });
 		} catch (error) {
 			await this.pdfFailed({ details, e: error as Error });
 		} finally {
@@ -280,37 +338,32 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
-		const buf: Uint8Array[] = [];
-		let outBuff = Buffer.alloc(0);
+	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
-		const stream = await this.worker.renderToStream({ template, data });
-		stream.on('data', (chunk) => {
-			buf.push(chunk);
-		});
-		stream.on('end', () => {
-			outBuff = Buffer.concat(buf);
+		const stream = await this.worker.renderToStream({ data });
+		const outBuff = await streamToBuffer(stream as Readable);
 
-			return uploadService
-				.uploadFile({
-					userId: details.userId,
-					buffer: outBuff,
-					details: {
-						// transcript_{company-name)_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
-							data.visitor?.name || data.visitor?.username || 'Visitor'
-						}.pdf`,
-						type: 'application/pdf',
-						rid: details.rid,
-						// Rocket.cat is the goat
-						userId: 'rocket.cat',
-						size: outBuff.length,
-					},
-				})
-				.then((file) => this.pdfComplete({ details, file }))
-				.catch((e) => this.pdfFailed({ details, e }));
-		});
+		try {
+			const file = await uploadService.uploadFile({
+				userId: details.userId,
+				buffer: outBuff,
+				details: {
+					// transcript_{company-name)_{date}_{hour}.pdf
+					name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						data.visitor?.name || data.visitor?.username || 'Visitor'
+					}.pdf`,
+					type: 'application/pdf',
+					rid: details.rid,
+					// Rocket.cat is the goat
+					userId: 'rocket.cat',
+					size: outBuff.length,
+				},
+			});
+			await this.pdfComplete({ details, file });
+		} catch (e: any) {
+			this.pdfFailed({ details, e });
+		}
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {

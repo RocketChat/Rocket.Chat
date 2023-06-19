@@ -1,4 +1,4 @@
-import { Button, Field, Modal, Box, Throbber, PasswordInput, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Button, Field, Modal, Box, PasswordInput, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, useRoute, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -51,7 +51,7 @@ const ResetPasswordPage = (): ReactElement => {
 			} else {
 				await setUserPassword(data.password);
 			}
-		} catch ({ error, reason }) {
+		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;
 			setError('password', { message: String(_error) });
 		}
@@ -95,7 +95,7 @@ const ResetPasswordPage = (): ReactElement => {
 				<Form.Footer>
 					<Modal.FooterControllers>
 						<Button primary disabled={!formState.isValid} type='submit'>
-							{formState.isSubmitting ? <Throbber size='x12' inheritColor /> : t('Reset')}
+							{t('Reset')}
 						</Button>
 					</Modal.FooterControllers>
 				</Form.Footer>

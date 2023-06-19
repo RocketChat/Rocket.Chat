@@ -6,11 +6,11 @@ import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-co
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
-import VerticalBarContent from '../../../../../components/VerticalBar/VerticalBarContent';
+import { ContextualbarContent } from '../../../../../components/Contextualbar';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
 import ComposerContainer from '../../../components/body/composer/ComposerContainer';
-import { useFileUploadDropTarget } from '../../../components/body/useFileUploadDropTarget';
+import { useFileUploadDropTarget } from '../../../components/body/hooks/useFileUploadDropTarget';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
@@ -70,7 +70,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid !== mainMessage._id) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
 				}
 
@@ -90,7 +90,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const t = useTranslation();
 
 	return (
-		<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
+		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DropTargetOverlay {...fileUploadOverlayProps} />
 			<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 				<MessageListErrorBoundary>
@@ -110,7 +110,12 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 				>
 					<Field>
 						<Field.Row marginBlock={8}>
-							<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
+							<CheckBox
+								id={sendToChannelID}
+								checked={sendToChannel}
+								onChange={() => setSendToChannel((checked) => !checked)}
+								name='alsoSendThreadToChannel'
+							/>
 							<Field.Label htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 								{t('Also_send_to_channel')}
 							</Field.Label>
@@ -118,7 +123,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					</Field>
 				</ComposerContainer>
 			</Box>
-		</VerticalBarContent>
+		</ContextualbarContent>
 	);
 };
 

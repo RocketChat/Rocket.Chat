@@ -9,13 +9,13 @@ import type {
 	CategoryOnSelected,
 	selectedCategoriesList,
 } from '../definitions/CategoryDropdownDefinitions';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
 	const t = useTranslation();
-	const [categories, setCategories] = useState<CategoryDropDownListProps['groups']>([]);
+	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>([]);
 
 	const fetchCategories = useCallback(async (): Promise<void> => {
 		try {

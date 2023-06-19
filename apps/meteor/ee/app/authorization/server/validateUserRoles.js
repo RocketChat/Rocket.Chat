@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { isEnterprise, getMaxGuestUsers } from '../../license/server';
-import { Users } from '../../../../app/models/server';
 
-export const validateUserRoles = function (userId, userData) {
+export const validateUserRoles = async function (userId, userData) {
 	if (!isEnterprise()) {
 		return;
 	}
@@ -19,7 +19,7 @@ export const validateUserRoles = function (userId, userData) {
 		});
 	}
 
-	const guestCount = Users.getActiveLocalGuestCount(userData._id);
+	const guestCount = await Users.getActiveLocalGuestCount(userData._id);
 	if (guestCount >= getMaxGuestUsers()) {
 		throw new Meteor.Error('error-max-guests-number-reached', 'Maximum number of guests reached.', {
 			method: 'insertOrUpdateUser',
