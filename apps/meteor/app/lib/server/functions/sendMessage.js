@@ -265,7 +265,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		void Apps.triggerEvents(AppEvents.IPostMessageSent, message);
+		void Apps.triggerEvent(AppEvents.IPostMessageSent, message);
 
 		/*
 		Defer other updates as their return is not interesting to the user
