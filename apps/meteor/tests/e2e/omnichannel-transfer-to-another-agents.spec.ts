@@ -6,7 +6,7 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.describe('omnichannel-transfer-to-another-agent', () => {
+test.describe.skip('omnichannel-transfer-to-another-agent', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 

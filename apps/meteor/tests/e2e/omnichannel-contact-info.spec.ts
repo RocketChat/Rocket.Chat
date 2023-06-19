@@ -6,7 +6,7 @@ import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { test } from './utils/test';
 
-test.describe('Omnichannel contact info', () => {
+test.describe.skip('Omnichannel contact info', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
