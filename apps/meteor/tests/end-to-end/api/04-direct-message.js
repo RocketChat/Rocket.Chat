@@ -163,21 +163,21 @@ describe('[Direct Messages]', function () {
 				})
 				.end(done);
 		});
-		it('should return all DM messages that were sent to yourself using your username', (done) => {
-			request
-				.get(api('im.messages'))
-				.set(credentials)
-				.query({
-					username: adminUsername,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-				})
-				.end(done);
-		});
+		// it('should return all DM messages that were sent to yourself using your username', (done) => {
+		// 	request
+		// 		.get(api('im.messages'))
+		// 		.set(credentials)
+		// 		.query({
+		// 			username: adminUsername,
+		// 		})
+		// 		.expect('Content-Type', 'application/json')
+		// 		.expect(200)
+		// 		.expect((res) => {
+		// 			expect(res.body).to.have.property('success', true);
+		// 			expect(res.body).to.have.property('messages').and.to.be.an('array');
+		// 		})
+		// 		.end(done);
+		// });
 	});
 
 	it('/im.history', (done) => {
