@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
 import proxyquire from 'proxyquire';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 const COMPONENT_PATH = '../../../../../../client/sidebar/header/actions/Administration';
 const defaultConfig = {
@@ -39,7 +39,7 @@ const defaultConfig = {
 		}),
 	},
 	'../../../components/AdministrationList/AdministrationList': ({ optionsList }: { optionsList: ReactElement[] }) =>
-		optionsList?.map((i) => <>{i}</>),
+		optionsList?.map((i, j) => <Fragment key={j}>{i}</Fragment>),
 };
 
 describe('sidebar/header/actions/Administration', () => {
