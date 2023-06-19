@@ -52,10 +52,11 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 				return t('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', {
 					date: format(expiration),
 					usesLeft,
+					interpolation: { escapeValue: false },
 				});
 			}
 
-			return t('Your_invite_link_will_expire_on__date__', { date: format(expiration) });
+			return t('Your_invite_link_will_expire_on__date__', { date: format(expiration), interpolation: { escapeValue: false } });
 		}
 
 		if (data.maxUses) {
