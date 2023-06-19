@@ -50,6 +50,10 @@ export type RouterContextValue = {
 	): string;
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
+	subscribeToRouteChange(onRouteChange: () => void): () => void;
+	getSearchParameters(): Record<string, string>;
+	setSearchParameters(parameters: Record<string, string | undefined | null>): void;
+	setSearchParameters(reducer: (prev: Record<string, string>) => Record<string, string>): void;
 	queryRoutePath: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -71,15 +75,10 @@ export type RouterContextValue = {
 		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 	) => void;
 	queryRouteParameter: (name: string) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
-	queryQueryStringParameter: (
-		name: string,
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 	queryCurrentRoute: () => [
 		subscribe: (onStoreChange: () => void) => () => void,
 		getSnapshot: () => [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?],
 	];
-	setQueryString(parameters: Record<string, string | null>): void;
-	setQueryString(fn: (parameters: Record<string, string>) => Record<string, string>): void;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -87,15 +86,16 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	navigate: () => undefined,
+	subscribeToRouteChange: () => () => undefined,
+	getSearchParameters: () => ({}),
+	setSearchParameters: () => undefined,
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
-	queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
 	queryCurrentRoute: () => [
 		() => (): void => undefined,
 		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
 	],
-	setQueryString: () => undefined,
 });

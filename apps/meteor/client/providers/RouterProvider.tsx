@@ -89,6 +89,46 @@ export const navigate = (
 	fn();
 };
 
+const subscribers = new Set<() => void>();
+
+const listenToRouteChange = (): void => {
+	FlowRouter.watchPathChange();
+	subscribers.forEach((onRouteChange) => onRouteChange());
+};
+
+let computation: Tracker.Computation | undefined;
+
+queueMicrotask(() => {
+	computation = Tracker.autorun(listenToRouteChange);
+});
+
+const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
+	subscribers.add(onRouteChange);
+	return () => {
+		subscribers.delete(onRouteChange);
+
+		if (subscribers.size === 0) {
+			queueMicrotask(() => computation?.stop());
+		}
+	};
+};
+
+const getSearchParameters = () => FlowRouter.current().queryParams;
+
+const setSearchParameters = (
+	paramsOrFn: Record<string, string | undefined | null> | ((prev: Record<string, string>) => Record<string, string>),
+): void => {
+	if (typeof paramsOrFn === 'function') {
+		const prevParams = FlowRouter.current().queryParams;
+		const emptyParams = Object.fromEntries(Object.entries(prevParams).map(([key]) => [key, null]));
+		const newParams = paramsOrFn(prevParams);
+		FlowRouter.setQueryParams({ ...emptyParams, ...newParams });
+		return;
+	}
+
+	FlowRouter.setQueryParams(paramsOrFn);
+};
+
 const queryRoutePath = (
 	name: Parameters<RouterContextValue['queryRoutePath']>[0],
 	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
@@ -134,8 +174,6 @@ const replaceRoute = (
 
 const queryRouteParameter = (name: string) => createSubscription(() => FlowRouter.getParam(name));
 
-const queryQueryStringParameter = (name: string) => createSubscription(() => FlowRouter.getQueryParam(name));
-
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
 		FlowRouter.watchPathChange();
@@ -143,29 +181,18 @@ const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']
 		return [route?.name, params, queryParams, route?.group?.name];
 	});
 
-const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Record<string, string>) => Record<string, string>)): void => {
-	if (typeof paramsOrFn === 'function') {
-		const prevParams = FlowRouter.current().queryParams;
-		const emptyParams = Object.fromEntries(Object.entries(prevParams).map(([key]) => [key, null]));
-		const newParams = paramsOrFn(prevParams);
-		FlowRouter.setQueryParams({ ...emptyParams, ...newParams });
-		return;
-	}
-
-	FlowRouter.setQueryParams(paramsOrFn);
-};
-
 const contextValue = {
 	getRoutePath,
 	navigate,
+	subscribeToRouteChange,
+	getSearchParameters,
+	setSearchParameters,
 	queryRoutePath,
 	queryRouteUrl,
 	pushRoute,
 	replaceRoute,
 	queryRouteParameter,
-	queryQueryStringParameter,
 	queryCurrentRoute,
-	setQueryString,
 };
 
 const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;

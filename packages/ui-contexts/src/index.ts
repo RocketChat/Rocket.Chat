@@ -56,6 +56,8 @@ export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useRoutePath } from './hooks/useRoutePath';
+export { useSearchParameter } from './hooks/useSearchParameter';
+export { useSearchParameters } from './hooks/useSearchParameters';
 export { useServerInformation } from './hooks/useServerInformation';
 export { useSession } from './hooks/useSession';
 export { useSessionDispatch } from './hooks/useSessionDispatch';

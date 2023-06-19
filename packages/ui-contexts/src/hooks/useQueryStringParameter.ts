@@ -1,12 +1,4 @@
-import { useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSearchParameter } from './useSearchParameter';
 
-import { RouterContext } from '../RouterContext';
-
-export const useQueryStringParameter = (name: string): string | undefined => {
-	const { queryQueryStringParameter } = useContext(RouterContext);
-
-	const [subscribe, getSnapshot] = useMemo(() => queryQueryStringParameter(name), [queryQueryStringParameter, name]);
-
-	return useSyncExternalStore(subscribe, getSnapshot);
-};
+/** @deprecated use useSearchParameter instead */
+export const useQueryStringParameter = useSearchParameter;

@@ -142,7 +142,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		setParams(newParams: Record<string, string>): boolean;
 
-		setQueryParams(newParams: Record<string, string | null>): boolean;
+		setQueryParams(newParams: Record<string, string | undefined | null>): boolean;
 
 		current(): Current;
 
