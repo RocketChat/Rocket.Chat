@@ -160,7 +160,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return;
 		}
 
-		console.log(this.onDepartmentDisabled);
 		return this.onDepartmentDisabled(dbDepartment);
 	}
 
