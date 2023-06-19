@@ -54,7 +54,6 @@ export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketpla
 	};
 
 	const appItems: Item[] = appBoxItems.map((item: IAppAccountBoxItem, key: number) => {
-		console.log(item);
 		const action = () => {
 			triggerActionButtonAction({
 				rid: '',
