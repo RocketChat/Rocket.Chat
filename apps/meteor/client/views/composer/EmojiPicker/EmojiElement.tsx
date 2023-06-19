@@ -16,7 +16,8 @@ const EmojiElement = ({ emoji, image, emojiHandle, onClick, small = false, ...pr
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
 
 	const emojiSmallClass = css`
-		> span {
+		> .emoji,
+		.emojione {
 			width: 18px;
 			height: 18px;
 		}
