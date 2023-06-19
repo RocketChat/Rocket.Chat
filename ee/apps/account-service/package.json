@@ -22,13 +22,13 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
-		"@types/node": "^14.18.21",
+		"@types/node": "^14.18.51",
 		"bcrypt": "^5.0.1",
-		"ejson": "^2.2.2",
+		"ejson": "^2.2.3",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.21",
+		"moleculer": "^0.14.29",
 		"mongodb": "^4.12.1",
 		"nats": "^2.4.0",
 		"pino": "^8.4.2",
@@ -38,11 +38,11 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/bcrypt": "^5.0.0",
-		"@types/eslint": "^8.4.10",
+		"@types/eslint": "~8.37.0",
 		"@types/polka": "^0.5.4",
-		"eslint": "^8.29.0",
+		"eslint": "~8.38.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.0.2"
+		"typescript": "~5.0.4"
 	},
 	"main": "./dist/ee/apps/account-service/src/service.js",
 	"files": [
