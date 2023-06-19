@@ -134,11 +134,13 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
 		if (!department.businessHourId) {
+			bhLogger.debug(`onDepartmentDisabled: department ${department._id} has no business hour`);
 			return;
 		}
 		// Get business hour
 		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
+			bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
 			return;
 		}
 		// Check if i'm the only department on this business hour, excluding myself
@@ -146,6 +148,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		// If i'm the only one, close the business hour
 		if (imTheOnlyOne) {
+			bhLogger.debug(`onDepartmentDisabled: department ${department._id} is the only one on business hour ${businessHour._id}, closing it`);
 			await closeBusinessHour(businessHour);
 		}
 
@@ -154,9 +157,11 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
+		bhLogger.debug('Processing department archived event on business hours', department);
 		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
 
 		if (!dbDepartment) {
+			bhLogger.error(`No department found with id: ${department._id} when archiving it`);
 			return;
 		}
 

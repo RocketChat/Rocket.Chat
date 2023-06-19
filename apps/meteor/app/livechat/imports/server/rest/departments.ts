@@ -192,11 +192,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.archiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
+			await Livechat.archiveDepartment(this.urlParams._id);
 
-			return API.v1.failure();
+			return API.v1.success();
 		},
 	},
 );
