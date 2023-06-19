@@ -96,6 +96,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 					return (
 						<EmojiElement
 							small
+							key={emoji}
 							title={emoji}
 							emoji={emoji}
 							image={image}
