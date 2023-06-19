@@ -47,6 +47,7 @@ export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
+export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
@@ -64,7 +65,7 @@ export { useSettings } from './hooks/useSettings';
 export { useSettingsDispatch } from './hooks/useSettingsDispatch';
 export { useSettingSetValue } from './hooks/useSettingSetValue';
 export { useSettingStructure } from './hooks/useSettingStructure';
-export { useStream } from './hooks/useStream';
+export { useStream, useSingleStream } from './hooks/useStream';
 export { useToastMessageDispatch } from './hooks/useToastMessageDispatch';
 export { useTooltipClose } from './hooks/useTooltipClose';
 export { useTooltipOpen } from './hooks/useTooltipOpen';
@@ -86,10 +87,9 @@ export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
+export { StreamerEvents, StreamNames, StreamKeys, StreamerConfigs, StreamerConfig, StreamerCallbackArgs } from './ServerContext/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';
 
-export interface ITest {
-	test: string;
-}
+export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

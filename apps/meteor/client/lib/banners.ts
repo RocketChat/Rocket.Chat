@@ -6,14 +6,14 @@ import type { ComponentProps } from 'react';
 export type LegacyBannerPayload = {
 	id: string;
 	closable?: boolean;
-	title?: string;
-	text?: string;
-	html?: string;
+	title?: string | (() => string);
+	text?: string | (() => string);
+	html?: string | (() => string);
 	icon?: ComponentProps<typeof Icon>['name'];
 	modifiers?: ('large' | 'danger')[];
 	timer?: number;
-	action?: () => void;
-	onClose?: () => void;
+	action?: () => Promise<void> | void;
+	onClose?: () => Promise<void> | void;
 };
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;

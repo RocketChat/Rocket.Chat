@@ -1,5 +1,5 @@
 import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOptions } from 'mongodb';
+import type { Collection, Db, Document, FindOptions } from 'mongodb';
 import type { ILivechatBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
@@ -24,7 +24,9 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 
 	async findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
 
-	async findOneDefaultBusinessHour<P>(options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
+	async findOneDefaultBusinessHour<P extends Document>(
+		options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>,
+	): Promise<P | null>;
 
 	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null> {
 		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);

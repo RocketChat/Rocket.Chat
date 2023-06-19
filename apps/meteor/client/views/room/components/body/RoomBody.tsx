@@ -1,11 +1,10 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useSession,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -15,7 +14,7 @@ import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { ChatMessage, RoomRoles } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -24,7 +23,7 @@ import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrd
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
+import { RoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -36,18 +35,20 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/Ro
 import { useToolboxContext } from '../../contexts/ToolboxContext';
 import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword';
+import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
-import { useFileUploadDropTarget } from './useFileUploadDropTarget';
-import { useRetentionPolicy } from './useRetentionPolicy';
-import { useUnreadMessages } from './useUnreadMessages';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
+import { useRetentionPolicy } from './hooks/useRetentionPolicy';
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
@@ -155,8 +156,8 @@ const RoomBody = (): ReactElement => {
 
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
-		const leaderRoomRole = roomRoles.findOne({
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
+		const leaderRoomRole = RoomRoles.findOne({
 			'rid': room._id,
 			'roles': 'leader',
 			'u._id': { $ne: user?._id },
@@ -211,6 +212,8 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
+	useGoToHomeOnRemoved(room, user?._id);
+
 	useEffect(() => {
 		callbacks.add(
 			'streamNewMessage',
@@ -262,17 +265,6 @@ const RoomBody = (): ReactElement => {
 	const tabBarRef = useRef(toolbox);
 	tabBarRef.current = toolbox;
 
-	useEffect(() => {
-		const room = roomRef.current;
-		const tabBar = tabBarRef.current;
-		Tracker.afterFlush(() => {
-			// Find a better way to do this, declaratively
-			if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
-				tabBar.openRoomInfo();
-			}
-		});
-	}, [room._id]);
-
 	const debouncedReadMessageRead = useMemo(
 		() =>
 			withDebouncing({ wait: 500 })(() => {
@@ -281,10 +273,8 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
 	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			return;
 		}
 
@@ -292,7 +282,7 @@ const RoomBody = (): ReactElement => {
 		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -305,7 +295,7 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		count && setUnreadCount(count);
+		setUnreadCount(count);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
@@ -404,7 +394,7 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		const store = NewRoomManager.getStore(room._id);
+		const store = RoomManager.getStore(room._id);
 
 		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
 			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
@@ -417,9 +407,9 @@ const RoomBody = (): ReactElement => {
 				sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-
-			wrapper.addEventListener('scroll', handleWrapperScroll);
 		};
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
@@ -428,6 +418,8 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [room._id, sendToBottom]);
+
+	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -453,11 +445,11 @@ const RoomBody = (): ReactElement => {
 			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
 		};
 
-		wrapper.addEventListener('mousewheel', handleWheel);
-		wrapper.addEventListener('wheel', handleWheel);
+		// wrapper.addEventListener('mousewheel', handleWheel);
+		// wrapper.addEventListener('wheel', handleWheel);
 		wrapper.addEventListener('scroll', handleWheel);
-		wrapper.addEventListener('touchstart', handleTouchStart);
-		wrapper.addEventListener('touchend', handleTouchEnd);
+		// wrapper.addEventListener('touchstart', handleTouchStart);
+		// wrapper.addEventListener('touchend', handleTouchEnd);
 
 		return (): void => {
 			if (timer1s) clearTimeout(timer1s);
@@ -513,7 +505,7 @@ const RoomBody = (): ReactElement => {
 		(e): void => {
 			/*
 			 * check if the element is a button or anchor
-			 * it considers the aria-role as well
+			 * it considers the role as well
 			 * usually, the flex tab is closed when clicking outside of it
 			 * but if the user clicks on a button or anchor, we don't want to close the flex tab
 			 * because the user could be actually trying to open the flex tab through those elements
@@ -523,10 +515,10 @@ const RoomBody = (): ReactElement => {
 				if (!element) {
 					return false;
 				}
-				if (element instanceof HTMLButtonElement || element.getAttribute('aria-role') === 'button') {
+				if (element instanceof HTMLButtonElement || element.getAttribute('role') === 'button') {
 					return true;
 				}
-				if (element instanceof HTMLAnchorElement || element.getAttribute('aria-role') === 'link') {
+				if (element instanceof HTMLAnchorElement || element.getAttribute('role') === 'link') {
 					return true;
 				}
 				return checkElement(element.parentElement);
@@ -540,6 +532,8 @@ const RoomBody = (): ReactElement => {
 		},
 		[toolbox],
 	);
+
+	useReadMessageWindowEvents();
 
 	return (
 		<>
@@ -575,9 +569,16 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
-								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
-								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
+							<div
+								ref={messagesBoxRef}
+								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
+							>
+								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
+								<JumpToRecentMessageButton
+									visible={hasMoreNextMessages}
+									onClick={handleJumpToRecentButtonClick}
+									text={t('Jump_to_recent_messages')}
+								/>
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>

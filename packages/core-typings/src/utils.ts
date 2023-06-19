@@ -23,3 +23,9 @@ export type Jsonify<T> = T extends Date
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
 
 export type RequiredField<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export type DeepWritable<T> = T extends (...args: any) => any
+	? T
+	: {
+			-readonly [P in keyof T]: DeepWritable<T[P]>;
+	  };

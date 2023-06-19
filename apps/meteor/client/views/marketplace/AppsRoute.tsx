@@ -6,7 +6,7 @@ import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
-import AppsPage from './AppsPage/AppsPage';
+import AppsPage from './AppsPage';
 import AppsProvider from './AppsProvider';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 
@@ -19,6 +19,7 @@ const AppsRoute = (): ReactElement => {
 	const page = useRouteParameter('page');
 
 	const isAdminUser = usePermission('manage-apps');
+	const canAccessMarketplace = usePermission('access-marketplace');
 
 	if (!page) marketplaceRoute.push({ context, page: 'list' });
 
@@ -39,6 +40,14 @@ const AppsRoute = (): ReactElement => {
 			mounted = false;
 		};
 	}, [marketplaceRoute, context]);
+
+	if (
+		(context === 'explore' || context === 'installed' || context === 'private' || context === 'enterprise') &&
+		!canAccessMarketplace &&
+		!isAdminUser
+	) {
+		return <NotAuthorizedPage />;
+	}
 
 	if ((context === 'requested' || page === 'install') && !isAdminUser) return <NotAuthorizedPage />;
 

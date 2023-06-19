@@ -67,10 +67,10 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 				<Box is='button' mie='x4' onClick={handleAvatarClick}>
 					<UserAvatar username={username} />
 				</Box>
-				<Box fontScale='p2' mi='x4'>
-					<Box fontWeight={700}>{name}</Box>
-					<Box display='flex' alignItems='center'>
-						<ReactiveUserStatus uid={_id} />
+				<Box fontScale='p2' mi='x4' display='flex' alignItems='center'>
+					<ReactiveUserStatus uid={_id} />
+					<Box fontWeight={700} mis='x8'>
+						{name}
 					</Box>
 				</Box>
 			</Box>

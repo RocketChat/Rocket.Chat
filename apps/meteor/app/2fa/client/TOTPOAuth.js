@@ -105,7 +105,7 @@ Meteor.loginWithLinkedin = function (options, cb) {
 	overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
 };
 
-Accounts.onPageLoadLogin((loginAttempt) => {
+Accounts.onPageLoadLogin(async (loginAttempt) => {
 	if (loginAttempt?.error?.error !== 'totp-required') {
 		return;
 	}
@@ -119,7 +119,7 @@ Accounts.onPageLoadLogin((loginAttempt) => {
 	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
 	const cb = loginAttempt.userCallback;
 
-	process2faReturn({
+	await process2faReturn({
 		error: loginAttempt.error,
 		originalCallback: cb,
 		onCode: (code) => {

@@ -46,7 +46,7 @@ export interface IStats {
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt: string;
+	lastMessageSentAt: Date | undefined;
 	lastSeenSubscription: string;
 	os: {
 		type: string;
@@ -75,8 +75,8 @@ export interface IStats {
 		_id?: string;
 		locked: boolean;
 		version: number;
-		buildAt?: string;
-		lockedAt?: string;
+		buildAt?: string | Date;
+		lockedAt?: string | Date;
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
@@ -200,6 +200,7 @@ export interface IStats {
 	};
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
+	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	matrixFederation: {

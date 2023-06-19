@@ -1,3 +1,3 @@
-export { EmojiPicker } from './lib/EmojiPicker';
-export { emoji } from '../lib/rocketchat';
-export { createEmojiMessageRenderer } from './emojiParser';
+export * from './helpers';
+export * from './types';
+export { emoji } from './lib';

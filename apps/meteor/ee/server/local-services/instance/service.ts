@@ -1,18 +1,23 @@
 import os from 'os';
 
 import type { BrokerNode } from 'moleculer';
-import { ServiceBroker } from 'moleculer';
+import { ServiceBroker, Transporters } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
+import { getTransporter } from './getTransporter';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
 	private broadcastStarted = false;
+
+	private transporter: Transporters.TCP | Transporters.NATS;
+
+	private isTransporterTCP = true;
 
 	private broker: ServiceBroker;
 
@@ -21,19 +26,29 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT });
+		if (typeof tx === 'string') {
+			this.transporter = new Transporters.NATS({ url: tx });
+			this.isTransporterTCP = false;
+		} else {
+			this.transporter = new Transporters.TCP(tx);
+		}
 
-			if (clientAction === 'inserted' && data?.extraInformation?.port) {
-				this.connectNode(data);
-			}
-		});
+		if (this.isTransporterTCP) {
+			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
+				if (clientAction === 'removed') {
+					return;
+				}
 
-		this.onEvent('license.module', ({ module, valid }) => {
+				if (clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
+					this.connectNode(data);
+				}
+			});
+		}
+
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
-				this.startBroadcast();
+				await this.startBroadcast();
 			}
 		});
 
@@ -60,17 +75,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
-		const port = process.env.TCP_PORT ? String(process.env.TCP_PORT).trim() : 0;
-
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
-			transporter: {
-				type: 'TCP',
-				options: {
-					port,
-					udpDiscovery: false,
-				},
-			},
+			transporter: this.transporter,
 		});
 
 		this.broker.createService({
@@ -116,17 +123,17 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			nodeVersion: process.version,
 		};
 
-		InstanceStatus.registerInstance('rocket.chat', instance);
+		await InstanceStatus.registerInstance('rocket.chat', instance);
 
 		const hasLicense = await License.hasLicense('scalability');
 		if (!hasLicense) {
 			return;
 		}
 
-		this.startBroadcast();
+		await this.startBroadcast();
 	}
 
-	private startBroadcast() {
+	private async startBroadcast() {
 		if (this.broadcastStarted) {
 			return;
 		}
@@ -135,18 +142,20 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
 
-		InstanceStatusRaw.find(
-			{
-				'extraInformation.tcpPort': {
-					$exists: true,
+		if (this.isTransporterTCP) {
+			await InstanceStatusRaw.find(
+				{
+					'extraInformation.tcpPort': {
+						$exists: true,
+					},
 				},
-			},
-			{
-				sort: {
-					_createdAt: -1,
+				{
+					sort: {
+						_createdAt: -1,
+					},
 				},
-			},
-		).forEach(this.connectNode.bind(this));
+			).forEach(this.connectNode.bind(this));
+		}
 	}
 
 	private connectNode(record: any) {
@@ -164,7 +173,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			return;
 		}
 
-		this.broker.broadcast('broadcast', { streamName, eventName, args });
+		void this.broker.broadcast('broadcast', { streamName, eventName, args });
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {

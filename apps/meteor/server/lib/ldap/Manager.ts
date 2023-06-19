@@ -1,6 +1,6 @@
 import limax from 'limax';
+import { SHA256 } from '@rocket.chat/sha256';
 // #ToDo: #TODO: Remove Meteor dependencies
-import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import ldapEscape from 'ldap-escape';
@@ -82,7 +82,7 @@ export class LDAPManager {
 		}
 	}
 
-	public static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
+	public static async syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): Promise<void> {
 		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
 			return;
 		}
@@ -98,9 +98,8 @@ export class LDAPManager {
 		}
 
 		logger.debug({ msg: 'Syncing user avatar', username: user.username });
-		// #ToDo: Remove Meteor references here
-		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
-		Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash));
+
+		await setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash);
 	}
 
 	// This method will only find existing users that are already linked to LDAP
@@ -127,7 +126,7 @@ export class LDAPManager {
 		}
 
 		const { attribute: idAttribute, value: id } = uniqueId;
-		const username = this.getLdapUsername(ldapUser) || usedUsername || id || undefined;
+		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const emails = this.getLdapEmails(ldapUser, username);
 		const name = this.getLdapName(ldapUser) || undefined;
 
@@ -150,7 +149,7 @@ export class LDAPManager {
 	}
 
 	private static onMapUserData(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		callbacks.run('mapLDAPUserData', userData, ldapUser);
+		void callbacks.run('mapLDAPUserData', userData, ldapUser);
 	}
 
 	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
@@ -218,21 +217,27 @@ export class LDAPManager {
 			return;
 		}
 
-		this.onLogin(ldapUser, user, password, ldap, true);
+		await this.onLogin(ldapUser, user, password, ldap, true);
 
 		return {
 			userId: user._id,
 		};
 	}
 
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
+	private static async onLogin(
+		ldapUser: ILDAPEntry,
+		user: IUser,
+		password: string | undefined,
+		ldap: LDAPConnection,
+		isNewUser: boolean,
+	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-			Accounts.setPassword(user._id, password, { logout: false });
+			await Accounts.setPasswordAsync(user._id, password, { logout: false });
 		}
 
-		this.syncUserAvatar(user, ldapUser);
-		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
+		await this.syncUserAvatar(user, ldapUser);
+		await callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
 	}
 
 	private static async loginExistingUser(
@@ -256,7 +261,7 @@ export class LDAPManager {
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && (await this.syncUserForLogin(ldapUser, user))) || user;
 
-		this.onLogin(ldapUser, updatedUser, password, ldap, false);
+		await this.onLogin(ldapUser, updatedUser, password, ldap, false);
 		return {
 			userId: user._id,
 		};
@@ -287,7 +292,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPDataConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}
@@ -423,7 +428,8 @@ export class LDAPManager {
 			return user;
 		}
 
-		return UsersRaw.findOneByUsername(slugifiedUsername);
+		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {

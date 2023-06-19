@@ -1,9 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
-import { APIClient } from '../../../app/utils/client';
-import { getRandomId } from '../../../lib/random';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
@@ -43,7 +43,7 @@ const send = async (
 		tmid?: string;
 	},
 ): Promise<void> => {
-	const id = getRandomId();
+	const id = Random.id();
 
 	updateUploads((uploads) => [
 		...uploads,
@@ -56,7 +56,7 @@ const send = async (
 
 	try {
 		await new Promise((resolve, reject) => {
-			const xhr = APIClient.upload(
+			const xhr = sdk.rest.upload(
 				`/v1/rooms.upload/${rid}`,
 				{
 					msg,

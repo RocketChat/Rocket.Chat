@@ -9,9 +9,9 @@ import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { addSettings } from '../settings/video-conference';
 import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(() =>
-	onLicense('videoconference-enterprise', () => {
-		addSettings();
+Meteor.startup(async () => {
+	await onLicense('videoconference-enterprise', async () => {
+		await addSettings();
 
 		videoConfTypes.registerVideoConferenceType(
 			{ type: 'direct', status: VideoConferenceStatus.CALLING },
@@ -48,5 +48,5 @@ Meteor.startup(() =>
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>
 			VideoConf.addUser(callId, userId),
 		);
-	}),
-);
+	});
+});

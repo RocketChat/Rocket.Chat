@@ -27,7 +27,6 @@ import {
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
@@ -44,6 +43,7 @@ import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
 import { Notifications } from '../../../app/notifications/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import { i18n } from '../../lib/i18n';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -166,7 +166,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				type: 'section',
 				text: {
 					type: 'mrkdwn',
-					text: `**${TAPi18n.__('Video_Conference_Url')}**: ${call.url}`,
+					text: `**${i18n.t('Video_Conference_Url')}**: ${call.url}`,
 				},
 			} as IBlock,
 		];
@@ -227,7 +227,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setProviderData(callId: VideoConference['_id'], data: VideoConference['providerData'] | undefined): Promise<void> {
-		VideoConferenceModel.setProviderDataById(callId, data);
+		await VideoConferenceModel.setProviderDataById(callId, data);
 	}
 
 	public async setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void> {
@@ -238,7 +238,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		VideoConferenceModel.setEndedById(callId, {
+		await VideoConferenceModel.setEndedById(callId, {
 			_id: user._id,
 			username: user.username,
 			name: user.name,
@@ -246,7 +246,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void> {
-		VideoConferenceModel.setEndedById(callId, undefined, endedAt);
+		await VideoConferenceModel.setEndedById(callId, undefined, endedAt);
 	}
 
 	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
@@ -257,7 +257,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				return this.expireCall(callId);
 		}
 
-		VideoConferenceModel.setStatusById(callId, status);
+		await VideoConferenceModel.setStatusById(callId, status);
 	}
 
 	public async addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void> {
@@ -281,7 +281,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		this.addUserToCall(call, {
+		await this.addUserToCall(call, {
 			_id: user._id,
 			username: user.username,
 			name: user.name,
@@ -317,7 +317,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.messages.started) {
 			const name =
 				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
-			const text = TAPi18n.__('video_livechat_missed', { username: name });
+			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
 
@@ -338,7 +338,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				this.createEphemeralMessage(uid, rid, error.message);
+				await this.createEphemeralMessage(uid, rid, error.message);
 				return error.message;
 			}
 		}
@@ -415,11 +415,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		action: string,
 		params: { uid: IUser['_id']; rid: IRoom['_id']; callId: VideoConference['_id'] },
 	): void {
-		api.broadcast('user.video-conference', { userId, action, params });
+		void api.broadcast('user.video-conference', { userId, action, params });
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
-		Notifications.notifyRoom(rid, callId);
+		/* deprecated */
+		(Notifications.notifyRoom as any)(rid, callId);
+
+		Notifications.notifyRoom(rid, 'videoconf', callId);
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -494,7 +497,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
-		const message = sendMessage(user, record, room, false);
+		const message = await sendMessage(user, record, room, false);
 		return message._id;
 	}
 
@@ -525,18 +528,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const user = await Users.findOneById<Pick<IUser, 'language' | 'roles'>>(uid, { projection: { language: 1, roles: 1 } });
 		const language = user?.language || settings.get<string>('Language') || 'en';
 		const key = user?.roles.includes('admin') ? `admin-${i18nKey}` : i18nKey;
-		const msg = TAPi18n.__(key, {
+		const msg = i18n.t(key, {
 			lng: language,
 		});
 
-		api.broadcast('notify.ephemeralMessage', uid, rid, {
+		void api.broadcast('notify.ephemeralMessage', uid, rid, {
 			msg,
 		});
 	}
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
 		const username = (settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username) || user.username || '';
-		const text = TAPi18n.__('video_livechat_started', {
+		const text = i18n.t('video_livechat_started', {
 			username,
 		});
 
@@ -554,7 +557,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 						type: 'button',
 						text: {
 							type: 'plain_text',
-							text: TAPi18n.__('Join_call'),
+							text: i18n.t('Join_call'),
 							emoji: true,
 						},
 						url,
@@ -614,11 +617,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
-		VideoConferenceModel.setUrlById(callId, url);
+		await VideoConferenceModel.setUrlById(callId, url);
 
 		const messageId = await this.createMessage(call, user);
 		call.messages.started = messageId;
-		VideoConferenceModel.setMessageById(callId, 'started', messageId);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
 		setTimeout(async () => {
@@ -685,13 +688,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
-		VideoConferenceModel.setUrlById(callId, url);
+		await VideoConferenceModel.setUrlById(callId, url);
 
 		call.url = url;
 
 		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
 		call.messages.started = messageId;
-		VideoConferenceModel.setMessageById(callId, 'started', messageId);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		if (call.ringing) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
@@ -738,7 +741,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
+		void callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
@@ -835,7 +838,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call);
-			VideoConferenceModel.setUrlById(call._id, call.url);
+			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
 
 		const callData = {

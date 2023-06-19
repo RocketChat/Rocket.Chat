@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
+		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]').locator('..');
 	}
 
 	get checkboxReadOnly(): Locator {
@@ -33,6 +33,10 @@ export class HomeSidenav {
 
 	get btnCreate(): Locator {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+	}
+
+	getSidebarItemByName(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {

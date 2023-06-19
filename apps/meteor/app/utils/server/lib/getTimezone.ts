@@ -18,7 +18,7 @@ const guessTimezoneFromOffset = (offset?: string | number): string => {
 	return moment.tz.names().find((tz) => padOffset(offset) === moment.tz(tz).format('Z').toString()) || moment.tz.guess();
 };
 
-export const getTimezone = (user?: { utcOffset?: string | number }): string => {
+export const getTimezone = (user?: { utcOffset?: string | number } | null): string => {
 	const timezone = settings.get('Default_Timezone_For_Reporting');
 
 	switch (timezone) {

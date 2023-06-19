@@ -1,35 +1,32 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarClose,
+} from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import VerticalBar from '../../../../components/VerticalBar';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import type { initialValues } from './PruneMessagesWithData';
 
 type PruneMessagesProps = {
 	callOutText?: string;
 	validateText?: string;
-	users: IUser['username'][];
+	users: string[];
 	values: Record<string, unknown>;
 	handlers: Record<string, (eventOrValue: unknown) => void>;
 	onClickClose: () => void;
 	onClickPrune: () => void;
-	onChangeUsers: (value: IUser['username'], action?: string) => void;
 };
 
-const PruneMessages = ({
-	callOutText,
-	validateText,
-	values,
-	handlers,
-	onClickClose,
-	onClickPrune,
-	onChangeUsers,
-}: PruneMessagesProps): ReactElement => {
+const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
 	const t = useTranslation();
 
 	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
@@ -45,6 +42,7 @@ const PruneMessages = ({
 		handleDiscussion,
 		handleThreads,
 		handleAttached,
+		handleUsers,
 	} = handlers;
 
 	const inclusiveCheckboxId = useUniqueId();
@@ -55,12 +53,12 @@ const PruneMessages = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='eraser' />
-				<VerticalBar.Text>{t('Prune_Messages')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='eraser' />
+				<ContextualbarTitle>{t('Prune_Messages')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<PruneMessagesDateTimeRow
 					label={t('Newer_than')}
 					dateTime={{ date: newerDate, time: newerTime }}
@@ -73,7 +71,7 @@ const PruneMessages = ({
 				/>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
-					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} placeholder={t('Please_enter_usernames')} />
+					<UserAutoCompleteMultiple value={users} onChange={handleUsers} placeholder={t('Please_enter_usernames')} />
 				</Field>
 				<Field>
 					<Field.Row>
@@ -107,14 +105,14 @@ const PruneMessages = ({
 				</Field>
 				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}
 				{validateText && <Callout type='warning'>{validateText}</Callout>}
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button danger disabled={Boolean(validateText)} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

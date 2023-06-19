@@ -12,7 +12,13 @@ import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
-import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
+import {
+	createAgent,
+	createVisitor,
+	createLivechatRoom,
+	bulkCreateLivechatRooms,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -24,14 +30,13 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
-			.then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
 	this.afterAll(async () => {
-		addPermissions({
+		await addPermissions({
 			'manage-livechat-priorities': ['admin', 'livechat-manager'],
 			'manage-livechat-sla': ['admin', 'livechat-manager'],
 			'view-l-room': ['admin', 'livechat-manager', 'livechat-agent'],
@@ -118,8 +123,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(sla._id);
-			const deleteResponse = deleteSLA(sla._id);
-			expect(deleteResponse).to.not.be.rejected;
+			await deleteSLA(sla._id);
 		});
 		// PUT
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
@@ -247,15 +251,15 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if inquiry is not queued', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await takeInquiry(room._id);
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
 
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
-					roomId: room._id,
+					roomId,
 					sla: '123',
 				})
 				.expect('Content-Type', 'application/json')

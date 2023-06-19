@@ -34,7 +34,7 @@ describe('AppsModelList', () => {
 	it('should render all apps options when a user has manage apps permission', async () => {
 		const AppsModelList = loadMock();
 
-		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed />);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed showMarketplace />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
@@ -50,11 +50,27 @@ describe('AppsModelList', () => {
 			},
 		});
 
-		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed={false} />);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed={false} showMarketplace />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
+		expect(screen.queryByText('Requested')).to.not.exist;
+	});
+
+	it('should not render marketplace and installed options when user does not have access-marketplace permission', async () => {
+		const AppsModelList = loadMock({
+			'@rocket.chat/ui-contexts': {
+				'useAtLeastOnePermission': (): boolean => false,
+				'@noCallThru': false,
+			},
+		});
+
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed={false} />);
+
+		expect(screen.getByText('Apps')).to.exist;
+		expect(screen.queryByText('Marketplace')).to.not.exist;
+		expect(screen.queryByText('Installed')).to.not.exist;
 		expect(screen.queryByText('Requested')).to.not.exist;
 	});
 
@@ -69,7 +85,7 @@ describe('AppsModelList', () => {
 		it('should go to marketplace', async () => {
 			const AppsModelList = loadMock();
 
-			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} showMarketplace />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Marketplace');
 			userEvent.click(button);
@@ -80,7 +96,7 @@ describe('AppsModelList', () => {
 		it('should go to installed', async () => {
 			const AppsModelList = loadMock();
 
-			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} showMarketplace />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Installed');
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
 import { api } from '@rocket.chat/core-services';
 
@@ -14,13 +14,18 @@ export { AppEvents };
 export class AppServerListener {
 	private orch: AppServerOrchestrator;
 
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received;
 
-	constructor(orch: AppServerOrchestrator, engineStreamer: IStreamer, clientStreamer: IStreamer, received: Map<any, any>) {
+	constructor(
+		orch: AppServerOrchestrator,
+		engineStreamer: IStreamer<'apps-engine'>,
+		clientStreamer: IStreamer<'apps'>,
+		received: Map<any, any>,
+	) {
 		this.orch = orch;
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
@@ -40,7 +45,7 @@ export class AppServerListener {
 	}
 
 	async onAppAdded(appId: string): Promise<void> {
-		await (this.orch.getManager()! as any).loadOne(appId); // TO-DO: fix type
+		await (this.orch.getManager()! as any).addLocal(appId); // TO-DO: fix type
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 
@@ -66,8 +71,8 @@ export class AppServerListener {
 		}
 	}
 
-	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: ISetting }): Promise<void> {
-		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`, {
+	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: AppsSetting }): Promise<void> {
+		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`, {
 			appId,
 			setting,
 			when: new Date(),
@@ -76,7 +81,7 @@ export class AppServerListener {
 			.getManager()!
 			.getSettingsManager()
 			.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
+		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId, setting });
 	}
 
 	async onAppUpdated(appId: string): Promise<void> {
@@ -124,9 +129,9 @@ export class AppServerListener {
 }
 
 export class AppServerNotifier {
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received: Map<any, any>;
 
@@ -143,11 +148,11 @@ export class AppServerNotifier {
 	}
 
 	async appAdded(appId: string): Promise<void> {
-		api.broadcast('apps.added', appId);
+		void api.broadcast('apps.added', appId);
 	}
 
 	async appRemoved(appId: string): Promise<void> {
-		api.broadcast('apps.removed', appId);
+		void api.broadcast('apps.removed', appId);
 	}
 
 	async appUpdated(appId: string): Promise<void> {
@@ -156,7 +161,7 @@ export class AppServerNotifier {
 			return;
 		}
 
-		api.broadcast('apps.updated', appId);
+		void api.broadcast('apps.updated', appId);
 	}
 
 	async appStatusUpdated(appId: string, status: AppStatus): Promise<void> {
@@ -168,35 +173,35 @@ export class AppServerNotifier {
 			}
 		}
 
-		api.broadcast('apps.statusUpdate', appId, status);
+		void api.broadcast('apps.statusUpdate', appId, status);
 	}
 
-	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
-		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`)) {
-			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`);
+	async appSettingsChange(appId: string, setting: AppsSetting): Promise<void> {
+		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`)) {
+			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`);
 			return;
 		}
 
-		api.broadcast('apps.settingUpdated', appId, setting);
+		void api.broadcast('apps.settingUpdated', appId, setting);
 	}
 
 	async commandAdded(command: string): Promise<void> {
-		api.broadcast('command.added', command);
+		void api.broadcast('command.added', command);
 	}
 
 	async commandDisabled(command: string): Promise<void> {
-		api.broadcast('command.disabled', command);
+		void api.broadcast('command.disabled', command);
 	}
 
 	async commandUpdated(command: string): Promise<void> {
-		api.broadcast('command.updated', command);
+		void api.broadcast('command.updated', command);
 	}
 
 	async commandRemoved(command: string): Promise<void> {
-		api.broadcast('command.removed', command);
+		void api.broadcast('command.removed', command);
 	}
 
 	async actionsChanged(): Promise<void> {
-		api.broadcast('actions.changed');
+		void api.broadcast('actions.changed');
 	}
 }

@@ -1,14 +1,14 @@
-import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 import React from 'react';
 
+import GenericNoResults from '../../../../client/components/GenericNoResults';
 import GenericTable from '../../../../client/components/GenericTable';
-import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
 
-export type CannedResponsesPageProps = {
+type CannedResponsesPageProps = {
 	data: any;
 	header: ReactElement[];
 	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: 25 | 50 | 100 }>>;
@@ -17,6 +17,7 @@ export type CannedResponsesPageProps = {
 	renderFilter?: (props: any) => ReactElement;
 	renderRow?: (props: any) => ReactElement;
 	totalCannedResponses: number;
+	busy?: boolean;
 };
 
 const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
@@ -28,6 +29,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	renderRow,
 	renderFilter,
 	totalCannedResponses,
+	busy,
 }) => {
 	const t = useTranslation();
 
@@ -44,19 +46,19 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 			<Page.Header title={title}>
 				<ButtonGroup>
 					<Button onClick={handleClick} title={t('New_Canned_Response')}>
-						<Icon name='plus' /> {t('New')}
+						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
 				{totalCannedResponses < 1 ? (
-					<NoResults
+					<GenericNoResults
 						icon='baloon-exclamation'
 						title={t('No_Canned_Responses_Yet')}
 						description={t('No_Canned_Responses_Yet-description')}
 						buttonTitle={t('Create_your_First_Canned_Response')}
 						buttonAction={handleClick}
-					></NoResults>
+					></GenericNoResults>
 				) : (
 					<GenericTable
 						renderFilter={renderFilter}
@@ -66,6 +68,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 						total={data?.total}
 						setParams={setParams}
 						params={params}
+						aria-busy={busy}
 					/>
 				)}
 			</Page.Content>

@@ -8,20 +8,21 @@ import React, { memo, useRef } from 'react';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
 import ToolboxHolder from '../ToolboxHolder';
+import MessageAvatar from '../header/MessageAvatar';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	unread: boolean;
 	sequential: boolean;
+	showUserAvatar: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
@@ -47,9 +48,10 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			data-qa-type='message'
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && (
-					<UserAvatar
-						url={message.avatar}
+				{!sequential && message.u.username && showUserAvatar && (
+					<MessageAvatar
+						emoji={message.emoji}
+						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
 						{...(chat?.userCard && {

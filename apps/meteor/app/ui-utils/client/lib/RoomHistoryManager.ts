@@ -12,10 +12,6 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-// import {
-// 	setHighlightMessage,
-// 	clearHighlightMessage,
-// } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
@@ -26,7 +22,7 @@ export async function upsertMessage(
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
 	},
-	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -41,7 +37,7 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
-	return direct.upsert({ _id }, msg);
+	return collection.upsert({ _id }, msg);
 }
 
 export function upsertMessageBulk(
@@ -54,7 +50,7 @@ export function upsertMessageBulk(
 		if (index === msgs.length - 1) {
 			collection.queries = queries;
 		}
-		upsertMessage({ msg, subscription }, collection);
+		void upsertMessage({ msg, subscription }, collection);
 	});
 }
 
@@ -156,6 +152,10 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
 
+		if (!result) {
+			throw new Error('loadHistory returned nothing');
+		}
+
 		this.unqueue();
 
 		let previousHeight: number | undefined;
@@ -164,7 +164,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitForElement('.messages-box .wrapper');
+		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -276,15 +276,14 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
+		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
-		if (surroundingMessage) {
+		if (messageAlreadyLoaded) {
 			return;
 		}
 
 		const room = this.getRoom(message.rid);
-		room.isLoading.set(true);
-		room.hasMore.set(false);
+		void this.clear(message.rid);
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 

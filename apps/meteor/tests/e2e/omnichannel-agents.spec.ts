@@ -15,8 +15,8 @@ test.describe.serial('omnichannel-agents', () => {
 	});
 
 	test('expect add "user1" as agent', async ({ page }) => {
-		await poOmnichannelAgents.inputUsername.type('user1', { delay: 1000 });
-		await page.keyboard.press('Enter');
+		await poOmnichannelAgents.inputUsername.type('user1');
+		await page.locator('role=option[name="user1"]').click();
 		await poOmnichannelAgents.btnAdd.click();
 
 		await poOmnichannelAgents.inputSearch.fill('user1');
@@ -29,7 +29,7 @@ test.describe.serial('omnichannel-agents', () => {
 
 		await poOmnichannelAgents.btnEdit.click();
 		await poOmnichannelAgents.btnStatus.click();
-		await page.locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="not-available"]`).click();
+		await page.locator(`.rcx-option__content:has-text("Not available")`).click();
 		await poOmnichannelAgents.btnSave.click();
 	});
 

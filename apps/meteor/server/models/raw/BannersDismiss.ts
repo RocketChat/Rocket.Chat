@@ -17,13 +17,13 @@ export class BannersDismissRaw extends BaseRaw<IBannerDismiss> implements IBanne
 
 	findByUserIdAndBannerId(userId: string, bannerIds: string[], options: FindOptions<IBannerDismiss>): FindCursor<IBannerDismiss>;
 
-	findByUserIdAndBannerId<P>(
+	findByUserIdAndBannerId<P extends Document>(
 		userId: string,
 		bannerIds: string[],
 		options: FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
 	): FindCursor<P>;
 
-	findByUserIdAndBannerId<P>(
+	findByUserIdAndBannerId<P extends Document>(
 		userId: string,
 		bannerIds: string[],
 		options?: undefined | FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,

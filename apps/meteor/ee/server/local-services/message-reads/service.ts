@@ -1,9 +1,7 @@
-import { MessageReads, Subscriptions } from '@rocket.chat/models';
-import type { ISubscription } from '@rocket.chat/core-typings';
+import { Messages, MessageReads, Subscriptions } from '@rocket.chat/models';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import type { IMessageReadsService } from '../../sdk/types/IMessageReadsService';
-import { Messages } from '../../../../app/models/server';
 import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
 import { MAX_ROOM_SIZE_CHECK_INDIVIDUAL_READ_RECEIPTS } from '../../lib/constants';
 
@@ -13,13 +11,13 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 	async readThread(userId: string, tmid: string): Promise<void> {
 		const read = await MessageReads.findOneByUserIdAndThreadId(userId, tmid);
 
-		const threadMessage = Messages.findOneById(tmid, { projection: { ts: 1, tlm: 1, rid: 1 } });
-		if (!threadMessage || !threadMessage.tlm) {
+		const threadMessage = await Messages.findOneById(tmid, { projection: { ts: 1, tlm: 1, rid: 1 } });
+		if (!threadMessage?.tlm) {
 			return;
 		}
 
 		await MessageReads.updateReadTimestampByUserIdAndThreadId(userId, tmid);
-		ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
+		await ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
 
 		// doesn't mark as read if not all room members have read the thread
 		const membersCount = await Subscriptions.countUnarchivedByRoomId(threadMessage.rid);
@@ -28,7 +26,7 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 			const subscriptions = await Subscriptions.findUnarchivedByRoomId(threadMessage.rid, {
 				projection: { 'u._id': 1 },
 			}).toArray();
-			const members = subscriptions.map((s: ISubscription) => s.u._id);
+			const members = subscriptions.map((s) => s.u._id);
 
 			const totalMessageReads = await MessageReads.countByThreadAndUserIds(tmid, members);
 			if (totalMessageReads < membersCount) {
@@ -44,7 +42,7 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 
 		const firstRead = await MessageReads.getMinimumLastSeenByThreadId(tmid);
 		if (firstRead?.ls) {
-			Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
+			await Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
 		}
 	}
 }

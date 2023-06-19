@@ -2,7 +2,7 @@ import { AvatarUrlContext, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/lib/getURL';
+import { getURL } from '../../app/utils/client/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 const AvatarUrlProvider: FC = ({ children }) => {
@@ -20,7 +20,7 @@ const AvatarUrlProvider: FC = ({ children }) => {
 				return (uid: string, etag?: string): string => getURL(`/avatar/${uid}${etag ? `?etag=${etag}` : ''}`);
 			})(),
 			getRoomPathAvatar: ({ type, ...room }: any): string =>
-				roomCoordinator.getRoomDirectives(type || room.t)?.getAvatarPath({ username: room._id, ...room }) || '',
+				roomCoordinator.getRoomDirectives(type || room.t).getAvatarPath({ username: room._id, ...room }) || '',
 		}),
 		[externalProviderUrl, cdnAvatarUrl],
 	);

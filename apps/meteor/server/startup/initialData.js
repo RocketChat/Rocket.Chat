@@ -1,22 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Rooms, Users } from '@rocket.chat/models';
 import colors from 'colors/safe';
 
 import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
-import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
+import { addUserToDefaultChannels } from '../../app/lib/server';
+import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
-			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
 			});
 		}
@@ -24,8 +24,8 @@ Meteor.startup(async function () {
 		Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
-	if (!Users.findOneById('rocket.cat')) {
-		Users.create({
+	if (!(await Users.findOneById('rocket.cat'))) {
+		await Users.create({
 			_id: 'rocket.cat',
 			name: 'Rocket.Cat',
 			username: 'rocket.cat',
@@ -38,11 +38,11 @@ Meteor.startup(async function () {
 
 		await addUserRolesAsync('rocket.cat', ['bot']);
 
-		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+		const buffer = Buffer.from(await Assets.getBinaryAsync('avatars/rocketcat.png'));
 
 		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 		const fileStore = FileUpload.getStore('Avatars');
-		fileStore.deleteByName('rocket.cat');
+		await fileStore.deleteByName('rocket.cat');
 
 		const file = {
 			userId: 'rocket.cat',
@@ -50,9 +50,8 @@ Meteor.startup(async function () {
 			size: buffer.length,
 		};
 
-		Meteor.runAsUser('rocket.cat', () => {
-			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
-		});
+		const upload = await fileStore.insert(file, rs);
+		await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 	}
 
 	if (process.env.ADMIN_PASS) {
@@ -75,7 +74,7 @@ Meteor.startup(async function () {
 
 			if (process.env.ADMIN_EMAIL) {
 				if (validateEmail(process.env.ADMIN_EMAIL)) {
-					if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
+					if (!(await Users.findOneByEmailAddress(process.env.ADMIN_EMAIL))) {
 						adminUser.emails = [
 							{
 								address: process.env.ADMIN_EMAIL,
@@ -102,7 +101,7 @@ Meteor.startup(async function () {
 				}
 
 				if (nameValidation.test(process.env.ADMIN_USERNAME)) {
-					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
+					if (await checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
 						console.log(colors.red('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'));
@@ -116,9 +115,9 @@ Meteor.startup(async function () {
 
 			adminUser.type = 'user';
 
-			const id = Users.create(adminUser);
+			const id = await Users.create(adminUser);
 
-			Accounts.setPassword(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
 
 			await addUserRolesAsync(id, ['admin']);
 		} else {
@@ -132,10 +131,10 @@ Meteor.startup(async function () {
 
 			if (!initialUser._id) {
 				console.log(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));
-			} else if (!Users.findOneById(initialUser._id)) {
+			} else if (!(await Users.findOneById(initialUser._id))) {
 				console.log(colors.green('Inserting initial user:'));
 				console.log(colors.green(JSON.stringify(initialUser, null, 2)));
-				Users.create(initialUser);
+				await Users.create(initialUser);
 
 				await addUserToDefaultChannels(initialUser, true);
 			}
@@ -145,7 +144,7 @@ Meteor.startup(async function () {
 	}
 
 	if ((await (await getUsersInRole('admin')).count()) === 0) {
-		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
+		const oldestUser = await Users.getOldest({ projection: { _id: 1, username: 1, name: 1 } });
 
 		if (oldestUser) {
 			await addUserRolesAsync(oldestUser._id, ['admin']);
@@ -160,7 +159,7 @@ Meteor.startup(async function () {
 		}
 	}
 
-	Users.removeById('rocketchat.internal.admin.test');
+	await Users.removeById('rocketchat.internal.admin.test');
 
 	if (process.env.TEST_MODE === 'true') {
 		console.log(colors.green('Inserting admin test user:'));
@@ -187,17 +186,17 @@ Meteor.startup(async function () {
 		console.log(colors.green(`Username: ${adminUser.username}`));
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
-		if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
+		if (await Users.findOneByEmailAddress(adminUser.emails[0].address)) {
 			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!checkUsernameAvailability(adminUser.username)) {
+		if (!(await checkUsernameAvailability(adminUser.username))) {
 			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		Users.create(adminUser);
+		await Users.create(adminUser);
 
-		Accounts.setPassword(adminUser._id, adminUser._id);
+		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 

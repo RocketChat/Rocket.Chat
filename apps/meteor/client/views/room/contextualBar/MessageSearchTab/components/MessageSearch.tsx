@@ -1,10 +1,11 @@
 import { Box, MessageDivider } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
+import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
@@ -23,25 +24,20 @@ type MessageSearchProps = {
 };
 
 const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactElement => {
+	const t = useTranslation();
+	const formatDate = useFormatDate();
 	const pageSize = useSetting<number>('PageSize') ?? 10;
-
 	const [limit, setLimit] = useState(pageSize);
-	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const subscription = useRoomSubscription();
-
-	const formatDate = useFormatDate();
-	const t = useTranslation();
+	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
 			{messageSearchQuery.data && (
 				<>
-					{messageSearchQuery.data.length === 0 && (
-						<Box p={24} color='annotation' textAlign='center' width='full'>
-							{t('No_results_found')}
-						</Box>
-					)}
+					{messageSearchQuery.data.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 					{messageSearchQuery.data.length > 0 && (
 						<MessageListErrorBoundary>
 							<MessageListProvider>
@@ -73,7 +69,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 													)}
 
 													{system ? (
-														<SystemMessage message={message} />
+														<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 													) : (
 														<RoomMessage
 															message={message}
@@ -83,6 +79,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 															all={all}
 															context='search'
 															searchText={searchText}
+															showUserAvatar={showUserAvatar}
 														/>
 													)}
 												</Fragment>

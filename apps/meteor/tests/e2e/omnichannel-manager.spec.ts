@@ -16,8 +16,8 @@ test.describe.serial('omnichannel-manager', () => {
 
 	test('Managers', async ({ page }) => {
 		await test.step('expect add "user1" as manager', async () => {
-			await poOmnichannelManagers.inputUsername.type('user1 ', { delay: 1000 });
-			await page.keyboard.press('Enter');
+			await poOmnichannelManagers.inputUsername.type('user1');
+			await page.locator('role=option[name="user1"]').click();
 			await poOmnichannelManagers.btnAdd.click();
 
 			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();

@@ -6,10 +6,10 @@ import React, { useState, useCallback, useMemo } from 'react';
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';
 import LeaveTeamModalConfirmation from './LeaveTeamModalConfirmation';
 
-export const LEAVE_TEAM_STEPS = {
+const LEAVE_TEAM_STEPS = {
 	LIST_ROOMS: 'LIST_ROOMS',
 	CONFIRM_LEAVE: 'CONFIRM_LEAVE',
-};
+} as const;
 
 type LeaveTeamModalProps = {
 	rooms: (Serialized<IRoom> & { isLastOwner?: boolean })[];

@@ -2,15 +2,16 @@ import { EventEmitter } from 'events';
 
 import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense, LicenseAppSources } from '../definition/ILicense';
+import type { ILicense } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -20,6 +21,7 @@ interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -173,7 +175,7 @@ class LicenseClass {
 					return item;
 				}
 				if (!this._validateURL(license.url, this.url)) {
-					item.valid = false;
+					this.invalidate(item);
 					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
 					this._invalidModules(license.modules);
 					return item;
@@ -181,7 +183,7 @@ class LicenseClass {
 			}
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
-				item.valid = false;
+				this.invalidate(item);
 				console.error(`#### License error: expired, valid until ${license.expiry}`);
 				this._invalidModules(license.modules);
 				return item;
@@ -189,6 +191,10 @@ class LicenseClass {
 
 			if (license.maxGuestUsers > maxGuestUsers) {
 				maxGuestUsers = license.maxGuestUsers;
+			}
+
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
 			}
 
 			if (license.maxActiveUsers > maxActiveUsers) {
@@ -211,20 +217,32 @@ class LicenseClass {
 		this.showLicenses();
 	}
 
-	canAddNewUser(): boolean {
+	invalidate(item: IValidLicense): void {
+		item.valid = false;
+
+		EnterpriseLicenses.emit('invalidate');
+	}
+
+	async canAddNewUser(): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > Users.getActiveLocalUserCount();
+		return maxActiveUsers > (await Users.getActiveLocalUserCount());
 	}
 
-	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!Apps.isInitialized()) {
+	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
+		if (!(await Apps.isInitialized())) {
 			return false;
 		}
 
-		return isUnderAppLimits(this.appsConfig, source);
+		// Migrated apps were installed before the validation was implemented
+		// so they're always allowed to be enabled
+		if (app.migrated) {
+			return true;
+		}
+
+		return isUnderAppLimits(this.appsConfig, getInstallationSourceFromAppStorageItem(app));
 	}
 
 	showLicenses(): void {
@@ -310,6 +328,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
+}
+
 export function getMaxActiveUsers(): number {
 	return maxActiveUsers;
 }
@@ -330,21 +352,15 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export function canAddNewUser(): boolean {
+export async function canAddNewUser(): Promise<boolean> {
 	return License.canAddNewUser();
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
-	// Migrated apps were installed before the validation was implemented
-	// so they're always allowed to be enabled
-	if (app.migrated) {
-		return true;
-	}
-
-	return License.canEnableApp(app.installationSource);
+	return License.canEnableApp(app);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -382,28 +398,28 @@ export function onToggledFeature(
 		up,
 		down,
 	}: {
-		up?: () => void;
-		down?: () => void;
+		up?: () => Promise<void> | void;
+		down?: () => Promise<void> | void;
 	},
 ): () => void {
 	let enabled = hasLicense(feature);
 
 	const offValidFeature = onValidFeature(feature, () => {
 		if (!enabled) {
-			up?.();
+			void up?.();
 			enabled = true;
 		}
 	});
 
 	const offInvalidFeature = onInvalidFeature(feature, () => {
 		if (enabled) {
-			down?.();
+			void down?.();
 			enabled = false;
 		}
 	});
 
 	if (enabled) {
-		up?.();
+		void up?.();
 	}
 
 	return (): void => {
@@ -418,6 +434,10 @@ export function onModule(cb: (...args: any[]) => void): void {
 
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
+}
+
+export function onInvalidateLicense(cb: (...args: any[]) => void): void {
+	EnterpriseLicenses.on('invalidate', cb);
 }
 
 export function flatModules(modulesAndBundles: string[]): string[] {
@@ -435,8 +455,8 @@ interface IOverrideClassProperties {
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
-	onLicense(license, () => {
+export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
 			original.prototype[key] = function (...args: any[]): any {

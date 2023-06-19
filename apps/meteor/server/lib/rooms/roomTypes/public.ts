@@ -2,12 +2,12 @@ import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 
-import { Federation } from '../../../../app/federation-v2/server/Federation';
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
+import { Federation } from '../../../services/federation/Federation';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
 
@@ -31,7 +31,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
 			return Federation.actionAllowed(_room, action, userId);
 		}
@@ -43,7 +43,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
@@ -61,9 +61,9 @@ roomCoordinator.add(PublicRoomType, {
 		return true;
 	},
 
-	getDiscussionType(room) {
+	async getDiscussionType(room) {
 		if (room?.teamId) {
-			const team = Promise.await(Team.getOneById(room.teamId, { projection: { type: 1 } }));
+			const team = await Team.getOneById(room.teamId, { projection: { type: 1 } });
 			if (team?.type === TEAM_TYPE.PRIVATE) {
 				return 'p';
 			}

@@ -3,8 +3,8 @@ import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from 
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
@@ -49,11 +49,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
-				let soundId;
+				let soundId: string;
 				try {
 					soundId = await insertOrUpdateSound(soundData);
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				soundData._id = soundId;
@@ -66,7 +67,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					reader.readAsBinaryString(sound);
 					reader.onloadend = (): void => {
 						try {
-							uploadCustomSound(reader.result, sound.type, soundData);
+							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
@@ -116,7 +117,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<ContextualbarScrollableContent {...props}>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -158,7 +159,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</ButtonGroup>
 				</Field.Row>
 			</Field>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 }
 

@@ -44,7 +44,7 @@ const getAppsEngineVersion = async function({ version, git }) {
 
 		const resultString = result.toString();
 
-		const match = resultString.match(/"@rocket.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@npm:([^"]+)"/);
+		const match = resultString.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
 		if (match) {
 			return match[1];
 		}

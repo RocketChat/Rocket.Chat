@@ -4,7 +4,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 
 export async function reconnectWorkspace() {
-	const { workspaceRegistered } = retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered || process.env.TEST_MODE) {
 		return false;
 	}

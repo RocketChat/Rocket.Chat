@@ -1,3 +1,5 @@
+import type { SettingValue } from '@rocket.chat/core-typings';
+
 export interface ISettingsService {
-	get<T>(settingId: string): Promise<T>;
+	get<T extends SettingValue>(settingId: string): Promise<T>;
 }
