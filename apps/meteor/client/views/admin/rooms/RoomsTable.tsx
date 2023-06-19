@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { isDiscussion, isPublicRoom, isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -20,7 +20,8 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import type { OptionProp } from './DropDown/CustomDropDown';
-import { CustomDropDown, CustomDropDownOptionsContext } from './DropDown/CustomDropDown';
+import { RoomTypeDropDown, RoomTypeDropDownOptionsContext } from './DropDown/RoomTypeDropDown';
+import { RoomVisibilityDropDown, RoomVisibilityDropDownOptionsContext } from './DropDown/RoomVisibilityDropDown';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -215,39 +216,76 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const roomTypeOptions = [
 		{
-			id: '1',
-			text: 'Titulo 1',
+			id: 'filter_by_room',
+			text: 'Filter_by_room:',
 			isGroupTitle: true,
 		},
 		{
-			id: '2',
-			text: 'option 1',
+			id: 'channels',
+			text: 'Channels',
 			checked: false,
 		},
 		{
-			id: '3',
-			text: 'option 2',
+			id: 'directMessages',
+			text: 'Direct_Message',
 			checked: false,
 		},
 		{
-			id: '4',
-			text: 'Titulo 2',
-			isGroupTitle: true,
+			id: 'discussions',
+			text: 'Discussions',
+			checked: false,
 		},
 		{
-			id: '5',
-			text: 'option 3',
+			id: 'omnichannel',
+			text: 'Omnichannel',
+			checked: false,
+		},
+		{
+			id: 'teams',
+			text: 'Teams',
 			checked: false,
 		},
 	] as OptionProp[];
 
-	// TODO: use the context data to filter rooms!
+	const roomVisibilityOptions = [
+		{
+			id: 'filter_by_visibility',
+			text: 'Filter by visibility:',
+			isGroupTitle: true,
+		},
+		{
+			id: 'private',
+			text: 'Private',
+			checked: false,
+		},
+		{
+			id: 'public',
+			text: 'Public',
+			checked: false,
+		},
+	] as OptionProp[];
 
-	const contextSelectedOptions = useContext(CustomDropDownOptionsContext);
+	const typeSelectedOptionsContext = useContext(RoomTypeDropDownOptionsContext);
 
-	console.log(`context data is: ${contextSelectedOptions}`);
+	const visibilitySelectedOptionsContext = useContext(RoomVisibilityDropDownOptionsContext);
 
-	/*
+	let filtered: IRoom[] = data === undefined ? [] : data.rooms; // TODO: get real endpoint data
+
+	const filterByRoomVisibility: Record<string, () => IRoom[]> = {
+		private: () => filtered.filter(filterRoomsByPrivate),
+		public: () => filtered.filter(filterRoomsByPublic),
+	};
+
+	const filterByRoomType: Record<string, () => IRoom[]> = {
+		channels: () => filtered.filter(filterRoomsByChannels),
+		directMessages: () => filtered.filter(filterRoomsByDirectMessages),
+		discussions: () => filtered.filter(filterRoomsByDiscussions),
+		omnichannel: () => filtered.filter(filterRoomsByOmnichannel),
+		teams: () => filtered.filter(filterRoomsByTeams),
+	};
+
+	// TODO: perhaps, pass the function inside the DropDownOption, and just use OOP
+
 	const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => isPublicRoom(room) === false;
 	const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room) === true;
 
@@ -256,14 +294,28 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const filterRoomsByDiscussions = (room: Partial<IRoom>): boolean => isDiscussion(room) === true;
 	const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'l'; // LiveChat
 	const filterRoomsByTeams = (room: Partial<IRoom>): boolean => isTeamRoom(room);
-	*/
+
+	useEffect(() => {
+		typeSelectedOptionsContext.forEach((element) => {
+			filtered = filterByRoomType[element.id]();
+		});
+
+		visibilitySelectedOptionsContext.forEach((element) => {
+			filtered = filterByRoomVisibility[element.id]();
+		});
+	}, [typeSelectedOptionsContext, visibilitySelectedOptionsContext]);
 
 	return (
 		<>
-			{/* TODO: mudar aqui */}
 			<FilterByTypeAndText setFilter={setRoomFilter} />
 
-			<CustomDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+			<RoomTypeDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+
+			<RoomVisibilityDropDown
+				dropdownOptions={roomVisibilityOptions}
+				defaultTitle={'All_visible' as any}
+				selectedOptionsTitle='Visibility'
+			/>
 
 			{isLoading && (
 				<GenericTable>
@@ -277,7 +329,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{isSuccess && data?.rooms.map((room) => renderRow(room))}</GenericTableBody>
+						<GenericTableBody>{isSuccess && filtered.map((room) => renderRow(room))}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

@@ -36,7 +36,7 @@ type CheckboxOptionProp = {
 
 export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
-type DropDownProps = {
+export type DropDownProps = {
 	dropdownOptions: OptionProp[];
 	defaultTitle: TranslationKey; // For example: 'All rooms'
 	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
@@ -57,6 +57,8 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 ) {
 	const t = useTranslation();
 
+	// TODO: when all options are clicked, should change to "all rooms" title
+
 	return (
 		<Button
 			ref={ref}
@@ -72,7 +74,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			h='x40'
 			{...props}
 		>
-			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
+			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount / 2})` : t(defaultTitle)}
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' fontSize='x20' color='hint' />
 			</Box>
@@ -108,7 +110,7 @@ export const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box
 
 // TODO: move DropDownList to new file!!
 
-const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelected: (item: OptionProp) => void }) => {
+export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelected: (item: OptionProp) => void }) => {
 	const t = useTranslation();
 
 	return (
