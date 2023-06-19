@@ -1,20 +1,14 @@
-import { MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import React from 'react';
 
-type GenericMenuContentProps = {
-	item: {
-		icon?: ComponentProps<typeof MenuItemIcon>['name'];
-		name?: string;
-		input?: ReactNode;
-		content?: ReactNode;
-	};
-};
-const GenericMenuContent = ({ item }: GenericMenuContentProps) => (
+import type { Item } from '../sidebar/header/actions/hooks/useSortModeItems';
+
+const GenericMenuContent = ({ item }: { item: Item }) => (
 	<>
 		{item.icon && <MenuItemIcon name={item.icon} />}
 		<MenuItemContent>{item.name || item.content}</MenuItemContent>
 		{item.input && <MenuItemInput>{item.input}</MenuItemInput>}
+		{item.badge && <MenuItemColumn>{item.badge}</MenuItemColumn>}
 	</>
 );
 

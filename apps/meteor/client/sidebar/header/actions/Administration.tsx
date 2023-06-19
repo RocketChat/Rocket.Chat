@@ -1,20 +1,18 @@
-import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
+import { MenuV2, MenuSection, MenuItem } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, VFC } from 'react';
-import React, { useCallback, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { usePermission, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import type { HTMLAttributes, Key, VFC } from 'react';
+import React from 'react';
 
 import { AccountBox } from '../../../../app/ui-utils/client';
 import type { IAppAccountBoxItem, AccountBoxItem } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { isAppAccountBoxItem } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
-import AdministrationList from '../../../components/AdministrationList/AdministrationList';
-import AdministrationModelList from '../../../components/AdministrationList/AdministrationModelList';
-import AppsModelList from '../../../components/AdministrationList/AppsModelList';
-import AuditModelList from '../../../components/AdministrationList/AuditModelList';
+import GenericMenuContent from '../../../components/GenericMenuContent';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
+import { useAdministrationItems } from './hooks/useAdministrationItems';
+import { useAppsItems } from './hooks/useAppsItems';
+import { useAuditItems } from './hooks/useAuditItems';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -44,12 +42,8 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
-const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
-	const reference = useRef(null);
-	const target = useRef(null);
-
-	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
-
+const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
+	const t = useTranslation();
 	const getAccountBoxItems = useMutableCallback(() => AccountBox.getItems());
 	const accountBoxItems = useReactiveValue(getAccountBoxItems);
 
@@ -67,36 +61,54 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const showWorkspace = hasAdminPermission;
 	const showApps = hasAccessMarketplacePermission || hasManageAppsPermission || !!appBoxItems.length;
 
-	const onDismiss = useCallback((): void => toggle(false), [toggle]);
+	const administrationItems = useAdministrationItems({ accountBoxItems: adminBoxItems, showWorkspace });
+	const appItems = useAppsItems({
+		appBoxItems,
+		appsManagementAllowed: hasManageAppsPermission,
+		showMarketplace: hasAccessMarketplacePermission || hasManageAppsPermission,
+	});
+	const auditItems = useAuditItems({ showAudit: hasAuditPermission, showAuditLog: hasAuditLogPermission });
 
-	const optionsList = [
-		showAdmin && <AdministrationModelList showWorkspace={showWorkspace} accountBoxItems={adminBoxItems} onDismiss={onDismiss} />,
-		showApps && (
-			<AppsModelList
-				appBoxItems={appBoxItems}
-				onDismiss={onDismiss}
-				appsManagementAllowed={hasManageAppsPermission}
-				showMarketplace={hasAccessMarketplacePermission || hasManageAppsPermission}
-			/>
-		),
-		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
-	].filter(Boolean);
+	const menuItems = [...administrationItems, ...appItems, ...auditItems];
 
-	if (!optionsList || optionsList.length === 0) {
-		return null;
-	}
+	const handleItemClick = useMutableCallback((id: Key) => {
+		const item = menuItems.find((item) => item.id === id);
+		item?.onClick && item.onClick();
+	});
 
 	return (
-		<>
-			<Sidebar.TopBar.Action icon='menu' onClick={(): void => toggle()} {...props} ref={reference} />
-			{isVisible &&
-				createPortal(
-					<Dropdown reference={reference} ref={target}>
-						<AdministrationList optionsList={optionsList} />
-					</Dropdown>,
-					document.body,
-				)}
-		</>
+		<MenuV2 title={t('Administration')} onAction={handleItemClick}>
+			{showAdmin &&
+				((
+					<MenuSection items={administrationItems} title={t('Administration')}>
+						{(item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuContent item={item} />
+							</MenuItem>
+						)}
+					</MenuSection>
+				) as any)}
+			{showApps &&
+				((
+					<MenuSection items={appItems} title={t('Apps')}>
+						{(item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuContent item={item} />
+							</MenuItem>
+						)}
+					</MenuSection>
+				) as any)}
+			{showAudit &&
+				((
+					<MenuSection items={auditItems} title={t('Audit')}>
+						{(item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuContent item={item} />
+							</MenuItem>
+						)}
+					</MenuSection>
+				) as any)}
+		</MenuV2>
 	);
 };
 

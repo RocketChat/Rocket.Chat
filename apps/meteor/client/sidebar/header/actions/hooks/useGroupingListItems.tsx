@@ -1,16 +1,9 @@
-import type { MenuItemIcon } from '@rocket.chat/fuselage';
 import { CheckBox } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 
-export type Item = {
-	id: string;
-	icon?: ComponentProps<typeof MenuItemIcon>['name'];
-	name?: string;
-	input?: ReactNode;
-	content?: ReactNode;
-};
+import type { Item } from './useSortModeItems';
+
 export const useGroupingListItems = (): Item[] => {
 	const t = useTranslation();
 
