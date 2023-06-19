@@ -14,18 +14,22 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 	});
 
 	if (result.isLoading) {
-		return [<Skeleton key={0} variant='text' />, <Skeleton key={1} variant='text' />, <Skeleton key={2} variant='text' />];
+		return [
+			<Skeleton key='event-count' variant='text' />,
+			<Skeleton key='user-count' variant='text' />,
+			<Skeleton key='server-count' variant='text' />,
+		];
 	}
 
 	if (result.isError) {
 		return [
-			<Box key={0} color='status-font-on-danger'>
+			<Box key='event-count' color='status-font-on-danger'>
 				Error
 			</Box>,
-			<Box key={1} color='status-font-on-danger'>
+			<Box key='user-count' color='status-font-on-danger'>
 				Error
 			</Box>,
-			<Box key={2} color='status-font-on-danger'>
+			<Box key='server-count' color='status-font-on-danger'>
 				Error
 			</Box>,
 		];
