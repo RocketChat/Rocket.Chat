@@ -83,6 +83,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
+		// TODO: get only publicly available methods removing all private methods
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)

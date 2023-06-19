@@ -38,7 +38,7 @@ export class LocalBroker implements IBroker {
 		instance.getEvents().forEach((eventName) => {
 			this.events.removeListener(eventName, instance.emit);
 		});
-
+		// TODO: get only publicly available methods removing all private methods
 		const methods =
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
