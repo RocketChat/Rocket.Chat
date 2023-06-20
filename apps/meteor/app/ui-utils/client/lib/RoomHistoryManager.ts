@@ -262,6 +262,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
+		room.oldestTs = undefined;
 		room.loaded = undefined;
 	}
 
