@@ -6,9 +6,17 @@ import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Us
 import { isEnterprise } from '../../../license/server/license';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept: any) => dept.agentId);
+	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)
+	// Then find the agents that are not in any of those departments
+
+	// TODO: define behaviors for disabled departmnents
+	const departmentIds = (await LivechatDepartment.findNotArchived({ projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+	const agentIdsWithDepartment = await LivechatDepartmentAgents.col.distinct('agentId', {
+		departmentEnabled: true,
+		departmentId: { $in: departmentIds },
+	});
+
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
 			'livechat-agent',
