@@ -18,8 +18,8 @@ const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 
 	return (
 		<MenuV2 icon='edit-rounded' title={t('Create_new')} onAction={handleAction}>
-			{sections.map(({ title, items }) => (
-				<MenuSection title={t.has(title) ? t(title) : title} items={items}>
+			{sections.map(({ title, items }, key) => (
+				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
 					{(item) => (
 						<MenuItem key={item.id}>
 							<GenericMenuContent {...item} />

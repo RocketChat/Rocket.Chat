@@ -13,8 +13,8 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 
 	return (
 		<MenuV2 icon='sort' selectionMode='multiple' title={t('Display')}>
-			{sections.map(({ title, items }) => (
-				<MenuSection title={t.has(title) ? t(title) : title} items={items}>
+			{sections.map(({ title, items }, key) => (
+				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
 					{(item) => (
 						<MenuItem key={item.id}>
 							<GenericMenuContent {...item} />

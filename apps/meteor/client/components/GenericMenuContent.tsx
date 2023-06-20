@@ -1,4 +1,4 @@
-import { MenuItemColumn, MenuItemContent, MenuItemIcon } from '@rocket.chat/fuselage';
+import { MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
@@ -14,7 +14,7 @@ const GenericMenuContent = ({ icon, content, addon }: GenericMenuItem) => (
 	<>
 		{icon && <MenuItemIcon name={icon} />}
 		{content && <MenuItemContent>{content}</MenuItemContent>}
-		{addon && <MenuItemColumn>{addon}</MenuItemColumn>}
+		{addon && <MenuItemInput>{addon}</MenuItemInput>}
 	</>
 );
 
