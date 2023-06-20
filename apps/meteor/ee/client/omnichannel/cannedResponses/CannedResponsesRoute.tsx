@@ -59,7 +59,7 @@ const CannedResponsesRoute: FC = () => {
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 
 	const { data } = useQuery(
-		['canned-responses', '/v1/canned-responses', debouncedText, debouncedSort, debouncedParams, sharing, createdBy],
+		['canned-responses', '/v1/canned-responses', { debouncedText, debouncedSort, debouncedParams, sharing, createdBy }],
 		() =>
 			getCannedResponses({
 				text: debouncedText,
