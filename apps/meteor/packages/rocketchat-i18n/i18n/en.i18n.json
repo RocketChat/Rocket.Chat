@@ -1907,6 +1907,8 @@
   "error-avatar-invalid-url": "Invalid avatar URL: {{url}}",
   "error-avatar-url-handling": "Error while handling avatar setting from a URL ({{url}}) for {{username}}",
   "error-business-hours-are-closed": "Business Hours are closed",
+  "error-business-hour-finish-time-before-start-time": "Finish time must be after start time",
+  "error-business-hour-finish-time-equals-start-time": "Start and Finish time cannot be the same",
   "error-blocked-username": "<strong>{{field}}</strong> is blocked and can't be used!",
   "error-canned-response-not-found": "Canned Response Not Found",
   "error-cannot-delete-app-user": "Deleting app user is not allowed, uninstall the corresponding app to remove it.",
