@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-properties */
 /* eslint-env mocha */
 
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
