@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import type { IUser } from "@rocket.chat/core-typings";
 import { password } from "../user";
 import { createUser, login } from "../users.helper";
@@ -21,5 +21,5 @@ export const createBotAgent = async (): Promise<{
     };
 }
 
-export const getRandomVisitorToken = (): string => faker.random.alphaNumeric(17);
+export const getRandomVisitorToken = (): string => faker.string.alphanumeric(17);
 
