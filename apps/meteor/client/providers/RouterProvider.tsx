@@ -1,11 +1,13 @@
-import type { RouterContextValue, RouterPathPattern, RouterPathName } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue, RouterPathPattern, RouterPathName, RouterPathname } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
+import { match } from 'path-to-regexp';
 import type { FC } from 'react';
 import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
+import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 const getRoutePath = (
 	patternOrName: RouterPathPattern | RouterPathName,
@@ -104,6 +106,9 @@ queueMicrotask(() => {
 
 const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	subscribers.add(onRouteChange);
+
+	onRouteChange();
+
 	return () => {
 		subscribers.delete(onRouteChange);
 
@@ -113,20 +118,26 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
+const getPathname = () => FlowRouter.current().path as RouterPathname;
+
+const getParameters = () => FlowRouter.current().params;
+
+const getSearch = () => location.search;
+
 const getSearchParameters = () => FlowRouter.current().queryParams;
 
-const setSearchParameters = (
-	paramsOrFn: Record<string, string | undefined | null> | ((prev: Record<string, string>) => Record<string, string>),
-): void => {
-	if (typeof paramsOrFn === 'function') {
-		const prevParams = FlowRouter.current().queryParams;
-		const emptyParams = Object.fromEntries(Object.entries(prevParams).map(([key]) => [key, null]));
-		const newParams = paramsOrFn(prevParams);
-		FlowRouter.setQueryParams({ ...emptyParams, ...newParams });
-		return;
+const matchPath = <TPathPattern extends RouterPathPattern>(pattern: TPathPattern | string, pathname: string) => {
+	const result = match<Record<string, string>>(pattern, { decode: decodeURIComponent })(pathname);
+
+	if (!result) {
+		return null;
 	}
 
-	FlowRouter.setQueryParams(paramsOrFn);
+	return {
+		pattern: pattern as TPathPattern,
+		pathname: result.path,
+		params: result.params,
+	};
 };
 
 const queryRoutePath = (
@@ -134,12 +145,6 @@ const queryRoutePath = (
 	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
 	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
 ): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
-
-const queryRouteUrl = (
-	name: Parameters<RouterContextValue['queryRouteUrl']>[0],
-	parameters: Parameters<RouterContextValue['queryRouteUrl']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRouteUrl']>[2],
-): ReturnType<RouterContextValue['queryRouteUrl']> => createSubscription(() => FlowRouter.url(name, parameters, queryStringParameters));
 
 const pushRoute = (
 	name: Parameters<RouterContextValue['pushRoute']>[0],
@@ -185,10 +190,12 @@ const contextValue = {
 	getRoutePath,
 	navigate,
 	subscribeToRouteChange,
+	getPathname,
+	getParameters,
+	getSearch,
 	getSearchParameters,
-	setSearchParameters,
+	matchPath,
 	queryRoutePath,
-	queryRouteUrl,
 	pushRoute,
 	replaceRoute,
 	queryRouteParameter,

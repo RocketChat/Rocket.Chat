@@ -13,19 +13,25 @@ export interface IRouterPaths {
 
 export type RouterPathName = keyof IRouterPaths;
 export type RouterPathPattern = IRouterPaths[keyof IRouterPaths]['pattern'];
-type Pathname = IRouterPaths[keyof IRouterPaths]['pathname'];
+export type RouterPathname = IRouterPaths[keyof IRouterPaths]['pathname'];
 
 type To =
-	| Pathname
+	| RouterPathname
 	| {
 			pattern: RouterPathPattern;
 			params: Record<string, string>;
 			search?: Record<string, string>;
 	  }
 	| {
-			pathname: Pathname;
+			pathname: RouterPathname;
 			search?: Record<string, string>;
 	  };
+
+type PathMatch<TPathPattern extends RouterPathPattern> = {
+	params: Record<string, string>;
+	pathname: string;
+	pattern: TPathPattern;
+};
 
 type RelativeRoutingType = 'route' | 'path';
 
@@ -51,15 +57,12 @@ export type RouterContextValue = {
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
 	subscribeToRouteChange(onRouteChange: () => void): () => void;
+	getPathname(): RouterPathname;
+	getParameters(): Record<string, string>;
+	getSearch(): string;
 	getSearchParameters(): Record<string, string>;
-	setSearchParameters(parameters: Record<string, string | undefined | null>): void;
-	setSearchParameters(reducer: (prev: Record<string, string>) => Record<string, string>): void;
+	matchPath<TPathPattern extends RouterPathPattern>(pattern: TPathPattern, pathname: string): PathMatch<TPathPattern> | null;
 	queryRoutePath: (
-		name: RouteName,
-		parameters: RouteParameters | undefined,
-		queryStringParameters: QueryStringParameters | undefined,
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
-	queryRouteUrl: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
@@ -87,10 +90,20 @@ export const RouterContext = createContext<RouterContextValue>({
 	},
 	navigate: () => undefined,
 	subscribeToRouteChange: () => () => undefined,
+	getPathname: () => {
+		throw new Error('not implemented');
+	},
+	getParameters: () => {
+		throw new Error('not implemented');
+	},
+	getSearch: () => {
+		throw new Error('not implemented');
+	},
 	getSearchParameters: () => ({}),
-	setSearchParameters: () => undefined,
+	matchPath: () => {
+		throw new Error('not implemented');
+	},
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
-	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],

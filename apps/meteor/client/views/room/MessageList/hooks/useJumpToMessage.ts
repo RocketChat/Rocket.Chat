@@ -34,7 +34,15 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 				return { top: newScrollPosition, behavior: 'smooth' };
 			});
 
-			router.setSearchParameters(({ msg: _, ...params }) => params);
+			const search = router.getSearchParameters();
+			delete search.msg;
+			router.navigate(
+				{
+					pathname: router.getPathname(),
+					search,
+				},
+				{ replace: true },
+			);
 
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);
