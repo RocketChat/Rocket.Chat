@@ -15,7 +15,7 @@ const getRoutePath = (
 	search?: Record<string, string>,
 ): string => Tracker.nonreactive(() => FlowRouter.path(patternOrName, parameters, search));
 
-export const navigate = (
+const navigate = (
 	toOrDelta:
 		| string
 		| {
@@ -140,6 +140,8 @@ const matchPath = <TPathPattern extends RouterPathPattern>(pattern: TPathPattern
 	};
 };
 
+const getRoutePatternByName = (name: RouterPathName) => FlowRouter._routesMap[name]?.pathDef ?? '/';
+
 const queryRoutePath = (
 	name: Parameters<RouterContextValue['queryRoutePath']>[0],
 	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
@@ -151,8 +153,7 @@ const pushRoute = (
 	parameters: Parameters<RouterContextValue['pushRoute']>[1],
 	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 ): ReturnType<RouterContextValue['pushRoute']> => {
-	const queryParams =
-		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
+	const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters(getSearchParameters()) : queryStringParameters;
 	navigate({
 		pattern: name,
 		params: parameters ?? {},
@@ -165,8 +166,7 @@ const replaceRoute = (
 	parameters: Parameters<RouterContextValue['replaceRoute']>[1],
 	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 ): ReturnType<RouterContextValue['replaceRoute']> => {
-	const queryParams =
-		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
+	const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters(getSearchParameters()) : queryStringParameters;
 	navigate(
 		{
 			pattern: name,
@@ -186,15 +186,16 @@ const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']
 		return [route?.name, params, queryParams, route?.group?.name];
 	});
 
-const contextValue = {
-	getRoutePath,
-	navigate,
+export const router: RouterContextValue = {
 	subscribeToRouteChange,
 	getPathname,
 	getParameters,
 	getSearch,
 	getSearchParameters,
 	matchPath,
+	getRoutePatternByName,
+	getRoutePath,
+	navigate,
 	queryRoutePath,
 	pushRoute,
 	replaceRoute,
@@ -202,6 +203,6 @@ const contextValue = {
 	queryCurrentRoute,
 };
 
-const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;
+const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={router} />;
 
 export default RouterProvider;

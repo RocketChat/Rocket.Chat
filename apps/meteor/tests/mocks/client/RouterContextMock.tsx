@@ -60,6 +60,7 @@ const RouterContextMock = ({ children, initialRoute, navigate, pushRoute, replac
 					getSearch: () => '',
 					getSearchParameters: () => ({}),
 					matchPath: () => null,
+					getRoutePatternByName: () => '/',
 					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					pushRoute: (name, parameters, queryStringParameters) => {
 						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;

@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
@@ -14,7 +13,7 @@ import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { navigate } from '../../../../client/providers/RouterProvider';
+import { router } from '../../../../client/providers/RouterProvider';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -112,7 +111,7 @@ class KonchatNotification {
 
 			switch (notification.payload?.type) {
 				case 'd':
-					return navigate({
+					return router.navigate({
 						pattern: '/direct/:rid/:tab?/:context?',
 						params: {
 							rid: notification.payload.rid,
@@ -121,10 +120,10 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 				case 'c':
-					return navigate({
+					return router.navigate({
 						pattern: '/channel/:name/:tab?/:context?',
 						params: {
 							name: notification.payload.name,
@@ -133,10 +132,10 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 				case 'p':
-					return navigate({
+					return router.navigate({
 						pattern: '/group/:name/:tab?/:context?',
 						params: {
 							name: notification.payload.name,
@@ -145,7 +144,7 @@ class KonchatNotification {
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...FlowRouter.current().queryParams, jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 			}
 		};

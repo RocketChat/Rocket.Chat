@@ -11,7 +11,7 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import { navigate } from '../providers/RouterProvider';
+import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
@@ -132,7 +132,7 @@ FlowRouter.route('/', {
 		);
 
 		if (!Meteor.userId()) {
-			return navigate('/home');
+			return router.navigate('/home');
 		}
 
 		Tracker.autorun((c) => {
@@ -141,13 +141,13 @@ FlowRouter.route('/', {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/') as [routeName: keyof IRouterPaths, routeParam: string];
-						navigate({
-							pattern: room[0],
+						router.navigate({
+							pattern: router.getRoutePatternByName(room[0]),
 							params: { name: room[1] },
-							search: FlowRouter.current().queryParams,
+							search: router.getSearchParameters(),
 						});
 					} else {
-						navigate('/home');
+						router.navigate('/home');
 					}
 				}, 0);
 				c.stop();
@@ -160,7 +160,7 @@ FlowRouter.route('/login', {
 	name: 'login',
 
 	action() {
-		navigate('/home');
+		router.navigate('/home');
 	},
 });
 
@@ -181,7 +181,7 @@ FlowRouter.route('/meet/:rid', {
 		}
 
 		if (!Meteor.userId()) {
-			navigate('/home');
+			router.navigate('/home');
 			return;
 		}
 
@@ -322,7 +322,7 @@ FlowRouter.route('/login-token/:token', {
 			],
 			userCallback(error) {
 				console.error(error);
-				navigate('/');
+				router.navigate('/');
 			},
 		});
 	},

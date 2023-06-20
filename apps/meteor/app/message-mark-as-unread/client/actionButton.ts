@@ -6,7 +6,7 @@ import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { navigate } from '../../../client/providers/RouterProvider';
+import { router } from '../../../client/providers/RouterProvider';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -27,7 +27,7 @@ Meteor.startup(() => {
 					return;
 				}
 				await LegacyRoomManager.close(subscription.t + subscription.name);
-				return navigate('/home');
+				return router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

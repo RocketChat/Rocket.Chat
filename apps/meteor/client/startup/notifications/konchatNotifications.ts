@@ -14,6 +14,7 @@ import { RoomManager } from '../../lib/RoomManager';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
+import { router } from '../../providers/RouterProvider';
 
 const OutlookCalendarEventModal = lazy(() => import('../../views/outlookCalendar/OutlookCalendarEventModal'));
 
@@ -23,7 +24,7 @@ const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> 
 		return;
 	}
 
-	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
+	if ((!router.getParameters().name || router.getParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
 		KonchatNotification.newRoom(sub.rid);
 	}
 };

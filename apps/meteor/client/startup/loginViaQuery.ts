@@ -2,11 +2,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { navigate } from '../providers/RouterProvider';
+import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.afterFlush(() => {
-		const resumeToken = FlowRouter.getQueryParam('resumeToken');
+		const { resumeToken } = router.getSearchParameters();
 		if (!resumeToken) {
 			return;
 		}
@@ -16,7 +16,7 @@ Meteor.startup(() => {
 				FlowRouter.setQueryParams({ resumeToken: null, userId: null });
 				return;
 			}
-			navigate('/home');
+			router.navigate('/home');
 		});
 	});
 });

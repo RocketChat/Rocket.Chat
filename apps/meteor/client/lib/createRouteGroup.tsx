@@ -16,7 +16,7 @@ import { Tracker } from 'meteor/tracker';
 import type { ElementType, ReactNode } from 'react';
 import React from 'react';
 
-import { navigate } from '../providers/RouterProvider';
+import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
 
@@ -53,7 +53,7 @@ const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName ext
 			const _enabled = enabled.get();
 
 			if (_enabled === false) {
-				navigate('/');
+				router.navigate('/');
 			}
 		});
 	};
@@ -70,7 +70,7 @@ const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName ext
 		}
 
 		oldRoute?.route?.name &&
-			navigate({
+			router.navigate({
 				pattern: oldRoute.route.name,
 				params: oldRoute.params,
 				search: oldRoute.queryParams,

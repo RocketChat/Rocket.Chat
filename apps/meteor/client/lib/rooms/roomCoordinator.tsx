@@ -17,7 +17,7 @@ import type {
 	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { navigate } from '../../providers/RouterProvider';
+import { router } from '../../providers/RouterProvider';
 import RoomOpener from '../../views/room/RoomOpener';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
 import { appLayout } from '../appLayout';
@@ -89,7 +89,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return;
 		}
 
-		navigate({
+		router.navigate({
 			pattern: config.route.path ?? '/home',
 			params: routeData,
 			search: queryParams,

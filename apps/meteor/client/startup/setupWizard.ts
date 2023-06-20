@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { hasRole } from '../../app/authorization/client';
 import { settings } from '../../app/settings/client';
-import { navigate } from '../providers/RouterProvider';
+import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -14,7 +14,7 @@ Meteor.startup(() => {
 		const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
 
 		if (mustRedirect) {
-			navigate('/setup-wizard');
+			router.navigate('/setup-wizard');
 		}
 	});
 });

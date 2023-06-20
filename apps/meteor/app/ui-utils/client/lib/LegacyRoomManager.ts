@@ -14,7 +14,7 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { navigate } from '../../../../client/providers/RouterProvider';
+import { router } from '../../../../client/providers/RouterProvider';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -90,17 +90,16 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
 			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
-			await close(type + FlowRouter.getParam('name'));
+			await close(type + router.getParameters().name);
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
 			if (!subscription) {
 				throw new Error('Subscription not found');
 			}
-			const route = subscription.t === 'c' ? 'channel' : 'group';
-			navigate({
-				pattern: route,
+			router.navigate({
+				pattern: subscription.t === 'c' ? '/channel/:name/:tab?/:context?' : '/group/:name/:tab?/:context?',
 				params: { name: subscription.name },
-				search: FlowRouter.current().queryParams,
+				search: router.getSearchParameters(),
 			});
 		}
 
@@ -109,9 +108,9 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			if (!room) {
 				throw new Error('Room not found');
 			}
-			if (room.name !== FlowRouter.getParam('name')) {
-				await close(room.t + FlowRouter.getParam('name'));
-				roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+			if (room.name !== router.getParameters().name) {
+				await close(room.t + router.getParameters().name);
+				roomCoordinator.openRouteLink(room.t, room, router.getSearchParameters());
 			}
 		}
 	});
