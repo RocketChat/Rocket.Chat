@@ -254,7 +254,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = await createRoom('c', channel, roomOwner, [], false, {
+		const room = await createRoom('c', channel, roomOwner, [], false, false, {
 			customFields: { ldap: true },
 		} as any);
 		if (!room?.rid) {

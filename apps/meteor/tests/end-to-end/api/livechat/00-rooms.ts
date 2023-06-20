@@ -14,9 +14,9 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -1152,7 +1152,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
 			expect(body.messages).to.be.an('array');
-			expect(body.messages.length <= 3).to.be.true;
+			expect(body.messages.length <= 4).to.be.true;
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
 			expect(body.messages[1]).to.have.property('t');
 		});
@@ -1204,7 +1204,7 @@ describe('LIVECHAT - rooms', function () {
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').that.is.an('array');
-			expect(body.messages.length <= 3).to.be.true;
+			expect(body.messages.length <= 4).to.be.true;
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
 			expect(body.messages[1]).to.have.property('t');
 		});
@@ -1600,6 +1600,75 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
+		(IS_EE ? it : it.skip)('should throw an error if a valid custom field fails the check', async () => {
+			await request
+				.post(methodCall('livechat:saveCustomField'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveCustomField',
+						params: [
+							null,
+							{
+								field: 'intfield',
+								label: 'intfield',
+								scope: 'room',
+								visibility: 'visible',
+								regexp: '\\d+',
+								searchable: true,
+								type: 'input',
+								required: false,
+								defaultValue: '0',
+								options: '',
+								public: false,
+							},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const response = await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						livechatData: { intfield: 'asdasd' },
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'Invalid value for intfield field');
+		});
+		(IS_EE ? it : it.skip)('should not throw an error if a valid custom field passes the check', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const response2 = await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						livechatData: { intfield: '1' },
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response2.body).to.have.property('success', true);
+		});
+
 		(IS_EE ? it : it.skip)('should update room priority', async () => {
 			await addPermissions({
 				'save-others-livechat-room-info': ['admin', 'livechat-manager'],
@@ -1678,7 +1747,7 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.priorities).to.have.length.greaterThan(0);
 				});
 			priorities = response.body.priorities;
-			const rnd = faker.datatype.number({ min: 0, max: priorities.length - 1 });
+			const rnd = faker.number.int({ min: 0, max: priorities.length - 1 });
 			chosenPriority = priorities[rnd];
 		});
 		it('should prioritize the room', async () => {

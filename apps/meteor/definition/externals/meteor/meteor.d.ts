@@ -92,11 +92,12 @@ declare module 'meteor/meteor' {
 				reconnect: () => void;
 			};
 			subscribe(
+				id: string,
 				name: string,
 				...args: [
 					...unknown,
 					callbacks?: {
-						onReady?: () => void;
+						onReady?: (...args: any[]) => void;
 						onStop?: (error?: Error) => void;
 						onError?: (error: Error) => void;
 					},

@@ -62,8 +62,8 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		receiveLoginDetectionEmail,
 	} = values as {
 		desktopNotificationRequireInteraction: boolean;
-		desktopNotifications: string | number | readonly string[];
-		pushNotifications: string | number | readonly string[];
+		desktopNotifications: string;
+		pushNotifications: string;
 		emailNotificationMode: string;
 		receiveLoginDetectionEmail: boolean;
 	};

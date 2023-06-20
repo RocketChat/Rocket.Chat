@@ -24,6 +24,7 @@ export const createRoom = async <T extends RoomType>(
 	name: T extends 'd' ? undefined : string,
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
+	excludeSelf?: boolean,
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
@@ -65,7 +66,7 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (owner.username && !members.includes(owner.username)) {
+	if (!excludeSelf && owner.username && !members.includes(owner.username)) {
 		members.push(owner.username);
 	}
 
@@ -143,7 +144,7 @@ export const createRoom = async <T extends RoomType>(
 	} else {
 		for await (const username of [...new Set(members)]) {
 			const member = await Users.findOneByUsername(username, {
-				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
 			});
 			if (!member) {
 				continue;
@@ -151,6 +152,7 @@ export const createRoom = async <T extends RoomType>(
 
 			try {
 				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 			} catch (error) {
 				continue;
 			}

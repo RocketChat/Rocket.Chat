@@ -1,6 +1,6 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Field, Button } from '@rocket.chat/fuselage';
+import { SelectLegacy, Box, Field, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -44,7 +44,14 @@ const AccountIntegrationsPage = (): ReactElement => {
 								control={control}
 								name='accountSelected'
 								render={({ field: { onChange, value, name, ref } }): ReactElement => (
-									<Select ref={ref} name={name} options={options} onChange={onChange} value={value} placeholder={t('Select_an_option')} />
+									<SelectLegacy
+										ref={ref}
+										name={name}
+										options={options}
+										onChange={onChange}
+										value={value}
+										placeholder={t('Select_an_option')}
+									/>
 								)}
 							/>
 							<Button danger onClick={handleSubmit(handleClickRemove)}>

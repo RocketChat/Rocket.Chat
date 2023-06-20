@@ -434,7 +434,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async refreshClients() {
 		const uid = Meteor.userId();
-		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('refreshClients', '7.0.0');
 
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

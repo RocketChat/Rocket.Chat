@@ -4,6 +4,7 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const getCustomSoundId = (soundId: ICustomSound['_id']) => `custom-sound-${soundId}`;
 
@@ -133,11 +134,10 @@ class CustomSoundsClass {
 export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>
-	CachedCollectionManager.onLogin(() => {
-		Meteor.call('listCustomSounds', (_error: Error, result: ICustomSound[]) => {
-			for (const sound of result) {
-				CustomSounds.add(sound);
-			}
-		});
+	CachedCollectionManager.onLogin(async () => {
+		const result = await sdk.call('listCustomSounds');
+		for (const sound of result) {
+			CustomSounds.add(sound);
+		}
 	}),
 );
