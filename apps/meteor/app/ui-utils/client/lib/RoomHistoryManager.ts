@@ -154,7 +154,9 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		room.oldestTs = messages[messages.length - 1].ts;
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
+		}
 
 		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
