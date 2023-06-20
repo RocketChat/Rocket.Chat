@@ -1,20 +1,20 @@
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
+import type { GenericMenuItem } from '../../../../components/GenericMenuContent';
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';
 import MatrixFederationSearch from '../../MatrixFederationSearch';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
-import type { Item } from './useSortModeItems';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-export const useCreateRoomItems = (): Item[] => {
+export const useCreateRoomItems = (): GenericMenuItem[] => {
 	const t = useTranslation();
 	const discussionEnabled = useSetting('Discussion_enabled');
 
@@ -32,41 +32,41 @@ export const useCreateRoomItems = (): Item[] => {
 	const { data } = useIsEnterprise();
 	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
 
-	const createChannelItem: Item = {
+	const createChannelItem: GenericMenuItem = {
 		id: 'channel',
-		name: t('Channel'),
+		content: t('Channel'),
 		icon: 'hashtag',
 		onClick: () => {
 			createChannel();
 		},
 	};
-	const createTeamItem: Item = {
+	const createTeamItem: GenericMenuItem = {
 		id: 'team',
-		name: t('Team'),
+		content: t('Team'),
 		icon: 'team',
 		onClick: () => {
 			createTeam();
 		},
 	};
-	const createDirectMessageItem: Item = {
+	const createDirectMessageItem: GenericMenuItem = {
 		id: 'direct',
-		name: t('Direct_Messages'),
+		content: t('Direct_Messages'),
 		icon: 'balloon',
 		onClick: () => {
 			createDirectMessage();
 		},
 	};
-	const createDiscussionItem: Item = {
+	const createDiscussionItem: GenericMenuItem = {
 		id: 'discussion',
-		name: t('Discussion'),
+		content: t('Discussion'),
 		icon: 'discussion',
 		onClick: () => {
 			createDiscussion();
 		},
 	};
-	const matrixFederationSearchItem: Item = {
+	const matrixFederationSearchItem: GenericMenuItem = {
 		id: 'matrix-federation-search',
-		name: t('Federation_Search_federated_rooms'),
+		content: t('Federation_Search_federated_rooms'),
 		icon: 'magnifier',
 		onClick: () => {
 			searchFederatedRooms();

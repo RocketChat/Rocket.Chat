@@ -2,9 +2,9 @@ import { RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import type { Item } from './useSortModeItems';
+import type { GenericMenuItem } from '../../../../components/GenericMenuContent';
 
-export const useViewModeItems = (): Item[] => {
+export const useViewModeItems = (): GenericMenuItem[] => {
 	const t = useTranslation();
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
@@ -27,27 +27,27 @@ export const useViewModeItems = (): Item[] => {
 	return [
 		{
 			id: 'extended',
-			name: t('Extended'),
+			content: t('Extended'),
 			icon: 'extended-view',
-			input: <RadioButton mi='x16' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />,
+			addon: <RadioButton mi='x16' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />,
 		},
 		{
 			id: 'medium',
-			name: t('Medium'),
+			content: t('Medium'),
 			icon: 'medium-view',
-			input: <RadioButton mi='x16' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />,
+			addon: <RadioButton mi='x16' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />,
 		},
 		{
 			id: 'condensed',
-			name: t('Condensed'),
+			content: t('Condensed'),
 			icon: 'condensed-view',
-			input: <RadioButton mi='x16' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />,
+			addon: <RadioButton mi='x16' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />,
 		},
 		{
 			id: 'avatars',
-			name: t('Avatars'),
+			content: t('Avatars'),
 			icon: 'user-rounded',
-			input: <ToggleSwitch mie='x16' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />,
+			addon: <ToggleSwitch mie='x16' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />,
 		},
 	];
 };
