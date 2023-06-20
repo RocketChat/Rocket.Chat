@@ -9,7 +9,7 @@ import GenericMenuItem from './GenericMenuItem';
 
 export type GenericMenuProps = {
 	sections: {
-		title: string;
+		title?: string;
 		items: GenericMenuItemProps[];
 		permission?: boolean | '' | 0 | null | undefined;
 	}[];
@@ -24,7 +24,7 @@ const GenericMenu = ({ sections, title, icon = 'menu', ...props }: GenericMenuPr
 	return (
 		<MenuV2 icon={icon} title={t.has(title) ? t(title) : title} {...props}>
 			{sections.map(({ title, items }, key) => (
-				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
+				<MenuSection title={title && (t.has(title) ? t(title) : title)} items={items} key={`${title}-${key}`}>
 					{(item) => (
 						<MenuItem key={item.id}>
 							<GenericMenuItem {...item} />
