@@ -59,7 +59,7 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 
 	test('expect to initiate a new livechat conversation', async ({ page }) => {
 		newVisitor = {
-			name: faker.name.firstName(),
+			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 		poLiveChat = new OmnichannelLiveChat(page);

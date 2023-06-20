@@ -276,15 +276,14 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
+		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
-		if (surroundingMessage) {
+		if (messageAlreadyLoaded) {
 			return;
 		}
 
 		const room = this.getRoom(message.rid);
-		room.isLoading.set(true);
-		room.hasMore.set(false);
+		void this.clear(message.rid);
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 
