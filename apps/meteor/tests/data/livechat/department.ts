@@ -88,3 +88,12 @@ export const addOrRemoveAgentFromDepartment = async (departmentId: string, agent
 		throw new Error('Failed to add or remove agent from department. Status code: ' + response.status + '\n' + response.body);
 	}
 }
+
+export const archiveDepartment = async (departmentId: string): Promise<void> => {
+    await request.post(api(`livechat/department/${ departmentId }/archive`)).set(credentials).expect(200);
+}
+
+export const getDepartmentById = async (departmentId: string): Promise<ILivechatDepartment> => {
+    const response = await request.get(api(`livechat/department/${ departmentId }`)).set(credentials).expect(200);
+    return response.body.department;
+};
