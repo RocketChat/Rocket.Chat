@@ -1,10 +1,10 @@
-import { isDiscussion, isPublicRoom, isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
+import { type IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 
 import {
 	GenericTable,
@@ -19,10 +19,9 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import type { OptionProp } from './DropDown/CustomDropDown';
-import { RoomTypeDropDown, RoomTypeDropDownOptionsContext } from './DropDown/RoomTypeDropDown';
-import { RoomVisibilityDropDown, RoomVisibilityDropDownOptionsContext } from './DropDown/RoomVisibilityDropDown';
+import { CustomDropDown, type OptionProp } from './DropDown/CustomDropDown';
 import FilterByTypeAndText from './FilterByTypeAndText';
+import { useFilteredRooms } from './useFilteredRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -66,6 +65,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const query = useDebouncedValue(
 		useMemo(() => {
+			// This section checks if the user has filtered the table, and returns to the first page
 			if (params.text !== prevRoomFilterText.current.text || params.types !== prevRoomFilterText.current.types) {
 				setCurrent(0);
 			}
@@ -214,7 +214,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
-	const roomTypeOptions = [
+	const roomTypeFilterStructure = [
 		{
 			id: 'filter_by_room',
 			text: 'Filter_by_room:',
@@ -247,7 +247,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		},
 	] as OptionProp[];
 
-	const roomVisibilityOptions = [
+	const [roomTypeOptions, setRoomTypeOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
+
+	const roomVisibilityFilterStructure = [
 		{
 			id: 'filter_by_visibility',
 			text: 'Filter by visibility:',
@@ -265,56 +267,35 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		},
 	] as OptionProp[];
 
-	const typeSelectedOptionsContext = useContext(RoomTypeDropDownOptionsContext);
+	const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
 
-	const visibilitySelectedOptionsContext = useContext(RoomVisibilityDropDownOptionsContext);
+	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
-	let filtered: IRoom[] = data === undefined ? [] : data.rooms; // TODO: get real endpoint data
+	console.log(selectedOptions);
+	// console.log(data?.rooms);
 
-	const filterByRoomVisibility: Record<string, () => IRoom[]> = {
-		private: () => filtered.filter(filterRoomsByPrivate),
-		public: () => filtered.filter(filterRoomsByPublic),
-	};
-
-	const filterByRoomType: Record<string, () => IRoom[]> = {
-		channels: () => filtered.filter(filterRoomsByChannels),
-		directMessages: () => filtered.filter(filterRoomsByDirectMessages),
-		discussions: () => filtered.filter(filterRoomsByDiscussions),
-		omnichannel: () => filtered.filter(filterRoomsByOmnichannel),
-		teams: () => filtered.filter(filterRoomsByTeams),
-	};
-
-	// TODO: perhaps, pass the function inside the DropDownOption, and just use OOP
-
-	const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => isPublicRoom(room) === false;
-	const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room) === true;
-
-	const filterRoomsByChannels = ({ t }: Partial<IRoom>): boolean => t === 'c';
-	const filterRoomsByDirectMessages = ({ t }: Partial<IRoom>): boolean => t === 'd';
-	const filterRoomsByDiscussions = (room: Partial<IRoom>): boolean => isDiscussion(room) === true;
-	const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'l'; // LiveChat
-	const filterRoomsByTeams = (room: Partial<IRoom>): boolean => isTeamRoom(room);
-
-	useEffect(() => {
-		typeSelectedOptionsContext.forEach((element) => {
-			filtered = filterByRoomType[element.id]();
-		});
-
-		visibilitySelectedOptionsContext.forEach((element) => {
-			filtered = filterByRoomVisibility[element.id]();
-		});
-	}, [typeSelectedOptionsContext, visibilitySelectedOptionsContext]);
+	const roomsList = useFilteredRooms(selectedOptions, isLoading, data?.rooms);
 
 	return (
 		<>
 			<FilterByTypeAndText setFilter={setRoomFilter} />
 
-			<RoomTypeDropDown dropdownOptions={roomTypeOptions} defaultTitle={'All_rooms' as any} selectedOptionsTitle='Rooms' />
+			<CustomDropDown
+				dropdownOptions={roomTypeOptions}
+				defaultTitle={'All_rooms' as any}
+				selectedOptionsTitle='Rooms'
+				selectedOptions={selectedOptions}
+				setSelectedOptions={setSelectedOptions}
+				customSetSelected={setRoomTypeOptions}
+			/>
 
-			<RoomVisibilityDropDown
+			<CustomDropDown
 				dropdownOptions={roomVisibilityOptions}
 				defaultTitle={'All_visible' as any}
-				selectedOptionsTitle='Visibility'
+				selectedOptionsTitle='Visible'
+				selectedOptions={selectedOptions}
+				setSelectedOptions={setSelectedOptions}
+				customSetSelected={setRoomVisibilityOptions}
 			/>
 
 			{isLoading && (
@@ -329,7 +310,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{isSuccess && filtered.map((room) => renderRow(room))}</GenericTableBody>
+						<GenericTableBody>{isSuccess && roomsList?.map((room) => renderRow(room))}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

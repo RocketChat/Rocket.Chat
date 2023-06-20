@@ -3,8 +3,8 @@ import { Box, Button, CheckBox, Icon, Option, Tile } from '@rocket.chat/fuselage
 import { useOutsideClick, usePosition, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEventHandler } from 'react';
-import React, { Fragment, createContext, forwardRef, useCallback, useRef, useState } from 'react';
+import type { ComponentProps, Dispatch, MouseEventHandler, SetStateAction } from 'react';
+import React, { Fragment, createContext, forwardRef, useCallback, useRef } from 'react';
 
 import { isValidReference } from '../../../marketplace/helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onMouseEventPreventSideEffects';
@@ -40,6 +40,9 @@ export type DropDownProps = {
 	dropdownOptions: OptionProp[];
 	defaultTitle: TranslationKey; // For example: 'All rooms'
 	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
+	selectedOptions: OptionProp[];
+	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
+	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
 };
 
 // TODO: move DropDownAnchor to new file!!
@@ -74,7 +77,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			h='x40'
 			{...props}
 		>
-			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount / 2})` : t(defaultTitle)}
+			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' fontSize='x20' color='hint' />
 			</Box>
@@ -117,7 +120,6 @@ export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; o
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{options.map((option) => (
 				<Fragment key={option.id}>
-					{/* TODO: mudar desing de acordo com o Figma */}
 					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props -> ver PR da Julia!!! */}
 					{option.isGroupTitle ? (
 						<Box pi='x16' pbs='x8' pbe='x4' fontScale='p2b' color='default'>
@@ -142,7 +144,14 @@ export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; o
 
 export const CustomDropDownOptionsContext = createContext<OptionProp[]>([]);
 
-export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsTitle }: DropDownProps) => {
+export const CustomDropDown = ({
+	dropdownOptions,
+	defaultTitle,
+	selectedOptionsTitle,
+	selectedOptions,
+	setSelectedOptions,
+	customSetSelected,
+}: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -158,9 +167,7 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 		[toggleCollapsed],
 	);
 
-	// TODO: create a context that provides the selectedOptions list globally
-
-	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
+	// const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
 	const onSelect = (item: OptionProp): void => {
 		item.checked = !item.checked;
@@ -168,6 +175,16 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 		if (item.checked === true) {
 			// the user has enabled this option -> add it to the selected options
 			setSelectedOptions([...selectedOptions, item]);
+			customSetSelected((prevItems) => {
+				const newItems = prevItems;
+				const toggledItem = newItems.find(({ id }) => id === item.id);
+
+				if (toggledItem) {
+					toggledItem.checked = !toggledItem.checked;
+				}
+
+				return [...prevItems];
+			});
 		} else {
 			// the user has disabled this option -> remove this from the selected options list
 			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
@@ -176,20 +193,18 @@ export const CustomDropDown = ({ dropdownOptions, defaultTitle, selectedOptionsT
 
 	return (
 		<>
-			<CustomDropDownOptionsContext.Provider value={selectedOptions}>
-				<DropDownAnchor
-					ref={reference}
-					onClick={toggleCollapsed as any}
-					defaultTitle={defaultTitle}
-					selectedOptionsTitle={selectedOptionsTitle}
-					selectedOptionsCount={selectedOptions.length}
-				/>
-				{collapsed && (
-					<DropDownListWrapper ref={reference} onClose={onClose}>
-						<DropDownList options={dropdownOptions} onSelected={onSelect} />
-					</DropDownListWrapper>
-				)}
-			</CustomDropDownOptionsContext.Provider>
+			<DropDownAnchor
+				ref={reference}
+				onClick={toggleCollapsed as any}
+				defaultTitle={defaultTitle}
+				selectedOptionsTitle={selectedOptionsTitle}
+				selectedOptionsCount={selectedOptions.length}
+			/>
+			{collapsed && (
+				<DropDownListWrapper ref={reference} onClose={onClose}>
+					<DropDownList options={dropdownOptions} onSelected={onSelect} />
+				</DropDownListWrapper>
+			)}
 		</>
 	);
 };
