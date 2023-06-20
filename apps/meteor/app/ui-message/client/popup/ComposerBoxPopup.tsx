@@ -1,8 +1,8 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, memo, useMemo } from 'react';
+import React, { useEffect, memo, useMemo, useRef } from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
 export type ComposerBoxPopupProps<
@@ -32,6 +32,24 @@ const ComposerBoxPopup = <
 }: ComposerBoxPopupProps<T>): ReactElement | null => {
 	const t = useTranslation();
 	const id = useUniqueId();
+	const composerBoxPopupRef = useRef<HTMLElement>(null);
+	const popupSizes = useContentBoxSize(composerBoxPopupRef);
+
+	const variant = popupSizes && popupSizes.inlineSize < 480 ? 'small' : 'large';
+
+	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean }>(item: T) => {
+		if (variant !== 'small') {
+			return undefined;
+		}
+
+		if (item.outside) {
+			return t('Not_in_channel');
+		}
+
+		if (item.suggestion) {
+			return t('Suggestion_from_recent_messages');
+		}
+	};
 
 	const itemsFlat = useMemo(
 		() =>
@@ -59,7 +77,7 @@ const ComposerBoxPopup = <
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' padding={0} role='menu' mbe='x8' overflow='hidden' aria-labelledby={id}>
+			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe='x8' overflow='hidden' aria-labelledby={id}>
 				{title && (
 					<Box bg='tint' pi='x16' pb='x8' id={id}>
 						{title}
@@ -71,6 +89,7 @@ const ComposerBoxPopup = <
 					{itemsFlat.map((item, index) => {
 						return (
 							<Option
+								title={getOptionTitle(item)}
 								onClick={() => select(item)}
 								selected={item === focused}
 								key={index}
@@ -78,7 +97,7 @@ const ComposerBoxPopup = <
 								tabIndex={item === focused ? 0 : -1}
 								aria-selected={item === focused}
 							>
-								{renderItem({ item })}
+								{renderItem({ item: { ...item, variant } })}
 							</Option>
 						);
 					})}
