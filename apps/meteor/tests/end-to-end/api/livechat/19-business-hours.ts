@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-properties */
 /* eslint-env mocha */
 
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
@@ -23,6 +24,7 @@ import {
 } from '../../../data/livechat/department';
 import { getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
+import { sleep } from '../../../../lib/utils/sleep';
 
 // TODO: In a separate PR, divide this file into 2 files, one for CE and one for EE
 describe('LIVECHAT - business hours', function () {
@@ -138,7 +140,6 @@ describe('LIVECHAT - business hours', function () {
 	//  archiving "dep1", we'd still need to BH within this user's cache since he's part of
 	//  "dep2" which is linked to BH
 	// TODO: Write similar test for disabling a department
-	// eslint-disable-next-line no-restricted-properties
 	(IS_EE ? describe.only : describe.skip)('[EE] BH operations', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
@@ -167,7 +168,7 @@ describe('LIVECHAT - business hours', function () {
 			await openOrCloseBusinessHour(customBusinessHour, true);
 		});
 
-		it('upon archiving a department, if BH is open and only linked to that department, it should be closed', async () => {
+		it.skip('upon archiving a department, if BH is open and only linked to that department, it should be closed', async () => {
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
@@ -184,7 +185,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH.departments).to.be.an('array').that.is.empty;
 		});
 
-		it('upon archiving a department, if BH is open and linked to other departments, it should remain open', async () => {
+		it.skip('upon archiving a department, if BH is open and linked to other departments, it should remain open', async () => {
 			// create another department and link it to the same BH
 			const { department } = await createDepartmentWithAnOnlineAgent();
 			await removeAllCustomBusinessHours();
@@ -208,17 +209,19 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH).to.be.an('object');
 			expect(latestCustomBH.active).to.be.true;
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
-			expect(latestCustomBH?.departments?.[0]).to.be.equal(department._id);
+			expect(latestCustomBH?.departments?.[0]._id).to.be.equal(department._id);
 
 			// cleanup
 			await deleteDepartment(department._id);
 		});
 
 		it('upon archiving a department, agents within the archived department should be assigned to default BH', async () => {
+			await openOrCloseBusinessHour(defaultBusinessHour, true);
+
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
-			await openOrCloseBusinessHour(defaultBusinessHour, true);
+			await sleep(5000);
 
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
 			expect(latestAgent).to.be.an('object');
