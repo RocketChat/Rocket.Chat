@@ -18,10 +18,19 @@ export interface ILivechatVisitorConnectionData {
 
 export interface IVisitorEmail {
 	address: string;
+	verified?: boolean;
 }
 
 interface ILivechatData {
 	[k: string]: unknown;
+}
+
+export interface IVisitorEmailCode {
+	code: string;
+	expire: Date;
+}
+export interface IVisitorServices {
+	emailCode: IVisitorEmailCode[];
 }
 
 export interface ILivechatVisitor extends IRocketChatRecord {
@@ -29,6 +38,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	ts: Date;
 	token: string;
 	department?: string;
+	services?: IVisitorServices;
 	name?: string;
 	phone?: IVisitorPhone[] | null;
 	lastChat?: IVisitorLastChat;

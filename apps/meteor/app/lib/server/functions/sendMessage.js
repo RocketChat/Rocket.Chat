@@ -11,7 +11,8 @@ import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { setVisitorEmail } from './setVisitorsEmail';
-import { verifyVisitor } from './verifyVisitor';
+import { initiateVerificationProcess } from './initiateVerificationProcess';
+import { verifyVisitorCode } from './sendVerificationCodeToVisitor';
 
 /**
  * IMPORTANT
@@ -277,15 +278,26 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
-		if (room.t === 'l' && room.verficationStatus === 'isListeningToEmail') {
-			await setVisitorEmail(room.v._id, message.msg);
+		// TODO add the below function in a callback
+		if (room.t === 'l' && room.verficationStatus === 'isListeningToEmail' && user._id !== 'rocket.cat') {
+			const result = await setVisitorEmail(room, message.msg);
+			if (result.success) {
+				await LivechatRooms.saveRoomById({
+					_id: room._id,
+					verficationStatus: 'off',
+					topic: '',
+					tags: [],
+				});
+				await initiateVerificationProcess(room._id);
+			}
+		} else if (room.t === 'l' && room.verficationStatus === 'isListeningToOTP') {
+			await verifyVisitorCode(room.v._id, message.msg);
 			await LivechatRooms.saveRoomById({
 				_id: room._id,
 				verficationStatus: 'off',
 				topic: '',
 				tags: [],
 			});
-			await verifyVisitor(room._id);
 		}
 		return message;
 	}

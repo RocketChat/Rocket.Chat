@@ -35,6 +35,62 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		];
 	}
 
+	addEmailCodeByVisitorId(visitorId: string, code: string, expire: Date): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: visitorId },
+			{
+				$push: {
+					'services.emailCode': {
+						$each: [
+							{
+								code,
+								expire,
+							},
+						],
+						$slice: -5,
+					},
+				},
+			},
+		);
+	}
+
+	removeExpiredEmailCodesOfVisitorId(visitorId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: visitorId },
+			{
+				$pull: {
+					'services.emailCode': {
+						expire: { $lt: new Date() },
+					},
+				},
+			},
+		);
+	}
+
+	removeEmailCodeByVisitorIdAndCode(visitorId: string, code: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: visitorId },
+			{
+				$pull: {
+					'services.emailCode': {
+						code,
+					},
+				},
+			},
+		);
+	}
+
+	updateVerificationStatus(visitorId: string, value: boolean): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: visitorId },
+			{
+				$set: {
+					'visitorEmails.0.verified': value,
+				},
+			},
+		);
+	}
+
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null> {
 		const query = {
 			'phone.phoneNumber': phone,

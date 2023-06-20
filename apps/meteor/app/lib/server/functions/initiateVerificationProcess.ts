@@ -5,25 +5,26 @@ import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
 import { sendMessage } from './sendMessage';
 import { i18n } from '../../../../server/lib/i18n';
+import { sendVerificationCodeToVisitor } from './sendVerificationCodeToVisitor';
 
-export const verifyVisitor = async function (rid: IRoom['_id']) {
+export const initiateVerificationProcess = async function (rid: IRoom['_id']) {
 	check(rid, String);
 	const user = await Users.findOneById('rocket.cat');
 	const room = await LivechatRooms.findOneById(rid);
 	const visitorRoomId = room?.v._id;
 	if (!visitorRoomId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'verifyVisitor' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'initiateVerificationProcess' });
 	}
 	const visitor = await LivechatVisitors.findOneById(visitorRoomId, {});
 	if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
-		console.log(visitor.visitorEmails[0].address);
 		const message = {
 			msg: i18n.t(
-				'Verification prcess started \n Kindly enter te OTP sent to your email \n Dont add any other word except your 6-digit OTP like `My OTP is 345678` Just reply with `345678`',
+				'Welcome to the verification process. \n Please enter the OTP (One-Time Password) sent to your email. \n Kindly avoid adding any extra words. Simply reply with the 6-digit OTP, for example, `345678`.',
 			),
 			groupable: false,
 		};
 		await sendMessage(user, message, room);
+		await sendVerificationCodeToVisitor(visitorRoomId);
 		await LivechatRooms.saveRoomById({
 			_id: room._id,
 			verficationStatus: 'isListeningToOTP',
@@ -33,7 +34,7 @@ export const verifyVisitor = async function (rid: IRoom['_id']) {
 	} else {
 		const message = {
 			msg: i18n.t(
-				'Verification prcess started \n Kindly provide your email \n Dont add any other word except your email like `My email is xyz@gmail.com` Just reply with xyz@gmail.com',
+				'Welcome to the verification process. \n To proceed, please provide your email. Please refrain from adding any additional words except for your email. For example, reply with `xyz@gmail.com` without any other text.',
 			),
 			groupable: false,
 		};
