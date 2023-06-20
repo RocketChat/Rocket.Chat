@@ -5,7 +5,14 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../components/Contextualbar';
 import NotificationPreferencesForm from './NotificationPreferencesForm';
 
 type NotificationPreferencesProps = {
@@ -30,22 +37,22 @@ const NotificationPreferences = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='bell' />
-				<VerticalBar.Text>{t('Notifications_Preferences')}</VerticalBar.Text>
-				{handleClose && <VerticalBar.Close onClick={handleClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='bell' />
+				<ContextualbarTitle>{t('Notifications_Preferences')}</ContextualbarTitle>
+				{handleClose && <ContextualbarClose onClick={handleClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<NotificationPreferencesForm notificationOptions={notificationOptions} handlePlaySound={handlePlaySound} />
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
 					<Button primary disabled={!isDirty} onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

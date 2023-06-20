@@ -352,6 +352,14 @@
 	--tooltip-text-color: var(--color-white);
 	--tooltip-text-size: 0.75rem;
 	--tooltip-radius: var(--border-radius);
+
+	/*
+	* Loading
+	*/
+	--page-loading-background-light: var(--rcx-color-surface-tint, #f7f8fa);
+	--page-loading-background-dark: var(--rcx-color-surface-tint, #1f2329);
+	--loading-bounce-color-light: var(--rcx-color-font-default, #2f343d);
+	--loading-bounce-color-dark: var(--rcx-color-font-default, #e4e7ea);
 }
 
 .rcx-sidebar--main {

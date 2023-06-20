@@ -5,6 +5,7 @@ import React, { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
+import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
@@ -36,11 +37,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
 			{messageSearchQuery.data && (
 				<>
-					{messageSearchQuery.data.length === 0 && (
-						<Box p={24} color='annotation' textAlign='center' width='full'>
-							{t('No_results_found')}
-						</Box>
-					)}
+					{messageSearchQuery.data.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 					{messageSearchQuery.data.length > 0 && (
 						<MessageListErrorBoundary>
 							<MessageListProvider>

@@ -1,9 +1,9 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import { Header } from '@rocket.chat/ui-client';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import VerticalBarSkeleton from '../../components/VerticalBar/VerticalBarSkeleton';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import MessageListSkeleton from '../../components/message/list/MessageListSkeleton';
 import ComposerSkeleton from './Room/ComposerSkeleton';
 import RoomLayout from './layout/RoomLayout';
@@ -12,17 +12,17 @@ const RoomSkeleton = (): ReactElement => (
 	<RoomLayout
 		header={
 			<Header>
-				<Header.Avatar>
+				<HeaderAvatar>
 					<Skeleton variant='rect' width={36} height={36} />
-				</Header.Avatar>
-				<Header.Content>
-					<Header.Content.Row>
+				</HeaderAvatar>
+				<HeaderContent>
+					<HeaderContentRow>
 						<Skeleton width='10%' />
-					</Header.Content.Row>
-					<Header.Content.Row>
+					</HeaderContentRow>
+					<HeaderContentRow>
 						<Skeleton width='30%' />
-					</Header.Content.Row>
-				</Header.Content>
+					</HeaderContentRow>
+				</HeaderContent>
 			</Header>
 		}
 		body={
@@ -31,7 +31,7 @@ const RoomSkeleton = (): ReactElement => (
 				<ComposerSkeleton />
 			</>
 		}
-		aside={<VerticalBarSkeleton />}
+		aside={<ContextualbarSkeleton />}
 	/>
 );
 export default RoomSkeleton;

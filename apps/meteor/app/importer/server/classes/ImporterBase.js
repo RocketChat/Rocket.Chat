@@ -13,7 +13,7 @@ import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
-import { t } from '../../../utils/server';
+import { t } from '../../../utils/lib/i18n';
 import { Selection, SelectionChannel, SelectionUser } from '..';
 
 /**
@@ -66,6 +66,7 @@ export class Base {
 			this.logger.debug('Found existing import operation');
 			this.importRecord = this.importRecordParam;
 			this.progress.step = this.importRecord.status;
+			this.reloadCount();
 		} else {
 			this.logger.debug('Starting new import operation');
 			const importId = (

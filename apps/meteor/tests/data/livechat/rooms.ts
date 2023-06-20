@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type {
 	IInquiry,
 	ILivechatAgent,
@@ -137,13 +137,13 @@ export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> 
 			});
 	});
 
-export const createManager = (): Promise<ILivechatAgent> =>
+export const createManager = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/manager'))
 			.set(credentials)
 			.send({
-				username: adminUsername,
+				username: overrideUsername || adminUsername,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
@@ -319,3 +319,11 @@ export const startANewLivechatRoomAndTakeIt = async ({
 
 	return { room, visitor };
 };
+
+export const placeRoomOnHold = async (roomId: string): Promise<void> => {
+    await request
+        .post(api('livechat/room.onHold'))
+        .set(credentials)
+        .send({ roomId })
+        .expect(200);
+}
