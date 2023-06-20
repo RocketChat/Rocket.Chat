@@ -1,5 +1,5 @@
-import type { Keys } from '@rocket.chat/icons';
 import { Icon } from '@rocket.chat/fuselage';
+import type { Keys } from '@rocket.chat/icons';
 import type { HTMLAttributes, ReactElement } from 'react';
 
 const MessageComposerIcon = ({ name, ...props }: { name: Keys } & Omit<HTMLAttributes<HTMLElement>, 'is'>): ReactElement => (

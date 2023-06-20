@@ -83,6 +83,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				},
 				sparse: true,
 			},
+			{
+				key: {
+					archived: 1,
+				},
+				sparse: true,
+			},
 		];
 	}
 
@@ -347,6 +353,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				$in: unitIds,
 			},
 		};
+
+		return this.find(query, options);
+	}
+
+	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+		const query = { archived: { $ne: false } };
 
 		return this.find(query, options);
 	}
