@@ -1,7 +1,7 @@
 import { Box, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
@@ -58,10 +58,10 @@ const RealTimeMonitoringPage = () => {
 
 	const reloadOptions = useMemo(
 		() => [
-			[5, <>5 {t('seconds')}</>],
-			[10, <>10 {t('seconds')}</>],
-			[30, <>30 {t('seconds')}</>],
-			[60, <>1 {t('minute')}</>],
+			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
+			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
+			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
+			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
 		],
 		[t],
 	);
