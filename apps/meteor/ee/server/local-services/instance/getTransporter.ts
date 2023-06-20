@@ -1,4 +1,4 @@
-export function getTransporter({ transporter, port }: { transporter?: string; port?: string } = {}) {
+export function getTransporter({ transporter, port, extra }: { transporter?: string; port?: string; extra?: string } = {}) {
 	if (transporter) {
 		if (!transporter.match(/^(?:monolith\+)/)) {
 			throw new Error('invalid transporter');
@@ -12,5 +12,6 @@ export function getTransporter({ transporter, port }: { transporter?: string; po
 		port: port ? port.trim() : 0,
 		udpDiscovery: false,
 		useHostname: false,
+		...(extra ? JSON.parse(extra) : {}),
 	};
 }

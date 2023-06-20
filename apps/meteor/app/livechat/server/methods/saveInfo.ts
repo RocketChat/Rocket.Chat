@@ -34,9 +34,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveInfo'(guestData, roomData) {
-		methodDeprecationLogger.warn(
-			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',
-		);
+		methodDeprecationLogger.method('livechat:saveInfo', '7.0.0', 'Use "livechat/room.saveInfo" endpoint instead.');
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
