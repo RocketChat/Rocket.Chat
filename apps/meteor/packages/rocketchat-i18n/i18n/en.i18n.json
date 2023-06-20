@@ -2864,6 +2864,7 @@
   "LDAP_Name_Field": "Name Field",
   "LDAP_Email_Field": "Email Field",
   "LDAP_Update_Data_On_Login": "Update User Data on Login",
+  "LDAP_Update_Data_On_OAuth_Login": "Update User Data on Login with OAuth services",
   "LDAP_Advanced_Sync": "Advanced Sync",
   "LDAP_Authentication": "Enable",
   "LDAP_Authentication_Password": "Password",
