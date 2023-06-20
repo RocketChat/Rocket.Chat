@@ -91,7 +91,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 
 	return (
 		<MessageToolbox>
-			{recentList.length &&
+			{recentList.length > 0 &&
 				recentList.slice(0, 3).map(({ emoji, image, emojiHandle }) => {
 					return (
 						<EmojiElement
