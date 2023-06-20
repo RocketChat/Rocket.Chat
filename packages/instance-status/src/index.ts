@@ -83,6 +83,8 @@ async function registerInstance(name: string, extraInformation: Record<string, u
 
 		events.emit('registerInstance', result, instance);
 
+		process.on('SIGINT', onExit);
+
 		process.on('exit', onExit);
 
 		return result;
@@ -92,12 +94,14 @@ async function registerInstance(name: string, extraInformation: Record<string, u
 }
 
 async function unregisterInstance() {
+	console.log('unregisterInstance');
 	try {
 		const result = await InstanceStatusModel.deleteOne({ _id: ID });
 		stop();
 
 		events.emit('unregisterInstance', ID);
 
+		process.removeListener('SIGINT', onExit);
 		process.removeListener('exit', onExit);
 
 		return result;
@@ -144,6 +148,7 @@ async function ping() {
 }
 
 async function onExit() {
+	console.log('onExit');
 	await unregisterInstance();
 }
 
