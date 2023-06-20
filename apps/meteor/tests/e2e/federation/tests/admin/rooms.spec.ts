@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationAdmin } from '../../page-objects/admin';
@@ -12,7 +12,7 @@ import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 test.describe.parallel('Federation - Admin Panel - Rooms', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
-	const channelName = faker.datatype.uuid();
+	const channelName = faker.string.uuid();
 	let poFederationAdmin: FederationAdmin;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {

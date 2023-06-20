@@ -21,7 +21,7 @@ test.describe.serial('omnichannel-departments', () => {
 	let departmentName: string;
 
 	test.beforeAll(async ({ api }) => {
-		departmentName = faker.datatype.uuid();
+		departmentName = faker.string.uuid();
 		// turn on department removal
 		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
 		await expect(statusCode).toBe(200);
@@ -146,7 +146,7 @@ test.describe.serial('omnichannel-departments', () => {
 	});
 
 	test('Tags', async () => {
-		const tagsDepartmentName = faker.datatype.uuid();
+		const tagsDepartmentName = faker.string.uuid();
 
 		await test.step('expect create new department', async () => {
 			await poOmnichannelDepartments.btnNew.click();
