@@ -78,7 +78,6 @@ export type RouterContextValue = {
 		parameters: RouteParameters | undefined,
 		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 	) => void;
-	queryRouteParameter: (name: string) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 	queryCurrentRoute: () => [
 		subscribe: (onStoreChange: () => void) => () => void,
 		getSnapshot: () => [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?],
@@ -110,7 +109,6 @@ export const RouterContext = createContext<RouterContextValue>({
 	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
-	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
 	queryCurrentRoute: () => [
 		() => (): void => undefined,
 		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],

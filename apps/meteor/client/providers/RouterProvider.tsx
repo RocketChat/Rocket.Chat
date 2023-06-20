@@ -177,8 +177,6 @@ const replaceRoute = (
 	);
 };
 
-const queryRouteParameter = (name: string) => createSubscription(() => FlowRouter.getParam(name));
-
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
 		FlowRouter.watchPathChange();
@@ -199,7 +197,6 @@ export const router: RouterContextValue = {
 	queryRoutePath,
 	pushRoute,
 	replaceRoute,
-	queryRouteParameter,
 	queryCurrentRoute,
 };
 
