@@ -140,7 +140,6 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-
 		const result = await callWithErrorHandling('loadHistory', rid, room.oldestTs, limit, ls ? String(ls) : undefined, false);
 
 		if (!result) {
