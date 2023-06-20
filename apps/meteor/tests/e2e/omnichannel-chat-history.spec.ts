@@ -14,7 +14,7 @@ test.describe('Omnichannel chat histr', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
-			name: faker.name.firstName(),
+			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 

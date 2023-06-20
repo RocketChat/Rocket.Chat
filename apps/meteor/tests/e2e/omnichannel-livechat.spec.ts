@@ -7,7 +7,7 @@ import { HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
 import { test, expect } from './utils/test';
 
 const newUser = {
-	name: `${faker.name.firstName()} ${faker.datatype.uuid()}}`,
+	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
 	email: faker.internet.email(),
 };
 test.describe('Livechat', () => {

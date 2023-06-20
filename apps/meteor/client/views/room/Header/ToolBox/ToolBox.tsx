@@ -88,14 +88,13 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <HeaderToolboxAction {...props} />;
+				return <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, 'data-tooltip': tooltip }, index) => {
@@ -107,14 +106,13 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <HeaderToolboxAction {...props} />;
+				return <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{(filteredActions.length > 6 || isMobile) && (
 				<Menu

@@ -1,9 +1,9 @@
 import { OptionDivider } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React, { Fragment } from 'react';
 
 type AdministrationListProps = {
-	optionsList: (false | JSX.Element)[];
+	optionsList: ReactNode[];
 };
 
 const AdministrationList = ({ optionsList }: AdministrationListProps): ReactElement => {
