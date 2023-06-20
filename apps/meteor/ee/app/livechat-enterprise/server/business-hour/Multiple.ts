@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
@@ -11,6 +11,8 @@ import {
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
+import { settings } from '../../../../../app/settings/server';
+import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -137,23 +139,52 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			bhLogger.debug(`onDepartmentDisabled: department ${department._id} has no business hour`);
 			return;
 		}
+
 		// Get business hour
-		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
+		let businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
 			bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
 			return;
 		}
-		// Check if i'm the only department on this business hour, excluding myself
-		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourIdExcludingDepartmentId(businessHour._id, department._id));
 
-		// If i'm the only one, close the business hour
+		// Remove me from the BH
+		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
+
+		// cleanup user's cache for default business hour and this business hour
+		const defaultBH = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		if (!defaultBH) {
+			throw new Error('Default business hour not found');
+		}
+		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds([businessHour._id, defaultBH._id]);
+
+		// If i'm the only one, disable the business hour
+		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourIdExcludingDepartmentId(businessHour._id, department._id));
 		if (imTheOnlyOne) {
-			bhLogger.debug(`onDepartmentDisabled: department ${department._id} is the only one on business hour ${businessHour._id}, closing it`);
-			await closeBusinessHour(businessHour);
+			bhLogger.warn(
+				`onDepartmentDisabled: department ${department._id} is the only one on business hour ${businessHour._id}, disabling it`,
+			);
+			await this.BusinessHourRepository.disableBusinessHour(businessHour._id);
+
+			businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
+			if (!businessHour) {
+				throw new Error(`Business hour ${department.businessHourId} not found`);
+			}
 		}
 
-		// Then remove me from the BH
-		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
+		// start default business hour if needed
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		// start business hour if needed
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
+		for await (const bh of businessHourToOpen) {
+			await openBusinessHour(bh, false);
+		}
+
+		await Users.updateLivechatStatusBasedOnBusinessHours();
+
+		await businessHourManager.restartCronJobsIfNecessary();
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {

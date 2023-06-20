@@ -127,6 +127,14 @@ export class BusinessHourManager {
 		return Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
 	}
 
+	async restartCronJobsIfNecessary(): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.createCronJobsForWorkHours();
+	}
+
 	private setupCallbacks(): void {
 		callbacks.add(
 			'livechat.removeAgentDepartment',

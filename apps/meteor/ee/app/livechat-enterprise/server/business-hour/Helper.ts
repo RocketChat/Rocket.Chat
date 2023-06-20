@@ -37,10 +37,12 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 	).map((dept: any) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
+export const openBusinessHour = async (businessHour: Record<string, any>, updateLivechatStatus = true): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+	if (updateLivechatStatus) {
+		await Users.updateLivechatStatusBasedOnBusinessHours();
+	}
 };
 
 export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
