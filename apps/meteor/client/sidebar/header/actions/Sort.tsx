@@ -1,9 +1,8 @@
-import { MenuV2, MenuSection, MenuItem } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { VFC, HTMLAttributes } from 'react';
 import React from 'react';
 
-import GenericMenuContent from '../../../components/GenericMenuItem';
+import GenericMenu from '../../../components/GenericMenu';
 import { useSortMenu } from './hooks/useSortMenu';
 
 const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
@@ -11,19 +10,7 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 
 	const sections = useSortMenu();
 
-	return (
-		<MenuV2 icon='sort' selectionMode='multiple' title={t('Display')}>
-			{sections.map(({ title, items }, key) => (
-				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
-					{(item) => (
-						<MenuItem key={item.id}>
-							<GenericMenuContent {...item} />
-						</MenuItem>
-					)}
-				</MenuSection>
-			))}
-		</MenuV2>
-	);
+	return <GenericMenu icon='sort' sections={sections} title={t('Create_new')} selectionMode='multiple' />;
 };
 
 export default Sort;
