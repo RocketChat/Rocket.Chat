@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItem } from '../../../../components/GenericMenuContent';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 import MatrixFederationSearch from '../../MatrixFederationSearch';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
 
@@ -8,12 +8,12 @@ export const useMatrixFederationItems = ({
 	isMatrixEnabled,
 }: {
 	isMatrixEnabled: string | number | boolean | null | undefined;
-}): GenericMenuItem[] => {
+}): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const searchFederatedRooms = useCreateRoomModal(MatrixFederationSearch);
 
-	const matrixFederationSearchItem: GenericMenuItem = {
+	const matrixFederationSearchItem: GenericMenuItemProps = {
 		id: 'matrix-federation-search',
 		content: t('Federation_Search_federated_rooms'),
 		icon: 'magnifier',

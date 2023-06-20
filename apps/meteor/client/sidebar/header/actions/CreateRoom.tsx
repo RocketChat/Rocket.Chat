@@ -3,8 +3,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, VFC } from 'react';
 import React from 'react';
 
-import type { GenericMenuItem } from '../../../components/GenericMenuContent';
-import GenericMenuContent from '../../../components/GenericMenuContent';
+import type { GenericMenuItemProps } from '../../../components/GenericMenuItem';
+import GenericMenuContent from '../../../components/GenericMenuItem';
 import { useHandleMenuAction } from '../../../hooks/useHandleMenuAction';
 import { useCreateRoom } from './hooks/useCreateRoomMenu';
 
@@ -12,7 +12,7 @@ const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 	const t = useTranslation();
 
 	const sections = useCreateRoom();
-	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItem[]);
+	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]);
 
 	const handleAction = useHandleMenuAction(items);
 

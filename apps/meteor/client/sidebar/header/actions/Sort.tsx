@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { VFC, HTMLAttributes } from 'react';
 import React from 'react';
 
-import GenericMenuContent from '../../../components/GenericMenuContent';
+import GenericMenuContent from '../../../components/GenericMenuItem';
 import { useSortMenu } from './hooks/useSortMenu';
 
 const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {

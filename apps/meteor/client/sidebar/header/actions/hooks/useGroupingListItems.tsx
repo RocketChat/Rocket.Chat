@@ -2,9 +2,9 @@ import { CheckBox } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import type { GenericMenuItem } from '../../../../components/GenericMenuContent';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 
-export const useGroupingListItems = (): GenericMenuItem[] => {
+export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType');

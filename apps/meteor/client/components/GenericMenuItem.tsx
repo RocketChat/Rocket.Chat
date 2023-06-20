@@ -2,7 +2,7 @@ import { MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fusel
 import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
-export type GenericMenuItem = {
+export type GenericMenuItemProps = {
 	id: string;
 	icon?: ComponentProps<typeof MenuItemIcon>['name'];
 	content?: ReactNode;
@@ -10,7 +10,7 @@ export type GenericMenuItem = {
 	onClick?: () => void;
 };
 
-const GenericMenuContent = ({ icon, content, addon }: GenericMenuItem) => (
+const GenericMenuItem = ({ icon, content, addon }: GenericMenuItemProps) => (
 	<>
 		{icon && <MenuItemIcon name={icon} />}
 		{content && <MenuItemContent>{content}</MenuItemContent>}
@@ -18,4 +18,4 @@ const GenericMenuContent = ({ icon, content, addon }: GenericMenuItem) => (
 	</>
 );
 
-export default GenericMenuContent;
+export default GenericMenuItem;

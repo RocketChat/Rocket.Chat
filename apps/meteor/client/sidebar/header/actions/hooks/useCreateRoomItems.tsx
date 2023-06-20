@@ -1,7 +1,7 @@
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import type { GenericMenuItem } from '../../../../components/GenericMenuContent';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
@@ -14,7 +14,7 @@ const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-export const useCreateRoomItems = (): GenericMenuItem[] => {
+export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const discussionEnabled = useSetting('Discussion_enabled');
 
@@ -32,7 +32,7 @@ export const useCreateRoomItems = (): GenericMenuItem[] => {
 	const { data } = useIsEnterprise();
 	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
 
-	const createChannelItem: GenericMenuItem = {
+	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
 		content: t('Channel'),
 		icon: 'hashtag',
@@ -40,7 +40,7 @@ export const useCreateRoomItems = (): GenericMenuItem[] => {
 			createChannel();
 		},
 	};
-	const createTeamItem: GenericMenuItem = {
+	const createTeamItem: GenericMenuItemProps = {
 		id: 'team',
 		content: t('Team'),
 		icon: 'team',
@@ -48,7 +48,7 @@ export const useCreateRoomItems = (): GenericMenuItem[] => {
 			createTeam();
 		},
 	};
-	const createDirectMessageItem: GenericMenuItem = {
+	const createDirectMessageItem: GenericMenuItemProps = {
 		id: 'direct',
 		content: t('Direct_Messages'),
 		icon: 'balloon',
@@ -56,7 +56,7 @@ export const useCreateRoomItems = (): GenericMenuItem[] => {
 			createDirectMessage();
 		},
 	};
-	const createDiscussionItem: GenericMenuItem = {
+	const createDiscussionItem: GenericMenuItemProps = {
 		id: 'discussion',
 		content: t('Discussion'),
 		icon: 'discussion',
@@ -64,7 +64,7 @@ export const useCreateRoomItems = (): GenericMenuItem[] => {
 			createDiscussion();
 		},
 	};
-	const matrixFederationSearchItem: GenericMenuItem = {
+	const matrixFederationSearchItem: GenericMenuItemProps = {
 		id: 'matrix-federation-search',
 		content: t('Federation_Search_federated_rooms'),
 		icon: 'magnifier',
