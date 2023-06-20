@@ -147,7 +147,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return;
 		}
 
-		// Remove me from the BH
+		// Unlink business hour from department
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
 
 		// cleanup user's cache for default business hour and this business hour
@@ -171,12 +171,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			}
 		}
 
-		// start default business hour if needed
+		// start default business hour and this BH if needed
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
-
-		// start business hour if needed
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
 		for await (const bh of businessHourToOpen) {
 			await openBusinessHour(bh, false);
