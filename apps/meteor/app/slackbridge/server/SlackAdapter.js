@@ -357,14 +357,15 @@ export default class SlackAdapter {
 
 			if (rocketMsg && rocketUser) {
 				const rocketReaction = `:${slackReactionMsg.reaction}:`;
+				const theReaction = (rocketMsg.reactions || {})[rocketReaction];
 
 				// If the Rocket user has already been removed, then this is an echo back from slack
-				if (rocketMsg.reactions) {
-					const theReaction = rocketMsg.reactions[rocketReaction];
-					if (theReaction) {
-						if (theReaction.usernames.indexOf(rocketUser.username) === -1) {
-							return; // Reaction already removed
-						}
+				if (rocketMsg.reactions && theReaction) {
+					if (rocketUser.roles.includes('bot')) {
+						return;
+					}
+					if (theReaction.usernames.indexOf(rocketUser.username) === -1) {
+						return; // Reaction already removed
 					}
 				} else {
 					// Reaction already removed
