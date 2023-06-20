@@ -57,7 +57,7 @@ export const createEmojiList = (
 			if (!image) {
 				continue;
 			}
-			emojiList.push({ emoji: current, image });
+			emojiList.push({ emoji: current, image, emojiHandle: emojiToRender });
 		}
 	});
 
