@@ -29,15 +29,14 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					index,
 					primary: false,
 					action,
-					key: id,
 					room,
 				};
 
 				if (options) {
-					return <ToolBoxActionOptions options={options} {...props} />;
+					return <ToolBoxActionOptions options={options} {...props} key={id} />;
 				}
 
-				return <Header.ToolBox.Action {...props} />;
+				return <Header.ToolBox.Action {...props} key={id} />;
 			})}
 			{visibleActions.length > 0 && <Header.ToolBox.Divider />}
 		</Header.ToolBox>
