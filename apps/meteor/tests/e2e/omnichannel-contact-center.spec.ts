@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { createToken } from '../../client/lib/utils/createToken';
 import { Users } from './fixtures/userStates';
@@ -8,9 +8,9 @@ import { test, expect } from './utils/test';
 
 const createContact = (generateToken = false) => ({
 	id: null,
-	name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+	name: `${faker.person.firstName()} ${faker.name.lastName()}`,
 	email: faker.internet.email().toLowerCase(),
-	phone: faker.phone.phoneNumber('+############'),
+	phone: faker.phone.number('+############'),
 	token: generateToken ? createToken() : null,
 	customFields: {},
 });
