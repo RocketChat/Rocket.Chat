@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
 export type GenericMenuItemProps = {
-	id: string;
+	id?: string;
 	icon?: ComponentProps<typeof MenuItemIcon>['name'];
 	content?: ReactNode;
 	addon?: ReactNode;
