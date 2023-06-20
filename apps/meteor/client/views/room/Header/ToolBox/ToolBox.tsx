@@ -13,7 +13,7 @@ import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/Toolbox
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />
+	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
 type ToolBoxProps = {
@@ -88,14 +88,13 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <Header.ToolBox.Action {...props} />;
+				return <Header.ToolBox.Action {...props} key={id} />;
 			})}
 			{featuredActions.length > 0 && <Header.ToolBox.Divider />}
 			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, 'data-tooltip': tooltip }, index) => {
@@ -107,14 +106,13 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <Header.ToolBox.Action {...props} />;
+				return <Header.ToolBox.Action {...props} key={id} />;
 			})}
 			{(filteredActions.length > 6 || isMobile) && (
 				<Menu

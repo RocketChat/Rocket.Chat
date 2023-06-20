@@ -17,6 +17,7 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -108,10 +109,7 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (
-		agent: { agentId: string; username: string },
-		visitor?: ILivechatVisitor,
-	) => { agentId: string; username: string };
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
@@ -127,8 +125,8 @@ type ChainedCallbackSignatures = {
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
-	'livechat:afterOnHold': (room: IRoom) => IRoom;
-	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
+	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		room: IRoom;
 		guest: ILivechatVisitor;
@@ -175,6 +173,7 @@ type ChainedCallbackSignatures = {
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
+	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };

@@ -44,6 +44,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		try {
 			await toggleArchive();
 			dispatchToastMessage({ type: 'success', message: archived ? t('Department_unarchived') : t('Department_archived') });
+			queryClient.removeQueries(['/v1/livechat/department/:_id', department._id]);
 			handleReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

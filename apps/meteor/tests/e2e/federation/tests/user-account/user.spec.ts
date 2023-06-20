@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import * as constants from '../../config/constants';
@@ -86,7 +86,7 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 		await page.goto(`${constants.RC_SERVER_1.url}/home`);
 		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-		const newName = faker.name.findName();
+		const newName = faker.person.fullName();
 
 		await page.goto(`${constants.RC_SERVER_1.url}/account/profile`);
 		await poFederationAccountProfileServer1.inputName.fill(newName);
@@ -110,7 +110,7 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 
 		const poFederationAccountProfileServer2 = new FederationAccountProfile(pageForServer2);
 
-		const newName = faker.name.findName();
+		const newName = faker.person.fullName();
 
 		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/account/profile`);
 		await poFederationAccountProfileServer2.inputName.fill(newName);
