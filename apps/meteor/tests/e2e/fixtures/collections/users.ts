@@ -28,7 +28,7 @@ export function createUserFixture(user: IUserState): UserFixture {
 			email: {
 				verificationTokens: [
 					{
-						token: faker.datatype.uuid(),
+						token: faker.string.uuid(),
 						address: `${username}@email.com`,
 						when: new Date(),
 					},

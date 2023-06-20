@@ -1,4 +1,5 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
+	"parser": "@typescript-eslint/parser",
 	"ignorePatterns": ["**/dist"]
 }

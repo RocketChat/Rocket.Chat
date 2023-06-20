@@ -94,7 +94,6 @@ const CustomSelect = ({ label, name, required, options = {}, setState, state, cl
 const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...props }) =>
 	Object.entries(customFields).map(([key, value]) => {
 		const extraProps = {
-			key,
 			name: key,
 			setState: formHandlers[`handle${capitalize(key)}`],
 			state: formValues[key],
@@ -102,11 +101,11 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		};
 
 		if (value.type === 'select') {
-			return <CustomSelect {...extraProps} {...props} />;
+			return <CustomSelect {...extraProps} {...props} key={key} />;
 		}
 
 		if (value.type === 'text') {
-			return <CustomTextInput {...extraProps} {...props} />;
+			return <CustomTextInput {...extraProps} {...props} key={key} />;
 		}
 
 		return null;
