@@ -22,9 +22,8 @@ import {
 	createDepartmentWithAnOnlineAgent,
 	getDepartmentById,
 } from '../../../data/livechat/department';
-import { getMe } from '../../../data/users.helper';
+import { deleteUser, getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
-import { sleep } from '../../../../lib/utils/sleep';
 
 // TODO: In a separate PR, divide this file into 2 files, one for CE and one for EE
 describe('LIVECHAT - business hours', function () {
@@ -130,7 +129,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 	});
 
-	// Scenario 1: Assume we have a BH linked to a department, and we archive the department
+	// Scenario: Assume we have a BH linked to a department, and we archive the department
 	// Expected result:
 	// 1) If BH is open and only linked to that department, it should be closed
 	// 2) If BH is open and linked to other departments, it should remain open
@@ -140,7 +139,7 @@ describe('LIVECHAT - business hours', function () {
 	//  archiving "dep1", we'd still need to BH within this user's cache since he's part of
 	//  "dep2" which is linked to BH
 	// TODO: Write similar test for disabling a department
-	(IS_EE ? describe.only : describe.skip)('[EE] BH operations', () => {
+	(IS_EE ? describe : describe.skip)('[EE] BH operations post department archiving', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -168,7 +167,7 @@ describe('LIVECHAT - business hours', function () {
 			await openOrCloseBusinessHour(customBusinessHour, true);
 		});
 
-		it.skip('upon archiving a department, if BH is open and only linked to that department, it should be closed', async () => {
+		it('upon archiving a department, if BH is open and only linked to that department, it should be closed', async () => {
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
@@ -185,9 +184,9 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH.departments).to.be.an('array').that.is.empty;
 		});
 
-		it.skip('upon archiving a department, if BH is open and linked to other departments, it should remain open', async () => {
+		it('upon archiving a department, if BH is open and linked to other departments, it should remain open', async () => {
 			// create another department and link it to the same BH
-			const { department } = await createDepartmentWithAnOnlineAgent();
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
 			await removeAllCustomBusinessHours();
 			customBusinessHour = await createCustomBusinessHour([deptLinkedToCustomBH._id, department._id]);
 
@@ -213,6 +212,7 @@ describe('LIVECHAT - business hours', function () {
 
 			// cleanup
 			await deleteDepartment(department._id);
+			await deleteUser(agent.user);
 		});
 
 		it('upon archiving a department, agents within the archived department should be assigned to default BH', async () => {
@@ -220,8 +220,6 @@ describe('LIVECHAT - business hours', function () {
 
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
-
-			await sleep(5000);
 
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
 			expect(latestAgent).to.be.an('object');
@@ -259,7 +257,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH).to.be.an('object');
 			expect(latestCustomBH.active).to.be.true;
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
-			expect(latestCustomBH?.departments?.[0]).to.be.equal(department._id);
+			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
@@ -275,10 +273,12 @@ describe('LIVECHAT - business hours', function () {
 
 			// cleanup
 			await deleteDepartment(department._id);
+			await deleteUser(agent.user);
 		});
 
 		this.afterEach(async () => {
 			await deleteDepartment(deptLinkedToCustomBH._id);
+			await deleteUser(agentLinkedToDept.user);
 		});
 	});
 });
