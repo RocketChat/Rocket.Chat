@@ -7,7 +7,7 @@ import { emoji, updateRecent, createEmojiList, createPickerEmojis, CUSTOM_CATEGO
 import { EmojiPickerContext } from '../contexts/EmojiPickerContext';
 import EmojiPicker from '../views/composer/EmojiPicker/EmojiPicker';
 
-const DEFAULT_ITEMS_LIMIT = 1;
+const DEFAULT_ITEMS_LIMIT = 90;
 
 const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
