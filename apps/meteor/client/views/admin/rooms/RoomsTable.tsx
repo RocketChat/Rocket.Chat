@@ -278,25 +278,25 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	return (
 		<>
-			<FilterByTypeAndText setFilter={setRoomFilter} />
+			<FilterByTypeAndText setFilter={setRoomFilter}>
+				<CustomDropDown
+					dropdownOptions={roomTypeOptions}
+					defaultTitle={'All_rooms' as any}
+					selectedOptionsTitle='Rooms'
+					selectedOptions={selectedOptions}
+					setSelectedOptions={setSelectedOptions}
+					customSetSelected={setRoomTypeOptions}
+				/>
 
-			<CustomDropDown
-				dropdownOptions={roomTypeOptions}
-				defaultTitle={'All_rooms' as any}
-				selectedOptionsTitle='Rooms'
-				selectedOptions={selectedOptions}
-				setSelectedOptions={setSelectedOptions}
-				customSetSelected={setRoomTypeOptions}
-			/>
-
-			<CustomDropDown
-				dropdownOptions={roomVisibilityOptions}
-				defaultTitle={'All_visible' as any}
-				selectedOptionsTitle='Visible'
-				selectedOptions={selectedOptions}
-				setSelectedOptions={setSelectedOptions}
-				customSetSelected={setRoomVisibilityOptions}
-			/>
+				<CustomDropDown
+					dropdownOptions={roomVisibilityOptions}
+					defaultTitle={'All_visible' as any}
+					selectedOptionsTitle='Visible'
+					selectedOptions={selectedOptions}
+					setSelectedOptions={setSelectedOptions}
+					customSetSelected={setRoomVisibilityOptions}
+				/>
+			</FilterByTypeAndText>
 
 			{isLoading && (
 				<GenericTable>

@@ -3,8 +3,8 @@ import { Box, Button, CheckBox, Icon, Option, Tile } from '@rocket.chat/fuselage
 import { useOutsideClick, usePosition, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, Dispatch, MouseEventHandler, SetStateAction } from 'react';
-import React, { Fragment, createContext, forwardRef, useCallback, useRef } from 'react';
+import type { ComponentProps, Dispatch, FormEvent, MouseEventHandler, SetStateAction } from 'react';
+import React, { Fragment, forwardRef, useCallback, useRef } from 'react';
 
 import { isValidReference } from '../../../marketplace/helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onMouseEventPreventSideEffects';
@@ -74,6 +74,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			borderColor='none'
 			borderWidth='x1'
 			bg='surface-light'
+			mis='x9'
 			h='x40'
 			{...props}
 		>
@@ -113,7 +114,13 @@ export const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box
 
 // TODO: move DropDownList to new file!!
 
-export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; onSelected: (item: OptionProp) => void }) => {
+export const DropDownList = ({
+	options,
+	onSelected,
+}: {
+	options: OptionProp[];
+	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
+}) => {
 	const t = useTranslation();
 
 	return (
@@ -130,7 +137,7 @@ export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; o
 							<Box pi='x8' w='full' justifyContent='space-between' display='inline-flex'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} onChange={(): void => onSelected(option)} />
+								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} />
 							</Box>
 						</Option>
 					)}
@@ -141,8 +148,6 @@ export const DropDownList = ({ options, onSelected }: { options: OptionProp[]; o
 };
 
 // ------------------- CustomDropDown -------------------
-
-export const CustomDropDownOptionsContext = createContext<OptionProp[]>([]);
 
 export const CustomDropDown = ({
 	dropdownOptions,
@@ -167,9 +172,9 @@ export const CustomDropDown = ({
 		[toggleCollapsed],
 	);
 
-	// const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
+	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
+		e?.stopPropagation();
 
-	const onSelect = (item: OptionProp): void => {
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
@@ -191,6 +196,8 @@ export const CustomDropDown = ({
 		}
 	};
 
+	const count = dropdownOptions.filter((option) => option.checked).length;
+
 	return (
 		<>
 			<DropDownAnchor
@@ -198,7 +205,7 @@ export const CustomDropDown = ({
 				onClick={toggleCollapsed as any}
 				defaultTitle={defaultTitle}
 				selectedOptionsTitle={selectedOptionsTitle}
-				selectedOptionsCount={selectedOptions.length}
+				selectedOptionsCount={count}
 			/>
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>

@@ -24,19 +24,31 @@ const filters: Record<string, (room: Partial<IRoom>) => boolean> = {
 	teams: filterRoomsByTeams,
 };
 
+function arrayUnique(array: IRoom[]) {
+	const a = array.concat();
+	for (let i = 0; i < a.length; ++i) {
+		for (let j = i + 1; j < a.length; ++j) {
+			if (a[i]._id === a[j]._id) a.splice(j--, 1);
+		}
+	}
+
+	return a;
+}
+
 // TODO: ver um sort depois, pq a ordem vai ficar mudando toda vez, dependendo da sequencia que escolher o filtro
 export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boolean, rooms?: IRoom[]) => {
 	if (isLoading || !rooms) return [];
+	if (selectedOptions.length === 0) return rooms;
 
 	let filtered: IRoom[] = [];
-
-	if (selectedOptions.length === 0) return rooms;
 
 	console.log(rooms);
 
 	selectedOptions.forEach((option) => {
-		filtered = [...filtered, ...rooms.filter(filters[option.id])];
+		filtered = arrayUnique(filtered.concat(rooms.filter(filters[option.id])));
 	});
+
+	console.log(filtered);
 
 	return filtered;
 };
