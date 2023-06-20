@@ -22,6 +22,7 @@ import {
 	getDepartmentById,
 } from '../../../data/livechat/department';
 import { getMe } from '../../../data/users.helper';
+import { deleteDepartment } from '../../../data/livechat/rooms';
 
 // TODO: In a separate PR, divide this file into 2 files, one for CE and one for EE
 describe('LIVECHAT - business hours', function () {
@@ -160,6 +161,7 @@ describe('LIVECHAT - business hours', function () {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
 			customBusinessHour = await createCustomBusinessHour([department._id]);
 			agentLinkedToDept = agent;
+			deptLinkedToCustomBH = department;
 
 			// open custom business hour
 			await openOrCloseBusinessHour(customBusinessHour, true);
@@ -207,6 +209,9 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH.active).to.be.true;
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]).to.be.equal(department._id);
+
+			// cleanup
+			await deleteDepartment(department._id);
 		});
 
 		it('upon archiving a department, agents within the archived department should be assigned to default BH', async () => {
@@ -264,6 +269,13 @@ describe('LIVECHAT - business hours', function () {
 			expect(otherAgent).to.be.an('object');
 			expect(otherAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(otherAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
+
+			// cleanup
+			await deleteDepartment(department._id);
+		});
+
+		this.afterEach(async () => {
+			await deleteDepartment(deptLinkedToCustomBH._id);
 		});
 	});
 });

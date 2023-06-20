@@ -3,7 +3,7 @@ import { api, credentials, methodCall, request } from "../api-data";
 import { updateEESetting, updateSetting } from "../permissions.helper"
 import moment from "moment";
 
-type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts'> & { workHours: { day: string, start: string, finish: string, open: boolean }[] } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
+type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'> & { workHours: { day: string, start: string, finish: string, open: boolean }[] } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
 
 // TODO: Migrate to an API call and return the business hour updated/created
 export const saveBusinessHour = async (businessHour: ISaveBhApiWorkHour) => {
@@ -22,11 +22,7 @@ export const createCustomBusinessHour = async (departments: string[]): Promise<I
         active: true,
         type: LivechatBusinessHourTypes.CUSTOM,
         workHours: getWorkHours(),
-        timezone: {
-            name: 'America/Sao_Paulo',
-            utc: '-03:00',
-        },
-        timezoneName: 'America/Sao_Paulo',
+        timezoneName: 'Asia/Calcutta',
         departmentsToApplyBusinessHour: '',
     };
 
@@ -131,8 +127,8 @@ export const removeCustomBusinessHour = async (businessHourId: string) => {
 };
 
 const getAllCustomBusinessHours = async (): Promise<ILivechatBusinessHour[]> => {
-    const response = await request.get(api('livechat/business-hour')).set(credentials).query({ type: LivechatBusinessHourTypes.CUSTOM }).expect(200);
-    return response.body.businessHours || [];
+    const response = await request.get(api('livechat/business-hours')).set(credentials).expect(200);
+    return (response.body.businessHours || []).filter((businessHour: ILivechatBusinessHour) => businessHour.type === LivechatBusinessHourTypes.CUSTOM);
 };
 
 
@@ -155,35 +151,19 @@ export const getCustomBusinessHourById = async (businessHourId: string): Promise
 
 
 export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHour, open: boolean) => {
-    const workHours = businessHour.workHours.map((workHour) => {
-        return {
-            open: workHour.open,
-            start: workHour.start.time,
-            finish: workHour.finish.time,
-        }
-    });
-    const allEnabledWorkHours = workHours.map((workHour) => {
-        workHour.open = open;
-        workHour.start = '00:00';
-        workHour.finish = '23:59';
-        return workHour;
-    });
-
     const enabledBusinessHour = {
         ...businessHour,
-        workHours: allEnabledWorkHours,
+        timezoneName: businessHour.timezone.name,
+        workHours: getWorkHours().map((workHour) => {
+            return {
+                ...workHour,
+                open,
+            }
+        }),
+        departmentsToApplyBusinessHour: businessHour.departments?.map((department) => department._id).join(',') || '',
     }
 
-    await request.post(methodCall('livechat:saveBusinessHour'))
-        .set(credentials)
-        .send({
-            message: JSON.stringify({
-                method: 'livechat:saveBusinessHour',
-                params: [enabledBusinessHour],
-                id: 'id',
-                msg: 'method',
-            }),
-        });
+    await saveBusinessHour(enabledBusinessHour as any);
 }
 
 const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
