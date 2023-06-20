@@ -1,17 +1,10 @@
-import type { MenuItemIcon } from '@rocket.chat/fuselage';
 import { CheckBox } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 
-export type Item = {
-	id: string;
-	icon?: ComponentProps<typeof MenuItemIcon>['name'];
-	name?: string;
-	input?: ReactNode;
-	content?: ReactNode;
-};
-export const useGroupingListItems = (): Item[] => {
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+
+export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType');
@@ -30,21 +23,21 @@ export const useGroupingListItems = (): Item[] => {
 	return [
 		{
 			id: 'unread',
-			name: t('Unread'),
+			content: t('Unread'),
 			icon: 'flag',
-			input: <CheckBox mi='x16' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
+			addon: <CheckBox mi='x16' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
 		},
 		{
 			id: 'favorites',
-			name: t('Favorites'),
+			content: t('Favorites'),
 			icon: 'star',
-			input: <CheckBox mi='x16' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />,
+			addon: <CheckBox mi='x16' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />,
 		},
 		{
 			id: 'types',
-			name: t('Types'),
+			content: t('Types'),
 			icon: 'group-by-type',
-			input: <CheckBox mi='x16' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
+			addon: <CheckBox mi='x16' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
 		},
 	];
 };

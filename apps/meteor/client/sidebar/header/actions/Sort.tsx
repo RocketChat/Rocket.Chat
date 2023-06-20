@@ -3,41 +3,25 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { VFC, HTMLAttributes } from 'react';
 import React from 'react';
 
-import GenericMenuContent from '../../../components/GenericMenuContent';
-import { useGroupingListItems } from './hooks/useGroupingListItems';
-import { useSortModeItems } from './hooks/useSortModeItems';
-import { useViewModeItems } from './hooks/useViewModeItems';
+import GenericMenuContent from '../../../components/GenericMenuItem';
+import { useSortMenu } from './hooks/useSortMenu';
 
 const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 	const t = useTranslation();
 
-	const viewModeItems = useViewModeItems();
-	const sortModeItems = useSortModeItems();
-	const groupingListItems = useGroupingListItems();
+	const sections = useSortMenu();
 
 	return (
 		<MenuV2 icon='sort' selectionMode='multiple' title={t('Display')}>
-			<MenuSection title={t('Display')} items={viewModeItems}>
-				{(item) => (
-					<MenuItem key={item.id}>
-						<GenericMenuContent item={item} />
-					</MenuItem>
-				)}
-			</MenuSection>
-			<MenuSection title={t('Sort_By')} items={sortModeItems}>
-				{(item) => (
-					<MenuItem key={item.id}>
-						<GenericMenuContent item={item} />
-					</MenuItem>
-				)}
-			</MenuSection>
-			<MenuSection title={t('Group_by')} items={groupingListItems}>
-				{(item) => (
-					<MenuItem key={item.id}>
-						<GenericMenuContent item={item} />
-					</MenuItem>
-				)}
-			</MenuSection>
+			{sections.map(({ title, items }, key) => (
+				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
+					{(item) => (
+						<MenuItem key={item.id}>
+							<GenericMenuContent {...item} />
+						</MenuItem>
+					)}
+				</MenuSection>
+			))}
 		</MenuV2>
 	);
 };

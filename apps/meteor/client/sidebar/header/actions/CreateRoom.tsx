@@ -1,32 +1,33 @@
-import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { MenuV2, MenuSection, MenuItem } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, VFC } from 'react';
-import React, { useRef } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 
-import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
-import CreateRoomList from './CreateRoomList';
+import type { GenericMenuItemProps } from '../../../components/GenericMenuItem';
+import GenericMenuContent from '../../../components/GenericMenuItem';
+import { useHandleMenuAction } from '../../../hooks/useHandleMenuAction';
+import { useCreateRoom } from './hooks/useCreateRoomMenu';
 
-const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
+const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
+	const t = useTranslation();
 
-const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
-	const reference = useRef(null);
-	const target = useRef(null);
-	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	const sections = useCreateRoom();
+	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]);
 
-	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
+	const handleAction = useHandleMenuAction(items);
 
 	return (
-		<>
-			{showCreate && <Sidebar.TopBar.Action icon='edit-rounded' onClick={(): void => toggle()} {...props} ref={reference} />}
-			{isVisible &&
-				createPortal(
-					<Dropdown reference={reference} ref={target}>
-						<CreateRoomList closeList={(): void => toggle(false)} />
-					</Dropdown>,
-					document.body,
-				)}
-		</>
+		<MenuV2 icon='edit-rounded' title={t('Create_new')} onAction={handleAction}>
+			{sections.map(({ title, items }, key) => (
+				<MenuSection title={t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
+					{(item) => (
+						<MenuItem key={item.id}>
+							<GenericMenuContent {...item} />
+						</MenuItem>
+					)}
+				</MenuSection>
+			))}
+		</MenuV2>
 	);
 };
 
