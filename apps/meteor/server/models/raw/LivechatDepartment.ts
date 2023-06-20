@@ -129,6 +129,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
+		const query = { businessHourId, _id: { $ne: departmentId } };
+		return this.col.countDocuments(query);
+	}
+
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId, enabled: true };
 		return this.find(query, options);
@@ -356,6 +361,60 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		const query = { archived: { $ne: false } };
 
 		return this.find(query, options);
+	}
+
+	getBusinessHoursWithDepartmentStatuses(): Promise<
+		{
+			_id: string;
+			validDepartments: string[];
+			invalidDepartments: string[];
+		}[]
+	> {
+		return this.col
+			.aggregate<{ _id: string; validDepartments: string[]; invalidDepartments: string[] }>([
+				{
+					$match: {
+						businessHourId: {
+							$exists: true,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$businessHourId',
+						validDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [
+											{
+												$eq: ['$enabled', true],
+											},
+											{
+												$ne: ['$archived', true],
+											},
+										],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+						invalidDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [{ $eq: ['$enabled', false] }, { $eq: ['$archived', true] }],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+					},
+				},
+			])
+			.toArray();
 	}
 }
 

@@ -758,7 +758,9 @@ export const Livechat = {
 		}
 
 		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
-		return LivechatDepartmentRaw.archiveDepartment(_id);
+		await LivechatDepartmentRaw.archiveDepartment(_id);
+
+		void callbacks.run('livechat.afterDepartmentArchived', department);
 	},
 
 	showConnecting() {

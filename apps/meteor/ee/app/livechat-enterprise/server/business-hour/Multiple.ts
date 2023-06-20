@@ -132,6 +132,42 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(deletedDepartment, agentsIds, options);
 	}
 
+	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
+		if (!department.businessHourId) {
+			bhLogger.debug(`onDepartmentDisabled: department ${department._id} has no business hour`);
+			return;
+		}
+		// Get business hour
+		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
+		if (!businessHour) {
+			bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
+			return;
+		}
+		// Check if i'm the only department on this business hour, excluding myself
+		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourIdExcludingDepartmentId(businessHour._id, department._id));
+
+		// If i'm the only one, close the business hour
+		if (imTheOnlyOne) {
+			bhLogger.debug(`onDepartmentDisabled: department ${department._id} is the only one on business hour ${businessHour._id}, closing it`);
+			await closeBusinessHour(businessHour);
+		}
+
+		// Then remove me from the BH
+		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId([department._id], businessHour._id);
+	}
+
+	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
+		bhLogger.debug('Processing department archived event on business hours', department);
+		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
+
+		if (!dbDepartment) {
+			bhLogger.error(`No department found with id: ${department._id} when archiving it`);
+			return;
+		}
+
+		return this.onDepartmentDisabled(dbDepartment);
+	}
+
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		const isWithinBushinessHours = await this.UsersRepository.isAgentWithinBusinessHours(agentId);
 		if (isWithinBushinessHours) {
@@ -233,7 +269,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			}
 			// TODO: We're doing a full fledged aggregation with lookups and getting the whole array just for getting the length? :(
 			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
-				// eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}

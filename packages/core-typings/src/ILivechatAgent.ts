@@ -13,4 +13,6 @@ export interface ILivechatAgent extends IUser {
 	livechatCount: number;
 	lastRoutingTime: Date;
 	livechatStatusSystemModified?: boolean;
+
+	openBusinessHours?: string[];
 }
