@@ -13,6 +13,7 @@ export type Item = {
 	name?: string;
 	input?: ReactNode;
 	content?: ReactNode;
+	onClick?: () => void;
 };
 export const useSortModeItems = (): Item[] => {
 	const t = useTranslation();

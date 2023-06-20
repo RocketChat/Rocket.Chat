@@ -10,7 +10,9 @@ export type Item = {
 	name?: string;
 	input?: ReactNode;
 	content?: ReactNode;
+	onClick?: () => void;
 };
+
 export const useGroupingListItems = (): Item[] => {
 	const t = useTranslation();
 
