@@ -15,7 +15,7 @@ export type ComposerBoxPopupUserProps = {
 	nickname?: string;
 	status?: string;
 	sort?: number;
-	variant: 'small' | 'large';
+	variant?: 'small' | 'large';
 };
 
 const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) => {
