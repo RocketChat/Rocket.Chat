@@ -71,36 +71,33 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				return false;
 			};
-			Notifications.onUser(
-				WEB_RTC_EVENTS.WEB_RTC,
-				(type: any, data: any) => {
-					if (data.room == null) {
-						return;
-					}
-					webrtcInstance.onUserStream(type, data);
-				},
-				visitorId,
-			);
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onVisitor(WEB_RTC_EVENTS.WEB_RTC, visitorId, (type: any, data: any) => {
+				if (data.room == null) {
+					return;
+				}
+				webrtcInstance.onUserStream(type, data);
+			});
+
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
-					Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+					Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 						isMobileDevice: isMobileDevice(),
 					});
 				} else if (type === 'cameraStatus') {
 					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 				isMobileDevice: isMobileDevice(),
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'callStatus', { callStatus: 'inProgress' });
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'callStatus', { callStatus: 'inProgress' });
 		} else if (!isAgentActive) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
 			if (status === 'inProgress') {
-				Notifications.notifyRoom(roomId, 'webrtc', 'getDeviceType');
+				Notifications.notifyRoom(roomId, 'webrtc' as any, 'getDeviceType');
 				webrtcInstance.startCall({
 					audio: true,
 					video: {
@@ -109,7 +106,7 @@ const CallPage: FC<CallPageProps> = ({
 					},
 				});
 			}
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
@@ -142,7 +139,7 @@ const CallPage: FC<CallPageProps> = ({
 		}
 		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
 		setIsCameraOn(!isCameraOn);
-		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
+		Notifications.notifyRoom(roomId, 'webrtc' as any, 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
 	const closeWindow = (): void => {

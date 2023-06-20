@@ -34,7 +34,7 @@ function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeC
 	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
-function getAvailableMethodNames(user: IUser): string[] | [] {
+function getAvailableMethodNames(user: IUser): string[] {
 	return (
 		Array.from(checkMethods)
 			.filter(([, method]) => method.isEnabled(user))
@@ -205,9 +205,9 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 
 	const data = await selectedMethod.processInvalidCode(existingUser);
 
-	if (!code) {
-		const availableMethods = getAvailableMethodNames(existingUser);
+	const availableMethods = getAvailableMethodNames(existingUser);
 
+	if (!code) {
 		throw new Meteor.Error('totp-required', 'TOTP Required', {
 			method: selectedMethod.name,
 			...data,
@@ -220,6 +220,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,
+			availableMethods,
 		});
 	}
 

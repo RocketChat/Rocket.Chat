@@ -26,6 +26,11 @@ export const addUserToRoom = async function (
 
 	const userToBeAdded = typeof user !== 'string' ? user : await Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
+
+	if (!userToBeAdded) {
+		throw new Meteor.Error('user-not-found');
+	}
+
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
@@ -34,10 +39,12 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
+		await callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
+
+	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
 
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
@@ -57,18 +64,11 @@ export const addUserToRoom = async function (
 
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
-		callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
+		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 		// Keep the current event
-		callbacks.run('beforeJoinRoom', userToBeAdded, room);
+		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
-	await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
-		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
-
-		throw error;
-	});
 
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
@@ -107,12 +107,12 @@ export const addUserToRoom = async function (
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		process.nextTick(function () {
+		process.nextTick(async function () {
 			// Add a new event, with an optional inviter
-			callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
+			await callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 			// Keep the current event
-			callbacks.run('afterJoinRoom', userToBeAdded, room);
+			await callbacks.run('afterJoinRoom', userToBeAdded, room);
 
 			void Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});

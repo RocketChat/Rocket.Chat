@@ -55,19 +55,19 @@ export default class RocketAdapter {
 		callbacks.remove('unsetReaction', 'SlackBridge_UnSetReaction');
 	}
 
-	onMessageDelete(rocketMessageDeleted) {
-		this.slackAdapters.forEach((slack) => {
+	async onMessageDelete(rocketMessageDeleted) {
+		for await (const slack of this.slackAdapters) {
 			try {
 				if (!slack.getSlackChannel(rocketMessageDeleted.rid)) {
 					// This is on a channel that the rocket bot is not subscribed on this slack server
 					return;
 				}
 				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
-				slack.postDeleteMessage(rocketMessageDeleted);
+				await slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
 				rocketLogger.error({ msg: 'Unhandled error onMessageDelete', err });
 			}
-		});
+		}
 	}
 
 	async onSetReaction(rocketMsgID, reaction) {
@@ -85,13 +85,13 @@ export default class RocketAdapter {
 				}
 				const rocketMsg = await Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
-					this.slackAdapters.forEach((slack) => {
+					for await (const slack of this.slackAdapters) {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
 						if (slackChannel != null) {
 							const slackTS = slack.getTimeStamp(rocketMsg);
-							slack.postReactionAdded(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
+							await slack.postReactionAdded(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
 						}
-					});
+					}
 				}
 			}
 		} catch (err) {
@@ -115,13 +115,13 @@ export default class RocketAdapter {
 
 				const rocketMsg = await Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
-					this.slackAdapters.forEach((slack) => {
+					for await (const slack of this.slackAdapters) {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
 						if (slackChannel != null) {
 							const slackTS = slack.getTimeStamp(rocketMsg);
-							slack.postReactionRemove(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
+							await slack.postReactionRemove(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
 						}
-					});
+					}
 				}
 			}
 		} catch (err) {
@@ -140,7 +140,7 @@ export default class RocketAdapter {
 
 				if (rocketMessage.editedAt) {
 					// This is an Edit Event
-					this.processMessageChanged(rocketMessage, slack);
+					await this.processMessageChanged(rocketMessage, slack);
 					return rocketMessage;
 				}
 				// Ignore messages originating from Slack
@@ -213,7 +213,7 @@ export default class RocketAdapter {
 		}
 	}
 
-	processMessageChanged(rocketMessage, slack) {
+	async processMessageChanged(rocketMessage, slack) {
 		if (rocketMessage) {
 			if (rocketMessage.updatedBySlack) {
 				// We have already processed this
@@ -223,7 +223,7 @@ export default class RocketAdapter {
 
 			// This was a change from Rocket.Chat
 			const slackChannel = slack.getSlackChannel(rocketMessage.rid);
-			slack.postMessageUpdate(slackChannel, rocketMessage);
+			await slack.postMessageUpdate(slackChannel, rocketMessage);
 		}
 	}
 

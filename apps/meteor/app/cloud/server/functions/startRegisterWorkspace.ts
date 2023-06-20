@@ -1,5 +1,5 @@
-import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
@@ -23,25 +23,32 @@ export async function startRegisterWorkspace(resend = false) {
 
 	let result;
 	try {
-		result = HTTP.post(`${cloudUrl}/api/v2/register/workspace?resend=${resend}`, {
-			data: regInfo,
+		const request = await fetch(`${cloudUrl}/api/v2/register/workspace`, {
+			method: 'POST',
+			body: regInfo,
+			params: {
+				resend,
+			},
 		});
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		result = await request.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to register with Rocket.Chat Cloud',
 			url: '/api/v2/register/workspace',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
 		return false;
 	}
-	const { data } = result;
-	if (!data) {
+	if (!result) {
 		return false;
 	}
 
-	await Settings.updateValueById('Cloud_Workspace_Id', data.id);
+	await Settings.updateValueById('Cloud_Workspace_Id', result.id);
 
 	return true;
 }

@@ -81,4 +81,8 @@ export interface IFederationBridge {
 	getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined>;
 	setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void>;
 	setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void>;
+	getRoomData(
+		externalUserId: string,
+		externalRoomId: string,
+	): Promise<{ creator: { id: string; username: string }; name: string; joinedMembers: string[] } | undefined>;
 }

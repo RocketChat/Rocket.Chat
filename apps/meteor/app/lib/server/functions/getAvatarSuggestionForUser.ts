@@ -3,9 +3,9 @@ import { check } from 'meteor/check';
 import Gravatar from 'gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { IUser } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../settings/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const avatarProviders = {
 	facebook(user: IUser) {

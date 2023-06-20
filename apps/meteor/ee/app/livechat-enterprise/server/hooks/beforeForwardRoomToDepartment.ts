@@ -25,7 +25,7 @@ callbacks.add(
 		}
 		const { departmentsAllowedToForward } = currentDepartment;
 		const isAllowedToTransfer =
-			!departmentsAllowedToForward ||
+			!departmentsAllowedToForward?.length ||
 			(Array.isArray(departmentsAllowedToForward) && departmentsAllowedToForward.includes(departmentToTransfer._id));
 		if (isAllowedToTransfer) {
 			cbLogger.debug(`Callback success. Room ${room._id} can be forwarded to department ${departmentToTransfer._id}`);

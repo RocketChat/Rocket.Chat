@@ -6,6 +6,14 @@ type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
 };
 
+declare global {
+	namespace Assets {
+		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+
+		function getTextAsync(assetPath: string): Promise<string | undefined>;
+	}
+}
+
 declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
@@ -69,6 +77,7 @@ declare module 'meteor/meteor' {
 				};
 				_launchConnectionAsync: () => void;
 				allowConnection: () => void;
+				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 
 			_outstandingMethodBlocks: unknown[];
@@ -82,6 +91,18 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+			subscribe(
+				id: string,
+				name: string,
+				...args: [
+					...unknown,
+					callbacks?: {
+						onReady?: (...args: any[]) => void;
+						onStop?: (error?: Error) => void;
+						onError?: (error: Error) => void;
+					},
+				]
+			): SubscriptionHandle;
 		}
 
 		const connection: IMeteorConnection;

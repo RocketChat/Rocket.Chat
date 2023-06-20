@@ -92,7 +92,7 @@ const ComposerBoxPopupPreview = forwardRef<
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' padding='x8' role='menu' mbe='x8' aria-labelledby={id}>
+			<Tile className='message-popup' display='flex' padding='x8' role='menu' mbe='x8' aria-labelledby={id}>
 				<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
 					{isLoading &&
 						Array(5)

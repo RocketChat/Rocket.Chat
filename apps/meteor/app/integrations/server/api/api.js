@@ -1,10 +1,6 @@
 import { VM, VMScript } from 'vm2';
-import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 import _ from 'underscore';
 import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
@@ -15,11 +11,25 @@ import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
+import { httpCall } from '../../../../server/lib/http/call';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {
+	const httpAsync = async (method, url, options) => {
+		try {
+			return {
+				result: await httpCall(method, url, options),
+			};
+		} catch (error) {
+			return { error };
+		}
+	};
+
 	const sandbox = {
 		scriptTimeout(reject) {
 			return setTimeout(() => reject('timed out'), 3000);
@@ -28,7 +38,6 @@ function buildSandbox(store = {}) {
 		s,
 		console,
 		moment,
-		Fiber,
 		Promise,
 		Livechat,
 		Store: {
@@ -40,17 +49,11 @@ function buildSandbox(store = {}) {
 				return store[key];
 			},
 		},
-		HTTP(method, url, options) {
-			try {
-				return {
-					result: HTTP.call(method, url, options),
-				};
-			} catch (error) {
-				return {
-					error,
-				};
-			}
+		HTTP: (method, url, options) => {
+			// TODO: deprecate, track and alert
+			return deasyncPromise(httpAsync(method, url, options));
 		},
+		// TODO: Export fetch as the non deprecated method
 	};
 	Object.keys(Models)
 		.filter((k) => !forbiddenModelMethods.includes(k))
@@ -106,35 +109,33 @@ async function createIntegration(options, user) {
 	incomingLogger.info({ msg: 'Add integration', integration: options.name });
 	incomingLogger.debug({ options });
 
-	await Meteor.runAsUser(user._id, async function () {
-		switch (options.event) {
-			case 'newMessageOnChannel':
-				if (options.data == null) {
-					options.data = {};
-				}
-				if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
-					options.data.channel_name = `#${options.data.channel_name}`;
-				}
-				return Meteor.callAsync('addOutgoingIntegration', {
-					username: 'rocket.cat',
-					urls: [options.target_url],
-					name: options.name,
-					channel: options.data.channel_name,
-					triggerWords: options.data.trigger_words,
-				});
-			case 'newMessageToUser':
-				if (options.data.username.indexOf('@') === -1) {
-					options.data.username = `@${options.data.username}`;
-				}
-				return Meteor.callAsync('addOutgoingIntegration', {
-					username: 'rocket.cat',
-					urls: [options.target_url],
-					name: options.name,
-					channel: options.data.username,
-					triggerWords: options.data.trigger_words,
-				});
-		}
-	});
+	switch (options.event) {
+		case 'newMessageOnChannel':
+			if (options.data == null) {
+				options.data = {};
+			}
+			if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
+				options.data.channel_name = `#${options.data.channel_name}`;
+			}
+			return addOutgoingIntegration(user._id, {
+				username: 'rocket.cat',
+				urls: [options.target_url],
+				name: options.name,
+				channel: options.data.channel_name,
+				triggerWords: options.data.trigger_words,
+			});
+		case 'newMessageToUser':
+			if (options.data.username.indexOf('@') === -1) {
+				options.data.username = `@${options.data.username}`;
+			}
+			return addOutgoingIntegration(user._id, {
+				username: 'rocket.cat',
+				urls: [options.target_url],
+				name: options.name,
+				channel: options.data.username,
+				triggerWords: options.data.trigger_words,
+			});
+	}
 
 	return API.v1.success();
 }
@@ -148,7 +149,7 @@ async function removeIntegration(options, user) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	await Meteor.runAsUser(user._id, () => Meteor.callAsync('deleteOutgoingIntegration', integrationToRemove._id));
+	await deleteOutgoingIntegration(integrationToRemove._id, user._id);
 
 	return API.v1.success();
 }
@@ -214,20 +215,26 @@ async function executeIntegrationRest() {
 				sandbox,
 			});
 
-			const scriptResult = vm.run(`
-				new Promise((resolve, reject) => {
-					Fiber(() => {
-						scriptTimeout(reject);
-						try {
-							resolve(script.process_incoming_request({ request: request }));
-						} catch(e) {
-							reject(e);
-						}
-					}).run();
-				}).catch((error) => { throw new Error(error); });
-			`);
+			const result = await new Promise((resolve, reject) => {
+				process.nextTick(async () => {
+					try {
+						const scriptResult = await vm.run(`
+							new Promise((resolve, reject) => {
+								scriptTimeout(reject);
+								try {
+									resolve(script.process_incoming_request({ request: request }));
+								} catch(e) {
+									reject(e);
+								}
+							}).catch((error) => { throw new Error(error); });
+						`);
 
-			const result = Future.fromPromise(scriptResult).wait();
+						resolve(scriptResult);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
 
 			if (!result) {
 				incomingLogger.debug({
@@ -267,6 +274,10 @@ async function executeIntegrationRest() {
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();
+	}
+
+	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.integration.overrideDestinationChannelEnabled) {
+		return API.v1.failure('overriding destination channel is disabled for this integration');
 	}
 
 	this.bodyParams.bot = { i: this.integration._id };

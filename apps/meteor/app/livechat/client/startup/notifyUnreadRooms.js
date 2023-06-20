@@ -16,7 +16,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const subs = Subscriptions.find({ t: 'l', ls: { $exists: 0 }, open: true }).count();
+		const subs = await Subscriptions.find({ t: 'l', ls: { $exists: 0 }, open: true }).count();
 		if (subs === 0) {
 			audio && audio.pause();
 			return;

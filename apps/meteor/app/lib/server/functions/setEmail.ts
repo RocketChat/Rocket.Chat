@@ -47,7 +47,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
-	validateEmailDomain(email);
+	await validateEmailDomain(email);
 
 	const user = await Users.findOneById(userId);
 	if (!user) {

@@ -327,33 +327,28 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
-		const update: DeepWriteable<UpdateFilter<ILivechatVisitor>> = {
-			$addToSet: {},
-		};
-
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
 			.map((email) => ({ address: email }));
-
-		if (update.$addToSet && saveEmail.length > 0) {
-			update.$addToSet.visitorEmails = { $each: saveEmail };
-		}
 
 		const savePhone = ([] as string[])
 			.concat(phones)
 			.filter((phone) => phone?.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 
-		if (update.$addToSet && savePhone.length > 0) {
-			update.$addToSet.phone = { $each: savePhone };
-		}
+		const update: UpdateFilter<ILivechatVisitor> = {
+			$addToSet: {
+				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+				...(savePhone.length && { phone: { $each: savePhone } }),
+			},
+		};
 
-		if (!Object.keys(update).length) {
+		if (!Object.keys(update.$addToSet as Record<string, any>).length) {
 			return Promise.resolve();
 		}
 
-		return this.updateOne({ _id }, update as UpdateFilter<ILivechatVisitor>);
+		return this.updateOne({ _id }, update);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {

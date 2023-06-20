@@ -12,7 +12,7 @@ import type {
 import type { ComponentProps } from 'react';
 import type { Icon } from '@rocket.chat/fuselage';
 
-export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
+export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
 
 export interface IRoomTypeRouteConfig {
 	name: string;

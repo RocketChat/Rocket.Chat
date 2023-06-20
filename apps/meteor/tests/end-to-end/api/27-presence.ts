@@ -3,7 +3,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
-import { password } from '../../data/user.js';
+import { password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 
 describe('[Presence]', function () {

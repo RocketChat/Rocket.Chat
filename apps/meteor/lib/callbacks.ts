@@ -17,6 +17,7 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -25,9 +26,6 @@ import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
-
-// Temporary since we are still using callbacks on client side
-Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -111,10 +109,7 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (
-		agent: { agentId: string; username: string },
-		visitor?: ILivechatVisitor,
-	) => { agentId: string; username: string };
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
@@ -130,8 +125,8 @@ type ChainedCallbackSignatures = {
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
-	'livechat:afterOnHold': (room: IRoom) => IRoom;
-	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
+	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		room: IRoom;
 		guest: ILivechatVisitor;
@@ -178,6 +173,7 @@ type ChainedCallbackSignatures = {
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
+	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
@@ -208,6 +204,15 @@ type ChainedCallbackSignatures = {
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
+	'livechat.onAgentAssignmentFailed': (params: {
+		inquiry: {
+			_id: string;
+			rid: string;
+			status: string;
+		};
+		room: IOmnichannelRoom;
+		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
 };
 
 export type Hook =
@@ -237,7 +242,6 @@ export type Hook =
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.offlineMessage'
-	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
 	| 'loginPageStateChange'
@@ -263,10 +267,11 @@ export type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet';
+	| 'userStatusManuallySet'
+	| 'test';
 
 type Callback = {
-	(item: unknown, constant?: unknown): unknown;
+	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: Hook;
 	id: string;
 	priority: CallbackPriority;
@@ -277,7 +282,7 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-class Callbacks {
+export class Callbacks {
 	private logger: Logger | undefined = undefined;
 
 	private trackCallback: CallbackTracker | undefined = undefined;
@@ -286,7 +291,7 @@ class Callbacks {
 
 	private callbacks = new Map<Hook, Callback[]>();
 
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
+	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
 
 	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
 
@@ -301,47 +306,34 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
+	private runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
 		const stopTracking = this.trackCallback?.(callback);
 
-		try {
-			const result = callback(item, constant);
-			if (result && result instanceof Promise) {
-				return Promise.await(result);
-			}
-
-			return result;
-		} finally {
-			stopTracking?.();
-		}
+		return Promise.resolve(callback(item, constant)).finally(stopTracking);
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			async (item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
-		const identity = <TItem>(item: TItem): TItem => item;
+		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			async (item: unknown, constant?: unknown): Promise<unknown> =>
+				next(await curr(item, constant), constant);
 
 		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
-			try {
-				return fn(item, constant);
-			} finally {
-				stopTracking?.();
-			}
+			return fn(item, constant).finally(() => stopTracking?.());
 		};
 	}
 
@@ -353,7 +345,7 @@ class Callbacks {
 
 			for (const callback of callbacks) {
 				setTimeout(() => {
-					this.runOne(callback, item, constant);
+					void this.runOne(callback, item, constant);
 				}, 0);
 			}
 
@@ -436,9 +428,9 @@ class Callbacks {
 	run<THook extends keyof ChainedCallbackSignatures>(
 		hook: THook,
 		...args: Parameters<ChainedCallbackSignatures[THook]>
-	): ReturnType<ChainedCallbackSignatures[THook]>;
+	): Promise<ReturnType<ChainedCallbackSignatures[THook]>>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -448,8 +440,8 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
+		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown): Promise<unknown> => item);
 		return runner(item, constant);
 	}
 
@@ -467,8 +459,27 @@ class Callbacks {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks();
+
+		return {
+			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
+			remove: (id) => callbacks.remove(hook as any, id),
+			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+		};
+	}
 }
 
+/**
+ * Callback hooks provide an easy way to add extra steps to common operations.
+ * @deprecated
+ */
+type Cb<I, R, C = undefined> = {
+	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
+	remove: (id: string) => void;
+	run: (item: I, constant?: C) => Promise<R>;
+};
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated

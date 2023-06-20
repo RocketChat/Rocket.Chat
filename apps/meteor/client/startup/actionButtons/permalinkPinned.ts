@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageAction } from '../../../app/ui-utils/client';
-import { t } from '../../../app/utils/client';
+import { t } from '../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
 

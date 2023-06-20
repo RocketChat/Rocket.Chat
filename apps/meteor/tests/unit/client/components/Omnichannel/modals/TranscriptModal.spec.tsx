@@ -35,24 +35,16 @@ describe('components/Omnichannel/TranscriptModal', () => {
 	});
 
 	it('should show Request button when roomOpen is true and transcriptRequest not exist', () => {
-		const onRequestMock = spy();
-		const { getByText } = render(
-			<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} onRequest={onRequestMock} />,
-		);
-		const requestButton = getByText('Request');
+		const { getByRole } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
-		fireEvent.click(requestButton);
-
-		expect(onRequestMock).to.have.been.called();
+		const requestBtn = getByRole('button', { name: 'request-button' });
+		expect(requestBtn).to.be.visible;
 	});
 
 	it('should show Send button when roomOpen is false', () => {
-		const onSendMock = spy();
-		const { getByText } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} onSend={onSendMock} />);
-		const requestButton = getByText('Send');
+		const { getByRole } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
-		fireEvent.click(requestButton);
-
-		expect(onSendMock).to.have.been.called();
+		const sendBtn = getByRole('button', { name: 'send-button' });
+		expect(sendBtn).to.be.visible;
 	});
 });

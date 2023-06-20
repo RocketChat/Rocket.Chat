@@ -59,8 +59,9 @@ const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
 };
 
 const stopRingBackById = (soundId: VoipSound): void => {
+	const sound = CustomSounds.getSound(soundId);
 	CustomSounds.pause(soundId);
-	CustomSounds.remove(soundId);
+	CustomSounds.remove(sound);
 };
 
 const stopTelephoneRingback = (): void => stopRingBackById('telephone');

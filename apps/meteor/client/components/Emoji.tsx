@@ -22,8 +22,16 @@ const EmojiComponent = styled('span', ({ fillContainer: _fillContainer, ...props
 `;
 
 function Emoji({ emojiHandle, className = undefined, fillContainer }: EmojiProps): ReactElement {
-	const { className: emojiClassName, ...props } = getEmojiClassNameAndDataTitle(emojiHandle);
-	return <EmojiComponent className={[emojiClassName, className].filter(Boolean).join(' ')} fillContainer={fillContainer} {...props} />;
+	const { className: emojiClassName, image, ...props } = getEmojiClassNameAndDataTitle(emojiHandle);
+
+	return (
+		<EmojiComponent
+			className={[emojiClassName, className].filter(Boolean).join(' ')}
+			style={image?.length ? { backgroundImage: image } : undefined}
+			fillContainer={fillContainer}
+			{...props}
+		/>
+	);
 }
 
 export default Emoji;

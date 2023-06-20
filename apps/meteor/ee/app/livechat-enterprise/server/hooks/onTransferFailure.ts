@@ -21,7 +21,7 @@ const onTransferFailure = async ({
 		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
 	})) as Partial<ILivechatDepartment>;
 
-	if (!department?.fallbackForwardDepartment) {
+	if (!department?.fallbackForwardDepartment?.length) {
 		return false;
 	}
 

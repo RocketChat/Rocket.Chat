@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import EJSON from 'ejson';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
@@ -38,10 +37,11 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import { call } from '../../../client/lib/utils/call';
-import { APIClient } from '../../utils/client';
+import { getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { t } from '../../utils/lib/i18n';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 let failedToDecodeKey = false;
 
@@ -131,20 +131,20 @@ class E2E extends Emitter {
 			throw new Error('Failed to encode private key with provided password.');
 		}
 
-		await APIClient.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
 			private_key: encodedPrivateKey,
 		});
 	}
 
 	async acceptSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.acceptSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
 			rid,
 		});
 	}
 
 	async rejectSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
 			rid,
 		});
 	}
@@ -180,8 +180,8 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: TAPi18n.__("Wasn't possible to decode your encryption key to be imported."),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>', // TODO: missing translation
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
@@ -206,14 +206,14 @@ class E2E extends Emitter {
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
-			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
+			const passwordRevealText = t('E2E_password_reveal_text', {
 				postProcess: 'sprintf',
 				sprintf: [randomPassword],
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_Your_Encryption_Password'),
-				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
+				title: () => t('Save_your_encryption_password'),
+				html: () => t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -222,6 +222,7 @@ class E2E extends Emitter {
 						component: SaveE2EPasswordModal,
 						props: {
 							passwordRevealText,
+							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
@@ -263,7 +264,7 @@ class E2E extends Emitter {
 
 	async loadKeysFromDB(): Promise<void> {
 		try {
-			const { public_key, private_key } = await APIClient.get('/v1/e2e.fetchMyKeys');
+			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
@@ -314,7 +315,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await call('e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -380,8 +381,8 @@ class E2E extends Emitter {
 
 			const showAlert = () => {
 				this.openAlert({
-					title: TAPi18n.__('Enter_your_E2E_password'),
-					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
+					title: () => t('Enter_your_E2E_password'),
+					html: () => t('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
@@ -489,7 +490,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const getQuotedMessage = await APIClient.get('/v1/chat.getMessage', { msgId });
+				const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 				const quotedMessage = getQuotedMessage?.message;
 
 				if (!quotedMessage) {
@@ -501,7 +502,12 @@ class E2E extends Emitter {
 				message.attachments = message.attachments || [];
 
 				const useRealName = settings.get('UI_Use_Real_Name');
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url, useRealName);
+				const quoteAttachment = createQuoteAttachment(
+					decryptedQuoteMessage,
+					url,
+					useRealName,
+					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
+				);
 
 				message.attachments.push(quoteAttachment);
 			}),
