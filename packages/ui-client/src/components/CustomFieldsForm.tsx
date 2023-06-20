@@ -1,10 +1,10 @@
+import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, Select, TextInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Control, FieldValues } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
@@ -38,11 +38,7 @@ const CustomField = <T extends FieldValues>({
 	const Component = FIELD_TYPES[type] ?? null;
 
 	const selectOptions =
-		options.length > 0 && options[0] instanceof Array
-			? options
-			: options.map((option) => {
-					return [option, option, defaultValue === option];
-			  });
+		options.length > 0 && options[0] instanceof Array ? options : options.map((option) => [option, option, defaultValue === option]);
 
 	const getErrorMessage = (error: any) => {
 		switch (error?.type) {
@@ -79,6 +75,7 @@ const CustomField = <T extends FieldValues>({
 	);
 };
 
+// eslint-disable-next-line react/no-multi-comp
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => (
 	<>
 		{metadata.map(({ name: fieldName, ...props }) => {
