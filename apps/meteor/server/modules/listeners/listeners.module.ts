@@ -270,6 +270,7 @@ export class ListenersModule {
 
 			if (setting.public === true) {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+				notifications.notifyAllInThisInstance('public-info', ['public-settings-changed', [clientAction, value]]);
 			}
 
 			notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);
@@ -385,10 +386,12 @@ export class ListenersModule {
 
 		service.onEvent('notify.deleteCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+			notifications.notifyAllInThisInstance('public-info', ['deleteCustomSound', [data]]);
 		});
 
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
+			notifications.notifyAllInThisInstance('public-info', ['updateCustomSound', [data]]);
 		});
 
 		service.onEvent('notify.calendar', (uid, data): void => {
