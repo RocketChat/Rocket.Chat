@@ -16,7 +16,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('expect create a public channel', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
@@ -27,7 +27,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('expect create a private channel', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
