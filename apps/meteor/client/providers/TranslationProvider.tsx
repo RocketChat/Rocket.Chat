@@ -103,6 +103,9 @@ const useI18next = (lng: string): typeof i18next => {
 			react: {
 				useSuspense: true,
 			},
+			interpolation: {
+				escapeValue: false,
+			},
 		});
 	}
 
