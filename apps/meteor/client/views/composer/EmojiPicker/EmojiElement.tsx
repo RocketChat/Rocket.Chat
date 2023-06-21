@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
@@ -26,7 +26,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		}
 	`;
 
-	const emojiElement = <Box dangerouslySetInnerHTML={{ __html: image }} />;
+	const emojiElement = <div dangerouslySetInnerHTML={{ __html: image }} />;
 
 	return (
 		<IconButton
