@@ -116,79 +116,81 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      # - name: Cache meteor local
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ./apps/meteor/.meteor/local
-      #     key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
-      #     restore-keys: |
-      #       meteor-local-cache-${{ runner.os }}-
+      - name: Cache meteor local
+        uses: actions/cache@v3
+        with:
+          path: ./apps/meteor/.meteor/local
+          key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          restore-keys: |
+            meteor-local-cache-${{ runner.os }}-
 
-      # - name: Cache meteor
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.meteor
-      #     key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
-      #     restore-keys: |
-      #       meteor-cache-${{ runner.os }}-
+      - name: Cache meteor
+        uses: actions/cache@v3
+        with:
+          path: ~/.meteor
+          key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
+          restore-keys: |
+            meteor-cache-${{ runner.os }}-
 
       - name: Install Meteor
         run: |
-          # # Restore bin from cache
-          # set +e
-          # METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-          # METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-          # set -e
-          # LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-          # if [ -e $LAUNCHER ]
-          # then
-          #   echo "Cached Meteor bin found, restoring it"
-          #   sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-          # else
-          #   echo "No cached Meteor bin found."
-          # fi
+          # Restore bin from cache
+          set +e
+          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+          set -e
+          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+          if [ -e $LAUNCHER ]
+          then
+            echo "Cached Meteor bin found, restoring it"
+            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+          else
+            echo "No cached Meteor bin found."
+          fi
 
-          # # only install meteor if bin isn't found
-          # command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-          git clone --recursive -b release-3.0 https://github.com/meteor/meteor.git /tmp/meteor
-          ln -s /tmp/meteor/meteor /usr/local/bin/meteor
-          meteor --help
+          # only install meteor if bin isn't found
+          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+          # git clone --recursive -b release-3.0 https://github.com/meteor/meteor.git /tmp/meteor
+          # ln -s /tmp/meteor/meteor /usr/local/bin/meteor
+          # meteor --help
 
-      # - name: Versions
-      #   run: |
-      #     npm --versions
-      #     yarn -v
-      #     node -v
-      #     meteor --version
-      #     # meteor npm --versions
-      #     # meteor node -v
-      #     git version
+      - name: Versions
+        run: |
+          npm --versions
+          yarn -v
+          node -v
+          meteor --version
+          meteor npm --versions
+          meteor node -v
+          git version
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Translation check
         run: yarn turbo run translation-check
 
-      # - name: Reset Meteor
-      #   if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
-      #   working-directory: ./apps/meteor
-      #   run: meteor reset
+      - name: Reset Meteor
+        if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
+        working-directory: ./apps/meteor
+        run: meteor reset
 
       - name: Build Rocket.Chat From Pull Request
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: |
-          cd apps/meteor/
-          METEOR_DISABLE_OPTIMISTIC_CACHING=1 /tmp/meteor/meteor build --server-only --directory /tmp/dist
-          cd -
+        run: yarn build:ci -- --directory /tmp/dist
+        # run: |
+        #   cd apps/meteor/
+        #   METEOR_DISABLE_OPTIMISTIC_CACHING=1 /tmp/meteor/meteor build --server-only --directory /tmp/dist
+        #   cd -
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: |
-          cd apps/meteor/
-          METEOR_DISABLE_OPTIMISTIC_CACHING=1 /tmp/meteor/meteor build --server-only --directory /tmp/dist
-          cd -
+        run: yarn build:ci -- --directory /tmp/dist
+        # run: |
+        #   cd apps/meteor/
+        #   METEOR_DISABLE_OPTIMISTIC_CACHING=1 /tmp/meteor/meteor build --server-only --directory /tmp/dist
+        #   cd -
 
       - name: Prepare build
         run: |
@@ -211,7 +213,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -219,7 +221,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -239,7 +241,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -263,7 +265,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -286,7 +288,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -312,7 +314,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
+    needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
     steps:
       - name: Test finish aggregation
