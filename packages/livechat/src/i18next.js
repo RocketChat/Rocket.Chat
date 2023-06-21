@@ -27,6 +27,6 @@ export default i18next
 			react: {
 				useSuspense: false,
 				bindI18n: 'loaded languageChanged',
-        		bindI18nStore: 'added',
+				bindI18nStore: 'added',
 			}
 		});
