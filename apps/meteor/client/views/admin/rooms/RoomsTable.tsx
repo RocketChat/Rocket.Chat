@@ -217,7 +217,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const roomTypeFilterStructure = [
 		{
 			id: 'filter_by_room',
-			text: 'Filter_by_room:',
+			text: 'Filter_by_room',
 			isGroupTitle: true,
 		},
 		{
@@ -252,7 +252,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const roomVisibilityFilterStructure = [
 		{
 			id: 'filter_by_visibility',
-			text: 'Filter by visibility:',
+			text: 'Filter_by_visibility',
 			isGroupTitle: true,
 		},
 		{
@@ -271,8 +271,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
-	console.log(selectedOptions);
-	// console.log(data?.rooms);
+	console.log(`Selected options: ${selectedOptions}`);
+	console.log(`Endpoint rooms: ${data?.rooms}`);
 
 	const roomsList = useFilteredRooms(selectedOptions, isLoading, data?.rooms);
 

@@ -10,12 +10,16 @@ import { isValidReference } from '../../../marketplace/helpers/isValidReference'
 import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onMouseEventPreventSideEffects';
 
 /**
- * @param inputData[]: recebe um array de todos os dados
- * @param dropdownOptions[]: recebe um array com as opções que vão aparecer no dropdown, seguindo um formato específico
- * @param defaultTitle: título padrão do dropdown, quando não selecionado // For example: 'All rooms'
-	@param selectedOptionsTitle: título quando uma ou mais opções forem selecionadas // For example: 'Rooms (3)'
- * @param filterFunction: função (ou função composta por outras funções menores) para filtrar o array
- * @returns um componente React e um array filtrado de acordo com uma função passada no dropdown
+ * @param dropdownOptions options available for the multiselect dropdown list
+ * @param defaultTitle dropdown text before selecting any options (or all of them). For example: 'All rooms'
+	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
+ * @param selectedOptions array with clicked options. This is used in the useFilteredRooms hook, to filter the Rooms' table. This array joins all of the individual clicked options from all available CustomDropDown components in the page. It helps to create a union filter for all the selections.
+ * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
+ * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
+ * @returns a React Component that should be used with a custom hook for filters, such as useFilteredRooms.tsx.
+ * Check out the following files, for examples: 
+ * 	useFilteredRooms.tsx,
+ * 	RoomsTable.tsx
  */
 
 // TODO: remove multicomponents from file!!!
@@ -52,22 +56,21 @@ type DropDownAnchorProps = {
 	defaultTitle: TranslationKey;
 	selectedOptionsTitle: TranslationKey;
 	selectedOptionsCount: number;
+	maxCount: number;
 } & ComponentProps<typeof Button>;
 
 export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(function DropDownAnchor(
-	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, ...props },
+	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
 	const t = useTranslation();
-
-	// TODO: when all options are clicked, should change to "all rooms" title
 
 	return (
 		<Button
 			ref={ref}
 			onClick={onClick}
 			display='flex'
-			alignItems='center'
+			justifyContent='space-between'
 			flexDirection='row'
 			flexGrow='1'
 			flexShrink='1'
@@ -78,7 +81,9 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 			h='x40'
 			{...props}
 		>
-			{selectedOptionsCount > 0 ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
+			{selectedOptionsCount > 0 && selectedOptionsCount !== maxCount - 1
+				? `${t(selectedOptionsTitle)} (${selectedOptionsCount})`
+				: t(defaultTitle)}
 			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' fontSize='x20' color='hint' />
 			</Box>
@@ -127,7 +132,6 @@ export const DropDownList = ({
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{options.map((option) => (
 				<Fragment key={option.id}>
-					{/* TODO: create constructor to accept SelectOption instead of custom type for the CustomDropDown, and then, transform it to the OptionProp by extending it and checking the props -> ver PR da Julia!!! */}
 					{option.isGroupTitle ? (
 						<Box pi='x16' pbs='x8' pbe='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
@@ -179,7 +183,7 @@ export const CustomDropDown = ({
 
 		if (item.checked === true) {
 			// the user has enabled this option -> add it to the selected options
-			setSelectedOptions([...selectedOptions, item]);
+			setSelectedOptions([...new Set([...selectedOptions, item])]);
 			customSetSelected((prevItems) => {
 				const newItems = prevItems;
 				const toggledItem = newItems.find(({ id }) => id === item.id);
@@ -206,6 +210,7 @@ export const CustomDropDown = ({
 				defaultTitle={defaultTitle}
 				selectedOptionsTitle={selectedOptionsTitle}
 				selectedOptionsCount={count}
+				maxCount={dropdownOptions.length}
 			/>
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
