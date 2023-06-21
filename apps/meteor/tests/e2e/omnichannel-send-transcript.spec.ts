@@ -14,7 +14,7 @@ test.describe('omnichannel-transcript', () => {
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
-			name: faker.name.firstName(),
+			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 
