@@ -35,10 +35,12 @@ export class BusinessHourManager {
 	}
 
 	async startManager(): Promise<void> {
+		console.log('BusinessHourManager.startManager()');
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
 		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();
+		console.log('BusinessHourManager.startManager() done');
 	}
 
 	async stopManager(): Promise<void> {
@@ -167,6 +169,8 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-archived',
 		);
+
+		console.log('Added multiple Business Hours callbacks');
 	}
 
 	private removeCallbacks(): void {
