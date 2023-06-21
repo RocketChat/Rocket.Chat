@@ -150,7 +150,7 @@ describe.only('LIVECHAT - business hours', function () {
 		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			// wait for the callbacks to be registered
-			await sleep(2000);
+			await sleep(7000);
 		});
 
 		beforeEach(async () => {
