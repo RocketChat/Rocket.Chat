@@ -3,6 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 export type EmojiItem = {
 	emoji: string;
 	image: string;
+	emojiHandle: string;
 };
 
 export type EmojiCategory = {
