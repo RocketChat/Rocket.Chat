@@ -303,6 +303,8 @@ export class ImportDataConverter {
 		}
 		await this.updateUser(user, userData);
 
+		Object.assign(user, userData);
+
 		await addUserToDefaultChannels(user, true);
 		return user;
 	}
