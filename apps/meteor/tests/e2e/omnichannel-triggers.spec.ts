@@ -15,10 +15,10 @@ test.describe.serial('omnichannel-triggers', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
-			name: faker.name.firstName(),
+			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
-		triggersName = faker.datatype.uuid();
+		triggersName = faker.string.uuid();
 		triggerMessage = 'Welcome to Rocket.chat';
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),

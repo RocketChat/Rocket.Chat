@@ -4,7 +4,7 @@ import type { BadgeProps } from '@rocket.chat/fuselage';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 
@@ -45,9 +45,9 @@ addAction('thread', (options) => {
 							const unread = tunread > 99 ? '99+' : tunread;
 							const variant = getVariant(tunreadUser, tunreadGroup);
 							return (
-								<Header.ToolBox.Action {...props}>
-									{!!unread && <Header.ToolBox.ActionBadge variant={variant}>{unread}</Header.ToolBox.ActionBadge>}
-								</Header.ToolBox.Action>
+								<HeaderToolboxAction {...props}>
+									{!!unread && <HeaderToolboxActionBadge variant={variant}>{unread}</HeaderToolboxActionBadge>}
+								</HeaderToolboxAction>
 							);
 						},
 						order: 2,

@@ -70,6 +70,7 @@ class RoomHistoryManagerClass extends Emitter {
 			unreadNotLoaded: ReactiveVar<number>;
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
+			oldestTs?: Date;
 		}
 	> = {};
 
@@ -122,7 +123,6 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getMore(rid: IRoom['_id'], limit = defaultLimit): Promise<void> {
-		let ts;
 		const room = this.getRoom(rid);
 
 		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
@@ -133,16 +133,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		await this.queue();
 
-		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
-		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
-
-		if (lastMessage) {
-			({ ts } = lastMessage);
-		} else {
-			ts = undefined;
-		}
-
 		let ls = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
@@ -150,7 +140,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
+		const result = await callWithErrorHandling('loadHistory', rid, room.oldestTs, limit, ls ? String(ls) : undefined, false);
 
 		if (!result) {
 			throw new Error('loadHistory returned nothing');
@@ -163,6 +153,10 @@ class RoomHistoryManagerClass extends Emitter {
 		const { messages = [] } = result;
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
+
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
+		}
 
 		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
@@ -268,6 +262,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
+		room.oldestTs = undefined;
 		room.loaded = undefined;
 	}
 
