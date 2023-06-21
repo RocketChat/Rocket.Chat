@@ -23,6 +23,7 @@ import {
 } from '../../../data/livechat/department';
 import { deleteUser, getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
+import { sleep } from '../../../../lib/utils/sleep';
 
 describe('LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -172,6 +173,8 @@ describe('LIVECHAT - business hours', function () {
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
+			await sleep(2000);
+
 			// verify if department is archived and BH link is removed
 			const department = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(department).to.be.an('object');
@@ -193,6 +196,8 @@ describe('LIVECHAT - business hours', function () {
 
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
+
+			await sleep(2000);
 
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
@@ -221,6 +226,8 @@ describe('LIVECHAT - business hours', function () {
 
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
+
+			await sleep(2000);
 
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
 			expect(latestAgent).to.be.an('object');
