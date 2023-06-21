@@ -16,8 +16,11 @@ Meteor.startup(async () => {
 	businessHourManager.registerBusinessHourBehavior(new BusinessHourBehaviorClass());
 	businessHourManager.registerBusinessHourType(new DefaultBusinessHour());
 
-	Accounts.onLogin(
-		async ({ user }: { user: any }) =>
-			user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id),
+	// Note: This shouldn't happen directly on login, but after the login process has already finished
+	// but meteor doesn't have "afterLogin" hooks
+	Accounts.onLogin(async ({ user }: { user: any }) =>
+		setTimeout(async () => {
+			user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id);
+		}, 1000),
 	);
 });

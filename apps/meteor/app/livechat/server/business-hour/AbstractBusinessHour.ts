@@ -44,6 +44,8 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
+	// After logout, users are turned not-available by default
+	// This will turn them available unless they put themselves offline (manual status change)
 	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
