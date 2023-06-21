@@ -37,11 +37,10 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 					color={message.u._id !== message.editedBy._id ? 'danger' : undefined}
 					title={
 						message.editedBy._id === uid
-							? t('Message_has_been_edited_at', { date: formatter(message.editedAt), interpolation: { escapeValue: false } })
+							? t('Message_has_been_edited_at', { date: formatter(message.editedAt) })
 							: t('Message_has_been_edited_by_at', {
 									username: message.editedBy.username || '?',
 									date: formatter(message.editedAt),
-									interpolation: { escapeValue: false },
 							  })
 					}
 				/>

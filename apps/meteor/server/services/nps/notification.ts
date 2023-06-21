@@ -34,7 +34,6 @@ export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 						text: i18n.t('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
 							date: moment(expireAt).format('YYYY-MM-DD'),
 							lng,
-							interpolation: { escapeValue: false },
 						}),
 						emoji: false,
 					},
