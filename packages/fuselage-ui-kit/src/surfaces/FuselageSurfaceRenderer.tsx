@@ -16,7 +16,8 @@ import MultiStaticSelectElement from '../elements/MultiStaticSelectElement';
 import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
-import TextElement from '../elements/TextElement';
+import MarkdownTextElement from '../elements/MarkdownTextElement';
+import PlainTextElement from '../elements/PlainTextElement';
 
 export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
@@ -42,18 +43,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
-    return this.text(textObject, context, index);
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return <PlainTextElement key={index} textObject={textObject} />;
   }
 
   public mrkdwn(
-    textObject: UiKit.TextObject,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    return this.text(textObject, context, index);
-  }
-
-  public text(
     textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
     index: number
@@ -62,7 +59,19 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return <TextElement key={index} textObject={textObject} />;
+    return <MarkdownTextElement key={index} textObject={textObject} />;
+  }
+
+  public text(
+    textObject: UiKit.TextObject,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (textObject.type === 'mrkdwn') {
+      return this.mrkdwn(textObject, context, index);
+    }
+
+    return this.plain_text(textObject, context, index);
   }
 
   actions(
