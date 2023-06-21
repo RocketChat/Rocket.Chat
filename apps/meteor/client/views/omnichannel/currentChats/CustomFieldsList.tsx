@@ -35,29 +35,33 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
 				{allCustomFields
 					.filter((customField) => customField.scope !== 'visitor')
-					.map((customField: ILivechatCustomField) =>
-						customField.type === 'select' ? (
-							<Field>
-								<Field.Label>{customField.label}</Field.Label>
-								<Field.Row>
-									<Controller
-										name={customField._id}
-										control={control}
-										render={({ field }): ReactElement => (
-											<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
-										)}
-									/>
-								</Field.Row>
-							</Field>
-						) : (
-							<Field>
+					.map((customField: ILivechatCustomField) => {
+						if (customField.type === 'select') {
+							return (
+								<Field key={customField._id}>
+									<Field.Label>{customField.label}</Field.Label>
+									<Field.Row>
+										<Controller
+											name={customField._id}
+											control={control}
+											render={({ field }): ReactElement => (
+												<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
+											)}
+										/>
+									</Field.Row>
+								</Field>
+							);
+						}
+
+						return (
+							<Field key={customField._id}>
 								<Field.Label>{customField.label}</Field.Label>
 								<Field.Row>
 									<TextInput flexGrow={1} {...register(customField._id)} />
 								</Field.Row>
 							</Field>
-						),
-					)}
+						);
+					})}
 			</ContextualbarScrollableContent>
 		</Contextualbar>
 	);
