@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
