@@ -1,30 +1,21 @@
-import type { MenuItemIcon } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute, useMethod, useSetModal, useRole } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
 import type { AccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
 import Emoji from '../../../../components/Emoji';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
-export type Item = {
-	id: string;
-	icon?: ComponentProps<typeof MenuItemIcon>['name'];
-	name?: string;
-	input?: ReactNode;
-	content?: ReactNode;
-	onClick?: () => void;
-};
 type useAdministrationItemProps = {
 	accountBoxItems: AccountBoxItem[];
 	showWorkspace: boolean;
 };
-export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAdministrationItemProps): Item[] => {
+export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAdministrationItemProps): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
@@ -47,7 +38,7 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 	const cloudRoute = useRoute('cloud');
 	const showUpgradeItem = !isLoading && tabType;
 
-	const upgradeItem: Item = {
+	const upgradeItem: GenericMenuItemProps = {
 		id: 'showUpgradeItem',
 		content: (
 			<>
@@ -59,9 +50,9 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 			upgradeRoute.push({ type: tabType as UpgradeTabVariant }, trialEndDate ? { trialEndDate } : undefined);
 		},
 	};
-	const adminItem: Item = {
+	const adminItem: GenericMenuItemProps = {
 		id: 'registration',
-		name: workspaceRegistered ? t('Registration') : t('Register'),
+		content: workspaceRegistered ? t('Registration') : t('Register'),
 		icon: 'cloud-plus',
 		onClick: () => {
 			if (workspaceRegistered) {
@@ -71,16 +62,16 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 			handleRegisterWorkspaceClick();
 		},
 	};
-	const workspaceItem: Item = {
+	const workspaceItem: GenericMenuItemProps = {
 		id: 'workspace',
-		name: t('Workspace'),
+		content: t('Workspace'),
 		icon: 'cog',
 		onClick: () => {
 			adminRoute.push({ context: '/' });
 		},
 	};
 
-	const accountBoxItem: Item[] = accountBoxItems.map((item, key) => {
+	const accountBoxItem: GenericMenuItemProps[] = accountBoxItems.map((item, key) => {
 		const action = () => {
 			if (item.href) {
 				FlowRouter.go(item.href);
@@ -88,7 +79,7 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 		};
 		return {
 			id: `account-box-item-${key}`,
-			name: t(item.name),
+			content: t(item.name),
 			icon: item.icon,
 			onClick: action,
 		};

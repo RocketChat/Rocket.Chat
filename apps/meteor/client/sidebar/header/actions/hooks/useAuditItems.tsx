@@ -1,28 +1,28 @@
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 
-import type { Item } from './useSortModeItems';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 
 type useAuditItemsProps = {
 	showAudit: boolean;
 	showAuditLog: boolean;
 };
 
-export const useAuditItems = ({ showAudit, showAuditLog }: useAuditItemsProps): Item[] => {
+export const useAuditItems = ({ showAudit, showAuditLog }: useAuditItemsProps): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const auditHomeRoute = useRoute('audit-home');
 	const auditSettingsRoute = useRoute('audit-log');
 
-	const auditMessageItem: Item = {
+	const auditMessageItem: GenericMenuItemProps = {
 		id: 'messages',
 		icon: 'document-eye',
-		name: t('Messages'),
+		content: t('Messages'),
 		onClick: () => auditHomeRoute.push(),
 	};
-	const auditLogItem: Item = {
+	const auditLogItem: GenericMenuItemProps = {
 		id: 'messages',
 		icon: 'document-eye',
-		name: t('Logs'),
+		content: t('Logs'),
 		onClick: () => auditSettingsRoute.push(),
 	};
 

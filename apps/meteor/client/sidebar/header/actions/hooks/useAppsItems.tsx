@@ -4,8 +4,8 @@ import React from 'react';
 
 import { triggerActionButtonAction } from '../../../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
-import type { Item } from './useSortModeItems';
 
 type useAppsItemsProps = {
 	appBoxItems: IAppAccountBoxItem[];
@@ -13,7 +13,7 @@ type useAppsItemsProps = {
 	showMarketplace?: boolean;
 };
 
-export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketplace }: useAppsItemsProps): Item[] => {
+export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketplace }: useAppsItemsProps): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const marketplaceRoute = useRoute('marketplace');
@@ -21,29 +21,29 @@ export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketpla
 
 	const appRequestStats = useAppRequestStats();
 
-	const marketPlaceItems: Item[] = [
+	const marketPlaceItems: GenericMenuItemProps[] = [
 		{
 			id: 'marketplace',
 			icon: 'store',
-			name: t('Marketplace'),
+			content: t('Marketplace'),
 			onClick: () => marketplaceRoute.push({ context: 'explore', page }),
 		},
 		{
 			id: 'installed',
 			icon: 'circle-arrow-down',
-			name: t('Installed'),
+			content: t('Installed'),
 			onClick: () => marketplaceRoute.push({ context: 'installed', page }),
 		},
 	];
 
-	const appsManagementItem: Item = {
+	const appsManagementItem: GenericMenuItemProps = {
 		id: 'requested-apps',
 		icon: 'cube',
-		name: t('Requested'),
+		content: t('Requested'),
 		onClick: () => {
 			marketplaceRoute.push({ context: 'requested', page });
 		},
-		badge: (
+		addon: (
 			<>
 				{appRequestStats.isLoading && <Skeleton variant='circle' height={16} width={16} />}
 				{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
@@ -53,7 +53,7 @@ export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketpla
 		),
 	};
 
-	const appItems: Item[] = appBoxItems.map((item: IAppAccountBoxItem, key: number) => {
+	const appItems: GenericMenuItemProps[] = appBoxItems.map((item: IAppAccountBoxItem, key: number) => {
 		const action = () => {
 			triggerActionButtonAction({
 				rid: '',
@@ -65,8 +65,8 @@ export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketpla
 		};
 		return {
 			id: item.actionId + key,
-			icon: item.icon as Item['icon'],
-			name: (t.has(item.name) && t(item.name)) || item.name,
+			icon: item.icon as GenericMenuItemProps['icon'],
+			content: (t.has(item.name) && t(item.name)) || item.name,
 			onClick: action,
 		};
 	});
