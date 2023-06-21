@@ -48,7 +48,7 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
-			{ livechatStatusSystemModified: true },
+			{ livechatStatusSystemModified: true, status: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
 	}
