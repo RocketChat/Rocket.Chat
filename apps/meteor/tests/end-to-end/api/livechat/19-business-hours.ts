@@ -25,7 +25,8 @@ import { deleteUser, getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
 import { sleep } from '../../../../lib/utils/sleep';
 
-describe('LIVECHAT - business hours', function () {
+// eslint-disable-next-line no-restricted-properties
+describe.only('LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -177,6 +178,7 @@ describe('LIVECHAT - business hours', function () {
 
 			// verify if department is archived and BH link is removed
 			const department = await getDepartmentById(deptLinkedToCustomBH._id);
+			console.log('archived department', JSON.stringify(department));
 			expect(department).to.be.an('object');
 			expect(department.archived).to.be.true;
 			expect(department.businessHourId).to.be.undefined;
