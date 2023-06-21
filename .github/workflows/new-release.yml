@@ -40,7 +40,7 @@ jobs:
     - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
     - name: Build
-      run: yarn build
+      run: yarn build --filter=@rocket.chat/release-action
 
     - name: Start next release
       if: ${{ github.event.inputs.name == 'next' }}
