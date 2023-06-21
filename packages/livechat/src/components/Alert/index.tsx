@@ -1,8 +1,24 @@
-import { useEffect } from 'preact/hooks';
+import { useCallback, useEffect } from 'preact/hooks';
+import type { JSXInternal } from 'preact/src/jsx';
+import { useTranslation } from 'react-i18next';
 
 import CloseIcon from '../../icons/close.svg';
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
+
+type AlertProps = {
+	id?: string;
+	onDismiss?: (id?: string) => void;
+	success?: boolean;
+	warning?: boolean;
+	error?: boolean;
+	color?: string;
+	hideCloseButton?: boolean;
+	className?: string;
+	style?: JSXInternal.CSSProperties;
+	children?: JSXInternal.Element[];
+	timeout?: number;
+};
 
 const Alert = ({
 	id,
@@ -16,17 +32,19 @@ const Alert = ({
 	style = {},
 	children,
 	timeout = 3000,
-}) => {
-	const handleDismiss = () => {
-		onDismiss && onDismiss(id);
-	};
+}: AlertProps) => {
+	const { t } = useTranslation();
+	const handleDismiss = useCallback(() => {
+		onDismiss?.(id);
+	}, [id, onDismiss]);
 
 	useEffect(() => {
+		let dismissTimeout: ReturnType<typeof setTimeout> | undefined;
 		if (Number.isFinite(timeout) && timeout > 0) {
-			this.dismissTimeout = setTimeout(this.handleDismiss, timeout);
+			dismissTimeout = setTimeout(handleDismiss, timeout);
 		}
-		return () => clearTimeout(this.dismissTimeout);
-	}, [timeout]);
+		return () => clearTimeout(dismissTimeout);
+	}, [handleDismiss, timeout]);
 
 	return (
 		<div
