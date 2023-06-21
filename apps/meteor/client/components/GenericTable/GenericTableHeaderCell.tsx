@@ -2,7 +2,7 @@ import { Box, TableCell } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import SortIcon from '../SortIcon';
+import SortIcon from './SortIcon';
 
 type GenericTableHeaderCellProps<T extends string> = Omit<ComponentProps<typeof Box>, 'onClick'> & {
 	active?: boolean;
