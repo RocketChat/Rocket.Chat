@@ -35,19 +35,19 @@ const VoipExtensionsPage: FC = () => {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell key='extension' w='x156'>
+				<GenericTable.HeaderCell key='extension-number' w='x156'>
 					{t('Extension_Number')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key='username' w='x160'>
+				<GenericTable.HeaderCell key='agent-name' w='x160'>
 					{t('Agent_Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key='username' w='x120'>
+				<GenericTable.HeaderCell key='extension-status' w='x120'>
 					{t('Extension_Status')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key='queues' w='x120'>
 					{t('Queues')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'remove-add'} w='x60' />,
+				<GenericTable.HeaderCell key='remove-add' w='x60' />,
 			].filter(Boolean),
 		[t],
 	);
