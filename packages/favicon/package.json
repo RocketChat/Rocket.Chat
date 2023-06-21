@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.38.0",
+		"eslint": "~8.43.0",
 		"typescript": "~5.0.4"
 	},
 	"scripts": {
