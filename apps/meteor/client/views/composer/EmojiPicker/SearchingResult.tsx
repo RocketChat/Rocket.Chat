@@ -37,8 +37,8 @@ const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultPr
 				List: SearchingResultWrapper,
 			}}
 			itemContent={(index) => {
-				const { emoji, image } = searchResults[index] || {};
-				return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
+				const { emoji, image, emojiHandle } = searchResults[index] || {};
+				return <EmojiElement emoji={emoji} image={image} emojiHandle={emojiHandle} onClick={handleSelectEmoji} />;
 			}}
 		/>
 	);
