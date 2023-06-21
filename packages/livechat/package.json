@@ -47,7 +47,7 @@
 		"css-loader": "^4.3.0",
 		"cssnano": "^4.1.11",
 		"desvg-loader": "^0.1.0",
-		"eslint": "~8.38.0",
+		"eslint": "~8.43.0",
 		"eslint-plugin-import": "~2.26.0",
 		"eslint-plugin-react": "~7.32.2",
 		"eslint-plugin-react-hooks": "~4.6.0",
