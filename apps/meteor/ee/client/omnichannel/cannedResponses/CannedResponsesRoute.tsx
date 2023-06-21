@@ -58,15 +58,17 @@ const CannedResponsesRoute: FC = () => {
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 
-	const { data } = useQuery(['canned-responses', '/v1/canned-responses', debouncedText], () =>
-		getCannedResponses({
-			text: debouncedText,
-			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(sharing && { scope: sharing }),
-			...(createdBy && createdBy !== 'all' && { createdBy }),
-			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
-			...(debouncedParams.current && { offset: debouncedParams.current }),
-		}),
+	const { data } = useQuery(
+		['canned-responses', '/v1/canned-responses', { debouncedText, debouncedSort, debouncedParams, sharing, createdBy }],
+		() =>
+			getCannedResponses({
+				text: debouncedText,
+				sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
+				...(sharing && { scope: sharing }),
+				...(createdBy && createdBy !== 'all' && { createdBy }),
+				...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
+				...(debouncedParams.current && { offset: debouncedParams.current }),
+			}),
 	);
 
 	const { data: totalData, isInitialLoading: totalDataLoading } = useQuery(['canned-responses', '/v1/canned-responses'], () =>
