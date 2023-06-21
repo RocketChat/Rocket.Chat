@@ -15,7 +15,7 @@ test.describe.serial('omnichannel-departments', () => {
 	let departmentName: string;
 
 	test.beforeAll(async () => {
-		departmentName = faker.datatype.uuid();
+		departmentName = faker.string.uuid();
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
