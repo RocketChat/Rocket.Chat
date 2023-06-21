@@ -85,11 +85,12 @@ export async function publishRelease({
 
 	await exec('git', ['push', '--follow-tags']);
 
-	core.info('create release');
+	core.info('create draft release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: releaseBody,
+		draft: true,
 		prerelease: newVersion.includes('-'),
 		...github.context.repo,
 	});
