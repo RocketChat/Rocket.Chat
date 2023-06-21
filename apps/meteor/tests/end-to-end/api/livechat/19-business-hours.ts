@@ -25,8 +25,7 @@ import { deleteUser, getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
 import { sleep } from '../../../../lib/utils/sleep';
 
-// eslint-disable-next-line no-restricted-properties
-describe.only('LIVECHAT - business hours', function () {
+describe('LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -150,7 +149,7 @@ describe.only('LIVECHAT - business hours', function () {
 		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			// wait for the callbacks to be registered
-			await sleep(7000);
+			await sleep(2000);
 		});
 
 		beforeEach(async () => {
@@ -177,11 +176,8 @@ describe.only('LIVECHAT - business hours', function () {
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
-			await sleep(2000);
-
 			// verify if department is archived and BH link is removed
 			const department = await getDepartmentById(deptLinkedToCustomBH._id);
-			console.log('archived department', JSON.stringify(department));
 			expect(department).to.be.an('object');
 			expect(department.archived).to.be.true;
 			expect(department.businessHourId).to.be.undefined;
@@ -201,8 +197,6 @@ describe.only('LIVECHAT - business hours', function () {
 
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
-
-			await sleep(2000);
 
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
@@ -231,8 +225,6 @@ describe.only('LIVECHAT - business hours', function () {
 
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
-
-			await sleep(2000);
 
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
 			expect(latestAgent).to.be.an('object');
