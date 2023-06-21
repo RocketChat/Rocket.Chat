@@ -10,7 +10,7 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = () => {
 
 	const sections = useSortMenu();
 
-	return <GenericMenu icon='sort' sections={sections} title={t('Create_new')} selectionMode='multiple' />;
+	return <GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' />;
 };
 
 export default Sort;
