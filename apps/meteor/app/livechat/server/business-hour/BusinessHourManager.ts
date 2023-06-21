@@ -35,12 +35,10 @@ export class BusinessHourManager {
 	}
 
 	async startManager(): Promise<void> {
-		console.log('BusinessHourManager.startManager()');
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
 		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();
-		console.log('BusinessHourManager.startManager() done');
 	}
 
 	async stopManager(): Promise<void> {
@@ -48,6 +46,11 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
+	}
+
+	async restartManager(): Promise<void> {
+		await this.stopManager();
+		await this.startManager();
 	}
 
 	async cleanupDisabledDepartmentReferences(): Promise<void> {
@@ -165,7 +168,7 @@ export class BusinessHourManager {
 		// TODO: Binding the correct "this" for the context of onDepartmentArchived. Should we do the same for other callbacks?
 		callbacks.add(
 			'livechat.afterDepartmentArchived',
-			this.behavior.onDepartmentArchived.bind(this.behavior),
+			this.behavior.onDepartmentArchived.bind(this),
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-archived',
 		);
