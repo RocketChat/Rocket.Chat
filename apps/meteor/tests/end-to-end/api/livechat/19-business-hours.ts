@@ -93,7 +93,6 @@ describe.only('LIVECHAT - business hours', function () {
 		});
 		it('should return a just created custom business hour', async () => {
 			const name = `business-hour-${Date.now()}`;
-			await updateSetting('Livechat_business_hour_type', 'multiple');
 			await saveBusinessHour({
 				name,
 				active: true,
@@ -148,9 +147,13 @@ describe.only('LIVECHAT - business hours', function () {
 		let deptLinkedToCustomBH: ILivechatDepartment;
 		let agentLinkedToDept: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['agent'];
 
-		beforeEach(async () => {
+		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			// wait for the callbacks to be registered
+			await sleep(2000);
+		});
 
+		beforeEach(async () => {
 			// cleanup any existing business hours
 			await removeAllCustomBusinessHours();
 
