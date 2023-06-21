@@ -1,5 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useCallback } from 'react';
 
@@ -11,8 +11,9 @@ type TabNavigationElementProps = BlockProps<UiKit.TabNavigationElement>;
 const TabNavigationElement = ({
   block,
   context,
+  surfaceRenderer,
 }: TabNavigationElementProps): ReactElement => {
-  const [{ loading }, action] = useUiKitState(block, context);
+  const [{ loading, value }, action] = useUiKitState(block, context);
   const { options } = block;
 
   const handleChange = useCallback(
@@ -23,16 +24,32 @@ const TabNavigationElement = ({
   );
 
   return (
-    <Tabs disabled={loading} onChange={handleChange}>
-      {options.map((tabItem) => (
-        <Tabs.Item
-          key={tabItem.value}
-          disabled={tabItem?.disabled}
-          selected={tabItem?.selected}
-        >
-          {tabItem.text}
-        </Tabs.Item>
-      ))}
+    <Tabs disabled={loading}>
+      {options.map((tabItem) => {
+        const isSelected = tabItem.value === value || tabItem.selected;
+        const isDisabled = tabItem?.disabled;
+
+        return (
+          <Tabs.Item
+            key={tabItem.value}
+            disabled={isDisabled}
+            selected={isSelected}
+            onClick={() => {
+              if (isDisabled) {
+                return;
+              }
+
+              handleChange(tabItem.value);
+            }}
+          >
+            {surfaceRenderer.renderTextObject(
+              tabItem.text,
+              0,
+              UiKit.BlockContext.NONE
+            )}
+          </Tabs.Item>
+        );
+      })}
     </Tabs>
   );
 };

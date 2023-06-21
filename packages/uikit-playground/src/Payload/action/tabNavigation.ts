@@ -12,12 +12,24 @@ export const actionWithTabNavigation: readonly LayoutBlock[] = [
         options: [
           {
             value: 'tab_1',
-            text: 'lorem ipsum 🚀',
-            selected: true,
+            text: {
+              type: 'plain_text',
+              text: 'lorem ipsum',
+            },
           },
           {
             value: 'tab_2',
-            text: 'lorem ipsum 🚀',
+            text: {
+              type: 'plain_text',
+              text: 'dolor sit amet',
+            },
+          },
+          {
+            value: 'tab_3',
+            text: {
+              type: 'plain_text',
+              text: 'dolor sit amet',
+            },
             disabled: true,
           },
         ],
