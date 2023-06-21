@@ -9657,14 +9657,14 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/fuselage-hooks@npm:next":
-  version: 0.32.0-dev.243
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.32.0-dev.243"
+  version: 0.32.0-dev.274
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.32.0-dev.274"
   dependencies:
     use-sync-external-store: ~1.2.0
   peerDependencies:
     "@rocket.chat/fuselage-tokens": "*"
     react: ^17.0.2
-  checksum: 3a8f2375e3df9d9194efd9e3f70ebeff6dffde07d0b49dc94fbe0a2e5e6b37fbf1d6822ed4d218140479c8ada22545eb74d6b31f764740c04292513e2fc3f0f6
+  checksum: 32e0872deb05e8b853aed59cab2cc4b3d3a707f0997009170a12b19d252ca09c203f8139b227c90678c0c06e14228c116ab428b9fba81228d1dab981844d8d54
   languageName: node
   linkType: hard
 
@@ -9775,6 +9775,12 @@ __metadata:
     react: "*"
     react-dom: "*"
   languageName: unknown
+  linkType: soft
+
+"@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  languageName: node
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
@@ -10092,7 +10098,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    "@rocket.chat/fuselage": next
+    "@rocket.chat/fuselage": "link:../../../fuselage/packages/fuselage"
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/fuselage-polyfills": next
     "@rocket.chat/fuselage-toastbar": next
