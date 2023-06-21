@@ -13,7 +13,7 @@ import {
 	createCustomBusinessHour,
 	getCustomBusinessHourById,
 } from '../../../data/livechat/businessHours';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import {
 	addOrRemoveAgentFromDepartment,
@@ -24,7 +24,6 @@ import {
 import { deleteUser, getMe } from '../../../data/users.helper';
 import { deleteDepartment } from '../../../data/livechat/rooms';
 
-// TODO: In a separate PR, divide this file into 2 files, one for CE and one for EE
 describe('LIVECHAT - business hours', function () {
 	this.retries(0);
 
@@ -32,16 +31,18 @@ describe('LIVECHAT - business hours', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_enable_business_hours', true);
 	});
 
 	describe('[CE] livechat/business-hour', () => {
 		it('should fail when user doesnt have view-livechat-business-hours permission', async () => {
-			await updatePermission('view-livechat-business-hours', []);
+			await removePermissionFromAllRoles('view-livechat-business-hours');
 			const response = await request.get(api('livechat/business-hour')).set(credentials).expect(403);
 			expect(response.body.success).to.be.false;
+
+			await restorePermissionToRoles('view-livechat-business-hours');
 		});
 		it('should fail when business hour type is not a valid BH type', async () => {
-			await updatePermission('view-livechat-business-hours', ['admin', 'livechat-manager']);
 			const response = await request.get(api('livechat/business-hour')).set(credentials).query({ type: 'invalid' }).expect(200);
 			expect(response.body.success).to.be.true;
 			expect(response.body.businessHour).to.be.null;
@@ -65,12 +66,13 @@ describe('LIVECHAT - business hours', function () {
 
 	(IS_EE ? describe : describe.skip)('[EE] livechat/business-hour', () => {
 		it('should fail if user doesnt have view-livechat-business-hours permission', async () => {
-			await updatePermission('view-livechat-business-hours', []);
+			await removePermissionFromAllRoles('view-livechat-business-hours');
 			const response = await request.get(api('livechat/business-hours')).set(credentials).expect(403);
 			expect(response.body.success).to.be.false;
+
+			await restorePermissionToRoles('view-livechat-business-hours');
 		});
 		it('should return a list of business hours', async () => {
-			await updatePermission('view-livechat-business-hours', ['admin', 'livechat-manager']);
 			const response = await request.get(api('livechat/business-hours')).set(credentials).expect(200);
 			expect(response.body.success).to.be.true;
 			expect(response.body.businessHours).to.be.an('array').with.lengthOf.greaterThan(0);
@@ -144,7 +146,7 @@ describe('LIVECHAT - business hours', function () {
 		let deptLinkedToCustomBH: ILivechatDepartment;
 		let agentLinkedToDept: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['agent'];
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 
 			// cleanup any existing business hours
@@ -275,7 +277,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agent.user);
 		});
 
-		this.afterEach(async () => {
+		afterEach(async () => {
 			await deleteDepartment(deptLinkedToCustomBH._id);
 			await deleteUser(agentLinkedToDept.user);
 		});
