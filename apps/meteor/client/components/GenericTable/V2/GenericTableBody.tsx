@@ -1,5 +1,5 @@
-import { Table } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import { TableBody } from '@rocket.chat/fuselage';
+import type { FC, ComponentProps } from 'react';
 import React from 'react';
 
-export const GenericTableBody: FC = (props) => <Table.Body {...props} />;
+export const GenericTableBody: FC<ComponentProps<typeof TableBody>> = (props) => <TableBody {...props} />;

@@ -1,11 +1,11 @@
-import { Table } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import { TableHead } from '@rocket.chat/fuselage';
+import type { FC, ComponentProps } from 'react';
 import React from 'react';
 
 import { GenericTableRow } from './GenericTableRow';
 
-export const GenericTableHeader: FC = ({ children, ...props }) => (
-	<Table.Head {...props}>
+export const GenericTableHeader: FC<ComponentProps<typeof TableHead>> = ({ children, ...props }) => (
+	<TableHead {...props}>
 		<GenericTableRow>{children}</GenericTableRow>
-	</Table.Head>
+	</TableHead>
 );
