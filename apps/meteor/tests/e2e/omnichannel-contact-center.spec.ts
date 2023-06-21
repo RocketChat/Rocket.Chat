@@ -1,7 +1,6 @@
 import faker from '@faker-js/faker';
 
 import { createToken } from '../../client/lib/utils/createToken';
-import { createCustomField , deleteCustomField } from '../data/livechat/custom-fields';
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { OmnichannelContacts } from './page-objects/omnichannel-contacts-list';
@@ -20,6 +19,16 @@ const createContact = (generateToken = false) => ({
 const NEW_CONTACT = createContact();
 const EDIT_CONTACT = createContact();
 const EXISTING_CONTACT = createContact(true);
+const NEW_CUSTOM_FIELD = {
+	searchable: true,
+	field: 'hiddenCustomField',
+	label: 'hiddenCustomField',
+	defaultValue: 'test_contact_center_hidden_customField',
+	scope: 'visitor',
+	visibility: 'hidden',
+	required: true,
+	regexp: '',
+}
 
 const URL = {
 	contactCenter: '/omnichannel-directory/contacts',
@@ -49,18 +58,9 @@ test.describe('Omnichannel Contact Center', () => {
 		// Add a contact
 		const { id: _, ...data } = EXISTING_CONTACT;
 		await api.post('/omnichannel/contact', data);
-
+		
 		if (IS_EE) {
-			await createCustomField({
-				searchable: true,
-				field: 'hiddenCustomField',
-				label: 'hiddenCustomField',
-				defaultValue: 'test_contact_center_hidden_customField',
-				scope: 'visitor',
-				visibility: 'hidden',
-				required: true,
-				regexp: '',
-			});
+			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
 		}
 	});
 
@@ -69,7 +69,7 @@ test.describe('Omnichannel Contact Center', () => {
 		await api.delete('/livechat/visitor', { token: EXISTING_CONTACT.token });
 		await api.delete('/livechat/visitor', { token: NEW_CONTACT.token });
 		if (IS_EE) {
-			await deleteCustomField('hiddenCustomField');
+			await api.post('method.call/livechat:removeCustomField', { message: NEW_CUSTOM_FIELD.field });
 		}
 	});
 
