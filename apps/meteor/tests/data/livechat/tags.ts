@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
 import type { DummyResponse } from './utils';
@@ -11,7 +11,7 @@ export const saveTags = (): Promise<ILivechatTag> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveTag',
-					params: [undefined, { name: faker.name.firstName(), description: faker.lorem.sentence() }, []],
+					params: [undefined, { name: faker.person.firstName(), description: faker.lorem.sentence() }, []],
 					id: '101',
 					msg: 'method',
 				}),
