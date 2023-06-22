@@ -76,7 +76,7 @@ export abstract class AbstractBusinessHourBehavior {
 			return;
 		}
 
-		await this.UsersRepository.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
+		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
 
 		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
 	}
