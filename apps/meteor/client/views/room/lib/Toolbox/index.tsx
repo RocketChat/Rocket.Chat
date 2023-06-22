@@ -13,7 +13,6 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	className: ComponentProps<typeof Box>['className'];
 	index: number;
 	title: string;
-	key: string;
 };
 
 type ActionRenderer = (props: ActionRendererProps) => ReactNode;
