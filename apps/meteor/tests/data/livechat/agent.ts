@@ -1,4 +1,4 @@
-import { getCredentials, api, request, credentials } from '../api-data';
+import { api, request, credentials } from '../api-data';
 
 export const changeAgentStatus = async (agentId: string, status: string) => {
     await request
