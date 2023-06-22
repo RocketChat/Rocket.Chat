@@ -45,7 +45,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 
 		// start a new chat for each test
 		newVisitor = {
-			name: faker.name.firstName(),
+			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 		poLiveChat = new OmnichannelLiveChat(page);

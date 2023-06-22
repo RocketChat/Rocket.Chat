@@ -15,10 +15,12 @@ export type ComposerBoxPopupUserProps = {
 	nickname?: string;
 	status?: string;
 	sort?: number;
+	variant?: 'small' | 'large';
 };
 
-const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, suggestion }: ComposerBoxPopupUserProps) => {
+const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) => {
 	const t = useTranslation();
+
 	return (
 		<>
 			{!system && (
@@ -42,12 +44,13 @@ const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, 
 				</OptionContent>
 			)}
 
-			{outside && (
+			{outside && variant === 'large' && (
 				<OptionColumn>
 					<OptionInput>{t('Not_in_channel')}</OptionInput>
 				</OptionColumn>
 			)}
-			{suggestion && (
+
+			{suggestion && variant === 'large' && (
 				<OptionColumn>
 					<OptionInput>{t('Suggestion_from_recent_messages')}</OptionInput>
 				</OptionColumn>
