@@ -161,4 +161,4 @@ await injectIntoBody(
 `,
 );
 
-await injectIntoBody('icons', await Assets.getTextAsync('public/icons.svg'));
+await injectIntoBody('icons', await Assets.getText('public/icons.svg'));
