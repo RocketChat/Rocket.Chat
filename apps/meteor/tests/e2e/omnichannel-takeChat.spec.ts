@@ -39,7 +39,7 @@ test.describe('omnichannel-takeChat', () => {
 
 		// start a new chat for each test
 		newVisitor = {
-			name: `${faker.name.firstName()} ${faker.datatype.uuid()}`,
+			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
 			email: faker.internet.email(),
 		};
 		poLiveChat = new OmnichannelLiveChat(page);

@@ -1,3 +1,4 @@
 declare module '*.svg' {
-	export = undefined;
+	const content: Preact.FunctionComponent<Preact.SVGAttributes<SVGElement>>;
+	export default content;
 }

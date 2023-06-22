@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FC } from 'react';
 import React, { useEffect, useState, useCallback } from 'react';
 
-import { APIClient } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
@@ -30,7 +30,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/livechat/room', {
+		const room = (await sdk.rest.get('/v1/livechat/room', {
 			token: visitorToken,
 			rid: roomId,
 		})) as any;
@@ -49,7 +49,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/rooms.info', { roomId })) as any;
+		const room = (await sdk.rest.get('/v1/rooms.info', { roomId })) as any;
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);

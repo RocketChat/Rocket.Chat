@@ -49,8 +49,8 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					<Controller
 						name='days'
 						control={control}
-						render={({ field: { onChange, value, name, ref } }): ReactElement => (
-							<Select ref={ref} name={name} value={value} onChange={onChange} options={daysOptions} />
+						render={({ field: { onChange, value, name } }): ReactElement => (
+							<Select name={name} value={value} onChange={onChange} options={daysOptions} />
 						)}
 					/>
 				</Field.Row>
@@ -61,8 +61,8 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					<Controller
 						name='maxUses'
 						control={control}
-						render={({ field: { onChange, value, name, ref } }): ReactElement => (
-							<Select ref={ref} name={name} value={value} onChange={onChange} options={maxUsesOptions} />
+						render={({ field: { onChange, value, name } }): ReactElement => (
+							<Select name={name} value={value} onChange={onChange} options={maxUsesOptions} />
 						)}
 					/>
 				</Field.Row>

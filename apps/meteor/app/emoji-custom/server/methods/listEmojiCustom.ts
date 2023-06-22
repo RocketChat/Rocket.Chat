@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async listEmojiCustom(options = {}) {
-		methodDeprecationLogger.warn('listEmojiCustom will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('listEmojiCustom', '7.0.0');
 
 		const user = await Meteor.userAsync();
 

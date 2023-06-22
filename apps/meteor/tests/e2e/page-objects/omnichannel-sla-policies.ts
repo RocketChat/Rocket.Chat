@@ -76,6 +76,6 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get txtEmptyState() {
-		return this.page.locator('div >> text="No data found"');
+		return this.page.locator('div >> text="No results found"');
 	}
 }

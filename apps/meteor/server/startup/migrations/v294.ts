@@ -1,40 +1,35 @@
-import { Settings } from '@rocket.chat/models';
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { AppSignatureManager } from '@rocket.chat/apps-engine/server/managers/AppSignatureManager';
 
+import { Apps } from '../../../ee/server/apps';
+import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
-import { SystemLogger } from '../../lib/logger/system';
 
 addMigration({
 	version: 294,
-	name: 'Change old "LDAP_Background_Sync_Interval" and "CROWD_Sync_Interval" to a pre-defined values instead of accept any input from the user',
 	async up() {
-		const oldLdapDefault = 'Every 24 hours';
-		const oldCrowdDefault = 'Every 60 mins';
+		Apps.initialize();
 
-		const newLdapDefault = 'every_24_hours';
-		const newCrowdDefault = 'every_1_hours';
+		const sigMan = Apps.getManager()?.getSignatureManager() as AppSignatureManager;
+		const appsStorage = Apps.getStorage() as AppRealStorage;
 
-		const ldapSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('LDAP_Background_Sync_Interval', {
-			projection: { value: 1 },
-		});
-		const crowdSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('CROWD_Sync_Interval', { projection: { value: 1 } });
+		const apps = await appsStorage.retrieveAll();
 
-		// update setting values
-		await Settings.updateOne({ _id: 'LDAP_Background_Sync_Interval' }, { $set: { value: newLdapDefault } });
-		await Settings.updateOne({ _id: 'CROWD_Sync_Interval' }, { $set: { value: newCrowdDefault } });
+		for await (const app of apps.values()) {
+			if (app.installationSource && app.signature) {
+				continue;
+			}
 
-		// notify user about the changes if the value was different from the default
+			const updatedApp = {
+				...app,
+				migrated: true,
+				installationSource: 'marketplaceInfo' in app ? 'marketplace' : 'private',
+			} as IAppStorageItem;
 
-		if (ldapSyncInterval && ldapSyncInterval.value !== oldLdapDefault) {
-			SystemLogger.warn(
-				`The value of the setting 'LDAP background synchronization interval' has changed from "${ldapSyncInterval.value}" to "${newLdapDefault}". Please review your settings.`,
-			);
-		}
-
-		if (crowdSyncInterval && crowdSyncInterval.value !== oldCrowdDefault) {
-			SystemLogger.warn(
-				`The value of the setting 'CROWD background synchronization interval' has changed from "${crowdSyncInterval.value}" to "${newCrowdDefault}". Please review your settings.`,
-			);
+			await appsStorage.update({
+				...updatedApp,
+				signature: await sigMan.signApp(updatedApp),
+			});
 		}
 	},
 });

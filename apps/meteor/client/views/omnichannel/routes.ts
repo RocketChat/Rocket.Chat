@@ -53,11 +53,6 @@ registerOmnichannelRoute('/tags/:context?/:id?', {
 	component: lazy(() => import('../../../ee/client/omnichannel/tags/TagsRoute')),
 });
 
-registerOmnichannelRoute('/sla-policies/:context?/:id?', {
-	name: 'omnichannel-sla-policies',
-	component: lazy(() => import('../../../ee/client/omnichannel/slaPolicies/SlasRoute')),
-});
-
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
 	component: lazy(() => import('./triggers/TriggersPage')),

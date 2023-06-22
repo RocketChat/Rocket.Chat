@@ -79,6 +79,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			return { rid: room._id };
 		},
 		{
+			retry: 0,
 			onError: async (error) => {
 				if (type !== 'd') {
 					return;

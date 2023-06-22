@@ -1,5 +1,12 @@
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
-import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useSetting,
+	usePermission,
+	useEndpoint,
+	useToastMessageDispatch,
+	usePermissionWithScopedRoles,
+} from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -25,6 +32,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -202,7 +210,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								control={control}
 								name='encrypted'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch disabled={!canSetReadOnly || !canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
 								)}
 							/>
 						</Box>

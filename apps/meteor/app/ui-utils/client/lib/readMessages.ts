@@ -5,8 +5,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { LegacyRoomManager } from './LegacyRoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
-import { APIClient } from '../../../utils/client';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -91,7 +91,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		return APIClient.post('/v1/subscriptions.read', { rid }).then(() => {
+		return sdk.rest.post('/v1/subscriptions.read', { rid }).then(() => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
 		});

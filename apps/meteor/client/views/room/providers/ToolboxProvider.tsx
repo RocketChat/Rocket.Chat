@@ -48,11 +48,16 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			return close();
 		}
 
-		router.push({
-			...params,
-			tab: actionId,
-			context: context ?? '',
-		});
+		const { layout } = queryStringParams || {};
+		const queryString = layout ? { layout } : undefined;
+		router.push(
+			{
+				...params,
+				tab: actionId,
+				context: context ?? '',
+			},
+			queryString,
+		);
 	});
 
 	const openRoomInfo = useMutableCallback((username?: string) => {

@@ -86,12 +86,14 @@ export class RocketChatRoomAdapter {
 		}
 
 		const readonly = false;
+		const excludeSelf = false;
 		const extraData = undefined;
 		const { rid, _id } = await createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getDisplayName(),
 			usernameOrId,
 			federatedRoom.getMembersUsernames(),
+			excludeSelf,
 			readonly,
 			extraData,
 			{ creator: creatorId },
@@ -311,7 +313,12 @@ export class RocketChatRoomAdapter {
 		federatedRoom: FederatedRoom,
 		role: string,
 		action: 'added' | 'removed',
-	): Record<string, any> {
+	): {
+		type: 'added' | 'removed' | 'changed';
+		_id: string;
+		u?: { _id: IUser['_id']; username: IUser['username']; name: IUser['name'] };
+		scope?: string;
+	} {
 		return {
 			type: action,
 			_id: role,
