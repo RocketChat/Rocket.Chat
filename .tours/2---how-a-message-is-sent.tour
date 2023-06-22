@@ -109,7 +109,7 @@
     },
     {
       "file": "apps/meteor/app/ui/client/lib/ChatMessages.ts",
-      "description": "## SendMessage -\n\n### Above we have a constructor and here in sendMessage we are calling *sendMessage.bind(this,this)* Here sendMessage is a function which makes the meteor call for sending Message Data.",
+      "description": "## SendMessage -\n\n### Above we have a constructor and here in this.flows we are calling *sendMessage.bind(this,this)* The sendMessage is a function which further makes the meteor call for sending Message Data.",
       "line": 160
     },
     {
