@@ -1,4 +1,4 @@
-import { type IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute, useStream, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
