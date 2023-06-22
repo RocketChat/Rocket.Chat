@@ -73,9 +73,19 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
+		console.log('convertWorkHours', businessHourData);
 		businessHourData.workHours.forEach((hour: any) => {
 			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+
+			if (hour.open && finishUtc.isBefore(startUtc)) {
+				throw new Error('error-business-hour-finish-time-before-start-time');
+			}
+
+			if (hour.open && startUtc.isSame(finishUtc)) {
+				throw new Error('error-business-hour-finish-time-equals-start-time');
+			}
+
 			hour.start = {
 				time: hour.start,
 				utc: {

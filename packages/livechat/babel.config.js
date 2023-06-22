@@ -5,13 +5,16 @@ module.exports = {
 			{
 				useBuiltIns: 'entry',
 				corejs: 3,
+				include: [
+					'@babel/plugin-proposal-class-properties',
+					'@babel/plugin-proposal-optional-chaining',
+					'@babel/plugin-proposal-nullish-coalescing-operator',
+				],
 			},
 		],
 		'@babel/preset-typescript',
 	],
 	plugins: [
-		'@babel/plugin-proposal-class-properties',
-		'@babel/plugin-proposal-object-rest-spread',
 		['@babel/plugin-transform-react-jsx', { pragma: 'h', pragmaFrag: 'Fragment' }],
 		[
 			'babel-plugin-jsx-pragmatic',
@@ -24,5 +27,6 @@ module.exports = {
 	],
 	assumptions: {
 		setPublicClassFields: true,
+		privateFieldsAsProperties: true,
 	},
 };
