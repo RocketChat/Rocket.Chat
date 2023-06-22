@@ -335,6 +335,24 @@ describe('[Direct Messages]', function () {
 		await testFileUploads('im.files', directMessage, 'invalid-channel');
 	});
 
+	describe('/im.messages', () => {
+		it('should return all DM messages that were sent to yourself using your username', (done) => {
+			request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					username: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
 	describe('/im.messages.others', () => {
 		it('should fail when the endpoint is disabled', (done) => {
 			updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
