@@ -54,7 +54,6 @@ const CallTable = () => {
 
 	const headers = (
 		<>
-			<FilterByText onChange={({ text }) => setText(text)} />
 			<GenericTableHeaderCell key='fname' direction={sortDirection} active={sortBy === 'fname'} onClick={setSort} sort='fname' w='x400'>
 				{t('Contact_Name')}
 			</GenericTableHeaderCell>
@@ -93,6 +92,7 @@ const CallTable = () => {
 
 	return (
 		<>
+			<FilterByText onChange={({ text }) => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
