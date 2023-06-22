@@ -4,7 +4,6 @@ import type { MouseEvent, AllHTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
-import Emoji from '../../../components/Emoji';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 
 type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
@@ -12,8 +11,12 @@ type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<
 		'is'
 	>;
 
-const EmojiElement = ({ emoji, image, emojiHandle, onClick, small = false, ...props }: EmojiElementProps) => {
+const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
+
+	if (!image) {
+		return null;
+	}
 
 	const emojiSmallClass = css`
 		> .emoji,
@@ -23,7 +26,7 @@ const EmojiElement = ({ emoji, image, emojiHandle, onClick, small = false, ...pr
 		}
 	`;
 
-	const emojiElement = <Emoji emojiHandle={emojiHandle} />;
+	const emojiElement = <div dangerouslySetInnerHTML={{ __html: image }} />;
 
 	return (
 		<IconButton
