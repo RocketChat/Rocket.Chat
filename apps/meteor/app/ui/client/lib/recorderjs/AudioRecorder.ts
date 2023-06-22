@@ -76,6 +76,7 @@ export class AudioRecorder {
 			this.destroyStream();
 			this.destroyAudioContext();
 			cb?.call(this, false);
+			throw error;
 		}
 	}
 
