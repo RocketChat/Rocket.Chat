@@ -364,6 +364,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
 		return this.updateMany({ departmentId }, { $set: { departmentEnabled: true } });
 	}
+
+	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
+		return this.col.distinct('agentId', { departmentId: { $in: departmentIds } });
+	}
 }
 
 const isStringValue = (value: any): value is string => typeof value === 'string';
