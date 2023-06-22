@@ -15,11 +15,11 @@ declare module 'meteor/accounts-base' {
 
 		function _getLoginToken(connectionId: string): string | undefined;
 
-		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): Promise<string>;
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
-		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
+		function _insertLoginToken(userId: string, token: { token: string; when: Date }): Promise<void>;
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): LoginMethodResult | undefined;
 
