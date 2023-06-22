@@ -165,7 +165,7 @@
 		"cross-env": "^7.0.3",
 		"emojione-assets": "^4.5.0",
 		"eslint": "~8.43.0",
-		"eslint-config-prettier": "~8.8.0",
+		"eslint-config-prettier": "~8.5.0",
 		"eslint-plugin-import": "~2.26.0",
 		"eslint-plugin-no-floating-promise": "~1.0.2",
 		"eslint-plugin-playwright": "~0.15.0",

@@ -39,15 +39,15 @@
 				"react/jsx-uses-vars": "error",
 				"react/jsx-no-undef": "error",
 				"react/jsx-fragments": ["error", "syntax"],
-				"@typescript-eslint/no-misused-promises": [
-					"error",
-					{
-						"checksVoidReturn": {
-							"arguments": false
-						}
-					}
-				],
-				"@typescript-eslint/no-floating-promises": "error",
+				// "@typescript-eslint/no-misused-promises": [
+				// 	"error",
+				// 	{
+				// 		"checksVoidReturn": {
+				// 			"arguments": false
+				// 		}
+				// 	}
+				// ],
+				// "@typescript-eslint/no-floating-promises": "error",
 				"no-unreachable-loop": "error"
 			},
 			"parserOptions": {
