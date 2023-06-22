@@ -252,7 +252,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v3
         with:
-          name: playwright-test-trace${{ inputs.release }}
+          name: playwright-test-trace ${{ inputs.release }} MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }} of ${{ inputs.total-shard }})
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
