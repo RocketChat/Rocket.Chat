@@ -25,6 +25,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		this.onAddAgentToDepartment = this.onAddAgentToDepartment.bind(this);
 		this.onRemoveAgentFromDepartment = this.onRemoveAgentFromDepartment.bind(this);
 		this.onRemoveDepartment = this.onRemoveDepartment.bind(this);
+		this.onDepartmentArchived = this.onDepartmentArchived.bind(this);
+		this.onDepartmentDisabled = this.onDepartmentDisabled.bind(this);
 	}
 
 	async onStartBusinessHours(): Promise<void> {
