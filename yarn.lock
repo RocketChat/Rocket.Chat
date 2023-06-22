@@ -9784,12 +9784,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
-  languageName: node
-  linkType: soft
-
 "@rocket.chat/fuselage@npm:next":
   version: 0.32.0-dev.358
   resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.358"
@@ -10105,7 +10099,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    "@rocket.chat/fuselage": "link:../../../fuselage/packages/fuselage"
+    "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/fuselage-polyfills": next
     "@rocket.chat/fuselage-toastbar": next
