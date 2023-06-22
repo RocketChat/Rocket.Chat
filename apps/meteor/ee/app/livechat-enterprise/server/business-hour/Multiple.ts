@@ -153,6 +153,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		// cleanup user's cache for default business hour and this business hour
 		const defaultBH = await this.BusinessHourRepository.findOneDefaultBusinessHour();
 		if (!defaultBH) {
+			bhLogger.error(`onDepartmentDisabled: default business hour not found`);
 			throw new Error('Default business hour not found');
 		}
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds([businessHour._id, defaultBH._id]);
@@ -167,6 +168,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 			businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 			if (!businessHour) {
+				bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
 				throw new Error(`Business hour ${department.businessHourId} not found`);
 			}
 		}
