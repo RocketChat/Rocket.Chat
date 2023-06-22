@@ -16,7 +16,7 @@ const hoverClass = css`
 const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 	const format = useFormatDateAndTime();
 
-	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
+	const { _id, name, path, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
 
 	return (
 		<Box display='flex' p='x12' borderRadius='x4' style={style} className={[className, hoverClass]}>
@@ -31,9 +31,9 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 				display='flex'
 				flexGrow={1}
 				flexShrink={1}
-				href={url}
+				href={path}
 			>
-				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
+				{typeGroup === 'image' ? <Avatar size='x48' url={path} /> : <FileItemIcon type={type} />}
 				<Box mis='x8' flexShrink={1} overflow='hidden'>
 					<Box withTruncatedText color='default' fontScale='p2m'>
 						{name}
@@ -50,7 +50,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 			<MenuItem
 				_id={_id}
 				name={name}
-				url={url}
+				url={path}
 				onClickDelete={isDeletionAllowed && isDeletionAllowed({ uid: user?._id, ts }) && onClickDelete}
 			/>
 		</Box>
