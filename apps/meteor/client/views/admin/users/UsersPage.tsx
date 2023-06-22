@@ -1,7 +1,7 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -15,35 +15,36 @@ import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
-	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
-	const usersRoute = useRoute('admin-users');
-
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
+
+	const router = useRoute('admin-users');
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+	const [tab, setTab] = useState<string>('all');
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
 			return;
 		}
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
-			usersRoute.push({});
+		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && context && !['edit', 'info'].includes(context)) {
+			router.push({});
 		}
-	}, [context, seatsCap, usersRoute]);
+	}, [context, seatsCap, tab, router]);
 
 	const handleCloseContextualbar = (): void => {
-		usersRoute.push({});
+		router.push({});
 	};
 
 	const handleNewUser = (): void => {
-		usersRoute.push({ context: 'new' });
+		router.push({ context: 'new' });
 	};
 
 	const handleInviteUser = (): void => {
-		usersRoute.push({ context: 'invite' });
+		router.push({ context: 'invite' });
 	};
 
 	const handleReload = (): void => {
@@ -73,6 +74,23 @@ const UsersPage = (): ReactElement => {
 					)}
 				</Page.Header>
 				<Page.Content>
+					<Tabs>
+						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+							{t('All')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-invited'} onClick={() => setTab('tab-invited')}>
+							{t('Invited')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-new'} onClick={() => setTab('tab-new')}>
+							{t('New_users')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-active'} onClick={() => setTab('tab-active')}>
+							{t('Active')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-deactivated'} onClick={() => setTab('tab-deactivated')}>
+							{t('Deactivated')}
+						</Tabs.Item>
+					</Tabs>
 					<UsersTable reload={reload} />
 				</Page.Content>
 			</Page>

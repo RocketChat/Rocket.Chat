@@ -1,24 +1,24 @@
+import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
-import { capitalize } from '@rocket.chat/string-helpers';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { Roles } from '../../../../../app/models/client';
+import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
 	onClick: (id: IUser['_id']) => void;
 	mediaQuery: boolean;
 };
 
 const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
-	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
+	const { _id, emails, username, name, status, roles, active, avatarETag } = user;
+	const registrationStatusText = active ? t('Active') : t('Deactivated');
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -33,14 +33,17 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 					<Box display='flex' mi='x8' withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
-								{name || username}
-							</Box>
-							{!mediaQuery && name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
+								<Box display='inline' mie='x8'>
+									<UserStatus status={status || Status.OFFLINE} />
 								</Box>
-							)}
+								{(name || username) ?? '—'}
+							</Box>
+							{(!mediaQuery && name && (
+								<Box fontScale='p2' color='hint' withTruncatedText>
+									{`@${username}`}
+								</Box>
+							)) ??
+								'—'}
 						</Box>
 					</Box>
 				</Box>
@@ -48,15 +51,16 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 			{mediaQuery && (
 				<TableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
-						{username}
-					</Box>{' '}
+						{username ?? '—'}
+					</Box>
 					<Box mi='x4' />
 				</TableCell>
 			)}
-			<TableCell withTruncatedText>{emails?.length && emails[0].address}</TableCell>
+
+			<TableCell withTruncatedText>{(emails?.length && emails[0].address) ?? '—'}</TableCell>
 			{mediaQuery && <TableCell withTruncatedText>{roleNames}</TableCell>}
 			<TableCell fontScale='p2' color='hint' withTruncatedText>
-				{statusText}
+				{registrationStatusText ?? '—'}
 			</TableCell>
 		</TableRow>
 	);
