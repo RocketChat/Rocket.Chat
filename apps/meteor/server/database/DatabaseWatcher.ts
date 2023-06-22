@@ -8,7 +8,7 @@ import { MongoClient } from 'mongodb';
 import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
-import { watchCollections } from './watchCollections';
+import { getWatchCollections } from './watchCollections';
 
 const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
 
@@ -62,6 +62,8 @@ export class DatabaseWatcher extends EventEmitter {
 	 */
 	private lastDocTS: Date;
 
+	private watchCollections: string[];
+
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	constructor({ db, _oplogHandle, metrics, logger: LoggerClass }: { db: Db; _oplogHandle?: any; metrics?: any; logger: typeof Logger }) {
 		super();
@@ -73,6 +75,8 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	async watch(): Promise<void> {
+		this.watchCollections = getWatchCollections();
+
 		if (useMeteorOplog) {
 			// TODO remove this when updating to Meteor 2.8
 			this.logger.warn(
@@ -139,7 +143,7 @@ export class DatabaseWatcher extends EventEmitter {
 		const stream = cursor.stream();
 
 		stream.on('data', (doc) => {
-			const doesMatter = watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
+			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
 			if (!doesMatter) {
 				return;
 			}
@@ -161,7 +165,7 @@ export class DatabaseWatcher extends EventEmitter {
 
 		this.logger.startup('Using Meteor oplog');
 
-		watchCollections.forEach((collection) => {
+		this.watchCollections.forEach((collection) => {
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
 			});
@@ -187,7 +191,7 @@ export class DatabaseWatcher extends EventEmitter {
 					{
 						$match: {
 							'operationType': { $in: ['insert', 'update', 'delete'] },
-							'ns.coll': { $in: watchCollections },
+							'ns.coll': { $in: this.watchCollections },
 						},
 					},
 				],
