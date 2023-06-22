@@ -172,8 +172,6 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-archived',
 		);
-
-		console.log('Added multiple Business Hours callbacks');
 	}
 
 	private removeCallbacks(): void {

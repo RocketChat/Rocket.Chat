@@ -282,8 +282,8 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		afterEach(async () => {
-			// await deleteDepartment(deptLinkedToCustomBH._id);
-			// await deleteUser(agentLinkedToDept.user);
+			await deleteDepartment(deptLinkedToCustomBH._id);
+			await deleteUser(agentLinkedToDept.user);
 		});
 	});
 });

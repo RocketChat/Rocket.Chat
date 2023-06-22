@@ -138,7 +138,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
 		if (!department.businessHourId) {
-			bhLogger.error(`onDepartmentDisabled: department ${department._id} has no business hour`);
+			bhLogger.debug(`onDepartmentDisabled: department ${department._id} has no business hour`);
 			return;
 		}
 
@@ -177,12 +177,12 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		// start default business hour and this BH if needed
 		if (!settings.get('Livechat_enable_business_hours')) {
-			bhLogger.error(`onDepartmentDisabled: business hours are disabled. skipping`);
+			bhLogger.debug(`onDepartmentDisabled: business hours are disabled. skipping`);
 			return;
 		}
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
 		for await (const bh of businessHourToOpen) {
-			bhLogger.error(`onDepartmentDisabled: opening business hour ${bh._id}`);
+			bhLogger.debug(`onDepartmentDisabled: opening business hour ${bh._id}`);
 			await openBusinessHour(bh, false);
 		}
 
@@ -190,11 +190,11 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		await businessHourManager.restartCronJobsIfNecessary();
 
-		bhLogger.error(`onDepartmentDisabled: successfully processed department ${department._id} disabled event`);
+		bhLogger.debug(`onDepartmentDisabled: successfully processed department ${department._id} disabled event`);
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
-		bhLogger.error('Processing department archived event on business hours', department);
+		bhLogger.debug('Processing department archived event on multiple business hours', department);
 		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
 
 		if (!dbDepartment) {
