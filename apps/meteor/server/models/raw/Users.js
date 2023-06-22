@@ -1607,6 +1607,20 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
+	unsetLivechatStatus(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				statusLivechat: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	setLivechatData(userId, data = {}) {
 		// TODO: Create class Agent
 		const query = {

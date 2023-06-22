@@ -1,5 +1,10 @@
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from "@rocket.chat/core-typings";
 import { api, credentials, methodCall, request } from "../api-data";
 import { updateEESetting, updateSetting } from "../permissions.helper"
+import { saveBusinessHour } from "./business-hours";
+import moment from "moment";
+
+type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'> & { workHours: { day: string, start: string, finish: string, open: boolean }[] } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
 
 export const makeDefaultBusinessHourActiveAndClosed = async () => {
 	// enable settings
@@ -71,4 +76,40 @@ export const disableDefaultBusinessHour = async () => {
 				msg: 'method',
 			}),
 		});
+}
+
+export const getDefaultBusinessHour = async (): Promise<ILivechatBusinessHour> => {
+    const response = await request.get(api('livechat/business-hour')).set(credentials).query({ type: LivechatBusinessHourTypes.DEFAULT }).expect(200);
+    return response.body.businessHour;
+};
+
+export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHour, open: boolean) => {
+    const enabledBusinessHour = {
+        ...businessHour,
+        timezoneName: businessHour.timezone.name,
+        workHours: getWorkHours().map((workHour) => {
+            return {
+                ...workHour,
+                open,
+            }
+        }),
+        departmentsToApplyBusinessHour: businessHour.departments?.map((department) => department._id).join(',') || '',
+    }
+
+    await saveBusinessHour(enabledBusinessHour as any);
+}
+
+const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
+    const workHours: ISaveBhApiWorkHour['workHours'] = [];
+
+    for (let i = 0; i < 7; i++) {
+        workHours.push({
+            day: moment().day(i).format('dddd'),
+            start: '00:00',
+            finish: '23:59',
+            open: true,
+        });
+    }
+
+    return workHours;
 }
