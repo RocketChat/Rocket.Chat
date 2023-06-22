@@ -4,6 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/layout": "next",
+		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "^4.16.1",
 		"@testing-library/react": "^13.3.0",
