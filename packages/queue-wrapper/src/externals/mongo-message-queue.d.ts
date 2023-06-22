@@ -21,6 +21,8 @@ declare module 'mongo-message-queue' {
 	export default class MessageQueue {
 		collectionName: string;
 
+		maxWorkers: number;
+
 		databasePromise: () => Promise<Db>;
 
 		registerWorker<T>(type: Actions, worker: (queueItem: Work<T>) => Promise<ValidResult>): void;

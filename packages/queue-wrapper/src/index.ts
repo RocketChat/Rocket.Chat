@@ -1,20 +1,43 @@
 import type { Db } from 'mongodb';
 import type { Actions, ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
+import { api } from '@rocket.chat/core-services';
 import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
 
-export class QueueWorker implements IQueueWorkerService {
-	protected name = 'queue-worker';
+import { Logger } from './logger';
+
+export class QueueWrapper implements IQueueWorkerService {
+	protected queue: MessageQueue;
 
 	protected retryCount = 5;
+
+	private queueCollection = '_queue';
 
 	// Default delay is 5 seconds
 	protected retryDelay = 5000;
 
-	protected queue: MessageQueue;
+	private logger: typeof Logger;
 
-	constructor(private readonly db: Db) {
+	constructor(private readonly db: Db, collectionName: string, maxWorkers = 5) {
+		this.logger = Logger;
 		this.queue = new MessageQueue();
+		this.queue.collectionName = `${this.queueCollection}_${collectionName}`;
+		this.queue.maxWorkers = maxWorkers;
+	}
+
+	async create(): Promise<void> {
+		this.logger.info('Starting queue worker');
+		this.queue.databasePromise = () => {
+			return Promise.resolve(this.db);
+		};
+
+		try {
+			await this.createIndexes();
+			await this.registerWorkers();
+		} catch (e) {
+			this.logger.fatal(e, 'Fatal error occurred when registering workers');
+			process.exit(1);
+		}
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {
@@ -25,37 +48,6 @@ export class QueueWorker implements IQueueWorkerService {
 		return message.includes('retry');
 	}
 
-	async created(): Promise<void> {
-		console.info('Starting queue worker');
-		this.queue.databasePromise = () => {
-			return Promise.resolve(this.db);
-		};
-
-		try {
-			await this.registerWorkers();
-			await this.createIndexes();
-		} catch (e) {
-			console.error(e, 'Fatal error occurred when registering workers');
-			process.exit(1);
-		}
-	}
-
-	async createIndexes(): Promise<void> {
-		console.info('Creating indexes for queue worker');
-
-		// Library doesnt create indexes by itself, for some reason
-		// This should create the indexes we need and improve queue perf on reading
-		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
-		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
-		await this.db.collection(this.queue.collectionName).createIndex({ nextReceivableTime: 1 }, { sparse: true });
-		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
-	}
-
-	async stopped(): Promise<void> {
-		console.info('Stopping queue worker');
-		this.queue.stopPolling();
-	}
-
 	private isRetryableError(error: string): boolean {
 		// Let's retry on 2 circumstances: (for now)
 		// 1. When the error is "service not found" -> this means the service is not yet registered
@@ -64,35 +56,46 @@ export class QueueWorker implements IQueueWorkerService {
 	}
 
 	private async workerCallback(queueItem: Work<{ to: string; data: any }>): Promise<ValidResult> {
-		console.info(`Processing queue item ${queueItem._id} for work`);
-		console.info(`Queue item is trying to call ${queueItem.message.to}`);
+		this.logger.info(`Processing queue item ${queueItem._id} for work`);
+		this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
 		try {
 			await api.waitAndCall(queueItem.message.to, [queueItem.message]);
-			console.info(`Queue item ${queueItem._id} completed`);
+			this.logger.info(`Queue item ${queueItem._id} completed`);
 			return 'Completed' as const;
 		} catch (err: unknown) {
 			const e = err as Error;
-			console.error(`Queue item ${queueItem._id} errored: ${e.message}`);
+			this.logger.error(`Queue item ${queueItem._id} errored: ${e.message}`);
 			queueItem.releasedReason = e.message;
 			// Let's only retry for X times when the error is "service not found"
 			// For any other error, we'll just reject the item
 			if ((queueItem.retryCount || 0) < this.retryCount && this.isRetryableError(e.message)) {
-				console.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
+				this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
 				queueItem.nextReceivableTime = new Date(Date.now() + this.retryDelay);
 				return 'Retry' as const;
 			}
-			console.info(`Queue item ${queueItem._id} will be rejected`);
+			this.logger.info(`Queue item ${queueItem._id} will be rejected`);
 			return 'Rejected' as const;
 		}
 	}
 
 	// Registers the actual workers, the actions lib will try to fetch elements to work on
-	private async registerWorkers(): Promise<void> {
-		console.info('Registering workers of type "work"');
+	async registerWorkers(): Promise<void> {
+		this.logger.info('Registering workers of type "work"');
 		this.queue.registerWorker('work', this.workerCallback.bind(this));
 
-		console.info('Registering workers of type "workComplete"');
+		this.logger.info('Registering workers of type "workComplete"');
 		this.queue.registerWorker('workComplete', this.workerCallback.bind(this));
+	}
+
+	async createIndexes(): Promise<void> {
+		this.logger.info('Creating indexes for queue worker');
+
+		// Library doesnt create indexes by itself, for some reason
+		// This should create the indexes we need and improve queue perf on reading
+		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
+		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
+		await this.db.collection(this.queue.collectionName).createIndex({ nextReceivableTime: 1 }, { sparse: true });
+		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
 	}
 
 	private matchServiceCall(service: string): boolean {
@@ -108,7 +111,7 @@ export class QueueWorker implements IQueueWorkerService {
 	// `to` is a service name that will be called, including namespace + action
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
-		console.info(`Queueing work for ${to}`);
+		this.logger.info(`Queueing work for ${to}`);
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);

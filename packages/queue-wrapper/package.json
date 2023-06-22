@@ -20,5 +20,9 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"mongo-message-queue": "^1.0.0",
+		"pino": "^8.14.1"
+	}
 }
