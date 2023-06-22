@@ -1,4 +1,4 @@
-import type { IVoipRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom, Serialized } from '@rocket.chat/core-typings';
 import { Table } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import { useIsCallReady } from '../../../../contexts/CallContext';
 import { CallDialpadButton } from '../components/CallDialpadButton';
 
 type CallTableRowProps = {
-	room: IVoipRoom;
+	room: Serialized<IVoipRoom>;
 	onRowClick(_id: string, token?: string): void;
 };
 
