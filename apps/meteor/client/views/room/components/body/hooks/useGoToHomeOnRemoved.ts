@@ -35,5 +35,5 @@ export function useGoToHomeOnRemoved(room: IRoom, userId: string | undefined): v
 		});
 
 		return unSubscribeFromNotifyUser;
-	}, [userId, homeRouter, subscribeToNotifyUser, room._id, room?.fname, room?.name, t, dispatchToastMessage, queryClient, room]);
+	}, [userId, homeRouter, subscribeToNotifyUser, room._id, room?.fname, room?.name, t, dispatchToastMessage, queryClient, room.t]);
 }
