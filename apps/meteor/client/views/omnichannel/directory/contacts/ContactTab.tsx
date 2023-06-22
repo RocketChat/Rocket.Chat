@@ -4,14 +4,14 @@ import React from 'react';
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import ContactTable from './ContactTable';
 
-function ContactTab(props) {
+const ContactTab = () => {
 	const hasAccess = usePermission('view-l-room');
 
 	if (hasAccess) {
-		return <ContactTable {...props} />;
+		return <ContactTable />;
 	}
 
 	return <NotAuthorizedPage />;
-}
+};
 
 export default ContactTab;
