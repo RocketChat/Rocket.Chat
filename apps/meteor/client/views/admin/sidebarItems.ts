@@ -57,7 +57,7 @@ export const {
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
 	},
 	{
-		icon: 'lock',
+		icon: 'user-lock',
 		href: 'admin-permissions',
 		i18nLabel: 'Permissions',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
@@ -106,22 +106,22 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},
 	{
-		icon: 'customize',
-		href: 'admin-settings',
-		i18nLabel: 'Settings',
-		permissionGranted: (): boolean =>
-			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
-	},
-	{
 		href: 'custom-sounds',
-		i18nLabel: 'Custom_Sounds',
+		i18nLabel: 'Sounds',
 		icon: 'volume',
 		permissionGranted: (): boolean => hasPermission('manage-sounds'),
 	},
 	{
 		icon: 'emoji',
 		href: 'emoji-custom',
-		i18nLabel: 'Custom_Emoji',
+		i18nLabel: 'Emoji',
 		permissionGranted: (): boolean => hasPermission('manage-emoji'),
+	},
+	{
+		icon: 'customize',
+		href: 'admin-settings',
+		i18nLabel: 'Settings',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 ]);
