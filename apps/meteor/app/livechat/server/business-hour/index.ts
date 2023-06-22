@@ -18,7 +18,7 @@ Meteor.startup(async () => {
 
 	// Note: This shouldn't happen directly on login, but after the login process has already finished
 	// but meteor doesn't have "afterLogin" hooks
-	Accounts.onLogin(async ({ user }: { user: any }) =>
+	Accounts.onLogin(async ({ user }: { user: IUser }) =>
 		setTimeout(async () => {
 			user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id);
 		}, 1000),
