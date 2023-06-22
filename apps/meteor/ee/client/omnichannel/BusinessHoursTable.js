@@ -5,7 +5,13 @@ import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../client/components/FilterByText';
 import GenericNoResults from '../../../client/components/GenericNoResults';
-import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableLoadingRow } from '../../../client/components/GenericTable';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeaderCell,
+	GenericTableHeader,
+	GenericTableLoadingRow,
+} from '../../../client/components/GenericTable';
 import { usePagination } from '../../../client/components/GenericTable/hooks/usePagination';
 import BusinessHoursRow from './BusinessHoursRow';
 
@@ -29,11 +35,11 @@ const BusinessHoursTable = () => {
 
 	const headers = (
 		<>
-			<GenericTable.HeaderCell>{t('Name')}</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell>{t('Timezone')}</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell>{t('Open_Days')}</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x100'>{t('Enabled')}</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x100'>{t('Remove')}</GenericTable.HeaderCell>
+			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Timezone')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Open_Days')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x100'>{t('Enabled')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x100'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
