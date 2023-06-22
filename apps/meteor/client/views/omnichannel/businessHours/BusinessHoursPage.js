@@ -7,10 +7,9 @@ import Page from '../../../components/Page';
 
 const BusinessHoursPage = () => {
 	const t = useTranslation();
-
 	const router = useRoute('omnichannel-businessHours');
 
-	const Table = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTableContainer')), []);
+	const BusinessHoursTable = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')), []);
 
 	const handleNew = useMutableCallback(() => {
 		router.push({
@@ -28,7 +27,7 @@ const BusinessHoursPage = () => {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				<Table />
+				<BusinessHoursTable />
 			</Page.Content>
 		</Page>
 	);

@@ -9467,7 +9467,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.132":
+"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.138":
   version: 0.31.23
   resolution: "@rocket.chat/css-in-js@npm:0.31.23"
   dependencies:
@@ -9493,7 +9493,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.132":
+"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.138":
   version: 0.31.23
   resolution: "@rocket.chat/css-supports@npm:0.31.23"
   dependencies:
@@ -9722,10 +9722,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.308":
-  version: 0.32.0-dev.308
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.308"
-  checksum: 8199770d85b86990d33337e0a5b27e55fc48bd4ba7a36b62df233b04e3d70859bac5618d1658b1cf1d90700caa2e4bb1539ac298f11b83d7de0062516e36e813
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.314":
+  version: 0.32.0-dev.314
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.314"
+  checksum: 7f9afe1e3f3a63e30ad963a8448e4003e66e3bf6f5d78f84116e472dc7dc1dee1955c11cebbc292e8bbe29999a89b674576b72e470e4577092af9a1c06a7fb2d
   languageName: node
   linkType: hard
 
@@ -9784,21 +9784,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/fuselage@link:../../../fuselage/packages/fuselage::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
-  languageName: node
-  linkType: soft
-
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.358
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.358"
+  version: 0.32.0-dev.364
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.364"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.132
-    "@rocket.chat/css-supports": ~0.31.23-dev.132
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.308
-    "@rocket.chat/memo": ~0.31.23-dev.132
-    "@rocket.chat/styled": ~0.31.23-dev.132
+    "@rocket.chat/css-in-js": ~0.31.23-dev.138
+    "@rocket.chat/css-supports": ~0.31.23-dev.138
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.314
+    "@rocket.chat/memo": ~0.31.23-dev.138
+    "@rocket.chat/styled": ~0.31.23-dev.138
     invariant: ^2.2.4
     react-aria: ~3.23.1
     react-keyed-flatten-children: ^1.3.0
@@ -9810,7 +9804,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 2850f7229bde95fbe5f7a1f283c66056e813db0a0df5a297ba03405cd5d1728fc7374609ad9f0523f97ebe24009b2986dfc9b42a49aa070c6de52af07bb0a46b
+  checksum: fb1c3a4db589156dbe7eaa226fd0c3a99d45f3f602f1eee23bae0d6facaecbe57f48c89cf904f6379b3fdbc805ad94ca774e62348a9ae591839777354118a6ab
   languageName: node
   linkType: hard
 
@@ -10042,7 +10036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.132":
+"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.138":
   version: 0.31.23
   resolution: "@rocket.chat/memo@npm:0.31.23"
   checksum: 070debb940749a2e4463cf767dd65c6967cea664a5bd67c22a812d611f6c3c46d6fe4bb0bf329e43dcd927493413add37c45ae3b05ec08f0b24e9d7385caebdd
@@ -10105,7 +10099,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    "@rocket.chat/fuselage": "link:../../../fuselage/packages/fuselage"
+    "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
     "@rocket.chat/fuselage-polyfills": next
     "@rocket.chat/fuselage-toastbar": next
@@ -10847,7 +10841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.132":
+"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.138":
   version: 0.31.23
   resolution: "@rocket.chat/styled@npm:0.31.23"
   dependencies:
