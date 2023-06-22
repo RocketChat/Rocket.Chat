@@ -247,7 +247,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
 		}
 
-		return Object.assign(record, { _id });
+		const latestDept = await this.findOneById(_id);
+		if (!latestDept) {
+			throw new Error(`Department ${_id} not found`);
+		}
+
+		return latestDept;
 	}
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult> {
