@@ -121,7 +121,7 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const subscription = await waitUntilFind(() => ChatRoom.findOne({ _id: message.rid }));
+			const subscription = await waitUntilFind(() => ChatRoom.findOneAsync({ _id: message.rid }));
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 

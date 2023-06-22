@@ -99,7 +99,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => ChatRoom.findOneAsync({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
