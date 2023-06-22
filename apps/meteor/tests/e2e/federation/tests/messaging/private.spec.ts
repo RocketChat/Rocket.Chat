@@ -1,5 +1,5 @@
 /* eslint no-await-in-loop: 0 */
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import * as constants from '../../config/constants';
@@ -109,7 +109,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			});
 
 			test.describe('With multiple users', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 
 				test('expect to send a message from Server A (creator) to Server B', async ({ browser, page }) => {
 					const page2 = await browser.newPage();
@@ -516,7 +516,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to send a message quoting a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -535,7 +535,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to send a message quoting a message Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -554,7 +554,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to react a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -581,7 +581,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to react a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -608,7 +608,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to unreact a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -678,7 +678,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to unreact a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -748,7 +748,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to edit a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -769,7 +769,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to edit a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -790,7 +790,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to delete a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -812,7 +812,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to delete a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -834,7 +834,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to reply a message in DM from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -858,7 +858,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to reply a message in DM Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -882,7 +882,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to star a message on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -905,7 +905,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to star a message on Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -928,7 +928,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to reply in thread in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -947,7 +947,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to reply in thread in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -966,7 +966,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to start a discussion from a message in thread in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -985,7 +985,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to start a discussion from a message in thread in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -1004,7 +1004,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to pin a message in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
@@ -1023,7 +1023,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to pin a message in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 

@@ -48,7 +48,42 @@ export class LDAPManager {
 				return await this.loginExistingUser(ldap, user, ldapUser, password);
 			}
 
-			return await this.loginNewUserFromLDAP(slugifiedUsername, password, ldapUser, ldap);
+			return await this.loginNewUserFromLDAP(slugifiedUsername, ldap, ldapUser, password);
+		} finally {
+			ldap.disconnect();
+		}
+	}
+
+	public static async loginAuthenticatedUser(username: string): Promise<LDAPLoginResult> {
+		logger.debug({ msg: 'Init LDAP login', username });
+
+		if (settings.get('LDAP_Enable') !== true) {
+			return;
+		}
+
+		let ldapUser: ILDAPEntry | undefined;
+
+		const ldap = new LDAPConnection();
+		try {
+			try {
+				await ldap.connect();
+				ldapUser = await this.findAuthenticatedUser(ldap, username);
+			} catch (error) {
+				logger.error(error);
+			}
+
+			if (ldapUser === undefined) {
+				return;
+			}
+
+			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
+			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
+
+			if (user) {
+				return await this.loginExistingUser(ldap, user, ldapUser);
+			}
+
+			return await this.loginNewUserFromLDAP(slugifiedUsername, ldap, ldapUser);
 		} finally {
 			ldap.disconnect();
 		}
@@ -187,11 +222,42 @@ export class LDAPManager {
 		}
 	}
 
+	private static async findAuthenticatedUser(ldap: LDAPConnection, username: string): Promise<ILDAPEntry | undefined> {
+		const escapedUsername = ldapEscape.filter`${username}`;
+
+		try {
+			const users = await ldap.searchByUsername(escapedUsername);
+
+			if (users.length !== 1) {
+				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				return;
+			}
+
+			const [ldapUser] = users;
+
+			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
+				// Do a search as the user and check if they have any result
+				authLogger.debug('User authenticated successfully, performing additional search.');
+				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
+					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+				}
+			}
+
+			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
+				throw new Error('User not in a valid group');
+			}
+
+			return ldapUser;
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
 	private static async loginNewUserFromLDAP(
 		slugifiedUsername: string,
-		ldapPass: string,
-		ldapUser: ILDAPEntry,
 		ldap: LDAPConnection,
+		ldapUser: ILDAPEntry,
+		ldapPass?: string,
 	): Promise<LDAPLoginResult> {
 		logger.debug({ msg: 'User does not exist, creating', username: slugifiedUsername });
 
@@ -244,7 +310,7 @@ export class LDAPManager {
 		ldap: LDAPConnection,
 		user: IUser,
 		ldapUser: ILDAPEntry,
-		password: string,
+		password?: string,
 	): Promise<LDAPLoginResult> {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.debug('User exists without "ldap: true"');

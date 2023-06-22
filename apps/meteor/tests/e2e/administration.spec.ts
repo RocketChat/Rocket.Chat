@@ -39,7 +39,7 @@ test.describe.parallel('administration', () => {
 
 		test('expect create a user', async () => {
 			await poAdmin.tabs.users.btnNew.click();
-			await poAdmin.tabs.users.inputName.type(faker.name.firstName());
+			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.checkboxVerified.click();
