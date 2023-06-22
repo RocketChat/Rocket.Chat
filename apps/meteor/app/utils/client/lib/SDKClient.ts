@@ -154,7 +154,7 @@ export const createSDK = (rest: RestClientInterface) => {
 	};
 
 	const publish = (name: string, args: unknown[]) => {
-		Meteor.call(`stream-${name}`, ...args);
+		void Meteor.callAsync(`stream-${name}`, ...args);
 	};
 
 	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
