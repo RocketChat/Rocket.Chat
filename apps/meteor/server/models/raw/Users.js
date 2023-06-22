@@ -1005,23 +1005,6 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	removeAllBusinessHoursFromUserByUserId(userId) {
-		const query = {
-			_id: userId,
-			openBusinessHours: {
-				$exists: true,
-			},
-		};
-
-		const update = {
-			$unset: {
-				openBusinessHours: 1,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	resetTOTPById(userId) {
 		return this.col.updateOne(
 			{
@@ -1601,20 +1584,6 @@ export class UsersRaw extends BaseRaw {
 			$set: {
 				statusLivechat: status,
 				livechatStatusSystemModified: false,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	unsetLivechatStatus(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$unset: {
-				statusLivechat: 1,
 			},
 		};
 

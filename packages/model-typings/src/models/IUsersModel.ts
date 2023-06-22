@@ -133,8 +133,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
-	removeAllBusinessHoursFromUserByUserId(userId: string): Promise<UpdateResult>;
-
 	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
 
 	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
@@ -257,7 +255,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
-	unsetLivechatStatus(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	closeOffice(): Promise<void>;
 	openOffice(): Promise<void>;
