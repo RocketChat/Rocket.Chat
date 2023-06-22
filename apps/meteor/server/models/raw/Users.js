@@ -2913,4 +2913,20 @@ export class UsersRaw extends BaseRaw {
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
 	}
+
+	removeAgent(_id) {
+		const update = {
+			$set: {
+				operator: false,
+			},
+			$unset: {
+				livechat: 1,
+				statusLivechat: 1,
+				extension: 1,
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
 }

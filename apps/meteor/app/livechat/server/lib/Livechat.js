@@ -575,13 +575,9 @@ export const Livechat = {
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
 			await Promise.all([
-				Users.setOperator(_id, false),
-				Users.removeLivechatData(_id),
-				Users.unsetLivechatStatus(_id),
+				Users.removeAgent(_id),
 				LivechatDepartmentAgents.removeByAgentId(_id),
 				LivechatVisitors.removeContactManagerByUsername(username),
-				Users.unsetExtension(_id),
-				Users.removeAllBusinessHoursFromUserByUserId(_id),
 			]);
 			return true;
 		}
