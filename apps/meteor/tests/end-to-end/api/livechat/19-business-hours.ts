@@ -6,7 +6,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveBusinessHour } from '../../../data/livechat/business-hours';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
 import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
@@ -126,7 +126,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 
 		before(async () => {
 			await updateSetting('Livechat_enable_business_hours', true);
-			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.SINGLE);
+			await updateEESetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.SINGLE);
 			// wait for callbacks to run
 			await sleep(2000);
 
