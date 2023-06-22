@@ -15,7 +15,7 @@ import {
 	MatrixRoomPowerLevelsChangedHandler,
 	MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
-import { InMemoryQueue } from './queue/InMemoryQueue';
+import { PersistentQueue } from './queue/PersistentQueue';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
@@ -58,8 +58,8 @@ export class FederationFactory {
 		return new RocketChatNotificationAdapter();
 	}
 
-	public static buildFederationQueue(): InMemoryQueue {
-		return new InMemoryQueue();
+	public static buildFederationQueue(): PersistentQueue {
+		return new PersistentQueue();
 	}
 
 	public static buildRoomServiceReceiver(
@@ -69,7 +69,7 @@ export class FederationFactory {
 		internalFileAdapter: RocketChatFileAdapter,
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
-		federationQueueInstance: InMemoryQueue,
+		federationQueueInstance: PersistentQueue,
 		bridge: IFederationBridge,
 	): FederationRoomServiceReceiver {
 		return new FederationRoomServiceReceiver(
@@ -182,7 +182,7 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
+	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: PersistentQueue): IFederationBridge {
 		return new MatrixBridge(internalSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 

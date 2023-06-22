@@ -14,11 +14,11 @@ import type { RocketChatFileAdapter } from '../../../../../server/services/feder
 import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
-import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
-import { RocketChatQueueAdapterEE } from './rocket-chat/adapters/Queue';
+import type { PersistentQueue } from '../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
+import { RocketChatQueueAdapter as RocketChatQueueAdapterEE } from '../../../../../server/services/federation/infrastructure/queue/RocketChatQueueAdapter';
 
 export class FederationFactoryEE extends FederationFactory {
-	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
+	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: PersistentQueue): IFederationBridgeEE {
 		return new MatrixBridgeEE(internalSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 
