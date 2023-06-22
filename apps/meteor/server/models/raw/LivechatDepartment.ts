@@ -128,6 +128,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = {
+			enabled: true,
+			businessHourId: { $exists: false },
+		};
+		return this.find(query, options);
+	}
+
 	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
 		businessHourIds: string[],
 		departmentIds: string[],
