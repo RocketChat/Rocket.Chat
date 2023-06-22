@@ -13,13 +13,13 @@ const ERROR = {
 const INITIAL_SLA = {
 	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.string.numeric(),
+	estimatedWaitTime: faker.string.numeric({ length: 1, exclude: '0' }),
 };
 
 const EDITED_SLA = {
 	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.string.numeric(),
+	estimatedWaitTime: faker.string.numeric({ length: 1, exclude: '0' }),
 };
 
 test.skip(!IS_EE, 'Omnichannel SLA Policies > Enterprise Only');
