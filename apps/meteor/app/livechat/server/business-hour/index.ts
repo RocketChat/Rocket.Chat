@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { cronJobs } from '@rocket.chat/cron';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { BusinessHourManager } from './BusinessHourManager';
 import { SingleBusinessHourBehavior } from './Single';
