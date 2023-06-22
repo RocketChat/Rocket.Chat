@@ -1,9 +1,9 @@
 import { Tracker } from 'meteor/tracker';
 
-export const waitUntilFind = <T>(fn: () => T | undefined): Promise<T> =>
+export const waitUntilFind = <T>(fn: () => Promise<T | undefined>): Promise<T> =>
 	new Promise((resolve) => {
-		Tracker.autorun((c) => {
-			const result = fn();
+		Tracker.autorun(async (c) => {
+			const result = await fn();
 
 			if (result === undefined) {
 				return;
