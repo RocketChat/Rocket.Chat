@@ -13,8 +13,8 @@ import PlainText from './PlainText';
 import SectionBlock from './SectionBlock';
 import StaticSelectElement from './StaticSelectElement';
 
-class MessageParser extends UiKitParserMessage {
-	divider = (element, context, index) => {
+class MessageParser extends UiKitParserMessage<JSX.Element> {
+	divider = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -22,7 +22,7 @@ class MessageParser extends UiKitParserMessage {
 		return <DividerBlock key={index} {...element} />;
 	};
 
-	section = (element, context, index) => {
+	section = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -30,7 +30,7 @@ class MessageParser extends UiKitParserMessage {
 		return <SectionBlock key={index} {...element} parser={this} />;
 	};
 
-	image = (element, context, index) => {
+	image = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return <ImageBlock key={index} {...element} parser={this} />;
 		}
@@ -38,7 +38,7 @@ class MessageParser extends UiKitParserMessage {
 		return <ImageElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	actions = (element, context, index) => {
+	actions = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -46,7 +46,7 @@ class MessageParser extends UiKitParserMessage {
 		return <ActionsBlock key={index} {...element} parser={this} />;
 	};
 
-	context = (element, context, index) => {
+	context = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -54,7 +54,7 @@ class MessageParser extends UiKitParserMessage {
 		return <ContextBlock key={index} {...element} parser={this} />;
 	};
 
-	plain_text = (element, context, index) => {
+	plain_text = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -62,7 +62,7 @@ class MessageParser extends UiKitParserMessage {
 		return <PlainText key={index} {...element} />;
 	};
 
-	mrkdwn = (element, context, index) => {
+	mrkdwn = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -70,7 +70,7 @@ class MessageParser extends UiKitParserMessage {
 		return <Mrkdwn key={index} {...element} />;
 	};
 
-	button = (element, context, index) => {
+	button = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -78,7 +78,7 @@ class MessageParser extends UiKitParserMessage {
 		return <ButtonElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	overflow = (element, context, index) => {
+	overflow = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -86,7 +86,7 @@ class MessageParser extends UiKitParserMessage {
 		return <OverflowElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	datePicker = (element, context, index) => {
+	datePicker = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -94,7 +94,7 @@ class MessageParser extends UiKitParserMessage {
 		return <DatePickerElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	staticSelect = (element, context, index) => {
+	staticSelect = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -109,4 +109,4 @@ export const parser = new MessageParser();
 
 export const renderMessageBlocks = uiKitMessage(parser, {
 	engine: 'livechat',
-});
+}) as { (blocks: any): JSX.Element[] };

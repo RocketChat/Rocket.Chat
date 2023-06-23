@@ -1,5 +1,7 @@
+import type { Meta } from '@storybook/react';
+
 import { renderMessageBlocks } from '.';
-import imageBlock from '../../../../.storybook/assets/imageBlock.png';
+import { imageBlock } from '../../../helpers.stories';
 
 export default {
 	title: 'UiKit/Message/Image block',
@@ -7,7 +9,7 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
-};
+} satisfies Meta;
 
 export const WithTitle = () =>
 	renderMessageBlocks([

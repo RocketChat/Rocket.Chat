@@ -1,4 +1,5 @@
 import { action } from '@storybook/addon-actions';
+import type { Meta } from '@storybook/react';
 
 import { renderMessageBlocks } from '.';
 import Surface from './Surface';
@@ -13,14 +14,14 @@ export default {
 		(storyFn) => (
 			<Surface
 				children={storyFn()}
-				dispatchAction={async (payload) => {
+				dispatchAction={async (payload: unknown) => {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 					action('dispatchAction')(payload);
 				}}
 			/>
 		),
 	],
-};
+} as Meta;
 
 export const AllSelects = () =>
 	renderMessageBlocks([

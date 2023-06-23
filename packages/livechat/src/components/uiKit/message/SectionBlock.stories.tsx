@@ -1,7 +1,8 @@
 import { action } from '@storybook/addon-actions';
+import type { Meta } from '@storybook/react';
 
 import { renderMessageBlocks } from '.';
-import accessoryImage from '../../../../.storybook/assets/accessoryImage.png';
+import { accessoryImage } from '../../../helpers.stories';
 import { PopoverContainer } from '../../Popover';
 import Surface from './Surface';
 
@@ -16,14 +17,14 @@ export default {
 		(storyFn) => (
 			<Surface
 				children={storyFn()}
-				dispatchAction={async (payload) => {
+				dispatchAction={async (payload: unknown) => {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 					action('dispatchAction')(payload);
 				}}
 			/>
 		),
 	],
-};
+} as Meta;
 
 export const TextAsPlainText = () =>
 	renderMessageBlocks([
