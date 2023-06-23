@@ -54,3 +54,5 @@ export { gazzoAvatar, martinAvatar, tassoAvatar };
 export { default as sampleAudio } from '../.storybook/assets/sample-audio.mp3';
 export { default as sampleImage } from '../.storybook/assets/sample-image.jpg';
 export { default as sampleVideo } from '../.storybook/assets/sample-video.mp4';
+export { default as accessoryImage } from '../.storybook/assets/accessoryImage.png';
+export { default as imageBlock } from '../.storybook/assets/imageBlock.png';

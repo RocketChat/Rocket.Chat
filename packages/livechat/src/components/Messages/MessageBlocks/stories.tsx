@@ -1,6 +1,7 @@
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+
 import MessageBlocks from '.';
-import accessoryImage from '../../../../.storybook/assets/accessoryImage.png';
-import imageBlock from '../../../../.storybook/assets/imageBlock.png';
+import { accessoryImage, imageBlock } from '../../../helpers.stories';
 import { PopoverContainer } from '../../Popover';
 
 export default {
@@ -9,9 +10,9 @@ export default {
 		layout: 'fullscreen',
 	},
 	decorators: [(storyFn) => <PopoverContainer children={storyFn()} />],
-};
+} satisfies ComponentMeta<typeof MessageBlocks>;
 
-export const WithBlocks = () => (
+export const WithBlocks: ComponentStory<typeof MessageBlocks> = () => (
 	<MessageBlocks
 		blocks={[
 			{
