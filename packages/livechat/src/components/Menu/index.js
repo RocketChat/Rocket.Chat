@@ -10,14 +10,14 @@ export const Menu = ({ children, hidden, placement, ...props }) => (
 	</div>
 );
 
-export const Group = ({ children, title, ...props }) => (
+export const Group = ({ children, title = undefined, ...props }) => (
 	<div className={createClassName(styles, 'menu__group')} {...props}>
 		{title && <div className={createClassName(styles, 'menu__group-title')}>{title}</div>}
 		{children}
 	</div>
 );
 
-export const Item = ({ children, primary, danger, disabled, icon, ...props }) => (
+export const Item = ({ children, primary = false, danger = false, disabled = false, icon = undefined, ...props }) => (
 	<button className={createClassName(styles, 'menu__item', { primary, danger, disabled })} disabled={disabled} {...props}>
 		{icon && <div className={createClassName(styles, 'menu__item__icon')}>{icon()}</div>}
 		{children}
