@@ -4,6 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Presence } from '@rocket.chat/core-services';
 
+import { presenceEvents } from '../../../lib/localEvents';
+
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
 	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
@@ -33,9 +35,12 @@ Meteor.startup(function () {
 		if (login.type !== 'resume') {
 			return;
 		}
-		void Presence.newConnection(login.user._id, login.connection.id, nodeId).then(() => {
+		void (async function () {
+			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();
-		});
+			// User-login event fires after user is logged in & connection status is set
+			presenceEvents.emit('user-login', login.user);
+		})();
 	});
 
 	Accounts.onLogout(function (login: any): void {
