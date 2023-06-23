@@ -50,3 +50,5 @@ const loremIpsumRandom = createRandom(42);
 export const loremIpsum = (options) => originalLoremIpsum({ random: loremIpsumRandom, ...options });
 
 export { gazzoAvatar, martinAvatar, tassoAvatar };
+
+export { default as sampleAudio } from '../.storybook/assets/sample-audio.mp3';
