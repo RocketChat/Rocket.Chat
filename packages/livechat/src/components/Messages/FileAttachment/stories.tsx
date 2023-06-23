@@ -1,0 +1,61 @@
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+
+import { FileAttachment } from '.';
+import { loremIpsum } from '../../../helpers.stories';
+
+export default {
+	title: 'Messages/FileAttachment',
+	component: FileAttachment,
+	args: {
+		title: 'Untitled',
+	},
+	parameters: {
+		layout: 'centered',
+	},
+} satisfies ComponentMeta<typeof FileAttachment>;
+
+const Template: ComponentStory<typeof FileAttachment> = (args) => <FileAttachment {...args} />;
+
+export const PDF = Template.bind({});
+PDF.storyName = 'for pdf';
+PDF.args = {
+	url: 'http://example.com/demo.pdf',
+};
+
+export const DOC = Template.bind({});
+DOC.storyName = 'for doc';
+DOC.args = {
+	url: 'http://example.com/demo.doc',
+};
+
+export const PPT = Template.bind({});
+PPT.storyName = 'for ppt';
+PPT.args = {
+	url: 'http://example.com/demo.ppt',
+};
+
+export const XLS = Template.bind({});
+XLS.storyName = 'for xls';
+XLS.args = {
+	url: 'http://example.com/demo.xls',
+};
+
+export const ZIP = Template.bind({});
+ZIP.storyName = 'for zip';
+ZIP.args = {
+	url: 'http://example.com/demo.zip',
+};
+
+export const UnknownExtension = Template.bind({});
+UnknownExtension.storyName = 'for unknown extension';
+UnknownExtension.args = {
+	url: 'http://example.com/demo.abc',
+};
+
+export const WithLongTitle = Template.bind({});
+WithLongTitle.storyName = 'with long title';
+WithLongTitle.args = {
+	title: loremIpsum({ count: 50, units: 'words' }),
+	url: 'http://example.com/demo.abc',
+};
+WithLongTitle.decorators = [(storyFn) => <div style={{ width: 365 }}>{storyFn()}</div>];
