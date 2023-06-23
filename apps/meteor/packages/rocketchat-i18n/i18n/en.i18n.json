@@ -91,6 +91,7 @@
   "Accounts_Default_User_Preferences_desktopNotifications": "Desktop Notifications Default Alert",
   "Accounts_Default_User_Preferences_pushNotifications": "Push Notifications Default Alert",
   "Accounts_Default_User_Preferences_not_available": "Failed to retrieve User Preferences because they haven't been set up by the user yet",
+  "Accounts_Default_User_Preferences_showThreadsInMainChannel_Description": "When enabled, all replies under a thread will also be displayed directly in the main room. When disabled, thread replies will be displayed based on the sender's choice.",
   "Accounts_DefaultUsernamePrefixSuggestion": "Default Username Prefix Suggestion",
   "Accounts_denyUnverifiedEmail": "Deny unverified email",
   "Accounts_Directory_DefaultView": "Default Directory Listing",
