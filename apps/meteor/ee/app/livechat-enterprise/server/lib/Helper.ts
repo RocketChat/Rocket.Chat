@@ -43,7 +43,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 	}
 
 	if (agentId) {
-		const user = await Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
