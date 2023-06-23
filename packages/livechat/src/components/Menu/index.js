@@ -6,7 +6,7 @@ import styles from './styles.scss';
 
 /** @typedef {{ children: any, hidden?: boolean, placement?: string }} MenuProps */
 
-/** @type {(props: MenuProps) => JSX.Element} */
+/** @type {{ (props: MenuProps) => JSX.Element; Group: any; Item: any}} */
 export const Menu = ({ children, hidden, placement = '', ...props }) => (
 	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
