@@ -241,6 +241,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			checked: false,
 		},
 		{
+			id: 'group',
+			text: 'Group',
+			checked: false,
+		},
+		{
 			id: 'teams',
 			text: 'Teams',
 			checked: false,

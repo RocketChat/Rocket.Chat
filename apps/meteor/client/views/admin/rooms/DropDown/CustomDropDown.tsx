@@ -49,9 +49,9 @@ export type DropDownProps = {
 	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
 };
 
-// TODO: move DropDownAnchor to new file!!
+// TODO: move CustomDropDownAnchor to new file!!
 
-type DropDownAnchorProps = {
+type CustomDropDownAnchorProps = {
 	onClick?: MouseEventHandler<HTMLElement>;
 	defaultTitle: TranslationKey;
 	selectedOptionsTitle: TranslationKey;
@@ -59,7 +59,7 @@ type DropDownAnchorProps = {
 	maxCount: number;
 } & ComponentProps<typeof Button>;
 
-export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(function DropDownAnchor(
+export const CustomDropDownAnchor = forwardRef<HTMLElement, CustomDropDownAnchorProps>(function CustomDropDownAnchor(
 	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
@@ -91,7 +91,7 @@ export const DropDownAnchor = forwardRef<HTMLElement, DropDownAnchorProps>(funct
 	);
 });
 
-// TODO: move DropDownListWrapper to new file!!
+// TODO: move CustomDropDownListWrapper to new file!!
 
 const options = {
 	margin: 8,
@@ -104,8 +104,8 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
-export const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
-	function DropDownListWrapper({ children, onClose }, ref) {
+export const CustomDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
+	function CustomDropDownListWrapper({ children, onClose }, ref) {
 		const target = useRef<HTMLElement>(null);
 		useOutsideClick([target], onClose);
 		const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
@@ -117,9 +117,9 @@ export const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box
 	},
 );
 
-// TODO: move DropDownList to new file!!
+// TODO: move CustomDropDownList to new file!!
 
-export const DropDownList = ({
+export const CustomDropDownList = ({
 	options,
 	onSelected,
 }: {
@@ -204,7 +204,7 @@ export const CustomDropDown = ({
 
 	return (
 		<>
-			<DropDownAnchor
+			<CustomDropDownAnchor
 				ref={reference}
 				onClick={toggleCollapsed as any}
 				defaultTitle={defaultTitle}
@@ -213,9 +213,9 @@ export const CustomDropDown = ({
 				maxCount={dropdownOptions.length}
 			/>
 			{collapsed && (
-				<DropDownListWrapper ref={reference} onClose={onClose}>
-					<DropDownList options={dropdownOptions} onSelected={onSelect} />
-				</DropDownListWrapper>
+				<CustomDropDownListWrapper ref={reference} onClose={onClose}>
+					<CustomDropDownList options={dropdownOptions} onSelected={onSelect} />
+				</CustomDropDownListWrapper>
 			)}
 		</>
 	);

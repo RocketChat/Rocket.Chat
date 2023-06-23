@@ -10,6 +10,7 @@ const filterRoomsByChannels = (room: Partial<IRoom>): boolean => room.t === 'c' 
 const filterRoomsByDirectMessages = (room: Partial<IRoom>): boolean => isDirectMessageRoom(room);
 const filterRoomsByDiscussions = (room: Partial<IRoom>): boolean => isDiscussion(room);
 const filterRoomsByOmnichannel = ({ t }: Partial<IRoom>): boolean => t === 'l'; // LiveChat
+const filterRoomsByGroup = (room: Partial<IRoom>): boolean => room.t === 'p' && !isTeamRoom(room); // Group: private channel
 const filterRoomsByTeams = (room: Partial<IRoom>): boolean => isTeamRoom(room);
 
 const filters: Record<string, (room: Partial<IRoom>) => boolean> = {
@@ -21,6 +22,7 @@ const filters: Record<string, (room: Partial<IRoom>) => boolean> = {
 	directMessages: filterRoomsByDirectMessages,
 	discussions: filterRoomsByDiscussions,
 	omnichannel: filterRoomsByOmnichannel,
+	group: filterRoomsByGroup,
 	teams: filterRoomsByTeams,
 };
 
