@@ -1,0 +1,66 @@
+import { action } from '@storybook/addon-actions';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+
+import { TextInput } from '.';
+import { Form, FormField } from '..';
+
+export default {
+	title: 'Forms/TextInput',
+	component: TextInput,
+	args: {
+		value: '',
+		placeholder: 'Placeholder',
+		disabled: false,
+		small: false,
+		multiline: false,
+		rows: 1,
+		error: false,
+		onInput: action('input'),
+	},
+	decorators: [
+		(storyFn) => (
+			<Form>
+				<FormField>{storyFn()}</FormField>
+			</Form>
+		),
+	],
+	parameters: {
+		layout: 'centered',
+	},
+} satisfies ComponentMeta<typeof TextInput>;
+
+const Template: ComponentStory<typeof TextInput> = (args) => <TextInput {...args} />;
+
+export const Empty = Template.bind({});
+Empty.storyName = 'empty';
+
+export const Filled = Template.bind({});
+Filled.storyName = 'filled';
+Filled.args = {
+	value: 'Value',
+};
+
+export const Disabled = Template.bind({});
+Disabled.storyName = 'disabled';
+Disabled.args = {
+	disabled: true,
+};
+
+export const Small = Template.bind({});
+Small.storyName = 'small';
+Small.args = {
+	small: true,
+};
+
+export const Multiline = Template.bind({});
+Multiline.storyName = 'multiline';
+Multiline.args = {
+	multiline: true,
+	rows: 3,
+};
+
+export const WithError = Template.bind({});
+WithError.storyName = 'with error';
+WithError.args = {
+	error: true,
+};
