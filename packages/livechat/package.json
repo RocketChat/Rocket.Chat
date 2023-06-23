@@ -43,7 +43,6 @@
 		"@typescript-eslint/parser": "~5.60.0",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "^8.3.0",
-		"babel-plugin-jsx-pragmatic": "^1.0.2",
 		"cross-env": "^7.0.3",
 		"css-loader": "^4.3.0",
 		"cssnano": "^4.1.11",

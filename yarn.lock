@@ -9974,7 +9974,6 @@ __metadata:
     "@typescript-eslint/parser": ~5.60.0
     autoprefixer: ^9.8.8
     babel-loader: ^8.3.0
-    babel-plugin-jsx-pragmatic: ^1.0.2
     cross-env: ^7.0.3
     crypto-js: ^4.1.1
     css-loader: ^4.3.0
@@ -16779,15 +16778,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-jsx-pragmatic@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "babel-plugin-jsx-pragmatic@npm:1.0.2"
-  dependencies:
-    babel-plugin-syntax-jsx: ^6.0.0
-  checksum: dbb5e5c07d8ca8525c3023b32fd93cabaa9a452dcd3446e2612074c93210a9e1163657c97436719e80705c1bf3e5ac4d453d8fd25051ce03bfb2b027e1a397cf
-  languageName: node
-  linkType: hard
-
 "babel-plugin-macros@npm:^2.0.0":
   version: 2.8.0
   resolution: "babel-plugin-macros@npm:2.8.0"
@@ -16912,7 +16902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-syntax-jsx@npm:^6.0.0, babel-plugin-syntax-jsx@npm:^6.18.0":
+"babel-plugin-syntax-jsx@npm:^6.18.0":
   version: 6.18.0
   resolution: "babel-plugin-syntax-jsx@npm:6.18.0"
   checksum: 0c7ce5b81d6cfc01a7dd7a76a9a8f090ee02ba5c890310f51217ef1a7e6163fb7848994bbc14fd560117892e82240df9c7157ad0764da67ca5f2afafb73a7d27
