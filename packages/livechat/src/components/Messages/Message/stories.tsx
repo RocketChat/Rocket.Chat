@@ -1,8 +1,7 @@
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+
 import Message from '.';
-import sampleAudio from '../../../../.storybook/assets/sample-audio.mp3';
-import sampleImage from '../../../../.storybook/assets/sample-image.jpg';
-import sampleVideo from '../../../../.storybook/assets/sample-video.mp4';
-import { attachmentResolver, avatarResolver, loremIpsum } from '../../../helpers.stories';
+import { attachmentResolver, avatarResolver, loremIpsum, sampleAudio, sampleImage, sampleVideo } from '../../../helpers.stories';
 import {
 	MESSAGE_TYPE_ROOM_NAME_CHANGED,
 	MESSAGE_TYPE_USER_ADDED,
@@ -13,18 +12,6 @@ import {
 	MESSAGE_TYPE_LIVECHAT_CLOSED,
 	MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY,
 } from '../constants';
-
-const messageTypes = {
-	NULL: null,
-	ROOM_NAME_CHANGED: MESSAGE_TYPE_ROOM_NAME_CHANGED,
-	USER_ADDED: MESSAGE_TYPE_USER_ADDED,
-	USER_REMOVED: MESSAGE_TYPE_USER_REMOVED,
-	USER_JOINED: MESSAGE_TYPE_USER_JOINED,
-	USER_LEFT: MESSAGE_TYPE_USER_LEFT,
-	WELCOME: MESSAGE_TYPE_WELCOME,
-	LIVECHAT_CLOSED: MESSAGE_TYPE_LIVECHAT_CLOSED,
-	TRANSFER_HISTORY: MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY,
-};
 
 const defaultMessage = loremIpsum({ count: 1, units: 'sentences' });
 const defaultMessageExtra = loremIpsum({ count: 1, units: 'sentences' });
@@ -75,7 +62,22 @@ export default {
 		me: { control: 'boolean' },
 		compact: { control: 'boolean' },
 		msg: { control: 'text' },
-		t: { control: { type: 'select', options: messageTypes } },
+		t: {
+			control: {
+				type: 'select',
+				options: {
+					NULL: null,
+					ROOM_NAME_CHANGED: MESSAGE_TYPE_ROOM_NAME_CHANGED,
+					USER_ADDED: MESSAGE_TYPE_USER_ADDED,
+					USER_REMOVED: MESSAGE_TYPE_USER_REMOVED,
+					USER_JOINED: MESSAGE_TYPE_USER_JOINED,
+					USER_LEFT: MESSAGE_TYPE_USER_LEFT,
+					WELCOME: MESSAGE_TYPE_WELCOME,
+					LIVECHAT_CLOSED: MESSAGE_TYPE_LIVECHAT_CLOSED,
+					TRANSFER_HISTORY: MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY,
+				},
+			},
+		},
 		u: { control: 'object' },
 		ts: { control: 'date' },
 		attachments: { control: 'object' },
@@ -91,9 +93,9 @@ export default {
 		attachments: [],
 		blocks: [],
 	},
-};
+} satisfies ComponentMeta<typeof Message>;
 
-export const Default = (args) => (
+export const Default: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -109,7 +111,7 @@ export const Default = (args) => (
 );
 Default.storyName = 'default';
 
-export const System = (args) => (
+export const System: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -129,7 +131,7 @@ System.args = {
 	t: MESSAGE_TYPE_WELCOME,
 };
 
-export const Me = (args) => (
+export const Me: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -148,7 +150,7 @@ Me.args = {
 	me: true,
 };
 
-export const Markdown = (args) => (
+export const Markdown: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -167,7 +169,7 @@ Markdown.args = {
 	msg: defaultMarkdownMessage,
 };
 
-export const Grouping = (args) => (
+export const Grouping: ComponentStory<typeof Message> = (args) => (
 	<div>
 		<Message
 			attachmentResolver={attachmentResolver}
@@ -197,7 +199,7 @@ Grouping.args = {
 	compact: true,
 };
 
-export const WithQuotation = (args) => (
+export const WithQuotation: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -221,7 +223,7 @@ WithQuotation.args = {
 	],
 };
 
-export const WithAudioAttachment = (args) => (
+export const WithAudioAttachment: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -244,7 +246,7 @@ WithAudioAttachment.args = {
 	],
 };
 
-export const WithVideoAttachment = (args) => (
+export const WithVideoAttachment: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -267,7 +269,7 @@ WithVideoAttachment.args = {
 	],
 };
 
-export const WithImageAttachment = (args) => (
+export const WithImageAttachment: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -290,7 +292,7 @@ WithImageAttachment.args = {
 	],
 };
 
-export const WithFilesAttachments = (args) => (
+export const WithFilesAttachments: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -312,7 +314,7 @@ WithFilesAttachments.args = {
 	})),
 };
 
-export const WithMultipleAttachments = (args) => (
+export const WithMultipleAttachments: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -345,7 +347,7 @@ WithMultipleAttachments.args = {
 	],
 };
 
-export const WithUiKitBlocks = (args) => (
+export const WithUiKitBlocks: ComponentStory<typeof Message> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
