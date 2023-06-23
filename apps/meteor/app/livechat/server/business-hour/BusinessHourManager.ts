@@ -141,6 +141,12 @@ export class BusinessHourManager {
 			items.map((hour) => {
 				const jobName = `${day}/${hour}/${type}`;
 				const time = moment(hour, 'HH:mm');
+
+				// When opening BH, we have to check if the job should have already run
+				if (type === 'open' && moment().isSameOrAfter(time)) {
+					job(day, hour);
+				}
+
 				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
 				this.addToCache(jobName);
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));

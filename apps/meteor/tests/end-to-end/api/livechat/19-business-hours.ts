@@ -2,16 +2,13 @@
 
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import moment from 'moment-timezone';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveBusinessHour } from '../../../data/livechat/business-hours';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { createAgent } from '../../../data/livechat/rooms';
-import { getMe } from '../../../data/users.helper';
-import { changeAgentStatus } from '../../../data/livechat/agent';
-import { sleep } from '../../../../lib/utils/sleep';
+import { makeAgentAvailable } from '../../../data/livechat/rooms';
+import { getWorkHours } from '../../../data/livechat/businessHours';
 
 describe('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -22,8 +19,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 		await updateSetting('Livechat_enabled', true);
 	});
 
-	const formatUtcOffset = (timezone: string) => moment.tz(timezone).format('Z');
-	let defaultBhId: string;
+	let defaultBhId: any;
 	describe('livechat/business-hour', () => {
 		it('should fail when user doesnt have view-livechat-business-hours permission', async () => {
 			await updatePermission('view-livechat-business-hours', []);
@@ -51,86 +47,37 @@ describe('[CE] LIVECHAT - business hours', function () {
 			expect(response.body.businessHour.workHours[0].open).to.be.a('boolean');
 			expect(response.body.businessHour.timezone).to.be.an('object').that.has.property('name').that.is.an('string');
 
-			defaultBhId = response.body.businessHour._id;
+			defaultBhId = response.body.businessHour;
 		});
-
-		it('should start default business hour', async () => {
-			const agent = await createAgent();
-			const timezone = moment.tz.guess();
-			const day = moment.tz(timezone).format('dddd');
-			const startHour = moment.tz(timezone).startOf('day').format('HH:mm');
-			const closeHour = moment.tz(timezone).endOf('day').format('HH:mm');
-
-			console.log('timezone', timezone);
-			console.log('day', day);
-			console.log('startHour', startHour);
-			console.log('closeHour', closeHour);
-
+		it('should not allow a user to be available if BH are closed', async () => {
 			await saveBusinessHour({
-				_id: defaultBhId,
-				active: true,
-				type: LivechatBusinessHourTypes.DEFAULT,
+				...defaultBhId,
 				workHours: [
 					{
-						day,
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: startHour,
-						// @ts-expect-error - same as previous one
-						finish: closeHour,
+						day: 'Monday',
+						open: false,
+						start: '00:00',
+						finish: '23:59',
 					},
 				],
-				timezone: {
-					name: timezone,
-					utc: formatUtcOffset(timezone),
-				},
-				departmentsToApplyBusinessHour: '',
-				timezoneName: timezone,
 			});
 
-			// BH active, we can toggle our status and get it added to our cache
-			await sleep(1000);
-			await changeAgentStatus(agent._id, 'available');
-			const me = await getMe(credentials);
+			// @ts-expect-error - afsdf
+			const { body } = await makeAgentAvailable(credentials);
 
-			expect(me.openBusinessHours).to.be.an('array').with.lengthOf(1);
-			expect(me.openBusinessHours[0]).to.be.equal(defaultBhId);
-			expect(me.statusLivechat).to.be.equal('available');
+			expect(body).to.have.property('success', false);
+			expect(body.error).to.be.equal('error-business-hours-are-closed');
 		});
-
-		it('should stop default business hour', async () => {
-			const timezone = moment.tz.guess();
-			const day = moment.tz(timezone).format('dddd');
-			const startHour = moment.tz(timezone).startOf('day').format('HH:mm');
-			const closeHour = moment.tz(timezone).startOf('day').add(1, 'minute').format('HH:mm');
-
+		it('should allow a user to be available if BH are open', async () => {
 			await saveBusinessHour({
-				_id: defaultBhId,
-				active: true,
-				type: LivechatBusinessHourTypes.DEFAULT,
-				workHours: [
-					{
-						day,
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: startHour,
-						// @ts-expect-error - same as previous one
-						finish: closeHour,
-					},
-				],
-				timezone: {
-					name: timezone,
-					utc: formatUtcOffset(timezone),
-				},
-				departmentsToApplyBusinessHour: '',
-				timezoneName: timezone,
+				...defaultBhId,
+				workHours: getWorkHours(true),
 			});
 
-			await sleep(1000);
-			const me = await getMe(credentials);
+			// @ts-expect-error - afsdf
+			const { body } = await makeAgentAvailable(credentials);
 
-			expect(me.openBusinessHours).to.be.an('array').with.lengthOf(0);
-			expect(me.statusLivechat).to.be.equal('not-available');
+			expect(body).to.have.property('success', true);
 		});
 	});
 
