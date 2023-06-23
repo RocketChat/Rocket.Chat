@@ -124,4 +124,14 @@ export const {
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
+	{
+		href: 'engagement-dashboard',
+		i18nLabel: 'Engagement Dashboard',
+		icon: 'file-keynote',
+	},
+	{
+		href: 'device-management',
+		i18nLabel: 'Device_Management',
+		icon: 'mobile',
+	},
 ]);
