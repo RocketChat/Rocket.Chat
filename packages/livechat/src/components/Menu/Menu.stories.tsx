@@ -2,7 +2,6 @@ import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import Menu, { Group, Item } from '.';
-import { centered } from '../../helpers.stories';
 import { Button } from '../Button';
 
 export default {
@@ -19,7 +18,6 @@ export default {
 			},
 		},
 	},
-	decorators: [centered],
 	parameters: {
 		layout: 'centered',
 	},

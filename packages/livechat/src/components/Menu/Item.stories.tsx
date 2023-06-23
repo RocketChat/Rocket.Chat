@@ -14,6 +14,9 @@ export default {
 		children: 'A menu item',
 		onClick: action('clicked'),
 	},
+	parameters: {
+		layout: 'centered',
+	},
 } satisfies ComponentMeta<typeof Item>;
 
 export const Simple: ComponentStory<typeof Item> = (args) => (
