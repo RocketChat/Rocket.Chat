@@ -32,6 +32,7 @@ type QueueInfo = {
 	statistics: Document;
 	numberMostRecentChats: number;
 };
+
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
