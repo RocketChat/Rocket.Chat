@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
@@ -114,7 +114,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('expect "readOnlyChannel" to show join button', async () => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);

@@ -9,6 +9,9 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getTransporter } from './getTransporter';
+import { getLogger } from './getLogger';
+
+const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
@@ -26,7 +29,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT });
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
 		if (typeof tx === 'string') {
 			this.transporter = new Transporters.NATS({ url: tx });
 			this.isTransporterTCP = false;
@@ -37,6 +40,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		if (this.isTransporterTCP) {
 			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
 				if (clientAction === 'removed') {
+					(this.broker.transit?.tx as any).nodes.disconnected(data?._id, false);
+					(this.broker.transit?.tx as any).nodes.nodes.delete(data?._id);
 					return;
 				}
 
@@ -78,7 +83,13 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
+
+			...getLogger(process.env),
 		});
+
+		if ((this.broker.transit?.tx as any)?.nodes?.localNode) {
+			(this.broker.transit?.tx as any).nodes.localNode.ipList = [hostIP];
+		}
 
 		this.broker.createService({
 			name: 'matrix',
@@ -88,7 +99,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 					const instance = StreamerCentral.instances[streamName];
 					if (!instance) {
-						return 'stream-not-exists';
+						// return 'stream-not-exists';
+						return;
 					}
 
 					if (instance.serverOnly) {
@@ -106,7 +118,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		await this.broker.start();
 
 		const instance = {
-			host: process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost',
+			host: hostIP,
 			port: String(process.env.PORT).trim(),
 			tcpPort: (this.broker.transit?.tx as any)?.nodes?.localNode?.port,
 			os: {

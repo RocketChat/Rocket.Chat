@@ -10,7 +10,7 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
-	const targetTeam = faker.datatype.uuid();
+	const targetTeam = faker.string.uuid();
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
