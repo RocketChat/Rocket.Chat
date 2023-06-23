@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { Users } from './fixtures/userStates';
-import { OmnichannelDepartments } from './page-objects';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelDepartments } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 const ERROR = {
 	requiredName: 'The field name is required.',
