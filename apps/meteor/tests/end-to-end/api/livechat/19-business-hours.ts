@@ -11,6 +11,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { createAgent } from '../../../data/livechat/rooms';
 import { getMe } from '../../../data/users.helper';
 import { changeAgentStatus } from '../../../data/livechat/agent';
+import { sleep } from '../../../../lib/utils/sleep';
 
 describe('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -57,8 +58,8 @@ describe('[CE] LIVECHAT - business hours', function () {
 			const agent = await createAgent();
 			const timezone = moment.tz.guess();
 			const day = moment.tz(timezone).format('dddd');
-			const startHour = moment.tz(timezone).subtract(1, 'minute').format('HH:mm'); // Start one minute ago
-			const closeHour = moment.tz(timezone).add(2, 'minutes').format('HH:mm'); // Finish in 1 minute
+			const startHour = moment.tz(timezone).startOf('day').format('HH:mm');
+			const closeHour = moment.tz(timezone).endOf('day').format('HH:mm');
 
 			await saveBusinessHour({
 				_id: defaultBhId,
@@ -83,6 +84,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 			});
 
 			// BH active, we can toggle our status and get it added to our cache
+			await sleep(1000);
 			await changeAgentStatus(agent._id, 'available');
 			const me = await getMe(credentials);
 
@@ -94,8 +96,8 @@ describe('[CE] LIVECHAT - business hours', function () {
 		it('should stop default business hour', async () => {
 			const timezone = moment.tz.guess();
 			const day = moment.tz(timezone).format('dddd');
-			const startHour = moment.tz(timezone).subtract(2, 'minute').format('HH:mm'); // Start 2 minute ago
-			const closeHour = moment.tz(timezone).subtract(1, 'minutes').format('HH:mm'); // Finish 1 minute ago
+			const startHour = moment.tz(timezone).startOf('day').format('HH:mm');
+			const closeHour = moment.tz(timezone).startOf('day').add(1, 'minute').format('HH:mm');
 
 			await saveBusinessHour({
 				_id: defaultBhId,
@@ -119,7 +121,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 				timezoneName: timezone,
 			});
 
-			// BH active, we can toggle our status and get it added to our cache
+			await sleep(1000);
 			const me = await getMe(credentials);
 
 			expect(me.openBusinessHours).to.be.an('array').with.lengthOf(0);
