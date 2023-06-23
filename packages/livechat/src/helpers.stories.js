@@ -52,3 +52,4 @@ export const loremIpsum = (options) => originalLoremIpsum({ random: loremIpsumRa
 export { gazzoAvatar, martinAvatar, tassoAvatar };
 
 export { default as sampleAudio } from '../.storybook/assets/sample-audio.mp3';
+export { default as sampleImage } from '../.storybook/assets/sample-image.jpg';
