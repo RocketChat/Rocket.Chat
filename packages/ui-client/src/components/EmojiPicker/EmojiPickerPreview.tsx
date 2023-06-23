@@ -1,5 +1,5 @@
-import { Box } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
 const EmojiPickerPreview = ({ emoji, name, ...props }: { emoji: string; name: string } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => {
