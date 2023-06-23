@@ -564,6 +564,15 @@ API.v1.addRoute(
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
+
+			if (this.bodyParams.customFields) {
+				try {
+					await validateCustomFields(this.bodyParams.customFields);
+				} catch (e) {
+					return API.v1.failure(e);
+				}
+			}
+
 			// Register the user
 			const userId = await Meteor.callAsync('registerUser', {
 				...params,
@@ -577,6 +586,10 @@ API.v1.addRoute(
 			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
 			}
 
 			return API.v1.success({ user });

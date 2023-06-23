@@ -378,7 +378,7 @@ function shouldQueueStart() {
 		return;
 	}
 
-	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
+	const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
 	queueLogger.debug(
 		`Routing method ${RoutingManager.methodName} supports auto assignment: ${routingSupportsAutoAssign}. ${
 			routingSupportsAutoAssign ? 'Starting' : 'Stopping'

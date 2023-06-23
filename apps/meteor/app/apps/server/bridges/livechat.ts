@@ -20,6 +20,7 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { settings } from '../../../settings/server';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -90,7 +91,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
-			const user = await Users.getAgentInfo(agent.id);
+			const user = await Users.getAgentInfo(agent.id, settings.get('Livechat_show_agent_email'));
 			if (!user) {
 				throw new Error(`The agent with id "${agent.id}" was not found.`);
 			}
