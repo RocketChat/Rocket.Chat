@@ -11,6 +11,10 @@ export class LDAPService extends ServiceClassInternal implements ILDAPService {
 		return LDAPManager.login(username, password);
 	}
 
+	async loginAuthenticatedUserRequest(username: string): Promise<LDAPLoginResult> {
+		return LDAPManager.loginAuthenticatedUser(username);
+	}
+
 	async testConnection(): Promise<void> {
 		return LDAPManager.testConnection();
 	}

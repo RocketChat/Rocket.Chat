@@ -20,6 +20,7 @@ import type {
 	ILivechatInquiryRecord,
 	IOmnichannelServiceLevelAgreements,
 	ILivechatPriority,
+	LivechatDepartmentDTO,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -69,6 +70,23 @@ const LivechatRoomOnHoldSchema = {
 };
 
 export const isLivechatRoomOnHoldProps = ajv.compile<LivechatRoomOnHold>(LivechatRoomOnHoldSchema);
+
+type LivechatRoomResumeOnHold = {
+	roomId: IRoom['_id'];
+};
+
+const LivechatRoomResumeOnHoldSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isLivechatRoomResumeOnHoldProps = ajv.compile<LivechatRoomResumeOnHold>(LivechatRoomResumeOnHoldSchema);
 
 type LivechatDepartmentId = {
 	onlyMyDepartments?: booleanString;
@@ -2969,6 +2987,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.onHold': {
 		POST: (params: LivechatRoomOnHold) => void;
 	};
+	'/v1/livechat/room.resumeOnHold': {
+		POST: (params: LivechatRoomResumeOnHold) => void;
+	};
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => void;
 	};
@@ -3008,7 +3029,13 @@ export type OmnichannelEndpoints = {
 			department: ILivechatDepartment | null;
 			agents?: ILivechatDepartmentAgents[];
 		};
-		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
+		PUT: (params: {
+			department: LivechatDepartmentDTO;
+			agents: {
+				upsert?: { agentId: string; count?: number; order?: number }[];
+				remove?: { agentId: string; count?: number; order?: number };
+			}[];
+		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};
@@ -3314,7 +3341,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
 	};
 	'/v1/livechat/triggers': {
-		GET: (params: GETLivechatTriggersParams) => { triggers: WithId<ILivechatTrigger>[] };
+		GET: (params: GETLivechatTriggersParams) => PaginatedResult<{ triggers: WithId<ILivechatTrigger>[] }>;
 	};
 	'/v1/livechat/triggers/:_id': {
 		GET: () => { trigger: ILivechatTrigger | null };

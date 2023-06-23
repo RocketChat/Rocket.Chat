@@ -206,7 +206,7 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
-			policy: [name: string, options?: Record<string, unknown>][];
+			policy: [name: string, value?: Record<string, number>][];
 		};
 	};
 

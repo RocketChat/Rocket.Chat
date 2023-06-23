@@ -248,7 +248,7 @@ const AccountProfilePage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
-					<Button danger disabled={!hasUnsavedChanges} onClick={reset}>
+					<Button disabled={!hasUnsavedChanges} onClick={reset}>
 						{t('Reset')}
 					</Button>
 					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
