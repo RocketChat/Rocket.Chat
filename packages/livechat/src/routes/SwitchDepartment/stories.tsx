@@ -1,0 +1,47 @@
+import { action } from '@storybook/addon-actions';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+
+import { screenDecorator, screenProps } from '../../helpers.stories';
+import SwitchDepartment from './component';
+
+export default {
+	title: 'Routes/SwitchDepartment',
+	component: SwitchDepartment,
+	args: {
+		title: '',
+		message: '',
+		departments: [
+			{
+				_id: 1,
+				name: 'Department #1',
+			},
+			{
+				_id: 2,
+				name: 'Department #2',
+			},
+			{
+				_id: 3,
+				name: 'Department #3',
+			},
+		],
+		loading: false,
+		onSubmit: action('submit'),
+		onCancel: action('cancel'),
+		...screenProps(),
+	},
+	decorators: [screenDecorator],
+	parameters: {
+		layout: 'centered',
+	},
+} as ComponentMeta<typeof SwitchDepartment>;
+
+const Template: ComponentStory<typeof SwitchDepartment> = (args) => <SwitchDepartment {...args} />;
+
+export const Normal = Template.bind({});
+Normal.storyName = 'normal';
+
+export const Loading = Template.bind({});
+Loading.storyName = 'loading';
+Loading.args = {
+	loading: true,
+};
