@@ -210,7 +210,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build, release-versions]
+    needs: [build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
