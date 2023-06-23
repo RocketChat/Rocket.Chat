@@ -1,4 +1,4 @@
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from "@rocket.chat/core-typings";
+import { ILivechatBusinessHour } from "@rocket.chat/core-typings";
 import { api, credentials, methodCall, request } from "../api-data";
 import { updateEESetting, updateSetting } from "../permissions.helper"
 import moment from "moment";
