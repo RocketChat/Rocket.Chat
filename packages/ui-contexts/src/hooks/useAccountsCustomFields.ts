@@ -1,17 +1,9 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 
-type AccountsCustomField = {
-	type: 'text' | 'select';
-	required: boolean;
-	defaultValue: string;
-	minLength: number;
-	maxLength: number;
-	options: string[];
-	name: string;
-};
+import { useSetting } from './useSetting';
 
-export const useAccountsCustomFields = (): AccountsCustomField[] => {
+export const useAccountsCustomFields = (): CustomFieldMetadata[] => {
 	const accountsCustomFieldsJSON = useSetting('Accounts_CustomFields');
 
 	return useMemo(() => {

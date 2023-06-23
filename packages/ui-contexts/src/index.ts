@@ -87,6 +87,7 @@ export { useAvailableDevices } from './hooks/useAvailableDevices';
 export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
+export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
 export { StreamerEvents, StreamNames, StreamKeys, StreamerConfigs, StreamerConfig, StreamerCallbackArgs } from './ServerContext/streams';
