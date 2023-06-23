@@ -3,6 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, Select, TextInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo } from 'react';
 import type { Control, FieldValues } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
@@ -37,8 +38,13 @@ const CustomField = <T extends FieldValues>({
 
 	const Component = FIELD_TYPES[type] ?? null;
 
-	const selectOptions =
-		options.length > 0 && options[0] instanceof Array ? options : options.map((option) => [option, option, defaultValue === option]);
+	const selectOptions = useMemo(
+		() =>
+			options.length > 0 && options[0] instanceof Array ? options : options.map((option) => [option, option, defaultValue === option]),
+		[defaultValue, options],
+	);
+
+	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
 	const getErrorMessage = (error: any) => {
 		switch (error?.type) {
@@ -58,7 +64,7 @@ const CustomField = <T extends FieldValues>({
 			name={name}
 			control={control}
 			defaultValue={defaultValue ?? ''}
-			rules={{ required, minLength: props.minLength, maxLength: props.maxLength }}
+			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
 					<Field.Label>
