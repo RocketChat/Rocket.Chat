@@ -1,15 +1,12 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test } from '../utils/test';
 
-test.describe('Omnichannel Canned Responses Sidebar', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe('Omnichannel contact info', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
@@ -38,7 +35,7 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 		await agent.page.close();
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
+	test('Receiving a message from visitor, and seeing its information', async ({ page }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();
@@ -51,9 +48,9 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 			await agent.poHomeChannel.sidenav.openChat(newUser.name);
 		});
 
-		await test.step('Expect to be able to open canned responses sidebar and creation', async () => {
-			await agent.poHomeChannel.content.btnCannedResponses.click();
-			await agent.poHomeChannel.content.btnNewCannedResponse.click();
+		await test.step('Expect to be see contact information and edit', async () => {
+			await agent.poHomeChannel.content.btnContactInformation.click();
+			await agent.poHomeChannel.content.btnContactEdit.click();
 		});
 	});
 });
