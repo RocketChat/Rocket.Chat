@@ -72,9 +72,13 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>>('visitor', {
-			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
-		});
+		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>>(
+			'visitor',
+			{
+				projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+			},
+			false,
+		);
 
 		const livechatData: Record<string, string> = {};
 
