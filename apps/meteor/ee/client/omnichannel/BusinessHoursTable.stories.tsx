@@ -14,7 +14,7 @@ export default {
 	},
 } as ComponentMeta<typeof BusinessHoursTable>;
 
-export const Default: ComponentStory<typeof BusinessHoursTable> = (args) => <BusinessHoursTable {...args} />;
+export const Default: ComponentStory<typeof BusinessHoursTable> = (_args) => <BusinessHoursTable />;
 Default.storyName = 'BusinessHoursTable';
 Default.args = {
 	businessHours: [
