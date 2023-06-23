@@ -1,5 +1,4 @@
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
-import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
+import type { ServerMethods, ServerMethodReturn, StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
