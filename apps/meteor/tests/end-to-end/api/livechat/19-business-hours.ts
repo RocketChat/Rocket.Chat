@@ -10,7 +10,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { makeAgentAvailable } from '../../../data/livechat/rooms';
 import { getWorkHours } from '../../../data/livechat/businessHours';
 
-describe('[CE] LIVECHAT - business hours', function () {
+describe.only('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -62,8 +62,8 @@ describe('[CE] LIVECHAT - business hours', function () {
 				],
 			});
 
-			const response = await request.get(api('livechat/business-hour')).set(credentials).query({ type: 'default' }).expect(200);
-			console.log(response);
+			const { body: bh } = await request.get(api('livechat/business-hour')).set(credentials).query({ type: 'default' }).expect(200);
+			console.log(JSON.stringify(bh));
 
 			// @ts-expect-error - afsdf
 			const { body } = await makeAgentAvailable(credentials);
