@@ -1,7 +1,8 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetting, useVerifyPassword, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,6 +20,7 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
+// eslint-disable-next-line complexity
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
@@ -44,6 +46,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		clearErrors,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
+
+	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -98,6 +102,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								})}
 								error={errors.name && t('registration.component.form.requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
+								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								id='name'
 							/>
 						</Field.Row>
@@ -149,14 +154,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
-								placeholder={passwordPlaceholder}
+								placeholder={passwordPlaceholder || t('Create_a_password')}
 							/>
 						</Field.Row>
-						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
-					</Field>
-					{requiresPasswordConfirmation && (
-						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('registration.component.form.confirmPassword')}*</Field.Label>
+						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -167,17 +168,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
-									placeholder={passwordConfirmationPlaceholder}
+									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 								/>
 							</Field.Row>
-							{errors.passwordConfirmation?.type === 'validate' && (
-								<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
-							)}
-							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
-							)}
-						</Field>
-					)}
+						)}
+						{errors.passwordConfirmation?.type === 'validate' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
+						)}
+						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+						)}
+						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
+					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
 							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>

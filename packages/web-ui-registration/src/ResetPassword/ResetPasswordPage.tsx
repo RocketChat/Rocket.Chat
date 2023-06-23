@@ -1,12 +1,21 @@
-import { Button, Field, Modal, Box, PasswordInput, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, useRoute, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import {
+	useSetting,
+	useVerifyPassword,
+	useRouteParameter,
+	useRoute,
+	useUser,
+	useMethod,
+	useTranslation,
+	useLoginWithToken,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Form } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
-import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
@@ -20,9 +29,7 @@ const ResetPasswordPage = (): ReactElement => {
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
-	const policies = usePasswordPolicy({
-		token: user ? undefined : token,
-	});
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 
 	const homeRouter = useRoute('home');
 
@@ -36,11 +43,15 @@ const ResetPasswordPage = (): ReactElement => {
 		setError,
 		formState: { errors },
 		formState,
+		watch,
 	} = useForm<{
 		password: string;
+		passwordConfirmation: string;
 	}>({
 		mode: 'onChange',
 	});
+
+	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const submit = handleSubmit(async (data) => {
 		try {
@@ -61,7 +72,7 @@ const ResetPasswordPage = (): ReactElement => {
 		<HorizontalTemplate>
 			<Form onSubmit={submit}>
 				<Form.Header>
-					<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
+					<Modal.Title textAlign='start'>{t('Reset_password')}</Modal.Title>
 				</Form.Header>
 				<Form.Container>
 					<Field>
@@ -74,22 +85,28 @@ const ResetPasswordPage = (): ReactElement => {
 								error={errors.password?.message}
 								aria-invalid={errors.password ? 'true' : 'false'}
 								id='password'
-								placeholder={t('Type_your_new_password')}
+								placeholder={t('Create_a_password')}
 								name='password'
 								autoComplete='off'
 							/>
 						</Field.Row>
+						{requiresPasswordConfirmation && (
+							<Field.Row>
+								<PasswordInput
+									{...register('passwordConfirmation', {
+										required: true,
+										deps: ['password'],
+										validate: (val: string) => watch('password') === val,
+									})}
+									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
+									aria-invalid={errors.passwordConfirmation ? 'true' : false}
+									id='passwordConfirmation'
+									placeholder={t('Confirm_password')}
+								/>
+							</Field.Row>
+						)}
 						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						<Field.Hint>
-							{policies.isLoading && <InputBoxSkeleton />}
-							{policies.isSuccess &&
-								policies.data.enabled &&
-								policies.data.policy?.map((policy, index) => (
-									<Box is='p' textAlign='start' key={index}>
-										{t(...(policy as unknown as [name: TranslationKey, options?: Record<string, unknown>]))}
-									</Box>
-								))}
-						</Field.Hint>
+						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
 					</Field>
 				</Form.Container>
 				<Form.Footer>

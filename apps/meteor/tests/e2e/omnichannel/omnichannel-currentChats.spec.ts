@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-import { Users } from './fixtures/userStates';
-import { OmnichannelCurrentChats } from './page-objects';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelCurrentChats } from '../page-objects';
 
 test.use({ storageState: Users.admin.state });
 
