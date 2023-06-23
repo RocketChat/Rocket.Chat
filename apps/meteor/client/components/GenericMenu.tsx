@@ -1,4 +1,4 @@
-import type { MenuItemIcon } from '@rocket.chat/fuselage';
+import type { Icon } from '@rocket.chat/fuselage';
 import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -8,7 +8,7 @@ import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
 
 type GenericMenuCommonProps = {
-	icon?: ComponentProps<typeof MenuItemIcon>['name'];
+	icon?: ComponentProps<typeof Icon>['name'];
 	title: string;
 };
 type GenericMenuConditionalProps =
@@ -25,9 +25,9 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps;
+type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', ...props }: GenericMenuProps & Omit<ComponentProps<typeof MenuV2>, 'children'>) => {
+const GenericMenu = ({ title, icon = 'menu', ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
