@@ -13,7 +13,7 @@ import { getMe } from '../../../data/users.helper';
 import { changeAgentStatus } from '../../../data/livechat/agent';
 import { sleep } from '../../../../lib/utils/sleep';
 
-describe('[CE] LIVECHAT - business hours', function () {
+describe.only('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -60,6 +60,11 @@ describe('[CE] LIVECHAT - business hours', function () {
 			const day = moment.tz(timezone).format('dddd');
 			const startHour = moment.tz(timezone).startOf('day').format('HH:mm');
 			const closeHour = moment.tz(timezone).endOf('day').format('HH:mm');
+
+			console.log('timezone', timezone);
+			console.log('day', day);
+			console.log('startHour', startHour);
+			console.log('closeHour', closeHour);
 
 			await saveBusinessHour({
 				_id: defaultBhId,
