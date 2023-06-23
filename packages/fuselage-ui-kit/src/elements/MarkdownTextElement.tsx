@@ -15,7 +15,13 @@ const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
   const { i18n } = textObject;
 
   if (i18n) {
-    textObject.text = t(`apps-${appId}-${i18n.key}`, { ...i18n.args });
+    return (
+      <Markup
+        tokens={parse(t(`apps-${appId}-${i18n.key}`, { ...i18n.args }), {
+          emoticons: false,
+        })}
+      />
+    );
   }
 
   return <Markup tokens={parse(textObject.text, { emoticons: false })} />;

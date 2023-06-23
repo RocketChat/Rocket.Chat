@@ -14,7 +14,9 @@ const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
   const { i18n } = textObject;
 
   if (i18n) {
-    textObject.text = t(`apps-${appId}-${i18n.key}`, { ...i18n.args });
+    return (
+      <Fragment>{t(`apps-${appId}-${i18n.key}`, { ...i18n.args })}</Fragment>
+    );
   }
 
   return <Fragment>{textObject.text}</Fragment>;
