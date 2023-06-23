@@ -10,5 +10,14 @@ declare global {
 			// This is a workaround for https://github.com/preactjs/preact/issues/1206
 			refs: Record<string, any>;
 		}
+
+		interface Provider<P> {
+			$$typeof: symbol;
+			props: P & { children?: ComponentChildren };
+		}
+
+		interface Consumer {
+			$$typeof: symbol;
+		}
 	}
 }

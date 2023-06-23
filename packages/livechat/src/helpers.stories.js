@@ -12,6 +12,8 @@ export const centered = (storyFn) => (
 	</div>
 );
 
+export const screenDecorator = (storyFn) => <div style={{ display: 'flex', width: 365, height: 500 }}>{storyFn()}</div>;
+
 export const screenCentered = (storyFn, ...args) =>
 	centered(() => <div style={{ display: 'flex', width: '365px', height: '500px' }}>{storyFn()}</div>, ...args);
 

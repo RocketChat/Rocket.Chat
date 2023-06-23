@@ -5,7 +5,7 @@ import { gazzoAvatar } from '../../helpers.stories';
 
 export default {
 	title: 'Components/Avatar',
-	decorators: [],
+	component: Avatar,
 	args: {
 		src: gazzoAvatar,
 		description: 'user description',
