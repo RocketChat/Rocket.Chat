@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useRef } from 'react';
 
-import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarTitle, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundsTable from './CustomSoundsTable';
@@ -51,7 +51,7 @@ const CustomSoundsPage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar flexShrink={0}>
+				<ContextualbarContainer flexShrink={0}>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'edit' && t('Custom_Sound_Edit')}
@@ -61,7 +61,7 @@ const CustomSoundsPage = () => {
 					</ContextualbarHeader>
 					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
 					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

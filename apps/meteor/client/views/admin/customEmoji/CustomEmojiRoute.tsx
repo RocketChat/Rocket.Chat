@@ -3,7 +3,7 @@ import { useRoute, useRouteParameter, usePermission, useTranslation } from '@roc
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomEmoji from './AddCustomEmoji';
@@ -55,7 +55,7 @@ const CustomEmojiRoute = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar flexShrink={0}>
+				<ContextualbarContainer flexShrink={0}>
 					<ContextualbarHeader>
 						{context === 'edit' && t('Custom_Emoji_Info')}
 						{context === 'new' && t('Custom_Emoji_Add')}
@@ -63,7 +63,7 @@ const CustomEmojiRoute = (): ReactElement => {
 					</ContextualbarHeader>
 					{context === 'edit' && id && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

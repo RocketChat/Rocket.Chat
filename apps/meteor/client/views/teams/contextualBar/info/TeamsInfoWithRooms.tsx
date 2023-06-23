@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
 import {
-	Contextualbar,
+	ContextualbarContainer,
 	ContextualbarHeader,
 	ContextualbarSkeleton,
 	ContextualbarIcon,
@@ -36,7 +36,7 @@ const TeamsInfoWithRooms = ({ rid }: TeamsInfoWithRoomsProps) => {
 
 	if (error) {
 		return (
-			<Contextualbar>
+			<ContextualbarContainer>
 				<ContextualbarHeader>
 					<ContextualbarIcon name='info-circled' />
 					<ContextualbarTitle>{t('Team_Info')}</ContextualbarTitle>
@@ -45,7 +45,7 @@ const TeamsInfoWithRooms = ({ rid }: TeamsInfoWithRoomsProps) => {
 				<ContextualbarScrollableContent>
 					<Callout type='danger'>{JSON.stringify(error)}</Callout>
 				</ContextualbarScrollableContent>
-			</Contextualbar>
+			</ContextualbarContainer>
 		);
 	}
 

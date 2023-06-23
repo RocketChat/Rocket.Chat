@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import {
-	Contextualbar,
+	ContextualbarContainer,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -56,7 +56,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 	}
 
 	return (
-		<Contextualbar>
+		<ContextualbarContainer>
 			<ContextualbarHeader expanded>
 				{bar === 'info' && (
 					<>
@@ -77,7 +77,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 			{bar === 'edit' && (
 				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsContextualbarBackButtonClick} />
 			)}
-		</Contextualbar>
+		</ContextualbarContainer>
 	);
 };
 

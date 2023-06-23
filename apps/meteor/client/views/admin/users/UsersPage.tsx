@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import AddUser from './AddUser';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
@@ -77,7 +77,7 @@ const UsersPage = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<ContextualbarContainer>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
@@ -91,7 +91,7 @@ const UsersPage = (): ReactElement => {
 					{context === 'edit' && id && <EditUserWithData uid={id} onReload={handleReload} />}
 					{context === 'new' && <AddUser onReload={handleReload} />}
 					{context === 'invite' && <InviteUsers />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

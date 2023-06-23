@@ -2,7 +2,7 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import React, { useMemo } from 'react';
 
 import {
-	Contextualbar,
+	ContextualbarContainer,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -38,7 +38,7 @@ const ContactContextualBar = () => {
 	const header = useMemo(() => HEADER_OPTIONS[bar] || HEADER_OPTIONS.info, [bar]);
 
 	return (
-		<Contextualbar className={'contextual-bar'}>
+		<ContextualbarContainer className='contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={header.icon} />
 				<ContextualbarTitle>{t(header.title)}</ContextualbarTitle>
@@ -47,7 +47,7 @@ const ContactContextualBar = () => {
 			{bar === 'new' && <ContactNewEdit id={contactId} close={handleContactsContextualbarCloseButtonClick} />}
 			{bar === 'info' && <ContactInfo id={contactId} />}
 			{bar === 'edit' && <ContactEditWithData id={contactId} close={handleContactsContextualbarBackButtonClick} />}
-		</Contextualbar>
+		</ContextualbarContainer>
 	);
 };
 

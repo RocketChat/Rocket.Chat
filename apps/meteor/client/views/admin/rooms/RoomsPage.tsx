@@ -2,7 +2,7 @@ import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-con
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
@@ -30,13 +30,13 @@ const RoomsPage = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<ContextualbarContainer>
 					<ContextualbarHeader>
 						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
 						<ContextualbarClose onClick={handleContextualbarCloseButtonClick} />
 					</ContextualbarHeader>
 					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

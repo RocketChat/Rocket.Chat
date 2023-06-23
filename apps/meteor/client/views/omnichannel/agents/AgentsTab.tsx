@@ -2,7 +2,7 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
 import AgentInfoActions from './AgentInfoActions';
@@ -22,7 +22,7 @@ const AgentsTab = ({ reload, context, id }: AgentsTabProps): ReactElement => {
 	}, [agentsRoute]);
 
 	return (
-		<Contextualbar>
+		<ContextualbarContainer>
 			<ContextualbarHeader>
 				<ContextualbarTitle>
 					{context === 'edit' && t('Edit_User')}
@@ -37,7 +37,7 @@ const AgentsTab = ({ reload, context, id }: AgentsTabProps): ReactElement => {
 					<AgentInfoActions reload={reload} />
 				</AgentInfo>
 			)}
-		</Contextualbar>
+		</ContextualbarContainer>
 	);
 };
 

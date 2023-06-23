@@ -3,7 +3,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
 
-import { Contextualbar, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../../client/components/Contextualbar';
+import {
+	ContextualbarContainer,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '../../../../client/components/Contextualbar';
 import Page from '../../../../client/components/Page';
 import SlaEditWithData from './SlaEditWithData';
 import SlaNew from './SlaNew';
@@ -46,7 +51,7 @@ const SlaPage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<ContextualbarContainer>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'edit' && t('Edit_SLA_Policy')}
@@ -56,7 +61,7 @@ const SlaPage = () => {
 					</ContextualbarHeader>
 					{context === 'edit' && id && <SlaEditWithData slaId={id} reload={handleReload} />}
 					{context === 'new' && <SlaNew reload={handleReload} />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

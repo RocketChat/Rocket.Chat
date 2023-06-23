@@ -5,7 +5,12 @@ import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Contextualbar, ContextualbarScrollableContent, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
+import {
+	ContextualbarContainer,
+	ContextualbarScrollableContent,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '../../../components/Contextualbar';
 
 type CustomFieldsListProps = {
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
@@ -26,7 +31,7 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 	const currentChatsRoute = useRoute('omnichannel-current-chats');
 
 	return (
-		<Contextualbar>
+		<ContextualbarContainer>
 			<ContextualbarHeader>
 				{t('Filter_by_Custom_Fields')}
 				<ContextualbarClose onClick={(): void => currentChatsRoute.push({ context: '' })} />
@@ -63,7 +68,7 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 						);
 					})}
 			</ContextualbarScrollableContent>
-		</Contextualbar>
+		</ContextualbarContainer>
 	);
 };
 

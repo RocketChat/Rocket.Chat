@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
 
-import { Contextualbar, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
@@ -46,14 +46,14 @@ const TriggersPage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<ContextualbarContainer>
 					<ContextualbarHeader>
 						<ContextualbarTitle>{t('Trigger')}</ContextualbarTitle>
 						<ContextualbarClose onClick={handleCloseContextualbar} />
 					</ContextualbarHeader>
 					{context === 'edit' && <EditTriggerPageContainer key={id} id={id} onSave={handleReload} />}
 					{context === 'new' && <NewTriggerPage onSave={handleReload} />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

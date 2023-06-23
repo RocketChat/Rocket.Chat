@@ -3,7 +3,7 @@ import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocke
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import { ContextualbarContainer, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
@@ -32,13 +32,13 @@ const PermissionsContextBar = (): ReactElement | null => {
 
 	return (
 		(context && (
-			<Contextualbar>
+			<ContextualbarContainer>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
 					<ContextualbarClose onClick={handleCloseContextualbar} />
 				</ContextualbarHeader>
 				<EditRolePageWithData roleId={_id} />
-			</Contextualbar>
+			</ContextualbarContainer>
 		)) ||
 		null
 	);

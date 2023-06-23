@@ -2,7 +2,7 @@ import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@roc
 import React from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client';
-import { Contextualbar } from '../../../components/Contextualbar';
+import { ContextualbarContainer } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
@@ -33,10 +33,10 @@ const ModerationConsolePage = () => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<ContextualbarContainer>
 					{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}
 					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
-				</Contextualbar>
+				</ContextualbarContainer>
 			)}
 		</Page>
 	);

@@ -4,7 +4,7 @@ import { useRoute, useRouteParameter, useQueryStringParameter, useTranslation } 
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import { Contextualbar } from '../../../components/Contextualbar';
+import { ContextualbarContainer } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import Call from './calls/Call';
@@ -20,7 +20,7 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const t = useTranslation();
 
-	const handleCallsContextualbarCloseButtonClick = (): void => {
+	const handleClose = (): void => {
 		directoryRoute.push({ page: 'calls' });
 	};
 
@@ -52,9 +52,7 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return (
-		<Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsContextualbarCloseButtonClick} />}</Contextualbar>
-	);
+	return <ContextualbarContainer>{bar === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</ContextualbarContainer>;
 };
 
 export default CallsContextualBarDirectory;

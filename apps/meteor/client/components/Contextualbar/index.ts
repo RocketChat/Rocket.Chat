@@ -1,4 +1,5 @@
 import {
+	Contextualbar,
 	ContextualbarAction,
 	ContextualbarActions,
 	ContextualbarContent,
@@ -9,9 +10,9 @@ import {
 	ContextualbarEmptyContent,
 } from '@rocket.chat/fuselage';
 
-import Contextualbar from './Contextualbar';
 import ContextualbarBack from './ContextualbarBack';
 import ContextualbarClose from './ContextualbarClose';
+import ContextualbarContainer from './ContextualbarContainer';
 import ContextualbarHeader from './ContextualbarHeader';
 import ContextualbarInnerContent from './ContextualbarInnerContent';
 import ContextualbarScrollableContent from './ContextualbarScrollableContent';
@@ -23,6 +24,7 @@ export {
 	ContextualbarActions,
 	ContextualbarBack,
 	ContextualbarClose,
+	ContextualbarContainer,
 	ContextualbarContent,
 	ContextualbarSkeleton,
 	ContextualbarIcon,
