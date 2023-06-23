@@ -10,7 +10,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { makeAgentAvailable } from '../../../data/livechat/rooms';
 import { getWorkHours } from '../../../data/livechat/businessHours';
 
-describe.only('[CE] LIVECHAT - business hours', function () {
+describe('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
