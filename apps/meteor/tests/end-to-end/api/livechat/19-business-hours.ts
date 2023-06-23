@@ -55,12 +55,15 @@ describe('[CE] LIVECHAT - business hours', function () {
 				workHours: [
 					{
 						day: 'Monday',
-						open: false,
+						open: true,
 						start: '00:00',
-						finish: '23:59',
+						finish: '00:01',
 					},
 				],
 			});
+
+			const response = await request.get(api('livechat/business-hour')).set(credentials).query({ type: 'default' }).expect(200);
+			console.log(response);
 
 			// @ts-expect-error - afsdf
 			const { body } = await makeAgentAvailable(credentials);
