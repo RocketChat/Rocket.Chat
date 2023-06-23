@@ -1,6 +1,7 @@
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
+export * from './CustomFieldsForm';
 export * from './PasswordVerifier';
 export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
