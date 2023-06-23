@@ -116,6 +116,14 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
+      - name: Cache vite
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.vite
+          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            vite-local-cache-${{ runner.os }}-
+
       - name: Cache meteor local
         uses: actions/cache@v3
         with:
