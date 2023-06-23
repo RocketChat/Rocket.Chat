@@ -19,7 +19,7 @@
 		"lint": "run-s eslint stylelint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint 'src/**/*.scss'",
-		"storybook": "start-storybook -p 9001 -c .storybook",
+		"storybook": "start-storybook -p 9001 -c .storybook --no-version-updates",
 		"build-storybook": "build-storybook",
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
