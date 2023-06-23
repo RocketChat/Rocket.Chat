@@ -56,3 +56,4 @@ export { default as sampleImage } from '../.storybook/assets/sample-image.jpg';
 export { default as sampleVideo } from '../.storybook/assets/sample-video.mp4';
 export { default as accessoryImage } from '../.storybook/assets/accessoryImage.png';
 export { default as imageBlock } from '../.storybook/assets/imageBlock.png';
+export { default as beepAudio } from '../.storybook/assets/beep.mp3';
