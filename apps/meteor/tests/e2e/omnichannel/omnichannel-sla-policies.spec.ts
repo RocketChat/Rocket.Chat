@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from './config/constants';
-import { Users } from './fixtures/userStates';
-import { OmnichannelSlaPolicies } from './page-objects/omnichannel-sla-policies';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelSlaPolicies } from '../page-objects/omnichannel-sla-policies';
+import { test, expect } from '../utils/test';
 
 const ERROR = {
 	nameRequired: 'The field Name is required.',
@@ -13,13 +13,13 @@ const ERROR = {
 const INITIAL_SLA = {
 	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.string.numeric(),
+	estimatedWaitTime: faker.string.numeric({ length: 1, exclude: '0' }),
 };
 
 const EDITED_SLA = {
 	name: faker.person.firstName(),
 	description: faker.lorem.sentence(),
-	estimatedWaitTime: faker.string.numeric(),
+	estimatedWaitTime: faker.string.numeric({ length: 1, exclude: '0' }),
 };
 
 test.skip(!IS_EE, 'Omnichannel SLA Policies > Enterprise Only');

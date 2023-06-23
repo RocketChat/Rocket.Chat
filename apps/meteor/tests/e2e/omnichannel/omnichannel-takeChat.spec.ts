@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;

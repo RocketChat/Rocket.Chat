@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { test, expect } from '../utils/test';
 
-test.describe('Omnichannel close chat', () => {
+test.describe('Omnichannel chat histr', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
@@ -21,7 +21,6 @@ test.describe('Omnichannel close chat', () => {
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
-
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
@@ -53,6 +52,24 @@ test.describe('Omnichannel close chat', () => {
 			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
 			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
 			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
+		});
+
+		await test.step('Expect send a message as a visitor again to reopen chat', async () => {
+			await page.goto('/livechat');
+			await poLiveChat.btnOpenLiveChat('R').click();
+			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+		});
+
+		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
+			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
+		});
+
+		await test.step('Expect to be able to see conversation history', async () => {
+			await agent.poHomeOmnichannel.btnCurrentChats.click();
+			await expect(agent.poHomeOmnichannel.historyItem).toBeVisible();
+			await agent.poHomeOmnichannel.historyItem.click();
+			await expect(agent.poHomeOmnichannel.historyMessage).toBeVisible();
 		});
 	});
 });

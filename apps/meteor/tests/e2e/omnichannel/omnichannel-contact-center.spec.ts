@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 
-import { createToken } from '../../client/lib/utils/createToken';
-import { IS_EE } from './config/constants';
-import { Users } from './fixtures/userStates';
-import { OmnichannelContacts } from './page-objects/omnichannel-contacts-list';
-import { OmnichannelSection } from './page-objects/omnichannel-section';
-import { test, expect } from './utils/test';
+import { createToken } from '../../../client/lib/utils/createToken';
+import { IS_EE } from '../config/constants';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
+import { OmnichannelSection } from '../page-objects/omnichannel-section';
+import { test, expect } from '../utils/test';
 
 const createContact = (generateToken = false) => ({
 	id: null,
@@ -28,7 +28,7 @@ const NEW_CUSTOM_FIELD = {
 	visibility: 'hidden',
 	required: true,
 	regexp: '',
-}
+};
 
 const URL = {
 	contactCenter: '/omnichannel-directory/contacts',
@@ -58,7 +58,7 @@ test.describe('Omnichannel Contact Center', () => {
 		// Add a contact
 		const { id: _, ...data } = EXISTING_CONTACT;
 		await api.post('/omnichannel/contact', data);
-		
+
 		if (IS_EE) {
 			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
 		}
