@@ -27,20 +27,20 @@ const LayoutProvider: FC = ({ children }) => {
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					sidebar: {
+						size: '240px',
 						isCollapsed,
 						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : routeHome.push()),
 					},
-					size: {
-						sidebar: '240px',
+					contextualbar: {
 						// eslint-disable-next-line no-nested-ternary
-						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
+						size: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
+						canExpand: breakpoints.includes('sm'),
+						// eslint-disable-next-line no-nested-ternary
+						position: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					},
-					contextualBarExpanded: breakpoints.includes('sm'),
-					// eslint-disable-next-line no-nested-ternary
-					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 				}),
 				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, routeHome],
 			)}

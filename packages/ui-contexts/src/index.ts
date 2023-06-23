@@ -34,9 +34,7 @@ export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading
 export { useLanguage } from './hooks/useLanguage';
 export { useLanguages } from './hooks/useLanguages';
 export { useLayout } from './hooks/useLayout';
-export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
-export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
-export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLayoutContextualbar } from './hooks/useLayoutContextualbar';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
