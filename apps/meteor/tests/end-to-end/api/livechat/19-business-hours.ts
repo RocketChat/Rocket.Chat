@@ -7,7 +7,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { saveBusinessHour } from '../../../data/livechat/business-hours';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { makeAgentAvailable } from '../../../data/livechat/rooms';
+import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { getWorkHours } from '../../../data/livechat/businessHours';
 
 describe('[CE] LIVECHAT - business hours', function () {
@@ -17,6 +17,8 @@ describe('[CE] LIVECHAT - business hours', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_enable_business_hours', true);
+		await createAgent();
 	});
 
 	let defaultBhId: any;
@@ -61,9 +63,6 @@ describe('[CE] LIVECHAT - business hours', function () {
 					},
 				],
 			});
-
-			const { body: bh } = await request.get(api('livechat/business-hour')).set(credentials).query({ type: 'default' }).expect(200);
-			console.log(JSON.stringify(bh));
 
 			// @ts-expect-error - afsdf
 			const { body } = await makeAgentAvailable(credentials);
