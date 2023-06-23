@@ -37,7 +37,6 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import { call } from '../../../client/lib/utils/call';
 import { getUserAvatarURL } from '../../utils/client';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
@@ -181,8 +180,8 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: t("Wasn't possible to decode your encryption key to be imported."),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>', // TODO: missing translation
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
@@ -213,8 +212,8 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: t('Save_your_encryption_password'),
-				html: t('Click_here_to_view_and_copy_your_password'),
+				title: () => t('Save_your_encryption_password'),
+				html: () => t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -316,7 +315,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await call('e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -382,8 +381,8 @@ class E2E extends Emitter {
 
 			const showAlert = () => {
 				this.openAlert({
-					title: t('Enter_your_E2E_password'),
-					html: t('Click_here_to_enter_your_encryption_password'),
+					title: () => t('Enter_your_E2E_password'),
+					html: () => t('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',

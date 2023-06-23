@@ -71,6 +71,7 @@ class RoomHistoryManagerClass extends Emitter {
 			unreadNotLoaded: ReactiveVar<number>;
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
+			oldestTs?: Date;
 		}
 	> = {};
 
@@ -123,7 +124,6 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getMore(rid: IRoom['_id'], limit = defaultLimit): Promise<void> {
-		let ts;
 		const room = this.getRoom(rid);
 
 		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
@@ -134,16 +134,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		await this.queue();
 
-		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
-		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
-
-		if (lastMessage) {
-			({ ts } = lastMessage);
-		} else {
-			ts = undefined;
-		}
-
 		let ls = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
@@ -152,7 +142,14 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, showThreadsInMainChannel);
+		const result = await callWithErrorHandling(
+			'loadHistory',
+			rid,
+			room.oldestTs,
+			limit,
+			ls ? String(ls) : undefined,
+			showThreadsInMainChannel,
+		);
 
 		if (!result) {
 			throw new Error('loadHistory returned nothing');
@@ -166,7 +163,11 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitForElement('.messages-box .wrapper');
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
+		}
+
+		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -270,6 +271,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
+		room.oldestTs = undefined;
 		room.loaded = undefined;
 	}
 
@@ -278,15 +280,14 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
+		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
-		if (surroundingMessage) {
+		if (messageAlreadyLoaded) {
 			return;
 		}
 
 		const room = this.getRoom(message.rid);
-		room.isLoading.set(true);
-		room.hasMore.set(false);
+		void this.clear(message.rid);
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 

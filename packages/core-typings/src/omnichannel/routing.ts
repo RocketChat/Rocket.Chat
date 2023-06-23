@@ -12,7 +12,11 @@ export type RoutingMethodConfig = {
 	autoAssignAgent: boolean;
 };
 
-export type SelectedAgent = { agentId: string; username: string };
+export type SelectedAgent = {
+	agentId: string;
+	username?: string;
+};
 export interface IRoutingMethod {
 	getNextAgent(departmentId?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined>;
+	config?: RoutingMethodConfig;
 }

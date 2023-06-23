@@ -13,7 +13,7 @@ const hoverClass = css`
 	}
 `;
 
-const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
+const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 	const format = useFormatDateAndTime();
 
 	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
@@ -32,7 +32,6 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
 				flexGrow={1}
 				flexShrink={1}
 				href={url}
-				key={index}
 			>
 				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
 				<Box mis='x8' flexShrink={1} overflow='hidden'>
