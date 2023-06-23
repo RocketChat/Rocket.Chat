@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
-import { test, expect } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 const newUser = {
 	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,

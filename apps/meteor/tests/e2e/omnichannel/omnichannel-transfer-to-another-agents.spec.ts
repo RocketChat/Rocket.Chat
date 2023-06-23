@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-transfer-to-another-agent', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -58,7 +58,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 
 	test('transfer omnichannel chat to another agent', async () => {
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent1.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent1.poHomeOmnichannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 		});
 
 		await test.step('Expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
@@ -74,7 +74,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		await test.step('Expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {
 			await agent2.poHomeOmnichannel.sidenav.switchStatus('online');
 
-			await agent1.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent1.poHomeOmnichannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user2');
 			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
@@ -84,7 +84,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 2', async () => {
-			await agent2.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent2.poHomeOmnichannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 		});
 	});
 });

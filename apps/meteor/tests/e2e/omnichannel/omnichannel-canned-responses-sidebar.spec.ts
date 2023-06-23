@@ -1,17 +1,20 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
-import { Users } from './fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
-import { test, expect } from './utils/test';
+import { IS_EE } from '../config/constants';
+import { createAuxContext } from '../fixtures/createAuxContext';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { test } from '../utils/test';
 
-test.describe('omnichannel-transcript', () => {
+test.describe('Omnichannel Canned Responses Sidebar', () => {
+	test.skip(!IS_EE, 'Enterprise Only');
+
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
+
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
 			name: faker.person.firstName(),
@@ -48,18 +51,9 @@ test.describe('omnichannel-transcript', () => {
 			await agent.poHomeChannel.sidenav.openChat(newUser.name);
 		});
 
-		await test.step('Expect to be able to send transcript to email', async () => {
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptToEmail.click();
-			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
-		});
-
-		await test.step('Expect to be not able send transcript as PDF', async () => {
-			test.skip(!IS_EE, 'Enterprise Only');
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
-			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
+		await test.step('Expect to be able to open canned responses sidebar and creation', async () => {
+			await agent.poHomeChannel.content.btnCannedResponses.click();
+			await agent.poHomeChannel.content.btnNewCannedResponse.click();
 		});
 	});
 });

@@ -1,6 +1,6 @@
-import { Users } from './fixtures/userStates';
-import { OmnichannelManager } from './page-objects';
-import { test, expect } from './utils/test';
+import { Users } from '../fixtures/userStates';
+import { OmnichannelManager } from '../page-objects';
+import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
