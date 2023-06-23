@@ -45,7 +45,7 @@ test.describe('Omnichannel contact info', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.getSidebarItemByName(newUser.name).click();
+			await agent.poHomeChannel.sidenav.openChat(newUser.name);
 		});
 
 		await test.step('Expect to be see contact information and edit', async () => {

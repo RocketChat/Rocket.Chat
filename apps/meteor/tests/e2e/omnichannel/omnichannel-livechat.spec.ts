@@ -46,7 +46,7 @@ test.describe('Livechat', () => {
 			});
 
 			await test.step('expect message to be received by agent', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.getSidebarItemByName(newUser.name).click();
+				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newUser.name);
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 			});
