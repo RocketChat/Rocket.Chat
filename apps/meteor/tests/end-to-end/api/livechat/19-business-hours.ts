@@ -13,7 +13,7 @@ import { getMe } from '../../../data/users.helper';
 import { changeAgentStatus } from '../../../data/livechat/agent';
 import { sleep } from '../../../../lib/utils/sleep';
 
-describe.only('[CE] LIVECHAT - business hours', function () {
+describe('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
