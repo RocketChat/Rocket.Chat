@@ -6,6 +6,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -42,6 +43,6 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		return Users.getAgentInfo(agent.agentId);
+		return Users.getAgentInfo(agent.agentId, settings.get('Livechat_show_agent_email'));
 	},
 });
