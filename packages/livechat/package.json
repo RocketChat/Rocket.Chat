@@ -26,6 +26,7 @@
 	"devDependencies": {
 		"@babel/eslint-parser": "~7.22.5",
 		"@babel/preset-env": "~7.22.5",
+		"@babel/preset-typescript": "~7.22.5",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "next",
@@ -68,6 +69,7 @@
 		"postcss-logical": "^4.0.2",
 		"postcss-scss": "^4.0.6",
 		"postcss-selector-not": "^4.0.1",
+		"react-docgen-typescript-plugin": "~1.0.5",
 		"react-dom": "~17.0.2",
 		"rimraf": "^3.0.2",
 		"sass": "~1.62.1",
@@ -106,9 +108,8 @@
 		"whatwg-fetch": "^3.6.2"
 	},
 	"browserslist": [
-		"> 1%",
 		"last 2 versions",
-		"not ie < 11"
+		"Firefox ESR"
 	],
 	"volta": {
 		"extends": "../../package.json"
