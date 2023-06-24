@@ -50,7 +50,9 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
-			{ livechatStatusSystemModified: true, status: { $ne: 'offline' } },
+			// Why this works: statusDefault is the property set when a user manually changes their status
+			// So if it's set to offline, we can be sure the user will be offline after login and we can skip the update
+			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
 	}

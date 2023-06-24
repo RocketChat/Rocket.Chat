@@ -968,7 +968,7 @@ export class UsersRaw extends BaseRaw {
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
 		const query = {
 			_id: userId,
-			status: { $ne: 'offline' },
+			statusDefault: { $ne: 'offline' },
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
