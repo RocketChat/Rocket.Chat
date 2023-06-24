@@ -3,7 +3,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { initiateVerificationProcess } from '../functions/initiateVerificationProcess';
-import { verifyVisitorCode } from '../functions/sendVerificationCodeToVisitor';
+import { verifyVisitorCode } from '../functions/visitorsVerificationCode';
 import { setVisitorEmail } from '../functions/setVisitorsEmail';
 
 callbacks.add(

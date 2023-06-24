@@ -5,7 +5,7 @@ import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
 import { sendMessage } from './sendMessage';
 import { i18n } from '../../../../server/lib/i18n';
-import { sendVerificationCodeToVisitor } from './sendVerificationCodeToVisitor';
+import { sendVerificationCodeToVisitor } from './visitorsVerificationCode';
 
 export const initiateVerificationProcess = async function (rid: IRoom['_id']) {
 	check(rid, String);
