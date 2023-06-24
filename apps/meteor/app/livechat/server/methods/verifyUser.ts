@@ -12,7 +12,16 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async 'livechat:verifyUser'(rid) {
+	async 'livechat:verifyUser'(rid: IRoom['_id']) {
+		// const room = await LivechatRooms.findOneById(rid);
+		// if (room?.verficationStatus !== 'off') {
+		// 	if (!room) return;
+		// 	if (!room.servedBy) return;
+		// 	void api.broadcast('notify.ephemeralMessage', room.servedBy._id, rid, {
+		// 		msg: i18n.t('The verification process is currently in progress.', { lng: settings.get('Language') || 'en' }),
+		// 	});
+		// 	return;
+		// }
 		await initiateVerificationProcess(rid);
 	},
 });

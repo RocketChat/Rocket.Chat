@@ -46,11 +46,16 @@ export const useQuickActions = (
 	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
+	const [visitorsVerificationStatus, setVisitorsVerificationStatus] = useState(false);
 
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
+	let roomVerificationStatus;
+	if (room?.verficationStatus) {
+		roomVerificationStatus = room.verficationStatus;
+	}
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
@@ -68,11 +73,29 @@ export const useQuickActions = (
 		}
 	});
 
+	const getVisitorsVerificationStatus = useCallback(async (): Promise<boolean> => {
+		if (!visitorRoomId) {
+			return false;
+		}
+
+		const {
+			visitor: { visitorEmails },
+		} = await getVisitorInfo({ visitorId: visitorRoomId });
+
+		if (visitorEmails?.length && visitorEmails[0]?.verified) {
+			setVisitorsVerificationStatus(true);
+			return true;
+		}
+		setVisitorsVerificationStatus(false);
+		return false;
+	}, [getVisitorInfo, visitorRoomId]);
+
 	useEffect(() => {
 		if (onHoldModalActive && roomLastMessage?.token) {
 			setModal(null);
 		}
-	}, [roomLastMessage, onHoldModalActive, setModal]);
+		getVisitorsVerificationStatus();
+	}, [roomLastMessage, onHoldModalActive, setModal, roomVerificationStatus, getVisitorsVerificationStatus]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
@@ -347,7 +370,7 @@ export const useQuickActions = (
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			case QuickActionsEnum.VerifyUser:
-				return !!roomOpen && canVerifyUser;
+				return !!roomOpen && canVerifyUser && !visitorsVerificationStatus;
 			default:
 				break;
 		}
