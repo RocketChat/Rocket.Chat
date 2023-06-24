@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import AudioAttachment from '.';
 import { sampleAudio } from '../../../helpers.stories';
@@ -9,9 +10,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof AudioAttachment>;
+} satisfies Meta<ComponentProps<typeof AudioAttachment>>;
 
-export const Default: ComponentStory<typeof AudioAttachment> = (args) => <AudioAttachment {...args} />;
+export const Default: Story<ComponentProps<typeof AudioAttachment>> = (args) => <AudioAttachment {...args} />;
 Default.storyName = 'default';
 Default.args = {
 	url: sampleAudio,

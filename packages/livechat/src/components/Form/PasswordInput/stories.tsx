@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { PasswordInput } from '.';
 import { Form, FormField } from '..';
@@ -26,9 +27,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof PasswordInput>;
+} satisfies Meta<ComponentProps<typeof PasswordInput>>;
 
-const Template: ComponentStory<typeof PasswordInput> = (args) => <PasswordInput {...args} />;
+const Template: Story<ComponentProps<typeof PasswordInput>> = (args) => <PasswordInput {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

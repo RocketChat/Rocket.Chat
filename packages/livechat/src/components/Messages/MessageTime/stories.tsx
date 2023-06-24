@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import MessageTime from '.';
 
@@ -11,9 +12,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof MessageTime>;
+} satisfies Meta<ComponentProps<typeof MessageTime>>;
 
-const Template: ComponentStory<typeof MessageTime> = (args) => <MessageTime {...args} />;
+const Template: Story<ComponentProps<typeof MessageTime>> = (args) => <MessageTime {...args} />;
 
 export const Today = Template.bind({});
 Today.storyName = 'today';

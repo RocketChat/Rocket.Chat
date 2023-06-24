@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { screenDecorator, screenProps } from '../../helpers.stories';
 import TriggerMessage from './component';
@@ -33,9 +34,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof TriggerMessage>;
+} satisfies Meta<ComponentProps<typeof TriggerMessage>>;
 
-const Template: ComponentStory<typeof TriggerMessage> = (args) => <TriggerMessage {...args} />;
+const Template: Story<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
 
 export const Single = Template.bind({});
 Single.storyName = 'single';

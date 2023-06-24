@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Menu, { Group, Item } from '.';
 import BellIcon from '../../icons/bell.svg';
@@ -17,9 +18,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Item>;
+} satisfies Meta<ComponentProps<typeof Item>>;
 
-export const Simple: ComponentStory<typeof Item> = (args) => (
+export const Simple: Story<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -29,7 +30,7 @@ export const Simple: ComponentStory<typeof Item> = (args) => (
 );
 Simple.storyName = 'simple';
 
-export const Primary: ComponentStory<typeof Item> = (args) => (
+export const Primary: Story<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -42,7 +43,7 @@ Primary.args = {
 	primary: true,
 };
 
-export const Danger: ComponentStory<typeof Item> = (args) => (
+export const Danger: Story<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -55,7 +56,7 @@ Danger.args = {
 	danger: true,
 };
 
-export const Disabled: ComponentStory<typeof Item> = (args) => (
+export const Disabled: Story<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -68,7 +69,7 @@ Disabled.args = {
 	disabled: true,
 };
 
-export const WithIcon: ComponentStory<typeof Item> = (args) => (
+export const WithIcon: Story<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />

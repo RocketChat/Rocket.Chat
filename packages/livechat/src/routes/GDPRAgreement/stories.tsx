@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { screenDecorator, screenProps } from '../../helpers.stories';
 import GDPRAgreement from './component';
@@ -18,9 +19,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof GDPRAgreement>;
+} satisfies Meta<ComponentProps<typeof GDPRAgreement>>;
 
-const Template: ComponentStory<typeof GDPRAgreement> = (args) => <GDPRAgreement {...args} />;
+const Template: Story<ComponentProps<typeof GDPRAgreement>> = (args) => <GDPRAgreement {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

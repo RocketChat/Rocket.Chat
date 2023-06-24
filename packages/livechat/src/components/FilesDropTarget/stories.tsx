@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 import { createRef } from 'preact';
 
 import { FilesDropTarget } from '.';
@@ -35,9 +36,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof FilesDropTarget>;
+} satisfies Meta<ComponentProps<typeof FilesDropTarget>>;
 
-const Template: ComponentStory<typeof FilesDropTarget> = (args) => <FilesDropTarget {...args} />;
+const Template: Story<ComponentProps<typeof FilesDropTarget>> = (args) => <FilesDropTarget {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

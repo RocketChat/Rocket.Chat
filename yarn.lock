@@ -9861,12 +9861,9 @@ __metadata:
     "@rocket.chat/logo": next
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-kit": next
-    "@storybook/addon-actions": ~6.5.16
-    "@storybook/addon-backgrounds": ~6.5.16
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/addon-postcss": ~2.0.0
-    "@storybook/addon-viewport": ~6.5.16
-    "@storybook/react": ~6.5.16
+    "@storybook/preact": ~6.5.16
     "@storybook/theming": ~6.5.16
     "@typescript-eslint/eslint-plugin": ~5.60.0
     "@typescript-eslint/parser": ~5.60.0
@@ -9906,10 +9903,9 @@ __metadata:
     postcss-logical: ^4.0.2
     postcss-scss: ^4.0.6
     postcss-selector-not: ^4.0.1
-    preact: ^10.8.2
+    preact: 10.15.1
     preact-router: ^3.2.1
     query-string: ^7.1.3
-    react-docgen-typescript-plugin: ~1.0.5
     react-dom: ~17.0.2
     react-i18next: ^11.16.9
     rimraf: ^3.0.2
@@ -11249,7 +11245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-backgrounds@npm:6.5.16, @storybook/addon-backgrounds@npm:~6.5.16":
+"@storybook/addon-backgrounds@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-backgrounds@npm:6.5.16"
   dependencies:
@@ -11558,7 +11554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-viewport@npm:6.5.16, @storybook/addon-viewport@npm:~6.5.16":
+"@storybook/addon-viewport@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-viewport@npm:6.5.16"
   dependencies:
@@ -12245,6 +12241,37 @@ __metadata:
   dependencies:
     core-js: ^3.8.2
   checksum: 023a19a0681675ce51f4acebf068f372e8657520680c67171c0a1b458f6009d1e444daa5680eeae7efb1088df184fbee61008548a73131d976201961dad65266
+  languageName: node
+  linkType: hard
+
+"@storybook/preact@npm:~6.5.16":
+  version: 6.5.16
+  resolution: "@storybook/preact@npm:6.5.16"
+  dependencies:
+    "@babel/plugin-transform-react-jsx": ^7.12.12
+    "@storybook/addons": 6.5.16
+    "@storybook/core": 6.5.16
+    "@storybook/core-common": 6.5.16
+    "@storybook/csf": 0.0.2--canary.4566f4d.1
+    "@storybook/store": 6.5.16
+    "@types/node": ^14.14.20 || ^16.0.0
+    "@types/webpack-env": ^1.16.0
+    core-js: ^3.8.2
+    global: ^4.4.0
+    react: 16.14.0
+    react-dom: 16.14.0
+    read-pkg-up: ^7.0.1
+    regenerator-runtime: ^0.13.7
+    ts-dedent: ^2.0.0
+    webpack: ">=4.0.0 <6.0.0"
+  peerDependencies:
+    "@babel/core": "*"
+    preact: ^8.0.0||^10.0.0
+  bin:
+    build-storybook: bin/build.js
+    start-storybook: bin/index.js
+    storybook-server: bin/index.js
+  checksum: ddad4337b2a05ff84522f16d51402f0d10956b2084aca69169cf9dedf0c19643a449da642bbb29fcf83c9571ada2a56da6da8d90208bd17a86e5123284bd51f5
   languageName: node
   linkType: hard
 
@@ -33597,10 +33624,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact@npm:^10.8.2":
-  version: 10.8.2
-  resolution: "preact@npm:10.8.2"
-  checksum: 183358ba03b4c104c89b383ea926099b49acd0435f24e95dee9ff0e81350d1bfbd77908f6a2ed16b3654d75e84832fd5b4479216c85fe8af6ad8c2ebe795c4f9
+"preact@npm:10.15.1":
+  version: 10.15.1
+  resolution: "preact@npm:10.15.1"
+  checksum: dabad11843b19b40b11846a25ff0b1fc4bc58268909e01a7faddb341a40983d24fbe7d44ad6e2c5d35e43091963af616800552fec9af44dd0a2f0f698d1bba1f
+  languageName: node
+  linkType: hard
+
+"preact@patch:preact@npm:10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch::locator=rocket.chat%40workspace%3A.":
+  version: 10.15.1
+  resolution: "preact@patch:preact@npm%3A10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch::version=10.15.1&hash=6e6d0e&locator=rocket.chat%40workspace%3A."
+  checksum: 6258efa196625543b88cb02ca1fe4eb3e2867be82bc58209cd8f0dce5aefc3a7da0df4ca440c26731fed9085c780e8b6b265183dd2a16ad66216d8a6480868b7
   languageName: node
   linkType: hard
 
@@ -34620,6 +34654,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:16.14.0":
+  version: 16.14.0
+  resolution: "react-dom@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+    scheduler: ^0.19.1
+  peerDependencies:
+    react: ^16.14.0
+  checksum: 5a5c49da0f106b2655a69f96c622c347febcd10532db391c262b26aec225b235357d9da1834103457683482ab1b229af7a50f6927a6b70e53150275e31785544
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^17.0.2, react-dom@npm:~17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
@@ -34898,6 +34946,17 @@ __metadata:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
   checksum: 1a2747d4b5abcba114ad9a27db4a4057464219c84cef4ae032460ab44f304073e4a115f56f93658844a4e3f76feb8175536618555ecf201bfd61e627a3e8cfb4
+  languageName: node
+  linkType: hard
+
+"react@npm:16.14.0":
+  version: 16.14.0
+  resolution: "react@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+  checksum: 8484f3ecb13414526f2a7412190575fc134da785c02695eb92bb6028c930bfe1c238d7be2a125088fec663cc7cda0a3623373c46807cf2c281f49c34b79881ac
   languageName: node
   linkType: hard
 
@@ -36200,6 +36259,16 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: 18d1e66cad3d26e3becd99b006d0744cda3556dbb356fc5b30df6d5499c85a308d18ee55353e01595f7c047b526564603ea80ef3d927a325faedc53ede03680c
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.19.1":
+  version: 0.19.1
+  resolution: "scheduler@npm:0.19.1"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+  checksum: 73e185a59e2ff5aa3609f5b9cb97ddd376f89e1610579d29939d952411ca6eb7a24907a4ea4556569dacb931467a1a4a56d94fe809ef713aa76748642cd96a6c
   languageName: node
   linkType: hard
 
@@ -41042,6 +41111,43 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 013fa24c00d4261e16ebca60353fa6f848e417b5a44bdf28c16ebebd67fa61e960420bb314c8df05cfe2dad9b90efabcf38fd6875f2361922769a0384085ef1e
+  languageName: node
+  linkType: hard
+
+"webpack@npm:>=4.0.0 <6.0.0":
+  version: 5.88.0
+  resolution: "webpack@npm:5.88.0"
+  dependencies:
+    "@types/eslint-scope": ^3.7.3
+    "@types/estree": ^1.0.0
+    "@webassemblyjs/ast": ^1.11.5
+    "@webassemblyjs/wasm-edit": ^1.11.5
+    "@webassemblyjs/wasm-parser": ^1.11.5
+    acorn: ^8.7.1
+    acorn-import-assertions: ^1.9.0
+    browserslist: ^4.14.5
+    chrome-trace-event: ^1.0.2
+    enhanced-resolve: ^5.15.0
+    es-module-lexer: ^1.2.1
+    eslint-scope: 5.1.1
+    events: ^3.2.0
+    glob-to-regexp: ^0.4.1
+    graceful-fs: ^4.2.9
+    json-parse-even-better-errors: ^2.3.1
+    loader-runner: ^4.2.0
+    mime-types: ^2.1.27
+    neo-async: ^2.6.2
+    schema-utils: ^3.2.0
+    tapable: ^2.1.1
+    terser-webpack-plugin: ^5.3.7
+    watchpack: ^2.4.0
+    webpack-sources: ^3.2.3
+  peerDependenciesMeta:
+    webpack-cli:
+      optional: true
+  bin:
+    webpack: bin/webpack.js
+  checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
   languageName: node
   linkType: hard
 

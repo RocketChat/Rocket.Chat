@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Group, Item, PopoverMenu } from '.';
 import { Button } from '../Button';
@@ -18,9 +19,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof PopoverMenu>;
+} satisfies Meta<ComponentProps<typeof PopoverMenu>>;
 
-export const Default: ComponentStory<typeof PopoverMenu> = (args) => (
+export const Default: Story<ComponentProps<typeof PopoverMenu>> = (args) => (
 	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
 		<Group>
 			<Item>Reload</Item>
@@ -30,7 +31,7 @@ export const Default: ComponentStory<typeof PopoverMenu> = (args) => (
 );
 Default.storyName = 'default';
 
-export const WithOverlay: ComponentStory<typeof PopoverMenu> = (args) => (
+export const WithOverlay: Story<ComponentProps<typeof PopoverMenu>> = (args) => (
 	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
 		<Group>
 			<Item>Reload</Item>

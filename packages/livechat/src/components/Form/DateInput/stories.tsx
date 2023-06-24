@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import DateInput from '.';
 import { Form, FormField } from '..';
@@ -26,9 +27,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof DateInput>;
+} satisfies Meta<ComponentProps<typeof DateInput>>;
 
-const Template: ComponentStory<typeof DateInput> = (args) => <DateInput {...args} />;
+const Template: Story<ComponentProps<typeof DateInput>> = (args) => <DateInput {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

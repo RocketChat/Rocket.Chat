@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { MessageAvatars } from '.';
 import { avatarResolver } from '../../../helpers.stories';
@@ -13,9 +14,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof MessageAvatars>;
+} satisfies Meta<ComponentProps<typeof MessageAvatars>>;
 
-const Template: ComponentStory<typeof MessageAvatars> = (args) => <MessageAvatars {...args} />;
+const Template: Story<ComponentProps<typeof MessageAvatars>> = (args) => <MessageAvatars {...args} />;
 
 export const Empty = Template.bind({});
 Empty.storyName = 'empty';

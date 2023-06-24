@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import VideoAttachment from '.';
 import { sampleVideo } from '../../../helpers.stories';
@@ -12,9 +13,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof VideoAttachment>;
+} satisfies Meta<ComponentProps<typeof VideoAttachment>>;
 
-const Template: ComponentStory<typeof VideoAttachment> = (args) => <VideoAttachment {...args} />;
+const Template: Story<ComponentProps<typeof VideoAttachment>> = (args) => <VideoAttachment {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

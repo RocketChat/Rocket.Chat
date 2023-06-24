@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Form, PasswordInput, SelectInput, TextInput } from '.';
 import { Button } from '../Button';
@@ -18,9 +19,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Form>;
+} satisfies Meta<ComponentProps<typeof Form>>;
 
-export const Default: ComponentStory<typeof Form> = (args) => (
+export const Default: Story<ComponentProps<typeof Form>> = (args) => (
 	<Form {...args}>
 		<FormField label='Text' description='Input field for plain text'>
 			<TextInput />

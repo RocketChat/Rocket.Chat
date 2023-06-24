@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Meta, Story } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
 
 export default {
 	title: 'Components/Icons',

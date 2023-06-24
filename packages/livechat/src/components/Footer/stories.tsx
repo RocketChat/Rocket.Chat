@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Footer, FooterContent, FooterOptions, PoweredBy } from '.';
 import ChangeIcon from '../../icons/change.svg';
@@ -27,9 +28,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof Footer>;
+} satisfies Meta<ComponentProps<typeof Footer>>;
 
-export const Simple: ComponentStory<typeof Footer> = (args) => (
+export const Simple: Story<ComponentProps<typeof Footer>> = (args) => (
 	<Footer {...args}>
 		<FooterContent>
 			<PoweredBy />
@@ -38,7 +39,7 @@ export const Simple: ComponentStory<typeof Footer> = (args) => (
 );
 Simple.storyName = 'simple';
 
-export const WithComposerAndOptions: ComponentStory<typeof Footer> = (args) => (
+export const WithComposerAndOptions: Story<ComponentProps<typeof Footer>> = (args) => (
 	<Footer {...args}>
 		<FooterContent>
 			<Composer placeholder='Insert your text here' />

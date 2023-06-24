@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { screenProps, avatarResolver, beepAudio, screenDecorator } from '../../helpers.stories';
 import Chat from './component';
@@ -58,9 +59,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof Chat>;
+} satisfies Meta<ComponentProps<typeof Chat>>;
 
-const Template: ComponentStory<typeof Chat> = (args) => <Chat {...args} />;
+const Template: Story<ComponentProps<typeof Chat>> = (args) => <Chat {...args} />;
 
 export const Loading = Template.bind({});
 Loading.storyName = 'loading';

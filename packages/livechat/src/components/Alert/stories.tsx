@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Alert from '.';
 import { loremIpsum, screenDecorator } from '../../helpers.stories';
@@ -20,9 +21,9 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [screenDecorator],
-} satisfies ComponentMeta<typeof Alert>;
+} satisfies Meta<ComponentProps<typeof Alert>>;
 
-const Template: ComponentStory<typeof Alert> = (args) => <Alert {...args} />;
+const Template: Story<ComponentProps<typeof Alert>> = (args) => <Alert {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

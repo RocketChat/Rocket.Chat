@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { ImageAttachment } from '.';
 import { sampleImage } from '../../../helpers.stories';
@@ -12,7 +13,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof ImageAttachment>;
+} satisfies Meta<ComponentProps<typeof ImageAttachment>>;
 
-export const Default: ComponentStory<typeof ImageAttachment> = (args) => <ImageAttachment {...args} />;
+export const Default: Story<ComponentProps<typeof ImageAttachment>> = (args) => <ImageAttachment {...args} />;
 Default.storyName = 'default';

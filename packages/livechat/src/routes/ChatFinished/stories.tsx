@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { screenProps, loremIpsum, screenDecorator } from '../../helpers.stories';
 import ChatFinished from './component';
@@ -18,9 +19,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof ChatFinished>;
+} satisfies Meta<ComponentProps<typeof ChatFinished>>;
 
-const Template: ComponentStory<typeof ChatFinished> = (args) => <ChatFinished {...args} />;
+const Template: Story<ComponentProps<typeof ChatFinished>> = (args) => <ChatFinished {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Screen } from '.';
 import { gazzoAvatar, screenDecorator } from '../../helpers.stories';
@@ -28,9 +29,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Screen>;
+} satisfies Meta<ComponentProps<typeof Screen>>;
 
-const Template: ComponentStory<typeof Screen> = (args) => (
+const Template: Story<ComponentProps<typeof Screen>> = (args) => (
 	<Screen {...args}>
 		<Screen.Content>Content</Screen.Content>
 	</Screen>

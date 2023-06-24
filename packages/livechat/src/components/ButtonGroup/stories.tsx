@@ -1,18 +1,19 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { ButtonGroup } from '.';
 import { Button } from '../Button';
 
-/** @type {import('@storybook/react').ComponentMeta<typeof ButtonGroup>} */
+/** @type {import('@storybook/preact').Meta<ComponentProps<typeof ButtonGroup>>} */
 export default {
 	title: 'Components/ButtonGroup',
 	component: ButtonGroup,
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof ButtonGroup>;
+} satisfies Meta<ComponentProps<typeof ButtonGroup>>;
 
-export const WithButtonsOfSameSize: ComponentStory<typeof ButtonGroup> = (args) => (
+export const WithButtonsOfSameSize: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button>Yes</Button>
 		<Button outline>Cancel</Button>
@@ -21,7 +22,7 @@ export const WithButtonsOfSameSize: ComponentStory<typeof ButtonGroup> = (args) 
 );
 WithButtonsOfSameSize.storyName = 'with buttons of same size';
 
-export const WithButtonsOfDifferentSizes: ComponentStory<typeof ButtonGroup> = (args) => (
+export const WithButtonsOfDifferentSizes: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small>Yes</Button>
 		<Button outline>Cancel</Button>
@@ -32,7 +33,7 @@ export const WithButtonsOfDifferentSizes: ComponentStory<typeof ButtonGroup> = (
 );
 WithButtonsOfDifferentSizes.storyName = 'with buttons of different sizes';
 
-export const WithOnlySmallButtons: ComponentStory<typeof ButtonGroup> = (args) => (
+export const WithOnlySmallButtons: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small>Yes</Button>
 		<Button small outline>
@@ -45,7 +46,7 @@ export const WithOnlySmallButtons: ComponentStory<typeof ButtonGroup> = (args) =
 );
 WithOnlySmallButtons.storyName = 'with only small buttons';
 
-export const WithStackedButtons: ComponentStory<typeof ButtonGroup> = (args) => (
+export const WithStackedButtons: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small outline>
 			Rename

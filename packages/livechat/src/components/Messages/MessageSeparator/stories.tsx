@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import MessageSeparator from '.';
 
@@ -12,9 +13,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof MessageSeparator>;
+} satisfies Meta<ComponentProps<typeof MessageSeparator>>;
 
-const Template: ComponentStory<typeof MessageSeparator> = (args) => <MessageSeparator {...args} />;
+const Template: Story<ComponentProps<typeof MessageSeparator>> = (args) => <MessageSeparator {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

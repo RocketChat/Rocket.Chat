@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Composer, ComposerActions, ComposerAction } from '.';
 import PlusIcon from '../../icons/plus.svg';
@@ -22,9 +23,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Composer>;
+} satisfies Meta<ComponentProps<typeof Composer>>;
 
-const Template: ComponentStory<typeof Composer> = (args) => <Composer {...args} />;
+const Template: Story<ComponentProps<typeof Composer>> = (args) => <Composer {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

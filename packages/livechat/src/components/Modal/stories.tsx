@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentStory, Meta } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { loremIpsum } from '../../helpers.stories';
 import Modal from './component';
@@ -25,7 +26,7 @@ export default {
 	},
 } satisfies Meta;
 
-export const Normal: ComponentStory<typeof Modal> = (args) => <Modal {...args} />;
+export const Normal: Story<ComponentProps<typeof Modal>> = (args) => <Modal {...args} />;
 Normal.storyName = 'normal';
 Normal.args = {
 	children: loremIpsum({ count: 1, units: 'paragraphs' }),
@@ -34,7 +35,7 @@ Normal.args = {
 	onDismiss: action('dismiss'),
 };
 
-export const Animated: ComponentStory<typeof Modal> = (args) => <Modal {...args} />;
+export const Animated: Story<ComponentProps<typeof Modal>> = (args) => <Modal {...args} />;
 Animated.storyName = 'animated';
 Animated.args = {
 	children: loremIpsum({ count: 1, units: 'paragraphs' }),
@@ -43,7 +44,7 @@ Animated.args = {
 	onDismiss: action('dismiss'),
 };
 
-export const Timeout: ComponentStory<typeof Modal> = (args) => <Modal {...args} />;
+export const Timeout: Story<ComponentProps<typeof Modal>> = (args) => <Modal {...args} />;
 Timeout.storyName = 'timeout';
 Timeout.args = {
 	children: loremIpsum({ count: 1, units: 'paragraphs' }),
@@ -53,7 +54,7 @@ Timeout.args = {
 	onDismiss: action('dismiss'),
 };
 
-export const DisallowDismissByOverlay: ComponentStory<typeof Modal> = (args) => <Modal {...args} />;
+export const DisallowDismissByOverlay: Story<ComponentProps<typeof Modal>> = (args) => <Modal {...args} />;
 DisallowDismissByOverlay.storyName = 'disallow dismiss by overlay';
 DisallowDismissByOverlay.args = {
 	children: loremIpsum({ count: 1, units: 'paragraphs' }),
@@ -63,7 +64,7 @@ DisallowDismissByOverlay.args = {
 	onDismiss: action('dismiss'),
 };
 
-export const Confirm: ComponentStory<typeof Modal.Confirm> = (args) => <Modal.Confirm {...args} />;
+export const Confirm: Story<ComponentProps<typeof Modal.Confirm>> = (args) => <Modal.Confirm {...args} />;
 Confirm.storyName = 'confirm';
 Confirm.args = {
 	text: 'Are you ok?',
@@ -73,7 +74,7 @@ Confirm.args = {
 	onCancel: action('cancel'),
 };
 
-export const Alert: ComponentStory<typeof Modal.Alert> = (args) => <Modal.Alert {...args} />;
+export const Alert: Story<ComponentProps<typeof Modal.Alert>> = (args) => <Modal.Alert {...args} />;
 Alert.storyName = 'alert';
 Alert.args = {
 	text: 'You look great today.',

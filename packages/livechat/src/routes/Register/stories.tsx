@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { screenDecorator, screenProps } from '../../helpers.stories';
 import Register from './component';
@@ -35,9 +36,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Register>;
+} satisfies Meta<ComponentProps<typeof Register>>;
 
-const Template: ComponentStory<typeof Register> = (args) => <Register {...args} />;
+const Template: Story<ComponentProps<typeof Register>> = (args) => <Register {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

@@ -1,4 +1,4 @@
-import type { Meta } from '@storybook/react';
+import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
 import { imageBlock } from '../../../helpers.stories';

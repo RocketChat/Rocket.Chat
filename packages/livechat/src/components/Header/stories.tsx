@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Header, { Picture, Content, SubTitle, Title, Actions, Action, Post, CustomField } from '.';
 import { gazzoAvatar } from '../../helpers.stories';
@@ -22,23 +23,23 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof Header>;
+} satisfies Meta<ComponentProps<typeof Header>>;
 
-export const WithTextContent: ComponentStory<typeof Header> = (args) => (
+export const WithTextContent: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Content>Need Help?</Content>
 	</Header>
 );
 WithTextContent.storyName = 'with text content';
 
-export const WithLongTextContent: ComponentStory<typeof Header> = (args) => (
+export const WithLongTextContent: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Content>{'Need Help? '.repeat(100)}</Content>
 	</Header>
 );
 WithLongTextContent.storyName = 'with long text content';
 
-export const WithTitleAndSubtitle: ComponentStory<typeof Header> = (args) => (
+export const WithTitleAndSubtitle: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Content>
 			<Title>Rocket.Chat</Title>
@@ -48,7 +49,7 @@ export const WithTitleAndSubtitle: ComponentStory<typeof Header> = (args) => (
 );
 WithTitleAndSubtitle.storyName = 'with title and subtitle';
 
-export const WithPicture: ComponentStory<typeof Header> = (args) => (
+export const WithPicture: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Picture>
 			<Bell width={20} height={20} />
@@ -58,7 +59,7 @@ export const WithPicture: ComponentStory<typeof Header> = (args) => (
 );
 WithPicture.storyName = 'with picture';
 
-export const WithActions: ComponentStory<typeof Header> = (args) => (
+export const WithActions: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Content>Chat finished</Content>
 		<Actions>
@@ -73,7 +74,7 @@ export const WithActions: ComponentStory<typeof Header> = (args) => (
 );
 WithActions.storyName = 'with actions';
 
-export const WithMultiplesAlerts: ComponentStory<typeof Header> = (args) => (
+export const WithMultiplesAlerts: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header
 		{...args}
 		post={
@@ -100,7 +101,7 @@ export const WithMultiplesAlerts: ComponentStory<typeof Header> = (args) => (
 );
 WithMultiplesAlerts.storyName = 'with multiples alerts';
 
-export const ForUserChat: ComponentStory<typeof Header> = (args) => (
+export const ForUserChat: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Picture>
 			<Avatar src={gazzoAvatar} status='busy' />
@@ -124,7 +125,7 @@ export const ForUserChat: ComponentStory<typeof Header> = (args) => (
 );
 ForUserChat.storyName = 'for user chat';
 
-export const WithCustomField: ComponentStory<typeof Header> = (args) => (
+export const WithCustomField: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args} large>
 		<Picture>
 			<Avatar src={gazzoAvatar} large status='away' />
@@ -152,7 +153,7 @@ WithCustomField.args = {
 	large: true,
 };
 
-export const WithCustomFieldAndAlert: ComponentStory<typeof Header> = (args) => (
+export const WithCustomFieldAndAlert: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header
 		{...args}
 		post={
@@ -188,7 +189,7 @@ WithCustomFieldAndAlert.args = {
 	large: true,
 };
 
-export const WithTheme: ComponentStory<typeof Header> = (args) => (
+export const WithTheme: Story<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Picture>
 			<Avatar src={gazzoAvatar} large status='away' />

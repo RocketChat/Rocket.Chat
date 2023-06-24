@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { FormField } from '.';
 import { Form, TextInput } from '..';
@@ -18,9 +19,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof FormField>;
+} satisfies Meta<ComponentProps<typeof FormField>>;
 
-const Template: ComponentStory<typeof FormField> = (args) => <FormField {...args} />;
+const Template: Story<ComponentProps<typeof FormField>> = (args) => <FormField {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

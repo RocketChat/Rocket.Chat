@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { Avatar } from '.';
 import { gazzoAvatar } from '../../helpers.stories';
@@ -23,9 +24,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Avatar>;
+} satisfies Meta<ComponentProps<typeof Avatar>>;
 
-const Template: ComponentStory<typeof Avatar> = (args) => <Avatar {...args} />;
+const Template: Story<ComponentProps<typeof Avatar>> = (args) => <Avatar {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';
@@ -42,7 +43,7 @@ Small.args = {
 	small: true,
 };
 
-export const AsPlaceholder: ComponentStory<typeof Avatar> = (args) => (
+export const AsPlaceholder: Story<ComponentProps<typeof Avatar>> = (args) => (
 	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
 		<Avatar {...args} style={{ margin: '0.5rem' }} large />
 		<Avatar {...args} style={{ margin: '0.5rem' }} />
@@ -54,7 +55,7 @@ AsPlaceholder.args = {
 	src: '',
 };
 
-export const WithStatusIndicator: ComponentStory<typeof Avatar> = (args) => (
+export const WithStatusIndicator: Story<ComponentProps<typeof Avatar>> = (args) => (
 	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
 		<Avatar {...args} style={{ margin: '0.5rem' }} status='offline' />
 		<Avatar {...args} style={{ margin: '0.5rem' }} status='away' />

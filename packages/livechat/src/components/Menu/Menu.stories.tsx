@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Menu, { Group, Item } from '.';
 import { Button } from '../Button';
@@ -21,12 +22,12 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Menu>;
+} satisfies Meta<ComponentProps<typeof Menu>>;
 
-export const Empty: ComponentStory<typeof Menu> = (args) => <Menu {...args} />;
+export const Empty: Story<ComponentProps<typeof Menu>> = (args) => <Menu {...args} />;
 Empty.storyName = 'empty';
 
-export const Simple: ComponentStory<typeof Menu> = (args) => (
+export const Simple: Story<ComponentProps<typeof Menu>> = (args) => (
 	<Menu {...args}>
 		<Group>
 			<Item onClick={action('clicked')}>A menu item</Item>
@@ -44,7 +45,7 @@ Simple.args = {
 	),
 };
 
-export const Placement: ComponentStory<typeof Menu> = (args) => (
+export const Placement: Story<ComponentProps<typeof Menu>> = (args) => (
 	<div style={{ position: 'relative' }}>
 		<Button>Button</Button>
 		<Menu {...args}>

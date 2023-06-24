@@ -9,7 +9,4 @@ module.exports = {
 		'@storybook/addon-postcss',
 	],
 	stories: ['../src/**/stories.{js,tsx}', '../src/**/story.{js,tsx}', '../src/**/*.stories.{js,tsx}', '../src/**/*.story.{js,tsx}'],
-	typescript: {
-		reactDocgen: 'react-docgen-typescript-plugin',
-	},
 };

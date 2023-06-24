@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { FileAttachment } from '.';
 import { loremIpsum } from '../../../helpers.stories';
@@ -12,9 +13,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof FileAttachment>;
+} satisfies Meta<ComponentProps<typeof FileAttachment>>;
 
-const Template: ComponentStory<typeof FileAttachment> = (args) => <FileAttachment {...args} />;
+const Template: Story<ComponentProps<typeof FileAttachment>> = (args) => <FileAttachment {...args} />;
 
 export const PDF = Template.bind({});
 PDF.storyName = 'for pdf';

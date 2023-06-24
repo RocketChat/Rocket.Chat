@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { TypingIndicator } from '.';
 import { avatarResolver } from '../../../helpers.stories';
@@ -14,9 +15,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof TypingIndicator>;
+} satisfies Meta<ComponentProps<typeof TypingIndicator>>;
 
-const Template: ComponentStory<typeof TypingIndicator> = (args) => <TypingIndicator {...args} />;
+const Template: Story<ComponentProps<typeof TypingIndicator>> = (args) => <TypingIndicator {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

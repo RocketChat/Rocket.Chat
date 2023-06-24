@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import MessageBlocks from '.';
 import { accessoryImage, imageBlock } from '../../../helpers.stories';
@@ -10,9 +11,9 @@ export default {
 		layout: 'fullscreen',
 	},
 	decorators: [(storyFn) => <PopoverContainer children={storyFn()} />],
-} satisfies ComponentMeta<typeof MessageBlocks>;
+} satisfies Meta<ComponentProps<typeof MessageBlocks>>;
 
-export const WithBlocks: ComponentStory<typeof MessageBlocks> = () => (
+export const WithBlocks: Story<ComponentProps<typeof MessageBlocks>> = () => (
 	<MessageBlocks
 		blocks={[
 			{

@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { SelectInput } from '.';
 import { Form, FormField } from '..';
@@ -31,9 +32,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof SelectInput>;
+} satisfies Meta<ComponentProps<typeof SelectInput>>;
 
-const Template: ComponentStory<typeof SelectInput> = (args) => <SelectInput {...args} />;
+const Template: Story<ComponentProps<typeof SelectInput>> = (args) => <SelectInput {...args} />;
 
 export const Empty = Template.bind({});
 Empty.storyName = 'empty';

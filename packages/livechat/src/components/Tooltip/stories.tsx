@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory, Story } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Tooltip, { withTooltip } from '.';
 import { Button } from '../Button';
@@ -23,12 +24,12 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof Tooltip>;
+} satisfies Meta<ComponentProps<typeof Tooltip>>;
 
-export const Inline: ComponentStory<typeof Tooltip> = (args) => <Tooltip {...args} />;
+export const Inline: Story<ComponentProps<typeof Tooltip>> = (args) => <Tooltip {...args} />;
 Inline.storyName = 'inline';
 
-export const Placements: ComponentStory<typeof Tooltip> = (args) => (
+export const Placements: Story<ComponentProps<typeof Tooltip>> = (args) => (
 	<div style={{ display: 'flex', flexDirection: 'column' }}>
 		{placements.map((placement, i) => (
 			<Tooltip {...args} key={i} placement={placement} />
@@ -37,7 +38,7 @@ export const Placements: ComponentStory<typeof Tooltip> = (args) => (
 );
 Placements.storyName = 'placements';
 
-export const ConnectedToAnotherComponent: ComponentStory<typeof Tooltip.Trigger> = (args) => (
+export const ConnectedToAnotherComponent: Story<ComponentProps<typeof Tooltip.Trigger>> = (args) => (
 	<Tooltip.Trigger {...args}>
 		<Button>A simple button</Button>
 	</Tooltip.Trigger>

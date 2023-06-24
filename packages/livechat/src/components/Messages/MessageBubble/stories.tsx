@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { MessageBubble } from '.';
 import { loremIpsum } from '../../../helpers.stories';
@@ -17,9 +18,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof MessageBubble>;
+} satisfies Meta<ComponentProps<typeof MessageBubble>>;
 
-const Template: ComponentStory<typeof MessageBubble> = (args) => <MessageBubble {...args} />;
+const Template: Story<ComponentProps<typeof MessageBubble>> = (args) => <MessageBubble {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

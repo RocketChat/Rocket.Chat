@@ -1,4 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import Message from '.';
 import { attachmentResolver, avatarResolver, loremIpsum, sampleAudio, sampleImage, sampleVideo } from '../../../helpers.stories';
@@ -93,9 +94,9 @@ export default {
 		attachments: [],
 		blocks: [],
 	},
-} satisfies ComponentMeta<typeof Message>;
+} satisfies Meta<ComponentProps<typeof Message>>;
 
-export const Default: ComponentStory<typeof Message> = (args) => (
+export const Default: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -111,7 +112,7 @@ export const Default: ComponentStory<typeof Message> = (args) => (
 );
 Default.storyName = 'default';
 
-export const System: ComponentStory<typeof Message> = (args) => (
+export const System: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -131,7 +132,7 @@ System.args = {
 	t: MESSAGE_TYPE_WELCOME,
 };
 
-export const Me: ComponentStory<typeof Message> = (args) => (
+export const Me: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -150,7 +151,7 @@ Me.args = {
 	me: true,
 };
 
-export const Markdown: ComponentStory<typeof Message> = (args) => (
+export const Markdown: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -169,7 +170,7 @@ Markdown.args = {
 	msg: defaultMarkdownMessage,
 };
 
-export const Grouping: ComponentStory<typeof Message> = (args) => (
+export const Grouping: Story<ComponentProps<typeof Message>> = (args) => (
 	<div>
 		<Message
 			attachmentResolver={attachmentResolver}
@@ -199,7 +200,7 @@ Grouping.args = {
 	compact: true,
 };
 
-export const WithQuotation: ComponentStory<typeof Message> = (args) => (
+export const WithQuotation: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -223,7 +224,7 @@ WithQuotation.args = {
 	],
 };
 
-export const WithAudioAttachment: ComponentStory<typeof Message> = (args) => (
+export const WithAudioAttachment: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -246,7 +247,7 @@ WithAudioAttachment.args = {
 	],
 };
 
-export const WithVideoAttachment: ComponentStory<typeof Message> = (args) => (
+export const WithVideoAttachment: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -269,7 +270,7 @@ WithVideoAttachment.args = {
 	],
 };
 
-export const WithImageAttachment: ComponentStory<typeof Message> = (args) => (
+export const WithImageAttachment: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -292,7 +293,7 @@ WithImageAttachment.args = {
 	],
 };
 
-export const WithFilesAttachments: ComponentStory<typeof Message> = (args) => (
+export const WithFilesAttachments: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -314,7 +315,7 @@ WithFilesAttachments.args = {
 	})),
 };
 
-export const WithMultipleAttachments: ComponentStory<typeof Message> = (args) => (
+export const WithMultipleAttachments: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -347,7 +348,7 @@ WithMultipleAttachments.args = {
 	],
 };
 
-export const WithUiKitBlocks: ComponentStory<typeof Message> = (args) => (
+export const WithUiKitBlocks: Story<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}

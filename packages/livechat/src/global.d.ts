@@ -1,3 +1,5 @@
+import type { ComponentType } from 'preact';
+
 export {};
 
 declare global {
@@ -20,4 +22,11 @@ declare global {
 			$$typeof: symbol;
 		}
 	}
+}
+
+declare module '@storybook/preact/dist/ts3.9/client/preview/types-6-0.d.ts' {
+	export type PreactFramework = {
+		component: ComponentType<any, any>;
+		storyResult: StoryFnPreactReturnType;
+	};
 }

@@ -1,5 +1,6 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, Story } from '@storybook/preact';
+import type { ComponentProps } from 'preact';
 
 import { MessageList } from '.';
 import { avatarResolver, loremIpsum } from '../../../helpers.stories';
@@ -46,9 +47,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies ComponentMeta<typeof MessageList>;
+} satisfies Meta<ComponentProps<typeof MessageList>>;
 
-const Template: ComponentStory<typeof MessageList> = (args) => <MessageList {...args} />;
+const Template: Story<ComponentProps<typeof MessageList>> = (args) => <MessageList {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';
