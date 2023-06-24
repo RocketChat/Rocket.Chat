@@ -132,7 +132,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 							<Field.Row>
 								<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
 							</Field.Row>
-							<Field.Hint>{t('Always_show_thread_replies_in_main_channel_Description')}</Field.Hint>
+							<Field.Hint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</Field.Hint>
 						</Field>
 					),
 					[handleShowThreadsInMainChannel, showThreadsInMainChannel, t],
