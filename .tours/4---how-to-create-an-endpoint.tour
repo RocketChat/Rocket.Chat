@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "3 - How to Create an Endpoint",
+  "title": "4 - How to Create an Endpoint",
   "steps": [
     {
       "file": "apps/meteor/app/api/server/index.ts",
