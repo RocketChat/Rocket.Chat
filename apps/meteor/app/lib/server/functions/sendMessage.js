@@ -1,5 +1,5 @@
 import { Match, check } from 'meteor/check';
-import { Messages, LivechatRooms } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -10,9 +10,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { setVisitorEmail } from './setVisitorsEmail';
-import { initiateVerificationProcess } from './initiateVerificationProcess';
-import { verifyVisitorCode } from './sendVerificationCodeToVisitor';
 
 /**
  * IMPORTANT
@@ -279,25 +276,12 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
 		// TODO add the below function in a callback
-		if (room.t === 'l' && room.verficationStatus === 'isListeningToEmail' && user._id !== 'rocket.cat') {
-			const result = await setVisitorEmail(room, message.msg);
-			if (result.success) {
-				await LivechatRooms.saveRoomById({
-					_id: room._id,
-					verficationStatus: 'off',
-					topic: '',
-					tags: [],
-				});
-				await initiateVerificationProcess(room._id);
-			}
-		} else if (room.t === 'l' && room.verficationStatus === 'isListeningToOTP') {
-			await verifyVisitorCode(room.v._id, message.msg);
-			await LivechatRooms.saveRoomById({
-				_id: room._id,
-				verficationStatus: 'off',
-				topic: '',
-				tags: [],
-			});
+		if (
+			user._id === room.v._id &&
+			room.t === 'l' &&
+			(room.verficationStatus === 'isListeningToEmail' || room.verficationStatus === 'isListeningToOTP')
+		) {
+			await callbacks.run('verificationCheck', room, message.msg);
 		}
 		return message;
 	}

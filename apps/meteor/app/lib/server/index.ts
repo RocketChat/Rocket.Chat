@@ -2,6 +2,7 @@ import '../lib/MessageTypes';
 import './lib/bugsnag';
 import './lib/debug';
 import './lib/loginErrorMessageOverride';
+import './lib/verificationCheck';
 import './oauth/oauth';
 import './oauth/facebook';
 import './oauth/google';

@@ -18,6 +18,7 @@ import type {
 	IOmnichannelRoom,
 	ILivechatTag,
 	SelectedAgent,
+	IOmnichannelGenericRoom,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -90,6 +91,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'verificationCheck': (room: IOmnichannelGenericRoom, msg: string) => void;
 }
 
 /**
@@ -268,6 +270,7 @@ export type Hook =
 	| 'userPasswordReset'
 	| 'userRegistered'
 	| 'userStatusManuallySet'
+	| 'verificationCheck'
 	| 'test';
 
 type Callback = {
