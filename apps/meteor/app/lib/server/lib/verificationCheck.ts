@@ -21,13 +21,15 @@ callbacks.add(
 				await initiateVerificationProcess(room._id);
 			}
 		} else if (room.verficationStatus === 'isListeningToOTP') {
-			await verifyVisitorCode(room.v._id, msg);
-			await LivechatRooms.saveRoomById({
-				_id: room._id,
-				verficationStatus: 'off',
-				topic: '',
-				tags: [],
-			});
+			const result = await verifyVisitorCode(room, msg);
+			if (result) {
+				await LivechatRooms.saveRoomById({
+					_id: room._id,
+					verficationStatus: 'off',
+					topic: '',
+					tags: [],
+				});
+			}
 		}
 	},
 	callbacks.priority.HIGH,

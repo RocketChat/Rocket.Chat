@@ -275,7 +275,6 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
-		// TODO add the below function in a callback
 		if (
 			user._id === room.v._id &&
 			room.t === 'l' &&

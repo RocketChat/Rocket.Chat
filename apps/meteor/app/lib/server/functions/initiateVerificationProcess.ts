@@ -16,7 +16,7 @@ export const initiateVerificationProcess = async function (rid: IRoom['_id']) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'initiateVerificationProcess' });
 	}
 	const visitor = await LivechatVisitors.findOneById(visitorRoomId, {});
-	if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
+	if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address && !visitor?.visitorEmails[0]?.verified) {
 		const message = {
 			msg: i18n.t(
 				'Welcome to the verification process. \n Please enter the OTP (One-Time Password) sent to your email. \n Kindly avoid adding any extra words. Simply reply with the 6-digit OTP, for example, `345678`.',

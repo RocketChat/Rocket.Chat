@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '@rocket.chat/models';
+import type { IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
@@ -7,6 +8,7 @@ import bcrypt from 'bcrypt';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import { i18n } from '../../../../server/lib/i18n';
+import { sendMessage } from './sendMessage';
 
 const send2FAEmail = async function (address: string, random: string): Promise<void> {
 	const language = settings.get<string>('Language') || 'en';
@@ -66,8 +68,8 @@ export const sendVerificationCodeToVisitor = async function (visitorId: string):
 	console.log(random);
 };
 
-export const verifyVisitorCode = async function (visitorId: string, _codeFromVisitor: string): Promise<boolean> {
-	console.log(_codeFromVisitor);
+export const verifyVisitorCode = async function (room: IOmnichannelGenericRoom, _codeFromVisitor: string): Promise<boolean> {
+	const visitorId = room.v._id;
 	if (!visitorId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'verifyVisitorCode' });
 	}
@@ -96,6 +98,12 @@ export const verifyVisitorCode = async function (visitorId: string, _codeFromVis
 			return true;
 		}
 	}
+	const bot = await Users.findOneById('rocket.cat');
+	const message = {
+		msg: i18n.t('Sorry, this is not a valid OTP, kindly provide another input'),
+		groupable: false,
+	};
+	await sendMessage(bot, message, room);
 
 	return false;
 };
