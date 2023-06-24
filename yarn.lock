@@ -11008,9 +11008,9 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.264
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.264"
-  checksum: f856ac22a422c862b84f5a550ca1358c313f0f42d74c1780eeb781394a9aca27a12572873c6d69edea92fdd092dcd4dd34dcfc8e45ecc91a34feec4220a80905
+  version: 0.32.0-dev.294
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.294"
+  checksum: cf58890f3fbcfdff3df9436a33c4aa333de34369f89902107dee74c50c11b8af793c9c80a8df5046ffcabf0fd90111f31a6fc2030876e838e43ec4c6a5703fc4
   languageName: node
   linkType: hard
 
