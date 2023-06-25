@@ -26,9 +26,9 @@ const Connection = {
 
 	async connect() {
 		try {
+			await import('../i18next');
 			this.clearListeners();
 			await loadConfig();
-			await import('../i18next');
 			// await Livechat.connection.connect();
 			this.addListeners();
 			this.clearAlerts();

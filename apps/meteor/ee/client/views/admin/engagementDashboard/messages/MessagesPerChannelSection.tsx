@@ -1,5 +1,19 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Flex,
+	Icon,
+	Margins,
+	Skeleton,
+	Table,
+	Tile,
+	Palette,
+	Tooltip,
+	TableHead,
+	TableRow,
+	TableBody,
+	TableCell,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -102,12 +116,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																	]}
 																	innerRadius={0.6}
 																	colors={[colors.warning, colors.success, colors.info]}
-																	// @ts-ignore
-																	enableRadialLabels={false}
-																	enableSlicesLabels={false}
 																	animate={true}
-																	motionStiffness={90}
-																	motionDamping={15}
+																	motionConfig='stiff'
 																	theme={{
 																		// TODO: Get it from theme
 																		axis: {
@@ -124,19 +134,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																				},
 																			},
 																		},
-																		tooltip: {
-																			container: {
-																				backgroundColor: '#1F2329',
-																				boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-																				borderRadius: 2,
-																			},
-																		},
 																	}}
-																	tooltip={({ datum }): ReactElement => (
-																		<Box fontScale='p1m' color='white'>
-																			{t('Value_messages', { value: datum.value })}
-																		</Box>
-																	)}
+																	tooltip={({ datum }) => <Tooltip>{t('Value_messages', { value: datum.value })}</Tooltip>}
 																/>
 															</Box>
 														</Box>
@@ -181,43 +180,43 @@ const MessagesPerChannelSection = (): ReactElement => {
 									)}
 									{(!table || !!table.length) && (
 										<Table>
-											<Table.Head>
-												<Table.Row>
-													<Table.Cell>{'#'}</Table.Cell>
-													<Table.Cell>{t('Channel')}</Table.Cell>
-													<Table.Cell align='end'>{t('Number_of_messages')}</Table.Cell>
-												</Table.Row>
-											</Table.Head>
-											<Table.Body>
+											<TableHead>
+												<TableRow>
+													<TableCell>{'#'}</TableCell>
+													<TableCell>{t('Channel')}</TableCell>
+													<TableCell align='end'>{t('Number_of_messages')}</TableCell>
+												</TableRow>
+											</TableHead>
+											<TableBody>
 												{table?.map(({ i, t, name, messages }) => (
-													<Table.Row key={i}>
-														<Table.Cell>{i + 1}.</Table.Cell>
-														<Table.Cell>
+													<TableRow key={i}>
+														<TableCell>{i + 1}.</TableCell>
+														<TableCell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
 																	(t === 'p' && <Icon name='lock' />) ||
 																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
-														</Table.Cell>
-														<Table.Cell align='end'>{messages}</Table.Cell>
-													</Table.Row>
+														</TableCell>
+														<TableCell align='end'>{messages}</TableCell>
+													</TableRow>
 												))}
 												{!table &&
 													Array.from({ length: 5 }, (_, i) => (
-														<Table.Row key={i}>
-															<Table.Cell>
+														<TableRow key={i}>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell>
+															</TableCell>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell align='end'>
+															</TableCell>
+															<TableCell align='end'>
 																<Skeleton width='100%' />
-															</Table.Cell>
-														</Table.Row>
+															</TableCell>
+														</TableRow>
 													))}
-											</Table.Body>
+											</TableBody>
 										</Table>
 									)}
 								</Box>

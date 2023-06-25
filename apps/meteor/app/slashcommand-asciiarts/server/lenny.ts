@@ -19,5 +19,6 @@ slashCommands.add({
 	options: {
 		description: 'Slash_LennyFace_Description',
 		params: 'your_message_optional',
+		clientOnly: true,
 	},
 });
