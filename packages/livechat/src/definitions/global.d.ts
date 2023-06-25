@@ -7,6 +7,11 @@ declare global {
 		SERVER_URL: string;
 	}
 
+	interface Document {
+		msHidden?: Document['hidden'];
+		webkitHidden?: Document['hidden'];
+	}
+
 	namespace preact {
 		interface Component {
 			// This is a workaround for https://github.com/preactjs/preact/issues/1206

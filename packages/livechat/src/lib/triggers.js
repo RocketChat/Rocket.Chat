@@ -2,7 +2,8 @@ import mitt from 'mitt';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { upsert, asyncForEach } from '../components/helpers';
+import { asyncForEach } from '../helpers/asyncForEach';
+import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { normalizeAgent } from './api';
 import { processUnread } from './main';

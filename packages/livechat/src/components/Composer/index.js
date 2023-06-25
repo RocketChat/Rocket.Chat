@@ -1,6 +1,7 @@
 import { Component } from 'preact';
 
-import { createClassName, parse } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { parse } from '../../helpers/parse';
 import styles from './styles.scss';
 
 const findLastTextNode = (node) => {

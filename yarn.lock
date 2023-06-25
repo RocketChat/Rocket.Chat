@@ -9855,6 +9855,7 @@ __metadata:
     "@babel/eslint-parser": ~7.22.5
     "@babel/preset-env": ~7.22.5
     "@babel/preset-typescript": ~7.22.5
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage-tokens": next
