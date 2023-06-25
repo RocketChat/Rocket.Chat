@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { ChatContainer } from '.';
@@ -5,7 +6,42 @@ import { getAvatarUrl } from '../../helpers/baseUrl';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { Consumer } from '../../store';
 
-const ChatConnector = ({ ref, ...props }) => (
+type ChatConnectorProps = Omit<
+	ComponentProps<typeof ChatContainer>,
+	| 'theme'
+	| 'title'
+	| 'sound'
+	| 'token'
+	| 'user'
+	| 'agent'
+	| 'room'
+	| 'messages'
+	| 'noMoreMessages'
+	| 'emoji'
+	| 'uploads'
+	| 'typingUsernames'
+	| 'loading'
+	| 'showConnecting'
+	| 'connecting'
+	| 'dispatch'
+	| 'departments'
+	| 'allowSwitchingDepartments'
+	| 'conversationFinishedMessage'
+	| 'allowRemoveUserData'
+	| 'alerts'
+	| 'visible'
+	| 'unread'
+	| 'lastReadMessageId'
+	| 'guest'
+	| 'triggerAgent'
+	| 'queueInfo'
+	| 'registrationFormEnabled'
+	| 'nameFieldRegistrationForm'
+	| 'emailFieldRegistrationForm'
+	| 'limitTextLength'
+>;
+
+const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 	<Consumer>
 		{({
 			config: {
@@ -63,9 +99,9 @@ const ChatConnector = ({ ref, ...props }) => (
 								_id: agent._id,
 								name: agent.name,
 								status: agent.status,
-								email: agent.emails && agent.emails[0] && agent.emails[0].address,
+								email: agent.emails?.[0]?.address,
 								username: agent.username,
-								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
+								phone: agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
 								avatar: agent.username
 									? {
 											description: agent.username,
@@ -76,7 +112,7 @@ const ChatConnector = ({ ref, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages?.filter((message) => canRenderMessage(message))}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}

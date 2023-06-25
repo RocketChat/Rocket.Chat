@@ -43,6 +43,13 @@ type StoreState = {
 	undocked?: boolean;
 	expanded?: boolean;
 	modal?: any;
+	agent?: any;
+	room?: any;
+	noMoreMessages?: boolean;
+	loading?: boolean;
+	lastReadMessageId?: any;
+	triggerAgent?: any;
+	queueInfo?: any;
 };
 
 export const initialState = (): StoreState => ({
