@@ -1,29 +1,62 @@
+import type { Emitter, EventHandlerMap, EventType, Handler, WildcardHandler } from 'mitt';
 import mitt from 'mitt';
-
-import { parentCall } from '../lib/parentCall';
-import { createToken } from '../lib/random';
 
 function getLocalStorage() {
 	try {
 		return window.localStorage;
 	} catch (_) {
-		const store = {};
+		const store: Record<string, string | null> = {};
 		return {
-			getItem(name) {
-				return store[name];
+			getItem(name: string): string | null {
+				return store[name] ?? null;
 			},
-			setItem(name, val) {
+			setItem(name: string, val: string) {
 				store[name] = val;
 			},
 		};
 	}
 }
 const localStorage = getLocalStorage();
-const { sessionStorage } = window;
 
-export default class Store {
-	constructor(initialState = {}, { localStorageKey = 'store', dontPersist = [] } = {}) {
-		Object.assign(this, mitt());
+export default class Store<T extends Record<string, unknown>> implements Emitter {
+	private _state: T;
+
+	private localStorageKey: string;
+
+	private dontPersist: string[];
+
+	all: EventHandlerMap;
+
+	on: {
+		<T = any>(type: EventType, handler: Handler<T>): void;
+		(type: '*', handler: WildcardHandler): void;
+	};
+
+	off: {
+		<T = any>(type: EventType, handler: Handler<T>): void;
+		(type: '*', handler: WildcardHandler): void;
+	};
+
+	emit: {
+		<T = any>(type: EventType, event?: T): void;
+		(type: '*', event?: any): void;
+	};
+
+	constructor(
+		initialState: T,
+		{
+			localStorageKey = 'store',
+			dontPersist = [],
+		}: {
+			localStorageKey?: string;
+			dontPersist?: string[];
+		} = {},
+	) {
+		const emitter = mitt();
+		this.all = emitter.all;
+		this.on = emitter.on;
+		this.off = emitter.off;
+		this.emit = emitter.emit;
 
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
@@ -31,7 +64,8 @@ export default class Store {
 		let storedState;
 
 		try {
-			storedState = JSON.parse(localStorage.getItem(this.localStorageKey));
+			const stored = localStorage.getItem(this.localStorageKey);
+			storedState = stored ? JSON.parse(stored) : {};
 		} catch (e) {
 			storedState = {};
 		} finally {
@@ -55,24 +89,6 @@ export default class Store {
 			this.setStoredState(storedState);
 			this.emit('storageSynced');
 		});
-
-		window.addEventListener('load', () => {
-			const sessionId = createToken();
-			sessionStorage.setItem('sessionId', sessionId);
-			const { openSessionIds = [] } = this._state;
-			this.setState({ openSessionIds: [sessionId, ...openSessionIds] });
-		});
-
-		window.addEventListener('visibilitychange', () => {
-			!this._state.minimized && !this._state.triggered && parentCall('openWidget');
-			this._state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
-		});
-
-		window.addEventListener('beforeunload', () => {
-			const sessionId = sessionStorage.getItem('sessionId');
-			const { openSessionIds = [] } = this._state;
-			this.setState({ openSessionIds: openSessionIds.filter((session) => session !== sessionId) });
-		});
 	}
 
 	get state() {
@@ -87,14 +103,14 @@ export default class Store {
 		localStorage.setItem(this.localStorageKey, JSON.stringify(persistable));
 	}
 
-	setState(partialState) {
+	setState(partialState: Partial<T>) {
 		const prevState = this._state;
 		this._state = { ...prevState, ...partialState };
 		this.persist();
 		this.emit('change', [this._state, prevState, partialState]);
 	}
 
-	unsetSinglePropInStateByName(propName) {
+	unsetSinglePropInStateByName(propName: string) {
 		const prevState = this._state;
 		delete prevState[propName];
 		this._state = { ...prevState };
@@ -102,10 +118,10 @@ export default class Store {
 		this.emit('change', [this._state, prevState]);
 	}
 
-	setStoredState(storedState) {
+	setStoredState(storedState: T) {
 		const prevState = this._state;
 
-		const nonPeristable = {};
+		const nonPeristable: Record<string, unknown> = {};
 		for (const ignoredKey of this.dontPersist) {
 			nonPeristable[ignoredKey] = prevState[ignoredKey];
 		}
