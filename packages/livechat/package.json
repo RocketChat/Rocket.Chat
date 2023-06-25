@@ -36,6 +36,8 @@
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/preact": "~6.5.16",
 		"@storybook/theming": "~6.5.16",
+		"@types/crypto-js": "~4.1.1",
+		"@types/whatwg-fetch": "~0.0.33",
 		"@typescript-eslint/eslint-plugin": "~5.60.0",
 		"@typescript-eslint/parser": "~5.60.0",
 		"autoprefixer": "^9.8.8",
