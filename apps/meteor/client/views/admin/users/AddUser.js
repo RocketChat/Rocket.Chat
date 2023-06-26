@@ -125,7 +125,7 @@ const AddUser = ({ onReload, ...props }) => {
 						<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={reset} mie='x4'>
 							{t('Cancel')}
 						</Button>
-						<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
+						<Button primary flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</Box>

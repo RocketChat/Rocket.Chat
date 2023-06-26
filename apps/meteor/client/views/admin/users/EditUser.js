@@ -134,7 +134,7 @@ function EditUser({ data, roles, onReload, ...props }) {
 							<Button flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>
 								{t('Reset')}
 							</Button>
-							<Button mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>
+							<Button primary mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>
 								{t('Save')}
 							</Button>
 						</Margins>
