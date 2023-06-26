@@ -8579,9 +8579,9 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/icons@npm:next":
-  version: 0.32.0-dev.347
-  resolution: "@rocket.chat/icons@npm:0.32.0-dev.347"
-  checksum: 04b778d798f15062e1ca82200fbf6c7afe6ff452ce6cfb2e0c52dd794dd75ff26fae0374dc38bc55d1b6f0e0b6c1cad00e5d96915a0dc2c25923125522500c2c
+  version: 0.32.0-dev.353
+  resolution: "@rocket.chat/icons@npm:0.32.0-dev.353"
+  checksum: 90d4cb1afe216370c440e8a72b27b225feaa7fc8639bdace078325205481daf74e49179bfd9f7e1c5b0c38c2e3771bf47495f5052c94f5460d4ebab3795e106c
   languageName: node
   linkType: hard
 
