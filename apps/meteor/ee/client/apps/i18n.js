@@ -6,13 +6,17 @@ import { Apps } from './orchestrator';
 const loadAppI18nResources = (appId, languages) => {
 	Object.entries(languages).forEach(([language, translations]) => {
 		try {
+			const regex = /([a-z]{2,3})-([a-z]{2,4})/;
+			const match = regex.exec(language);
+			const normalizedLanguage = match ? `${match[1]}-${match[2].toUpperCase()}` : language;
+
 			// Translations keys must be scoped under app id
 			const scopedTranslations = Object.entries(translations).reduce((translations, [key, value]) => {
 				translations[Utilities.getI18nKeyForApp(key, appId)] = value;
 				return translations;
 			}, {});
 
-			i18n.addResourceBundle(language, 'core', scopedTranslations);
+			i18n.addResourceBundle(normalizedLanguage, 'core', scopedTranslations);
 		} catch (error) {
 			Apps.handleError(error);
 		}
