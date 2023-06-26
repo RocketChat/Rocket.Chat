@@ -85,10 +85,6 @@ class VideoRecorder {
 			this.videoel.src = URL.createObjectURL(stream as unknown as MediaSource | Blob);
 		}
 
-		this.videoel.onloadedmetadata = () => {
-			void this.videoel?.play();
-		};
-
 		this.started = true;
 		return this.cameraStarted.set(true);
 	}
