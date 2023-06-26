@@ -303,10 +303,10 @@ export class ImportDataConverter {
 		}
 		await this.updateUser(user, userData);
 
-		Object.assign(user, userData);
+		const updatedUser = (await Users.findOneById(userId)) as IUser;
 
-		await addUserToDefaultChannels(user, true);
-		return user;
+		await addUserToDefaultChannels(updatedUser, true);
+		return updatedUser;
 	}
 
 	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
