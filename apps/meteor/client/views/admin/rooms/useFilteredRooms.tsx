@@ -26,16 +26,11 @@ const filters: Record<string, (room: Partial<IRoom>) => boolean> = {
 	teams: filterRoomsByTeams,
 };
 
-// TODO: criar interface que aceite selectOption??
-
-// TODO: ver um sort depois, pq a ordem vai ficar mudando toda vez, dependendo da sequencia que escolher o filtro
 export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boolean, rooms?: IRoom[]) => {
 	if (isLoading || !rooms) return [];
 	if (selectedOptions.length === 0) return rooms;
 
 	let filtered: IRoom[] = [];
-
-	console.log(`Rooms: ${rooms}`);
 
 	selectedOptions.forEach((option) => {
 		filtered = [...new Set([...filtered, ...rooms.filter(filters[option.id])])];

@@ -29,8 +29,10 @@ export const CustomDropDownList = ({
 
 	const filteredOptions = useFilteredOptions(optionSearch, options);
 
+	// TODO: check if the search bar margins are correct with the Design team
+
 	return (
-		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2' mbs='x16'>
+		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{searchBarText && (
 				<Option>
 					<Box mi='x8' mbs='x4' display='flex' flexWrap='wrap' alignItems='center'>

@@ -36,6 +36,13 @@ type CheckboxOptionProp = {
 	checked: boolean;
 };
 
+// TODO: perhaps create a method to accept SelectOptions and convert to CheckboxOptionProp?
+// export type SelectOption = readonly [
+//     value: string, -> id
+//     label: string, -> text
+//     selected?: boolean -> checked
+// ];
+
 export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
 export type DropDownProps = {

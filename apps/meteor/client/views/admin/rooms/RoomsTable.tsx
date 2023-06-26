@@ -242,11 +242,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			checked: false,
 		},
 		{
-			id: 'filter_by_room2',
-			text: 'Filter_by_room2',
-			isGroupTitle: true,
-		},
-		{
 			id: 'group',
 			text: 'Group',
 			checked: false,
@@ -294,7 +289,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					selectedOptions={selectedOptions}
 					setSelectedOptions={setSelectedOptions}
 					customSetSelected={setRoomTypeOptions}
-					searchBarText={'Search...' as any}
 				/>
 
 				<CustomDropDown
