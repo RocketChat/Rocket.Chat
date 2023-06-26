@@ -154,7 +154,7 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 			});
 	});
 
-export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<Response> => {
+export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
 	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
 	await request
 		.post(api('users.setStatus'))

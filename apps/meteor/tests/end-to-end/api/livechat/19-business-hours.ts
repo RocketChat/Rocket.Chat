@@ -64,7 +64,6 @@ describe('[CE] LIVECHAT - business hours', function () {
 				],
 			});
 
-			// @ts-expect-error - afsdf
 			const { body } = await makeAgentAvailable(credentials);
 
 			expect(body).to.have.property('success', false);
@@ -76,7 +75,6 @@ describe('[CE] LIVECHAT - business hours', function () {
 				workHours: getWorkHours(true),
 			});
 
-			// @ts-expect-error - afsdf
 			const { body } = await makeAgentAvailable(credentials);
 
 			expect(body).to.have.property('success', true);
