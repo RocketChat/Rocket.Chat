@@ -5,11 +5,30 @@ export {};
 declare global {
 	interface Window {
 		SERVER_URL: string;
+		handleIframeClose?: () => void;
+		expandCall?: () => void;
 	}
 
 	interface Document {
 		msHidden?: Document['hidden'];
 		webkitHidden?: Document['hidden'];
+		parentWindow?: Window;
+		selection?: Selection;
+	}
+
+	interface Selection {
+		createRange?: () => Range;
+	}
+
+	interface HTMLElement {
+		document?: Document;
+		createTextRange?: () => Range;
+	}
+
+	interface Range {
+		moveToElementText?: (el: HTMLElement) => void;
+		setEndPoint?: (type: string, endRange: Range) => void;
+		text?: string;
 	}
 
 	namespace preact {

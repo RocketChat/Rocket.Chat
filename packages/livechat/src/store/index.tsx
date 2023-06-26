@@ -33,9 +33,9 @@ type StoreState = {
 	messages: any[];
 	user: any;
 	sound: {
-		src: string;
+		src?: string;
+		play?: boolean;
 		enabled: boolean;
-		play: boolean;
 	};
 	iframe: {
 		guest: any;
@@ -143,7 +143,9 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-type StoreContextValue = StoreState & { dispatch: (partialState: Partial<StoreState>) => void };
+export type Dispatch = (partialState: Partial<StoreState>) => void;
+
+type StoreContextValue = StoreState & { dispatch: Dispatch };
 
 export const StoreContext = createContext<StoreContextValue>({ ...store.state, dispatch: store.setState.bind(store) });
 

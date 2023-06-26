@@ -22,6 +22,7 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
+import type { Dispatch } from '../../store';
 import store from '../../store';
 
 type AppProps = {
@@ -45,7 +46,7 @@ type AppProps = {
 	user: {
 		token: string;
 	};
-	dispatch: (args: any) => void;
+	dispatch: Dispatch;
 	sound: {
 		enabled: boolean;
 	};

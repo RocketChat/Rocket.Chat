@@ -1,3 +1,5 @@
+import { useEffect } from 'preact/hooks';
+
 import { getConnectionBaseUrl } from '../../helpers/baseUrl';
 import { createClassName } from '../../helpers/createClassName';
 import store from '../../store';
@@ -7,17 +9,22 @@ import styles from './styles.scss';
 export const CallIframe = () => {
 	const { token, room, incomingCallAlert, ongoingCall } = store.state;
 	const url = `${getConnectionBaseUrl()}/meet/${room._id}?token=${token}&layout=embedded`;
-	window.handleIframeClose = () => store.setState({ incomingCallAlert: { ...incomingCallAlert, show: false } });
-	window.expandCall = () => {
-		window.open(`${getConnectionBaseUrl()}/meet/${room._id}?token=${token}`, room._id);
-		return store.setState({
-			incomingCallAlert: { ...incomingCallAlert, show: false },
-			ongoingCall: {
-				...ongoingCall,
-				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
-			},
-		});
-	};
+
+	useEffect(() => {
+		window.handleIframeClose = () => store.setState({ incomingCallAlert: { ...incomingCallAlert, show: false } });
+
+		window.expandCall = () => {
+			window.open(`${getConnectionBaseUrl()}/meet/${room._id}?token=${token}`, room._id);
+			return store.setState({
+				incomingCallAlert: { ...incomingCallAlert, show: false },
+				ongoingCall: {
+					...ongoingCall,
+					callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
+				},
+			});
+		};
+	});
+
 	return (
 		<div className={createClassName(styles, 'call-iframe')}>
 			<iframe className={createClassName(styles, 'call-iframe__content')} allow='camera;microphone' src={url} />

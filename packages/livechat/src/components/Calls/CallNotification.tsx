@@ -1,4 +1,5 @@
 import { useState } from 'preact/compat';
+import type { TFunction } from 'react-i18next';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
@@ -8,13 +9,25 @@ import { isMobileDevice } from '../../helpers/isMobileDevice';
 import PhoneAccept from '../../icons/phone.svg';
 import PhoneDecline from '../../icons/phoneOff.svg';
 import constants from '../../lib/constants';
+import type { Dispatch } from '../../store';
 import store from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
 import { CallStatus } from './CallStatus';
 import styles from './styles.scss';
 
-const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, rid, callId, t }) => {
+type CallNotificationProps = {
+	callProvider: string;
+	callerUsername: string;
+	url: string;
+	dispatch: Dispatch;
+	time: number;
+	rid: string;
+	callId: string;
+	t: TFunction;
+};
+
+const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, rid, callId, t }: CallNotificationProps) => {
 	const [show, setShow] = useState(true);
 
 	const callInNewTab = async () => {
@@ -38,7 +51,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 		switch (callProvider) {
 			case 'video-conference': {
 				window.open(url, rid);
-				await dispatch({
+				dispatch({
 					incomingCallAlert: { show: false, url, callProvider },
 					ongoingCall: {
 						callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
@@ -53,7 +66,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 					callInNewTab();
 					break;
 				}
-				await dispatch({ ongoingCall: { callStatus: CallStatus.IN_PROGRESS_SAME_TAB, time: { time } } });
+				dispatch({ ongoingCall: { callStatus: CallStatus.IN_PROGRESS_SAME_TAB, time: { time } } });
 				break;
 			}
 		}
@@ -62,7 +75,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 	const declineClick = async () => {
 		await Livechat.updateCallStatus(CallStatus.DECLINED, rid, callId);
 		await Livechat.notifyCallDeclined(rid);
-		await dispatch({
+		dispatch({
 			incomingCallAlert: null,
 			ongoingCall: {
 				callStatus: CallStatus.DECLINED,
@@ -76,7 +89,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 			{show && (
 				<div className={createClassName(styles, 'call-notification__content')}>
 					<div className={createClassName(styles, 'call-notification__content-avatar')}>
-						<Avatar src={getAvatarUrl(callerUsername)} large />
+						<Avatar src={getAvatarUrl(callerUsername) ?? undefined} large />
 					</div>
 					<div className={createClassName(styles, 'call-notification__content-message')}>{t('incoming_video_call')}</div>
 					<div className={createClassName(styles, 'call-notification__content-actions')}>
