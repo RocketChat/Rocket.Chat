@@ -44,14 +44,13 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 								<Box display='inline' mie='x8'>
 									<UserStatus status={status || Status.OFFLINE} />
 								</Box>
-								{(name || username) ?? '—'}
+								{name || username}
 							</Box>
-							{(!mediaQuery && name && (
+							{!mediaQuery && name && (
 								<Box fontScale='p2' color='hint' withTruncatedText>
 									{`@${username}`}
 								</Box>
-							)) ??
-								'—'}
+							)}
 						</Box>
 					</Box>
 				</Box>
@@ -59,15 +58,16 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 			{mediaQuery && (
 				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
-						{username ?? '—'}
+						{username}
 					</Box>
 					<Box mi={4} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>{(emails?.length && emails[0].address) ?? '—'}</GenericTableCell>
+
+			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
 			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				{registrationStatusText ?? '—'}
+				{registrationStatusText}
 			</GenericTableCell>
 		</GenericTableRow>
 	);
