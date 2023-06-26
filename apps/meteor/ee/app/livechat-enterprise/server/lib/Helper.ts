@@ -32,6 +32,7 @@ type QueueInfo = {
 	statistics: Document;
 	numberMostRecentChats: number;
 };
+
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
@@ -42,7 +43,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 	}
 
 	if (agentId) {
-		const user = await Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;

@@ -1,46 +1,40 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
+import { GenericTableCell } from '../../../../client/components/GenericTable';
 
 type RemoveCannedResponseButtonProps = {
 	_id: string;
 	reload: () => void;
-	totalDataReload: () => void;
 };
 
-const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload, totalDataReload }) => {
-	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
-	const removeCannedResponse = useMethod('removeCannedResponse');
+const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload }) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 
-	const handleRemoveClick = useMutableCallback(async () => {
-		try {
-			await removeCannedResponse(_id);
-		} catch (error) {
-			console.log(error);
-		}
-		cannedResponsesRoute.push({});
-	});
+	const removeCannedResponse = useMethod('removeCannedResponse');
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
-				await handleRemoveClick();
+				await removeCannedResponse(_id);
 				reload();
-				totalDataReload();
+				cannedResponsesRoute.push({});
 				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
 			}
-			setModal(null);
 		};
+
 		setModal(
 			<GenericModal
 				variant='danger'
@@ -53,9 +47,9 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, 
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
 };
 
