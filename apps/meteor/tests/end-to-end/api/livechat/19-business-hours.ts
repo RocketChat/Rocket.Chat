@@ -21,9 +21,9 @@ import {
 	createDepartmentWithAnOnlineAgent,
 	disableDepartment,
 	getDepartmentById,
+	deleteDepartment,
 } from '../../../data/livechat/department';
 import { deleteUser, getMe } from '../../../data/users.helper';
-import { deleteDepartment } from '../../../data/livechat/rooms';
 import { sleep } from '../../../../lib/utils/sleep';
 
 describe('LIVECHAT - business hours', function () {
@@ -140,7 +140,6 @@ describe('LIVECHAT - business hours', function () {
 	//  and "dep2" and both these depts are connected to same BH, then in this case after
 	//  archiving "dep1", we'd still need to BH within this user's cache since he's part of
 	//  "dep2" which is linked to BH
-	// TODO: Write similar test for deleting a department
 	(IS_EE ? describe : describe.skip)('[EE] BH operations post department archiving', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
@@ -428,6 +427,130 @@ describe('LIVECHAT - business hours', function () {
 
 		afterEach(async () => {
 			await deleteDepartment(deptLinkedToCustomBH._id);
+			await deleteUser(agentLinkedToDept.user);
+		});
+	});
+	(IS_EE ? describe : describe.skip)('[EE] BH operations post department removal', () => {
+		let defaultBusinessHour: ILivechatBusinessHour;
+		let customBusinessHour: ILivechatBusinessHour;
+		let deptLinkedToCustomBH: ILivechatDepartment;
+		let agentLinkedToDept: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['agent'];
+
+		before(async () => {
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			// wait for the callbacks to be registered
+			await sleep(2000);
+		});
+
+		beforeEach(async () => {
+			// cleanup any existing business hours
+			await removeAllCustomBusinessHours();
+
+			// get default business hour
+			defaultBusinessHour = await getDefaultBusinessHour();
+
+			// close default business hour
+			await openOrCloseBusinessHour(defaultBusinessHour, false);
+
+			// create custom business hour and link it to a department
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			customBusinessHour = await createCustomBusinessHour([department._id]);
+			agentLinkedToDept = agent;
+			deptLinkedToCustomBH = department;
+
+			// open custom business hour
+			await openOrCloseBusinessHour(customBusinessHour, true);
+		});
+
+		it('upon deleting a department, if BH is open and only linked to that department, it should be closed', async () => {
+			await deleteDepartment(deptLinkedToCustomBH._id);
+
+			// verify if BH is closed
+			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
+			expect(latestCustomBH).to.be.an('object');
+			expect(latestCustomBH.active).to.be.false;
+			expect(latestCustomBH.departments).to.be.an('array').that.is.empty;
+		});
+
+		it('upon deleting a department, if BH is open and linked to other departments, it should remain open', async () => {
+			// create another department and link it to the same BH
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			await removeAllCustomBusinessHours();
+			customBusinessHour = await createCustomBusinessHour([deptLinkedToCustomBH._id, department._id]);
+
+			await deleteDepartment(deptLinkedToCustomBH._id);
+
+			// verify if other department BH link is not removed
+			const otherDepartment = await getDepartmentById(department._id);
+			expect(otherDepartment).to.be.an('object');
+			expect(otherDepartment.businessHourId).to.be.equal(customBusinessHour._id);
+
+			// verify if BH is still open
+			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
+			expect(latestCustomBH).to.be.an('object');
+			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
+			expect(latestCustomBH?.departments?.[0]._id).to.be.equal(department._id);
+
+			// cleanup
+			await deleteDepartment(department._id);
+			await deleteUser(agent.user);
+		});
+
+		it('upon deleting a department, agents within the disabled department should be assigned to default BH', async () => {
+			await openOrCloseBusinessHour(defaultBusinessHour, true);
+
+			await deleteDepartment(deptLinkedToCustomBH._id);
+
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
+		});
+
+		it('upon deleting a department, overlapping agents should still have BH within their cache', async () => {
+			// create another department and link it to the same BH
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			await removeAllCustomBusinessHours();
+			customBusinessHour = await createCustomBusinessHour([deptLinkedToCustomBH._id, department._id]);
+
+			// create overlapping agent by adding previous agent to newly created department
+			await addOrRemoveAgentFromDepartment(
+				department._id,
+				{
+					agentId: agentLinkedToDept.user._id,
+					username: agentLinkedToDept.user.username || '',
+				},
+				true,
+			);
+
+			await deleteDepartment(deptLinkedToCustomBH._id);
+
+			// verify if BH is still open
+			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
+			expect(latestCustomBH).to.be.an('object');
+			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
+			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
+
+			// verify if overlapping agent still has BH within his cache
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
+
+			// verify if other agent still has BH within his cache
+			const otherAgent: ILivechatAgent = await getMe(agent.credentials as any);
+			expect(otherAgent).to.be.an('object');
+			expect(otherAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(otherAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
+
+			// cleanup
+			await deleteDepartment(department._id);
+			await deleteUser(agent.user);
+		});
+
+		afterEach(async () => {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
