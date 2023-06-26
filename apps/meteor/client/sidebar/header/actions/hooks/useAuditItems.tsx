@@ -20,7 +20,7 @@ export const useAuditItems = ({ showAudit, showAuditLog }: useAuditItemsProps): 
 		onClick: () => auditHomeRoute.push(),
 	};
 	const auditLogItem: GenericMenuItemProps = {
-		id: 'messages',
+		id: 'auditLog',
 		icon: 'document-eye',
 		content: t('Logs'),
 		onClick: () => auditSettingsRoute.push(),
