@@ -6,6 +6,8 @@ describe('LocalBroker', () => {
 		it('should call all the expected lifecycle hooks when creating a service', () => {
 			const createdStub = jest.fn();
 			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+
 				async created() {
 					createdStub();
 				}
@@ -23,6 +25,8 @@ describe('LocalBroker', () => {
 			const removeAllListenersStub = jest.fn();
 			const stoppedStub = jest.fn();
 			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+
 				removeAllListeners() {
 					removeAllListenersStub();
 				}
@@ -43,7 +47,9 @@ describe('LocalBroker', () => {
 
 	describe('#broadcast()', () => {
 		it('should call all the ServiceClass instance registered events', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 			const testListener = jest.fn();
 			const testListener2 = jest.fn();
 			const test2Listener = jest.fn();
@@ -62,7 +68,9 @@ describe('LocalBroker', () => {
 		});
 
 		it('should NOT call any instance event anymore after the service being destroyed', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 			const testListener = jest.fn();
 			const test2Listener = jest.fn();
 			instance.onEvent('test' as any, testListener);

@@ -9449,7 +9449,7 @@ __metadata:
     "@types/babel__core": ^7
     "@types/babel__preset-env": ^7
     "@types/fibers": ^3.1.1
-    "@types/jest": ^29.5.1
+    "@types/jest": ^29.5.2
     babel-jest: ^29.5.0
     eslint: ~8.43.0
     fibers: ^5.0.3
@@ -13580,7 +13580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.5.1, @types/jest@npm:^29.5.2, @types/jest@npm:~29.5.2":
+"@types/jest@npm:^29.5.2, @types/jest@npm:~29.5.2":
   version: 29.5.2
   resolution: "@types/jest@npm:29.5.2"
   dependencies:

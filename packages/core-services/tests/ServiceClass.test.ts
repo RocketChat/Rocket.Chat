@@ -4,7 +4,9 @@ import { ServiceClass } from '../src/types/ServiceClass';
 describe('ServiceClass', () => {
 	describe('#onEvent()', () => {
 		it('should add one event to the internal event emitter instance', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 
 			instance.onEvent('test' as any, () => {});
 
@@ -14,7 +16,9 @@ describe('ServiceClass', () => {
 	});
 	describe('#getEvents()', () => {
 		it('should return an array of events with all of their listeners', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 			const listener1 = () => {};
 			const listener2 = () => {};
 			const listener3 = () => {};
@@ -31,7 +35,9 @@ describe('ServiceClass', () => {
 
 	describe('#removeAllListeners()', () => {
 		it('should remove all listeners', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 			const listener1 = () => {};
 			const listener2 = () => {};
 			const listener3 = () => {};
@@ -46,7 +52,9 @@ describe('ServiceClass', () => {
 		});
 
 		it('should not be possible to receive any event after remove them all', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				protected name = 'test';
+			})();
 			const listener1 = jest.fn();
 
 			instance.onEvent('test' as any, listener1);
