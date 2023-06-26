@@ -35,40 +35,42 @@ const UpsellModal = ({
 	const t = useTranslation();
 
 	return (
-		<Modal>
-			<Modal.Header>
-				{icon && <Modal.Icon name={icon} />}
-				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
-					<Modal.Title>{title}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
-				<Modal.HeroImage src={img} />
-				{subtitle && (
-					<Box is='h3' fontScale='h3'>
-						{subtitle}
-					</Box>
-				)}
-				<br />
-				{description && <Box fontScale='p2'>{description}</Box>}
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
-					{onCancel && (
-						<Button secondary onClick={onCancel}>
-							{cancelText ?? t('Close')}
-						</Button>
+		<Modal.Backdrop onClick={onClose}>
+			<Modal>
+				<Modal.Header>
+					{icon && <Modal.Icon name={icon} />}
+					<Modal.HeaderText>
+						<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
+						<Modal.Title>{title}</Modal.Title>
+					</Modal.HeaderText>
+					<Modal.Close title={t('Close')} onClick={onClose} />
+				</Modal.Header>
+				<Modal.Content>
+					<Modal.HeroImage src={img} />
+					{subtitle && (
+						<Box is='h3' fontScale='h3'>
+							{subtitle}
+						</Box>
 					)}
-					{onConfirm && (
-						<Button primary onClick={onConfirm}>
-							{confirmText ?? t('Talk_to_sales')}
-						</Button>
-					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
-		</Modal>
+					<br />
+					{description && <Box fontScale='p2'>{description}</Box>}
+				</Modal.Content>
+				<Modal.Footer>
+					<Modal.FooterControllers>
+						{onCancel && (
+							<Button secondary onClick={onCancel}>
+								{cancelText ?? t('Close')}
+							</Button>
+						)}
+						{onConfirm && (
+							<Button primary onClick={onConfirm}>
+								{confirmText ?? t('Talk_to_sales')}
+							</Button>
+						)}
+					</Modal.FooterControllers>
+				</Modal.Footer>
+			</Modal>
+		</Modal.Backdrop>
 	);
 };
 
