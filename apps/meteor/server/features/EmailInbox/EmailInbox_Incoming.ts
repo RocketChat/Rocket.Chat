@@ -147,7 +147,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	if (room?.closedAt) {
 		logger.debug(`Room ${room?._id} is closed. Reopening`);
-		// @ts-expect-error - QueueManager is not typed
 		room = await QueueManager.unarchiveRoom(room);
 	}
 

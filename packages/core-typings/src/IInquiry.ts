@@ -55,5 +55,5 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 
 export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
 	position?: number;
-	defaultAgent?: { username: string; agentId: string };
+	defaultAgent?: SelectedAgent;
 };

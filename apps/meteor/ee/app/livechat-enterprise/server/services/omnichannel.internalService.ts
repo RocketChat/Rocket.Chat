@@ -149,6 +149,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		const { _id: inquiryId } = inquiry;
 		const newInquiry = await LivechatInquiry.findOneById(inquiryId);
 
+		if (!newInquiry) {
+			this.logger.error(`No inquiry found for id ${inquiryId}`);
+			throw new Error('error-invalid-inquiry');
+		}
 		await queueInquiry(newInquiry);
 
 		this.logger.debug('Room queued successfully');

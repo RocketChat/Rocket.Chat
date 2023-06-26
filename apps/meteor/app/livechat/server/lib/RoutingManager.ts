@@ -63,7 +63,7 @@ type Routing = {
 			transferredBy: { _id: string };
 		},
 	): Promise<boolean>;
-	delegateAgent(agent: SelectedAgent, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
+	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 };
 
