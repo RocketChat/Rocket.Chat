@@ -13,7 +13,7 @@ export interface IBusinessHourBehavior {
 	onDisableBusinessHours(): Promise<void>;
 	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
-	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
 	onDepartmentDisabled(department?: ILivechatDepartment): Promise<any>;
 	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;

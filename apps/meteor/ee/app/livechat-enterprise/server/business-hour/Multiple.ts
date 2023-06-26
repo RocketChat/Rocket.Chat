@@ -127,13 +127,13 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
-	async onRemoveDepartment(options: Record<string, any> = {}): Promise<any> {
+	async onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any> {
+		bhLogger.debug(`onRemoveDepartment: department ${options.department._id} removed`);
 		const { department, agentsIds } = options;
 		if (!department || !agentsIds?.length) {
 			return options;
 		}
-		const deletedDepartment = LivechatDepartment.trashFindOneById(department._id);
-		return this.handleRemoveAgentsFromDepartments(deletedDepartment, agentsIds, options);
+		return this.onDepartmentDisabled(department);
 	}
 
 	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
