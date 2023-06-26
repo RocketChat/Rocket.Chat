@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
@@ -13,15 +12,7 @@ import { CachedCollectionManager } from '../../../app/ui-cached-collection/clien
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import type { App } from '../../../client/views/marketplace/types';
-import type {
-	// IAppFromMarketplace,
-	IAppLanguage,
-	IAppExternalURL,
-	ICategory,
-	// IAppSynced,
-	// IAppScreenshots,
-	// IScreenshot,
-} from './@types/IOrchestrator';
+import type { IAppLanguage, IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
@@ -31,27 +22,27 @@ class AppClientOrchestrator {
 
 	private _manager: AppClientManager;
 
-	private isLoaded: boolean;
+	private _isLoaded: boolean;
 
-	private ws: AppWebsocketReceiver;
+	private _ws: AppWebsocketReceiver;
 
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
-		this.isLoaded = false;
+		this._isLoaded = false;
 	}
 
 	public async load(): Promise<void> {
-		if (!this.isLoaded) {
-			this.ws = new AppWebsocketReceiver();
-			this.isLoaded = true;
+		if (!this._isLoaded) {
+			this._ws = new AppWebsocketReceiver();
+			this._isLoaded = true;
 		}
 
 		await handleI18nResources();
 	}
 
 	public getWsListener(): AppWebsocketReceiver {
-		return this.ws;
+		return this._ws;
 	}
 
 	public getAppClientManager(): AppClientManager {
@@ -82,8 +73,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(isAdminUser?: string): Promise<App[]> {
-		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser });
+	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
+		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -271,11 +262,11 @@ class AppClientOrchestrator {
 	}
 }
 
-export const Apps = new AppClientOrchestrator();
+export const AppClientOrchestratorInstance = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Apps.getAppClientManager().initialize();
-		Apps.load();
+		AppClientOrchestratorInstance.getAppClientManager().initialize();
+		AppClientOrchestratorInstance.load();
 	});
 });
