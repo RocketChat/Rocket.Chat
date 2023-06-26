@@ -9,6 +9,7 @@ import type { FormSectionProps } from './AccountPreferencesPage';
 
 type Values = {
 	unreadAlert: boolean;
+	showThreadsInMainChannel: boolean;
 	alsoSendThreadToChannel: 'default' | 'always' | 'never';
 	useEmojis: boolean;
 	convertAsciiEmoji: boolean;
@@ -30,6 +31,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const settings = {
 		unreadAlert: useUserPreference('unreadAlert'),
+		showThreadsInMainChannel: useUserPreference('showThreadsInMainChannel'),
 		alsoSendThreadToChannel: useUserPreference('alsoSendThreadToChannel'),
 		useEmojis: useUserPreference('useEmojis'),
 		convertAsciiEmoji: useUserPreference('convertAsciiEmoji'),
@@ -48,6 +50,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const {
 		unreadAlert,
+		showThreadsInMainChannel,
 		alsoSendThreadToChannel,
 		useEmojis,
 		convertAsciiEmoji,
@@ -64,6 +67,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const {
 		handleUnreadAlert,
+		handleShowThreadsInMainChannel,
 		handleAlsoSendThreadToChannel,
 		handleUseEmojis,
 		handleConvertAsciiEmoji,
@@ -120,6 +124,18 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 						</Field>
 					),
 					[handleUnreadAlert, t, unreadAlert],
+				)}
+				{useMemo(
+					() => (
+						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
+							</Field.Row>
+							<Field.Hint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</Field.Hint>
+						</Field>
+					),
+					[handleShowThreadsInMainChannel, showThreadsInMainChannel, t],
 				)}
 				{useMemo(
 					() => (

@@ -40,7 +40,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 
@@ -64,7 +64,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 

@@ -136,7 +136,7 @@ function SideBarItemTemplateWithData({
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
 
 	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && Boolean(userMentions));
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
 
 	const badges = (
 		<Margins inlineStart={8}>
