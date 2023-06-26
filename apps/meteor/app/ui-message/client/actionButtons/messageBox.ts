@@ -28,12 +28,13 @@ export const onAdded = (button: IUIActionButton): void =>
 				),
 			);
 		},
-		action() {
+		action(params) {
 			void triggerActionButtonAction({
-				rid: RoomManager.opened,
+				rid: params.rid,
+				tmid: params.tmid,
 				actionId: button.actionId,
 				appId: button.appId,
-				payload: { context: button.context },
+				payload: { context: button.context, message: params.chat.composer?.text },
 			});
 		},
 	});

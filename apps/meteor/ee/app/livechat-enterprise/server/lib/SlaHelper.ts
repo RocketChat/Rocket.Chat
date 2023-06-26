@@ -2,8 +2,11 @@ import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/cor
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
+import { callbacks } from '../../../../../lib/callbacks';
+
 export const removeSLAFromRooms = async (slaId: string) => {
-	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }).toArray();
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }, extraQuery).toArray();
 	if (openRooms.length) {
 		const openRoomIds: string[] = openRooms.map(({ _id }) => _id);
 		await LivechatInquiry.bulkUnsetSla(openRoomIds);

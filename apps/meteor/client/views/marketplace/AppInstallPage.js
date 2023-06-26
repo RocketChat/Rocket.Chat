@@ -11,13 +11,13 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Apps } from '../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../ee/client/apps/orchestrator';
 import Page from '../../components/Page';
+import { useAppsReload } from '../../contexts/hooks/useAppsReload';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useForm } from '../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
-import { useAppsReload } from './AppsContext';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
 import { handleAPIError, handleInstallError } from './helpers';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
@@ -102,7 +102,7 @@ function AppInstallPage() {
 
 	const isAppInstalled = async (appId) => {
 		try {
-			const app = await Apps.getApp(appId);
+			const app = await AppClientOrchestratorInstance.getApp(appId);
 			return !!app || false;
 		} catch (e) {
 			return false;
