@@ -80,7 +80,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	eventStats({
 		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
-	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
+	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ context: 'active', tab })} />;
 };
 
 export default EngagementDashboardRoute;
