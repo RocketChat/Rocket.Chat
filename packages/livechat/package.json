@@ -93,7 +93,7 @@
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",
-		"history": "^5.3.0",
+		"history": "~5.3.0",
 		"i18next": "^21.8.10",
 		"markdown-it": "^11.0.1",
 		"mem": "^6.1.1",

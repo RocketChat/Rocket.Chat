@@ -59,6 +59,18 @@ const getAgent = (triggerAction) => {
 };
 
 class Triggers {
+	/** @property {Triggers} instance*/
+
+	/** @property {boolean} _started */
+
+	/** @property {Array} _requests */
+
+	/** @property {Array} _triggers */
+
+	/** @property {boolean} _enabled */
+
+	/** @property {import('mitt').Emitter} callbacks */
+
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;

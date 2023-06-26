@@ -10,11 +10,25 @@ type StoreState = {
 	typing: string[];
 	config: {
 		messages: any;
-		settings: any;
 		theme: any;
 		triggers: any[];
-		departments: any[];
 		resources: any;
+		settings: {
+			registrationForm?: boolean;
+			nameFieldRegistrationForm?: boolean;
+			emailFieldRegistrationForm?: boolean;
+			forceAcceptDataProcessingConsent?: boolean;
+			fileUpload?: any;
+			allowSwitchingDepartments?: any;
+			showConnecting?: any;
+			limitTextLength?: any;
+		};
+		online?: boolean;
+		departments: {
+			_id: string;
+			showOnRegistration: boolean;
+		}[];
+		enabled?: boolean;
 	};
 	messages: any[];
 	user: any;

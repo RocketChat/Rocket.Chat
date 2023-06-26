@@ -35,3 +35,20 @@ declare module '@storybook/preact/dist/ts3.9/client/preview/types-6-0.d.ts' {
 		storyResult: StoryFnPreactReturnType;
 	};
 }
+
+declare module 'react-i18next' {
+	import type { ComponentType, ComponentProps } from 'preact';
+
+	export function withTranslation<N extends Namespace = DefaultNamespace, TKPrefix extends KeyPrefix<N> = undefined>(
+		ns?: N,
+		options?: {
+			withRef?: boolean;
+			keyPrefix?: TKPrefix;
+		},
+	): <
+		C extends ComponentType<ComponentProps<any> & WithTranslationProps>,
+		ResolvedProps = JSX.LibraryManagedAttributes<C, Subtract<ComponentProps<C>, WithTranslationProps>>,
+	>(
+		component: C,
+	) => ComponentType<Omit<ResolvedProps, keyof WithTranslation<N>> & WithTranslationProps>;
+}

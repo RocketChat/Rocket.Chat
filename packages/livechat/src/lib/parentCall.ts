@@ -1,6 +1,6 @@
 import { validCallbacks } from '../widget';
 
-export const parentCall = (method: string, args: any[] = []) => {
+export const parentCall = (method: string, args: any = []) => {
 	const data = {
 		src: 'rocketchat',
 		fn: method,
