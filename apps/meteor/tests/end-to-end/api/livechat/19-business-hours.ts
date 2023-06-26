@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes, LivechatBusinessHourBehaviors } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -107,7 +107,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 		});
 		it('should return a just created custom business hour', async () => {
 			const name = `business-hour-${Date.now()}`;
-			await updateSetting('Livechat_business_hour_type', 'Multiple');
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			await saveBusinessHour({
 				name,
 				active: true,
@@ -146,7 +146,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 		});
 		it('should fail if start and finish time are the same', async () => {
 			const name = `business-hour-${Date.now()}`;
-			await updateSetting('Livechat_business_hour_type', 'Multiple');
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			const result = await saveBusinessHour({
 				name,
 				active: true,
@@ -173,7 +173,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 		});
 		it('should fail if finish is before start time', async () => {
 			const name = `business-hour-${Date.now()}`;
-			await updateSetting('Livechat_business_hour_type', 'Multiple');
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			const result = await saveBusinessHour({
 				name,
 				active: true,
@@ -200,7 +200,7 @@ describe('[CE] LIVECHAT - business hours', function () {
 		});
 		it('should fail if data is invalid', async () => {
 			const name = `business-hour-${Date.now()}`;
-			await updateSetting('Livechat_business_hour_type', 'Multiple');
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			const result = await saveBusinessHour({
 				name,
 				active: true,
