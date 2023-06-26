@@ -1,9 +1,10 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useVerifyPassword, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useVerifyPassword, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { PasswordVerifier, CustomFieldsForm } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -34,6 +35,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
+	const customFields = useAccountsCustomFields();
+
+	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -44,6 +48,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		watch,
 		getValues,
 		clearErrors,
+		control,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
 
@@ -74,6 +79,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/error-user-is-not-activated/.test(error.error)) {
 						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
 						setLoginRoute('login');
+					}
+					if (error.error === 'error-user-registration-custom-field') {
+						setServerError(error.message);
 					}
 				},
 			},
@@ -196,6 +204,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
 					)}
+					{customFields.length > 0 && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />}
+					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
 			<Form.Footer>
