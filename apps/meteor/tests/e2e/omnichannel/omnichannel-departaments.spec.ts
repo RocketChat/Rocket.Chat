@@ -12,12 +12,6 @@ const ERROR = {
 	invalidEmail: 'Invalid email address',
 };
 
-const ERROR = {
-	requiredName: 'The field name is required.',
-	requiredEmail: 'The field email is required.',
-	invalidEmail: 'Invalid email address',
-};
-
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('omnichannel-departments', () => {
