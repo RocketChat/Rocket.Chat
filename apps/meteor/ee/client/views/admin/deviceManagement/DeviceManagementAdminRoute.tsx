@@ -10,12 +10,13 @@ import DeviceManagementAdminPage from './DeviceManagementAdminPage';
 
 const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
-
 	const canViewDeviceManagement = usePermission('view-device-management');
-	const deviceManagementRoute = useRoute('device-management');
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
-
 	const { data } = useIsEnterprise();
+
+	const deviceManagementRoute = useRoute('device-management');
+	const upgradeRoute = useRoute('upgrade');
+
 	const setModal = useSetModal();
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,10 +26,19 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	}, [setModal]);
 
 	const isUpsell = !data?.isEnterprise;
-	const startFreeTrial = 'https://www.rocket.chat/trial-saas';
-	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
 
 	useEffect(() => {
+		const handleConfirmModal = () => {
+			handleModalClose();
+			upgradeRoute.push({ type: 'go-fully-featured-registered' });
+		};
+
+		const talkToSales = 'https://go.rocket.chat/i/contact-sales';
+		const handleCancelModal = () => {
+			handleModalClose();
+			window.open(talkToSales, '_blank');
+		};
+
 		if (isUpsell) {
 			deviceManagementRoute.replace({ context: 'upsell' });
 			setModal(
@@ -39,14 +49,14 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 					description={t('Manage_which_devices')}
 					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					cancelText={t('Talk_to_an_expert')}
-					onConfirm={() => window.open(startFreeTrial, '_blank')}
-					onCancel={() => window.open(talkToSales, '_blank')}
+					onConfirm={handleConfirmModal}
+					onCancel={handleCancelModal}
 					onClose={handleModalClose}
 				/>,
 			);
 			setIsModalOpen(true);
 		}
-	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleModalClose, isUpsell, setModal, t]);
+	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleModalClose, isUpsell, setModal, t, upgradeRoute]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

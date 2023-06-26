@@ -14,10 +14,11 @@ const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'cha
 
 const EngagementDashboardRoute = (): ReactElement | null => {
 	const t = useTranslation();
-
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
-	const engagementDashboardRoute = useRoute('engagement-dashboard');
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
+
+	const engagementDashboardRoute = useRoute('engagement-dashboard');
+	const upgradeRoute = useRoute('upgrade');
 	const [routeName, routeParams] = useCurrentRoute();
 	const { tab } = routeParams ?? {};
 
@@ -31,13 +32,22 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [setModal]);
 
 	const isUpsell = !data?.isEnterprise;
-	const startFreeTrial = 'https://www.rocket.chat/trial-saas';
-	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
 
 	useEffect(() => {
 		if (routeName !== 'engagement-dashboard') {
 			return;
 		}
+
+		const handleConfirmModal = () => {
+			handleModalClose();
+			upgradeRoute.push({ type: 'go-fully-featured-registered' });
+		};
+
+		const talkToSales = 'https://go.rocket.chat/i/contact-sales';
+		const handleCancelModal = () => {
+			handleModalClose();
+			window.open(talkToSales, '_blank');
+		};
 
 		if (isUpsell) {
 			engagementDashboardRoute.replace({ context: 'upsell', tab: 'users' });
@@ -49,8 +59,8 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 					description={t('Enrich_your_workspace')}
 					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					cancelText={t('Talk_to_an_expert')}
-					onConfirm={() => window.open(startFreeTrial, '_blank')}
-					onCancel={() => window.open(talkToSales, '_blank')}
+					onConfirm={handleConfirmModal}
+					onCancel={handleCancelModal}
 					onClose={handleModalClose}
 				/>,
 			);
@@ -61,7 +71,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		if (!isValidTab(tab)) {
 			engagementDashboardRoute.replace({ context: 'active', tab: 'users' });
 		}
-	}, [routeName, engagementDashboardRoute, tab, isUpsell, setModal, handleModalClose, t, cloudWorkspaceHadTrial]);
+	}, [routeName, engagementDashboardRoute, tab, isUpsell, setModal, handleModalClose, t, cloudWorkspaceHadTrial, upgradeRoute]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
