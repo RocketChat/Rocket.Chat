@@ -71,7 +71,7 @@ const DeviceManagementAdminRow = ({
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell>{rcVersion || '—'}</GenericTableCell>
+			<GenericTableCell>{rcVersion}</GenericTableCell>
 			<GenericTableCell>{deviceOSName}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{username}</GenericTableCell>
 			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}
