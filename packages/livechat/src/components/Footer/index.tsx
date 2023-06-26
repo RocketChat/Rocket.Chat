@@ -7,19 +7,19 @@ import { createClassName } from '../../helpers/createClassName';
 import { PopoverMenu } from '../Menu';
 import styles from './styles.scss';
 
-export const Footer = ({ children, className, ...props }: { children: ComponentChildren; className: string }) => (
+export const Footer = ({ children, className, ...props }: { children: ComponentChildren; className?: string }) => (
 	<footer className={createClassName(styles, 'footer', {}, [className])} {...props}>
 		{children}
 	</footer>
 );
 
-export const FooterContent = ({ children, className = '', ...props }: { children: ComponentChildren; className: string }) => (
+export const FooterContent = ({ children, className, ...props }: { children: ComponentChildren; className?: string }) => (
 	<div className={createClassName(styles, 'footer__content', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const PoweredBy = withTranslation()(({ className, t, ...props }: { className: string; t: (translationKey: string) => string }) => (
+export const PoweredBy = withTranslation()(({ className, t, ...props }: { className?: string; t: (translationKey: string) => string }) => (
 	<h3 className={createClassName(styles, 'powered-by', {}, [className])} {...props}>
 		{t('powered_by_rocket_chat').split('Rocket.Chat')[0]}
 		<a className={createClassName(styles, 'powered-by__logo')} href='https://rocket.chat' target='_blank' rel='noopener noreferrer'>
@@ -53,7 +53,7 @@ export const CharCounter = ({
 	textLength,
 	limitTextLength,
 }: {
-	className: string;
+	className?: string;
 	style: JSXInternal.CSSProperties;
 	textLength: number;
 	limitTextLength: number;
