@@ -45,6 +45,7 @@ export type DropDownProps = {
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
 	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
+	searchBarText?: TranslationKey;
 };
 
 export const CustomDropDown = ({
@@ -54,6 +55,7 @@ export const CustomDropDown = ({
 	selectedOptions,
 	setSelectedOptions,
 	customSetSelected,
+	searchBarText,
 }: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
@@ -108,7 +110,7 @@ export const CustomDropDown = ({
 			/>
 			{collapsed && (
 				<CustomDropDownListWrapper ref={reference} onClose={onClose}>
-					<CustomDropDownList options={dropdownOptions} onSelected={onSelect} />
+					<CustomDropDownList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</CustomDropDownListWrapper>
 			)}
 		</>

@@ -41,8 +41,6 @@ export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boole
 		filtered = [...new Set([...filtered, ...rooms.filter(filters[option.id])])];
 	});
 
-	console.log(`Filtered rooms: ${filtered}`);
-
 	return filtered;
 };
 

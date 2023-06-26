@@ -242,6 +242,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			checked: false,
 		},
 		{
+			id: 'filter_by_room2',
+			text: 'Filter_by_room2',
+			isGroupTitle: true,
+		},
+		{
 			id: 'group',
 			text: 'Group',
 			checked: false,
@@ -277,9 +282,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
 
-	console.log(`Selected options: ${selectedOptions}`);
-	console.log(`Endpoint rooms: ${data?.rooms}`);
-
 	const roomsList = useFilteredRooms(selectedOptions, isLoading, data?.rooms);
 
 	return (
@@ -292,6 +294,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					selectedOptions={selectedOptions}
 					setSelectedOptions={setSelectedOptions}
 					customSetSelected={setRoomTypeOptions}
+					searchBarText={'Search...' as any}
 				/>
 
 				<CustomDropDown
