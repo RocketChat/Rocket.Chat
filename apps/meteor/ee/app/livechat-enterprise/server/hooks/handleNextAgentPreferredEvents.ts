@@ -1,5 +1,5 @@
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -8,18 +8,22 @@ import { settings } from '../../../../../app/settings/server';
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
 
-const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null) => {
+const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | null => {
 	if (!agent) {
-		return;
+		return null;
 	}
 
 	const { _id: agentId, username } = agent;
 	return { agentId, username };
 };
 
-const getDefaultAgent = async (username?: string) =>
-	username !== undefined &&
-	normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
+const getDefaultAgent = async (username?: string): Promise<SelectedAgent | null> => {
+	if (!username) {
+		return null;
+	}
+
+	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
+};
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) {
 	lastChattedAgentPreferred = value;
@@ -36,7 +40,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 
@@ -60,7 +64,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 

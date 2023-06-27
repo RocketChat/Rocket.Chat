@@ -30,6 +30,7 @@ import { getUserInfo } from '../helpers/getUserInfo';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { i18n } from '../../../../server/lib/i18n';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 /**
  * @openapi
@@ -392,7 +393,7 @@ API.v1.addRoute(
 API.v1.addRoute(
 	'pw.getPolicy',
 	{
-		authRequired: true,
+		authRequired: false,
 	},
 	{
 		get() {
@@ -409,6 +410,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
