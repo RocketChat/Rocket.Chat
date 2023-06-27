@@ -156,7 +156,6 @@ const RouterContextMock = ({ children, navigate, currentPath }: RouterContextMoc
 
 							setCurrentRoute(buildRouteTuple(toOrDelta));
 						}),
-					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					queryCurrentRoute: () => [subscribeToCurrentRoute, getCurrentRoute],
 				};
 			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, navigate])}

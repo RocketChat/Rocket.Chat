@@ -106,12 +106,6 @@ const navigate = (
 	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
-const queryRoutePath = (
-	name: Parameters<RouterContextValue['queryRoutePath']>[0],
-	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
-): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
-
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
 		FlowRouter.watchPathChange();
@@ -128,7 +122,6 @@ export const router: RouterContextValue = {
 	getRouteName,
 	buildRoutePath,
 	navigate,
-	queryRoutePath,
 	queryCurrentRoute,
 };
 
