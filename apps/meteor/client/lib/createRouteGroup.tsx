@@ -71,7 +71,7 @@ const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName ext
 
 		oldRoute?.route?.name &&
 			router.navigate({
-				pattern: oldRoute.route.name,
+				name: oldRoute.route.name,
 				params: oldRoute.params,
 				search: oldRoute.queryParams,
 			});

@@ -18,7 +18,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const adminEmbedded = isLayoutEmbedded() && router.getPathname().startsWith('/admin');
+		const adminEmbedded = isLayoutEmbedded() && router.getLocationPathname().startsWith('/admin');
 
 		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
 			e2e.startClient();

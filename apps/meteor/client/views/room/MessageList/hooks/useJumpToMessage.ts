@@ -38,7 +38,7 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 			delete search.msg;
 			router.navigate(
 				{
-					pathname: router.getPathname(),
+					pathname: router.getLocationPathname(),
 					search,
 				},
 				{ replace: true },

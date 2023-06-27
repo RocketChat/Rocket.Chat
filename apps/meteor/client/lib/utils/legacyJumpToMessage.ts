@@ -16,7 +16,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 
 	if (isThreadMessage(message) || message.tcount) {
 		const { route } = FlowRouter.current();
-		const params = router.getParameters();
+		const params = router.getRouteParameters();
 
 		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
 			return;

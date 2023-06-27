@@ -1,95 +1,13 @@
-import type { RouterContextValue, RouterPathPattern, RouterPathName, RouterPathname } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue, RouteName, LocationPathname, RouteParameters, SearchParameters, To } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
+import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
-import { match } from 'path-to-regexp';
 import type { FC } from 'react';
 import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
-
-const getRoutePath = (
-	patternOrName: RouterPathPattern | RouterPathName,
-	parameters?: Record<string, string>,
-	search?: Record<string, string>,
-): string => Tracker.nonreactive(() => FlowRouter.path(patternOrName, parameters, search));
-
-const navigate = (
-	toOrDelta:
-		| string
-		| {
-				pathname?: string;
-				search?: string;
-				hash?: string;
-		  }
-		| {
-				pathname: string;
-				search?: Record<string, string>;
-				hash?: undefined;
-		  }
-		| {
-				pattern: string;
-				params: Record<string, string>;
-				search?: Record<string, string>;
-		  }
-		| number,
-	options?: {
-		replace?: boolean;
-	},
-) => {
-	if (typeof toOrDelta === 'number') {
-		window.history.go(toOrDelta);
-		return;
-	}
-
-	if (typeof toOrDelta === 'string') {
-		navigate({ pathname: toOrDelta }, options);
-		return;
-	}
-
-	if ('pattern' in toOrDelta) {
-		const { pattern, params, search } = toOrDelta;
-		const { replace } = options || {};
-		const fn = () => FlowRouter.go(pattern, params, search);
-
-		if (replace) {
-			FlowRouter.withReplaceState(fn);
-		} else {
-			fn();
-		}
-
-		return;
-	}
-
-	if ('pathname' in toOrDelta && toOrDelta.pathname !== undefined && typeof toOrDelta.search === 'object') {
-		const { pathname, search } = toOrDelta;
-		const { replace } = options || {};
-		const fn = () => FlowRouter.go(pathname, undefined, search);
-
-		if (replace) {
-			FlowRouter.withReplaceState(fn);
-		} else {
-			fn();
-		}
-
-		return;
-	}
-
-	const { pathname = FlowRouter.current().path, search = '', hash = '' } = toOrDelta;
-	const { replace } = options || {};
-
-	const fn = () => {
-		FlowRouter.go(pathname + search + hash);
-	};
-
-	if (replace) {
-		FlowRouter.withReplaceState(fn);
-		return;
-	}
-
-	fn();
-};
 
 const subscribers = new Set<() => void>();
 
@@ -118,64 +36,78 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getPathname = () => FlowRouter.current().path as RouterPathname;
+const getLocationPathname = () => FlowRouter.current().path as LocationPathname;
 
-const getParameters = () => FlowRouter.current().params;
+const getLocationSearch = () => location.search as LocationSearch;
 
-const getSearch = () => location.search;
+const getRouteParameters = () => FlowRouter.current().params as RouteParameters;
 
-const getSearchParameters = () => FlowRouter.current().queryParams ?? {};
+const getSearchParameters = () => (FlowRouter.current().queryParams ?? {}) as SearchParameters;
 
-const matchPath = <TPathPattern extends RouterPathPattern>(pattern: TPathPattern | string, pathname: string) => {
-	const result = match<Record<string, string>>(pattern, { decode: decodeURIComponent })(pathname);
+const getRouteName = () => FlowRouter.current().route.name as RouteName | undefined;
 
-	if (!result) {
-		return null;
+const encodeSearchParameters = (searchParameters: SearchParameters) => {
+	const search = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(searchParameters)) {
+		search.append(key, value);
 	}
 
-	return {
-		pattern: pattern as TPathPattern,
-		pathname: result.path,
-		params: result.params,
-	};
+	const searchString = search.toString();
+
+	return searchString ? `?${searchString}` : '';
 };
 
-const getRoutePatternByName = (name: RouterPathName) => FlowRouter._routesMap[name]?.pathDef ?? '/';
+const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${LocationSearch}` => {
+	if (typeof to === 'string') {
+		return to;
+	}
+
+	if ('pathname' in to) {
+		const { pathname, search = {} } = to;
+		return (pathname + encodeSearchParameters(search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('pattern' in to) {
+		const { pattern, params = {}, search = {} } = to;
+		return Tracker.nonreactive(() => FlowRouter.path(pattern, params, search)) as
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('name' in to) {
+		const { name, params = {}, search = {} } = to;
+		return Tracker.nonreactive(() => FlowRouter.path(name, params, search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+	}
+
+	throw new Error('Invalid route');
+};
+
+const navigate = (
+	toOrDelta: To | number,
+	options?: {
+		replace?: boolean;
+	},
+) => {
+	if (typeof toOrDelta === 'number') {
+		window.history.go(toOrDelta);
+		return;
+	}
+
+	const path = buildRoutePath(toOrDelta);
+
+	if (options?.replace) {
+		window.history.replaceState({}, '', path);
+	} else {
+		window.history.pushState({}, '', path);
+	}
+};
 
 const queryRoutePath = (
 	name: Parameters<RouterContextValue['queryRoutePath']>[0],
 	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
 	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
 ): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
-
-const pushRoute = (
-	name: Parameters<RouterContextValue['pushRoute']>[0],
-	parameters: Parameters<RouterContextValue['pushRoute']>[1],
-	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-): ReturnType<RouterContextValue['pushRoute']> => {
-	const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters(getSearchParameters()) : queryStringParameters;
-	navigate({
-		pattern: name,
-		params: parameters ?? {},
-		search: queryParams,
-	});
-};
-
-const replaceRoute = (
-	name: Parameters<RouterContextValue['replaceRoute']>[0],
-	parameters: Parameters<RouterContextValue['replaceRoute']>[1],
-	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-): ReturnType<RouterContextValue['replaceRoute']> => {
-	const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters(getSearchParameters()) : queryStringParameters;
-	navigate(
-		{
-			pattern: name,
-			params: parameters ?? {},
-			search: queryParams,
-		},
-		{ replace: true },
-	);
-};
 
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
@@ -186,17 +118,14 @@ const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']
 
 export const router: RouterContextValue = {
 	subscribeToRouteChange,
-	getPathname,
-	getParameters,
-	getSearch,
+	getLocationPathname,
+	getLocationSearch,
+	getRouteParameters,
 	getSearchParameters,
-	matchPath,
-	getRoutePatternByName,
-	getRoutePath,
+	getRouteName,
+	buildRoutePath,
 	navigate,
 	queryRoutePath,
-	pushRoute,
-	replaceRoute,
 	queryCurrentRoute,
 };
 

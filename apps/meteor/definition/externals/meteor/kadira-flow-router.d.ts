@@ -1,6 +1,6 @@
 declare module 'meteor/kadira:flow-router' {
 	import type { Subscription } from 'meteor/meteor';
-	import type { IRouterPaths, RouterPathName, RouterPathPattern } from '@rocket.chat/ui-contexts';
+	import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
 
 	type RouteName = keyof IRouterPaths;
 
@@ -130,7 +130,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		group<TGroupName extends GroupName>(options: GroupOptions<TGroupName>): Group<TGroupName>;
 
-		path(pathDef: RouterPathName | RouterPathPattern, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
+		path(pathDef: RouteName | RouterPathPattern, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
 		url(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 

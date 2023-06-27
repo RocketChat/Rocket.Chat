@@ -15,13 +15,21 @@ type Route = {
 };
 
 export const useRoute = (name: RouteName): Route => {
-	const { pushRoute, replaceRoute } = useContext(RouterContext);
+	const router = useContext(RouterContext);
 
 	return useMemo<Route>(
 		() => ({
-			push: (parameters, queryStringParameters) => pushRoute(name, parameters, queryStringParameters),
-			replace: (parameters, queryStringParameters) => replaceRoute(name, parameters, queryStringParameters),
+			push: (params, queryStringParameters) => {
+				const search =
+					typeof queryStringParameters === 'function' ? queryStringParameters(router.getSearchParameters()) : queryStringParameters;
+				router.navigate({ name, params, search }, { replace: false });
+			},
+			replace: (params, queryStringParameters) => {
+				const search =
+					typeof queryStringParameters === 'function' ? queryStringParameters(router.getSearchParameters()) : queryStringParameters;
+				router.navigate({ name, params, search }, { replace: true });
+			},
 		}),
-		[name, pushRoute, replaceRoute],
+		[name, router],
 	);
 };

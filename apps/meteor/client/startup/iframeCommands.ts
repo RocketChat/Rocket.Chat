@@ -1,6 +1,6 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { RouterPathname } from '@rocket.chat/ui-contexts';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -28,7 +28,7 @@ const commands = {
 		const newPath = newUrl.pathname.replace(
 			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
 			'',
-		) as RouterPathname;
+		) as LocationPathname;
 		router.navigate({
 			pathname: newPath,
 			search: { ...router.getSearchParameters(), ...newParams },

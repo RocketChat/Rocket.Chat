@@ -4,12 +4,12 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { RouterContext } from '../RouterContext';
 
 export const useRouteParameter = (name: string): string | undefined => {
-	const { subscribeToRouteChange, getParameters } = useContext(RouterContext);
+	const { subscribeToRouteChange, getRouteParameters } = useContext(RouterContext);
 
 	const getSnapshot = useCallback(() => {
-		const parameters = getParameters();
+		const parameters = getRouteParameters();
 		return parameters[name];
-	}, [getParameters, name]);
+	}, [getRouteParameters, name]);
 
 	return useSyncExternalStore(subscribeToRouteChange, getSnapshot);
 };

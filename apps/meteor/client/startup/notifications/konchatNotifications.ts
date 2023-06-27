@@ -24,7 +24,7 @@ const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> 
 		return;
 	}
 
-	if ((!router.getParameters().name || router.getParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
+	if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
 		KonchatNotification.newRoom(sub.rid);
 	}
 };

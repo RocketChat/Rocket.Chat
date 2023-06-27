@@ -52,7 +52,13 @@ function NewImportPage() {
 	};
 
 	const handleImporterKeyChange = (importerKey) => {
-		router.navigate(router.getRoutePath('/admin/import/new/:importerKey', { importerKey }), { replace: true });
+		router.navigate(
+			router.buildRoutePath({
+				pattern: '/admin/import/new/:importerKey',
+				params: { importerKey },
+			}),
+			{ replace: true },
+		);
 	};
 
 	const handleFileTypeChange = (fileType) => {

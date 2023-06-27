@@ -91,7 +91,10 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 			(event: UIEvent): void => {
 				if (isEmbedded) {
 					fireGlobalEvent('click-mention-link', {
-						path: router.getRoutePath('/channel/:name/:tab?/:context?', { name: rid }),
+						path: router.buildRoutePath({
+							pattern: '/channel/:name/:tab?/:context?',
+							params: { name: rid },
+						}),
 						channel: rid,
 					});
 				}

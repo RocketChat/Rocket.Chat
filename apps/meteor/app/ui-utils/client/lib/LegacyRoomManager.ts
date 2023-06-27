@@ -90,7 +90,7 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
 			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
-			await close(type + router.getParameters().name);
+			await close(type + router.getRouteParameters().name);
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
 			if (!subscription) {
@@ -108,8 +108,8 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			if (!room) {
 				throw new Error('Room not found');
 			}
-			if (room.name !== router.getParameters().name) {
-				await close(room.t + router.getParameters().name);
+			if (room.name !== router.getRouteParameters().name) {
+				await close(room.t + router.getRouteParameters().name);
 				roomCoordinator.openRouteLink(room.t, room, router.getSearchParameters());
 			}
 		}

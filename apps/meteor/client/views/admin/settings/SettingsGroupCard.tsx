@@ -29,13 +29,20 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 	return (
 		<Card data-qa-id={id}>
 			<Card.Title>{t(title)}</Card.Title>
-			<Card.Body height='x88'>
+			<Card.Body height={88}>
 				<Box className={clampStyle}>
 					{description && t.has(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
 			</Card.Body>
 			<Card.Footer>
-				<Button is='a' href={router.getRoutePath('/admin/settings/:group?', { group: id })} role='button'>
+				<Button
+					is='a'
+					href={router.buildRoutePath({
+						pattern: '/admin/settings/:group?',
+						params: { group: id },
+					})}
+					role='button'
+				>
 					{t('Open')}
 				</Button>
 			</Card.Footer>

@@ -142,7 +142,7 @@ FlowRouter.route('/', {
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/') as [routeName: keyof IRouterPaths, routeParam: string];
 						router.navigate({
-							pattern: router.getRoutePatternByName(room[0]),
+							name: room[0],
 							params: { name: room[1] },
 							search: router.getSearchParameters(),
 						});
