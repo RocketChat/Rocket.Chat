@@ -35,7 +35,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 				</Box>
 			</Card.Body>
 			<Card.Footer>
-				<Button is='a' href={router.getRoutePath('/admin/settings/:group?', { group: id })}>
+				<Button is='a' href={router.getRoutePath('/admin/settings/:group?', { group: id })} role='button'>
 					{t('Open')}
 				</Button>
 			</Card.Footer>
