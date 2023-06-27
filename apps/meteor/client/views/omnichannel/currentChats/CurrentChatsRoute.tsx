@@ -10,6 +10,7 @@ import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hook
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
 	GenericTableHeader,
@@ -17,7 +18,6 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 } from '../../../components/GenericTable';
-import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';

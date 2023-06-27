@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderToolboxAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo, useRef } from 'react';
@@ -27,7 +27,7 @@ const ToolBoxActionOptions: FC<ToolBoxActionOptionsProps> = ({ options, room, ac
 
 	return (
 		<>
-			<Header.ToolBox.Action ref={reference} onClick={(): void => toggle()} secondary={isVisible} {...props} />
+			<HeaderToolboxAction ref={reference} onClick={(): void => toggle()} secondary={isVisible} {...props} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target}>
 					{options.map(({ id, label, validate }) => {
