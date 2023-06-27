@@ -128,6 +128,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = {
+			enabled: true,
+			businessHourId: { $exists: false },
+		};
+		return this.find(query, options);
+	}
+
 	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
 		businessHourIds: string[],
 		departmentIds: string[],
@@ -196,12 +204,27 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
-	async createOrUpdateDepartment(_id: string, data: ILivechatDepartment): Promise<ILivechatDepartment> {
-		const current = await this.findOneById(_id);
+	async createOrUpdateDepartment(
+		_id: string | null,
+		data: {
+			enabled: boolean;
+			name: string;
+			description?: string;
+			showOnRegistration: boolean;
+			email: string;
+			showOnOfflineForm: boolean;
+			requestTagBeforeClosingChat?: boolean;
+			chatClosingTags?: string[];
+			fallbackForwardDepartment?: string;
+			departmentsAllowedToForward?: string[];
+			type?: string;
+		},
+	): Promise<ILivechatDepartment> {
+		const current = _id ? await this.findOneById(_id) : null;
 
 		const record = {
 			...data,
-		};
+		} as ILivechatDepartment;
 
 		if (_id) {
 			await this.updateOne({ _id }, { $set: record });

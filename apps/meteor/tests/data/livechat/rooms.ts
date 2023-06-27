@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type {
 	IInquiry,
 	ILivechatAgent,
@@ -12,6 +12,7 @@ import { getSettingValueById, updatePermission, updateSetting } from '../permiss
 import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import { DummyResponse, sleep } from './utils';
+import { Response } from 'supertest';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
@@ -137,13 +138,13 @@ export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> 
 			});
 	});
 
-export const createManager = (): Promise<ILivechatAgent> =>
+export const createManager = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/manager'))
 			.set(credentials)
 			.send({
-				username: adminUsername,
+				username: overrideUsername || adminUsername,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
@@ -153,7 +154,7 @@ export const createManager = (): Promise<ILivechatAgent> =>
 			});
 	});
 
-export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
 	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
 	await request
 		.post(api('users.setStatus'))
@@ -161,16 +162,14 @@ export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token':
 		.send({
 			message: '',
 			status: 'online',
-		})
-		.expect(200);
+		});
 
-	await request
+	return request
 		.post(api('livechat/agent.status'))
 		.set(overrideCredentials || credentials)
 		.send({
 			status: 'available',
-		})
-		.expect(200);
+		});
 };
 
 export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
@@ -319,3 +318,11 @@ export const startANewLivechatRoomAndTakeIt = async ({
 
 	return { room, visitor };
 };
+
+export const placeRoomOnHold = async (roomId: string): Promise<void> => {
+    await request
+        .post(api('livechat/room.onHold'))
+        .set(credentials)
+        .send({ roomId })
+        .expect(200);
+}

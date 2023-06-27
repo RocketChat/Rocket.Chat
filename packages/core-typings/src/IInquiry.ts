@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IUser } from './IUser';
+import type { SelectedAgent } from './omnichannel/routing';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
@@ -41,10 +41,7 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	locked?: boolean;
 	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
-	defaultAgent?: {
-		agentId: IUser['_id'];
-		username?: IUser['username'];
-	};
+	defaultAgent?: SelectedAgent;
 	source: {
 		type: OmnichannelSourceType;
 	};
@@ -55,3 +52,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
+
+export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
+	position?: number;
+	defaultAgent?: { username: string; agentId: string };
+};

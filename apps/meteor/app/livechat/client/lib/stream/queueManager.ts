@@ -2,32 +2,24 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } f
 
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { queryClient } from '../../../../../client/lib/queryClient';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 
 const departments = new Set();
 
-type ILivechatInquiryWithType = ILivechatInquiryRecord & { type?: 'added' | 'removed' | 'changed' };
-
 const events = {
-	added: (inquiry: ILivechatInquiryWithType) => {
-		delete inquiry.type;
+	added: (inquiry: ILivechatInquiryRecord) => {
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 	},
-	changed: (inquiry: ILivechatInquiryWithType) => {
+	changed: async (inquiry: ILivechatInquiryRecord) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
-		delete inquiry.type;
-		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-	},
-	removed: (inquiry: ILivechatInquiryWithType) => LivechatInquiry.remove(inquiry._id),
-};
 
-const updateCollection = (inquiry: ILivechatInquiryWithType) => {
-	if (!inquiry.type) {
-		return;
-	}
-	events[inquiry.type](inquiry);
+		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
+	},
+	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
 };
 
 const getInquiriesFromAPI = async () => {
@@ -42,7 +34,13 @@ const removeListenerOfDepartment = (departmentId: ILivechatDepartment['_id']) =>
 
 const appendListenerToDepartment = (departmentId: ILivechatDepartment['_id']) => {
 	departments.add(departmentId);
-	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], updateCollection);
+	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], async (args) => {
+		if (!('type' in args)) {
+			return;
+		}
+		const { type, ...inquiry } = args;
+		await events[args.type](inquiry);
+	});
 	return () => removeListenerOfDepartment(departmentId);
 };
 const addListenerForeachDepartment = (departments: ILivechatDepartment['_id'][] = []) => {
@@ -61,7 +59,13 @@ const getAgentsDepartments = async (userId: IOmnichannelAgent['_id']) => {
 const removeGlobalListener = () => sdk.stop('livechat-inquiry-queue-observer', 'public');
 
 const addGlobalListener = () => {
-	sdk.stream('livechat-inquiry-queue-observer', ['public'], updateCollection);
+	sdk.stream('livechat-inquiry-queue-observer', ['public'], async (args) => {
+		if (!('type' in args)) {
+			return;
+		}
+		const { type, ...inquiry } = args;
+		await events[args.type](inquiry);
+	});
 	return removeGlobalListener;
 };
 

@@ -81,7 +81,7 @@ export type RocketchatSdkLegacyEvents = {
 	'updateEmojiCustom': StreamerCallbackArgs<'notify-logged', 'updateEmojiCustom'>;
 	'deleteEmojiCustom': StreamerCallbackArgs<'notify-logged', 'deleteEmojiCustom'>;
 	'public-settings-changed': StreamerCallbackArgs<'notify-all', 'public-settings-changed'>;
-	'permissions-changed': StreamerCallbackArgs<'notify-all', 'permissions-changed'>;
+	'permissions-changed': StreamerCallbackArgs<'notify-logged', 'permissions-changed'>;
 	'Users:NameChanged': StreamerCallbackArgs<'notify-logged', 'Users:NameChanged'>;
 	'Users:Deleted': StreamerCallbackArgs<'notify-logged', 'Users:Deleted'>;
 	'updateAvatar': StreamerCallbackArgs<'notify-logged', 'updateAvatar'>;

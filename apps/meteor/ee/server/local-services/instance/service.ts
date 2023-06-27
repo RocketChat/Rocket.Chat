@@ -1,18 +1,26 @@
 import os from 'os';
 
 import type { BrokerNode } from 'moleculer';
-import { ServiceBroker } from 'moleculer';
+import { ServiceBroker, Transporters } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
+import { getTransporter } from './getTransporter';
+import { getLogger } from './getLogger';
+
+const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
 	private broadcastStarted = false;
+
+	private transporter: Transporters.TCP | Transporters.NATS;
+
+	private isTransporterTCP = true;
 
 	private broker: ServiceBroker;
 
@@ -21,15 +29,27 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
+		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
+		if (typeof tx === 'string') {
+			this.transporter = new Transporters.NATS({ url: tx });
+			this.isTransporterTCP = false;
+		} else {
+			this.transporter = new Transporters.TCP(tx);
+		}
 
-			if (clientAction === 'inserted' && data?.extraInformation?.port) {
-				this.connectNode(data);
-			}
-		});
+		if (this.isTransporterTCP) {
+			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
+				if (clientAction === 'removed') {
+					(this.broker.transit?.tx as any).nodes.disconnected(data?._id, false);
+					(this.broker.transit?.tx as any).nodes.nodes.delete(data?._id);
+					return;
+				}
+
+				if (clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
+					this.connectNode(data);
+				}
+			});
+		}
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
@@ -60,18 +80,16 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
-		const port = process.env.TCP_PORT ? String(process.env.TCP_PORT).trim() : 0;
-
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
-			transporter: {
-				type: 'TCP',
-				options: {
-					port,
-					udpDiscovery: false,
-				},
-			},
+			transporter: this.transporter,
+
+			...getLogger(process.env),
 		});
+
+		if ((this.broker.transit?.tx as any)?.nodes?.localNode) {
+			(this.broker.transit?.tx as any).nodes.localNode.ipList = [hostIP];
+		}
 
 		this.broker.createService({
 			name: 'matrix',
@@ -81,7 +99,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 					const instance = StreamerCentral.instances[streamName];
 					if (!instance) {
-						return 'stream-not-exists';
+						// return 'stream-not-exists';
+						return;
 					}
 
 					if (instance.serverOnly) {
@@ -99,7 +118,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		await this.broker.start();
 
 		const instance = {
-			host: process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost',
+			host: hostIP,
 			port: String(process.env.PORT).trim(),
 			tcpPort: (this.broker.transit?.tx as any)?.nodes?.localNode?.port,
 			os: {
@@ -135,18 +154,20 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
 
-		await InstanceStatusRaw.find(
-			{
-				'extraInformation.tcpPort': {
-					$exists: true,
+		if (this.isTransporterTCP) {
+			await InstanceStatusRaw.find(
+				{
+					'extraInformation.tcpPort': {
+						$exists: true,
+					},
 				},
-			},
-			{
-				sort: {
-					_createdAt: -1,
+				{
+					sort: {
+						_createdAt: -1,
+					},
 				},
-			},
-		).forEach(this.connectNode.bind(this));
+			).forEach(this.connectNode.bind(this));
+		}
 	}
 
 	private connectNode(record: any) {

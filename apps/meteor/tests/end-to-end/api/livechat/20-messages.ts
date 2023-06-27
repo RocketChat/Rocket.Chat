@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import {
 	sendMessage,
@@ -33,7 +33,7 @@ describe('LIVECHAT - messages', function () {
 			const agentMsgSentence = faker.lorem.sentence();
 			const agentMsg = await sendAgentMessage(roomId, agentMsgSentence);
 
-			const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
 			const msgLink = `${siteUrl}/live/${roomId}?msg=${agentMsg._id}`;
 			const quotedMsgSentence = faker.lorem.sentence();

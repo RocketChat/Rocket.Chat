@@ -59,12 +59,18 @@ Meteor.methods<ServerMethods>({
 
 		const rs = RocketChatFile.bufferToStream(fileBuffer);
 		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
-			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
-			contentType,
-		);
-		ws.on('end', () => setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500));
 
-		rs.pipe(ws);
+		return new Promise((resolve) => {
+			const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
+				encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
+				contentType,
+			);
+			ws.on('end', () => {
+				setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500);
+				resolve();
+			});
+
+			rs.pipe(ws);
+		});
 	},
 });

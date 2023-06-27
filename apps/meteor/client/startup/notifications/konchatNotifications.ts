@@ -1,4 +1,4 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -12,7 +12,7 @@ import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
-const notifyNewRoom = async (sub: ISubscription): Promise<void> => {
+const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
 	const user = Meteor.user() as IUser | null;
 	if (!user || user.status === 'busy') {
 		return;
@@ -76,7 +76,10 @@ Meteor.startup(() => {
 			void notifyNewRoom(sub);
 		});
 
-		Notifications.onUser('subscriptions-changed', (_, sub) => {
+		Notifications.onUser('subscriptions-changed', (action, sub) => {
+			if (action === 'removed') {
+				return;
+			}
 			void notifyNewRoom(sub);
 		});
 	});

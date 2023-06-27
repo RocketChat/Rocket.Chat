@@ -17,6 +17,7 @@ const getInitialValue = (data) => {
 		avatar: data.avatar ?? '',
 		emoji: data.emoji ?? '',
 		scriptEnabled: data.scriptEnabled,
+		overrideDestinationChannelEnabled: data.overrideDestinationChannelEnabled,
 		script: data.script,
 	};
 	return initialValue;

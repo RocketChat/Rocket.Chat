@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isVoipRoom } from '@rocket.chat/core-typings';
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
@@ -21,9 +21,9 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const slots = useMemo(
 		() => ({
 			start: isMobile && (
-				<TemplateHeader.ToolBox>
+				<HeaderToolbox>
 					<BurgerMenu />
-				</TemplateHeader.ToolBox>
+				</HeaderToolbox>
 			),
 		}),
 		[isMobile],

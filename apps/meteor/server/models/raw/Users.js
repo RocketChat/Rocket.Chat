@@ -304,6 +304,10 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findOneByImportId(_id, options) {
+		return this.findOne({ importIds: _id }, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -1636,12 +1640,9 @@ export class UsersRaw extends BaseRaw {
 				customFields: 1,
 				status: 1,
 				livechat: 1,
+				...(showAgentEmail && { emails: 1 }),
 			},
 		};
-
-		if (showAgentEmail) {
-			options.fields.emails = 1;
-		}
 
 		return this.findOne(query, options);
 	}
@@ -2819,7 +2820,21 @@ export class UsersRaw extends BaseRaw {
 
 	// here
 	getActiveLocalUserCount() {
-		return this.col.countDocuments({ active: true, federated: false, isRemote: false });
+		return Promise.all([
+			this.col.countDocuments({
+				active: true,
+				type: {
+					$nin: ['app'],
+				},
+				roles: { $ne: ['guest'] },
+			}),
+			this.col.countDocuments({ federated: true, active: true }),
+			this.col.countDocuments({
+				isRemote: true,
+				active: true,
+				roles: { $ne: ['guest'] },
+			}),
+		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {
