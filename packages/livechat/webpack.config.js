@@ -99,7 +99,16 @@ module.exports = (env, argv) => [
 				{
 					enforce: 'pre',
 					test: /\.scss$/,
-					use: ['sass-loader'],
+					use: [
+						{
+							loader: 'sass-loader',
+							options: {
+								sassOptions: {
+									fiber: false,
+								},
+							},
+						},
+					],
 				},
 				{
 					test: /\.(woff2?|ttf|eot|jpe?g|png|webp|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
@@ -133,52 +142,28 @@ module.exports = (env, argv) => [
 				minSize: 20000,
 				enforceSizeThreshold: 500000,
 				maxSize: 0,
-				// cacheGroups: {
-				// 	sdk: {
-				// 		name: 'sdk',
-				// 		chunks: 'all',
-				// 		test: /node_modules\/@rocket\.chat\/sdk/,
-				// 		priority: 40,
-				// 	},
-				// 	components: {
-				// 		name: 'components',
-				// 		test: /components|icons|\.scss$/,
-				// 		chunks: 'all',
-				// 		priority: 50,
-				// 	},
-				// 	vendor: {
-				// 		name: 'vendor',
-				// 		chunks: 'all',
-				// 		test: /node_modules/,
-				// 		priority: 30,
-				// 	},
-				// 	common: {
-				// 		name: 'common',
-				// 		minChunks: 2,
-				// 		chunks: 'async',
-				// 		priority: 10,
-				// 		reuseExistingChunk: true,
-				// 		enforce: true,
-				// 	},
-				// },
 			},
 		},
 		devServer: {
-			inline: true,
 			hot: true,
-			compress: true,
-			publicPath: argv.mode === 'production' ? 'livechat/' : '/',
-			contentBase: path.resolve(__dirname, './src'),
 			port: 8080,
 			host: '0.0.0.0',
-			disableHostCheck: true,
+			allowedHosts: 'all',
+			open: true,
 			historyApiFallback: true,
-			quiet: false,
-			clientLogLevel: 'trace',
-			overlay: true,
-			stats: 'normal',
-			watchOptions: {
-				ignored: [path.resolve(__dirname, './dist'), path.resolve(__dirname, './node_modules')],
+			devMiddleware: {
+				publicPath: argv.mode === 'production' ? 'livechat/' : '/',
+				stats: 'normal',
+			},
+			client: {
+				logging: 'verbose',
+			},
+			static: {
+				directory: path.resolve(__dirname, './src'),
+				publicPath: argv.mode === 'production' ? 'livechat/' : '/',
+				watch: {
+					ignored: [path.resolve(__dirname, './dist'), path.resolve(__dirname, './node_modules')],
+				},
 			},
 		},
 	},

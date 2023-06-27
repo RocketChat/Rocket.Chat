@@ -22,10 +22,10 @@ jobs:
         check: ['ts', 'lint']
 
     steps:
-      # - name: Set Swap Space
-      #   uses: pierotofy/set-swap-space@master
-      #   with:
-      #     swap-size-gb: 4
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
 
       - uses: actions/checkout@v3
 

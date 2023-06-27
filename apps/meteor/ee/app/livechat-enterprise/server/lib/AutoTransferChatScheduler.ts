@@ -89,7 +89,7 @@ class AutoTransferChatSchedulerClass {
 
 		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
 
-		if (!RoutingManager.getConfig().autoAssignAgent) {
+		if (!RoutingManager.getConfig()?.autoAssignAgent) {
 			this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
 
 			await Livechat.returnRoomAsInquiry(room._id, departmentId, {
