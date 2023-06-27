@@ -90,17 +90,20 @@ const navigate = (
 	},
 ) => {
 	if (typeof toOrDelta === 'number') {
-		window.history.go(toOrDelta);
+		history.go(toOrDelta);
 		return;
 	}
 
 	const path = buildRoutePath(toOrDelta);
+	const state = { path };
 
 	if (options?.replace) {
-		window.history.replaceState({}, '', path);
+		history.replaceState({ path }, '', path);
 	} else {
-		window.history.pushState({}, '', path);
+		history.pushState({ path }, '', path);
 	}
+
+	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
 const queryRoutePath = (
