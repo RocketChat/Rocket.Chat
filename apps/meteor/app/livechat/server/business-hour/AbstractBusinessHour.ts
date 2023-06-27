@@ -73,7 +73,6 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
-		console.log('convertWorkHours', businessHourData);
 		businessHourData.workHours.forEach((hour: any) => {
 			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
