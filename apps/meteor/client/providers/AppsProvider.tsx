@@ -3,13 +3,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppEvents } from '../../../ee/client/apps/communication';
-import { Apps } from '../../../ee/client/apps/orchestrator';
-import PageSkeleton from '../../components/PageSkeleton';
-import { AsyncStatePhase } from '../../lib/asyncState';
-import { AppsContext } from './AppsContext';
-import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
-import type { App } from './types';
+import { AppEvents } from '../../ee/client/apps/communication';
+import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import PageSkeleton from '../components/PageSkeleton';
+import { AppsContext } from '../contexts/AppsContext';
+import { AsyncStatePhase } from '../lib/asyncState';
+import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
+import type { App } from '../views/marketplace/types';
 
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
@@ -23,11 +23,11 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 		undefined
 	>[];
 	for (const [event, callback] of entries) {
-		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
+		AppClientOrchestratorInstance.getWsListener()?.registerListener(AppEvents[event], callback);
 	}
 	return (): void => {
 		for (const [event, callback] of entries) {
-			Apps.getWsListener()?.unregisterListener(AppEvents[event], callback);
+			AppClientOrchestratorInstance.getWsListener()?.unregisterListener(AppEvents[event], callback);
 		}
 	};
 };
@@ -68,7 +68,7 @@ const AppsProvider: FC = ({ children }) => {
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
 		() => {
-			const result = Apps.getAppsFromMarketplace(isAdminUser ? 'true' : 'false');
+			const result = AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
 			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
 			return result;
 		},
@@ -83,7 +83,7 @@ const AppsProvider: FC = ({ children }) => {
 	const instance = useQuery(
 		['marketplace', 'apps-instance', isAdminUser],
 		async () => {
-			const result = await Apps.getInstalledApps().then((result: App[]) =>
+			const result = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
@@ -109,7 +109,6 @@ const AppsProvider: FC = ({ children }) => {
 			const marketplaceApps: App[] = [];
 			const installedApps: App[] = [];
 			const privateApps: App[] = [];
-
 			const clonedData = [...instance.data];
 
 			sortByName(marketplace.data).forEach((app) => {
@@ -130,13 +129,10 @@ const AppsProvider: FC = ({ children }) => {
 					marketplaceVersion: app.version,
 				};
 
-				if (installedApp?.private) {
-					privateApps.push(record);
-				}
-
-				if (installedApp && !installedApp.private) {
+				if (installedApp) {
 					installedApps.push(record);
 				}
+
 				marketplaceApps.push(record);
 			});
 

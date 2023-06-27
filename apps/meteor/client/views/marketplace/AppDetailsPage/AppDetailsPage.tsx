@@ -14,7 +14,7 @@ import type { ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
-import { Apps } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import Page from '../../../components/Page';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
@@ -61,7 +61,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		const { current } = settingsRef;
 		setIsSaving(true);
 		try {
-			await Apps.setAppSettings(
+			await AppClientOrchestratorInstance.setAppSettings(
 				id,
 				(Object.values(settings || {}) as ISetting[]).map((value) => ({
 					...value,
