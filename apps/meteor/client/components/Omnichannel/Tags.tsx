@@ -1,12 +1,10 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState } from 'react';
 
 import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
-import { FormSkeleton } from './Skeleton';
 
 const Tags = ({
 	tags = [],
@@ -27,15 +25,10 @@ const Tags = ({
 	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
 	const EETagsComponent = useCurrentChatTags?.();
 
-	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
-		enabled: Boolean(EETagsComponent),
-	});
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>();
+	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>(tags);
 
 	const removeTag = (tagToRemove: string): void => {
 		if (tags) {
@@ -63,17 +56,13 @@ const Tags = ({
 		handleTagValue('');
 	});
 
-	if (isInitialLoading) {
-		return <FormSkeleton />;
-	}
-
 	return (
 		<>
 			<Field.Label required={tagRequired} mb='x4'>
 				{t('Tags')}
 			</Field.Label>
 
-			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
+			{EETagsComponent ? (
 				<Field.Row>
 					<EETagsComponent
 						value={paginatedTagValue}
