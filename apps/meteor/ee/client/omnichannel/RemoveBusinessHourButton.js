@@ -1,9 +1,10 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../client/components/GenericModal';
+import { GenericTableCell } from '../../../client/components/GenericTable';
 
 function RemoveBusinessHourButton({ _id, type, reload }) {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
@@ -36,9 +37,9 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' onClick={handleDelete} withTruncatedText>
+		<GenericTableCell fontScale='p2' color='hint' onClick={handleDelete} withTruncatedText>
 			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
 }
 
