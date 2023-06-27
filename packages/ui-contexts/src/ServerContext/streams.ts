@@ -19,6 +19,7 @@ import type {
 	IUserDataEvent,
 	IUserStatus,
 	ILivechatInquiryRecord,
+	ILivechatAgent,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -280,14 +281,16 @@ export interface StreamerEvents {
 						status: string;
 				  }
 				| {
-						type: 'queueData' | 'agentData';
-						data: {
-							[k: string]: unknown;
-						};
+						type: 'queueData';
+						data:
+							| {
+									[k: string]: unknown;
+							  }
+							| undefined;
 				  }
 				| {
 						type: 'agentData';
-						data: unknown;
+						data: ILivechatAgent | undefined | { hiddenInfo: boolean };
 				  }
 				| {
 						type: 'visitorData';

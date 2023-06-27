@@ -11,6 +11,7 @@ import type {
 	RoutingMethodConfig,
 	SelectedAgent,
 	InquiryWithAgentInfo,
+	TransferData,
 } from '@rocket.chat/core-typings';
 
 import {
@@ -42,8 +43,8 @@ type Routing = {
 	delegateInquiry(
 		inquiry: InquiryWithAgentInfo,
 		agent?: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
-	): Promise<IOmnichannelRoom | null | void>;
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
+	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
 	takeInquiry(
@@ -52,17 +53,9 @@ type Routing = {
 			'estimatedInactivityCloseTimeAt' | 'message' | 't' | 'source' | 'estimatedWaitingTimeQueue' | 'priorityWeight' | '_updatedAt'
 		>,
 		agent: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<IOmnichannelRoom | null | void>;
-	transferRoom(
-		room: IOmnichannelRoom,
-		guest: ILivechatVisitor,
-		transferData: {
-			departmentId?: string;
-			userId?: string;
-			transferredBy: { _id: string };
-		},
-	): Promise<boolean>;
+	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
 	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 };
@@ -196,7 +189,7 @@ export const RoutingManager: Routing = {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
 			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid, null);
+			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
@@ -307,7 +300,6 @@ export const RoutingManager: Routing = {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;
 			}
-			// @ts-expect-error - File still in JS, expecting error for now on `u` types
 			void removeAgentFromSubscription(roomId, u);
 		});
 	},

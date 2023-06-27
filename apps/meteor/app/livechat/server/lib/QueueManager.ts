@@ -73,7 +73,7 @@ export const QueueManager: queueManager = {
 		}
 
 		const { rid } = message;
-		const name = roomInfo?.fname || guest.name || guest.username;
+		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
 		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		if (!room) {
@@ -89,8 +89,6 @@ export const QueueManager: queueManager = {
 				guest,
 				message,
 				extraData: { ...extraData, source: roomInfo.source },
-				// Passing default value for inquiry
-				initialStatus: 'ready',
 			}),
 		);
 		if (!inquiry) {
@@ -120,17 +118,7 @@ export const QueueManager: queueManager = {
 			throw new Error('no-room-to-unarchive');
 		}
 
-		const {
-			_id: rid,
-			open,
-			closedAt,
-			fname: name,
-			servedBy,
-			v,
-			departmentId: department,
-			lastMessage: message,
-			source = {},
-		} = archivedRoom;
+		const { _id: rid, open, closedAt, fname: name, servedBy, v, departmentId: department, lastMessage: message, source } = archivedRoom;
 
 		if (!rid || !closedAt || !!open) {
 			return archivedRoom;
@@ -160,9 +148,7 @@ export const QueueManager: queueManager = {
 			logger.debug(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
-		const inquiry = await LivechatInquiry.findOneById(
-			await createLivechatInquiry({ rid, name, guest, message, extraData: { source }, initialStatus: 'ready' }),
-		);
+		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		if (!inquiry) {
 			logger.debug(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');

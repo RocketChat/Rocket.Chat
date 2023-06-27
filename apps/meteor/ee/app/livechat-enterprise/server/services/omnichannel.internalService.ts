@@ -177,7 +177,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
 
-		await dispatchAgentDelegated(roomId, null);
+		await dispatchAgentDelegated(roomId);
 
 		this.logger.debug(`Current agent removed from room ${room._id} successfully`);
 	}

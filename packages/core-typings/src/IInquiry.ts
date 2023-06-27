@@ -4,6 +4,7 @@ import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLe
 import type { SelectedAgent } from './omnichannel/routing';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { ILivechatVisitor } from './ILivechatVisitor';
 
 export interface IInquiry {
 	_id: string;
@@ -33,16 +34,16 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	ts: Date;
 	message: string;
 	status: LivechatInquiryStatus;
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone'> & { lastMessageTs?: Date };
 	t: 'l';
 
-	department: string;
-	estimatedInactivityCloseTimeAt: Date;
+	department?: string;
+	estimatedInactivityCloseTimeAt?: Date;
 	locked?: boolean;
 	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
 	defaultAgent?: SelectedAgent;
-	source: {
+	source?: {
 		type: OmnichannelSourceType;
 	};
 	// Note: for the sort order to be maintained, we're making priorityWeight and estimatedWaitingTimeQueue required

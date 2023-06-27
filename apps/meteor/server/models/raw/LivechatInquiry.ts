@@ -122,7 +122,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 

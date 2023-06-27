@@ -9,7 +9,7 @@ import type {
 	ILivechatAgent,
 	IMessage,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -124,7 +124,7 @@ class LivechatClass {
 		return RoutingManager.getNextAgent(department);
 	}
 
-	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -539,7 +539,7 @@ class LivechatClass {
 		phone,
 		username,
 		connectionData,
-		status = 'online',
+		status = UserStatus.ONLINE,
 	}: {
 		id?: string;
 		token: string;
