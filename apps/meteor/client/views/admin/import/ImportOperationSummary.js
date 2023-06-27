@@ -1,4 +1,4 @@
-import { Table } from '@rocket.chat/fuselage';
+import { TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -81,20 +81,20 @@ function ImportOperationSummary({
 		: {};
 
 	return (
-		<Table.Row {...props}>
-			<Table.Cell>{type}</Table.Cell>
-			<Table.Cell>{formatDateAndTime(_updatedAt)}</Table.Cell>
+		<TableRow {...props}>
+			<TableCell>{type}</TableCell>
+			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
-					<Table.Cell>{fileName}</Table.Cell>
-					<Table.Cell align='center'>{users}</Table.Cell>
-					<Table.Cell align='center'>{channels}</Table.Cell>
-					<Table.Cell align='center'>{messages}</Table.Cell>
-					<Table.Cell align='center'>{total}</Table.Cell>
+					<TableCell>{status && t(status.replace('importer_', 'importer_status_'))}</TableCell>
+					<TableCell>{fileName}</TableCell>
+					<TableCell align='center'>{users}</TableCell>
+					<TableCell align='center'>{channels}</TableCell>
+					<TableCell align='center'>{messages}</TableCell>
+					<TableCell align='center'>{total}</TableCell>
 				</>
 			)}
-		</Table.Row>
+		</TableRow>
 	);
 }
 
