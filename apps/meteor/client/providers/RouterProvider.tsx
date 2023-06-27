@@ -124,7 +124,7 @@ const getParameters = () => FlowRouter.current().params;
 
 const getSearch = () => location.search;
 
-const getSearchParameters = () => FlowRouter.current().queryParams;
+const getSearchParameters = () => FlowRouter.current().queryParams ?? {};
 
 const matchPath = <TPathPattern extends RouterPathPattern>(pattern: TPathPattern | string, pathname: string) => {
 	const result = match<Record<string, string>>(pattern, { decode: decodeURIComponent })(pathname);

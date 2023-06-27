@@ -105,7 +105,7 @@ declare module 'meteor/kadira:flow-router' {
 		path: string;
 		context: Context;
 		params: Record<string, string>;
-		queryParams: Record<string, string>;
+		queryParams?: Record<string, string>;
 		route?: Route | undefined;
 		oldRoute?: Route | undefined;
 	};
