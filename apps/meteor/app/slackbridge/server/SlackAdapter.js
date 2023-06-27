@@ -1006,7 +1006,7 @@ export default class SlackAdapter {
 				],
 			};
 
-			if (!isImporting) {
+			if (!isImporting && slackMessage.attachments[0].channel_id && slackMessage.attachments[0].ts) {
 				const messageId = `slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`;
 				await Messages.setPinnedByIdAndUserId(messageId, rocketMsgObj.u, true, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000));
 				if (settings.get('Message_Read_Receipt_Store_Users')) {
