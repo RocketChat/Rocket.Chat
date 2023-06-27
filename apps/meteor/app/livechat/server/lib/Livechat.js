@@ -760,7 +760,7 @@ export const Livechat = {
 		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
 		await LivechatDepartmentRaw.archiveDepartment(_id);
 
-		this.logger.debug('Running livechat.afterDepartmentArchived callback for department:', _id);
+		this.logger.debug({ msg: 'Running livechat.afterDepartmentArchived callback for department:', departmentId: _id });
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	},
 
