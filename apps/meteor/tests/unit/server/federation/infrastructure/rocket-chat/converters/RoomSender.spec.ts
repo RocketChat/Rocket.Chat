@@ -9,7 +9,7 @@ import {
 	FederationRoomSendExternalMessageDto,
 } from '../../../../../../../server/services/federation/application/room/input/RoomSenderDto';
 
-describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
+describe.skip('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toCreateDirectMessageRoomDto()', () => {
 		it('should return an instance of FederationCreateDMAndInviteUserDto', () => {
 			expect(

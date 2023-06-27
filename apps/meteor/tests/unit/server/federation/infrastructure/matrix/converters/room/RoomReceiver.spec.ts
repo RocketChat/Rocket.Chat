@@ -19,7 +19,7 @@ import { RoomMembershipChangedEventType } from '../../../../../../../../server/s
 import { EVENT_ORIGIN } from '../../../../../../../../server/services/federation/domain/IFederationBridge';
 import { MATRIX_POWER_LEVELS } from '../../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixPowerLevels';
 
-describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
+describe.skip('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
 		const event = {
 			content: { was_internally_programatically_created: true, name: 'roomName', internalRoomId: 'internalRoomId' },

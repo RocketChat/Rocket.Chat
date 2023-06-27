@@ -49,6 +49,10 @@ interface IFederationSendInternalMessageInputDto extends IFederationReceiverBase
 	rawMessage: string;
 	externalFormattedText: string;
 	replyToEventId?: string;
+	thread?: {
+		rootEventId: string;
+		replyToEventId: string;
+	};
 }
 
 interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -218,6 +222,7 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 		rawMessage,
 		externalEventId,
 		replyToEventId,
+		thread,
 	}: IFederationSendInternalMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
@@ -226,6 +231,7 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 		this.rawMessage = rawMessage;
 		this.replyToEventId = replyToEventId;
 		this.externalEventId = externalEventId;
+		this.thread = thread;
 	}
 
 	externalSenderId: string;
@@ -237,6 +243,11 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 	rawMessage: string;
 
 	replyToEventId?: string;
+
+	thread?: {
+		rootEventId: string;
+		replyToEventId: string;
+	};
 }
 
 export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto {
@@ -280,6 +291,10 @@ interface IFederationFileMessageInputDto {
 	messageText: string;
 	url: string;
 	replyToEventId?: string;
+	thread?: {
+		rootEventId: string;
+		replyToEventId: string;
+	};
 }
 
 class FederationFileMessageInputDto {
@@ -315,12 +330,14 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 		url,
 		externalEventId,
 		replyToEventId,
+		thread,
 	}: IFederationSendInternalMessageBaseInputDto & IFederationFileMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
 		this.replyToEventId = replyToEventId;
 		this.messageBody = new FederationFileMessageInputDto({ filename, mimetype, size, messageText, url });
+		this.thread = thread;
 	}
 
 	externalSenderId: string;
@@ -330,6 +347,11 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 	messageBody: FederationFileMessageInputDto;
 
 	replyToEventId?: string;
+
+	thread?: {
+		rootEventId: string;
+		replyToEventId: string;
+	};
 }
 
 export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {

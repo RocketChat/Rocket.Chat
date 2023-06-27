@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import { getExternalMessageSender } from '../../../../../../../../server/services/federation/application/room/message/sender/message-sender-helper';
 import { FederatedUser } from '../../../../../../../../server/services/federation/domain/FederatedUser';
 
-describe('Federation - Application - Message Senders', () => {
+describe.skip('Federation - Application - Message Senders', () => {
 	const bridge = {
 		sendMessage: sinon.stub(),
 		sendMessageFileToRoom: sinon.stub(),

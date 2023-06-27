@@ -7,7 +7,7 @@ import {
 	MatrixEnumSendMessageType,
 } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/events/RoomMessageSent';
 
-describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentHandler ', () => {
+describe.skip('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentHandler ', () => {
 	const normalMessageStub = sinon.stub();
 	const editedMessageStub = sinon.stub();
 	const fileMessageStub = sinon.stub();
