@@ -372,6 +372,11 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	});
 
 	watcher.on<IInstanceStatus>(InstanceStatus.getCollectionName(), ({ clientAction, id, data, diff }) => {
+		if (clientAction === 'removed') {
+			void broadcast('watch.instanceStatus', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
 		void broadcast('watch.instanceStatus', { clientAction, data, diff, id });
 	});
 

@@ -23,6 +23,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		options: FindOptions<ILivechatDepartment>,
 	): FindCursor<ILivechatDepartment>;
 
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+
 	addBusinessHourToDepartmentsByIds(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
