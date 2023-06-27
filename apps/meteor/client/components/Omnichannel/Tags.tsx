@@ -28,7 +28,7 @@ const Tags = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>(tags);
+	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>();
 
 	const removeTag = (tagToRemove: string): void => {
 		if (tags) {
