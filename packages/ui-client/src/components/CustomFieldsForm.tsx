@@ -5,7 +5,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import type { Control, FieldValues } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormState, get } from 'react-hook-form';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
@@ -34,7 +34,7 @@ const CustomField = <T extends FieldValues>({
 	...props
 }: CustomFieldProps<T>) => {
 	const t = useTranslation();
-	const { getFieldState } = control;
+	const { errors } = useFormState({ control });
 
 	const Component = FIELD_TYPES[type] ?? null;
 
@@ -46,18 +46,22 @@ const CustomField = <T extends FieldValues>({
 
 	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
-	const getErrorMessage = (error: any) => {
-		switch (error?.type) {
-			case 'required':
-				return t('The_field_is_required', label || name);
-			case 'minLength':
-				return t('Min_length_is', props?.minLength);
-			case 'maxLength':
-				return t('Max_length_is', props?.maxLength);
-		}
-	};
+	const getErrorMessage = useCallback(
+		(error: any) => {
+			switch (error?.type) {
+				case 'required':
+					return t('The_field_is_required', label || name);
+				case 'minLength':
+					return t('Min_length_is', props?.minLength);
+				case 'maxLength':
+					return t('Max_length_is', props?.maxLength);
+			}
+		},
+		[label, name, props?.maxLength, props?.minLength, t],
+	);
 
-	const error = getErrorMessage(getFieldState(name as any).error);
+	const error = get(errors, name);
+	const errorMessage = useMemo(() => getErrorMessage(error), [error, getErrorMessage]);
 
 	return (
 		<Controller<T, any>
@@ -72,9 +76,9 @@ const CustomField = <T extends FieldValues>({
 						{required && '*'}
 					</Field.Label>
 					<Field.Row>
-						<Component {...props} {...field} error={error} options={selectOptions as SelectOption[]} flexGrow={1} />
+						<Component {...props} {...field} error={errorMessage} options={selectOptions as SelectOption[]} flexGrow={1} />
 					</Field.Row>
-					<Field.Error>{error}</Field.Error>
+					<Field.Error>{errorMessage}</Field.Error>
 				</Field>
 			)}
 		/>
