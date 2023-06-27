@@ -1,5 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useCurrentRoute, useRouter, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
@@ -15,19 +15,24 @@ const DirectoryPage = (): ReactElement => {
 
 	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView') ?? 'users';
 	const federationEnabled = useSetting('FEDERATION_Enabled');
-	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab') as TabName | undefined;
 	const router = useRouter();
 
-	useEffect(() => {
-		if (routeName !== 'directory') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'directory') {
+					return;
+				}
 
-		if (!tab || (tab === 'external' && !federationEnabled)) {
-			router.navigate(`/directory/${defaultTab}`, { replace: true });
-		}
-	}, [routeName, router, tab, federationEnabled, defaultTab]);
+				const { tab } = router.getRouteParameters();
+
+				if (!tab || (tab === 'external' && !federationEnabled)) {
+					router.navigate(`/directory/${defaultTab}`, { replace: true });
+				}
+			}),
+		[router, federationEnabled, defaultTab],
+	);
 
 	const handleTabClick = useCallback((tab: TabName) => () => router.navigate(`/directory/${tab}`), [router]);
 

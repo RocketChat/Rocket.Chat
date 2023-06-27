@@ -26,6 +26,7 @@ export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollap
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoute } from './hooks/useCurrentRoute';
+export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export type { EndpointFunction } from './hooks/useEndpoint';
@@ -55,7 +56,6 @@ export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
-export { useRoutePath } from './hooks/useRoutePath';
 export { useSearchParameter } from './hooks/useSearchParameter';
 export { useSearchParameters } from './hooks/useSearchParameters';
 export { useServerInformation } from './hooks/useServerInformation';

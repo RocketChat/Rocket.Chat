@@ -1,15 +1,21 @@
 import { useCallback, useContext } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import type { RouteParameters, IRouterPaths, SearchParameters } from '../RouterContext';
 import { RouterContext } from '../RouterContext';
 
-export const useRoutePath = (name: keyof IRouterPaths, params?: RouteParameters, search?: SearchParameters): string | undefined => {
+export const useCurrentRoutePath = () => {
 	const router = useContext(RouterContext);
 
 	const getSnapshot = useCallback(() => {
-		return router.buildRoutePath({ name, params, search });
-	}, [name, params, router, search]);
+		const name = router.getRouteName();
+		return name
+			? router.buildRoutePath({
+					name,
+					params: router.getRouteParameters(),
+					search: router.getSearchParameters(),
+			  })
+			: undefined;
+	}, [router]);
 
 	return useSyncExternalStore(router.subscribeToRouteChange, getSnapshot);
 };
