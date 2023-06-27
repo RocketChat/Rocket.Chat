@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { htmlToText } from 'html-to-text';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
@@ -254,7 +253,7 @@ export class MatrixBridge implements IFederationBridge {
 				.getIntent(externalSenderId)
 				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
 					'msgtype': 'm.text',
-					'body': htmlToText(text, { wordwrap: false }),
+					'body': this.escapeEmojis(message.msg),
 					'formatted_body': text,
 					'format': 'org.matrix.custom.html',
 					'm.relates_to': {
