@@ -40,7 +40,7 @@
     {
       "file": "apps/meteor/app/api/server/v1/chat.ts",
       "description": "## Calling REST endpoint\n\n### Let us try to call an REST Endpoint for sending message\n- In order to make Api call you need Personal Access Tokens for user authentication. **[Get Token here](https://docs.rocket.chat/use-rocket.chat/user-guides/user-panel/my-account#personal-access-tokens)** (Remember get access token from your own local server)\n\n- To get User-Id go to admin settings then users(or http://localhost:3000/admin/users) select your account and copy unique user id from URL (http://localhost:3000/admin/users/info/u3y2jXw5ayckPciE9) here we have **u3y2jXw5ayckPciE9** as user id, Try finding yours\n\n-  After you get you Personal access token Start Rocket Chat server on your local machine and in another terminal enter this command.\n\n```\ncurl -H \"X-Auth-Token: ENTER_YOUR_TOKEN \" \\\n      -H \"X-User-Id: ENTER_YOUR_USERID \" \\\n      -H \"Content-type:application/json\" \\\n      http://localhost:3000/api/v1/chat.sendMessage \\\n      -d '{\"message\":{\"rid\":\"GENERAL\", \"msg\":\"Hello From Rocket Chat\"}}'\n```\n- You will get a success response once your request is successful and vice versa\n\n### Similarly you can also create your own REST Endpoint with unique route name and define what it needs to do by adding different funtionalities in it. ",
-      "line": 239,
+      "line": 211,
       "selection": {
         "start": {
           "line": 6,
