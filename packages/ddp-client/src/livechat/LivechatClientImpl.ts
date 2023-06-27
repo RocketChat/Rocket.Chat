@@ -324,6 +324,13 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		});
 	}
 
+	async sendUiInteraction(
+		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
+		{ appId, visitorToken }: { appId: string; visitorToken: string },
+	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>> {
+		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': visitorToken } });
+	}
+
 	// API DELETE
 
 	deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>> {

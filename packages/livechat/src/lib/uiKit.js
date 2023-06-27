@@ -104,8 +104,7 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 
 	try {
 		const result = await Promise.race([
-			Livechat.rest.post(
-				`/apps/ui.interaction/${appId}`,
+			Livechat.sendUiInteraction(
 				{
 					type,
 					actionId,
@@ -117,9 +116,8 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 					payload,
 				},
 				{
-					headers: {
-						'x-visitor-token': Livechat.credentials.token,
-					},
+					appId,
+					visitorToken: Livechat.credentials.token,
 				},
 			),
 
