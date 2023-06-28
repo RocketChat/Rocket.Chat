@@ -1,12 +1,12 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
-	useQueryStringParameter,
 	useEndpoint,
 	useUpload,
 	useTranslation,
 	useRouteParameter,
 	useRouter,
+	useSearchParameter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -35,8 +35,8 @@ function AppInstallPage() {
 
 	const setModal = useSetModal();
 
-	const appId = useQueryStringParameter('id');
-	const queryUrl = useQueryStringParameter('url');
+	const appId = useSearchParameter('id');
+	const queryUrl = useSearchParameter('url');
 
 	const [installing, setInstalling] = useState(false);
 

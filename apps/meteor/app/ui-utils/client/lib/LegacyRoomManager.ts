@@ -1,6 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
@@ -89,7 +88,7 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 
 	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
-			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
+			const type = router.getRouteName() === 'channel' ? 'c' : 'p';
 			await close(type + router.getRouteParameters().name);
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });

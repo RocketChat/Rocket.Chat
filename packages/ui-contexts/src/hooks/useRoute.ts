@@ -14,6 +14,7 @@ type Route = {
 	) => void;
 };
 
+/** @deprecated prefer `useRouter` */
 export const useRoute = (name: RouteName): Route => {
 	const router = useContext(RouterContext);
 

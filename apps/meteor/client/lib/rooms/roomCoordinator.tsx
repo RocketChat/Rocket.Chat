@@ -2,6 +2,7 @@ import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@r
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
@@ -72,7 +73,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
 	}
 
-	public openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
+	public openRouteLink(
+		roomType: RoomType,
+		subData: RoomIdentification,
+		queryParams?: Record<string, string>,
+		options: { replace?: boolean } = {},
+	): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
@@ -89,11 +95,14 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return;
 		}
 
-		router.navigate({
-			pattern: config.route.path ?? '/home',
-			params: routeData,
-			search: queryParams,
-		});
+		router.navigate(
+			{
+				pattern: config.route.path ?? '/home',
+				params: routeData,
+				search: queryParams,
+			},
+			options,
+		);
 	}
 
 	public isLivechatRoom(roomType: string): boolean {
@@ -207,8 +216,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			const { extractOpenRoomParams } = directives;
 			FlowRouter.route(path, {
 				name,
-				action: (params) => {
-					const { type, ref } = extractOpenRoomParams(params ?? {});
+				action: () => {
+					const { type, ref } = extractOpenRoomParams(router.getRouteParameters());
 
 					appLayout.render(
 						<MainLayout>
@@ -231,7 +240,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 
-		return FlowRouter.url(config.route.name, routeData);
+		return Meteor.absoluteUrl(
+			router.buildRoutePath({
+				name: config.route.name,
+				params: routeData,
+			}),
+		);
 	}
 
 	public isRouteNameKnown(routeName: string): boolean {

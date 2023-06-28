@@ -1,5 +1,4 @@
 import type { AtLeast, ISubscription, IUser, ICalendarNotification } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
@@ -84,7 +83,7 @@ Meteor.startup(() => {
 			return;
 		}
 		Notifications.onUser('notification', (notification) => {
-			const openedRoomId = ['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) ? RoomManager.opened : undefined;
+			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName()!) ? RoomManager.opened : undefined;
 
 			// This logic is duplicated in /client/startup/unread.coffee.
 			const hasFocus = readMessage.isEnable();

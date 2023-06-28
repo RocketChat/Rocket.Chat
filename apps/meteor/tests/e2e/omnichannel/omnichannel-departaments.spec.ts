@@ -188,7 +188,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Enabled tags state', async () => {
-			const tagName = faker.datatype.string(5);
+			const tagName = faker.string.sample(5);
 
 			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
@@ -224,7 +224,7 @@ test.describe.serial('omnichannel-departments', () => {
 			});
 
 			await test.step('expect to not be possible adding same tag twice', async () => {
-				const tagName = faker.datatype.string(5);
+				const tagName = faker.string.sample(5);
 				await poOmnichannelDepartments.inputTags.fill(tagName);
 				await poOmnichannelDepartments.btnTagsAdd.click();
 				await poOmnichannelDepartments.inputTags.fill(tagName);

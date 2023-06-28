@@ -104,9 +104,13 @@ const RouterContextMock = ({ children, navigate, currentPath }: RouterContextMoc
 							history.current.stack = history.current.stack.slice(0, history.current.index + 1);
 							history.current.stack.push(toOrDelta);
 							history.current.index = history.current.stack.length - 1;
+
+							if (currentPath) {
+								currentPath.current = buildRoutePath(history.current.stack[history.current.index]);
+							}
 						}),
 				};
-			}, [navigate])}
+			}, [currentPath, navigate])}
 		>
 			{children}
 		</RouterContext.Provider>

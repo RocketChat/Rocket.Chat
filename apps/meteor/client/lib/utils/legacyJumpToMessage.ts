@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
@@ -15,16 +14,15 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 	}
 
 	if (isThreadMessage(message) || message.tcount) {
-		const { route } = FlowRouter.current();
-		const params = router.getRouteParameters();
+		const { tab, context } = router.getRouteParameters();
 
-		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
+		if (tab === 'thread' && (context === message.tmid || context === message._id)) {
 			return;
 		}
 
 		router.navigate(
 			{
-				pattern: route?.name ?? 'home',
+				name: router.getRouteName()!,
 				params: {
 					tab: 'thread',
 					context: message.tmid || message._id,

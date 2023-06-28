@@ -1,5 +1,5 @@
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
-import { useRouteParameter, useQueryStringParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
@@ -15,8 +15,8 @@ const MeetPage = () => {
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
-	const visitorToken = useQueryStringParameter('token');
-	const layout = useQueryStringParameter('layout');
+	const visitorToken = useSearchParameter('token');
+	const layout = useSearchParameter('layout');
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);

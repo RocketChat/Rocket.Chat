@@ -43,7 +43,7 @@ const getRouteParameters = () => FlowRouter.current().params as RouteParameters;
 
 const getSearchParameters = () => (FlowRouter.current().queryParams ?? {}) as SearchParameters;
 
-const getRouteName = () => FlowRouter.current().route.name as RouteName | undefined;
+const getRouteName = () => FlowRouter.current().route?.name as RouteName | undefined;
 
 const encodeSearchParameters = (searchParameters: SearchParameters) => {
 	const search = new URLSearchParams();

@@ -158,7 +158,6 @@ FlowRouter.route('/', {
 
 FlowRouter.route('/login', {
 	name: 'login',
-
 	action() {
 		router.navigate('/home');
 	},
@@ -166,11 +165,12 @@ FlowRouter.route('/login', {
 
 FlowRouter.route('/meet/:rid', {
 	name: 'meet',
+	async action() {
+		const { token } = router.getSearchParameters();
 
-	async action(_params, queryParams) {
-		if (queryParams?.token !== undefined) {
+		if (token !== undefined) {
 			// visitor login
-			const result = await sdk.rest.get(`/v1/livechat/visitor/${queryParams.token}`);
+			const result = await sdk.rest.get(`/v1/livechat/visitor/${token}`);
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
@@ -191,14 +191,19 @@ FlowRouter.route('/meet/:rid', {
 
 FlowRouter.route('/home', {
 	name: 'home',
+	action() {
+		const { saml_idp_credentialToken: token, ...search } = router.getSearchParameters();
 
-	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
-		if (queryParams?.saml_idp_credentialToken !== undefined) {
-			const token = queryParams.saml_idp_credentialToken;
-			FlowRouter.setQueryParams({
-				saml_idp_credentialToken: null,
-			});
+		if (token !== undefined) {
+			router.navigate(
+				{
+					pathname: router.getLocationPathname(),
+					search,
+				},
+				{ replace: true },
+			);
+
 			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -313,11 +318,11 @@ FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 
 FlowRouter.route('/login-token/:token', {
 	name: 'tokenLogin',
-	action(params) {
+	action() {
 		Accounts.callLoginMethod({
 			methodArguments: [
 				{
-					loginToken: params?.token,
+					loginToken: router.getRouteParameters().token,
 				},
 			],
 			userCallback(error) {

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings/client';
 import { callbacks } from '../../../lib/callbacks';
 import { ChatRoom } from '../../models/client';
+import { router } from '../../../client/providers/RouterProvider';
 
 function trackEvent(category, action, label) {
 	if (window._paq) {
@@ -17,20 +17,17 @@ function trackEvent(category, action, label) {
 
 if (!window._paq || window.ga) {
 	// Trigger the trackPageView manually as the page views are only loaded when the loadScript.js code is executed
-	FlowRouter.triggers.enter([
-		(route) => {
-			if (window._paq) {
-				const http = location.protocol;
-				const slashes = http.concat('//');
-				const host = slashes.concat(window.location.hostname);
-				window._paq.push(['setCustomUrl', host + route.path]);
-				window._paq.push(['trackPageView']);
-			}
-			if (window.ga) {
-				window.ga('send', 'pageview', route.path);
-			}
-		},
-	]);
+	router.subscribeToRouteChange(() => {
+		if (window._paq) {
+			const http = location.protocol;
+			const slashes = http.concat('//');
+			const host = slashes.concat(window.location.hostname);
+			window._paq.push(['setCustomUrl', host + router.getLocationPathname()]);
+			window._paq.push(['trackPageView']);
+		}
+
+		window.ga?.('send', 'pageview', router.getLocationPathname());
+	});
 
 	// Login page has manual switches
 	callbacks.add(

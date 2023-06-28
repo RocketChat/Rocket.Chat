@@ -167,7 +167,7 @@ Tracker.autorun(
 	(() => {
 		let oldName: RouteName | undefined;
 		return () => {
-			const name = FlowRouter.getRouteName();
+			const name = router.getRouteName();
 			if (oldName !== name) {
 				oldRoute = FlowRouter.current();
 			}
