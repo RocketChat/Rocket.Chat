@@ -23,6 +23,7 @@
 	],
 	"dependencies": {
 		"mongo-message-queue": "^1.0.0",
-		"pino": "^8.14.1"
+		"mongodb": "^4.12.1",
+		"pino": "^8.4.2"
 	}
 }

@@ -87,6 +87,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.bridge,
 		);
 		this.setEventListeners();
+
+		this.internalQueueInstance.startWorkersWith(this.handleMatrixEvent.bind(this)).catch(console.error);
 	}
 
 	private setEventListeners(): void {
@@ -229,6 +231,10 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.cancelSettingsObserver();
 		this.isRunning = false;
 	}
+
+	protected async handleMatrixEvent(event: AbstractMatrixEvent): Promise<void> {
+		await this.getFederationEventsHandler().handleEvent(event);
+	}
 }
 
 abstract class AbstractBaseFederationService extends AbstractFederationService {
@@ -313,10 +319,6 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
-	}
-
-	public async handleMatrixEvent(event: AbstractMatrixEvent): Promise<void> {
-		await this.getFederationEventsHandler().handleEvent(event);
 	}
 
 	static async createFederationService(): Promise<FederationService> {

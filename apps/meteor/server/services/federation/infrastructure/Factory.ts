@@ -1,3 +1,4 @@
+import { MongoInternals } from 'meteor/mongo';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
@@ -59,7 +60,9 @@ export class FederationFactory {
 	}
 
 	public static buildFederationQueue(): PersistentQueue {
-		return new PersistentQueue();
+		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+		return new PersistentQueue(db);
 	}
 
 	public static buildRoomServiceReceiver(

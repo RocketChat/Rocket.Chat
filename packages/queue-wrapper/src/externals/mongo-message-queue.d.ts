@@ -16,8 +16,6 @@ declare module 'mongo-message-queue' {
 
 	export type ValidResult = 'Completed' | 'Rejected' | 'Retry';
 
-	export type Actions = 'work' | 'workComplete';
-
 	export default class MessageQueue {
 		collectionName: string;
 
@@ -25,11 +23,11 @@ declare module 'mongo-message-queue' {
 
 		databasePromise: () => Promise<Db>;
 
-		registerWorker<T>(type: Actions, worker: (queueItem: Work<T>) => Promise<ValidResult>): void;
+		registerWorker<T>(type: string, worker: (queueItem: Work<T>) => Promise<ValidResult>): void;
 
-		enqueue<T>(type: Actions, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<void>;
+		enqueue<T>(type: string, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<void>;
 
-		enqueueAndProcess<T>(type: Actions, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<void>;
+		enqueueAndProcess<T>(type: string, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<void>;
 
 		stopPolling(): void;
 	}
