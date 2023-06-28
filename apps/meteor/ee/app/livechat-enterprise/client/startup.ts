@@ -8,14 +8,14 @@ import { EESingleBusinessHourBehaviour } from './SingleBusinessHour';
 import { hasLicense } from '../../license/client';
 
 const businessHours: Record<string, IBusinessHourBehavior> = {
-	Multiple: new MultipleBusinessHoursBehavior(),
-	Single: new EESingleBusinessHourBehaviour(),
+	multiple: new MultipleBusinessHoursBehavior(),
+	single: new EESingleBusinessHourBehaviour(),
 };
 
 Meteor.startup(function () {
 	settings.onload('Livechat_business_hour_type', async (_, value) => {
 		if (await hasLicense('livechat-enterprise')) {
-			businessHourManager.registerBusinessHourBehavior(businessHours[value as string]);
+			businessHourManager.registerBusinessHourBehavior(businessHours[(value as string).toLowerCase()]);
 		}
 	});
 });
