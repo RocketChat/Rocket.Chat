@@ -3,7 +3,7 @@ import { useStatusItems } from './useStatusItems';
 import { useThemeItems } from './useThemeItems';
 import { useUserStatusItem } from './useUserStatusItem';
 
-export const useUserDropdownMenu = () => {
+export const useUserMenu = () => {
 	const userHeaderItems = useUserStatusItem();
 	const statusItems = useStatusItems();
 	const themeItems = useThemeItems();
