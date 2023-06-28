@@ -30,7 +30,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const t = useTranslation();
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
+	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url')
 	const { authEnabled, canSync, handleCheckCredentials } = useOutlookAuthentication({ onChangeRoute });
 
 	const syncOutlookEvents = useSyncOutlookEvents();
