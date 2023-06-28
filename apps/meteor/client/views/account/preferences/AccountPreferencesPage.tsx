@@ -1,9 +1,11 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject, ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
+import PreferencesFeaturePreview from './PreferencesFeaturePreview';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -46,6 +48,7 @@ type CurrentData = {
 	muteFocusedConversations: boolean;
 	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
+	featuresPreview: { name: string; value: boolean; i18n: TranslationKey }[];
 };
 
 export type FormSectionProps = {
@@ -140,6 +143,7 @@ const AccountPreferencesPage = (): ReactElement => {
 					<Accordion>
 						<PreferencesLocalizationSection commitRef={commitRef} onChange={onChange} defaultExpanded />
 						<PreferencesGlobalSection commitRef={commitRef} onChange={onChange} />
+						<PreferencesFeaturePreview commitRef={commitRef} onChange={onChange} />
 						<PreferencesUserPresenceSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesNotificationsSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesMessagesSection commitRef={commitRef} onChange={onChange} />

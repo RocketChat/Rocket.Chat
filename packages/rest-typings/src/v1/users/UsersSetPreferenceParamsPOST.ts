@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -39,6 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
+		featuresPreview: { name: string; value: boolean; i18n: TranslationKey };
 		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
 		idleTimeLimit?: number;
@@ -192,6 +194,18 @@ const UsersSetPreferencesParamsPostSchema = {
 						properties: {
 							action: { type: 'string' },
 							label: { type: 'string' },
+						},
+					},
+					nullable: true,
+				},
+				featuresPreview: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							name: { type: 'string' },
+							value: { type: 'boolean' },
+							i18n: { type: 'string' },
 						},
 					},
 					nullable: true,
