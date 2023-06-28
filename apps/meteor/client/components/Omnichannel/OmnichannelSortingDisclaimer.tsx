@@ -22,7 +22,7 @@ export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimer
 	}
 
 	return (
-		<Box is='small' display='block' padding='4px 12px' fontSize='14px' lineHeight='20px' maxWidth='180px' {...props}>
+		<Box is='small' wordBreak='break-word' style={{ whiteSpace: 'normal' }} {...props}>
 			{t('Omnichannel_sorting_disclaimer', { sortingMechanism: t(type) })}
 		</Box>
 	);
