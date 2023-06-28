@@ -1,15 +1,5 @@
-import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import type {
-	Context,
-	Current,
-	Group,
-	GroupName,
-	GroupPrefix,
-	RouteName,
-	RouteNamesOf,
-	RouteOptions,
-	TrimPrefix,
-} from 'meteor/kadira:flow-router';
+import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
+import type { Context, Current, Group, GroupName, GroupPrefix, RouteNamesOf, RouteOptions, TrimPrefix } from 'meteor/kadira:flow-router';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';

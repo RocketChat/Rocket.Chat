@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { IRouterPaths } from '@rocket.chat/ui-contexts';
+import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
@@ -140,7 +140,7 @@ FlowRouter.route('/', {
 				setTimeout(async () => {
 					const user = Meteor.user() as IUser | null;
 					if (user?.defaultRoom) {
-						const room = user.defaultRoom.split('/') as [routeName: keyof IRouterPaths, routeParam: string];
+						const room = user.defaultRoom.split('/') as [routeName: RouteName, routeParam: string];
 						router.navigate({
 							name: room[0],
 							params: { name: room[1] },

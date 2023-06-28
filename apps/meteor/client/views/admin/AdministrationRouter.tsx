@@ -1,4 +1,4 @@
-import { useRouter, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
@@ -27,31 +27,39 @@ type AdministrationRouterProps = {
 };
 
 const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactElement => {
-	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
-	const [routeName] = useCurrentRoute();
-
-	const upgradeRoute = useRoute('upgrade');
 	const router = useRouter();
+	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 
-	useEffect(() => {
-		if (routeName !== 'admin-index') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'admin-index') {
+					return;
+				}
 
-		if (tabType && !isLoading) {
-			upgradeRoute.replace({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
-			return;
-		}
+				if (tabType && !isLoading) {
+					router.navigate(
+						{
+							name: 'upgrade',
+							params: { type: tabType },
+							search: trialEndDate ? { trialEndDate } : undefined,
+						},
+						{ replace: true },
+					);
+					return;
+				}
 
-		const defaultRoutePath = getAdminSidebarItems().find(firstSidebarPage)?.href ?? '/admin/info';
+				const defaultRoutePath = getAdminSidebarItems().find(firstSidebarPage)?.href ?? '/admin/info';
 
-		if (isGoRocketChatLink(defaultRoutePath)) {
-			window.open(defaultRoutePath, '_blank');
-			return;
-		}
+				if (isGoRocketChatLink(defaultRoutePath)) {
+					window.open(defaultRoutePath, '_blank');
+					return;
+				}
 
-		router.navigate(defaultRoutePath, { replace: true });
-	}, [upgradeRoute, routeName, tabType, trialEndDate, isLoading, router]);
+				router.navigate(defaultRoutePath, { replace: true });
+			}),
+		[tabType, trialEndDate, isLoading, router],
+	);
 
 	return (
 		<AdministrationLayout>

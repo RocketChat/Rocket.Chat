@@ -6,7 +6,6 @@ import { Tracker } from 'meteor/tracker';
 import type { FC } from 'react';
 import React from 'react';
 
-import { createSubscription } from '../lib/createSubscription';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 const subscribers = new Set<() => void>();
@@ -106,13 +105,6 @@ const navigate = (
 	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
-const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
-	createSubscription(() => {
-		FlowRouter.watchPathChange();
-		const { route, params, queryParams } = FlowRouter.current();
-		return [route?.name, params, queryParams, route?.group?.name];
-	});
-
 export const router: RouterContextValue = {
 	subscribeToRouteChange,
 	getLocationPathname,
@@ -122,7 +114,6 @@ export const router: RouterContextValue = {
 	getRouteName,
 	buildRoutePath,
 	navigate,
-	queryCurrentRoute,
 };
 
 const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={router} />;

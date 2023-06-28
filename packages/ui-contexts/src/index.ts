@@ -25,7 +25,6 @@ export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentModal } from './hooks/useCurrentModal';
-export { useCurrentRoute } from './hooks/useCurrentRoute';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';

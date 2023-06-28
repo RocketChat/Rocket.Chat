@@ -39,10 +39,6 @@ export type To =
 
 type RelativeRoutingType = 'route' | 'path';
 
-export type QueryStringParameters = SearchParameters;
-
-export type RouteGroupName = string;
-
 export type RouterContextValue = {
 	subscribeToRouteChange(onRouteChange: () => void): () => void;
 	getLocationPathname(): LocationPathname;
@@ -53,10 +49,6 @@ export type RouterContextValue = {
 	buildRoutePath(to: To): LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
-	queryCurrentRoute: () => [
-		subscribe: (onStoreChange: () => void) => () => void,
-		getSnapshot: () => [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?],
-	];
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -70,7 +62,9 @@ export const RouterContext = createContext<RouterContextValue>({
 	getLocationSearch: () => {
 		throw new Error('not implemented');
 	},
-	getSearchParameters: () => ({}),
+	getSearchParameters: () => {
+		throw new Error('not implemented');
+	},
 	getRouteName: () => {
 		throw new Error('not implemented');
 	},
@@ -78,8 +72,4 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	navigate: () => undefined,
-	queryCurrentRoute: () => [
-		() => (): void => undefined,
-		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
-	],
 });

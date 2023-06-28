@@ -2,8 +2,6 @@ declare module 'meteor/kadira:flow-router' {
 	import type { Subscription } from 'meteor/meteor';
 	import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
 
-	type RouteName = keyof IRouterPaths;
-
 	type GroupName = RouteName extends infer U ? (U extends `${infer TGroupName}-index` ? TGroupName : never) : never;
 	type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-index`]['pattern'];
 	type RouteNamesOf<TGroupName extends GroupName> = Extract<
