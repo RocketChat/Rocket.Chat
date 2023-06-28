@@ -98,6 +98,6 @@ export interface LivechatEndpoints {
 
 	sendUiInteraction(
 		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
-		{ appId, visitorToken }: { appId: string; visitorToken: string },
+		appId: string,
 	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>>;
 }

@@ -326,9 +326,12 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	async sendUiInteraction(
 		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
-		{ appId, visitorToken }: { appId: string; visitorToken: string },
+		appId: string,
 	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>> {
-		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': visitorToken } });
+		if (!this.token) {
+			throw new Error('Invalid token');
+		}
+		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': this.token } });
 	}
 
 	// API DELETE

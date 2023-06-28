@@ -115,10 +115,7 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 					triggerId,
 					payload,
 				},
-				{
-					appId,
-					visitorToken: Livechat.credentials.token,
-				},
+				appId,
 			),
 
 			new Promise((_, reject) => {
