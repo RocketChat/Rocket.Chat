@@ -19,30 +19,26 @@
 		"lint": "run-s eslint stylelint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint 'src/**/*.scss'",
-		"storybook": "start-storybook -p 9001 -c .storybook",
+		"storybook": "start-storybook -p 9001 -c .storybook --no-version-updates",
 		"build-storybook": "build-storybook",
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "~7.22.5",
 		"@babel/preset-env": "~7.22.5",
+		"@babel/preset-typescript": "~7.22.5",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "next",
 		"@rocket.chat/logo": "next",
-		"@storybook/addon-actions": "~6.5.16",
-		"@storybook/addon-backgrounds": "~6.5.16",
 		"@storybook/addon-essentials": "~6.5.16",
-		"@storybook/addon-knobs": "~6.4.0",
 		"@storybook/addon-postcss": "~2.0.0",
-		"@storybook/addon-viewport": "~6.5.16",
-		"@storybook/react": "~6.5.16",
+		"@storybook/preact": "~6.5.16",
 		"@storybook/theming": "~6.5.16",
 		"@typescript-eslint/eslint-plugin": "~5.60.0",
 		"@typescript-eslint/parser": "~5.60.0",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "^8.3.0",
-		"babel-plugin-jsx-pragmatic": "^1.0.2",
 		"cross-env": "^7.0.3",
 		"css-loader": "^4.3.0",
 		"cssnano": "^4.1.11",
@@ -99,16 +95,15 @@
 		"markdown-it": "^11.0.1",
 		"mem": "^6.1.1",
 		"mitt": "^2.1.0",
-		"preact": "^10.8.2",
+		"preact": "10.15.1",
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",
 		"react-i18next": "^11.16.9",
 		"whatwg-fetch": "^3.6.2"
 	},
 	"browserslist": [
-		"> 1%",
 		"last 2 versions",
-		"not ie < 11"
+		"Firefox ESR"
 	],
 	"volta": {
 		"extends": "../../package.json"
