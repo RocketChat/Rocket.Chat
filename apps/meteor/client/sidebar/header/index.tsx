@@ -3,7 +3,7 @@ import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import UserAvatarButton from './UserAvatarButton';
+import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
 import CreateRoom from './actions/CreateRoom';
 import Directory from './actions/Directory';
@@ -24,7 +24,7 @@ const HeaderWithData = (): ReactElement => {
 					style: { flexShrink: 0 },
 				}}
 			>
-				<UserAvatarButton />
+				<UserMenu />
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />
 					<Search title={t('Search')} />

@@ -1,4 +1,4 @@
-import type { Icon } from '@rocket.chat/fuselage';
+import type { IconButton } from '@rocket.chat/fuselage';
 import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -8,7 +8,7 @@ import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
 
 type GenericMenuCommonProps = {
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: ComponentProps<typeof IconButton>['icon'];
 	title: string;
 };
 type GenericMenuConditionalProps =

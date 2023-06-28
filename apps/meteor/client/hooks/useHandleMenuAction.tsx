@@ -2,9 +2,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import type { GenericMenuItemProps } from '../components/GenericMenuItem';
 
-export const useHandleMenuAction = (items: GenericMenuItemProps[]) => {
+export const useHandleMenuAction = (items: GenericMenuItemProps[], close?: () => void) => {
 	return useMutableCallback((id) => {
-		const item = items.find((item) => item.id === id);
-		item?.onClick && item.onClick();
+		const item = items.find((item) => item.id === id && !!item.onClick);
+		if (item) {
+			item.onClick?.();
+			close?.();
+		}
 	});
 };
