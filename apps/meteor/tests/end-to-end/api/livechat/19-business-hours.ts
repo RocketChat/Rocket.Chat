@@ -317,7 +317,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(archivedDepartment).to.be.an('object');
-			expect(department).to.have.property('archived', true);
+			expect(archivedDepartment).to.have.property('archived', true);
 			expect(archivedDepartment.businessHourId).to.be.undefined;
 			// verify if other department is not archived and BH link is not removed
 			const otherDepartment = await getDepartmentById(department._id);
@@ -370,7 +370,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(archivedDepartment).to.be.an('object');
-			expect(department).to.have.property('archived', true);
+			expect(archivedDepartment).to.have.property('archived', true);
 			expect(archivedDepartment.businessHourId).to.be.undefined;
 
 			// verify if BH is still open
