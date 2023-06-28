@@ -283,6 +283,7 @@ const appsRoutes =
 					triggerId,
 					rid,
 					mid,
+					tmid,
 					payload: { context, message: msgText },
 				} = req.body;
 
@@ -298,6 +299,7 @@ const appsRoutes =
 					user,
 					room,
 					message,
+					tmid,
 					payload: {
 						context,
 						...(msgText && { message: msgText }),
