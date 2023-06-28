@@ -28,8 +28,3 @@
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: optimizeQuality;
 }
-
-.big > .emojione {
-	width: 44px;
-	height: 44px;
-}
