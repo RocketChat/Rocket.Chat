@@ -8,8 +8,8 @@ import { createClassName } from '../../helpers';
 import styles from './styles.scss';
 
 type SelectInputProps = {
-	name: string;
-	placeholder: string;
+	name?: string;
+	placeholder?: string;
 	options: { value: string; label: string }[];
 	disabled?: boolean;
 	small?: boolean;
@@ -18,7 +18,7 @@ type SelectInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps;
+	field?: ControllerRenderProps<any, any>;
 	value?: string;
 };
 

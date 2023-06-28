@@ -16,10 +16,10 @@ type TextInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps;
+	field?: ControllerRenderProps<any, any>;
 };
 
-export const TextInput = ({
+const TextInput = ({
 	name,
 	value,
 	placeholder,
@@ -45,3 +45,5 @@ export const TextInput = ({
 		{...field}
 	/>
 );
+
+export { TextInput };

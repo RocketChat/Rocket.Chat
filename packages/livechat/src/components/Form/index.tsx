@@ -7,24 +7,16 @@ import { createClassName, MemoizedComponent } from '../helpers';
 import styles from './styles.scss';
 
 type FormProps = {
-	onSubmit?: (event: Event) => void;
+	onSubmit: (event: Event) => void;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
+	id?: string;
 	children: ComponentChildren;
 };
 
 export class Form extends MemoizedComponent {
-	static defaultHandleSubmit = (event: Event) => {
-		event.preventDefault();
-	};
-
-	render = ({ onSubmit, className, style = {}, children }: FormProps) => (
-		<form
-			noValidate
-			onSubmit={onSubmit || Form.defaultHandleSubmit}
-			className={createClassName(styles, 'form', {}, [className])}
-			style={style}
-		>
+	render = ({ onSubmit, className, style = {}, id, children }: FormProps) => (
+		<form noValidate id={id} onSubmit={onSubmit} className={createClassName(styles, 'form', {}, [className])} style={style}>
 			{children}
 		</form>
 	);

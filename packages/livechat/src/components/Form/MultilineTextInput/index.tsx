@@ -2,7 +2,6 @@ import type { TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../helpers';
-import styles from './styles.scss';
 
 type MultilineTextInputProps = {
 	name: string;
@@ -40,7 +39,7 @@ export const MultilineTextInput = ({
 		disabled={disabled}
 		onChange={onChange}
 		onInput={onInput}
-		className={createClassName(styles, 'text-input', { disabled, error, small }, [className])}
+		className={createClassName(null, 'text-input', { disabled, error, small }, [className])}
 		style={style}
 		{...props}
 	/>
