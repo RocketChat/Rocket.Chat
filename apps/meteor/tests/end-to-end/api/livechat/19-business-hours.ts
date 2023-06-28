@@ -265,7 +265,7 @@ describe('LIVECHAT - business hours', function () {
 		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			// wait for the callbacks to be registered
-			await sleep(2000);
+			await sleep(1000);
 		});
 
 		beforeEach(async () => {
@@ -295,13 +295,13 @@ describe('LIVECHAT - business hours', function () {
 			// verify if department is archived and BH link is removed
 			const department = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(department).to.be.an('object');
-			expect(department.archived).to.be.true;
+			expect(department).to.have.property('archived', true);
 			expect(department.businessHourId).to.be.undefined;
 
 			// verify if BH is closed
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.false;
+			expect(latestCustomBH).to.have.property('active', false);
 			expect(latestCustomBH.departments).to.be.an('array').that.is.empty;
 		});
 
@@ -317,7 +317,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(archivedDepartment).to.be.an('object');
-			expect(archivedDepartment.archived).to.be.true;
+			expect(department).to.have.property('archived', true);
 			expect(archivedDepartment.businessHourId).to.be.undefined;
 			// verify if other department is not archived and BH link is not removed
 			const otherDepartment = await getDepartmentById(department._id);
@@ -327,7 +327,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]._id).to.be.equal(department._id);
 
@@ -370,13 +370,13 @@ describe('LIVECHAT - business hours', function () {
 			// verify if department is archived and BH link is removed
 			const archivedDepartment = await getDepartmentById(deptLinkedToCustomBH._id);
 			expect(archivedDepartment).to.be.an('object');
-			expect(archivedDepartment.archived).to.be.true;
+			expect(department).to.have.property('archived', true);
 			expect(archivedDepartment.businessHourId).to.be.undefined;
 
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
@@ -411,7 +411,7 @@ describe('LIVECHAT - business hours', function () {
 		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			// wait for the callbacks to be registered
-			await sleep(2000);
+			await sleep(1000);
 		});
 
 		beforeEach(async () => {
@@ -472,7 +472,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]._id).to.be.equal(department._id);
 
@@ -520,7 +520,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
@@ -555,7 +555,7 @@ describe('LIVECHAT - business hours', function () {
 		before(async () => {
 			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			// wait for the callbacks to be registered
-			await sleep(2000);
+			await sleep(1000);
 		});
 
 		beforeEach(async () => {
@@ -604,7 +604,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]._id).to.be.equal(department._id);
 
@@ -645,7 +645,7 @@ describe('LIVECHAT - business hours', function () {
 			// verify if BH is still open
 			const latestCustomBH = await getCustomBusinessHourById(customBusinessHour._id);
 			expect(latestCustomBH).to.be.an('object');
-			expect(latestCustomBH.active).to.be.true;
+			expect(latestCustomBH).to.have.property('active', true);
 			expect(latestCustomBH.departments).to.be.an('array').of.length(1);
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 

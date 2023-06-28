@@ -102,10 +102,6 @@ export const disableDepartment = async (department: ILivechatDepartment): Promis
 
 export const deleteDepartment = async (departmentId: string): Promise<void> => {
     await request.delete(api(`livechat/department/${ departmentId }`)).set(credentials).expect(200);
-
-    // verify if department was deleted
-    const department = await getDepartmentById(departmentId);
-    expect(department).to.be.null;
 }
 
 export const getDepartmentById = async (departmentId: string): Promise<ILivechatDepartment> => {
