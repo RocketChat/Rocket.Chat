@@ -21,6 +21,7 @@ export const useUserStatusItem = (): GenericMenuItemProps[] => {
 	return [
 		{
 			id: 'user-status',
+			disabled: presenceDisabled,
 			content: (
 				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Box mie='x4'>

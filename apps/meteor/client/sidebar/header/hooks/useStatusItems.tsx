@@ -43,8 +43,9 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 	const handleStatusDisabledModal = useStatusDisabledModal();
 
 	const presenceDisabledItem = {
+		id: 'presence-disabled',
 		content: (
-			<Box fontScale='p2' mi='x12' mb='x4'>
+			<Box fontScale='p2'>
 				<Box mbe='x4'>{t('User_status_disabled')}</Box>
 				<Box is='a' color='info' onClick={handleStatusDisabledModal}>
 					{t('Learn_more')}
@@ -63,12 +64,13 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 				status: <UserStatus status={modifier} />,
 				content: <MarkdownText content={name} parseEmoji={true} variant='inline' />,
 				onClick: () => setStatus(status),
+				disabled: presenceDisabled,
 			};
 		});
 
 	return [
 		...(presenceDisabled ? [presenceDisabledItem] : []),
 		...statusItems,
-		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus /* disabled: presenceDisabled */ },
+		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus, disabled: presenceDisabled },
 	];
 };
