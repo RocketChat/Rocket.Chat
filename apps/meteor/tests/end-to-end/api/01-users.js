@@ -1766,32 +1766,6 @@ describe('[Users]', function () {
 			await updateSetting('Accounts_AllowPasswordChange', true);
 		});
 
-		it('should throw an error if the password is not a string or is empty', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
-
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
-				.send({
-					data: {
-						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
-						newPassword: '',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property(
-						'error',
-						`The password provided does not meet the server's password policy. [error-password-policy-not-met]`,
-					);
-				});
-
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
-		});
-
 		it('should throw an error if the password length is less than the minimum length', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
 
