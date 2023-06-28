@@ -12,6 +12,7 @@ import {
 	openOrCloseBusinessHour,
 	createCustomBusinessHour,
 	getCustomBusinessHourById,
+	getWorkHours,
 } from '../../../data/livechat/businessHours';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -22,7 +23,7 @@ import {
 	getDepartmentById,
 } from '../../../data/livechat/department';
 import { deleteUser, getMe } from '../../../data/users.helper';
-import { deleteDepartment } from '../../../data/livechat/rooms';
+import { deleteDepartment, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { sleep } from '../../../../lib/utils/sleep';
 
 describe('LIVECHAT - business hours', function () {
@@ -33,8 +34,10 @@ describe('LIVECHAT - business hours', function () {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_enable_business_hours', true);
+		await createAgent();
 	});
 
+	let defaultBhId: any;
 	describe('[CE] livechat/business-hour', () => {
 		it('should fail when user doesnt have view-livechat-business-hours permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-business-hours');
@@ -62,6 +65,36 @@ describe('LIVECHAT - business hours', function () {
 			expect(response.body.businessHour.workHours[0].finish).to.be.an('object');
 			expect(response.body.businessHour.workHours[0].open).to.be.a('boolean');
 			expect(response.body.businessHour.timezone).to.be.an('object').that.has.property('name').that.is.an('string');
+
+			defaultBhId = response.body.businessHour;
+		});
+		it('should not allow a user to be available if BH are closed', async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				workHours: [
+					{
+						day: 'Monday',
+						open: true,
+						start: '00:00',
+						finish: '00:01',
+					},
+				],
+			});
+
+			const { body } = await makeAgentAvailable(credentials);
+
+			expect(body).to.have.property('success', false);
+			expect(body.error).to.be.equal('error-business-hours-are-closed');
+		});
+		it('should allow a user to be available if BH are open', async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				workHours: getWorkHours(true),
+			});
+
+			const { body } = await makeAgentAvailable(credentials);
+
+			expect(body).to.have.property('success', true);
 		});
 	});
 
@@ -92,6 +125,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 		it('should return a just created custom business hour', async () => {
 			const name = `business-hour-${Date.now()}`;
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
 			await saveBusinessHour({
 				name,
 				active: true,
@@ -127,6 +161,87 @@ describe('LIVECHAT - business hours', function () {
 			expect(body.businessHours[0].workHours[0]).to.have.property('start').that.is.an('object');
 			expect(body.businessHours[0].workHours[0]).to.have.property('finish').that.is.an('object');
 			expect(body.businessHours[0]).to.have.property('timezone').that.is.an('object').with.property('name', 'America/Sao_Paulo');
+		});
+		it('should fail if start and finish time are the same', async () => {
+			const name = `business-hour-${Date.now()}`;
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			const result = await saveBusinessHour({
+				name,
+				active: true,
+				type: LivechatBusinessHourTypes.CUSTOM,
+				workHours: [
+					{
+						day: 'Monday',
+						open: true,
+						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
+						start: '08:00',
+						// @ts-expect-error - same as previous one
+						finish: '08:00',
+					},
+				],
+				timezone: {
+					name: 'America/Sao_Paulo',
+					utc: '-03:00',
+				},
+				departmentsToApplyBusinessHour: '',
+				timezoneName: 'America/Sao_Paulo',
+			});
+
+			expect(result).to.have.property('error');
+		});
+		it('should fail if finish is before start time', async () => {
+			const name = `business-hour-${Date.now()}`;
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			const result = await saveBusinessHour({
+				name,
+				active: true,
+				type: LivechatBusinessHourTypes.CUSTOM,
+				workHours: [
+					{
+						day: 'Monday',
+						open: true,
+						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
+						start: '10:00',
+						// @ts-expect-error - same as previous one
+						finish: '08:00',
+					},
+				],
+				timezone: {
+					name: 'America/Sao_Paulo',
+					utc: '-03:00',
+				},
+				departmentsToApplyBusinessHour: '',
+				timezoneName: 'America/Sao_Paulo',
+			});
+
+			expect(result).to.have.property('error');
+		});
+		it('should fail if data is invalid', async () => {
+			const name = `business-hour-${Date.now()}`;
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			const result = await saveBusinessHour({
+				name,
+				active: true,
+				type: LivechatBusinessHourTypes.CUSTOM,
+				workHours: [
+					{
+						day: 'Monday',
+						open: true,
+						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
+						start: '20000',
+						// @ts-expect-error - same as previous one
+						finish: 'xxxxx',
+					},
+				],
+				timezone: {
+					name: 'America/Sao_Paulo',
+					utc: '-03:00',
+				},
+				departmentsToApplyBusinessHour: '',
+				timezoneName: 'America/Sao_Paulo',
+			});
+
+			expect(result).to.have.property('error');
 		});
 	});
 
