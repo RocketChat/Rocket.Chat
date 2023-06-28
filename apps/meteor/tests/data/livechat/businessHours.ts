@@ -1,5 +1,8 @@
+import { ILivechatBusinessHour } from "@rocket.chat/core-typings";
 import { api, credentials, methodCall, request } from "../api-data";
 import { updateEESetting, updateSetting } from "../permissions.helper"
+import moment from "moment";
+type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'> & { workHours: { day: string, start: string, finish: string, open: boolean }[] } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
 
 export const makeDefaultBusinessHourActiveAndClosed = async () => {
 	// enable settings
@@ -71,4 +74,19 @@ export const disableDefaultBusinessHour = async () => {
 				msg: 'method',
 			}),
 		});
+}
+
+export const getWorkHours = (open = true): ISaveBhApiWorkHour['workHours'] => {
+    const workHours: ISaveBhApiWorkHour['workHours'] = [];
+
+    for (let i = 0; i < 7; i++) {
+        workHours.push({
+            day: moment().day(i).format('dddd'),
+            start: '00:00',
+            finish: '23:59',
+            open,
+        });
+    }
+
+    return workHours;
 }
