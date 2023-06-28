@@ -87,19 +87,14 @@ export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHou
     const enabledBusinessHour = {
         ...businessHour,
         timezoneName: businessHour.timezone.name,
-        workHours: getWorkHours().map((workHour) => {
-            return {
-                ...workHour,
-                open,
-            }
-        }),
+        workHours: getWorkHours(open),
         departmentsToApplyBusinessHour: businessHour.departments?.map((department) => department._id).join(',') || '',
     }
 
     await saveBusinessHour(enabledBusinessHour as any);
 }
 
-const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
+export const getWorkHours = (open = true): ISaveBhApiWorkHour['workHours'] => {
     const workHours: ISaveBhApiWorkHour['workHours'] = [];
 
     for (let i = 0; i < 7; i++) {
@@ -107,7 +102,7 @@ const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
             day: moment().day(i).format('dddd'),
             start: '00:00',
             finish: '23:59',
-            open: true,
+            open,
         });
     }
 

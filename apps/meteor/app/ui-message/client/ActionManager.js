@@ -160,7 +160,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) =>
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, tmid, ...rest }) =>
 	new Promise(async (resolve, reject) => {
 		const triggerId = generateTriggerId(appId);
 
@@ -177,6 +177,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 					container,
 					mid,
 					rid,
+					tmid,
 					triggerId,
 					viewId,
 				});
