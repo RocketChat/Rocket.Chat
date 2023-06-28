@@ -202,25 +202,25 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 				return;
 			}
 
-			await getExternalMessageSender(
+			await getExternalMessageSender({
 				message,
 				isThreadedMessage,
-				this.bridge,
-				this.internalFileAdapter,
-				this.internalMessageAdapter,
-				this.internalUserAdapter,
-			).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
+				bridge: this.bridge,
+				internalFileAdapter: this.internalFileAdapter,
+				internalMessageAdapter: this.internalMessageAdapter,
+				internalUserAdapter: this.internalUserAdapter,
+			}).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
 			return;
 		}
 
-		await getExternalMessageSender(
+		await getExternalMessageSender({
 			message,
 			isThreadedMessage,
-			this.bridge,
-			this.internalFileAdapter,
-			this.internalMessageAdapter,
-			this.internalUserAdapter,
-		).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
+			bridge: this.bridge,
+			internalFileAdapter: this.internalFileAdapter,
+			internalMessageAdapter: this.internalMessageAdapter,
+			internalUserAdapter: this.internalUserAdapter,
+		}).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 	}
 
 	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {

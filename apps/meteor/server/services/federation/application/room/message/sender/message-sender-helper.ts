@@ -246,20 +246,27 @@ class ThreadFileExternalMessageSender implements IExternalMessageSender {
 	}
 }
 
-export const getExternalMessageSender = (
-	message: IMessage,
-	isThreadedMessage: boolean,
-	bridge: IFederationBridge,
-	internalFileHelper: RocketChatFileAdapter,
-	internalMessageAdapter: RocketChatMessageAdapter,
-	internalUserAdapter: RocketChatUserAdapter,
-): IExternalMessageSender => {
+export const getExternalMessageSender = ({
+	message,
+	bridge,
+	internalFileAdapter,
+	internalMessageAdapter,
+	internalUserAdapter,
+	isThreadedMessage,
+}: {
+	message: IMessage;
+	isThreadedMessage: boolean;
+	bridge: IFederationBridge;
+	internalFileAdapter: RocketChatFileAdapter;
+	internalMessageAdapter: RocketChatMessageAdapter;
+	internalUserAdapter: RocketChatUserAdapter;
+}): IExternalMessageSender => {
 	if (isThreadedMessage) {
 		return message.files
-			? new ThreadFileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
+			? new ThreadFileExternalMessageSender(bridge, internalFileAdapter, internalMessageAdapter)
 			: new ThreadTextExternalMessageSender(bridge, internalMessageAdapter, internalUserAdapter);
 	}
 	return message.files
-		? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
+		? new FileExternalMessageSender(bridge, internalFileAdapter, internalMessageAdapter)
 		: new TextExternalMessageSender(bridge, internalMessageAdapter, internalUserAdapter);
 };
