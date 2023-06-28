@@ -17,8 +17,13 @@ import {
 	LivechatPriority,
 } from '@rocket.chat/models';
 
+const { DBWATCHER_EXCLUDE_COLLECTIONS = '', DBWATCHER_ONLY_COLLECTIONS = '' } = process.env;
+
 export function getWatchCollections(): string[] {
-	return [
+	const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',').map((collection) => collection.trim());
+	const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',').map((collection) => collection.trim());
+
+	const collections = [
 		Messages.getCollectionName(),
 		Users.getCollectionName(),
 		Subscriptions.getCollectionName(),
@@ -36,4 +41,14 @@ export function getWatchCollections(): string[] {
 		Settings.getCollectionName(),
 		LivechatPriority.getCollectionName(),
 	];
+
+	if (onlyCollections.length === 0) {
+		return collections.filter((collection) => onlyCollections.includes(collection));
+	}
+
+	if (excludeCollections.length === 0) {
+		return collections.filter((collection) => !excludeCollections.includes(collection));
+	}
+
+	return collections;
 }
