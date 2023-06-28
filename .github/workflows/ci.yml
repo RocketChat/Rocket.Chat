@@ -259,6 +259,8 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -307,6 +309,8 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
 
   tests-done:
     name: ✅ Tests Done

@@ -22,14 +22,13 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
-		process.env.REPORTER_ROCKETCHAT_URL &&
-			process.env.REPORTER_ROCKETCHAT_API_KEY && [
-				'./reporters/rocketchat.ts',
-				{
-					url: process.env.REPORTER_ROCKETCHAT_URL,
-					apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
-				},
-			],
+		[
+			'./reporters/rocketchat.ts',
+			{
+				url: process.env.REPORTER_ROCKETCHAT_URL,
+				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
+			},
+		],
 		[
 			'playwright-qase-reporter',
 			{
