@@ -9907,6 +9907,7 @@ __metadata:
     preact-router: ^3.2.1
     query-string: ^7.1.3
     react-dom: ~17.0.2
+    react-hook-form: ^7.45.0
     react-i18next: ^11.16.9
     rimraf: ^3.0.2
     sass: ~1.62.1
@@ -34724,6 +34725,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
   checksum: 485cde0248e668ad1845b927f9cc05b434c384141bb03bc143a7d7cc937eebf119c935114ccbfa397b463808283dab5b2334022fe5dba975402b201e601d6876
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:^7.45.0":
+  version: 7.45.0
+  resolution: "react-hook-form@npm:7.45.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 3e35253f0efb0f77f5036c74f85cbdd425adb2fad20a14fc692d573fe552b3d9b7e7ac22193cd767f265fa292c33383d8721cfbdcc5ae41910a35a1ba3655f66
   languageName: node
   linkType: hard
 
