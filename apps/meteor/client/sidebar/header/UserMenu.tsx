@@ -20,7 +20,7 @@ const UserMenu: FC = () => {
 			icon={<UserAvatarWithStatus />}
 			selectionMode='multiple'
 			sections={sections}
-			title='Menu'
+			title='User menu'
 			onAction={handleAction}
 			isOpen={isOpen}
 			onOpenChange={setIsOpen}

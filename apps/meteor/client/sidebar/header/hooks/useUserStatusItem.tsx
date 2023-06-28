@@ -23,7 +23,7 @@ export const useUserStatusItem = (): GenericMenuItemProps[] => {
 			id: 'user-status',
 			disabled: presenceDisabled,
 			content: (
-				<Box display='flex' flexDirection='row' alignItems='center'>
+				<Box display='flex' flexDirection='row' alignItems='center' minWidth='x220'>
 					<Box mie='x4'>
 						<UserAvatar size='x36' username={user?.username || ''} etag={user?.avatarETag} />
 					</Box>
