@@ -8,7 +8,7 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('engagement-dashboard', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/admin/engagement-dashboard');
+		await page.goto('/admin/engagement');
 		await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort());
 	});
 	test('expect to trigger fallback error component', async ({ page }) => {
