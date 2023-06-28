@@ -13,7 +13,7 @@ import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceFor
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyAppInstall } from '../marketplace/appInstall';
-import { canEnableApp } from '../../../app/license/server/license';
+import { canEnableApp, isEnterprise } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
@@ -1124,14 +1124,36 @@ export class AppsRestApi {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
 
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const appId = this.urlParams.id;
+					const { version } = this.bodyParams;
+
+					const headers = getDefaultHeaders();
+
+					const request = await fetch(`${baseUrl}/v1/apps/${appId}?appVersion=${version}`, {
+						headers,
+					});
+
+					const [data] = await request.json();
+
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (!prl) {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
+					const storedApp = prl.getStorageItem();
+
+					const isEnterpriseEnableFeasible = isEnterprise() && data.isEnterpriseOnly;
+
+					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(this.bodyParams.status)) {
+						if (!isEnterpriseEnableFeasible) {
+							return API.v1.failure('Invalid environment for enabling enterprise app');
+						}
+					}
+
 					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
-						if (!(await canEnableApp(prl.getStorageItem()))) {
+						if (!(await canEnableApp(storedApp))) {
 							return API.v1.failure('Enabled apps have been maxed out');
 						}
 					}

@@ -13,6 +13,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import WarningModal from '../../components/WarningModal';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import IframeModal from './IframeModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
@@ -40,6 +41,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const { data } = useIsEnterprise();
+
+	const isEnterprise = data?.isEnterprise ?? false;
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -148,12 +152,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const handleEnable = useCallback(async () => {
 		try {
-			const { status } = await setAppStatus({ status: 'manually_enabled' });
+			const { status } = await setAppStatus({ status: 'manually_enabled', version: app.version });
 			warnEnableDisableApp(app.name, status, 'enable');
 		} catch (error) {
 			handleAPIError(error);
 		}
-	}, [app.name, setAppStatus]);
+	}, [app.name, app.version, setAppStatus]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {
@@ -294,6 +298,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}),
 		};
 
+		const isEnterpriseFeasible = app.isEnterpriseOnly && isEnterprise;
+		const shouldBeAbleToEnable = app.installed && isAdminUser && !isAppEnabled && isEnterpriseFeasible;
+
 		const installedAppOptions = {
 			...(context !== 'details' &&
 				isAdminUser &&
@@ -334,20 +341,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						action: handleDisable,
 					},
 				}),
-			...(app.installed &&
-				isAdminUser &&
-				!isAppEnabled && {
-					enable: {
-						label: (
-							<>
-								<Icon name='check' size='x16' marginInlineEnd='x4' />
-								{t('Enable')}
-							</>
-						),
-						disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
-						action: handleEnable,
-					},
-				}),
+			...(shouldBeAbleToEnable && {
+				enable: {
+					label: (
+						<>
+							<Icon name='check' size='x16' marginInlineEnd='x4' />
+							{t('Enable')}
+						</>
+					),
+					// disabled: isToDisable,
+					disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
+					action: handleEnable,
+				},
+			}),
 			...(app.installed &&
 				isAdminUser && {
 					divider: {
@@ -381,15 +387,16 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		t,
 		handleSubscription,
-		requestedEndUser,
-		button?.label,
+		button.label,
 		handleAcquireApp,
+		requestedEndUser,
+		isEnterprise,
+		isAppEnabled,
 		context,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
-		isAppEnabled,
 		handleDisable,
 		appCountQuery?.data?.hasUnlimitedApps,
 		appCountQuery?.data?.enabled,
