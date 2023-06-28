@@ -366,7 +366,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	}
 
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
-		return this.col.distinct('agentId', { departmentId: { $in: departmentIds } });
+		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 }
 

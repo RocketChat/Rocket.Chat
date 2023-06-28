@@ -138,14 +138,20 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
 		if (!department.businessHourId) {
-			bhLogger.debug(`onDepartmentDisabled: department ${department._id} has no business hour`);
+			bhLogger.debug({
+				msg: 'onDepartmentDisabled: department has no business hour',
+				departmentId: department._id,
+			});
 			return;
 		}
 
 		// Get business hour
 		let businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
-			bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
+			bhLogger.error({
+				msg: 'onDepartmentDisabled: business hour not found',
+				businessHourId: department.businessHourId,
+			});
 			return;
 		}
 
@@ -155,7 +161,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		// cleanup user's cache for default business hour and this business hour
 		const defaultBH = await this.BusinessHourRepository.findOneDefaultBusinessHour();
 		if (!defaultBH) {
-			bhLogger.error(`onDepartmentDisabled: default business hour not found`);
+			bhLogger.error('onDepartmentDisabled: default business hour not found');
 			throw new Error('Default business hour not found');
 		}
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds([businessHour._id, defaultBH._id]);
@@ -163,14 +169,20 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		// If i'm the only one, disable the business hour
 		const imTheOnlyOne = !(await LivechatDepartment.countByBusinessHourIdExcludingDepartmentId(businessHour._id, department._id));
 		if (imTheOnlyOne) {
-			bhLogger.warn(
-				`onDepartmentDisabled: department ${department._id} is the only one on business hour ${businessHour._id}, disabling it`,
-			);
+			bhLogger.warn({
+				msg: 'onDepartmentDisabled: department is the only one on business hour, disabling it',
+				departmentId: department._id,
+				businessHourId: businessHour._id,
+			});
 			await this.BusinessHourRepository.disableBusinessHour(businessHour._id);
 
 			businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 			if (!businessHour) {
-				bhLogger.error(`onDepartmentDisabled: business hour ${department.businessHourId} not found`);
+				bhLogger.error({
+					msg: 'onDepartmentDisabled: business hour not found',
+					businessHourId: department.businessHourId,
+				});
+
 				throw new Error(`Business hour ${department.businessHourId} not found`);
 			}
 		}
@@ -182,7 +194,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
 		for await (const bh of businessHourToOpen) {
-			bhLogger.debug(`onDepartmentDisabled: opening business hour ${bh._id}`);
+			bhLogger.debug({
+				msg: 'onDepartmentDisabled: opening business hour',
+				businessHourId: bh._id,
+			});
 			await openBusinessHour(bh, false);
 		}
 
@@ -190,7 +205,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		await businessHourManager.restartCronJobsIfNecessary();
 
-		bhLogger.debug(`onDepartmentDisabled: successfully processed department ${department._id} disabled event`);
+		bhLogger.debug({
+			msg: 'onDepartmentDisabled: successfully processed department disabled event',
+			departmentId: department._id,
+		});
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {

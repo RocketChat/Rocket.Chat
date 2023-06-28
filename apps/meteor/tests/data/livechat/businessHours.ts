@@ -7,12 +7,13 @@ type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'>
 
 // TODO: Migrate to an API call and return the business hour updated/created
 export const saveBusinessHour = async (businessHour: ISaveBhApiWorkHour) => {
-	await request
-		.post(methodCall('livechat:saveBusinessHour'))
-		.set(credentials)
-		.send({ message: JSON.stringify({ params: [businessHour], msg: 'method', method: 'livechat:saveBusinessHour', id: '101' }) })
-		.expect(200);
-	return true;
+    const { body } = await request
+        .post(methodCall('livechat:saveBusinessHour'))
+        .set(credentials)
+        .send({ message: JSON.stringify({ params: [businessHour], msg: 'method', method: 'livechat:saveBusinessHour', id: '101' }) })
+        .expect(200);
+
+    return JSON.parse(body.message);
 };
 
 export const createCustomBusinessHour = async (departments: string[]): Promise<ILivechatBusinessHour> => {
@@ -41,7 +42,6 @@ export const createCustomBusinessHour = async (departments: string[]): Promise<I
 
     return createdBusinessHour;
 };
-
 
 
 export const makeDefaultBusinessHourActiveAndClosed = async () => {
@@ -166,7 +166,7 @@ export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHou
     await saveBusinessHour(enabledBusinessHour as any);
 }
 
-const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
+export const getWorkHours = (open = true): ISaveBhApiWorkHour['workHours'] => {
     const workHours: ISaveBhApiWorkHour['workHours'] = [];
 
     for (let i = 0; i < 7; i++) {
@@ -174,7 +174,8 @@ const getWorkHours = (): ISaveBhApiWorkHour['workHours'] => {
             day: moment().day(i).format('dddd'),
             start: '00:00',
             finish: '23:59',
-            open: true,
+
+            open,
         });
     }
 
