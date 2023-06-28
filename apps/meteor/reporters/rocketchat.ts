@@ -13,6 +13,8 @@ class RocketChatReporter implements Reporter {
 	constructor(options: { url: string; apiKey: string; branch: string; draft: boolean }) {
 		this.url = options.url;
 		this.apiKey = options.apiKey;
+		this.branch = options.branch;
+		this.draft = options.draft;
 	}
 
 	onTestEnd(test: TestCase, result: TestResult) {
