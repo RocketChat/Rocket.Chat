@@ -1,4 +1,3 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useState, memo } from 'react';
 
