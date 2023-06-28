@@ -56,7 +56,7 @@ export type FormSectionProps = {
 	commitRef: MutableRefObject<Record<string, () => void>>;
 };
 
-type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'> };
+type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights' | 'featuresPreview'> };
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();

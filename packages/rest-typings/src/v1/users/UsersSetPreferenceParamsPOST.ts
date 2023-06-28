@@ -40,7 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
-		featuresPreview: { name: string; value: boolean; i18n: TranslationKey };
+		featuresPreview?: { name: string; value: boolean; i18n: TranslationKey };
 		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
 		idleTimeLimit?: number;
