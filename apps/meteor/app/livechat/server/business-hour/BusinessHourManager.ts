@@ -132,6 +132,7 @@ export class BusinessHourManager {
 		}
 
 		const { start, finish } = workHours;
+
 		await Promise.all(start.map(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback)));
 		await Promise.all(finish.map(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback)));
 	}
