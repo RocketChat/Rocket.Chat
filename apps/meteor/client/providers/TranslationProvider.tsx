@@ -11,7 +11,9 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
+import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
+import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
@@ -217,6 +219,15 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				console.error('Error loading moment locale:', error);
 			});
 	}, [language, loadLocale, availableLanguages]);
+
+	useEffect(() => {
+		const cb = () => {
+			AppClientOrchestratorInstance.getAppClientManager().initialize();
+			AppClientOrchestratorInstance.load();
+		};
+		CachedCollectionManager.onLogin(cb);
+		return () => CachedCollectionManager.off('login', cb);
+	}, []);
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>

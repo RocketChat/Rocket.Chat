@@ -5,7 +5,7 @@ import { useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import GenericTable from '../../../../components/GenericTable';
+import { GenericTableHeaderCell } from '../../../../components/GenericTable';
 
 type RoleHeaderProps = {
 	_id: IRole['_id'];
@@ -24,14 +24,14 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement =
 	});
 
 	return (
-		<GenericTable.HeaderCell clickable pi='x4' p='x8'>
+		<GenericTableHeaderCell pi='x4' p='x8'>
 			<Button secondary onClick={handleEditRole}>
 				<Margins inline='x2'>
 					<span>{description || name}</span>
 					<Icon name='edit' size='x16' />
 				</Margins>
 			</Button>
-		</GenericTable.HeaderCell>
+		</GenericTableHeaderCell>
 	);
 };
 
