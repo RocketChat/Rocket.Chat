@@ -5,11 +5,14 @@ import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPalet
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
+import Navbar from '../../../navbar/Navbar';
 import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
+	const newNavbarEnabled = useFeaturePreview('newNavbar');
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
@@ -49,7 +52,12 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		>
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
-			{!removeSidenav ? <Sidebar /> : null}
+			{!removeSidenav ? (
+				<>
+					{newNavbarEnabled && <Navbar />}
+					<Sidebar />
+				</>
+			) : null}
 			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
 			</div>
