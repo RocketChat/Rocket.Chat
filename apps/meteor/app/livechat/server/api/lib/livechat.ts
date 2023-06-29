@@ -90,9 +90,10 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		},
 	};
 
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 	const rooms = departmentId
-		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
-		: await LivechatRooms.findOpenByVisitorToken(token, options).toArray();
+		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options, extraQuery).toArray()
+		: await LivechatRooms.findOpenByVisitorToken(token, options, extraQuery).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
@@ -125,7 +126,7 @@ export function getRoom({
 	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
+export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 

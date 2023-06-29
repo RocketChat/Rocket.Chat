@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { Document } from 'mongodb';
-import type { ILivechatInquiryRecord, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 
 import { memoizeDebounce } from './debounceByParams';
 import { settings } from '../../../../../app/settings/server';
@@ -19,6 +19,7 @@ import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { updateInquiryQueueSla } from './SlaHelper';
+import { callbacks } from '../../../../../lib/callbacks';
 
 type QueueInfo = {
 	message: {
@@ -32,11 +33,6 @@ type QueueInfo = {
 	numberMostRecentChats: number;
 };
 
-type InquiryWithExtraData = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & {
-	position: number;
-	defaultAgent?: { username: string; agentId: string };
-};
-
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
@@ -47,7 +43,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 	}
 
 	if (agentId) {
-		const user = await Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
@@ -106,10 +102,14 @@ const normalizeQueueInfo = async ({
 	return { spot, message, estimatedWaitTimeSeconds };
 };
 
-export const dispatchInquiryPosition = async (inquiry: InquiryWithExtraData, queueInfo?: QueueInfo) => {
+export const dispatchInquiryPosition = async (inquiry: Omit<InquiryWithAgentInfo, 'v'>, queueInfo?: QueueInfo) => {
 	const { position, department } = inquiry;
+	// Avoid broadcasting if no position was determined
+	if (position === undefined) {
+		return;
+	}
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = (inquiry: InquiryWithExtraData) => {
+	const propagateInquiryPosition = (inquiry: Omit<InquiryWithAgentInfo, 'v'>) => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
@@ -146,7 +146,7 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithExtraData) => {
+export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithAgentInfo) => {
 	const queue = department || 'Public';
 	helperLogger.debug(`Processing items on queue ${queue}`);
 
@@ -204,8 +204,9 @@ export const updatePredictedVisitorAbandonment = async () => {
 		await LivechatRooms.unsetAllPredictedVisitorAbandonment();
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const promisesArray: Promise<void>[] = [];
-		await LivechatRooms.findOpen().forEach((room) => {
+		await LivechatRooms.findOpen(extraQuery).forEach((room) => {
 			promisesArray.push(setPredictedVisitorAbandonmentTime(room));
 		});
 
@@ -240,7 +241,8 @@ export const updateSLAInquiries = async (sla?: Pick<IOmnichannelServiceLevelAgre
 
 	const { _id: slaId } = sla;
 	const promises: Promise<void>[] = [];
-	await LivechatRooms.findOpenBySlaId(slaId, {}).forEach((room) => {
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	await LivechatRooms.findOpenBySlaId(slaId, {}, extraQuery).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises);

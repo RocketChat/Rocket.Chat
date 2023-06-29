@@ -1306,10 +1306,23 @@ describe('[Rooms]', function () {
 		const suffix = `test-${Date.now()}`;
 		const fnameRoom = `Ελληνικά-${suffix}`;
 		const nameRoom = `Ellinika-${suffix}`;
+		const discussionRoomName = `${nameRoom}-discussion`;
+
+		let testGroup;
 
 		before((done) => {
 			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
-				createRoom({ type: 'p', name: fnameRoom }).end(done);
+				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
+					testGroup = res.body.group;
+					request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: discussionRoomName,
+						})
+						.end(done);
+				});
 			});
 		});
 
@@ -1399,6 +1412,73 @@ describe('[Rooms]', function () {
 					})
 					.end(done);
 			});
+		});
+		it('should filter by only rooms types', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0].t).to.be.equal('p');
+					expect(res.body.rooms.find((room) => room.name === nameRoom)).to.exist;
+					expect(res.body.rooms.find((room) => room.name === discussionRoomName)).to.not.exist;
+				})
+				.end(done);
+		});
+		it('should filter by only name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should filter by type and name at the same query', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should return an empty array when filter by wrong type and correct room name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['c'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(0);
+				})
+				.end(done);
 		});
 	});
 

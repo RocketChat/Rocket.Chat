@@ -19,6 +19,7 @@ import { normalizeMessageFileUpload } from '../../../../utils/server/functions/n
 import { settings } from '../../../../settings/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
+import { callbacks } from '../../../../../lib/callbacks';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -254,7 +255,8 @@ API.v1.addRoute(
 			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).toArray();
+				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken, {}, extraQuery).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {
