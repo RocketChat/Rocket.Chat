@@ -38,7 +38,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		await agent1.page.close();
 		await agent2.page.close();
 	});
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
 		await agent1.poHomeOmnichannel.sidenav.switchStatus('online');
 		await agent2.poHomeOmnichannel.sidenav.switchStatus('offline');
@@ -48,9 +48,9 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
-		poLiveChat = new OmnichannelLiveChat(page);
+		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
-		await poLiveChat.btnOpenLiveChat('R').click();
+		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();

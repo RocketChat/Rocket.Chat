@@ -33,9 +33,10 @@ Meteor.startup(function () {
 		if (login.type !== 'resume') {
 			return;
 		}
-		void Presence.newConnection(login.user._id, login.connection.id, nodeId).then(() => {
+		void (async function () {
+			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();
-		});
+		})();
 	});
 
 	Accounts.onLogout(function (login: any): void {

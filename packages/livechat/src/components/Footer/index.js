@@ -11,7 +11,7 @@ export const Footer = ({ children, className, ...props }) => (
 	</footer>
 );
 
-export const FooterContent = ({ children, className, ...props }) => (
+export const FooterContent = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'footer__content', {}, [className])} {...props}>
 		{children}
 	</div>
