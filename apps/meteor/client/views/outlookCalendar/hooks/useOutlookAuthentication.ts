@@ -1,7 +1,8 @@
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import { getDesktopApp } from '../../lib/utils/getDesktopApp';
+import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
 
 export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () => void }) => {
 	const t = useTranslation();
@@ -10,18 +11,20 @@ export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () 
 	const desktopApp = getDesktopApp();
 	const canSync = !!desktopApp?.getOutlookEvents;
 
-	const handleCheckCredentials = useCallback(async () => {
-		try {
-			const isAuth = await desktopApp?.hasOutlookCredentials();
-			setEnableAuth(isAuth || false);
-		} catch (error) {
-			console.error(error);
-		}
-	}, [desktopApp]);
-
-	useEffect(() => {
-		handleCheckCredentials();
-	}, [handleCheckCredentials]);
+	const { refetch } = useQuery(
+		['checkOutlookCredentials'],
+		async () => {
+			return desktopApp?.hasOutlookCredentials() || false;
+		},
+		{
+			onSuccess: (data) => {
+				setEnableAuth(data);
+			},
+			onError: (error) => {
+				console.error(error);
+			},
+		},
+	);
 
 	const handleDisableAuth = () => {
 		desktopApp?.clearOutlookCredentials();
@@ -29,5 +32,5 @@ export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () 
 		dispatchToastMessage({ type: 'success', message: t('Outlook_authentication_disabled') });
 	};
 
-	return { authEnabled, canSync, handleDisableAuth, handleCheckCredentials };
+	return { authEnabled, canSync, handleDisableAuth, handleCheckCredentials: refetch };
 };

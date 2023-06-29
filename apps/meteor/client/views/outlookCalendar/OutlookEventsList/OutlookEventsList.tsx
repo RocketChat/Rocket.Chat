@@ -16,9 +16,9 @@ import {
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import { useSyncOutlookEvents } from '../../../hooks/useSyncOutlookCalendar';
 import { getErrorMessage } from '../../../lib/errorHandling';
-import { useOutlookAuthentication } from '../useOutlookAuthentication';
+import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
+import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
@@ -30,16 +30,17 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 	const t = useTranslation();
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url')
+	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url');
 	const { authEnabled, canSync, handleCheckCredentials } = useOutlookAuthentication({ onChangeRoute });
 
-	const syncOutlookEvents = useSyncOutlookEvents();
-
-	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
-	const { data, isLoading, isError, error, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isLoading, isError, error, refetch } = useQuery(
+		['getCalendarEventsList'],
+		async () => calendarData({ date: new Date().toISOString() }),
+		{
+			refetchOnWindowFocus: false,
+		},
+	);
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -109,7 +110,7 @@ const OutlookEventsList = ({ onClose, onChangeRoute }: OutlookEventsListProps): 
 				</>
 			)}
 
-			{(authEnabled || (!authEnabled && total > 0)) && (
+			{(authEnabled || !canSync) && (
 				<>
 					<ContextualbarContent paddingInline={0} ref={ref} color='default'>
 						{(total === 0 || isError) && (

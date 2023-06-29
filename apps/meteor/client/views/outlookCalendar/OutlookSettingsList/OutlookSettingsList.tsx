@@ -11,7 +11,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 } from '../../../components/Contextualbar';
-import { useOutlookAuthentication } from '../useOutlookAuthentication';
+import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {

@@ -1,7 +1,6 @@
-/* eslint-disable new-cap */
-import { getDesktopApp } from '../lib/utils/getDesktopApp';
+import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
 
-export const useSyncOutlookEvents = (): (() => Promise<void>) => {
+export const syncOutlookEvents = (): (() => Promise<void>) => {
 	const date = new Date();
 	const desktopApp = getDesktopApp();
 
