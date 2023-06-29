@@ -42,11 +42,11 @@ export function getWatchCollections(): string[] {
 		LivechatPriority.getCollectionName(),
 	];
 
-	if (onlyCollections.length === 0) {
+	if (onlyCollections.length > 0) {
 		return collections.filter((collection) => onlyCollections.includes(collection));
 	}
 
-	if (excludeCollections.length === 0) {
+	if (excludeCollections.length > 0) {
 		return collections.filter((collection) => !excludeCollections.includes(collection));
 	}
 
