@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick, usePosition } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 
 const options = {
 	margin: 8,
@@ -14,8 +14,8 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
-export const CustomDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
-	function CustomDropDownListWrapper({ children, onClose }, ref) {
+export const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
+	function MultiSelectCustomListWrapper({ children, onClose }, ref) {
 		const target = useRef<HTMLElement>(null);
 		useOutsideClick([target], onClose);
 		const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);

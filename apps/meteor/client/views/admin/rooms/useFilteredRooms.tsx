@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isPublicRoom, isDiscussion, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 
-import type { OptionProp } from './DropDown/CustomDropDown';
+import type { OptionProp } from '../../../../../../packages/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
 
 const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => !isPublicRoom(room);
 const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room);
@@ -38,9 +38,3 @@ export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boole
 
 	return filtered;
 };
-
-/*
-	Instead of creating a custom function to remove repeated items from the array of filtered elements, we can use the ES6 Set feature, which takes an array, but skips the duplicates, because every element in a set must be unique in the collection.
-
-	Remember that null is treated as undefined and that it is a different concept from an array: a Set is a “keyed collection” while the second is an “indexed collection”
-*/

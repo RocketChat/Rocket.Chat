@@ -1,19 +1,30 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
-import { isValidReference } from '../../../marketplace/helpers/isValidReference';
-import { onMouseEventPreventSideEffects } from '../../../marketplace/helpers/onMouseEventPreventSideEffects';
-import { CustomDropDownAnchor } from './CustomDropDownAnchor';
-import { CustomDropDownList } from './CustomDropDownList';
-import { CustomDropDownListWrapper } from './CustomDropDownListWrapper';
+import { MultiSelectCustomAnchor } from './MultiSelectCustomAnchor';
+import { MultiSelectCustomList } from './MultiSelectCustomList';
+import { MultiSelectCustomListWrapper } from './MultiSelectCustomListWrapper';
+
+const isValidReference = (reference: React.RefObject<HTMLElement>, e: { target: Node | null }): boolean => {
+	const isValidTarget = Boolean(e.target);
+	const isValidReference = e.target !== reference.current && !reference.current?.contains(e.target);
+
+	return isValidTarget && isValidReference;
+};
+
+export const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
+	e.preventDefault();
+	e.stopPropagation();
+	e.stopImmediatePropagation();
+};
 
 /**
  * @param dropdownOptions options available for the multiselect dropdown list
  * @param defaultTitle dropdown text before selecting any options (or all of them). For example: 'All rooms'
 	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
- * @param selectedOptions array with clicked options. This is used in the useFilteredRooms hook, to filter the Rooms' table. This array joins all of the individual clicked options from all available CustomDropDown components in the page. It helps to create a union filter for all the selections.
+ * @param selectedOptions array with clicked options. This is used in the useFilteredRooms hook, to filter the Rooms' table. This array joins all of the individual clicked options from all available MultiSelectCustom components in the page. It helps to create a union filter for all the selections.
  * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
  * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
  * @returns a React Component that should be used with a custom hook for filters, such as useFilteredRooms.tsx.
@@ -55,7 +66,7 @@ export type DropDownProps = {
 	searchBarText?: TranslationKey;
 };
 
-export const CustomDropDown = ({
+export const MultiSelectCustom = ({
 	dropdownOptions,
 	defaultTitle,
 	selectedOptionsTitle,
@@ -107,7 +118,7 @@ export const CustomDropDown = ({
 
 	return (
 		<>
-			<CustomDropDownAnchor
+			<MultiSelectCustomAnchor
 				ref={reference}
 				onClick={toggleCollapsed as any}
 				defaultTitle={defaultTitle}
@@ -116,9 +127,9 @@ export const CustomDropDown = ({
 				maxCount={dropdownOptions.length}
 			/>
 			{collapsed && (
-				<CustomDropDownListWrapper ref={reference} onClose={onClose}>
-					<CustomDropDownList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
-				</CustomDropDownListWrapper>
+				<MultiSelectCustomListWrapper ref={reference} onClose={onClose}>
+					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
+				</MultiSelectCustomListWrapper>
 			)}
 		</>
 	);

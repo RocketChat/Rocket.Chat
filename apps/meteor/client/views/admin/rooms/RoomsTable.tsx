@@ -6,6 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 
+import {
+	MultiSelectCustom,
+	type OptionProp,
+} from '../../../../../../packages/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -20,7 +24,6 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { CustomDropDown, type OptionProp } from './DropDown/CustomDropDown';
 import FilterByTypeAndText from './FilterByTypeAndText';
 import { useFilteredRooms } from './useFilteredRooms';
 
@@ -282,7 +285,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	return (
 		<>
 			<FilterByTypeAndText setFilter={setRoomFilter}>
-				<CustomDropDown
+				<MultiSelectCustom
 					dropdownOptions={roomTypeOptions}
 					defaultTitle={'All_rooms' as any}
 					selectedOptionsTitle='Rooms'
@@ -291,7 +294,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					customSetSelected={setRoomTypeOptions}
 				/>
 
-				<CustomDropDown
+				<MultiSelectCustom
 					dropdownOptions={roomVisibilityOptions}
 					defaultTitle={'All_visible' as any}
 					selectedOptionsTitle='Visible'

@@ -2,9 +2,9 @@ import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
-type CustomDropDownAnchorProps = {
+type MultiSelectCustomAnchorProps = {
 	onClick?: MouseEventHandler<HTMLElement>;
 	defaultTitle: TranslationKey;
 	selectedOptionsTitle: TranslationKey;
@@ -12,7 +12,7 @@ type CustomDropDownAnchorProps = {
 	maxCount: number;
 } & ComponentProps<typeof Button>;
 
-export const CustomDropDownAnchor = forwardRef<HTMLElement, CustomDropDownAnchorProps>(function CustomDropDownAnchor(
+export const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
 	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {

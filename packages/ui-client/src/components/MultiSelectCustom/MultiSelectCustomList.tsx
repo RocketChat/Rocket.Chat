@@ -2,12 +2,12 @@ import { Box, CheckBox, Icon, Option, TextInput, Tile } from '@rocket.chat/fusel
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 
-import type { OptionProp } from './CustomDropDown';
+import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
-export const CustomDropDownList = ({
+export const MultiSelectCustomList = ({
 	options,
 	onSelected,
 	searchBarText,
@@ -23,9 +23,7 @@ export const CustomDropDownList = ({
 
 	const [optionSearch, setOptionSearch] = useState('');
 
-	useEffect(() => {
-		return setOptionSearch(text);
-	}, [setOptionSearch, text]);
+	useEffect(() => setOptionSearch(text), [setOptionSearch, text]);
 
 	const filteredOptions = useFilteredOptions(optionSearch, options);
 
