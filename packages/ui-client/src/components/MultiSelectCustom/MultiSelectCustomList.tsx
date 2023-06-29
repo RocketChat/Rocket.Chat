@@ -2,8 +2,7 @@ import { Box, CheckBox, Icon, Option, TextInput, Tile } from '@rocket.chat/fusel
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
@@ -54,7 +53,7 @@ export const MultiSelectCustomList = ({
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pi='x8' w='full' justifyContent='space-between' display='inline-flex'>
+							<Box pi='x8' w='full' justifyContent='space-between' display='flex'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} />
