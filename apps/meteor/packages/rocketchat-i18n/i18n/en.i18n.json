@@ -3290,6 +3290,7 @@
   "Max_Retry": "Maximum attemps to reconnect to the server",
   "Maximum": "Maximum",
   "Maximum_number_of_guests_reached": "Maximum number of guests reached",
+  "Maximum_Wrong_Messages_Allowed_during_Verification":"Maximum Wrong Messages Allowed during Verification",
   "Me": "Me",
   "Media": "Media",
   "Medium": "Medium",

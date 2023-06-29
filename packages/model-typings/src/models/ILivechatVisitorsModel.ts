@@ -56,4 +56,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	removeEmailCodeByVisitorIdAndCode(visitorId: string, code: string): Promise<UpdateResult>;
 
 	updateVerificationStatus(visitorId: string, value: boolean): Promise<UpdateResult>;
+
+	updateWrongMessageCount(visitorId: string, value: number): Promise<UpdateResult>;
 }

@@ -91,6 +91,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
+	updateWrongMessageCount(visitorId: string, value: number): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: visitorId },
+			{
+				$set: {
+					wrongMessageCount: value,
+				},
+			},
+		);
+	}
+
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null> {
 		const query = {
 			'phone.phoneNumber': phone,

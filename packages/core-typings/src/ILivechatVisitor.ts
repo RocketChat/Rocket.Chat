@@ -21,6 +21,11 @@ export interface IVisitorEmail {
 	verified?: boolean;
 }
 
+// enum VerificationStatusEnum {
+// 	InProgress = 'InProgress',
+// 	Off = 'Off',
+// 	UnVerified = 'UnVerified',
+// }
 interface ILivechatData {
 	[k: string]: unknown;
 }
@@ -56,6 +61,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	contactManager?: {
 		username: string;
 	};
+	wrongMessageCount?: number;
 }
 
 export interface ILivechatVisitorDTO {

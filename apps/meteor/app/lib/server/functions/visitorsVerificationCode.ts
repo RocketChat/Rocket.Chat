@@ -98,6 +98,14 @@ export const verifyVisitorCode = async function (room: IOmnichannelGenericRoom, 
 			return true;
 		}
 	}
+	if (!visitor?.wrongMessageCount) {
+		await LivechatVisitors.updateWrongMessageCount(visitorId, 1);
+	} else if (visitor.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
+		await LivechatVisitors.updateVerificationStatus(visitor._id, false);
+		await LivechatVisitors.updateWrongMessageCount(visitorId, 0);
+	} else {
+		await LivechatVisitors.updateWrongMessageCount(visitorId, visitor.wrongMessageCount + 1);
+	}
 	const bot = await Users.findOneById('rocket.cat');
 	const message = {
 		msg: i18n.t('Sorry, this is not a valid OTP, kindly provide another input'),
