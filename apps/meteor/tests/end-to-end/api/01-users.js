@@ -1768,6 +1768,7 @@ describe('[Users]', function () {
 
 		it('should throw an error if the password length is less than the minimum length', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-minLength',
@@ -1792,10 +1793,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password length is greater than the maximum length', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
 			const expectedError = {
@@ -1821,11 +1824,13 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			await updateSetting('Accounts_Password_Policy_MaxLength', -1);
 		});
 
 		it('should throw an error if the password contains repeating characters', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-repeatingCharacters',
@@ -1850,10 +1855,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one lowercase character', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-oneLowercase',
@@ -1878,10 +1885,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one uppercase character', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-oneUppercase',
@@ -1906,10 +1915,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one numerical character', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-oneNumber',
@@ -1934,10 +1945,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one special character', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-oneSpecial',
@@ -1962,10 +1975,12 @@ describe('[Users]', function () {
 				.expect(400);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should be able to update if the password meets all the validation rules', async () => {
 			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
@@ -1984,6 +1999,7 @@ describe('[Users]', function () {
 				.expect(200);
 
 			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 	});
 
