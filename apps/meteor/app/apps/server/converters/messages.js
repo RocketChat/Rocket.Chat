@@ -1,5 +1,5 @@
-import { Random } from '@rocket.chat/random';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { v4 as uuid } from 'uuid';
 
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
@@ -65,7 +65,7 @@ export class AppMessagesConverter {
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = this.orch.getConverters().get('users').convertToApp(message.u);
+					user = await this.orch.getConverters().get('users').convertToApp(message.u);
 				}
 
 				delete message.u;
@@ -119,7 +119,7 @@ export class AppMessagesConverter {
 		const attachments = this._convertAppAttachments(message.attachments);
 
 		const newMessage = {
-			_id: message.id || Random.id(),
+			_id: message.id || uuid(),
 			...('threadId' in message && { tmid: message.threadId }),
 			rid: room._id,
 			u,
@@ -237,6 +237,8 @@ export class AppMessagesConverter {
 			},
 		};
 
-		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
+		const promisedAttachments = attachments.map(async (attachment) => transformMappedData(attachment, map));
+
+		return Promise.all(promisedAttachments);
 	}
 }
