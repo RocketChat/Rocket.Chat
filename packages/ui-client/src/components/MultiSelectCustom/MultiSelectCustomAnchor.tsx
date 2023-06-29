@@ -2,7 +2,8 @@ import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
-import { forwardRef } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { forwardRef } from 'react';
 
 type MultiSelectCustomAnchorProps = {
 	onClick?: MouseEventHandler<HTMLElement>;

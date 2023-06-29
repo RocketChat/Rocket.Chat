@@ -2,7 +2,8 @@ import { Box, CheckBox, Icon, Option, TextInput, Tile } from '@rocket.chat/fusel
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
@@ -36,7 +37,7 @@ export const MultiSelectCustomList = ({
 					<Box mi='x8' mbs='x4' display='flex' flexWrap='wrap' alignItems='center'>
 						<TextInput
 							flexGrow={2}
-							minWidth='x240'
+							minWidth='x224'
 							placeholder={t(searchBarText)}
 							addon={<Icon name='magnifier' size='x20' />}
 							onChange={handleChange}
@@ -46,21 +47,21 @@ export const MultiSelectCustomList = ({
 				</Option>
 			)}
 			{filteredOptions.map((option) => (
-				<Fragment key={option.id}>
+				<Box is={Fragment} key={option.id}>
 					{option.isGroupTitle ? (
-						<Box pi='x16' pbs='x8' pbe='x4' fontScale='p2b' color='default'>
+						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pi='x8' w='full' justifyContent='space-between' display='flex'>
+							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} />
+								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} />
 							</Box>
 						</Option>
 					)}
-				</Fragment>
+				</Box>
 			))}
 		</Tile>
 	);
