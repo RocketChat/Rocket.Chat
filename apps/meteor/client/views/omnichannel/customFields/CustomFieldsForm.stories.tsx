@@ -3,11 +3,11 @@ import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import CustomFieldsForm from './CustomFieldsForm';
+import NewCustomFieldsForm from './NewCustomFieldsForm';
 
 export default {
-	title: 'Omnichannel/CustomFieldsForm',
-	component: CustomFieldsForm,
+	title: 'Omnichannel/NewCustomFieldsForm',
+	component: NewCustomFieldsForm,
 	decorators: [
 		(fn) => (
 			<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
@@ -15,9 +15,9 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof CustomFieldsForm>;
+} as ComponentMeta<typeof NewCustomFieldsForm>;
 
-export const Default: ComponentStory<typeof CustomFieldsForm> = (args) => <CustomFieldsForm {...args} />;
+export const Default: ComponentStory<typeof NewCustomFieldsForm> = (args) => <NewCustomFieldsForm {...args} />;
 Default.storyName = 'CustomFieldsForm';
 Default.args = {
 	values: {

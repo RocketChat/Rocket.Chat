@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -115,46 +115,46 @@ function ImportHistoryPage() {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Table fixed data-qa-id='ImportTable'>
-					<Table.Head>
-						<Table.Row>
-							<Table.Cell is='th' rowSpan={2} width='x140'>
+					<TableHead>
+						<TableRow>
+							<TableCell is='th' rowSpan={2} width='x140'>
 								{t('Import_Type')}
-							</Table.Cell>
-							<Table.Cell is='th' rowSpan={2}>
+							</TableCell>
+							<TableCell is='th' rowSpan={2}>
 								{t('Last_Updated')}
-							</Table.Cell>
+							</TableCell>
 							{!small && (
 								<>
-									<Table.Cell is='th' rowSpan={2}>
+									<TableCell is='th' rowSpan={2}>
 										{t('Last_Status')}
-									</Table.Cell>
-									<Table.Cell is='th' rowSpan={2}>
+									</TableCell>
+									<TableCell is='th' rowSpan={2}>
 										{t('File')}
-									</Table.Cell>
-									<Table.Cell is='th' align='center' colSpan={4} width='x320'>
+									</TableCell>
+									<TableCell is='th' align='center' colSpan={4} width='x320'>
 										{t('Counters')}
-									</Table.Cell>
+									</TableCell>
 								</>
 							)}
-						</Table.Row>
+						</TableRow>
 						{!small && (
-							<Table.Row>
-								<Table.Cell is='th' align='center'>
+							<TableRow>
+								<TableCell is='th' align='center'>
 									{t('Users')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Channels')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Messages')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Total')}
-								</Table.Cell>
-							</Table.Row>
+								</TableCell>
+							</TableRow>
 						)}
-					</Table.Head>
-					<Table.Body>
+					</TableHead>
+					<TableBody>
 						{isLoading && (
 							<>
 								{Array.from({ length: 20 }, (_, i) => (
@@ -176,7 +176,7 @@ function ImportHistoryPage() {
 									))}
 							</>
 						)}
-					</Table.Body>
+					</TableBody>
 				</Table>
 			</Page.ScrollableContentWithShadow>
 		</Page>
