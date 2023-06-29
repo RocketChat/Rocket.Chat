@@ -44,11 +44,15 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
+	// After logout, users are turned not-available by default
+	// This will turn them available unless they put themselves offline (manual status change)
 	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
-			{ livechatStatusSystemModified: true },
+			// Why this works: statusDefault is the property set when a user manually changes their status
+			// So if it's set to offline, we can be sure the user will be offline after login and we can skip the update
+			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
 	}
@@ -76,6 +80,15 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.workHours.forEach((hour: any) => {
 			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+
+			if (hour.open && finishUtc.isBefore(startUtc)) {
+				throw new Error('error-business-hour-finish-time-before-start-time');
+			}
+
+			if (hour.open && startUtc.isSame(finishUtc)) {
+				throw new Error('error-business-hour-finish-time-equals-start-time');
+			}
+
 			hour.start = {
 				time: hour.start,
 				utc: {

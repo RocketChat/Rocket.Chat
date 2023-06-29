@@ -95,9 +95,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 										}}
 										axisLeft={null}
 										animate={true}
-										// @ts-ignore
-										motionStiffness={90}
-										motionDamping={15}
+										motionConfig='stiff'
 										theme={{
 											// TODO: Get it from theme
 											axis: {

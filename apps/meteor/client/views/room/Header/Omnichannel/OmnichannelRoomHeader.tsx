@@ -1,4 +1,4 @@
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
@@ -36,10 +36,10 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 		() => ({
 			...parentSlot,
 			start: (!!isMobile || name === 'omnichannel-directory' || name === 'omnichannel-current-chats') && (
-				<TemplateHeader.ToolBox>
+				<HeaderToolbox>
 					{isMobile && <BurgerMenu />}
 					{<BackButton routeName={name} />}
-				</TemplateHeader.ToolBox>
+				</HeaderToolbox>
 			),
 			posContent: <QuickActions room={room} />,
 		}),

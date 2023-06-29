@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { useAppsReload, useAppsResult } from '../AppsContext';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import type { appsDataType } from '../hooks/useFilteredApps';
@@ -23,9 +23,8 @@ import PrivateEmptyState from './PrivateEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
-	const { marketplaceApps, installedApps, privateApps } = useAppsResult();
+	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
-	const reload = useAppsReload();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [currentRouteName] = useCurrentRoute();
@@ -36,10 +35,8 @@ const AppsPageContent = (): ReactElement => {
 
 	const context = useRouteParameter('context');
 
-	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
 	const isRequested = context === 'requested';
-	const isPrivate = context === 'private';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -76,16 +73,17 @@ const AppsPageContent = (): ReactElement => {
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const getAppsData = useCallback((): appsDataType => {
-		if (isMarketplace || isEnterprise || isRequested) {
-			return marketplaceApps;
+		switch (context) {
+			case 'enterprise':
+			case 'explore':
+			case 'requested':
+				return marketplaceApps;
+			case 'private':
+				return privateApps;
+			default:
+				return installedApps;
 		}
-
-		if (isPrivate) {
-			return privateApps;
-		}
-
-		return installedApps;
-	}, [isMarketplace, isEnterprise, isRequested, isPrivate, installedApps, marketplaceApps, privateApps]);
+	}, [context, marketplaceApps, installedApps, privateApps]);
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
@@ -172,7 +170,7 @@ const AppsPageContent = (): ReactElement => {
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}
-					appsResult={appsResult}
+					appsResult={appsResult.value}
 					itemsPerPage={itemsPerPage}
 					current={current}
 					onSetItemsPerPage={onSetItemsPerPage}

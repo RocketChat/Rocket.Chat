@@ -322,7 +322,6 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			file: '',
 			getKeyInfo: () => '<X509Data></X509Data>',
 			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};

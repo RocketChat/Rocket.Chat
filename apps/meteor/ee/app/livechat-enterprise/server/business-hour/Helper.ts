@@ -21,9 +21,31 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	return agentIdsWithoutDepartment;
 };
 
+const getAllAgentIdsWithDepartmentNotConnectedToBusinessHour = async (): Promise<string[]> => {
+	const activeDepartmentsWithoutBusinessHour = (
+		await LivechatDepartment.findActiveDepartmentsWithoutBusinessHour({
+			projection: { _id: 1 },
+		}).toArray()
+	).map((dept) => dept._id);
+
+	const agentIdsWithDepartmentNotConnectedToBusinessHour = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(
+		activeDepartmentsWithoutBusinessHour,
+	);
+	return agentIdsWithDepartmentNotConnectedToBusinessHour;
+};
+
+const getAllAgentIdsForDefaultBusinessHour = async (): Promise<string[]> => {
+	const [withoutDepartment, withDepartmentNotConnectedToBusinessHour] = await Promise.all([
+		getAllAgentIdsWithoutDepartment(),
+		getAllAgentIdsWithDepartmentNotConnectedToBusinessHour(),
+	]);
+
+	return [...new Set([...withoutDepartment, ...withDepartmentNotConnectedToBusinessHour])];
+};
+
 const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
-		return getAllAgentIdsWithoutDepartment();
+		return getAllAgentIdsForDefaultBusinessHour();
 	}
 	const departmentIds = (
 		await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, {

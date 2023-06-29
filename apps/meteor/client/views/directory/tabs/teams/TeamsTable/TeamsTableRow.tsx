@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell, Avatar } from '@rocket.chat/fuselage';
+import { Box, Avatar } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { RoomIcon } from '../../../../../components/RoomIcon';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -20,8 +21,8 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(team);
 
 	return (
-		<TableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
-			<TableCell>
+		<GenericTableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
+			<GenericTableCell>
 				<Box display='flex'>
 					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
 					<Box flexGrow={1} mi='x8' withTruncatedText>
@@ -35,16 +36,16 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 						{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' withTruncatedText content={topic} />}
 					</Box>
 				</Box>
-			</TableCell>
-			<TableCell fontScale='p2' color='hint' withTruncatedText>
+			</GenericTableCell>
+			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 				{roomsCount}
-			</TableCell>
+			</GenericTableCell>
 			{mediaQuery && ts && (
-				<TableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{formatDate(ts)}
-				</TableCell>
+				</GenericTableCell>
 			)}
-		</TableRow>
+		</GenericTableRow>
 	);
 };
 

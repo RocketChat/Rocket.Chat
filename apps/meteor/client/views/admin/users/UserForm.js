@@ -10,16 +10,16 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useState } from 'react';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { useTranslation, useAccountsCustomFields } from '@rocket.chat/ui-contexts';
+import React, { useCallback, useMemo, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import CustomFieldsForm from '../../../components/CustomFieldsForm';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, isSmtpEnabled, ...props }) {
 	const t = useTranslation();
-	const [hasCustomFields, setHasCustomFields] = useState(false);
 
 	const {
 		name,
@@ -55,7 +55,17 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		handleSendWelcomeEmail,
 	} = formHandlers;
 
-	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
+	const customFieldsMetadata = useAccountsCustomFields();
+
+	const { control, watch } = useForm({
+		defaultValues: { customFields: { ...customFields } },
+		mode: 'onBlur',
+	});
+
+	useEffect(() => {
+		const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
+		return () => subscription.unsubscribe();
+	}, [watch, handleCustomFields]);
 
 	return (
 		<ContextualbarScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
@@ -274,13 +284,17 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 						),
 					[handleSendWelcomeEmail, t, sendWelcomeEmail, isSmtpEnabled],
 				)}
-				{hasCustomFields && (
-					<>
-						<Divider />
-						<Box fontScale='h4'>{t('Custom_Fields')}</Box>
-					</>
+				{useMemo(
+					() =>
+						customFieldsMetadata && (
+							<>
+								<Divider />
+								<Box fontScale='h4'>{t('Custom_Fields')}</Box>
+								<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
+							</>
+						),
+					[customFieldsMetadata, control, t],
 				)}
-				<CustomFieldsForm onLoadFields={onLoadCustomFields} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 				{append}
 			</FieldGroup>
 		</ContextualbarScrollableContent>
