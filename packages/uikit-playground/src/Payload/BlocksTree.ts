@@ -16,7 +16,6 @@ import {
   actionWithRadioButton,
   actionWithCheckbox,
   actionWithCallout,
-  actionWithToastBar,
   actionWithTimePicker,
   actionWithTabNavigation,
 } from './action';
@@ -125,10 +124,6 @@ const BlocksTree: Item = [
       {
         label: 'callout',
         payload: actionWithCallout,
-      },
-      {
-        label: 'toast bar',
-        payload: actionWithToastBar,
       },
       {
         label: 'tab navigation',

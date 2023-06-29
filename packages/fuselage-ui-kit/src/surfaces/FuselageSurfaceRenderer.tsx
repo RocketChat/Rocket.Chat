@@ -20,7 +20,6 @@ import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 import RadioButtonElement from '../elements/RadioButtonElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import CalloutElement from '../elements/CalloutElement';
-import ToastBarElement from '../elements/ToastBarElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import TabNavigationElement from '../elements/TabNavigationElement';
 import MarkdownTextElement from '../elements/MarkdownTextElement';
@@ -439,26 +438,6 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
 
     return (
       <CalloutElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
-
-  toast_bar(
-    block: UiKit.ToastBarElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
-
-    return (
-      <ToastBarElement
         key={index}
         block={block}
         context={context}
