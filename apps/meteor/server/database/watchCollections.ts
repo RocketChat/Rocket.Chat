@@ -19,8 +19,13 @@ import {
 
 const { DBWATCHER_EXCLUDE_COLLECTIONS = '', DBWATCHER_ONLY_COLLECTIONS = '' } = process.env;
 
-const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',').map((collection) => collection.trim());
-const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',').map((collection) => collection.trim());
+const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',')
+	.map((collection) => collection.trim())
+	.filter(Boolean);
+
+const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
+	.map((collection) => collection.trim())
+	.filter(Boolean);
 
 export function getWatchCollections(): string[] {
 	const collections = [
