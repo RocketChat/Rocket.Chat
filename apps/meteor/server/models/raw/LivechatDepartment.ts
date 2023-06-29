@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatDepartmentWithBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -118,9 +118,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
-	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartmentWithBusinessHour> {
 		const query = { businessHourId };
-		return this.find(query, options);
+		return this.find<ILivechatDepartmentWithBusinessHour>(query, options);
 	}
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {

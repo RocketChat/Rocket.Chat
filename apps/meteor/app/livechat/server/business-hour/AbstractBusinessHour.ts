@@ -18,6 +18,7 @@ export interface IBusinessHourBehavior {
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
+	allowStartNewConversation(departmentId?: string): Promise<boolean>;
 }
 
 export interface IBusinessHourType {

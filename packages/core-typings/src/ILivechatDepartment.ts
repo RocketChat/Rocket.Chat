@@ -33,3 +33,5 @@ export type LivechatDepartmentDTO = {
 	fallbackForwardDepartment?: string | undefined;
 	departmentsAllowedToForward?: string[] | undefined;
 };
+
+export type ILivechatDepartmentWithBusinessHour = ILivechatDepartment & Required<Pick<ILivechatDepartment, 'businessHourId'>>;

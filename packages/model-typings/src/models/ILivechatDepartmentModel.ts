@@ -1,5 +1,5 @@
 import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatDepartmentWithBusinessHour } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -13,7 +13,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		options: FindOptions<ILivechatDepartment>,
 	): FindCursor<ILivechatDepartment>;
 
-	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartmentWithBusinessHour>;
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 

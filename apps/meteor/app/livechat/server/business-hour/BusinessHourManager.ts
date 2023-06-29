@@ -53,6 +53,13 @@ export class BusinessHourManager {
 		return this.behavior.allowAgentChangeServiceStatus(agentId);
 	}
 
+	async allowStartNewConversation(departmentId?: string): Promise<boolean> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return true;
+		}
+		return this.behavior.allowStartNewConversation(departmentId);
+	}
+
 	registerBusinessHourType(businessHourType: IBusinessHourType): void {
 		this.types.set(businessHourType.name, businessHourType);
 	}
