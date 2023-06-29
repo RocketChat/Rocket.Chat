@@ -19,10 +19,10 @@ import {
 
 const { DBWATCHER_EXCLUDE_COLLECTIONS = '', DBWATCHER_ONLY_COLLECTIONS = '' } = process.env;
 
-export function getWatchCollections(): string[] {
-	const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',').map((collection) => collection.trim());
-	const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',').map((collection) => collection.trim());
+const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',').map((collection) => collection.trim());
+const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',').map((collection) => collection.trim());
 
+export function getWatchCollections(): string[] {
 	const collections = [
 		Messages.getCollectionName(),
 		Users.getCollectionName(),
