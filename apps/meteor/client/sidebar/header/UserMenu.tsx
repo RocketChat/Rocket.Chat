@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 import React, { useState, memo } from 'react';
 
-import GenericMenu from '../../components/GenericMenu';
-import type { GenericMenuItemProps } from '../../components/GenericMenuItem';
-import { useHandleMenuAction } from '../../hooks/useHandleMenuAction';
+import GenericMenu from '../../components/GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../components/GenericMenu/GenericMenuItem';
+import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import { useUserMenu } from './hooks/useUserMenu';
 

@@ -4,9 +4,9 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React from 'react';
 
-import { useHandleMenuAction } from '../hooks/useHandleMenuAction';
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
+import { useHandleMenuAction } from './hooks/useHandleMenuAction';
 
 type GenericMenuCommonProps = {
 	icon?: ComponentProps<typeof IconButton>['icon'];
