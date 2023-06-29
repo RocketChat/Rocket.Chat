@@ -83,4 +83,6 @@ export class Provider extends Component {
 
 export const { Consumer } = StoreContext;
 
+export { StoreContext };
+
 export default store;

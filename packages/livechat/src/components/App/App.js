@@ -238,7 +238,8 @@ export class App extends Component {
 				<ChatFinished path='/chat-finished' {...screenProps} />
 				<GDPRAgreement path='/gdpr' {...screenProps} />
 				<LeaveMessage path='/leave-message' {...screenProps} />
-				<Register path='/register' {...screenProps} />
+				{/* TODO: Find a better way to avoid prop drilling with that amout of props (perhaps create a screen context/provider) */}
+				<Register path='/register' screenProps={screenProps} />
 				<SwitchDepartment path='/switch-department' {...screenProps} />
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>

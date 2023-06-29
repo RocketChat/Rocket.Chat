@@ -2,8 +2,8 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
+import Register from '.';
 import { screenDecorator, screenProps } from '../../helpers.stories';
-import Register from './component';
 
 export default {
 	title: 'Routes/Register',
