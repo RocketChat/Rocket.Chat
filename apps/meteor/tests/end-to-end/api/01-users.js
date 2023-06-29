@@ -1464,8 +1464,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	// eslint-disable-next-line no-restricted-properties
-	describe.only('[/users.updateOwnBasicInfo]', () => {
+	describe('[/users.updateOwnBasicInfo]', () => {
 		let user;
 		before((done) => {
 			const username = `user.test.${Date.now()}`;
