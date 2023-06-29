@@ -1,7 +1,7 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { MultiSelectCustomAnchor } from './MultiSelectCustomAnchor';
 import { MultiSelectCustomList } from './MultiSelectCustomList';

@@ -1,15 +1,13 @@
 import { type IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { OptionProp } from '@rocket.chat/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
+import { MultiSelectCustom } from '@rocket.chat/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 
-import {
-	MultiSelectCustom,
-	type OptionProp,
-} from '../../../../../../packages/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,

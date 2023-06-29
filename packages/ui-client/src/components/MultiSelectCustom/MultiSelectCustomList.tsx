@@ -2,7 +2,8 @@ import { Box, CheckBox, Icon, Option, TextInput, Tile } from '@rocket.chat/fusel
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
