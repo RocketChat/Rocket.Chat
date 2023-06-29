@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import React from 'react';
 
-import type { GenericMenuItemProps } from '../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
 export const useThemeItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();

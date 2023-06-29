@@ -8,7 +8,7 @@ import React from 'react';
 import { AccountBox } from '../../../../app/ui-utils/client';
 import { userStatus } from '../../../../app/user-status/client';
 import { callbacks } from '../../../../lib/callbacks';
-import type { GenericMenuItemProps } from '../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
 import { useStatusDisabledModal } from '../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';

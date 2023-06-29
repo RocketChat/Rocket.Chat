@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLogout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
