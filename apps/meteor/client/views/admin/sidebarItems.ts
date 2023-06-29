@@ -14,22 +14,22 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
-		icon: 'cloud-plus',
 		href: 'cloud',
 		i18nLabel: 'Registration',
+		icon: 'cloud-plus',
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
-		icon: 'shield-alt',
 		href: 'moderation-console',
 		i18nLabel: 'Moderation',
+		icon: 'shield-alt',
 		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		icon: 'discover',
 		href: 'federation-dashboard',
 		i18nLabel: 'Federation',
+		icon: 'discover',
 		permissionGranted: (): boolean => hasPermission('view-federation-data'),
 	},
 	{
@@ -51,40 +51,40 @@ export const {
 		permissionGranted: (): boolean => hasPermission('create-invite-links'),
 	},
 	{
-		icon: 'user',
 		href: 'user-status',
 		i18nLabel: 'User_Status',
+		icon: 'user',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
 	},
 	{
-		icon: 'user-lock',
 		href: 'admin-permissions',
 		i18nLabel: 'Permissions',
+		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
 	},
 	{
-		icon: 'mail',
 		href: 'admin-email-inboxes',
 		i18nLabel: 'Email_Inboxes',
+		icon: 'mail',
 		tag: 'Alpha',
 		permissionGranted: (): boolean => hasPermission('manage-email-inbox'),
 	},
 	{
-		icon: 'mail',
 		href: 'admin-mailer',
 		i18nLabel: 'Mailer',
+		icon: 'mail',
 		permissionGranted: (): boolean => hasAllPermission('access-mailer'),
 	},
 	{
-		icon: 'login',
 		href: 'admin-oauth-apps',
 		i18nLabel: 'Third_party_login',
+		icon: 'login',
 		permissionGranted: (): boolean => hasAllPermission('manage-oauth-apps'),
 	},
 	{
-		icon: 'code',
 		href: 'admin-integrations',
 		i18nLabel: 'Integrations',
+		icon: 'code',
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission([
 				'manage-outgoing-integrations',
@@ -112,15 +112,15 @@ export const {
 		permissionGranted: (): boolean => hasPermission('manage-sounds'),
 	},
 	{
-		icon: 'emoji',
 		href: 'emoji-custom',
 		i18nLabel: 'Emoji',
+		icon: 'emoji',
 		permissionGranted: (): boolean => hasPermission('manage-emoji'),
 	},
 	{
-		icon: 'customize',
 		href: 'admin-settings',
 		i18nLabel: 'Settings',
+		icon: 'customize',
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
