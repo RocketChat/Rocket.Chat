@@ -165,7 +165,6 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-department-disabled',
 		);
-		// TODO: Binding the correct "this" for the context of onDepartmentArchived. Should we do the same for other callbacks?
 		callbacks.add(
 			'livechat.afterDepartmentArchived',
 			this.behavior.onDepartmentArchived.bind(this),
