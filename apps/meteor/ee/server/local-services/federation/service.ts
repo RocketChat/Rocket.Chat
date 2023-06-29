@@ -11,6 +11,7 @@ import type { IFederationBridgeEE } from './domain/IFederationBridge';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
 import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
+import type { PersistentQueue } from '../../../../server/services/federation/infrastructure/queue/PersistentQueue';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalUserServiceEE: FederationUserServiceEE;
@@ -23,12 +24,16 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 	protected internalUserAdapterEE: RocketChatUserAdapterEE;
 
+	protected internalQueueForJoinExternalPublicRoom: PersistentQueue;
+
 	constructor() {
 		const internalQueueInstance = FederationFactoryEE.buildFederationQueue();
 		const internalSettingsAdapter = FederationFactoryEE.buildInternalSettingsAdapter();
 		const bridgeEE = FederationFactoryEE.buildFederationBridge(internalSettingsAdapter, internalQueueInstance);
+
 		super(bridgeEE, internalQueueInstance, internalSettingsAdapter);
 
+		this.internalQueueForJoinExternalPublicRoom = FederationFactoryEE.buildInternalQueueAdapter();
 		this.internalRoomAdapterEE = FederationFactoryEE.buildInternalRoomAdapter();
 		this.internalUserAdapterEE = FederationFactoryEE.buildInternalUserAdapter();
 		this.internalUserServiceEE = FederationFactoryEE.buildRoomApplicationService(
@@ -51,7 +56,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 			this.getInternalSettingsAdapter(),
 			this.getInternalMessageAdapter(),
 			this.getInternalNotificationAdapter(),
-			FederationFactoryEE.buildInternalQueueAdapter(),
+			this.internalQueueForJoinExternalPublicRoom,
 			this.getBridge(),
 		);
 	}
@@ -140,6 +145,12 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 export class FederationServiceEE extends AbstractBaseFederationServiceEE implements IFederationServiceEE {
 	protected name = 'federation-enterprise';
+
+	constructor() {
+		super();
+
+		this.internalQueueForJoinExternalPublicRoom.startWorkersWith(this.joinExternalPublicRoom.bind(this)).catch(console.error);
+	}
 
 	public async createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void> {
 		await this.directMessageRoomServiceSenderEE.createInternalLocalDirectMessageRoom(

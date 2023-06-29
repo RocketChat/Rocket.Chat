@@ -30,7 +30,7 @@ export class QueueWrapper implements IQueueWrapper {
 	constructor(private readonly db: Db, collectionName: string, maxWorkers = 5) {
 		this.logger = Logger;
 		this.queue = new MessageQueue();
-		this.queue.collectionName = `${this.queueCollection}_${collectionName}`;
+		this.queue.collectionName = collectionName ? `${this.queueCollection}_${collectionName}` : this.queueCollection;
 		this.queue.maxWorkers = maxWorkers;
 		this.queue.databasePromise = async () => this.db;
 	}

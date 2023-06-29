@@ -20,7 +20,7 @@ import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/servic
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import type { RocketChatQueueAdapter as RocketChatQueueAdapterEE } from '../../../../../../../server/services/federation/infrastructure/queue/RocketChatQueueAdapter';
+import type { PersistentQueue } from '../../../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(
@@ -30,7 +30,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
-		protected internalQueueAdapter: RocketChatQueueAdapterEE,
+		protected internalQueueForJoinExternalPublicRoom: PersistentQueue,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
@@ -149,7 +149,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
-		await this.internalQueueAdapter.enqueueJob('federation-enterprise.joinExternalPublicRoom', {
+		await this.internalQueueForJoinExternalPublicRoom.addToQueue({
 			internalUserId,
 			externalRoomId,
 			roomName,

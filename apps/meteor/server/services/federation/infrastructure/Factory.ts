@@ -62,7 +62,7 @@ export class FederationFactory {
 	public static buildFederationQueue(): PersistentQueue {
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-		return new PersistentQueue(db);
+		return new PersistentQueue(db, 'matrix_event');
 	}
 
 	public static buildRoomServiceReceiver(

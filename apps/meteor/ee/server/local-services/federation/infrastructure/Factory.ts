@@ -1,3 +1,4 @@
+import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
 import { FederationDirectMessageRoomServiceSender } from '../application/room/sender/DirectMessageRoomServiceSender';
@@ -14,8 +15,7 @@ import type { RocketChatFileAdapter } from '../../../../../server/services/feder
 import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
-import type { PersistentQueue } from '../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
-import { RocketChatQueueAdapter as RocketChatQueueAdapterEE } from '../../../../../server/services/federation/infrastructure/queue/RocketChatQueueAdapter';
+import { PersistentQueue } from '../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
 
 export class FederationFactoryEE extends FederationFactory {
 	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: PersistentQueue): IFederationBridgeEE {
@@ -34,8 +34,10 @@ export class FederationFactoryEE extends FederationFactory {
 		return new RocketChatUserAdapterEE();
 	}
 
-	public static buildInternalQueueAdapter(): RocketChatQueueAdapterEE {
-		return new RocketChatQueueAdapterEE();
+	public static buildInternalQueueAdapter(): PersistentQueue {
+		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+		return new PersistentQueue(db, 'matrix_join_external_public_room');
 	}
 
 	public static buildRoomServiceSenderEE(
@@ -45,7 +47,7 @@ export class FederationFactoryEE extends FederationFactory {
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalMessageAdapter: RocketChatMessageAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
-		internalQueueAdapter: RocketChatQueueAdapterEE,
+		internalQueueAdapter: PersistentQueue,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(
