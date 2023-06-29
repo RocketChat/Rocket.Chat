@@ -77,25 +77,34 @@ declare module 'meteor/kadira:flow-router' {
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 	};
 
+	/** @deprecated */
 	class Group<TGroupName extends GroupName, TParentGroup extends Group<GroupName> | undefined = any> {
+		/** @deprecated */
 		constructor(router: Router, options?: GroupOptions<TGroupName>, parent?: TParentGroup);
 
+		/** @deprecated */
 		name: TGroupName;
 
+		/** @deprecated */
 		prefix: GroupPrefix<TGroupName>;
 
+		/** @deprecated */
 		options: GroupOptions<TGroupName>;
 
+		/** @deprecated */
 		parent: TParentGroup;
 
+		/** @deprecated */
 		route<TRouteName extends RouteNamesOf<TGroupName>>(
 			pathDef: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
 			options: RouteOptions<TRouteName>,
 			group?: TParentGroup,
 		): Route<TRouteName, TGroup>;
 
+		/** @deprecated */
 		group(options?: GroupOptions<TGroupName>): Group;
 
+		/** @deprecated */
 		callSubscriptions(current: Current): void;
 	}
 
@@ -126,6 +135,7 @@ declare module 'meteor/kadira:flow-router' {
 			group: TGroup,
 		): Route<TRouteName, TGroup>;
 
+		/** @deprecated */
 		group<TGroupName extends GroupName>(options: GroupOptions<TGroupName>): Group<TGroupName>;
 
 		path(pathDef: RouteName | RouterPathPattern, fields?: Record<string, string>, queryParams?: Record<string, string>): string;

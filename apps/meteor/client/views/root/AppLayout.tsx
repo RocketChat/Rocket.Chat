@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import React, { useEffect, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -9,12 +8,12 @@ import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 
-const AppLayout = (): ReactElement => {
+const AppLayout = () => {
 	useEffect(() => {
 		document.body.classList.add('color-primary-font-color', 'rcx-content--main');
 
 		return () => {
-			document.body.classList.add('color-primary-font-color', 'rcx-content--main');
+			document.body.classList.remove('color-primary-font-color', 'rcx-content--main');
 		};
 	}, []);
 

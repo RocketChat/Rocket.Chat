@@ -1,8 +1,5 @@
-import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
-import type { Context, Current, Group, GroupName, GroupPrefix, RouteNamesOf, RouteOptions, TrimPrefix } from 'meteor/kadira:flow-router';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
+import type { IRouterPaths, RouterPathPattern } from '@rocket.chat/ui-contexts';
+import type { GroupName, GroupPrefix, RouteNamesOf, TrimPrefix } from 'meteor/kadira:flow-router';
 import type { ElementType, ReactNode } from 'react';
 import React from 'react';
 
@@ -10,167 +7,57 @@ import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
 
-let oldRoute: Current;
-
-const registerLazyComponentRoute = <TGroupName extends GroupName, TRouteName extends RouteNamesOf<TGroupName>>(
-	routeGroup: Group<TGroupName>,
-	RouterComponent: ElementType<{
-		children?: ReactNode;
-	}>,
-	path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-	{
-		component: RouteComponent,
-		props,
-		ready = true,
-		...rest
-	}: RouteOptions<TRouteName> & {
-		component: ElementType;
-		props?: Record<string, unknown>;
-		ready?: boolean;
-	},
-): [register: () => void, unregister: () => void] => {
-	const enabled = new ReactiveVar(ready ? true : undefined);
-	let computation: Tracker.Computation | undefined;
-
-	const handleEnter = (_context: Context, _redirect: (pathDef: string) => void, stop: () => void): void => {
-		const _enabled = Tracker.nonreactive(() => enabled.get());
-		if (_enabled === false) {
-			stop();
-			return;
-		}
-
-		computation = Tracker.autorun(() => {
-			const _enabled = enabled.get();
-
-			if (_enabled === false) {
-				router.navigate('/');
-			}
-		});
-	};
-
-	const handleExit = (context: Context): void => {
-		computation?.stop();
-
-		if (!context.oldRoute) {
-			return;
-		}
-
-		if (context.route.group?.name === context.oldRoute?.group?.name) {
-			return;
-		}
-
-		oldRoute?.route?.name &&
-			router.navigate({
-				name: oldRoute.route.name,
-				params: oldRoute.params,
-				search: oldRoute.queryParams,
-			});
-	};
-
-	routeGroup.route(path, {
-		...rest,
-		triggersEnter: [handleEnter, ...(rest.triggersEnter ?? [])],
-		triggersExit: [handleExit, ...(rest.triggersExit ?? [])],
-		action() {
-			appLayout.render(
-				<MainLayout>
-					<RouterComponent>
-						<RouteComponent {...props} />
-					</RouterComponent>
-				</MainLayout>,
-			);
-		},
-	});
-
-	return [(): void => enabled.set(true), (): void => enabled.set(false)];
-};
-
 export const createRouteGroup = <TGroupName extends GroupName>(
 	name: TGroupName,
 	prefix: GroupPrefix<TGroupName>,
 	RouterComponent: ElementType<{
 		children?: ReactNode;
 	}>,
-): {
-	(path: '/' | '', options: RouteOptions<`${TGroupName}-index`>): [register: () => void, unregister: () => void];
-	(
-		path: '/' | '',
-		options: RouteOptions<`${TGroupName}-index`> & {
-			component: ElementType;
-			props?: Record<string, unknown>;
-			ready?: boolean;
-		},
-	): [register: () => void, unregister: () => void];
-	<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-		options: RouteOptions<TRouteName> & {
-			component: ElementType;
-			props?: Record<string, unknown>;
-			ready?: boolean;
-		},
-	): [register: () => void, unregister: () => void];
-	<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-		options: RouteOptions<TRouteName>,
-	): void;
-} => {
-	const routeGroup = FlowRouter.group({
-		name,
-		prefix,
+) => {
+	router.defineRoute({
+		path: prefix,
+		id: `${name}-index`,
+		element: appLayout.wrap(
+			<MainLayout>
+				<RouterComponent />
+			</MainLayout>,
+		),
 	});
 
-	function registerRoute(path: '/' | '', options: RouteOptions<`${TGroupName}-index`>): [register: () => void, unregister: () => void];
-	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
+	return <TRouteName extends RouteNamesOf<TGroupName>>(
 		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-		options: RouteOptions<TRouteName> & {
+		{
+			name,
+			component: RouteComponent,
+			props,
+			ready = true,
+		}: {
+			name: TRouteName;
 			component: ElementType;
 			props?: Record<string, unknown>;
 			ready?: boolean;
 		},
-	): [register: () => void, unregister: () => void];
-	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-		options: RouteOptions<TRouteName>,
-	): void;
-	function registerRoute<TRouteName extends RouteNamesOf<TGroupName>>(
-		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-		options:
-			| RouteOptions<TRouteName>
-			| (RouteOptions<TRouteName> & {
-					component: ElementType;
-					props?: Record<string, unknown>;
-					ready?: boolean;
-			  }),
-	): [register: () => void, unregister: () => void] | void {
-		if ('component' in options) {
-			return registerLazyComponentRoute(routeGroup, RouterComponent, path, options);
+	): [register: () => void, unregister: () => void] => {
+		let unregister: (() => void) | undefined;
+
+		const register = () => {
+			unregister = router.defineRoute({
+				path: `${prefix}${path}` as RouterPathPattern,
+				id: name,
+				element: appLayout.wrap(
+					<MainLayout>
+						<RouterComponent>
+							<RouteComponent {...props} />
+						</RouterComponent>
+					</MainLayout>,
+				),
+			});
+		};
+
+		if (ready) {
+			register();
 		}
 
-		routeGroup.route(path, options);
-	}
-
-	registerRoute('/', {
-		name: `${name}-index`,
-		action() {
-			appLayout.render(
-				<MainLayout>
-					<RouterComponent />
-				</MainLayout>,
-			);
-		},
-	});
-
-	return registerRoute;
+		return [register, () => unregister?.()];
+	};
 };
-
-Tracker.autorun(
-	(() => {
-		let oldName: RouteName | undefined;
-		return () => {
-			const name = router.getRouteName();
-			if (oldName !== name) {
-				oldRoute = FlowRouter.current();
-			}
-		};
-	})(),
-);

@@ -1,41 +1,30 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import type { RouteName } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import React, { lazy } from 'react';
+import React, { createElement, lazy, useEffect } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { t } from '../../app/utils/lib/i18n';
 import { appLayout } from '../lib/appLayout';
-import { dispatchToastMessage } from '../lib/toast';
 import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 
-const PageLoading = lazy(() => import('../views/root/PageLoading'));
+const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
+const MeetRoute = lazy(() => import('../views/meet/MeetRoute'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
-const InvitePage = lazy(() => import('../views/invite/InvitePage'));
-const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
-
-const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
-const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
-const ResetPasswordPage = lazy(() =>
-	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
-);
-
-const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
-const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-const MeetPage = lazy(() => import('../views/meet/MeetPage'));
-
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
-
+const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
+const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
+const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
+const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
+const ResetPasswordPage = lazy(() =>
+	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+);
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
+const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 
 FlowRouter.wait();
 
@@ -122,242 +111,144 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-FlowRouter.route('/', {
-	name: 'index',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<PageLoading />
-			</MainLayout>,
-		);
-
-		if (!Meteor.userId()) {
-			return router.navigate('/home');
-		}
-
-		Tracker.autorun((c) => {
-			if (FlowRouter.subsReady() === true) {
-				setTimeout(async () => {
-					const user = Meteor.user() as IUser | null;
-					if (user?.defaultRoom) {
-						const room = user.defaultRoom.split('/') as [routeName: RouteName, routeParam: string];
-						router.navigate({
-							name: room[0],
-							params: { name: room[1] },
-							search: router.getSearchParameters(),
-						});
-					} else {
-						router.navigate('/home');
-					}
-				}, 0);
-				c.stop();
-			}
-		});
-	},
+router.defineRoute({
+	path: '/',
+	id: 'index',
+	element: appLayout.wrap(<IndexRoute />),
 });
 
-FlowRouter.route('/login', {
-	name: 'login',
-	action() {
-		router.navigate('/home');
-	},
-});
-
-FlowRouter.route('/meet/:rid', {
-	name: 'meet',
-	async action() {
-		const { token } = router.getSearchParameters();
-
-		if (token !== undefined) {
-			// visitor login
-			const result = await sdk.rest.get(`/v1/livechat/visitor/${token}`);
-			if ('visitor' in result) {
-				appLayout.render(<MeetPage />);
-				return;
-			}
-
-			dispatchToastMessage({ type: 'error', message: t('Visitor_does_not_exist') });
-			return;
-		}
-
-		if (!Meteor.userId()) {
+router.defineRoute({
+	path: '/login',
+	id: 'login',
+	element: createElement(() => {
+		useEffect(() => {
 			router.navigate('/home');
-			return;
-		}
+		}, []);
 
-		appLayout.render(<MeetPage />);
-	},
+		return null;
+	}),
 });
 
-FlowRouter.route('/home', {
-	name: 'home',
-	action() {
-		const { saml_idp_credentialToken: token, ...search } = router.getSearchParameters();
-
-		KonchatNotification.getDesktopPermission();
-		if (token !== undefined) {
-			router.navigate(
-				{
-					pathname: router.getLocationPathname(),
-					search,
-				},
-				{ replace: true },
-			);
-
-			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
-				if (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-
-				appLayout.render(
-					<MainLayout>
-						<HomePage />
-					</MainLayout>,
-				);
-			});
-
-			return;
-		}
-
-		appLayout.render(
-			<MainLayout>
-				<HomePage />
-			</MainLayout>,
-		);
-	},
+router.defineRoute({
+	path: '/meet/:rid',
+	id: 'meet',
+	element: appLayout.wrap(<MeetRoute />),
 });
 
-FlowRouter.route('/directory/:tab?', {
-	name: 'directory',
-	action: () => {
-		appLayout.render(
-			<MainLayout>
-				<DirectoryPage />
-			</MainLayout>,
-		);
-	},
+router.defineRoute({
+	path: '/home',
+	id: 'home',
+	element: appLayout.wrap(
+		<MainLayout>
+			<HomePage />
+		</MainLayout>,
+	),
 });
 
-FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
-	name: 'omnichannel-directory',
-	action: () => {
-		appLayout.render(
-			<MainLayout>
-				<OmnichannelDirectoryPage />
-			</MainLayout>,
-		);
-	},
+router.defineRoute({
+	path: '/directory/:tab?',
+	id: 'directory',
+	element: appLayout.wrap(
+		<MainLayout>
+			<DirectoryPage />
+		</MainLayout>,
+	),
 });
 
-FlowRouter.route('/livechat-queue', {
-	name: 'livechat-queue',
-	action: () => {
-		appLayout.render(
-			<MainLayout>
-				<OmnichannelQueueList />
-			</MainLayout>,
-		);
-	},
+router.defineRoute({
+	path: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?',
+	id: 'omnichannel-directory',
+	element: appLayout.wrap(
+		<MainLayout>
+			<OmnichannelDirectoryPage />
+		</MainLayout>,
+	),
 });
 
-FlowRouter.route('/terms-of-service', {
-	name: 'terms-of-service',
-	action: () => {
-		appLayout.render(<CMSPage page='Layout_Terms_of_Service' />);
-	},
+router.defineRoute({
+	path: '/livechat-queue',
+	id: 'livechat-queue',
+	element: appLayout.wrap(
+		<MainLayout>
+			<OmnichannelQueueList />
+		</MainLayout>,
+	),
 });
 
-FlowRouter.route('/privacy-policy', {
-	name: 'privacy-policy',
-	action: () => {
-		appLayout.render(<CMSPage page='Layout_Privacy_Policy' />);
-	},
+router.defineRoute({
+	path: '/terms-of-service',
+	id: 'terms-of-service',
+	element: appLayout.wrap(<CMSPage page='Layout_Terms_of_Service' />),
 });
 
-FlowRouter.route('/legal-notice', {
-	name: 'legal-notice',
-	action: () => {
-		appLayout.render(<CMSPage page='Layout_Legal_Notice' />);
-	},
+router.defineRoute({
+	path: '/privacy-policy',
+	id: 'privacy-policy',
+	element: appLayout.wrap(<CMSPage page='Layout_Privacy_Policy' />),
 });
 
-FlowRouter.route('/register/:hash', {
-	name: 'register-secret-url',
-	action: () => {
-		appLayout.render(<SecretURLPage />);
-	},
+router.defineRoute({
+	path: '/legal-notice',
+	id: 'legal-notice',
+	element: appLayout.wrap(<CMSPage page='Layout_Legal_Notice' />),
 });
 
-FlowRouter.route('/invite/:hash', {
-	name: 'invite',
-	action: () => {
-		appLayout.render(<InvitePage />);
-	},
+router.defineRoute({
+	path: '/register/:hash',
+	id: 'register-secret-url',
+	element: appLayout.wrap(<SecretURLPage />),
 });
 
-FlowRouter.route('/conference/:id', {
-	name: 'conference',
-	action: () => {
-		appLayout.render(<ConferenceRoute />);
-	},
+router.defineRoute({
+	path: '/invite/:hash',
+	id: 'invite',
+	element: appLayout.wrap(<InvitePage />),
 });
 
-FlowRouter.route('/setup-wizard/:step?', {
-	name: 'setup-wizard',
-	action: () => {
-		appLayout.renderStandalone(<SetupWizardRoute />);
-	},
+router.defineRoute({
+	path: '/conference/:id',
+	id: 'conference',
+	element: appLayout.wrap(<ConferenceRoute />),
 });
 
-FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
-	name: 'mailer-unsubscribe',
-	action: () => {
-		appLayout.render(<MailerUnsubscriptionPage />);
-	},
+router.defineRoute({
+	path: '/setup-wizard/:step?',
+	id: 'setup-wizard',
+	element: <SetupWizardRoute />,
 });
 
-FlowRouter.route('/login-token/:token', {
-	name: 'tokenLogin',
-	action() {
-		Accounts.callLoginMethod({
-			methodArguments: [
-				{
-					loginToken: router.getRouteParameters().token,
-				},
-			],
-			userCallback(error) {
-				console.error(error);
-				router.navigate('/');
-			},
-		});
-	},
+router.defineRoute({
+	path: '/mailer/unsubscribe/:_id/:createdAt',
+	id: 'mailer-unsubscribe',
+	element: appLayout.wrap(<MailerUnsubscriptionPage />),
 });
 
-FlowRouter.route('/reset-password/:token', {
-	name: 'resetPassword',
-	action() {
-		appLayout.render(<ResetPasswordPage />);
-	},
+router.defineRoute({
+	path: '/login-token/:token',
+	id: 'tokenLogin',
+	element: appLayout.wrap(<LoginTokenRoute />),
 });
 
-FlowRouter.route('/oauth/authorize', {
-	name: 'oauth/authorize',
-	action() {
-		appLayout.render(<OAuthAuthorizationPage />);
-	},
+router.defineRoute({
+	path: '/reset-password/:token',
+	id: 'resetPassword',
+	element: appLayout.wrap(<ResetPasswordPage />),
 });
 
-FlowRouter.route('/oauth/error/:error', {
-	name: 'oauth/error',
-	action() {
-		appLayout.render(<OAuthErrorPage />);
-	},
+router.defineRoute({
+	path: '/oauth/authorize',
+	id: 'oauth/authorize',
+	element: appLayout.wrap(<OAuthAuthorizationPage />),
+});
+
+router.defineRoute({
+	path: '/oauth/error/:error',
+	id: 'oauth/error',
+	element: appLayout.wrap(<OAuthErrorPage />),
 });
 
 FlowRouter.notFound = {
-	action: (): void => {
-		appLayout.renderStandalone(<NotFoundPage />);
-	},
+	action: () => appLayout.renderStandalone(<NotFoundPage />),
 };
 
 Meteor.startup(() => {

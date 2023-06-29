@@ -1,7 +1,6 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
@@ -19,7 +18,7 @@ import type {
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
-import RoomOpener from '../../views/room/RoomOpener';
+import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
 import { appLayout } from '../appLayout';
 
@@ -214,17 +213,14 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				route: { name, path },
 			} = roomConfig;
 			const { extractOpenRoomParams } = directives;
-			FlowRouter.route(path, {
-				name,
-				action: () => {
-					const { type, ref } = extractOpenRoomParams(router.getRouteParameters());
-
-					appLayout.render(
-						<MainLayout>
-							<RoomOpener type={type} reference={ref} />
-						</MainLayout>,
-					);
-				},
+			router.defineRoute({
+				path,
+				id: name,
+				element: appLayout.wrap(
+					<MainLayout>
+						<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
+					</MainLayout>,
+				),
 			});
 		}
 	}

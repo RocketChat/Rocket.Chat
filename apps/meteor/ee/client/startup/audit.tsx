@@ -1,9 +1,8 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
 import { hasAllPermission } from '../../../app/authorization/client';
 import { appLayout } from '../../../client/lib/appLayout';
+import { router } from '../../../client/providers/RouterProvider';
 import NotAuthorizedPage from '../../../client/views/notAuthorized/NotAuthorizedPage';
 import MainLayout from '../../../client/views/root/MainLayout';
 import { onToggledFeature } from '../lib/onToggledFeature';
@@ -24,66 +23,43 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-let auditRoute = FlowRouter.route('/audit/:tab?', { name: 'audit-home' });
-let auditLogRoute = FlowRouter.route('/audit-log', { name: 'audit-log' });
+const PermissionGuard = ({ children, permission }: { children: React.ReactNode; permission: string }) => {
+	const canView = hasAllPermission(permission);
 
-const registerRoutes = () => {
-	FlowRouter._routes = FlowRouter._routes.filter((r) => r !== auditRoute && r !== auditLogRoute);
-	if (auditRoute.name) {
-		delete FlowRouter._routesMap[auditRoute.name];
-	}
-	if (auditLogRoute.name) {
-		delete FlowRouter._routesMap[auditLogRoute.name];
-	}
-
-	auditRoute = FlowRouter.route('/audit/:tab?', {
-		name: 'audit-home',
-		action() {
-			Tracker.autorun(() => {
-				const canAudit = hasAllPermission('can-audit');
-
-				appLayout.render(<MainLayout>{canAudit ? <AuditPage /> : <NotAuthorizedPage />}</MainLayout>);
-			});
-		},
-	});
-
-	auditLogRoute = FlowRouter.route('/audit-log', {
-		name: 'audit-log',
-		action() {
-			Tracker.autorun(() => {
-				const canAuditLog = hasAllPermission('can-audit-log');
-
-				appLayout.render(<MainLayout>{canAuditLog ? <AuditLogPage /> : <NotAuthorizedPage />}</MainLayout>);
-			});
-		},
-	});
-
-	if (FlowRouter._initialized) {
-		FlowRouter._updateCallbacks();
-		FlowRouter.reload();
-	}
+	return <>{canView ? children : <NotAuthorizedPage />}</>;
 };
 
-const unregisterRoutes = () => {
-	FlowRouter._routes = FlowRouter._routes.filter((r) => r !== auditRoute && r !== auditLogRoute);
-	if (auditRoute.name) {
-		delete FlowRouter._routesMap[auditRoute.name];
-	}
-	if (auditLogRoute.name) {
-		delete FlowRouter._routesMap[auditLogRoute.name];
-	}
-
-	if (FlowRouter._initialized) {
-		FlowRouter._updateCallbacks();
-		FlowRouter.reload();
-	}
-};
+let unregisterAuditRoute: () => void;
+let unregisterAuditLogRoute: () => void;
 
 onToggledFeature('auditing', {
 	up: () => {
-		registerRoutes();
+		unregisterAuditRoute = router.defineRoute({
+			path: '/audit/:tab?',
+			id: 'audit-home',
+			element: appLayout.wrap(
+				<MainLayout>
+					<PermissionGuard permission='can-audit'>
+						<AuditPage />
+					</PermissionGuard>
+				</MainLayout>,
+			),
+		});
+
+		unregisterAuditLogRoute = router.defineRoute({
+			path: '/audit-log',
+			id: 'audit-log',
+			element: appLayout.wrap(
+				<MainLayout>
+					<PermissionGuard permission='can-audit-log'>
+						<AuditLogPage />
+					</PermissionGuard>
+				</MainLayout>,
+			),
+		});
 	},
 	down: () => {
-		unregisterRoutes();
+		unregisterAuditRoute();
+		unregisterAuditLogRoute();
 	},
 });
