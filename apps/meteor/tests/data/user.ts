@@ -2,9 +2,9 @@ export const username = 'user.test';
 export const email = `${username}@rocket.chat`;
 export const password = 'rocket.chat';
 export const reason = 'rocket.chat.reason';
-export const adminUsername = 'rocketchat.internal.admin.test';
+export const adminUsername = 'johndoe';
 export const adminEmail = `${adminUsername}@rocket.chat`;
-export const adminPassword = adminUsername;
+export const adminPassword = `Abc@12345678`;
 export const preferences = {
 	data: {
 		newRoomNotification: 'door',

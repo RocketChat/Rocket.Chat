@@ -1481,33 +1481,37 @@ describe('[Users]', function () {
 
 		let userCredentials;
 		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+			updateSetting('Accounts_Password_Policy_Enabled', true).then(() => {
+				request
+					.post(api('login'))
+					.send({
+						user: user.username,
+						password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						userCredentials = {};
+						userCredentials['X-Auth-Token'] = res.body.data.authToken;
+						userCredentials['X-User-Id'] = res.body.data.userId;
+					})
+					.end(done);
+			});
 		});
 		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
-			user = undefined;
+			updateSetting('Accounts_Password_Policy_Enabled', false).then(() => {
+				request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+					})
+					.end(done);
+				user = undefined;
+			});
 		});
 
-		const newPassword = `${password}test`;
+		const newPassword = `${password}@Test123`;
 		const currentPassword = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
 		const editedUsername = `basicInfo.name${+new Date()}`;
 		const editedName = `basic-info-test-name${+new Date()}`;
@@ -1767,7 +1771,7 @@ describe('[Users]', function () {
 		});
 
 		it('should throw an error if the password length is less than the minimum length', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1788,16 +1792,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password length is greater than the maximum length', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
@@ -1819,17 +1824,18 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			await updateSetting('Accounts_Password_Policy_MaxLength', -1);
 		});
 
 		it('should throw an error if the password contains repeating characters', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1850,16 +1856,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one lowercase character', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1880,16 +1887,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one uppercase character', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1910,16 +1918,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one numerical character', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1940,16 +1949,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should throw an error if the password does not contain at least one special character', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			const expectedError = {
@@ -1970,16 +1980,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
 					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 				})
 				.expect(400);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 
 		it('should be able to update if the password meets all the validation rules', async () => {
-			await updateSetting('Accounts_Password_Policy_Enabled', true);
+			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 			await request
@@ -1998,7 +2009,7 @@ describe('[Users]', function () {
 				})
 				.expect(200);
 
-			await updateSetting('Accounts_Password_Policy_Enabled', false);
+			// await updateSetting('Accounts_Password_Policy_Enabled', false);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 		});
 	});
