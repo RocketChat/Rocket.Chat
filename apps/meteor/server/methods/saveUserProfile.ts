@@ -4,6 +4,8 @@ import { Accounts } from 'meteor/accounts-base';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
 import type { UserStatus } from '@rocket.chat/core-typings';
+import { Apps } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -12,7 +14,6 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 
 async function saveUserProfile(
