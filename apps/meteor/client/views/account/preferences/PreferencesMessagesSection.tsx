@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -127,11 +127,13 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 				)}
 				{useMemo(
 					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
-							</Field.Row>
+						<Field>
+							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+								<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</Field.Hint>
 						</Field>
 					),

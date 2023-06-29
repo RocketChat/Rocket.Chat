@@ -72,6 +72,7 @@ const CssVar = ({ theme }) => {
 	);
 };
 
+/** @type {{ (props: any) => JSX.Element; Content: (props: any) => JSX.Element; Footer: (props: any) => JSX.Element }} */
 export const Screen = ({
 	theme = {},
 	agent,
