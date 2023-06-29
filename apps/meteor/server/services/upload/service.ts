@@ -14,7 +14,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return fileStore.insert(details, buffer);
 	}
 
-	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {
+	async sendFileMessage({ roomId, file, userId, message = {} }: ISendFileMessageParams): Promise<boolean> {
 		return sendFileMessage(userId, { roomId, file, msgData: message });
 	}
 

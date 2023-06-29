@@ -22,7 +22,7 @@ export interface ISendFileLivechatMessageParams {
 
 export interface IUploadService {
 	uploadFile(params: IUploadFileParams): Promise<IUpload>;
-	sendFileMessage(params: ISendFileMessageParams): Promise<boolean | undefined>;
-	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<boolean | undefined>;
+	sendFileMessage(params: ISendFileMessageParams): Promise<boolean>;
+	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<boolean>;
 	getFileBuffer({ file }: { userId: string; file: IUpload }): Promise<Buffer>;
 }
