@@ -1,6 +1,6 @@
 import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
 import React, { memo, useState, useEffect } from 'react';
 
@@ -29,6 +29,7 @@ const FileUploadModal = ({
 	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
@@ -48,6 +49,15 @@ const FileUploadModal = ({
 				message: t('error-the-field-is-required', { field: t('Name') }),
 			});
 		}
+
+		if(file.size > maxFileSize) {
+			onClose();
+			return dispatchToastMessage({
+				type: 'error',
+				message: t('File_exceeds_allowed_size_of_bytes', { size: maxFileSize + ' bytes' }),
+			});
+		}
+
 		onSubmit(name, description);
 	};
 
