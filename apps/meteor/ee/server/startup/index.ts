@@ -7,6 +7,7 @@ import './maxRoomsPerGuest';
 import './seatsCap';
 import './services';
 import './upsell';
+import '../../../app/apps/server/api';
 import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';

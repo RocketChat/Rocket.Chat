@@ -305,15 +305,18 @@ export class AppsRestApi {
 					return API.v1.success({ apps });
 				},
 				async post() {
+					console.log('installing app...');
 					let buff;
 					let marketplaceInfo;
 					let permissionsGranted;
 
+					console.log('installing app 2...');
 					if (this.bodyParams.url) {
 						try {
 							const response = await fetch(this.bodyParams.url);
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
+								console.log('invalid url');
 								return API.v1.failure({
 									error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
 								});
@@ -321,11 +324,13 @@ export class AppsRestApi {
 
 							buff = Buffer.from(await response.arrayBuffer());
 						} catch (e: any) {
+							console.log('error getting the app from url');
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
 						}
 
 						if (this.bodyParams.downloadOnly) {
+							console.log('download only');
 							return API.v1.success({ buff });
 						}
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
@@ -356,6 +361,7 @@ export class AppsRestApi {
 							marketplaceInfo = (await marketplaceResponse.json()) as any;
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: any) {
+							console.log('error getting the app from marketplace');
 							return API.v1.failure(err.message);
 						}
 					} else {
@@ -379,7 +385,10 @@ export class AppsRestApi {
 						})();
 					}
 
+					console.log('installing app 3...');
+
 					if (!buff) {
+						console.log('failed to get a file to install for the App');
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
@@ -388,14 +397,18 @@ export class AppsRestApi {
 						?.get('users')
 						?.convertToApp(await Meteor.userAsync());
 
+					console.log('installing app 4...');
+
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
+						console.log('storage error');
 						return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 					}
 
 					if (aff.hasAppUserError()) {
+						console.log('app user error');
 						return API.v1.failure({
 							status: 'app_user_error',
 							messages: [(aff.getAppUserError() as Record<string, any>).message],
@@ -403,14 +416,19 @@ export class AppsRestApi {
 						});
 					}
 
+					console.log('installing app 5...');
+
 					info.status = aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
+
+					console.log('installing app 6...');
 
 					if (await canEnableApp(aff.getApp().getStorageItem())) {
 						const success = await manager.enable(info.id);
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
+					console.log('installing app 7...');
 
 					void orchestrator.getNotifier().appAdded(info.id);
 
