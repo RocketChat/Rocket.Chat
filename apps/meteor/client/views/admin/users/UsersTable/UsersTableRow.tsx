@@ -1,5 +1,5 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { Roles } from '../../../../../app/models/client';
+import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
@@ -26,8 +27,15 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 		.join(', ');
 
 	return (
-		<TableRow onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<TableCell withTruncatedText>
+		<GenericTableRow
+			onKeyDown={(): void => onClick(_id)}
+			onClick={(): void => onClick(_id)}
+			tabIndex={0}
+			role='link'
+			action
+			qa-user-id={_id}
+		>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' mi='x8' withTruncatedText>
@@ -44,21 +52,21 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 						</Box>
 					</Box>
 				</Box>
-			</TableCell>
+			</GenericTableCell>
 			{mediaQuery && (
-				<TableCell>
+				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
 					</Box>{' '}
 					<Box mi='x4' />
-				</TableCell>
+				</GenericTableCell>
 			)}
-			<TableCell withTruncatedText>{emails?.length && emails[0].address}</TableCell>
-			{mediaQuery && <TableCell withTruncatedText>{roleNames}</TableCell>}
-			<TableCell fontScale='p2' color='hint' withTruncatedText>
+			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
+			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 				{statusText}
-			</TableCell>
-		</TableRow>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
 };
 

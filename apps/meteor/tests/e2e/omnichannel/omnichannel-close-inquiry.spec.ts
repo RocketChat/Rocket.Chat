@@ -18,17 +18,15 @@ test.describe('Omnichannel close inquiry', () => {
 			email: faker.internet.email(),
 		};
 
-		await Promise.all([
-			await api.post('/livechat/users/manager', { username: 'user1' }),
-			await api.post('/livechat/users/agent', { username: 'user1' }),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
-		]);
+		await api.post('/livechat/users/manager', { username: 'user1' });
+		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200));
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChat(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -43,7 +41,7 @@ test.describe('Omnichannel close inquiry', () => {
 	test('Receiving a message from visitor', async ({ page }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
-			await poLiveChat.btnOpenLiveChat('R').click();
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newUser, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
