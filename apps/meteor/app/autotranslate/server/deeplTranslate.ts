@@ -198,8 +198,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
+		const msgs = message.msg.split('\n');
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -250,7 +249,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-						text: encodeURIComponent(attachment.description || attachment.text || ''),
+						text: attachment.description || attachment.text || '',
 					},
 				});
 				if (!result.ok) {

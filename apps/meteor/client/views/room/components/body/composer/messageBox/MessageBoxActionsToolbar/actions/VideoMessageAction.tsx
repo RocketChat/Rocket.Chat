@@ -5,6 +5,7 @@ import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
+import { VideoRecorder } from '../../../../../../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import type { ChatAPI } from '../../../../../../../../lib/chats/ChatAPI';
 import { useChat } from '../../../../../../contexts/ChatContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
@@ -33,7 +34,7 @@ const VideoMessageAction = ({ collapsed, chatContext, disabled, ...props }: Vide
 					isVideoRecorderEnabled &&
 					!fileUploadMediaTypeBlackList?.match(/video\/webm|video\/\*/i) &&
 					(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/video\/webm|video\/\*/i)) &&
-					window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus'),
+					Boolean(VideoRecorder.getSupportedMimeTypes()),
 			),
 		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isFileUploadEnabled, isPermissionDenied, isVideoRecorderEnabled],
 	);

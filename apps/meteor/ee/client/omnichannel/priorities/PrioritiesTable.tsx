@@ -1,40 +1,64 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 
-import GenericTable, { GenericTableCell, GenericTableRow } from '../../../../client/components/GenericTable';
+import GenericNoResults from '../../../../client/components/GenericNoResults';
+import {
+	GenericTable,
+	GenericTableHeaderCell,
+	GenericTableCell,
+	GenericTableRow,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableLoadingTable,
+} from '../../../../client/components/GenericTable';
 import { PriorityIcon } from './PriorityIcon';
 
 type PrioritiesTableProps = {
-	data?: Serialized<ILivechatPriority>[];
+	priorities?: Serialized<ILivechatPriority>[];
 	onRowClick: (id: string) => void;
+	isLoading: boolean;
 };
 
-export const PrioritiesTable = ({ data, onRowClick }: PrioritiesTableProps): ReactElement => {
+export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps): ReactElement => {
 	const t = useTranslation();
 
-	const renderRow = useCallback(
-		({ _id, name, i18n, sortItem, dirty }) => (
-			<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-row-id={_id}>
-				<GenericTableCell withTruncatedText>
-					<PriorityIcon level={sortItem} />
-				</GenericTableCell>
-				<GenericTableCell withTruncatedText>{dirty ? name : t(i18n)}</GenericTableCell>
-			</GenericTableRow>
-		),
-		[onRowClick, t],
-	);
-
-	const header = useMemo(
-		() => [
-			<GenericTable.HeaderCell key='icon' w='100px'>
+	const headers = (
+		<>
+			<GenericTableHeaderCell key='icon' w='100px'>
 				{t('Icon')}
-			</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell key='name'>{t('Name')}</GenericTable.HeaderCell>,
-		],
-		[t],
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
+		</>
 	);
 
-	return <GenericTable results={data} header={header} renderRow={renderRow} pagination={false} />;
+	return (
+		<>
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={2} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{priorities?.length === 0 && <GenericNoResults />}
+			{priorities && priorities?.length > 0 && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						{priorities?.map(({ _id, name, i18n, sortItem, dirty }) => (
+							<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-row-id={_id}>
+								<GenericTableCell withTruncatedText>
+									<PriorityIcon level={sortItem} />
+								</GenericTableCell>
+								<GenericTableCell withTruncatedText>{dirty ? name : i18n}</GenericTableCell>
+							</GenericTableRow>
+						))}
+					</GenericTableBody>
+				</GenericTable>
+			)}
+		</>
+	);
 };
