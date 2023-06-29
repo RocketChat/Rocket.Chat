@@ -1,11 +1,11 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Apps } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { getValidRoomName } from '../../../utils/server';
@@ -108,7 +108,7 @@ export const createRoom = async <T extends RoomType>(
 		_USERNAMES: members,
 	};
 
-	const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
+	const prevent = await Apps.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
@@ -120,9 +120,9 @@ export const createRoom = async <T extends RoomType>(
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const eventResult = await Apps.triggerEvent('IPreRoomCreateModify', await Apps.triggerEvent('IPreRoomCreateExtend', tmp));
+	const eventResult = await Apps.triggerEvent(AppEvents.IPreRoomCreateModify, await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp));
 
-	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
+	if (eventResult && typeof eventResult === 'object' && delete (eventResult as any)._USERNAMES) {
 		Object.assign(roomProps, eventResult);
 	}
 
@@ -191,7 +191,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
-	void Apps.triggerEvent('IPostRoomCreate', room);
+	void Apps.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,
