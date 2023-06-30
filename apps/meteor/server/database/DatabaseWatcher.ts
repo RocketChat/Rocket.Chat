@@ -30,22 +30,6 @@ const useMeteorOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OP
 
 const useFullDocument = ['yes', 'true'].includes(String(process.env.CHANGESTREAM_FULL_DOCUMENT).toLowerCase());
 
-const logOnDoc = ['yes', 'true'].includes(String(process.env.LOG_ON_DOC).toLowerCase());
-
-const onDocumentWithLog =
-	<T>(collection: string, callback: (event: RealTimeData<T>) => void) =>
-	async (event: RealTimeData<T>) => {
-		const hrstart = process.hrtime();
-		const result = await callback(event);
-		const hrend = process.hrtime(hrstart);
-
-		console.log(JSON.stringify({ collection, time: hrend[0] * 1000 + hrend[1] / 1000000 }));
-		return result;
-	};
-
-const onDocument = <T>(collection: string, callback: (event: RealTimeData<T>) => void) =>
-	logOnDoc ? onDocumentWithLog(collection, callback) : callback;
-
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
 
@@ -243,7 +227,7 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
-		return super.on(collection, onDocument(collection, callback));
+		return super.on(collection, callback);
 	}
 
 	/**
