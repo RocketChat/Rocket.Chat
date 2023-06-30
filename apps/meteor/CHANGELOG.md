@@ -1,5 +1,32 @@
 # @rocket.chat/meteor
 
+## 6.2.9
+
+### Patch Changes
+
+- [#29686](https://github.com/RocketChat/Rocket.Chat/pull/29686) [`b1d103b1d5`](https://github.com/RocketChat/Rocket.Chat/commit/b1d103b1d58a4b67595b7fff2404becc2145b1a3) Thanks [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)! - fixed video message button disabled on iOS browsers
+
+- [#29686](https://github.com/RocketChat/Rocket.Chat/pull/29686) [`a6115380fa`](https://github.com/RocketChat/Rocket.Chat/commit/a6115380fa49bc4cebdf749bba3644d08a89064e) Thanks [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)! - fixed an error on mobile ios browser where if you started recording audio and denied permission, it would look like it is still recording
+
+- Updated dependencies []:
+  - @rocket.chat/core-typings@6.2.9
+  - @rocket.chat/rest-typings@6.2.9
+  - @rocket.chat/omnichannel-services@0.0.4
+  - @rocket.chat/pdf-worker@0.0.4
+  - @rocket.chat/presence@0.0.4
+  - @rocket.chat/api-client@0.0.4
+  - @rocket.chat/core-services@0.0.4
+  - @rocket.chat/gazzodown@0.0.1
+  - @rocket.chat/model-typings@0.0.4
+  - @rocket.chat/ui-contexts@0.0.4
+  - @rocket.chat/models@0.0.4
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/fuselage-ui-kit@0.31.16
+  - @rocket.chat/ui-client@0.0.1
+  - @rocket.chat/ui-video-conf@0.0.1
+  - @rocket.chat/web-ui-registration@0.0.1
+  - @rocket.chat/instance-status@0.0.4
+
 ## 6.2.7
 
 ### Patch Changes
