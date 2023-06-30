@@ -5,7 +5,7 @@ import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from './lib/callbackLogger';
+import { callbackLogger } from './lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
