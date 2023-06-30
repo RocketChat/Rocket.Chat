@@ -1144,10 +1144,8 @@ export class AppsRestApi {
 
 					const storedApp = prl.getStorageItem();
 
-					const isEnterpriseEnableFeasible = isEnterprise() && data.isEnterpriseOnly;
-
 					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(this.bodyParams.status)) {
-						if (!isEnterpriseEnableFeasible) {
+						if (!isEnterprise() && data.isEnterpriseOnly) {
 							return API.v1.failure('Invalid environment for enabling enterprise app');
 						}
 					}
