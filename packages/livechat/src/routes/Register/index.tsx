@@ -1,5 +1,5 @@
-// import { route } from 'preact-router';
-import { useContext } from 'preact/hooks';
+import { route } from 'preact-router';
+import { useContext, useEffect } from 'preact/hooks';
 import type { Control, FieldErrors, FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -123,7 +123,7 @@ type ContextReturn = {
 	loading: boolean;
 	token: string;
 	dispatch: (args: unknown) => void;
-	user?: unknown;
+	user?: { _id: string; [key: string]: unknown };
 };
 export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown } }) => {
 	const { t } = useTranslation();
@@ -149,6 +149,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		loading = false,
 		token,
 		dispatch,
+		user,
 	}: ContextReturn = useContext(StoreContext);
 
 	const defaultTitle = t('need_help');
@@ -175,7 +176,6 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		department: string;
 		customFields: { [key: string]: string };
 	}) => {
-		console.log('handleSubmit', name, email, department, customFields);
 		const fields = {
 			name,
 			email,
@@ -199,15 +199,11 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		}
 	};
 
-	// TODO: decide if this is still necessary with refactor
-	// const componentDidUpdate(prevProps) {
-	// 	const { user: prevUser } = prevProps;
-	// 	const { user } = this.props;
-
-	// 	if ((!prevUser || Object.keys(prevUser).length === 0) && user && user._id) {
-	// 		route('/');
-	// 	}
-	// }
+	useEffect(() => {
+		if (user?._id) {
+			route('/');
+		}
+	}, [user?._id]);
 
 	return (
 		<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
@@ -303,36 +299,5 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		</Form>
 	);
 };
-
-// export const RegisterConnector = ({ ref, screenProps }) => (
-// 	<Consumer>
-// 		{() => (
-// 			<RegisterContainer
-// 				ref={ref}
-// 				theme={{
-// 					color: customColor || color,
-// 					fontColor: customFontColor,
-// 					iconColor: customIconColor,
-// 					title: customTitle,
-// 				}}
-// 				title={customTitle || title}
-// 				message={message}
-// 				hasNameField={nameFieldRegistrationForm}
-// 				hasEmailField={emailFieldRegistrationForm}
-// 				hasDepartmentField={}
-// 				departments={departments.filter((dept) => dept.showOnRegistration)}
-// 				nameDefault={guestName}
-// 				emailDefault={guestEmail}
-// 				guestDepartment={guestDepartment}
-// 				loading={loading}
-// 				token={token}
-// 				dispatch={dispatch}
-// 				user={user}
-// 				customFields={customFields}
-// 				screenProps={screenProps}
-// 			/>
-// 		)}
-// 	</Consumer>
-// );
 
 export default Register;
