@@ -7,16 +7,7 @@ import { Users } from '@rocket.chat/models';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-
-const cronJobDayDict: Record<string, number> = {
-	Sunday: 0,
-	Monday: 1,
-	Tuesday: 2,
-	Wednesday: 3,
-	Thursday: 4,
-	Friday: 5,
-	Saturday: 6,
-};
+import { businessHourLogger } from '../lib/logger';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -35,6 +26,7 @@ export class BusinessHourManager {
 
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
+		businessHourLogger.debug('Cron jobs created, setting up callbacks');
 		this.setupCallbacks();
 		await this.behavior.onStartBusinessHours();
 	}
@@ -115,12 +107,19 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-save-agent-department',
 		);
+		callbacks.add(
+			'livechat.onNewAgentCreated',
+			this.behavior.onNewAgentCreated.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-agent-created',
+		);
 	}
 
 	private removeCallbacks(): void {
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove('livechat.onNewAgentCreated', 'business-hour-livechat-on-agent-created');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
@@ -137,12 +136,17 @@ export class BusinessHourManager {
 		await Promise.all(finish.map(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback)));
 	}
 
-	private async scheduleCronJob(items: string[], day: string, type: string, job: (day: string, hour: string) => void): Promise<void> {
+	private async scheduleCronJob(
+		items: string[],
+		day: string,
+		type: 'open' | 'close',
+		job: (day: string, hour: string) => void,
+	): Promise<void> {
 		await Promise.all(
 			items.map((hour) => {
-				const jobName = `${day}/${hour}/${type}`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
+				const time = moment(hour, 'HH:mm').day(day);
+				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
+				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
 				this.addToCache(jobName);
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),
