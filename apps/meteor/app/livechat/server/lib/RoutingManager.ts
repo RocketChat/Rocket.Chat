@@ -128,6 +128,8 @@ export const RoutingManager: Routing = {
 
 		if (!agent) {
 			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
+			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
+			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
 			return LivechatRooms.findOneById(rid);
 		}
 
