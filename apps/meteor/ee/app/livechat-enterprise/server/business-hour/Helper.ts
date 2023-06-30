@@ -4,11 +4,13 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { isEnterprise } from '../../../license/server/license';
+import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (
 		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept: any) => dept.agentId);
+	).map((dept) => dept.agentId);
+
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
 			'livechat-agent',
@@ -17,7 +19,8 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 			},
 			{ projection: { _id: 1 } },
 		).toArray()
-	).map((user: any) => user._id);
+	).map((user) => user._id);
+
 	return agentIdsWithoutDepartment;
 };
 
@@ -43,7 +46,7 @@ const getAllAgentIdsForDefaultBusinessHour = async (): Promise<string[]> => {
 	return [...new Set([...withoutDepartment, ...withDepartmentNotConnectedToBusinessHour])];
 };
 
-const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
+const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
 		return getAllAgentIdsForDefaultBusinessHour();
 	}
@@ -51,22 +54,35 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 		await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, {
 			projection: { _id: 1 },
 		}).toArray()
-	).map((dept: any) => dept._id);
+	).map((dept) => dept._id);
 	return (
 		await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
 			projection: { agentId: 1 },
 		}).toArray()
-	).map((dept: any) => dept.agentId);
+	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
-	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
+	const agentIds = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug({
+		msg: 'Opening business hour',
+		businessHour: businessHour._id,
+		totalAgents: agentIds.length,
+		top10AgentIds: agentIds.slice(0, 10),
+	});
+
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
+export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug({
+		msg: 'Closing business hour',
+		businessHour: businessHour._id,
+		totalAgents: agentIds.length,
+		top10AgentIds: agentIds.slice(0, 10),
+	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
