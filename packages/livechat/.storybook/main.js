@@ -6,8 +6,7 @@ module.exports = {
 				backgrounds: false,
 			},
 		},
-		'@storybook/addon-knobs',
 		'@storybook/addon-postcss',
 	],
-	stories: ['../src/**/stories.js', '../src/**/story.js', '../src/**/*.stories.js', '../src/**/*.story.js'],
+	stories: ['../src/**/stories.{js,tsx}', '../src/**/story.{js,tsx}', '../src/**/*.stories.{js,tsx}', '../src/**/*.story.{js,tsx}'],
 };
