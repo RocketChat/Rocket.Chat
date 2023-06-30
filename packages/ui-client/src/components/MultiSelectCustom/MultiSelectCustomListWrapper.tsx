@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick, usePosition } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { forwardRef, useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 
 const options = {
 	margin: 8,

@@ -1,20 +1,20 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEvent, SetStateAction } from 'react';
-import React, { useCallback, useRef } from 'react';
+import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { MultiSelectCustomAnchor } from './MultiSelectCustomAnchor';
 import { MultiSelectCustomList } from './MultiSelectCustomList';
 import { MultiSelectCustomListWrapper } from './MultiSelectCustomListWrapper';
 
-const isValidReference = (reference: React.RefObject<HTMLElement>, e: { target: Node | null }): boolean => {
+const isValidReference = (reference: RefObject<HTMLElement>, e: { target: Node | null }): boolean => {
 	const isValidTarget = Boolean(e.target);
 	const isValidReference = e.target !== reference.current && !reference.current?.contains(e.target);
 
 	return isValidTarget && isValidReference;
 };
 
-export const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
+const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
 	e.preventDefault();
 	e.stopPropagation();
 	e.stopImmediatePropagation();
@@ -28,7 +28,7 @@ export const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
  * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
  * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
  * @returns a React Component that should be used with a custom hook for filters, such as useFilteredRooms.tsx.
- * Check out the following files, for examples: 
+ * Check out the following files, for examples:
  * 	useFilteredRooms.tsx,
  * 	RoomsTable.tsx
  */
@@ -56,7 +56,7 @@ type CheckboxOptionProp = {
 
 export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
-export type DropDownProps = {
+type DropDownProps = {
 	dropdownOptions: OptionProp[];
 	defaultTitle: TranslationKey; // For example: 'All rooms'
 	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
@@ -66,7 +66,7 @@ export type DropDownProps = {
 	searchBarText?: TranslationKey;
 };
 
-export const MultiSelectCustom = ({
+const MultiSelectCustom = ({
 	dropdownOptions,
 	defaultTitle,
 	selectedOptionsTitle,
@@ -74,7 +74,7 @@ export const MultiSelectCustom = ({
 	setSelectedOptions,
 	customSetSelected,
 	searchBarText,
-}: DropDownProps) => {
+}: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -134,3 +134,5 @@ export const MultiSelectCustom = ({
 		</>
 	);
 };
+
+export default MultiSelectCustom;
