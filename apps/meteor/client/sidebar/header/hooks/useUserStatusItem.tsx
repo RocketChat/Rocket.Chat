@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
@@ -10,9 +10,8 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 
-export const useUserStatusItem = (): GenericMenuItemProps[] => {
+export const useUserStatusItem = (user: IUser): GenericMenuItemProps[] => {
 	const t = useTranslation();
-	const user = useUser() as IUser;
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 	const displayName = useUserDisplayName(user);
 

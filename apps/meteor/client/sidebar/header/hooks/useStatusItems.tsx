@@ -1,8 +1,8 @@
-import type { ValueOf } from '@rocket.chat/core-typings';
+import type { IUser, ValueOf } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { AccountBox } from '../../../../app/ui-utils/client';
@@ -24,9 +24,8 @@ const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (type
 	return status.name;
 };
 
-export const useStatusItems = (): GenericMenuItemProps[] => {
+export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 	const t = useTranslation();
-	const user = useUser();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	const setStatus = (status: (typeof userStatus.list)['']): void => {
