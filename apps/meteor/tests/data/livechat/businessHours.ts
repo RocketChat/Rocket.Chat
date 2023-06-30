@@ -149,7 +149,6 @@ export const getCustomBusinessHourById = async (businessHourId: string): Promise
     return response.body.businessHour;
 };
 
-
 export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHour, open: boolean) => {
     const enabledBusinessHour = {
         ...businessHour,

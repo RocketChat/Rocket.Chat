@@ -842,9 +842,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -878,9 +875,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
@@ -985,15 +979,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return (
-			(await this.find({
-				_id: agentId,
-				openBusinessHours: {
-					$exists: true,
-					$not: { $size: 0 },
-				},
-			}).count()) > 0
-		);
+		const query = {
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+		return (await this.col.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -2886,5 +2879,21 @@ export class UsersRaw extends BaseRaw {
 
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
+	}
+
+	removeAgent(_id) {
+		const update = {
+			$set: {
+				operator: false,
+			},
+			$unset: {
+				livechat: 1,
+				statusLivechat: 1,
+				extension: 1,
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
 	}
 }
