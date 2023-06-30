@@ -46,7 +46,7 @@ export const MultiSelectCustomList = ({
 				</Option>
 			)}
 			{filteredOptions.map((option) => (
-				<Box is={Fragment} key={option.id}>
+				<Fragment key={option.id}>
 					{option.isGroupTitle ? (
 						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
@@ -60,7 +60,7 @@ export const MultiSelectCustomList = ({
 							</Box>
 						</Option>
 					)}
-				</Box>
+				</Fragment>
 			))}
 		</Tile>
 	);
