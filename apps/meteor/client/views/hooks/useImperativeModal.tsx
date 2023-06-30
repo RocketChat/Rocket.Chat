@@ -20,6 +20,5 @@ export const useImperativeModal = (setModal: Dispatch<SetStateAction<ReactNode>>
 				);
 			}
 		});
-		å;
 	}, [setModal]);
 };
