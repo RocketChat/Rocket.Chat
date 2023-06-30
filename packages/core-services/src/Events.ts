@@ -36,7 +36,7 @@ import type { AutoUpdateRecord } from './types/IMeteor';
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
-	'videoconference': {
+	'room.video-conference': {
 		rid: string;
 		callId: string;
 	};

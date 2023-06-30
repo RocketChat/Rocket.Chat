@@ -132,7 +132,7 @@ export class ListenersModule {
 			},
 		);
 
-		service.onEvent('videoconference', ({ rid, callId }) => {
+		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
 			(notifications.notifyRoom as any)(rid, callId);
 

@@ -419,7 +419,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
-		void api.broadcast('videoconference', { rid, callId });
+		void api.broadcast('room.video-conference', { rid, callId });
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
