@@ -5,8 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 
+import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { queryClient } from '../../../../../lib/queryClient';
-import { useAppsReload } from '../../../AppsContext';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';

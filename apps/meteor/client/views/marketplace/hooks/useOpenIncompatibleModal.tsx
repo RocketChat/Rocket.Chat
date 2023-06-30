@@ -1,7 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { Apps } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import IframeModal from '../IframeModal';
 import { handleAPIError } from '../helpers/handleAPIError';
 
@@ -21,7 +21,11 @@ export const useOpenIncompatibleModal = () => {
 			};
 
 			try {
-				const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, actionName);
+				const incompatibleData = await AppClientOrchestratorInstance.buildIncompatibleExternalUrl(
+					app.id,
+					app.marketplaceVersion,
+					actionName,
+				);
 				setModal(<IframeModal url={incompatibleData.url} cancel={handleCancel} confirm={handleConfirm} />);
 			} catch (e) {
 				handleAPIError(e);

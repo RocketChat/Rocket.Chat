@@ -14,25 +14,25 @@ export const Header = ({ children, theme: { color: backgroundColor, fontColor: c
 	</header>
 );
 
-export const Picture = ({ children, className, ...props }) => (
+export const Picture = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'header__picture', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const Content = ({ children, className, ...props }) => (
+export const Content = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'header__content', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const Title = ({ children, className, ...props }) => (
+export const Title = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const SubTitle = ({ children, className, ...props }) => (
+export const SubTitle = ({ children, className = undefined, ...props }) => (
 	<div
 		className={createClassName(
 			styles,
@@ -48,25 +48,25 @@ export const SubTitle = ({ children, className, ...props }) => (
 	</div>
 );
 
-export const Actions = ({ children, className, ...props }) => (
+export const Actions = ({ children, className = undefined, ...props }) => (
 	<nav className={createClassName(styles, 'header__actions', {}, [className])} {...props}>
 		{children}
 	</nav>
 );
 
-export const Action = ({ children, className, ...props }) => (
+export const Action = ({ children, className = undefined, ...props }) => (
 	<button className={createClassName(styles, 'header__action', {}, [className])} {...props}>
 		{children}
 	</button>
 );
 
-export const Post = ({ children, className, ...props }) => (
+export const Post = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'header__post', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const CustomField = ({ children, className, ...props }) => (
+export const CustomField = ({ children, className = undefined, ...props }) => (
 	<div className={createClassName(styles, 'header__custom-field', {}, [className])} {...props}>
 		{children}
 	</div>

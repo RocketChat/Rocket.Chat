@@ -31,7 +31,9 @@ export const useDialModal = (): DialModalControls => {
 			}
 
 			setModal(
-				<Suspense fallback={null}>
+				// TODO: Revisit Modal's FocusScope which currently does not accept null as children.
+				// Added dummy div fallback for that reason.
+				<Suspense fallback={<div />}>
 					<DialPadModal initialValue={initialValue} errorMessage={errorMessage} handleClose={closeDialModal} />
 				</Suspense>,
 			);
