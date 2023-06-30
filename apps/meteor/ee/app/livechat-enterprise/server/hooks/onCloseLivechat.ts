@@ -4,8 +4,8 @@ import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
-import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
+import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;
