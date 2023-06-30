@@ -12,14 +12,14 @@ const CALENDAR_ROUTES: { [key: string]: OutlookCalendarRoutes } = {
 };
 
 const OutlookEventsRoute = () => {
-	const closeTabbar = useTabBarClose();
+	const closeTabBar = useTabBarClose();
 	const [calendarRoute, setCalendarRoute] = useState<OutlookCalendarRoutes>('list');
 
 	if (calendarRoute === CALENDAR_ROUTES.SETTINGS) {
-		return <OutlookSettingsList onClose={closeTabbar} onChangeRoute={() => setCalendarRoute(CALENDAR_ROUTES.LIST)} />;
+		return <OutlookSettingsList onClose={closeTabBar} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.LIST)} />;
 	}
 
-	return <OutlookEventsList onClose={closeTabbar} onChangeRoute={() => setCalendarRoute(CALENDAR_ROUTES.SETTINGS)} />;
+	return <OutlookEventsList onClose={closeTabBar} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.SETTINGS)} />;
 };
 
 export default OutlookEventsRoute;

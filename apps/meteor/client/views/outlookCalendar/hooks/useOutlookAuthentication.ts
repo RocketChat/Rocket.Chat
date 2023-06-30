@@ -1,36 +1,59 @@
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
+import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
-export const useOutlookAuthentication = ({ onChangeRoute }: { onChangeRoute: () => void }) => {
-	const t = useTranslation();
-	const [authEnabled, setEnableAuth] = useState(false);
-	const dispatchToastMessage = useToastMessageDispatch();
-	const desktopApp = getDesktopApp();
-	const canSync = !!desktopApp?.getOutlookEvents;
-
-	const { refetch } = useQuery(
-		['checkOutlookCredentials'],
+export const useOutlookAuthentication = () => {
+	const {
+		data: authEnabled,
+		isError,
+		error,
+	} = useQuery(
+		['outlook', 'auth'],
 		async () => {
-			return desktopApp?.hasOutlookCredentials() || false;
+			const desktopApp = window.RocketChatDesktop;
+			if (desktopApp?.hasOutlookCredentials) {
+				throw new NotOnDesktopError();
+			}
+
+			return Boolean(await desktopApp?.hasOutlookCredentials?.()) || false;
 		},
 		{
-			onSuccess: (data) => {
-				setEnableAuth(data);
-			},
 			onError: (error) => {
 				console.error(error);
 			},
 		},
 	);
 
-	const handleDisableAuth = () => {
-		desktopApp?.clearOutlookCredentials();
-		onChangeRoute();
-		dispatchToastMessage({ type: 'success', message: t('Outlook_authentication_disabled') });
-	};
+	return { authEnabled: Boolean(authEnabled), isError, error };
+};
 
-	return { authEnabled, canSync, handleDisableAuth, handleCheckCredentials: refetch };
+export const useOutlookAuthenticationMutation = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: async () => {
+			await queryClient.invalidateQueries(['outlook', 'auth']);
+		},
+	});
+};
+
+export const useOutlookAuthenticationMutationLogout = () => {
+	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const mutation = useOutlookAuthenticationMutation();
+	return useMutation({
+		mutationFn: async () => {
+			const desktopApp = window.RocketChatDesktop;
+			if (!desktopApp?.clearOutlookCredentials) {
+				throw new NotOnDesktopError();
+			}
+
+			await desktopApp.clearOutlookCredentials();
+
+			return mutation.mutateAsync();
+		},
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Outlook_authentication_disabled') });
+		},
+	});
 };

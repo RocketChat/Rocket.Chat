@@ -1,7 +1,6 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { getDesktopApp } from '../../../../../lib/utils/getDesktopApp';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
 export const useVideoConfOpenCall = () => {
@@ -9,11 +8,9 @@ export const useVideoConfOpenCall = () => {
 
 	const handleOpenCall = useCallback(
 		(callUrl: string) => {
-			const desktopApp = getDesktopApp();
+			const desktopApp = window.RocketChatDesktop;
 
-			if (desktopApp?.openInternalVideoChatWindow) {
-				desktopApp.openInternalVideoChatWindow(callUrl, undefined);
-			} else {
+			if (!desktopApp?.openInternalVideoChatWindow) {
 				const open = () => window.open(callUrl);
 				const popup = open();
 
@@ -22,7 +19,10 @@ export const useVideoConfOpenCall = () => {
 				}
 
 				setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
+				return;
 			}
+
+			desktopApp.openInternalVideoChatWindow(callUrl, undefined);
 		},
 		[setModal],
 	);

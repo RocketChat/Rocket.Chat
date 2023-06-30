@@ -1,19 +1,15 @@
-import { getDesktopApp } from '../../../lib/utils/getDesktopApp';
+import { NotOnDesktopError } from './NotOnDesktopError';
 
-export const syncOutlookEvents = (): (() => Promise<void>) => {
+export const syncOutlookEvents = async () => {
 	const date = new Date();
-	const desktopApp = getDesktopApp();
+	const desktopApp = window.RocketChatDesktop;
 
-	const syncEvents = async () => {
-		if (!desktopApp) {
-			return;
-		}
+	if (!desktopApp?.getOutlookEvents) {
+		throw new NotOnDesktopError();
+	}
 
-		const response = await desktopApp.getOutlookEvents(date);
-		if (response.status === 'canceled') {
-			throw new Error('abort');
-		}
-	};
-
-	return syncEvents;
+	const response = await desktopApp.getOutlookEvents(date);
+	if (response.status === 'canceled') {
+		throw new Error('abort');
+	}
 };

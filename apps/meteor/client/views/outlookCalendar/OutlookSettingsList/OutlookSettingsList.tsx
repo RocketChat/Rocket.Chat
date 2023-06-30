@@ -11,20 +11,21 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 } from '../../../components/Contextualbar';
-import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
+import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
 import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {
 	onClose: () => void;
-	onChangeRoute: () => void;
+	changeRoute: () => void;
 };
 
-const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProps): ReactElement => {
+const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const notifyCalendarEvents = useUserPreference('notifyCalendarEvents') as boolean;
-	const { authEnabled, handleDisableAuth } = useOutlookAuthentication({ onChangeRoute });
+	const { authEnabled } = useOutlookAuthentication();
+	const handleDisableAuth = useOutlookAuthenticationMutationLogout();
 
 	const handleNotifyCalendarEvents = useCallback(
 		(value: boolean) => {
@@ -51,7 +52,10 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 			title: t('Outlook_authentication'),
 			subTitle: t('Outlook_authentication_description'),
 			enabled: authEnabled,
-			handleEnable: handleDisableAuth,
+			handleEnable: () =>
+				handleDisableAuth.mutate(undefined, {
+					onSuccess: changeRoute,
+				}),
 		},
 	];
 
@@ -73,7 +77,7 @@ const OutlookSettingsList = ({ onClose, onChangeRoute }: OutlookSettingsListProp
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={onChangeRoute}>{t('Back_to_calendar')}</Button>
+					<Button onClick={changeRoute}>{t('Back_to_calendar')}</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
