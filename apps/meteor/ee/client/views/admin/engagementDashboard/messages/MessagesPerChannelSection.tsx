@@ -1,5 +1,19 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette, Tooltip } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Flex,
+	Icon,
+	Margins,
+	Skeleton,
+	Table,
+	Tile,
+	Palette,
+	Tooltip,
+	TableHead,
+	TableRow,
+	TableBody,
+	TableCell,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -166,43 +180,43 @@ const MessagesPerChannelSection = (): ReactElement => {
 									)}
 									{(!table || !!table.length) && (
 										<Table>
-											<Table.Head>
-												<Table.Row>
-													<Table.Cell>{'#'}</Table.Cell>
-													<Table.Cell>{t('Channel')}</Table.Cell>
-													<Table.Cell align='end'>{t('Number_of_messages')}</Table.Cell>
-												</Table.Row>
-											</Table.Head>
-											<Table.Body>
+											<TableHead>
+												<TableRow>
+													<TableCell>{'#'}</TableCell>
+													<TableCell>{t('Channel')}</TableCell>
+													<TableCell align='end'>{t('Number_of_messages')}</TableCell>
+												</TableRow>
+											</TableHead>
+											<TableBody>
 												{table?.map(({ i, t, name, messages }) => (
-													<Table.Row key={i}>
-														<Table.Cell>{i + 1}.</Table.Cell>
-														<Table.Cell>
+													<TableRow key={i}>
+														<TableCell>{i + 1}.</TableCell>
+														<TableCell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
 																	(t === 'p' && <Icon name='lock' />) ||
 																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
-														</Table.Cell>
-														<Table.Cell align='end'>{messages}</Table.Cell>
-													</Table.Row>
+														</TableCell>
+														<TableCell align='end'>{messages}</TableCell>
+													</TableRow>
 												))}
 												{!table &&
 													Array.from({ length: 5 }, (_, i) => (
-														<Table.Row key={i}>
-															<Table.Cell>
+														<TableRow key={i}>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell>
+															</TableCell>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell align='end'>
+															</TableCell>
+															<TableCell align='end'>
 																<Skeleton width='100%' />
-															</Table.Cell>
-														</Table.Row>
+															</TableCell>
+														</TableRow>
 													))}
-											</Table.Body>
+											</TableBody>
 										</Table>
 									)}
 								</Box>
