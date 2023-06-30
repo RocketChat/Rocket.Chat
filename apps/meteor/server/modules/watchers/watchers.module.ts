@@ -120,9 +120,11 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, {
-					projection: subscriptionFields,
-				});
+				const subscription =
+					data ||
+					(await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, {
+						projection: subscriptionFields,
+					}));
 				if (!subscription) {
 					return;
 				}
