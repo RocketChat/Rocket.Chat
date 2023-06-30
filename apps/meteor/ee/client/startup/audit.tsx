@@ -29,37 +29,36 @@ const PermissionGuard = ({ children, permission }: { children: React.ReactNode; 
 	return <>{canView ? children : <NotAuthorizedPage />}</>;
 };
 
-let unregisterAuditRoute: () => void;
-let unregisterAuditLogRoute: () => void;
+let unregisterAuditRoutes: () => void;
 
 onToggledFeature('auditing', {
 	up: () => {
-		unregisterAuditRoute = router.defineRoute({
-			path: '/audit/:tab?',
-			id: 'audit-home',
-			element: appLayout.wrap(
-				<MainLayout>
-					<PermissionGuard permission='can-audit'>
-						<AuditPage />
-					</PermissionGuard>
-				</MainLayout>,
-			),
-		});
-
-		unregisterAuditLogRoute = router.defineRoute({
-			path: '/audit-log',
-			id: 'audit-log',
-			element: appLayout.wrap(
-				<MainLayout>
-					<PermissionGuard permission='can-audit-log'>
-						<AuditLogPage />
-					</PermissionGuard>
-				</MainLayout>,
-			),
-		});
+		unregisterAuditRoutes = router.defineRoutes([
+			{
+				path: '/audit/:tab?',
+				id: 'audit-home',
+				element: appLayout.wrap(
+					<MainLayout>
+						<PermissionGuard permission='can-audit'>
+							<AuditPage />
+						</PermissionGuard>
+					</MainLayout>,
+				),
+			},
+			{
+				path: '/audit-log',
+				id: 'audit-log',
+				element: appLayout.wrap(
+					<MainLayout>
+						<PermissionGuard permission='can-audit-log'>
+							<AuditLogPage />
+						</PermissionGuard>
+					</MainLayout>,
+				),
+			},
+		]);
 	},
 	down: () => {
-		unregisterAuditRoute();
-		unregisterAuditLogRoute();
+		unregisterAuditRoutes();
 	},
 });

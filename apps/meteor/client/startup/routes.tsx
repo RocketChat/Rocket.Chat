@@ -111,141 +111,125 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-router.defineRoute({
-	path: '/',
-	id: 'index',
-	element: appLayout.wrap(<IndexRoute />),
-});
+router.defineRoutes([
+	{
+		path: '/',
+		id: 'index',
+		element: appLayout.wrap(<IndexRoute />),
+	},
+	{
+		path: '/login',
+		id: 'login',
+		element: createElement(() => {
+			useEffect(() => {
+				router.navigate('/home');
+			}, []);
 
-router.defineRoute({
-	path: '/login',
-	id: 'login',
-	element: createElement(() => {
-		useEffect(() => {
-			router.navigate('/home');
-		}, []);
-
-		return null;
-	}),
-});
-
-router.defineRoute({
-	path: '/meet/:rid',
-	id: 'meet',
-	element: appLayout.wrap(<MeetRoute />),
-});
-
-router.defineRoute({
-	path: '/home',
-	id: 'home',
-	element: appLayout.wrap(
-		<MainLayout>
-			<HomePage />
-		</MainLayout>,
-	),
-});
-
-router.defineRoute({
-	path: '/directory/:tab?',
-	id: 'directory',
-	element: appLayout.wrap(
-		<MainLayout>
-			<DirectoryPage />
-		</MainLayout>,
-	),
-});
-
-router.defineRoute({
-	path: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?',
-	id: 'omnichannel-directory',
-	element: appLayout.wrap(
-		<MainLayout>
-			<OmnichannelDirectoryPage />
-		</MainLayout>,
-	),
-});
-
-router.defineRoute({
-	path: '/livechat-queue',
-	id: 'livechat-queue',
-	element: appLayout.wrap(
-		<MainLayout>
-			<OmnichannelQueueList />
-		</MainLayout>,
-	),
-});
-
-router.defineRoute({
-	path: '/terms-of-service',
-	id: 'terms-of-service',
-	element: appLayout.wrap(<CMSPage page='Layout_Terms_of_Service' />),
-});
-
-router.defineRoute({
-	path: '/privacy-policy',
-	id: 'privacy-policy',
-	element: appLayout.wrap(<CMSPage page='Layout_Privacy_Policy' />),
-});
-
-router.defineRoute({
-	path: '/legal-notice',
-	id: 'legal-notice',
-	element: appLayout.wrap(<CMSPage page='Layout_Legal_Notice' />),
-});
-
-router.defineRoute({
-	path: '/register/:hash',
-	id: 'register-secret-url',
-	element: appLayout.wrap(<SecretURLPage />),
-});
-
-router.defineRoute({
-	path: '/invite/:hash',
-	id: 'invite',
-	element: appLayout.wrap(<InvitePage />),
-});
-
-router.defineRoute({
-	path: '/conference/:id',
-	id: 'conference',
-	element: appLayout.wrap(<ConferenceRoute />),
-});
-
-router.defineRoute({
-	path: '/setup-wizard/:step?',
-	id: 'setup-wizard',
-	element: <SetupWizardRoute />,
-});
-
-router.defineRoute({
-	path: '/mailer/unsubscribe/:_id/:createdAt',
-	id: 'mailer-unsubscribe',
-	element: appLayout.wrap(<MailerUnsubscriptionPage />),
-});
-
-router.defineRoute({
-	path: '/login-token/:token',
-	id: 'tokenLogin',
-	element: appLayout.wrap(<LoginTokenRoute />),
-});
-
-router.defineRoute({
-	path: '/reset-password/:token',
-	id: 'resetPassword',
-	element: appLayout.wrap(<ResetPasswordPage />),
-});
-
-router.defineRoute({
-	path: '/oauth/authorize',
-	id: 'oauth/authorize',
-	element: appLayout.wrap(<OAuthAuthorizationPage />),
-});
-
-router.defineRoute({
-	path: '/oauth/error/:error',
-	id: 'oauth/error',
-	element: appLayout.wrap(<OAuthErrorPage />),
-});
+			return null;
+		}),
+	},
+	{
+		path: '/meet/:rid',
+		id: 'meet',
+		element: appLayout.wrap(<MeetRoute />),
+	},
+	{
+		path: '/home',
+		id: 'home',
+		element: appLayout.wrap(
+			<MainLayout>
+				<HomePage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/directory/:tab?',
+		id: 'directory',
+		element: appLayout.wrap(
+			<MainLayout>
+				<DirectoryPage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?',
+		id: 'omnichannel-directory',
+		element: appLayout.wrap(
+			<MainLayout>
+				<OmnichannelDirectoryPage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/livechat-queue',
+		id: 'livechat-queue',
+		element: appLayout.wrap(
+			<MainLayout>
+				<OmnichannelQueueList />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/terms-of-service',
+		id: 'terms-of-service',
+		element: appLayout.wrap(<CMSPage page='Layout_Terms_of_Service' />),
+	},
+	{
+		path: '/privacy-policy',
+		id: 'privacy-policy',
+		element: appLayout.wrap(<CMSPage page='Layout_Privacy_Policy' />),
+	},
+	{
+		path: '/legal-notice',
+		id: 'legal-notice',
+		element: appLayout.wrap(<CMSPage page='Layout_Legal_Notice' />),
+	},
+	{
+		path: '/register/:hash',
+		id: 'register-secret-url',
+		element: appLayout.wrap(<SecretURLPage />),
+	},
+	{
+		path: '/invite/:hash',
+		id: 'invite',
+		element: appLayout.wrap(<InvitePage />),
+	},
+	{
+		path: '/conference/:id',
+		id: 'conference',
+		element: appLayout.wrap(<ConferenceRoute />),
+	},
+	{
+		path: '/setup-wizard/:step?',
+		id: 'setup-wizard',
+		element: <SetupWizardRoute />,
+	},
+	{
+		path: '/mailer/unsubscribe/:_id/:createdAt',
+		id: 'mailer-unsubscribe',
+		element: appLayout.wrap(<MailerUnsubscriptionPage />),
+	},
+	{
+		path: '/login-token/:token',
+		id: 'tokenLogin',
+		element: appLayout.wrap(<LoginTokenRoute />),
+	},
+	{
+		path: '/reset-password/:token',
+		id: 'resetPassword',
+		element: appLayout.wrap(<ResetPasswordPage />),
+	},
+	{
+		path: '/oauth/authorize',
+		id: 'oauth/authorize',
+		element: appLayout.wrap(<OAuthAuthorizationPage />),
+	},
+	{
+		path: '/oauth/error/:error',
+		id: 'oauth/error',
+		element: appLayout.wrap(<OAuthErrorPage />),
+	},
+]);
 
 FlowRouter.notFound = {
 	action: () => appLayout.renderStandalone(<NotFoundPage />),

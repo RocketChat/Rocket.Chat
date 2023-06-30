@@ -14,15 +14,17 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 		children?: ReactNode;
 	}>,
 ) => {
-	router.defineRoute({
-		path: prefix,
-		id: `${name}-index`,
-		element: appLayout.wrap(
-			<MainLayout>
-				<RouterComponent />
-			</MainLayout>,
-		),
-	});
+	router.defineRoutes([
+		{
+			path: prefix,
+			id: `${name}-index`,
+			element: appLayout.wrap(
+				<MainLayout>
+					<RouterComponent />
+				</MainLayout>,
+			),
+		},
+	]);
 
 	return <TRouteName extends RouteNamesOf<TGroupName>>(
 		path: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
@@ -41,17 +43,19 @@ export const createRouteGroup = <TGroupName extends GroupName>(
 		let unregister: (() => void) | undefined;
 
 		const register = () => {
-			unregister = router.defineRoute({
-				path: `${prefix}${path}` as RouterPathPattern,
-				id: name,
-				element: appLayout.wrap(
-					<MainLayout>
-						<RouterComponent>
-							<RouteComponent {...props} />
-						</RouterComponent>
-					</MainLayout>,
-				),
-			});
+			unregister = router.defineRoutes([
+				{
+					path: `${prefix}${path}` as RouterPathPattern,
+					id: name,
+					element: appLayout.wrap(
+						<MainLayout>
+							<RouterComponent>
+								<RouteComponent {...props} />
+							</RouterComponent>
+						</MainLayout>,
+					),
+				},
+			]);
 		};
 
 		if (ready) {

@@ -121,7 +121,7 @@ type RouteObject = {
 };
 
 interface IRouter extends RouterContextValue {
-	defineRoute(route: RouteObject): () => void;
+	defineRoutes(routes: RouteObject[]): () => void;
 	getRoutes(): RouteObject[];
 	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
 }
@@ -136,31 +136,33 @@ const updateFlowRouter = () => {
 	}
 };
 
-const defineRoute = (route: RouteObject) => {
-	const flowRoute = FlowRouter.route(route.path as RouterPathPattern, {
-		name: route.id as RouteName,
-		action: () => appLayout.renderStandalone(<>{route.element}</>),
-	});
+const defineRoutes = (routes: RouteObject[]) => {
+	const flowRoutes = routes.map((route) =>
+		FlowRouter.route(route.path, {
+			name: route.id,
+			action: () => appLayout.renderStandalone(<>{route.element}</>),
+		}),
+	);
 
-	updateFlowRouter();
-
-	routes.push(route);
+	routes.push(...routes);
 	const index = routes.length - 1;
 
+	updateFlowRouter();
 	routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 
 	return () => {
-		FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
-		if (flowRoute.name) {
-			delete FlowRouter._routesMap[flowRoute.name];
-		}
-
-		updateFlowRouter();
+		flowRoutes.forEach((flowRoute) => {
+			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
+			if (flowRoute.name) {
+				delete FlowRouter._routesMap[flowRoute.name];
+			}
+		});
 
 		if (index !== -1) {
 			routes.splice(index, 1);
 		}
 
+		updateFlowRouter();
 		routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 	};
 };
@@ -177,6 +179,7 @@ const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
 	};
 };
 
+/** @deprecated */
 export const router: IRouter = {
 	subscribeToRouteChange,
 	getLocationPathname,
@@ -186,7 +189,7 @@ export const router: IRouter = {
 	getRouteName,
 	buildRoutePath,
 	navigate,
-	defineRoute,
+	defineRoutes,
 	getRoutes,
 	subscribeToRoutesChange,
 };

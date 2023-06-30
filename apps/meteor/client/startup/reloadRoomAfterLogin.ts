@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	// Reload rooms after login
@@ -20,7 +21,7 @@ Meteor.startup(() => {
 			}
 			const roomType = roomCoordinator.getRouteNameIdentifier(routeName);
 			if (roomType) {
-				FlowRouter.reload();
+				router.navigate(0);
 			}
 		}
 	});

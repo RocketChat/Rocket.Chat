@@ -213,15 +213,17 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				route: { name, path },
 			} = roomConfig;
 			const { extractOpenRoomParams } = directives;
-			router.defineRoute({
-				path,
-				id: name,
-				element: appLayout.wrap(
-					<MainLayout>
-						<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
-					</MainLayout>,
-				),
-			});
+			router.defineRoutes([
+				{
+					path,
+					id: name,
+					element: appLayout.wrap(
+						<MainLayout>
+							<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
+						</MainLayout>,
+					),
+				},
+			]);
 		}
 	}
 
