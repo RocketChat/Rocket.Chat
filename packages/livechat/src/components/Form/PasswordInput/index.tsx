@@ -16,7 +16,7 @@ type PasswordInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps;
+	field?: ControllerRenderProps<{ [key: string]: string }, string>;
 };
 
 export const PasswordInput = ({
@@ -31,17 +31,27 @@ export const PasswordInput = ({
 	className,
 	style = {},
 	field,
-}: PasswordInputProps) => (
-	<input
-		type='password'
-		name={name}
-		value={value}
-		placeholder={placeholder}
-		disabled={disabled}
-		onChange={onChange}
-		onInput={onInput}
-		className={createClassName(styles, 'password-input', { disabled, error, small }, [className])}
-		style={style}
-		{...field}
-	/>
-);
+}: PasswordInputProps) =>
+	field ? (
+		<input
+			type='password'
+			placeholder={placeholder}
+			disabled={disabled}
+			className={createClassName(styles, 'password-input', { disabled, error, small }, [className])}
+			style={style}
+			// TODO: find a better way to handle the difference between react and preact on TS
+			{...(field as any)}
+		/>
+	) : (
+		<input
+			type='password'
+			name={name}
+			value={value}
+			placeholder={placeholder}
+			disabled={disabled}
+			onChange={onChange}
+			onInput={onInput}
+			className={createClassName(styles, 'password-input', { disabled, error, small }, [className])}
+			style={style}
+		/>
+	);

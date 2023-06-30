@@ -18,7 +18,7 @@ type SelectInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps<any, any>;
+	field?: ControllerRenderProps<{ [key: string]: string }, string>;
 	value?: string;
 };
 
@@ -39,6 +39,12 @@ export const SelectInput = ({
 }: SelectInputProps) => {
 	const [internalValue, setInternalValue] = useState(value);
 
+	const SelectOptions = Array.from(options).map(({ value, label }, key) => (
+		<option key={key} value={value} className={createClassName(styles, 'select-input__option')}>
+			{label}
+		</option>
+	));
+
 	const handleChange = (event: TargetedEvent<HTMLSelectElement, Event>) => {
 		onChange(event);
 
@@ -49,7 +55,7 @@ export const SelectInput = ({
 		setInternalValue((event.target as HTMLSelectElement)?.value);
 	};
 
-	return (
+	return field ? (
 		<div className={createClassName(styles, 'select-input', {}, [className])} style={style}>
 			<select
 				name={name}
@@ -63,17 +69,34 @@ export const SelectInput = ({
 					small,
 					placeholder: !internalValue,
 				})}
-				{...field}
 				{...props}
 			>
 				<option value='' disabled hidden>
 					{placeholder}
 				</option>
-				{Array.from(options).map(({ value, label }, key) => (
-					<option key={key} value={value} className={createClassName(styles, 'select-input__option')}>
-						{label}
-					</option>
-				))}
+				{SelectOptions}
+			</select>
+			<ArrowIcon className={createClassName(styles, 'select-input__arrow')} />
+		</div>
+	) : (
+		<div className={createClassName(styles, 'select-input', {}, [className])} style={style}>
+			<select
+				name={name}
+				disabled={disabled}
+				className={createClassName(styles, 'select-input__select', {
+					disabled,
+					error,
+					small,
+					placeholder: !internalValue,
+				})}
+				// TODO: find a better way to handle the difference between react and preact on TS
+				{...(field as any)}
+				{...props}
+			>
+				<option value='' disabled hidden>
+					{placeholder}
+				</option>
+				{SelectOptions}
 			</select>
 			<ArrowIcon className={createClassName(styles, 'select-input__arrow')} />
 		</div>
