@@ -3,12 +3,15 @@ import { Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
+import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
+
 type OmnichannelSortingDisclaimerProps = {
 	id?: string;
 };
 
-export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimerProps) => {
-	const t = useTranslation();
+export const useOmnichannelSortingDisclaimer = () => {
+	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
+
 	const sortingMechanism = useSetting<OmniSortingType>('Omnichannel_sorting_mechanism') || OmniSortingType.Timestamp;
 
 	const [{ [sortingMechanism]: type }] = useState({
@@ -16,6 +19,14 @@ export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimer
 		[OmniSortingType.SLAs]: 'SLA_Policies',
 		[OmniSortingType.Timestamp]: '',
 	} as const);
+
+	return isOmnichannelEnabled ? type : '';
+};
+
+export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimerProps) => {
+	const t = useTranslation();
+
+	const type = useOmnichannelSortingDisclaimer();
 
 	if (!type) {
 		return null;

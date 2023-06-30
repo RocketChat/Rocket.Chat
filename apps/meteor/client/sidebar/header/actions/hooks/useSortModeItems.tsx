@@ -3,15 +3,17 @@ import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-
 import React, { useCallback } from 'react';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import { OmnichannelSortingDisclaimer } from '../../../../components/Omnichannel/OmnichannelSortingDisclaimer';
-import { useOmnichannelEnterpriseEnabled } from '../../../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
+import {
+	OmnichannelSortingDisclaimer,
+	useOmnichannelSortingDisclaimer,
+} from '../../../../components/Omnichannel/OmnichannelSortingDisclaimer';
 
 export const useSortModeItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
-	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
+	const isOmnichannelEnabled = useOmnichannelSortingDisclaimer();
 
 	const omniDisclaimerItem = {
 		id: 'sortByList',
@@ -23,7 +25,7 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');
-	const items: GenericMenuItemProps[] = [
+	const items = [
 		{
 			id: 'activity',
 			content: t('Activity'),
@@ -36,11 +38,8 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 			icon: 'sort-az',
 			addon: <RadioButton mi='x16' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />,
 		},
-	];
-
-	if (isOmnichannelEnabled) {
-		items.push(omniDisclaimerItem);
-	}
+		isOmnichannelEnabled && omniDisclaimerItem,
+	].filter(Boolean) as GenericMenuItemProps[];
 
 	return items;
 };
