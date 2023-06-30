@@ -35,12 +35,11 @@ export const useTagsList = (
 				count: end + start,
 			});
 			return {
-				items: tags.map((tag: any) => {
-					tag._updatedAt = new Date(tag._updatedAt);
-					tag.label = tag.name;
-					tag.value = { value: tag._id, label: tag.name };
-					return tag;
-				}),
+				items: tags.map<any>((tag: any) => ({
+					label: tag.name,
+					value: tag._id,
+					_updatedAt: new Date(tag._updatedAt),
+				})),
 				itemCount: total,
 			};
 		},
