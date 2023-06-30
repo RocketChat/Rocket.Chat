@@ -2,6 +2,7 @@ import type { AtLeast, ISubscription, IUser, ICalendarNotification } from '@rock
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { lazy } from 'react';
 
 import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
@@ -13,7 +14,8 @@ import { RoomManager } from '../../lib/RoomManager';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
-import OutlookCalendarEventModal from '../../views/outlookCalendar/OutlookCalendarEventModal';
+
+const OutlookCalendarEventModal = lazy(() => import('../../views/outlookCalendar/OutlookCalendarEventModal'));
 
 const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
 	const user = Meteor.user() as IUser | null;
@@ -24,31 +26,6 @@ const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> 
 	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
 		KonchatNotification.newRoom(sub.rid);
 	}
-};
-
-const notifyUserCalendar = async function (notification: ICalendarNotification): Promise<void> {
-	const user = Meteor.user() as IUser | null;
-	if (!user || user.status === 'busy') {
-		return;
-	}
-
-	const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
-
-	const n = new Notification(notification.title, {
-		body: notification.text,
-		tag: notification.payload._id,
-		silent: true,
-		requireInteraction,
-	} as NotificationOptions);
-
-	n.onclick = function () {
-		this.close();
-		window.focus();
-		imperativeModal.open({
-			component: OutlookCalendarEventModal,
-			props: { id: notification.payload._id, onClose: imperativeModal.close, onCancel: imperativeModal.close },
-		});
-	};
 };
 
 function notifyNewMessageAudio(rid?: string): void {
@@ -69,15 +46,42 @@ function notifyNewMessageAudio(rid?: string): void {
 }
 
 Meteor.startup(() => {
+	const notifyUserCalendar = async function (notification: ICalendarNotification): Promise<void> {
+		const user = Meteor.user() as IUser | null;
+		if (!user || user.status === 'busy') {
+			return;
+		}
+
+		const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
+
+		const n = new Notification(notification.title, {
+			body: notification.text,
+			tag: notification.payload._id,
+			silent: true,
+			requireInteraction,
+		} as NotificationOptions);
+
+		n.onclick = function () {
+			this.close();
+			window.focus();
+			imperativeModal.open({
+				component: OutlookCalendarEventModal,
+				props: { id: notification.payload._id, onClose: imperativeModal.close, onCancel: imperativeModal.close },
+			});
+		};
+	};
+	Tracker.autorun(() => {
+		if (!Meteor.userId() || !settings.get('Outlook_Calendar_Enabled')) {
+			return Notifications.unUser('calendar');
+		}
+
+		Notifications.onUser('calendar', notifyUserCalendar);
+	});
+
 	Tracker.autorun(() => {
 		if (!Meteor.userId()) {
 			return;
 		}
-
-		if (settings.get('Outlook_Calendar_Enabled')) {
-			return Notifications.onUser('calendar', notifyUserCalendar);
-		}
-
 		Notifications.onUser('notification', (notification) => {
 			const openedRoomId = ['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) ? RoomManager.opened : undefined;
 
