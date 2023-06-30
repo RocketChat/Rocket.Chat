@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
-import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, TextInput, SelectInput } from '../../components/Form';
 import Screen from '../../components/Screen';
 import { createClassName, sortArrayByColumn } from '../../components/helpers';
@@ -206,19 +205,19 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 	}, [user?._id]);
 
 	return (
-		<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
-			<Screen
-				theme={{
-					color: customColor || color,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				}}
-				title={title || defaultTitle}
-				className={createClassName(styles, 'register')}
-				{...screenProps}
-			>
-				<Screen.Content>
+		<Screen
+			theme={{
+				color: customColor || color,
+				fontColor: customFontColor,
+				iconColor: customIconColor,
+				title: customTitle,
+			}}
+			title={title || defaultTitle}
+			className={createClassName(styles, 'register')}
+			{...screenProps}
+		>
+			<Screen.Content>
+				<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
 					<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>
 
 					{hasNameField ? (
@@ -269,7 +268,6 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 								name='department'
 								control={control}
 								defaultValue={getDepartmentDefault()}
-								// rules={{ required: true }}
 								render={({ field }) => (
 									<SelectInput
 										name='department'
@@ -287,16 +285,20 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 					) : null}
 
 					{customFields && renderCustomFields({ customFields, loading, control, errors })}
-				</Screen.Content>
-				<Screen.Footer>
-					<ButtonGroup>
-						<Button loading={loading} disabled={!isDirty || !isValid || loading || isSubmitting || Object.keys(errors).length > 0} submit>
-							{t('start_chat')}
-						</Button>
-					</ButtonGroup>
-				</Screen.Footer>
-			</Screen>
-		</Form>
+				</Form>
+			</Screen.Content>
+			<Screen.Footer>
+				<Button
+					loading={loading}
+					form='register'
+					submit
+					full
+					disabled={!isDirty || !isValid || loading || isSubmitting || Object.keys(errors).length > 0}
+				>
+					{t('start_chat')}
+				</Button>
+			</Screen.Footer>
+		</Screen>
 	);
 };
 

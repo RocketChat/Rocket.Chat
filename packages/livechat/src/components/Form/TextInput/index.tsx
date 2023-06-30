@@ -16,7 +16,7 @@ type TextInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps<{ [key: string]: string }, string>;
+	field?: ControllerRenderProps<{ [key: string]: string }, any>;
 };
 
 const TextInput = ({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {}, field }: TextInputProps) =>

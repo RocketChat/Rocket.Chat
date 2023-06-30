@@ -16,7 +16,7 @@ type DateInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps;
+	field?: ControllerRenderProps<{ [key: string]: string }, any>;
 };
 
 const DateInput = ({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {}, field }: DateInputProps) =>

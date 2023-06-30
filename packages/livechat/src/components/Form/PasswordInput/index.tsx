@@ -16,7 +16,7 @@ type PasswordInputProps = {
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps<{ [key: string]: string }, string>;
+	field?: ControllerRenderProps<{ [key: string]: string }, any>;
 };
 
 export const PasswordInput = ({

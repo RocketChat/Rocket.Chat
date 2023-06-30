@@ -12,6 +12,7 @@ const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTM
 type ButtonProps = {
 	children?: ComponentChildren;
 	submit?: boolean;
+	form?: string;
 	disabled?: boolean;
 	outline?: boolean;
 	nude?: boolean;
@@ -26,10 +27,12 @@ type ButtonProps = {
 	style?: CSSProperties;
 	img?: string;
 	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	full?: boolean;
 };
 
 export const Button = ({
 	submit,
+	form,
 	disabled,
 	outline,
 	nude,
@@ -45,11 +48,13 @@ export const Button = ({
 	style = {},
 	children,
 	img,
+	full,
 }: ButtonProps) => {
 	const { t } = useTranslation();
 	return (
 		<button
 			type={submit ? 'submit' : 'button'}
+			form={form}
 			disabled={disabled}
 			onClick={onClick}
 			onMouseUp={handleMouseUp}
@@ -68,6 +73,7 @@ export const Button = ({
 					loading,
 					icon: !!icon,
 					img,
+					full,
 				},
 				[className],
 			)}
