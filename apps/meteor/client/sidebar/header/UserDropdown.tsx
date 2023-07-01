@@ -1,6 +1,7 @@
 import type { IUser, ValueOf } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import {
+	Badge,
 	Box,
 	Margins,
 	Option,
@@ -25,6 +26,7 @@ import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
+import { useFeaturePreview } from '../../hooks/useFeaturePreview';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
@@ -55,6 +57,8 @@ type UserDropdownProps = {
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account-index');
+	const featurePreviewRoute = useRoute('feature-preview');
+
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
@@ -65,6 +69,8 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const { username, avatarETag, status, statusText } = user;
 
 	const displayName = useUserDisplayName(user);
+
+	const { newFeatures } = useFeaturePreview();
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
 		? (status: ValueOf<(typeof userStatus)['list']>): boolean => status.name !== 'invisible'
@@ -81,6 +87,11 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
+		onClose();
+	});
+
+	const handleFeaturePreview = useMutableCallback(() => {
+		featurePreviewRoute.push();
 		onClose();
 	});
 
@@ -150,7 +161,6 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				})}
 			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} disabled={presenceDisabled}></Option>
 			<OptionDivider />
-
 			<OptionTitle>{t('Theme')}</OptionTitle>
 			<Option is='label' role='listitem'>
 				<OptionIcon name='sun' />
@@ -175,6 +185,15 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			</Option>
 			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
+			<Option is='label' role='listitem' onClick={handleFeaturePreview}>
+				<OptionIcon name='eye' />
+				<OptionContent>{t('Feature_preview')}</OptionContent>
+				{newFeatures > 0 && (
+					<OptionInput>
+						<Badge variant='primary'>{newFeatures}</Badge>
+					</OptionInput>
+				)}
+			</Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
 	);

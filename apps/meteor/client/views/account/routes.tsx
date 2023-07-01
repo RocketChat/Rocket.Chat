@@ -37,3 +37,8 @@ registerAccountRoute('/omnichannel', {
 	name: 'omnichannel',
 	component: lazy(() => import('./omnichannel/OmnichannelPreferencesPage')),
 });
+
+registerAccountRoute('/feature-preview', {
+	name: 'feature-preview',
+	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+});

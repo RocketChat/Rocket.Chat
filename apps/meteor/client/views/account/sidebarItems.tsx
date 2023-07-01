@@ -1,6 +1,9 @@
+import React from 'react';
+
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import AccountFeaturePreviewBadge from './featurePreview/AccountFeaturePreviewBadge';
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,
@@ -42,5 +45,11 @@ export const {
 		i18nLabel: 'Omnichannel',
 		icon: 'headset',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['send-omnichannel-chat-transcript', 'request-pdf-transcript']),
+	},
+	{
+		href: 'feature-preview',
+		i18nLabel: 'Feature_preview',
+		icon: 'eye',
+		badge: () => <AccountFeaturePreviewBadge />,
 	},
 ]);
