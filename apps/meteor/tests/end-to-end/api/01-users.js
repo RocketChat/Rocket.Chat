@@ -21,6 +21,8 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 
+import { sleep } from '/lib/utils/sleep.js';
+
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
 		name,
@@ -1805,6 +1807,7 @@ describe('[Users]', function () {
 			// await updateSetting('Accounts_Password_Policy_Enabled', true);
 			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			await updateSetting('Accounts_Password_Policy_MaxLength', 5);
+			await sleep(500);
 
 			const expectedError = {
 				error: 'error-password-policy-not-met-maxLength',
