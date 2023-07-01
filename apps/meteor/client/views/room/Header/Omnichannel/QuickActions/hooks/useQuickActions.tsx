@@ -53,8 +53,8 @@ export const useQuickActions = (
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
 	let roomVerificationStatus;
-	if (room?.verficationStatus) {
-		roomVerificationStatus = room.verficationStatus;
+	if (room?.verificationStatus) {
+		roomVerificationStatus = room.verificationStatus;
 	}
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
@@ -82,7 +82,7 @@ export const useQuickActions = (
 			visitor: { visitorEmails },
 		} = await getVisitorInfo({ visitorId: visitorRoomId });
 
-		if (visitorEmails?.length && visitorEmails[0]?.verified) {
+		if (visitorEmails?.length && visitorEmails[0]?.verified === 'Verified') {
 			setVisitorsVerificationStatus(true);
 			return true;
 		}
@@ -105,8 +105,6 @@ export const useQuickActions = (
 	const handleVerifyUser = useCallback(async () => {
 		try {
 			await verifyUser(rid);
-			// const visitorEmail = await getVisitorEmail();
-			// console.log(visitorEmail);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

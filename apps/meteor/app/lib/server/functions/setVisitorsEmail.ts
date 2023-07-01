@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import type { IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 // import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import { validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from '.';
+import { Logger } from '../../../logger/server';
 import { sendMessage } from './sendMessage';
 import { i18n } from '../../../../server/lib/i18n';
 
@@ -13,17 +13,19 @@ interface ISetVisitorEmailResult {
 	error?: Error | undefined;
 }
 
+const logger = new Logger('updateEmail');
+
 export const setVisitorEmail = async function (room: IOmnichannelGenericRoom, email: string): Promise<ISetVisitorEmailResult> {
 	try {
 		const userId = room.v._id;
 		const bot = await Users.findOneById('rocket.cat');
 		email = email.trim();
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+			throw new Error('error-invalid-user');
 		}
 
 		if (!email) {
-			throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
+			throw new Error('error-email-required');
 		}
 
 		try {
@@ -34,14 +36,12 @@ export const setVisitorEmail = async function (room: IOmnichannelGenericRoom, em
 				groupable: false,
 			};
 			await sendMessage(bot, message, room);
-			// console.error('Failed to update email:', error);
-			// throw new Meteor.Error('error-invalid-email-domain', 'Invalid email domain');
 			return { success: false, error: error as Error };
 		}
 
 		const visitor = await LivechatVisitors.findOneById(userId, {});
 		if (!visitor) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+			throw new Error('error-invalid-user');
 		}
 
 		// User already has desired email, return
@@ -51,10 +51,7 @@ export const setVisitorEmail = async function (room: IOmnichannelGenericRoom, em
 
 		// Check email availability
 		if (!(await checkEmailAvailability(email))) {
-			throw new Meteor.Error('error-field-unavailable', `${email} is already in use :(`, {
-				function: '_setEmail',
-				field: email,
-			});
+			throw new Error('error-email-unavailable');
 		}
 
 		// Set new email
@@ -73,14 +70,7 @@ export const setVisitorEmail = async function (room: IOmnichannelGenericRoom, em
 		};
 		return result;
 	} catch (error) {
-		console.error('Failed to update email:', error);
+		logger.error({ msg: 'Failed to update email :', error });
 		return { success: false, error: error as Error };
 	}
 };
-
-// export const setVisitorEmail = RateLimiter.limitFunction(_setVisitorEmail, 1, 60000, {
-// 	async 0() {
-// 		const userId = Meteor.userId();
-// 		return !userId;
-// 	}, // Administrators have permission to change others emails, so don't limit those
-// });

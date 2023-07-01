@@ -88,7 +88,6 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
-	verficationStatus?: string;
 
 	/* @deprecated */
 	federated?: boolean;
@@ -150,6 +149,12 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
+export enum RoomVerificationState {
+	off = 'off',
+	isListeningToEmail = 'isListeningToEmail',
+	isListeningToOTP = 'isListeningToOTP',
+}
+
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
 	v: IVisitor;
@@ -200,7 +205,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	livechatData: any;
 	queuedAt?: Date;
 
-	verficationStatus: string;
+	verificationStatus: RoomVerificationState;
 
 	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 

@@ -278,7 +278,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		if (
 			user._id === room.v._id &&
 			room.t === 'l' &&
-			(room.verficationStatus === 'isListeningToEmail' || room.verficationStatus === 'isListeningToOTP')
+			(room.verificationStatus === 'isListeningToEmail' || room.verificationStatus === 'isListeningToOTP')
 		) {
 			await callbacks.run('verificationCheck', room, message.msg);
 		}

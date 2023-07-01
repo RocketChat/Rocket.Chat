@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted, VerificationStatusEnum } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
@@ -80,7 +80,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	updateVerificationStatus(visitorId: string, value: boolean): Promise<UpdateResult> {
+	updateVerificationStatus(visitorId: string, value: VerificationStatusEnum): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: visitorId },
 			{

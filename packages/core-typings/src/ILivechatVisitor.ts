@@ -16,16 +16,17 @@ export interface ILivechatVisitorConnectionData {
 	clientAddress: string;
 }
 
+export enum VerificationStatusEnum {
+	InProgress = 'InProgress',
+	Off = 'Off',
+	UnVerified = 'UnVerified',
+	Verified = 'Verified',
+}
 export interface IVisitorEmail {
 	address: string;
-	verified?: boolean;
+	verified?: VerificationStatusEnum;
 }
 
-// enum VerificationStatusEnum {
-// 	InProgress = 'InProgress',
-// 	Off = 'Off',
-// 	UnVerified = 'UnVerified',
-// }
 interface ILivechatData {
 	[k: string]: unknown;
 }

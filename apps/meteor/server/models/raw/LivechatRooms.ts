@@ -1668,6 +1668,20 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateMany(query, update);
 	}
 
+	updateVerificationStatusById(_id: string, verificationStatus: RoomVerificationState) {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				verificationStatus,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	async saveRoomById({
 		_id,
 		topic,

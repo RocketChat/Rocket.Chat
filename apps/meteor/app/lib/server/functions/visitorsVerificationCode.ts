@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import type { IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
+import { VerificationStatusEnum } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
 import { settings } from '../../../settings/server';
+import { Logger } from '../../../logger/server';
 import * as Mailer from '../../../mailer/server/api';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessage } from './sendMessage';
+
+const logger = new Logger('getVerficationCode');
 
 const send2FAEmail = async function (address: string, random: string): Promise<void> {
 	const language = settings.get<string>('Language') || 'en';
@@ -44,17 +47,16 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 export const sendVerificationCodeToVisitor = async function (visitorId: string): Promise<void> {
 	if (!visitorId) {
-		// this.logger.error('[2fa] User was not found when requesting 2fa email code');
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'sendVerificationCodeToVisitor' });
+		throw new Error('error-invalid-user');
 	}
 	const visitor = await LivechatVisitors.findOneById(visitorId, {});
 
 	if (!visitor) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+		throw new Error('error-invalid-user');
 	}
 
 	if (!visitor?.visitorEmails?.length) {
-		throw new Meteor.Error('error-parameter-required', 'email is required');
+		throw new Error('error-email-required');
 	}
 	const visitorEmail = visitor.visitorEmails[0].address;
 	const random = Random._randomString(6, '0123456789');
@@ -65,18 +67,18 @@ export const sendVerificationCodeToVisitor = async function (visitorId: string):
 
 	await LivechatVisitors.addEmailCodeByVisitorId(visitorId, encryptedRandom, expire);
 	await send2FAEmail(visitorEmail, random);
-	console.log(random);
+	logger.info(random);
 };
 
 export const verifyVisitorCode = async function (room: IOmnichannelGenericRoom, _codeFromVisitor: string): Promise<boolean> {
 	const visitorId = room.v._id;
 	if (!visitorId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'verifyVisitorCode' });
+		throw new Error('error-invalid-user');
 	}
 
 	const visitor = await LivechatVisitors.findOneById(visitorId, {});
 	if (!visitor) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+		throw new Error('error-invalid-user');
 	}
 	if (!visitor.services || !Array.isArray(visitor.services?.emailCode)) {
 		return false;
@@ -94,14 +96,14 @@ export const verifyVisitorCode = async function (room: IOmnichannelGenericRoom, 
 
 		if (await bcrypt.compare(_codeFromVisitor, code)) {
 			await LivechatVisitors.removeEmailCodeByVisitorIdAndCode(visitor._id, code);
-			await LivechatVisitors.updateVerificationStatus(visitor._id, true);
+			await LivechatVisitors.updateVerificationStatus(visitor._id, VerificationStatusEnum.Verified);
 			return true;
 		}
 	}
 	if (!visitor?.wrongMessageCount) {
 		await LivechatVisitors.updateWrongMessageCount(visitorId, 1);
 	} else if (visitor.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
-		await LivechatVisitors.updateVerificationStatus(visitor._id, false);
+		await LivechatVisitors.updateVerificationStatus(visitor._id, VerificationStatusEnum.Off);
 		await LivechatVisitors.updateWrongMessageCount(visitorId, 0);
 	} else {
 		await LivechatVisitors.updateWrongMessageCount(visitorId, visitor.wrongMessageCount + 1);

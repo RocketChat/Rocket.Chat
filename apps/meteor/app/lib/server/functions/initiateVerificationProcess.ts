@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
@@ -12,41 +12,27 @@ export const initiateVerificationProcess = async function (rid: IRoom['_id']) {
 	const room = await LivechatRooms.findOneById(rid);
 	const visitorRoomId = room?.v._id;
 	if (!visitorRoomId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'initiateVerificationProcess' });
+		throw new Error('error-invalid-user');
 	}
-	const visitor = await LivechatVisitors.findOneById(visitorRoomId, {});
-	if (visitor?.visitorEmails?.length && visitor?.visitorEmails[0]?.verified) {
+	const visitor = await LivechatVisitors.findOneById(visitorRoomId, { projection: { visitorEmails: 1 } });
+	if (visitor?.visitorEmails?.length && visitor?.visitorEmails[0]?.verified === 'Verified') {
 		return;
 	}
 	const user = await Users.findOneById('rocket.cat');
 	if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
 		const message = {
-			msg: i18n.t(
-				'Welcome to the verification process. \n Please enter the OTP (One-Time Password) sent to your email. \n Kindly avoid adding any extra words. Simply reply with the 6-digit OTP, for example, `345678`.',
-			),
+			msg: i18n.t('OTP_Entry_Instructions_for_Visitor_Verification_Process'),
 			groupable: false,
 		};
 		await sendMessage(user, message, room);
 		await sendVerificationCodeToVisitor(visitorRoomId);
-		await LivechatRooms.saveRoomById({
-			_id: room._id,
-			verficationStatus: 'isListeningToOTP',
-			topic: '',
-			tags: [],
-		});
+		await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToOTP);
 	} else {
 		const message = {
-			msg: i18n.t(
-				'Welcome to the verification process. \n To proceed, please provide your email. Please refrain from adding any additional words except for your email. For example, reply with `xyz@gmail.com` without any other text.',
-			),
+			msg: i18n.t('Email_Entry_Instructions_for_Visitor_Verification_Process'),
 			groupable: false,
 		};
 		await sendMessage(user, message, room);
-		await LivechatRooms.saveRoomById({
-			_id: room._id,
-			verficationStatus: 'isListeningToEmail',
-			topic: '',
-			tags: [],
-		});
+		await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToEmail);
 	}
 };
