@@ -4242,6 +4242,7 @@
   "Required_action": "Required action",
   "Default_Referrer_Policy": "Default Referrer Policy",
   "Default_Referrer_Policy_Description": "This controls the 'referrer' header that's sent when requesting embedded media from other servers. For more information, refer to [this link from MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy). Remember, a full page refresh is required for this to take effect",
+  "No_feature_to_preview": "No feature to preview",
   "No_Referrer": "No Referrer",
   "No_Referrer_When_Downgrade": "No referrer when downgrade",
   "Notes": "Notes",

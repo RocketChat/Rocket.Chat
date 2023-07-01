@@ -1,5 +1,4 @@
 import Ajv from 'ajv';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 const ajv = new Ajv({
 	coerceTypes: true,

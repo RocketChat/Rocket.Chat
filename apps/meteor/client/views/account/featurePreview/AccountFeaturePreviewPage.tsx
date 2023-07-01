@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Box, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box, Field, ToggleSwitch, FieldGroup, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useEffect } from 'react';
@@ -10,7 +10,7 @@ import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { features, newFeatures, defaultFeaturesPreview } = useFeaturePreview();
+	const { features, newFeatures } = useFeaturePreview();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -23,7 +23,7 @@ const AccountFeaturePreviewPage = () => {
 
 			void setUserPreferences({ data: { featuresPreview } });
 		}
-	}, [defaultFeaturesPreview, setUserPreferences, features, newFeatures]);
+	}, [setUserPreferences, features, newFeatures]);
 
 	const {
 		watch,
@@ -64,6 +64,12 @@ const AccountFeaturePreviewPage = () => {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
+					{featuresPreview.length === 0 && (
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_feature_to_preview')}</StatesTitle>
+						</States>
+					)}
 					<FieldGroup>
 						{featuresPreview.length > 0 &&
 							featuresPreview?.map((feature) => (

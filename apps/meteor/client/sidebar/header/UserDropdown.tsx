@@ -70,7 +70,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const displayName = useUserDisplayName(user);
 
-	const { newFeatures } = useFeaturePreview();
+	const { newFeatures, defaultFeaturesPreview } = useFeaturePreview();
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
 		? (status: ValueOf<(typeof userStatus)['list']>): boolean => status.name !== 'invisible'
@@ -185,15 +185,17 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			</Option>
 			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
-			<Option is='label' role='listitem' onClick={handleFeaturePreview}>
-				<OptionIcon name='eye' />
-				<OptionContent>{t('Feature_preview')}</OptionContent>
-				{newFeatures > 0 && (
-					<OptionInput>
-						<Badge variant='primary'>{newFeatures}</Badge>
-					</OptionInput>
-				)}
-			</Option>
+			{defaultFeaturesPreview.length > 0 && (
+				<Option is='label' role='listitem' onClick={handleFeaturePreview}>
+					<OptionIcon name='eye' />
+					<OptionContent>{t('Feature_preview')}</OptionContent>
+					{newFeatures > 0 && (
+						<OptionInput>
+							<Badge variant='primary'>{newFeatures}</Badge>
+						</OptionInput>
+					)}
+				</Option>
+			)}
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
 	);

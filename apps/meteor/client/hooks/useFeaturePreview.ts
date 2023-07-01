@@ -3,7 +3,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 type FeaturePreviewProps = { name: string; value: boolean; i18n: TranslationKey };
 
-const defaultFeaturesPreview: FeaturePreviewProps[] = [
+export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'quickReactions',
 		i18n: 'Quick_reactions',
