@@ -10,6 +10,7 @@ export type GenericMenuItemProps = {
 	onClick?: () => void;
 	status?: ReactNode;
 	disabled?: boolean;
+	description?: ReactNode;
 };
 
 const GenericMenuItem = ({ icon, content, addon, status }: GenericMenuItemProps) => (

@@ -15,31 +15,26 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
 	const isOmnichannelEnabled = useOmnichannelSortingDisclaimer();
 
-	const omniDisclaimerItem = {
-		id: 'sortByList',
-		content: <OmnichannelSortingDisclaimer id='sortByList' />,
-	};
-
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
 
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');
-	const items = [
+
+	return [
 		{
 			id: 'activity',
 			content: t('Activity'),
 			icon: 'clock',
 			addon: <RadioButton mi='x16' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />,
+			description: sidebarSortBy === 'activity' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
 		},
 		{
 			id: 'name',
 			content: t('Name'),
 			icon: 'sort-az',
 			addon: <RadioButton mi='x16' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />,
+			description: sidebarSortBy === 'alphabetical' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
 		},
-		isOmnichannelEnabled && omniDisclaimerItem,
-	].filter(Boolean) as GenericMenuItemProps[];
-
-	return items;
+	];
 };

@@ -1,13 +1,8 @@
 import { OmnichannelSortingMechanismSettingType as OmniSortingType } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
-
-type OmnichannelSortingDisclaimerProps = {
-	id?: string;
-};
 
 export const useOmnichannelSortingDisclaimer = () => {
 	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
@@ -23,7 +18,7 @@ export const useOmnichannelSortingDisclaimer = () => {
 	return isOmnichannelEnabled ? type : '';
 };
 
-export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimerProps) => {
+export const OmnichannelSortingDisclaimer = () => {
 	const t = useTranslation();
 
 	const type = useOmnichannelSortingDisclaimer();
@@ -32,9 +27,5 @@ export const OmnichannelSortingDisclaimer = (props: OmnichannelSortingDisclaimer
 		return null;
 	}
 
-	return (
-		<Box is='small' wordBreak='break-word' style={{ whiteSpace: 'normal' }} {...props}>
-			{t('Omnichannel_sorting_disclaimer', { sortingMechanism: t(type) })}
-		</Box>
-	);
+	return <>{t('Omnichannel_sorting_disclaimer', { sortingMechanism: t(type) })}</>;
 };
