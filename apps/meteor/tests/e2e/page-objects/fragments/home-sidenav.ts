@@ -41,7 +41,7 @@ export class HomeSidenav {
 
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async openInstalledApps(): Promise<void> {
@@ -50,8 +50,8 @@ export class HomeSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator('role=button[name="Create new"]').click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async logout(): Promise<void> {

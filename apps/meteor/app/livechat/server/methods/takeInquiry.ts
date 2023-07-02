@@ -9,14 +9,17 @@ import { settings } from '../../../settings/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:takeInquiry'(inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }): unknown;
+		'livechat:takeInquiry'(
+			inquiryId: string,
+			options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+		): unknown;
 	}
 }
 
 export const takeInquiry = async (
 	userId: string,
 	inquiryId: string,
-	options?: { clientAction: boolean; forwardingToDepartment?: boolean },
+	options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
 ): Promise<void> => {
 	if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
