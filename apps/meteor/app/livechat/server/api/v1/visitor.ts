@@ -9,6 +9,7 @@ import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
+import { initiateVerificationProcess } from '../../../../lib/server/functions/initiateVerificationProcess';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {
@@ -196,5 +197,14 @@ API.v1.addRoute('livechat/visitor.status', {
 		await Livechat.notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
+	},
+});
+API.v1.addRoute('livechat/visitor.verify', {
+	async post() {
+		const { rid } = this.bodyParams;
+		// console.log(rid);
+		await initiateVerificationProcess(rid);
+
+		return API.v1.success({ rid });
 	},
 });

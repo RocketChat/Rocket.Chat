@@ -58,6 +58,10 @@ type LivechatRoomOnHold = {
 	roomId: IRoom['_id'];
 };
 
+type LivechatVisitorVerify = {
+	rid: IRoom['_id'];
+};
+
 const LivechatRoomOnHoldSchema = {
 	type: 'object',
 	properties: {
@@ -3183,6 +3187,12 @@ export type OmnichannelEndpoints = {
 		POST: (params: LivechatVisitorStatus) => {
 			token: string;
 			status: string;
+		};
+	};
+
+	'/v1/livechat/visitor.verify': {
+		POST: (params: LivechatVisitorVerify) => {
+			rid: string;
 		};
 	};
 

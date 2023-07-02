@@ -2,7 +2,7 @@ import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat
 import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import type { DDPDispatchOptions } from '../types/DDPClient';
@@ -219,8 +219,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return result;
 	}
 
-	login(guest: OperationParams<'POST', '/v1/livechat/visitor'>) {
-		return this.grantVisitor(guest);
+	async verifyUser(rid: IRoom['_id']): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.verify'>>> {
+		const result = await this.rest.post('/v1/livechat/visitor.verify', { rid });
+		return result;
 	}
 
 	closeChat({ rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.close'>>> {
