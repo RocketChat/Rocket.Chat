@@ -3,13 +3,13 @@ import type { ReactElement, ReactNode } from 'react';
 
 import { Surface } from './Surface';
 
-type ModalSurfaceProps = {
+type ContextualBarSurfaceProps = {
   children?: ReactNode;
 };
 
 const ContextualBarSurface = ({
   children,
-}: ModalSurfaceProps): ReactElement => (
+}: ContextualBarSurfaceProps): ReactElement => (
   <Surface type='modal'>
     <Margins blockEnd='x16'>{children}</Margins>
   </Surface>
