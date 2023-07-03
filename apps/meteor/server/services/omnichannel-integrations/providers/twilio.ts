@@ -148,7 +148,7 @@ export class Twilio implements ISMSProvider {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
+			} else if (!fileUploadIsValidContentType(type, this.mediaTypeWhiteList)) {
 				reason = i18n.t('File_type_is_not_accepted', { lng });
 			}
 
@@ -179,10 +179,6 @@ export class Twilio implements ISMSProvider {
 			isSuccess: result.status !== 'failed',
 			resultMsg: result.status,
 		};
-	}
-
-	fileUploadMediaTypeWhiteList(): any {
-		throw new Error('Method not implemented.');
 	}
 
 	response(): SMSProviderResponse {
