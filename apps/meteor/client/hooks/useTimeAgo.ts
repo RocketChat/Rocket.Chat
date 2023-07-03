@@ -12,7 +12,12 @@ export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
 	return useCallback(
 		(time) =>
-			moment(time).calendar(null, { sameDay: format, lastDay: `[Yesterday at] ${format}`, lastWeek: `dddd ${format}`, sameElse: 'LL' }),
+			moment(time).calendar(null, {
+				sameDay: format,
+				lastDay: moment().localeData().calendar('lastDay').replace('LT', format),
+				lastWeek: `dddd ${format}`,
+				sameElse: 'LL',
+			}),
 		[format],
 	);
 };
@@ -43,6 +48,6 @@ export const useShortTimeAgo = (): ((time: Date | string | number) => string) =>
 					return 'MMM Do';
 				},
 			}),
-		[],
+		[format],
 	);
 };
