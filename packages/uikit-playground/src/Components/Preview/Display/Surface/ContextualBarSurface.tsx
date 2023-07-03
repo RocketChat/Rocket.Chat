@@ -57,8 +57,8 @@ const ContextualBarSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
 
     <ContextualbarFooter>
       <ButtonGroup stretch>
-        <Button danger>Cancel</Button>
-        <Button primary>Save</Button>
+        <Button>Cancel</Button>
+        <Button primary>Submit</Button>
       </ButtonGroup>
     </ContextualbarFooter>
   </Contextualbar>
