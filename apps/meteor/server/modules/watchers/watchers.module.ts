@@ -120,59 +120,61 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById<
-					Pick<
-						ISubscription,
-						| 't'
-						| 'ts'
-						| 'ls'
-						| 'lr'
-						| 'name'
-						| 'fname'
-						| 'rid'
-						| 'code'
-						| 'f'
-						| 'u'
-						| 'open'
-						| 'alert'
-						| 'roles'
-						| 'unread'
-						| 'prid'
-						| 'userMentions'
-						| 'groupMentions'
-						| 'archived'
-						| 'audioNotificationValue'
-						| 'desktopNotifications'
-						| 'mobilePushNotifications'
-						| 'emailNotifications'
-						| 'desktopPrefOrigin'
-						| 'mobilePrefOrigin'
-						| 'emailPrefOrigin'
-						| 'unreadAlert'
-						| '_updatedAt'
-						| 'blocked'
-						| 'blocker'
-						| 'autoTranslate'
-						| 'autoTranslateLanguage'
-						| 'disableNotifications'
-						| 'hideUnreadStatus'
-						| 'hideMentionStatus'
-						| 'muteGroupMentions'
-						| 'ignored'
-						| 'E2EKey'
-						| 'E2ESuggestedKey'
-						| 'tunread'
-						| 'tunreadGroup'
-						| 'tunreadUser'
+				const subscription =
+					data ||
+					(await Subscriptions.findOneById<
+						Pick<
+							ISubscription,
+							| 't'
+							| 'ts'
+							| 'ls'
+							| 'lr'
+							| 'name'
+							| 'fname'
+							| 'rid'
+							| 'code'
+							| 'f'
+							| 'u'
+							| 'open'
+							| 'alert'
+							| 'roles'
+							| 'unread'
+							| 'prid'
+							| 'userMentions'
+							| 'groupMentions'
+							| 'archived'
+							| 'audioNotificationValue'
+							| 'desktopNotifications'
+							| 'mobilePushNotifications'
+							| 'emailNotifications'
+							| 'desktopPrefOrigin'
+							| 'mobilePrefOrigin'
+							| 'emailPrefOrigin'
+							| 'unreadAlert'
+							| '_updatedAt'
+							| 'blocked'
+							| 'blocker'
+							| 'autoTranslate'
+							| 'autoTranslateLanguage'
+							| 'disableNotifications'
+							| 'hideUnreadStatus'
+							| 'hideMentionStatus'
+							| 'muteGroupMentions'
+							| 'ignored'
+							| 'E2EKey'
+							| 'E2ESuggestedKey'
+							| 'tunread'
+							| 'tunreadGroup'
+							| 'tunreadUser'
 
-						// Omnichannel fields
-						| 'department'
-						| 'v'
-						| 'onHold'
-					>
-				>(id, {
-					projection: subscriptionFields,
-				});
+							// Omnichannel fields
+							| 'department'
+							| 'v'
+							| 'onHold'
+						>
+					>(id, {
+						projection: subscriptionFields,
+					}));
 
 				if (!subscription) {
 					return;

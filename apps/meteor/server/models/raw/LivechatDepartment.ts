@@ -13,7 +13,7 @@ import type {
 	UpdateFilter,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -352,6 +352,47 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean> {
+		const aggregation = [
+			{
+				$match: {
+					enabled: true,
+					_id: departmentId,
+				},
+			},
+			{
+				$lookup: {
+					from: LivechatUnitMonitors.getCollectionName(),
+					localField: 'parentId',
+					foreignField: 'unitId',
+					as: 'monitors',
+					pipeline: [
+						{
+							$match: {
+								monitorId,
+							},
+						},
+					],
+				},
+			},
+			{
+				$match: {
+					monitors: {
+						$exists: true,
+						$ne: [],
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregation).hasNext();
 	}
 }
 

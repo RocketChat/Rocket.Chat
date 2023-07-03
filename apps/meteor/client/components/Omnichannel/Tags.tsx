@@ -1,23 +1,25 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState } from 'react';
 
 import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
+import { useLivechatTags } from './hooks/useLivechatTags';
 
 const Tags = ({
 	tags = [],
 	handler,
 	error,
 	tagRequired,
+	department,
 }: {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
+	department?: string;
 }): ReactElement => {
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
@@ -27,9 +29,8 @@ const Tags = ({
 	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
 	const EETagsComponent = useCurrentChatTags?.();
 
-	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
-		enabled: Boolean(EETagsComponent),
+	const { data: tagsResult, isInitialLoading } = useLivechatTags({
+		department,
 	});
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -81,6 +82,7 @@ const Tags = ({
 							handler(tags.map((tag) => tag.label));
 							handlePaginatedTagValue(tags);
 						}}
+						department={department}
 					/>
 				</Field.Row>
 			) : (

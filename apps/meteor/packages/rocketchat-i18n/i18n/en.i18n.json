@@ -135,6 +135,8 @@
   "Accounts_OAuth_Custom_Map_Channels": "Map Roles/Groups to channels",
   "Accounts_OAuth_Custom_Merge_Roles": "Merge Roles from SSO",
   "Accounts_OAuth_Custom_Merge_Users": "Merge users",
+  "Accounts_OAuth_Custom_Merge_Users_Distinct_Services": "Merge users from distinct services",
+  "Accounts_OAuth_Custom_Merge_Users_Distinct_Services_Description": "When the given key field matches the one of an existing user, allow users from this OAuth service to be merged to existing users regardless of their origin service.",
   "Accounts_OAuth_Custom_Name_Field": "Name field",
   "Accounts_OAuth_Custom_Roles_Claim": "Roles/Groups field name",
   "Accounts_OAuth_Custom_Roles_To_Sync": "Roles to Sync",
