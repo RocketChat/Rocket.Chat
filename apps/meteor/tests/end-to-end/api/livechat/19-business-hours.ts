@@ -1,14 +1,20 @@
 /* eslint-env mocha */
 
-import { LivechatBusinessHourTypes, LivechatBusinessHourBehaviors } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, LivechatBusinessHourBehaviors, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveBusinessHour } from '../../../data/livechat/business-hours';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
 import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { getWorkHours } from '../../../data/livechat/businessHours';
+import { sleep } from '../../../../lib/utils/sleep';
+import { getDefaultBusinessHour, openOrCloseBusinessHour, getWorkHours } from '../../../data/livechat/businessHours';
+import type { IUserCredentialsHeader } from '../../../data/user';
+import { password } from '../../../data/user';
+import { removeAgent } from '../../../data/livechat/users';
 
 describe('[CE] LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -224,6 +230,80 @@ describe('[CE] LIVECHAT - business hours', function () {
 			});
 
 			expect(result).to.have.property('error');
+		});
+	});
+
+	describe('BH behavior upon new agent creation/deletion', () => {
+		let defaultBH: ILivechatBusinessHour;
+		let agent: ILivechatAgent;
+		let agentCredentials: IUserCredentialsHeader;
+
+		before(async () => {
+			await updateSetting('Livechat_enable_business_hours', true);
+			await updateEESetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.SINGLE);
+			// wait for callbacks to run
+			await sleep(2000);
+
+			defaultBH = await getDefaultBusinessHour();
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			agent = await createUser();
+			agentCredentials = await login(agent.username, password);
+		});
+
+		it('should create a new agent and verify if it is assigned to the default business hour which is open', async () => {
+			agent = await createAgent(agent.username);
+
+			const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
+		});
+
+		it('should create a new agent and verify if it is assigned to the default business hour which is closed', async () => {
+			await openOrCloseBusinessHour(defaultBH, false);
+
+			const newUser: ILivechatAgent = await createUser();
+			const newUserCredentials = await login(newUser.username, password);
+			await createAgent(newUser.username);
+
+			const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.undefined;
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should verify if agent is assigned to BH when it is opened', async () => {
+			// first verify if agent is not assigned to any BH
+			let latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+
+			// now open BH
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			// verify if agent is assigned to BH
+			latestAgent = await getMe(agentCredentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
+
+			// verify if agent is able to make themselves available
+			await makeAgentAvailable(agentCredentials as any);
+		});
+
+		it('should verify if BH related props are cleared when an agent is deleted', async () => {
+			await removeAgent(agent._id);
+
+			const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.undefined;
+			expect(latestAgent.statusLivechat).to.be.undefined;
+		});
+
+		after(async () => {
+			await deleteUser(agent._id);
 		});
 	});
 });
