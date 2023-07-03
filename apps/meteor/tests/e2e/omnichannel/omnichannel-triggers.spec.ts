@@ -32,8 +32,8 @@ test.describe.serial('omnichannel-triggers', () => {
 		await page.locator('.main-content').waitFor();
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChat(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -55,7 +55,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		await test.step('expect triggers to be displaye on Livechat', async () => {
 			await test.step('Expect send a message as a visitor', async () => {
 				await page.goto('/livechat');
-				await poLiveChat.btnOpenLiveChat('R').click();
+				await poLiveChat.openLiveChat();
 				if (await page.locator('[type="button"] >> text="Chat now"').isVisible()) {
 					await page.locator('[type="button"] >> text="Chat now"').click();
 				}
