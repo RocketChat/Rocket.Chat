@@ -346,7 +346,7 @@ export const useQuickActions = (
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
-	const canVerifyUser = usePermission('enable-livechat-verification-process');
+	const canVerifyUser = usePermission('initiate-livechat-verification-process');
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {

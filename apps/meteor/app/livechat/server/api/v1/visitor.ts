@@ -199,12 +199,15 @@ API.v1.addRoute('livechat/visitor.status', {
 		return API.v1.success({ token, status });
 	},
 });
-API.v1.addRoute('livechat/visitor.verify', {
-	async post() {
-		const { rid } = this.bodyParams;
-		// console.log(rid);
-		await OmnichannelVerification.initiateVerificationProcess(rid);
+API.v1.addRoute(
+	'livechat/visitor.verify',
+	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
+	{
+		async post() {
+			const { rid } = this.bodyParams;
+			await OmnichannelVerification.initiateVerificationProcess(rid);
 
-		return API.v1.success({ rid });
+			return API.v1.success({ rid });
+		},
 	},
-});
+);

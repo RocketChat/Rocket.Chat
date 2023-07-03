@@ -165,7 +165,7 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{
-		_id: 'enable-livechat-verification-process',
+		_id: 'initiate-livechat-verification-process',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{ _id: 'send-omnichannel-chat-transcript', roles: ['livechat-manager', 'admin'] },
