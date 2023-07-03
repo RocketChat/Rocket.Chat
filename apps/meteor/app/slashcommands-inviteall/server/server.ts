@@ -86,7 +86,6 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Users_added', { lng }),
 			});
-			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {

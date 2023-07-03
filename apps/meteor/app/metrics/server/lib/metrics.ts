@@ -3,6 +3,11 @@ import client from 'prom-client';
 const percentiles = [0.01, 0.1, 0.9, 0.99];
 
 export const metrics = {
+	deprecations: new client.Counter({
+		name: 'rocketchat_deprecations',
+		labelNames: ['type', 'kind', 'name', 'params'],
+		help: 'cumulated number of deprecations being used',
+	}),
 	metricsRequests: new client.Counter({
 		name: 'rocketchat_metrics_requests',
 		labelNames: ['notification_type'],
