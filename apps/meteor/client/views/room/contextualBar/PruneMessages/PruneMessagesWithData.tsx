@@ -5,9 +5,9 @@ import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTran
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useForm } from '../../../../hooks/useForm';
 import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
@@ -47,9 +47,8 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	const [validateText, setValidateText] = useState<string | undefined>();
 	const [counter, setCounter] = useState(0);
 
-	const { values, handlers, reset } = useForm(initialValues);
-	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
-		values as typeof initialValues;
+	const methods = useForm({ defaultValues: initialValues });
+	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } = methods.watch();
 
 	const handlePrune = useMutableCallback((): void => {
 		const handlePruneAction = async (): Promise<void> => {
@@ -80,8 +79,9 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 				}
 
 				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
+				console.log('reset form');
+				methods.reset();
 				closeModal();
-				reset();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 				closeModal();
@@ -152,7 +152,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 			setCallOutText(
 				t('Prune_Warning_all', {
 					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, room && isDirectMessageRoom(room) && (room.name || room.usernames?.join(' x '))],
+					sprintf: [filesOrMessages, room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name)],
 				}) +
 					exceptPinned +
 					ifFrom,
@@ -180,15 +180,15 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	}, [newerDate, olderDate, fromDate, toDate, attached, t, pinned, users, room]);
 
 	return (
-		<PruneMessages
-			callOutText={callOutText}
-			validateText={validateText}
-			users={users}
-			values={values}
-			handlers={handlers}
-			onClickClose={onClickClose}
-			onClickPrune={handlePrune}
-		/>
+		<FormProvider {...methods}>
+			<PruneMessages
+				callOutText={callOutText}
+				validateText={validateText}
+				users={users}
+				onClickClose={onClickClose}
+				onClickPrune={handlePrune}
+			/>
+		</FormProvider>
 	);
 };
 

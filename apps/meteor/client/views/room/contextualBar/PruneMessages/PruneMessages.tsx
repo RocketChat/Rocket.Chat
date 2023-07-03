@@ -2,7 +2,8 @@ import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuse
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import {
 	ContextualbarHeader,
@@ -20,30 +21,21 @@ type PruneMessagesProps = {
 	callOutText?: string;
 	validateText?: string;
 	users: string[];
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: unknown) => void>;
 	onClickClose: () => void;
 	onClickPrune: () => void;
 };
 
-const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
+const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
 	const t = useTranslation();
+	const { watch, setValue, control } = useFormContext();
+	const { newerDate, newerTime, olderDate, olderTime } = watch() as typeof initialValues;
 
-	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
-		values as typeof initialValues;
+	const handleFieldValues = useCallback((field) => (e: any) => setValue(field, e.target.value), [setValue]);
 
-	const {
-		handleNewerDate,
-		handleNewerTime,
-		handleOlderDate,
-		handleOlderTime,
-		handleInclusive,
-		handlePinned,
-		handleDiscussion,
-		handleThreads,
-		handleAttached,
-		handleUsers,
-	} = handlers;
+	const handleNewerDate = handleFieldValues('newerDate');
+	const handleNewerTime = handleFieldValues('newerTime');
+	const handleOlderDate = handleFieldValues('olderDate');
+	const handleOlderTime = handleFieldValues('olderTime');
 
 	const inclusiveCheckboxId = useUniqueId();
 	const pinnedCheckboxId = useUniqueId();
@@ -71,35 +63,61 @@ const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClo
 				/>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
-					<UserAutoCompleteMultiple value={users} onChange={handleUsers} placeholder={t('Please_enter_usernames')} />
+					<Controller
+						control={control}
+						name='users'
+						render={({ field: { onChange, value } }) => (
+							<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Please_enter_usernames')} />
+						)}
+					/>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={inclusiveCheckboxId} checked={inclusive} onChange={handleInclusive} />
+						<Controller
+							control={control}
+							name='inclusive'
+							render={({ field: { onChange, value } }) => <CheckBox id={inclusiveCheckboxId} checked={value} onChange={onChange} />}
+						/>
 						<Field.Label htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={pinnedCheckboxId} checked={pinned} onChange={handlePinned} />
+						<Controller
+							control={control}
+							name='pinned'
+							render={({ field: { onChange, value } }) => <CheckBox id={pinnedCheckboxId} checked={value} onChange={onChange} />}
+						/>
 						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={discussionCheckboxId} checked={discussion} onChange={handleDiscussion} />
+						<Controller
+							control={control}
+							name='discussion'
+							render={({ field: { onChange, value } }) => <CheckBox id={discussionCheckboxId} checked={value} onChange={onChange} />}
+						/>
 						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={threadsCheckboxId} checked={threads} onChange={handleThreads} />
+						<Controller
+							control={control}
+							name='threads'
+							render={({ field: { onChange, value } }) => <CheckBox id={threadsCheckboxId} checked={value} onChange={onChange} />}
+						/>
 						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={attachedCheckboxId} checked={attached} onChange={handleAttached} />
+						<Controller
+							control={control}
+							name='attached'
+							render={({ field: { onChange, value } }) => <CheckBox id={attachedCheckboxId} checked={value} onChange={onChange} />}
+						/>
 						<Field.Label htmlFor={attachedCheckboxId}>{t('Files_only')}</Field.Label>
 					</Field.Row>
 				</Field>
