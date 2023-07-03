@@ -26,6 +26,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { queueLogger } from './logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -134,6 +135,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
+		await callbacks.run('livechat.afterTagRemoved', tag);
 		return LivechatTag.removeById(_id);
 	},
 

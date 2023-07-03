@@ -19,6 +19,7 @@ import type {
 	ILivechatTag,
 	SelectedAgent,
 	InquiryWithAgentInfo,
+	ILivechatTagRecord,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -93,6 +94,7 @@ interface EventLikeCallbackSignatures {
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
+	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
 }
 
 /**

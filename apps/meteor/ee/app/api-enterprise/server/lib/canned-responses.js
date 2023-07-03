@@ -8,6 +8,10 @@ const getTagsInformation = async (cannedResponses) => {
 		cannedResponses.map(async (cannedResponse) => {
 			const { tags } = cannedResponse;
 
+			if (!Array.isArray(tags) || !tags.length) {
+				return cannedResponse;
+			}
+
 			const serverTags = await LivechatTag.find({ _id: { $in: tags } }, { projection: { _id: 1, name: 1 } }).toArray();
 
 			// filter out tags that were found

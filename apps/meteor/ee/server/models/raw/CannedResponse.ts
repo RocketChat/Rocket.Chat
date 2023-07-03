@@ -1,6 +1,6 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import type { ICannedResponseModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription } from 'mongodb';
+import type { Db, DeleteResult, Document, FindCursor, FindOptions, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -105,5 +105,15 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		const query = { _id };
 
 		return this.deleteOne(query);
+	}
+
+	removeTagFromCannedResponses(tagId: string): Promise<UpdateResult | Document> {
+		const update: UpdateFilter<IOmnichannelCannedResponse> = {
+			$pull: {
+				tags: tagId,
+			},
+		};
+
+		return this.updateMany({}, update);
 	}
 }
