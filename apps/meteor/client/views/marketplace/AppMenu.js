@@ -139,7 +139,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		const confirm = async () => {
 			closeModal();
 			try {
-				const { status } = await setAppStatus({ status: 'manually_disabled' });
+				const { status } = await setAppStatus({ status: 'manually_disabled', version: app.version });
 				warnEnableDisableApp(app.name, status, 'disable');
 			} catch (error) {
 				handleAPIError(error);
@@ -148,7 +148,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		setModal(
 			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [app.name, closeModal, setAppStatus, setModal, t]);
+	}, [app.name, app.version, closeModal, setAppStatus, setModal, t]);
 
 	const handleEnable = useCallback(async () => {
 		try {
