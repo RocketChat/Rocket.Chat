@@ -1,12 +1,38 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, CannedResponse, LivechatUnit } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, CannedResponse, LivechatUnit, LivechatTag } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+
+const getTagsInformation = async (cannedResponses) => {
+	return Promise.all(
+		cannedResponses.map(async (cannedResponse) => {
+			const { tags } = cannedResponse;
+
+			const serverTags = await LivechatTag.find({ _id: { $in: tags } }, { projection: { _id: 1, name: 1 } }).toArray();
+
+			// filter out tags that were found
+			const newTags = tags.reduce((acc, tag) => {
+				const found = serverTags.find((serverTag) => serverTag._id === tag);
+				if (found) {
+					acc.push(found.name);
+				} else {
+					acc.push(tag);
+				}
+				return acc;
+			}, []);
+
+			// Known limitation: if a tag was added and removed before this, it will return the tag id instead of the name
+			cannedResponse.tags = newTags;
+
+			return cannedResponse;
+		}),
+	);
+};
 
 export async function findAllCannedResponses({ userId }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
-		return CannedResponse.find({
+		const cannedResponses = await CannedResponse.find({
 			$or: [
 				{
 					scope: 'user',
@@ -20,14 +46,16 @@ export async function findAllCannedResponses({ userId }) {
 				},
 			],
 		}).toArray();
+		return getTagsInformation(cannedResponses);
 	}
 
 	// If the user it not any of the previous roles nor an agent, then get only his own responses
 	if (!(await hasPermissionAsync(userId, 'view-agent-canned-responses'))) {
-		return CannedResponse.find({
+		const cannedResponses = await CannedResponse.find({
 			scope: 'user',
 			userId,
 		}).toArray();
+		return getTagsInformation(cannedResponses);
 	}
 
 	// Last scenario: user is an agente, so get his own responses and those from the departments he is in
@@ -48,7 +76,7 @@ export async function findAllCannedResponses({ userId }) {
 		...monitoredDepartments.map((department) => department._id),
 	];
 
-	return CannedResponse.find({
+	const cannedResponses = await CannedResponse.find({
 		$or: [
 			{
 				scope: 'user',
@@ -65,6 +93,8 @@ export async function findAllCannedResponses({ userId }) {
 			},
 		],
 	}).toArray();
+
+	return getTagsInformation(cannedResponses);
 }
 
 export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
@@ -76,7 +106,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 				agentId: userId,
 			},
 			{
-				fields: {
+				projection: {
 					departmentId: 1,
 				},
 			},
@@ -153,7 +183,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	});
 	const [cannedResponses, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
-		cannedResponses,
+		cannedResponses: await getTagsInformation(cannedResponses),
 		total,
 	};
 }
