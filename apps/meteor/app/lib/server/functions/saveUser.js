@@ -419,10 +419,13 @@ export const saveUser = async function (userId, userData) {
 
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
-	await callbacks.run('afterSaveUser', userData);
-
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userId);
+
+	await callbacks.run('afterSaveUser', {
+		user: userUpdated,
+		oldUser: oldUserData,
+	});
 
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,

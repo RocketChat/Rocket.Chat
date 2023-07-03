@@ -17,7 +17,7 @@ const events = {
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		await queryClient.invalidateQueries({ queryKey: ['rooms', inquiry.rid], exact: true });
+		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
 	},
 	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
 };

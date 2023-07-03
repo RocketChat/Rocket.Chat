@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 				{ _id: integrationId },
 				{
 					$set: { scriptCompiled: integration.scriptCompiled },
-					$unset: { scriptError: 1 },
+					$unset: { scriptError: 1 as const },
 				},
 			);
 		} else {
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 				{ _id: integrationId },
 				{
 					$set: { scriptError: integration.scriptError },
-					$unset: { scriptCompiled: 1 },
+					$unset: { scriptCompiled: 1 as const },
 				},
 			);
 		}

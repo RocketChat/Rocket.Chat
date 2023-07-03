@@ -6,7 +6,7 @@ import { renderMessageBlocks } from '../../uiKit';
 import Surface from '../../uiKit/message/Surface';
 import styles from './styles.scss';
 
-const MessageBlocks = ({ blocks = [], mid, rid }) => {
+const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }) => {
 	const dispatchAction = useCallback(
 		({ appId, actionId, payload }) =>
 			triggerAction({

@@ -6,6 +6,7 @@ import * as core from '@actions/core';
 import { publishRelease } from './publishRelease';
 import { bumpNextVersion } from './bumpNextVersion';
 import { startPatchRelease } from './startPatchRelease';
+import { setupGitUser } from './gitUtils';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
@@ -21,6 +22,9 @@ import { startPatchRelease } from './startPatchRelease';
 	// 	core.info('changing directory to the one given as the input');
 	// 	process.chdir(inputCwd);
 	// }
+
+	core.info('setting git user');
+	await setupGitUser();
 
 	core.info('setting GitHub credentials');
 	fs.writeFileSync(`${process.env.HOME}/.netrc`, `machine github.com\nlogin github-actions[bot]\npassword ${githubToken}`);

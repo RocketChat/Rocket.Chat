@@ -91,19 +91,9 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 
 	return (
 		<MessageToolbox>
-			{recentList.length &&
-				recentList.slice(0, 3).map(({ emoji, image, emojiHandle }) => {
-					return (
-						<EmojiElement
-							small
-							key={emoji}
-							title={emoji}
-							emoji={emoji}
-							image={image}
-							emojiHandle={emojiHandle}
-							onClick={() => handleSetReaction(emoji)}
-						/>
-					);
+			{recentList.length > 0 &&
+				recentList.slice(0, 3).map(({ emoji, image }) => {
+					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
 				})}
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem

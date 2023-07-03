@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +10,7 @@ const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTM
 	(target as HTMLButtonElement)?.blur();
 
 type ButtonProps = {
+	children?: ComponentChildren;
 	submit?: boolean;
 	disabled?: boolean;
 	outline?: boolean;
@@ -19,12 +21,11 @@ type ButtonProps = {
 	small?: boolean;
 	loading?: boolean;
 	badge?: number;
-	icon?: boolean;
-	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	icon?: ComponentChildren;
 	className?: string;
 	style?: CSSProperties;
-	children?: JSXInternal.Element[];
 	img?: string;
+	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const Button = ({
@@ -52,7 +53,7 @@ export const Button = ({
 			disabled={disabled}
 			onClick={onClick}
 			onMouseUp={handleMouseUp}
-			aria-label={icon && children ? children[0] : null}
+			aria-label={icon && Array.isArray(children) ? children[0] : children}
 			className={createClassName(
 				styles,
 				'button',

@@ -18,6 +18,7 @@ import type {
 	IOmnichannelRoom,
 	ILivechatTag,
 	SelectedAgent,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -60,7 +61,8 @@ interface EventLikeCallbackSignatures {
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: { agentId: string; username: string }) => void;
+	'livechat.onNewAgentCreated': (agentId: string) => void;
+	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
@@ -90,6 +92,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 }
 
 /**
@@ -156,19 +159,7 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (
-		agent: {
-			agentId: string;
-			username: string;
-		},
-		params?: { department?: string },
-	) =>
-		| {
-				agentId: string;
-				username: string;
-		  }
-		| null
-		| undefined;
+	'livechat.beforeDelegateAgent': (agent: SelectedAgent | undefined, params?: { department?: string }) => SelectedAgent | null | undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },

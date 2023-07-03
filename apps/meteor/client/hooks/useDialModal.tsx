@@ -1,9 +1,10 @@
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo } from 'react';
 
-import DialPadModal from '../../ee/client/voip/modal/DialPad/DialPadModal';
 import { useIsVoipEnterprise } from '../contexts/CallContext';
 import { dispatchToastMessage } from '../lib/toast';
+
+const DialPadModal = lazy(() => import('../../ee/client/voip/modal/DialPad/DialPadModal'));
 
 type DialModalProps = {
 	initialValue?: string;
@@ -29,7 +30,13 @@ export const useDialModal = (): DialModalControls => {
 				return;
 			}
 
-			setModal(<DialPadModal initialValue={initialValue} errorMessage={errorMessage} handleClose={closeDialModal} />);
+			setModal(
+				// TODO: Revisit Modal's FocusScope which currently does not accept null as children.
+				// Added dummy div fallback for that reason.
+				<Suspense fallback={<div />}>
+					<DialPadModal initialValue={initialValue} errorMessage={errorMessage} handleClose={closeDialModal} />
+				</Suspense>,
+			);
 		},
 		[setModal, isEnterprise, t, closeDialModal],
 	);
