@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
+import { OmnichannelVerification } from '@rocket.chat/core-services';
 
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -9,7 +10,6 @@ import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { initiateVerificationProcess } from '../../../../lib/server/functions/initiateVerificationProcess';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {
@@ -203,7 +203,7 @@ API.v1.addRoute('livechat/visitor.verify', {
 	async post() {
 		const { rid } = this.bodyParams;
 		// console.log(rid);
-		await initiateVerificationProcess(rid);
+		await OmnichannelVerification.initiateVerificationProcess(rid);
 
 		return API.v1.success({ rid });
 	},

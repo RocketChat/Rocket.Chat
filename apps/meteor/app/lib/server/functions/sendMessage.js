@@ -1,5 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -277,7 +278,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		await callbacks.run('afterSaveMessage', message, room);
 		if (
 			user._id === room.v._id &&
-			room.t === 'l' &&
+			isOmnichannelRoom(room) &&
 			(room.verificationStatus === 'isListeningToEmail' || room.verificationStatus === 'isListeningToOTP')
 		) {
 			await callbacks.run('verificationCheck', room, message.msg);

@@ -52,10 +52,6 @@ export const useQuickActions = (
 	const rid = room._id;
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
-	let roomVerificationStatus;
-	if (room?.verificationStatus) {
-		roomVerificationStatus = room.verificationStatus;
-	}
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
@@ -95,7 +91,7 @@ export const useQuickActions = (
 			setModal(null);
 		}
 		getVisitorsVerificationStatus();
-	}, [roomLastMessage, onHoldModalActive, setModal, roomVerificationStatus, getVisitorsVerificationStatus]);
+	}, [roomLastMessage, onHoldModalActive, setModal, getVisitorsVerificationStatus]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
