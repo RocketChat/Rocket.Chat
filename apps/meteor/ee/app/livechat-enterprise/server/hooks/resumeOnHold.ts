@@ -4,8 +4,8 @@ import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
 import { i18n } from '../../../../../server/lib/i18n';
+import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
 	const {
