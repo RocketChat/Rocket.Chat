@@ -1,4 +1,4 @@
-import { Table } from '@rocket.chat/fuselage';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
@@ -46,21 +46,21 @@ const AgentOverview = ({
 
 	return (
 		<Table style={style} fixed>
-			<Table.Head>
-				<Table.Row>
+			<TableHead>
+				<TableRow>
 					{displayData.head?.map(({ name }, i) => (
-						<Table.Cell key={i}>{t(name)}</Table.Cell>
+						<TableCell key={i}>{t(name)}</TableCell>
 					))}
-				</Table.Row>
-			</Table.Head>
-			<Table.Body>
+				</TableRow>
+			</TableHead>
+			<TableBody>
 				{displayData.data?.map(({ name, value }, i) => (
-					<Table.Row key={i}>
-						<Table.Cell>{name}</Table.Cell>
-						<Table.Cell>{value}</Table.Cell>
-					</Table.Row>
+					<TableRow key={i}>
+						<TableCell>{name}</TableCell>
+						<TableCell>{value}</TableCell>
+					</TableRow>
 				))}
-			</Table.Body>
+			</TableBody>
 		</Table>
 	);
 };
