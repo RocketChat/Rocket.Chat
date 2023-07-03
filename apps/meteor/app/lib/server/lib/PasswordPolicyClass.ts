@@ -3,6 +3,34 @@ import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
 
 class PasswordPolicy {
+	regex: {
+		forbiddingRepeatingCharacters: RegExp;
+		mustContainAtLeastOneLowercase: RegExp;
+		mustContainAtLeastOneUppercase: RegExp;
+		mustContainAtLeastOneNumber: RegExp;
+		mustContainAtLeastOneSpecialCharacter: RegExp;
+	};
+
+	enabled: boolean;
+
+	minLength: number;
+
+	maxLength: number;
+
+	forbidRepeatingCharacters: boolean;
+
+	mustContainAtLeastOneLowercase: boolean;
+
+	mustContainAtLeastOneUppercase: boolean;
+
+	mustContainAtLeastOneNumber: boolean;
+
+	mustContainAtLeastOneSpecialCharacter: boolean;
+
+	throwError: boolean;
+
+	private _forbidRepeatingCharactersCount: number;
+
 	constructor({
 		enabled = false,
 		minLength = -1,
@@ -14,8 +42,20 @@ class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	} = {}) {
+	}: {
+		enabled: boolean;
+		minLength: number;
+		maxLength: number;
+		forbidRepeatingCharacters: boolean;
+		forbidRepeatingCharactersCount: number;
+		mustContainAtLeastOneLowercase: boolean;
+		mustContainAtLeastOneUppercase: boolean;
+		mustContainAtLeastOneNumber: boolean;
+		mustContainAtLeastOneSpecialCharacter: boolean;
+		throwError: boolean;
+	}) {
 		this.regex = {
+			forbiddingRepeatingCharacters: new RegExp('.*'), // match everything (with no line breaks) by default
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
@@ -43,7 +83,7 @@ class PasswordPolicy {
 		return this._forbidRepeatingCharactersCount;
 	}
 
-	error(error, message) {
+	error(error: string | number, message: string | undefined) {
 		if (this.throwError) {
 			throw new Meteor.Error(error, message);
 		}
@@ -51,7 +91,7 @@ class PasswordPolicy {
 		return false;
 	}
 
-	validate(password) {
+	validate(password: string | unknown) {
 		if (typeof password !== 'string' || !password.trim().length) {
 			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
 		}
@@ -107,10 +147,16 @@ class PasswordPolicy {
 	}
 
 	getPasswordPolicy() {
-		const data = {
+		type dataType = {
+			enabled: boolean;
+			policy: [string, { [key: string]: number }?][];
+		};
+
+		const data: dataType = {
 			enabled: false,
 			policy: [],
 		};
+
 		if (this.enabled) {
 			data.enabled = true;
 			if (this.minLength >= 1) {
