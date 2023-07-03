@@ -1,29 +1,15 @@
 declare module 'meteor/kadira:flow-router' {
 	import type { Subscription } from 'meteor/meteor';
-	import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
-
-	type GroupName = RouteName extends infer U ? (U extends `${infer TGroupName}-index` ? TGroupName : never) : never;
-	type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-index`]['pattern'];
-	type RouteNamesOf<TGroupName extends GroupName> = Extract<
-		| keyof {
-				[TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}`
-					? TRouteName
-					: never]: Route<TRouteName>;
-		  }
-		| `${GroupName}-index`,
-		RouteName
-	>;
-	type TrimPrefix<T extends string, P extends string> = T extends `${P}${infer U}` ? U : T;
 
 	type Context = {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
 		pathname: string;
-		oldRoute?: Route<RouteName, any>;
-		route: Route<RouteName, any>;
+		oldRoute?: Route<string, any>;
+		route: Route<string, any>;
 	};
 
-	type RouteOptions<TRouteName extends RouteName> = {
+	type RouteOptions<TRouteName extends string> = {
 		name?: TRouteName;
 		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
@@ -31,12 +17,12 @@ declare module 'meteor/kadira:flow-router' {
 		triggersExit?: ((context: Context) => void)[];
 	};
 
-	class Route<TRouteName extends RouteName, TGroup extends Group<GroupName> | undefined = any> {
-		constructor(router: Router, pathDef: IRouterPaths[TRouteName]['pattern'], options?: RouteOptions<TRouteName>, group?: TGroup);
+	class Route<TRouteName extends string, TGroup extends Group<string> | undefined = any> {
+		constructor(router: Router, pathDef: string, options?: RouteOptions<TRouteName>, group?: TGroup);
 
 		options: RouteOptions<TRouteName>;
 
-		pathDef: IRouterPaths[TRouteName]['pattern'];
+		pathDef: string;
 
 		path: string;
 
@@ -69,16 +55,16 @@ declare module 'meteor/kadira:flow-router' {
 		registerRouteChange(currentContext: Context, routeChanging?: boolean): void;
 	}
 
-	type GroupOptions<TGroupName extends RouteName> = {
+	type GroupOptions<TGroupName extends string> = {
 		name: TGroupName;
-		prefix?: GroupPrefix<TGroupName>;
+		prefix?: string;
 		triggersEnter?: unknown[];
 		triggersExit?: unknown[];
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 	};
 
 	/** @deprecated */
-	class Group<TGroupName extends GroupName, TParentGroup extends Group<GroupName> | undefined = any> {
+	class Group<TGroupName extends string, TParentGroup extends Group<string> | undefined = any> {
 		/** @deprecated */
 		constructor(router: Router, options?: GroupOptions<TGroupName>, parent?: TParentGroup);
 
@@ -86,7 +72,7 @@ declare module 'meteor/kadira:flow-router' {
 		name: TGroupName;
 
 		/** @deprecated */
-		prefix: GroupPrefix<TGroupName>;
+		prefix: string;
 
 		/** @deprecated */
 		options: GroupOptions<TGroupName>;
@@ -95,11 +81,7 @@ declare module 'meteor/kadira:flow-router' {
 		parent: TParentGroup;
 
 		/** @deprecated */
-		route<TRouteName extends RouteNamesOf<TGroupName>>(
-			pathDef: TrimPrefix<IRouterPaths[TRouteName]['pattern'], GroupPrefix<TGroupName>>,
-			options: RouteOptions<TRouteName>,
-			group?: TParentGroup,
-		): Route<TRouteName, TGroup>;
+		route<TRouteName extends string>(pathDef: string, options: RouteOptions<TRouteName>, group?: TParentGroup): Route<TRouteName, TGroup>;
 
 		/** @deprecated */
 		group(options?: GroupOptions<TGroupName>): Group;
@@ -113,8 +95,8 @@ declare module 'meteor/kadira:flow-router' {
 		context: Context;
 		params: Record<string, string>;
 		queryParams?: Record<string, string>;
-		route?: Route<RouteName> | undefined;
-		oldRoute?: Route<RouteName> | undefined;
+		route?: Route<string> | undefined;
+		oldRoute?: Route<string> | undefined;
 	};
 
 	type RouterOptions = {
@@ -124,21 +106,18 @@ declare module 'meteor/kadira:flow-router' {
 	class Router {
 		constructor();
 
-		route<TRouteName extends RouteName>(
-			pathDef: IRouterPaths[TRouteName]['pattern'],
-			options: RouteOptions<TRouteName>,
-		): Route<TRouteName, undefined>;
+		route<TRouteName extends string>(pathDef: string, options: RouteOptions<TRouteName>): Route<TRouteName, undefined>;
 
-		route<TRouteName extends RouteName, TGroup extends Group<RouteName>>(
-			pathDef: IRouterPaths[TRouteName]['pattern'],
+		route<TRouteName extends string, TGroup extends Group<string>>(
+			pathDef: string,
 			options: RouteOptions<TRouteName>,
 			group: TGroup,
 		): Route<TRouteName, TGroup>;
 
 		/** @deprecated */
-		group<TGroupName extends GroupName>(options: GroupOptions<TGroupName>): Group<TGroupName>;
+		group<TGroupName extends string>(options: GroupOptions<TGroupName>): Group<TGroupName>;
 
-		path(pathDef: RouteName | RouterPathPattern, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
+		path(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
 		url(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
@@ -166,7 +145,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		notFound: Omit<RouteOptions<any>, 'name'>;
 
-		getRouteName(): RouteName;
+		getRouteName(): string;
 
 		getParam(key: string): string;
 

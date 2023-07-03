@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -15,7 +14,7 @@ Meteor.startup(() => {
 			currentUsername = user?.username;
 			LegacyRoomManager.closeAllRooms();
 			// Reload only if the current route is a channel route
-			const routeName = FlowRouter.current().route?.name;
+			const routeName = router.getRouteName();
 			if (!routeName) {
 				return;
 			}

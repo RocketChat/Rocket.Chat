@@ -1,6 +1,5 @@
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { useRouter, useUser, useUserId } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect } from 'react';
 
 import PageLoading from './PageLoading';
@@ -17,10 +16,6 @@ const IndexRoute = () => {
 		}
 
 		const computation = Tracker.autorun((c) => {
-			if (!FlowRouter.subsReady()) {
-				return;
-			}
-
 			setTimeout(async () => {
 				if (user?.defaultRoom) {
 					const room = user.defaultRoom.split('/') as [routeName: RouteName, routeParam: string];

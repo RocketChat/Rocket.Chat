@@ -1,11 +1,25 @@
-import type { IRouterPaths, RouterPathPattern } from '@rocket.chat/ui-contexts';
-import type { GroupName, GroupPrefix, RouteNamesOf, TrimPrefix } from 'meteor/kadira:flow-router';
-import type { ElementType, ReactNode } from 'react';
-import React from 'react';
+import { type IRouterPaths, type RouteName, type RouterPathPattern } from '@rocket.chat/ui-contexts';
+import React, { type ElementType, type ReactNode } from 'react';
 
 import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
+
+type GroupName = 'omnichannel' | 'marketplace' | 'account' | 'admin';
+
+type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-index`]['pattern'];
+
+type RouteNamesOf<TGroupName extends GroupName> = Extract<
+	| keyof {
+			[TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}`
+				? TRouteName
+				: never]: never;
+	  }
+	| `${GroupName}-index`,
+	RouteName
+>;
+
+type TrimPrefix<T extends string, P extends string> = T extends `${P}${infer U}` ? U : T;
 
 export const createRouteGroup = <TGroupName extends GroupName>(
 	name: TGroupName,
