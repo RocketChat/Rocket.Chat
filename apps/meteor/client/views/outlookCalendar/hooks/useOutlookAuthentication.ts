@@ -12,7 +12,7 @@ export const useOutlookAuthentication = () => {
 		['outlook', 'auth'],
 		async () => {
 			const desktopApp = window.RocketChatDesktop;
-			if (desktopApp?.hasOutlookCredentials) {
+			if (!desktopApp?.hasOutlookCredentials) {
 				throw new NotOnDesktopError();
 			}
 
