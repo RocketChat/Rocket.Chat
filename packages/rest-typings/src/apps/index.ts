@@ -251,4 +251,17 @@ export type AppsEndpoints = {
 			app: App;
 		};
 	};
+
+	'/apps/ui.interaction/:id': {
+		POST: (params: {
+			type: string;
+			actionId: string;
+			rid: string;
+			mid: string;
+			viewId: string;
+			container: string;
+			triggerId: string;
+			payload: any;
+		}) => any;
+	};
 };
