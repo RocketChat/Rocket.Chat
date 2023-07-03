@@ -8,6 +8,7 @@ import { RecordList } from '../../../client/lib/lists/RecordList';
 
 type TagsListOptions = {
 	filter: string;
+	department?: string;
 };
 
 export const useTagsList = (
@@ -33,6 +34,7 @@ export const useTagsList = (
 				text: options.filter,
 				offset: start,
 				count: end + start,
+				...(options.department && { department: options.department }),
 			});
 			return {
 				items: tags.map<any>((tag: any) => ({
@@ -43,7 +45,7 @@ export const useTagsList = (
 				itemCount: total,
 			};
 		},
-		[getTags, options.filter],
+		[getTags, options.filter, options.department],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

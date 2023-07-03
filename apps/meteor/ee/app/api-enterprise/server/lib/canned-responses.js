@@ -1,8 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, CannedResponse, LivechatUnit } from '@rocket.chat/models';
+import { CannedResponse } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { getTagsInformation } from './tags';
+import { getDepartmentsWhichUserCanAccess } from '../../../livechat-enterprise/server/api/lib/departments';
 
 export async function findAllCannedResponses({ userId }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
@@ -33,23 +34,8 @@ export async function findAllCannedResponses({ userId }) {
 		return getTagsInformation(cannedResponses);
 	}
 
-	// Last scenario: user is an agente, so get his own responses and those from the departments he is in
-	const departments = await LivechatDepartmentAgents.find(
-		{
-			agentId: userId,
-		},
-		{
-			projection: {
-				departmentId: 1,
-			},
-		},
-	).toArray();
-
-	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
-	const combinedDepartments = [
-		...departments.map((department) => department.departmentId),
-		...monitoredDepartments.map((department) => department._id),
-	];
+	// Last scenario: user is an agent, so get his own responses and those from the departments he is in
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
 
 	const cannedResponses = await CannedResponse.find({
 		$or: [
@@ -60,7 +46,7 @@ export async function findAllCannedResponses({ userId }) {
 			{
 				scope: 'department',
 				departmentId: {
-					$in: combinedDepartments,
+					$in: accessibleDepartments,
 				},
 			},
 			{
@@ -76,26 +62,11 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!(await hasPermissionAsync(userId, 'view-all-canned-responses'))) {
-		const departments = await LivechatDepartmentAgents.find(
-			{
-				agentId: userId,
-			},
-			{
-				projection: {
-					departmentId: 1,
-				},
-			},
-		).toArray();
+		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
 
-		const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
-		const combinedDepartments = [
-			...departments.map((department) => department.departmentId),
-			...monitoredDepartments.map((department) => department._id),
-		];
+		const isDepartmentInScope = (departmentId) => !!accessibleDepartments.includes(departmentId);
 
-		const isDepartmentInScope = (departmentId) => !!combinedDepartments.includes(departmentId);
-
-		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : combinedDepartments;
+		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : accessibleDepartments;
 
 		extraFilter = [
 			{
@@ -168,22 +139,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 		return CannedResponse.findOneById(_id);
 	}
 
-	const departments = await LivechatDepartmentAgents.find(
-		{
-			agentId: userId,
-		},
-		{
-			fields: {
-				departmentId: 1,
-			},
-		},
-	).toArray();
-
-	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
-	const combinedDepartments = [
-		...departments.map((department) => department.departmentId),
-		...monitoredDepartments.map((department) => department._id),
-	];
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
 
 	const filter = {
 		_id,
@@ -195,7 +151,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 			{
 				scope: 'department',
 				departmentId: {
-					$in: combinedDepartments,
+					$in: accessibleDepartments,
 				},
 			},
 			{
