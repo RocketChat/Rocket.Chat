@@ -4,3 +4,29 @@
 	font-weight: 500;
 	line-height: 1.5;
 }
+
+.scrollShadow {
+	overflow: hidden;
+
+	&::before, &::after {
+		position: absolute;
+			z-index: 0;
+			height: 1px;
+
+			width: 100%;
+
+			content: "";
+			transition: all 0.3s;
+			background-color: rgba(47, 52, 61, 0.90);
+
+			box-shadow: 0px 0px 12px 0px rgba(47, 52, 61, 0.90);
+	}
+	&--atTop::before {
+		box-shadow: none;
+	}
+
+	&--atBottom::after {
+		box-shadow: none;
+	}
+}
+

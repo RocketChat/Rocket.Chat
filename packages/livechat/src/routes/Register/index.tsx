@@ -1,5 +1,5 @@
 import { route } from 'preact-router';
-import { useContext, useEffect } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import type { Control, FieldErrors, FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -127,6 +127,12 @@ type ContextReturn = {
 export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown } }) => {
 	const { t } = useTranslation();
 
+	const topRef = useRef<HTMLDivElement>(null);
+	const bottomRef = useRef<HTMLDivElement>(null);
+
+	const [atTop, setAtTop] = useState(true);
+	const [atBottom, setAtBottom] = useState(false);
+
 	const {
 		handleSubmit,
 		formState: { errors, isDirty, isValid, isSubmitting },
@@ -204,6 +210,31 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		}
 	}, [user?._id]);
 
+	// TODO: Move this to its own component
+	const callback: IntersectionObserverCallback = (entries) => {
+		entries.forEach((entry) => {
+			entry.target.id === 'top' && setAtTop(entry.isIntersecting);
+			entry.target.id === 'bottom' && setAtBottom(entry.isIntersecting);
+		});
+	};
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(callback, {
+			root: document.getElementById('scrollShadow'),
+			rootMargin: '0px',
+			threshold: 0.1,
+		});
+		if (topRef.current) {
+			observer.observe(topRef.current);
+		}
+		if (bottomRef.current) {
+			observer.observe(bottomRef.current);
+		}
+		return () => {
+			observer.disconnect();
+		};
+	}, []);
+
 	return (
 		<Screen
 			theme={{
@@ -216,77 +247,81 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			className={createClassName(styles, 'register')}
 			{...screenProps}
 		>
-			<Screen.Content>
-				<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
-					<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>
+			<div id='scrollShadow' className={createClassName(styles, 'scrollShadow', { atTop, atBottom })}>
+				<Screen.Content full>
+					<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
+						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
+						<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>
 
-					{hasNameField ? (
-						<FormField required label={t('name')} error={errors.name?.message?.toString()}>
-							<Controller
-								name='name'
-								control={control}
-								defaultValue={guestName}
-								rules={{ required: true }}
-								render={({ field }) => (
-									<TextInput
-										name='name'
-										placeholder={t('insert_your_field_here', { field: t('name') })}
-										disabled={loading}
-										field={field}
-										// onInput={(target: HTMLInputElement) => setName(target.value)}
-									/>
-								)}
-							/>
-						</FormField>
-					) : null}
+						{hasNameField ? (
+							<FormField required label={t('name')} error={errors.name?.message?.toString()}>
+								<Controller
+									name='name'
+									control={control}
+									defaultValue={guestName}
+									rules={{ required: true }}
+									render={({ field }) => (
+										<TextInput
+											name='name'
+											placeholder={t('insert_your_field_here', { field: t('name') })}
+											disabled={loading}
+											field={field}
+											// onInput={(target: HTMLInputElement) => setName(target.value)}
+										/>
+									)}
+								/>
+							</FormField>
+						) : null}
 
-					{hasEmailField ? (
-						<FormField required label={t('email')} error={errors.email?.message?.toString()}>
-							<Controller
-								name='email'
-								control={control}
-								defaultValue={guestEmail}
-								rules={{
-									required: true,
-									validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
-								}}
-								render={({ field }) => (
-									<TextInput
-										name='email'
-										placeholder={t('insert_your_field_here', { field: t('email') })}
-										disabled={loading}
-										field={field}
-									/>
-								)}
-							/>
-						</FormField>
-					) : null}
+						{hasEmailField ? (
+							<FormField required label={t('email')} error={errors.email?.message?.toString()}>
+								<Controller
+									name='email'
+									control={control}
+									defaultValue={guestEmail}
+									rules={{
+										required: true,
+										validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
+									}}
+									render={({ field }) => (
+										<TextInput
+											name='email'
+											placeholder={t('insert_your_field_here', { field: t('email') })}
+											disabled={loading}
+											field={field}
+										/>
+									)}
+								/>
+							</FormField>
+						) : null}
 
-					{departments?.some((dept) => dept.showOnRegistration) ? (
-						<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
-							<Controller
-								name='department'
-								control={control}
-								defaultValue={getDepartmentDefault()}
-								render={({ field }) => (
-									<SelectInput
-										name='department'
-										options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
-											value: _id,
-											label: name,
-										}))}
-										placeholder={t('choose_an_option')}
-										disabled={loading}
-										field={field}
-									/>
-								)}
-							/>
-						</FormField>
-					) : null}
+						{departments?.some((dept) => dept.showOnRegistration) ? (
+							<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
+								<Controller
+									name='department'
+									control={control}
+									defaultValue={getDepartmentDefault()}
+									render={({ field }) => (
+										<SelectInput
+											name='department'
+											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
+												value: _id,
+												label: name,
+											}))}
+											placeholder={t('choose_an_option')}
+											disabled={loading}
+											field={field}
+										/>
+									)}
+								/>
+							</FormField>
+						) : null}
 
-					{customFields && renderCustomFields({ customFields, loading, control, errors })}
-				</Form>
-			</Screen.Content>
+						{customFields && renderCustomFields({ customFields, loading, control, errors })}
+						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
+					</Form>
+				</Screen.Content>
+			</div>
 			<Screen.Footer>
 				<Button
 					loading={loading}
