@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
@@ -18,6 +17,8 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
+	SelectedAgent,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -60,7 +61,8 @@ interface EventLikeCallbackSignatures {
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: { agentId: string; username: string }) => void;
+	'livechat.onNewAgentCreated': (agentId: string) => void;
+	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
@@ -87,6 +89,10 @@ interface EventLikeCallbackSignatures {
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterValidateLogin': (login: { user: IUser }) => void;
+	'afterJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 }
 
 /**
@@ -103,13 +109,10 @@ type ChainedCallbackSignatures = {
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
-	) => T;
+	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (
-		agent: { agentId: string; username: string },
-		visitor?: ILivechatVisitor,
-	) => { agentId: string; username: string };
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
@@ -125,17 +128,21 @@ type ChainedCallbackSignatures = {
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
-	'livechat:afterOnHold': (room: IRoom) => IRoom;
-	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
+	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		room: IRoom;
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
-	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
-		servedBy: unknown;
-		oldServedBy: unknown;
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
+	}) => {
+		rid: IRoom['_id'];
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
 	};
 	'livechat.afterForwardChatToDepartment': (params: {
 		rid: IRoom['_id'];
@@ -152,11 +159,12 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
+	'livechat.beforeDelegateAgent': (agent: SelectedAgent | undefined, params?: { department?: string }) => SelectedAgent | null | undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
+	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
@@ -183,12 +191,24 @@ type ChainedCallbackSignatures = {
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
+	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'beforeSendMessageNotifications': (message: string) => string;
+	'livechat.onAgentAssignmentFailed': (params: {
+		inquiry: {
+			_id: string;
+			rid: string;
+			status: string;
+		};
+		room: IOmnichannelRoom;
+		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
 };
 
-type Hook =
+export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
@@ -196,19 +216,14 @@ type Hook =
 	| 'afterRoomArchived'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
-	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
 	| 'archiveRoom'
 	| 'beforeActivateUser'
-	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSaveMessage'
-	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
-	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
 	| 'livechat.beforeRoom'
@@ -217,9 +232,7 @@ type Hook =
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
-	| 'livechat.leadCapture'
 	| 'livechat.offlineMessage'
-	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
 	| 'loginPageStateChange'
@@ -245,10 +258,11 @@ type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet';
+	| 'userStatusManuallySet'
+	| 'test';
 
 type Callback = {
-	(item: unknown, constant?: unknown): unknown;
+	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: Hook;
 	id: string;
 	priority: CallbackPriority;
@@ -259,10 +273,7 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-// Temporary since we are still using callbacks on client side
-Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
-
-class Callbacks {
+export class Callbacks {
 	private logger: Logger | undefined = undefined;
 
 	private trackCallback: CallbackTracker | undefined = undefined;
@@ -271,7 +282,7 @@ class Callbacks {
 
 	private callbacks = new Map<Hook, Callback[]>();
 
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
+	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
 
 	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
 
@@ -286,42 +297,34 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
+	private runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
 		const stopTracking = this.trackCallback?.(callback);
 
-		try {
-			return Promise.await(callback(item, constant));
-		} finally {
-			stopTracking?.();
-		}
+		return Promise.resolve(callback(item, constant)).finally(stopTracking);
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			async (item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
-		const identity = <TItem>(item: TItem): TItem => item;
+		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			async (item: unknown, constant?: unknown): Promise<unknown> =>
+				next(await curr(item, constant), constant);
 
 		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return async (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
-			try {
-				return fn(item, constant);
-			} finally {
-				stopTracking?.();
-			}
+			return fn(item, constant).finally(() => stopTracking?.());
 		};
 	}
 
@@ -332,9 +335,9 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				Meteor.defer(() => {
-					this.runOne(callback, item, constant);
-				});
+				setTimeout(() => {
+					void this.runOne(callback, item, constant);
+				}, 0);
 			}
 
 			return item;
@@ -416,9 +419,9 @@ class Callbacks {
 	run<THook extends keyof ChainedCallbackSignatures>(
 		hook: THook,
 		...args: Parameters<ChainedCallbackSignatures[THook]>
-	): ReturnType<ChainedCallbackSignatures[THook]>;
+	): Promise<ReturnType<ChainedCallbackSignatures[THook]>>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -428,8 +431,8 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
+		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown): Promise<unknown> => item);
 		return runner(item, constant);
 	}
 
@@ -447,8 +450,27 @@ class Callbacks {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks();
+
+		return {
+			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
+			remove: (id) => callbacks.remove(hook as any, id),
+			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+		};
+	}
 }
 
+/**
+ * Callback hooks provide an easy way to add extra steps to common operations.
+ * @deprecated
+ */
+type Cb<I, R, C = undefined> = {
+	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
+	remove: (id: string) => void;
+	run: (item: I, constant?: C) => Promise<R>;
+};
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated

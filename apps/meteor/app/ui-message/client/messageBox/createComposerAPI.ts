@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import $ from 'jquery';
 
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -10,8 +9,6 @@ import { formattingButtons } from './messageBoxFormatting';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
-		$(input).trigger(evt);
-
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;

@@ -164,10 +164,7 @@ export const useQuickActions = (
 			}
 
 			try {
-				const result = await forwardChat(transferData);
-				if (!result) {
-					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
-				}
+				await forwardChat(transferData);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				homeRoute.push();
 				LegacyRoomManager.close(room.t + rid);
@@ -203,8 +200,6 @@ export const useQuickActions = (
 						  }
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
-				homeRoute.push();
-				LegacyRoomManager.close(room.t + rid);
 				LivechatInquiry.remove({ rid });
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
@@ -212,7 +207,7 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, homeRoute, room.t, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({

@@ -1,15 +1,22 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { api, Message } from '@rocket.chat/core-services';
+import {
+	LivechatDepartmentAgents,
+	LivechatInquiry,
+	LivechatRooms,
+	LivechatDepartment,
+	Subscriptions,
+	Rooms,
+	Users,
+} from '@rocket.chat/models';
 
-import { hasRole } from '../../../authorization/server';
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -19,6 +26,7 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { i18n } from '../../../../server/lib/i18n';
 
 const logger = new Logger('LivechatHelper');
 
@@ -30,7 +38,7 @@ export const allowAgentSkipQueue = (agent) => {
 		}),
 	);
 
-	return hasRole(agent.agentId, 'bot');
+	return hasRoleAsync(agent.agentId, 'bot');
 };
 
 export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraData = {}) => {
@@ -46,7 +54,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		}),
 	);
 
-	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
@@ -85,10 +93,10 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		extraRoomInfo,
 	);
 
-	const roomId = Rooms.insert(room);
+	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
@@ -114,7 +122,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 		}),
 	);
 
-	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
@@ -148,7 +156,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 	return result;
 };
 
-export const createLivechatSubscription = (rid, name, guest, agent, department) => {
+export const createLivechatSubscription = async (rid, name, guest, agent, department) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -167,7 +175,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		}),
 	);
 
-	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
+	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
 	if (existingSubscription?._id) {
 		return existingSubscription;
 	}
@@ -199,17 +207,17 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		...(department && { department }),
 	};
 
-	return Subscriptions.insert(subscriptionData);
+	return Subscriptions.insertOne(subscriptionData);
 };
 
 export const removeAgentFromSubscription = async (rid, { _id, username }) => {
-	const room = await LivechatRoomsRaw.findOneById(rid);
-	const user = Users.findOneById(_id);
+	const room = await LivechatRooms.findOneById(rid);
+	const user = await Users.findOneById(_id);
 
-	Subscriptions.removeByRoomIdAndUserId(rid, _id);
-	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
+	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
@@ -241,7 +249,7 @@ export const parseAgentCustomFields = (customFields) => {
 	);
 };
 
-export const normalizeAgent = (agentId) => {
+export const normalizeAgent = async (agentId) => {
 	if (!agentId) {
 		return;
 	}
@@ -250,15 +258,15 @@ export const normalizeAgent = (agentId) => {
 		return { hiddenInfo: true };
 	}
 
-	const agent = Users.getAgentInfo(agentId);
+	const agent = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_email'));
 	const { customFields: agentCustomFields, ...extraData } = agent;
 	const customFields = parseAgentCustomFields(agentCustomFields);
 
 	return Object.assign(extraData, { ...(customFields && { customFields }) });
 };
 
-export const dispatchAgentDelegated = (rid, agentId) => {
-	const agent = normalizeAgent(agentId);
+export const dispatchAgentDelegated = async (rid, agentId) => {
+	const agent = await normalizeAgent(agentId);
 
 	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
@@ -273,31 +281,28 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 	const { department, rid, v } = inquiry;
-	const room = await LivechatRoomsRaw.findOneById(rid);
-	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+	const room = await LivechatRooms.findOneById(rid);
+	setImmediate(() => callbacks.run('livechat.chatQueued', room));
 
 	if (RoutingManager.getConfig().autoAssignAgent) {
 		return;
 	}
 
-	if (!agent || !allowAgentSkipQueue(agent)) {
+	if (!agent || !(await allowAgentSkipQueue(agent))) {
 		await saveQueueInquiry(inquiry);
 	}
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
 	}
 
-	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
+	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	for await (let agent of onlineAgents) {
-		if (agent.agentId) {
-			agent = await UsersRaw.findOneById(agent.agentId);
-		}
+	for await (const agent of onlineAgents) {
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
 		await sendNotification({
 			// fake a subscription in order to make use of the function defined above
@@ -323,8 +328,8 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
 	}
@@ -338,7 +343,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
 
 	const { userId: agentId, clientAction } = transferData;
-	const user = Users.findOneOnlineAgentById(agentId);
+	const user = await Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
 		throw new Error('error-user-is-offline');
@@ -370,19 +375,15 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		return false;
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+			await RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
-		Messages.createUserJoinWithRoomIdAndUser(rid, {
-			_id: servedBy._id,
-			username: servedBy.username,
-		});
 
-		Meteor.defer(() => {
+		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
@@ -393,16 +394,16 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent._id}`);
-	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
+	await callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
 
 export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartmentId }) => {
-	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	await LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
-	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
+	await Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
-	Meteor.defer(() => {
+	setImmediate(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
@@ -424,7 +425,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	logger.debug(`Attempting to forward room ${room._id} to department ${transferData.departmentId}`);
 
-	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
+	await callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
@@ -442,7 +443,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
-		let user = Users.findOneOnlineAgentById(agentId);
+		let user = await Users.findOneOnlineAgentById(agentId);
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
@@ -458,7 +459,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(
 			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
 		);
-		Livechat.saveTransferHistory(room, transferData);
+		await Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -476,23 +477,23 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = LivechatDepartment.findOneById(departmentId);
-		if (!department?.fallbackForwardDepartment) {
+		const department = await LivechatDepartment.findOneById(departmentId);
+		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
-			return false;
+			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
-		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
+		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
-		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
+		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
@@ -500,16 +501,16 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
 		await LivechatInquiry.readyInquiry(inquiry._id);
-		LivechatRooms.removeAgentByRoomId(rid);
-		dispatchAgentDelegated(rid, null);
+		await LivechatRooms.removeAgentByRoomId(rid);
+		await dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
-		await queueInquiry(room, newInquiry);
+		await queueInquiry(newInquiry);
 
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
 
 	const { token } = guest;
-	await Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
@@ -530,14 +531,14 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 	};
 };
 
-export const checkServiceStatus = ({ guest, agent }) => {
+export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
-		return Livechat.online(guest.department);
+		return LivechatTyped.online(guest.department);
 	}
 
 	const { agentId } = agent;
-	const users = Users.findOnlineAgents(agentId);
-	return users && users.count() > 0;
+	const users = await Users.countOnlineAgents(agentId);
+	return users > 0;
 };
 
 export const updateDepartmentAgents = async (departmentId, agents, departmentEnabled) => {
@@ -563,7 +564,7 @@ export const updateDepartmentAgents = async (departmentId, agents, departmentEna
 	}
 
 	for await (const agent of upsert) {
-		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
+		const agentFromDb = await Users.findOneById(agent.agentId, { projection: { _id: 1, username: 1 } });
 		if (!agentFromDb) {
 			continue;
 		}

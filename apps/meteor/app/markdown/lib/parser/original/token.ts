@@ -23,7 +23,7 @@ export const addAsToken = (message: IMessage, html: string, type: TokenType, ext
 export const isToken = (msg: string): boolean => /=!=[.a-z0-9]{17}=!=/gim.test(msg.trim());
 
 export const validateAllowedTokens = (message: IMessage, id: string, desiredTokens: TokenType[]): boolean => {
-	const tokens = id.match(/=!=[.a-z0-9]{17}=!=/gim) || [];
+	const tokens: string[] = id.match(/=!=[.a-z0-9]{17}=!=/gim) || [];
 	const tokensFound = message.tokens?.filter(({ token }) => tokens.includes(token)) || [];
 	return tokensFound.length === 0 || tokensFound.every((token) => token.type && desiredTokens.includes(token.type));
 };

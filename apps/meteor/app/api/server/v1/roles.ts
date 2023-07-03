@@ -2,17 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { Users } from '../../../models/server';
 import { API } from '../api';
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'roles.list',
@@ -59,7 +59,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 			const { roleId, roleName, roomId } = this.bodyParams;
 
 			if (!roleId) {
@@ -67,7 +67,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.warn(`Assigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -75,11 +75,11 @@ API.v1.addRoute(
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
 
-			if (hasRole(user._id, role._id, roomId)) {
+			if (await hasRoleAsync(user._id, role._id, roomId)) {
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.call('authorization:addUserToRole', role._id, user.username, roomId);
+			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -94,7 +94,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
-			const { offset, count = 50 } = this.getPaginationItems();
+			const { offset, count = 50 } = await getPaginationItems(this.queryParams);
 
 			const projection = {
 				name: 1,
@@ -123,7 +123,14 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-roleId');
 				}
 
-				apiDeprecationLogger.warn(`Querying roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.deprecatedParameterUsage(
+					this.request.route,
+					'role',
+					'7.0.0',
+					this.response,
+					({ parameter, endpoint, version }) =>
+						`Querying \`${parameter}\` by name is deprecated in ${endpoint} and will be removed on the removed on version ${version}`,
+				);
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
@@ -198,10 +205,10 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.warn(`Unassigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
 			}
 
-			const user = Users.findOneByUsername(username);
+			const user = await Users.findOneByUsername(username);
 
 			if (!user) {
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');

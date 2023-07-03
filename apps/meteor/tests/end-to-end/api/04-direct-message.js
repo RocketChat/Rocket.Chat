@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
-import { password, adminUsername } from '../../data/user.js';
+import { password, adminUsername } from '../../data/user';
 import { deleteRoom } from '../../data/rooms.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
@@ -333,6 +333,24 @@ describe('[Direct Messages]', function () {
 
 	describe('[/im.files]', async function () {
 		await testFileUploads('im.files', directMessage, 'invalid-channel');
+	});
+
+	describe('/im.messages', () => {
+		it('should return all DM messages that were sent to yourself using your username', (done) => {
+			request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					username: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('/im.messages.others', () => {

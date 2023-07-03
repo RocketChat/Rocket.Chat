@@ -112,7 +112,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query) as unknown as Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	}
 
-	findOneByRoomId<T = ILivechatInquiryRecord>(
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
@@ -140,7 +140,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
-				...(department && { department }),
+				...(department ? { department } : { department: { $exists: false } }),
 				$or: [
 					{
 						locked: true,
@@ -188,7 +188,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		queueSortBy,
 	}: {
 		inquiryId?: string;
-		department: string;
+		department?: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
 		const filter: Filter<ILivechatInquiryRecord>[] = [

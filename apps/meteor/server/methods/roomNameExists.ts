@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../app/models/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,17 +13,17 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	roomNameExists(roomName) {
+	async roomNameExists(roomName) {
 		check(roomName, String);
 
-		methodDeprecationLogger.warn('roomNameExists will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('roomNameExists', '7.0.0');
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'roomExists',
 			});
 		}
-		const room = Rooms.findOneByName(roomName);
+		const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
 
 		if (room === undefined || room === null) {
 			return false;

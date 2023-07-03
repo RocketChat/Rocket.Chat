@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import ChannelToTeamModal from '../../ChannelToTeamModal/ChannelToTeamModal';
+import ChannelToTeamModal from '../../ChannelToTeamModal';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomMoveToTeam = (room: IRoom) => {

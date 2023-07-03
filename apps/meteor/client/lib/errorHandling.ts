@@ -1,4 +1,4 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { t } from '../../app/utils/lib/i18n';
 
 const isObject = (obj: unknown): obj is object => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
 
@@ -7,11 +7,22 @@ const hasProperty = <TProperty extends number | string | symbol>(
 	property: TProperty,
 ): obj is { [key in TProperty]: unknown } => isObject(obj) && property in obj;
 
-const hasJQueryXHR = (error: object): error is { xhr: JQuery.jqXHR } => hasProperty(error, 'xhr') && hasProperty(error.xhr, 'responseJSON');
+const hasXHR = (
+	error: object,
+): error is {
+	xhr: {
+		responseJSON: {
+			error: string;
+			status: string;
+			messages: string[];
+			payload?: any;
+		};
+	};
+} => hasProperty(error, 'xhr') && hasProperty(error.xhr, 'responseJSON');
 
 export function getErrorMessage(error: unknown, defaultMessage?: string): string {
 	if (typeof error === 'string') {
-		return TAPi18n.__(error);
+		return t(error);
 	}
 
 	if (!isObject(error)) {
@@ -20,7 +31,7 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 		throw new TypeError('no default error message specified');
 	}
 
-	if (hasJQueryXHR(error)) {
+	if (hasXHR(error)) {
 		return getErrorMessage(error.xhr.responseJSON, defaultMessage);
 	}
 
@@ -31,8 +42,7 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 		defaultMessage;
 	const details = hasProperty(error, 'details') && isObject(error.details) ? error.details : undefined;
 
-	if (message)
-		return TAPi18n.__(message, Object.fromEntries(Object.entries(details ?? {}).map(([key, value]) => [key, TAPi18n.__(value)])));
+	if (message) return t(message, Object.fromEntries(Object.entries(details ?? {}).map(([key, value]) => [key, t(value)])));
 
 	return getErrorMessage(defaultMessage);
 }

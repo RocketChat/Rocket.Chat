@@ -1,7 +1,7 @@
-import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, IRocketChatRecord, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { Users } from '../../../app/models/server';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
 
@@ -14,7 +14,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			async allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): Promise<boolean> {
 				return false;
 			},
-			roomName(_room: IRoom, _userId?: string): string {
+			async roomName(_room: IRoom, _userId?: string): Promise<string> {
 				return '';
 			},
 			isGroupChat(_room: IRoom): boolean {
@@ -32,23 +32,23 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
-			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {
+			async canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): Promise<boolean> {
 				return false;
 			},
-			getNotificationDetails(
+			async getNotificationDetails(
 				room: IRoom,
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
 				userId: string,
-			): { title: string | undefined; text: string } {
-				const title = `#${this.roomName(room, userId)}`;
+			): Promise<{ title: string | undefined; text: string }> {
+				const title = `#${await this.roomName(room, userId)}`;
 				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
 
 				const text = `${name}: ${notificationMessage}`;
 
 				return { title, text };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): Promise<IRocketChatRecord | undefined> {
+			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {
@@ -75,16 +75,12 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		return directives as IRoomTypeServerDirectives;
 	}
 
-	openRoom(_type: string, _name: string, _render = true): void {
-		// Nothing to do on the server side.
-	}
-
 	getTypesToShowOnDashboard(): Array<IRoomTypeConfig['identifier']> {
 		return Object.keys(this.roomTypes).filter((key) => (this.roomTypes[key].directives as IRoomTypeServerDirectives).includeInDashboard());
 	}
 
-	getRoomName(roomType: string, roomData: IRoom, userId?: string): string {
-		return this.getRoomDirectives(roomType).roomName(roomData, userId) ?? '';
+	async getRoomName(roomType: string, roomData: IRoom, userId?: string): Promise<string> {
+		return (await this.getRoomDirectives(roomType).roomName(roomData, userId)) ?? '';
 	}
 
 	setRoomFind(roomType: string, roomFind: Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind']): void {

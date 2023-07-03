@@ -7,11 +7,12 @@ import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 
 import Notifications from '../../notifications/client/lib/Notifications';
 import { CachedCollectionManager } from '../../ui-cached-collection/client';
-import { APIClient, t } from '../../utils/client';
+import { t } from '../../utils/client';
 import * as banners from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import ConnectedModalBlock from '../../../client/views/blocks/ConnectedModalBlock';
+import UiKitModal from '../../../client/views/modal/uikit/UiKitModal';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 const events = new Emitter();
 
@@ -90,7 +91,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 
 	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
 		const instance = imperativeModal.open({
-			component: ConnectedModalBlock,
+			component: UiKitModal,
 			props: {
 				triggerId,
 				viewId,
@@ -159,7 +160,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) =>
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, tmid, ...rest }) =>
 	new Promise(async (resolve, reject) => {
 		const triggerId = generateTriggerId(appId);
 
@@ -169,13 +170,14 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 		const { type: interactionType, ...data } = await (async () => {
 			try {
-				return await APIClient.post(`/apps/ui.interaction/${appId}`, {
+				return await sdk.rest.post(`/apps/ui.interaction/${appId}`, {
 					type,
 					actionId,
 					payload,
 					container,
 					mid,
 					rid,
+					tmid,
 					triggerId,
 					viewId,
 				});

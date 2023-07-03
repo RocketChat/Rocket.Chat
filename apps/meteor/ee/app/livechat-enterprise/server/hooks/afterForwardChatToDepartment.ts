@@ -1,7 +1,6 @@
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(
@@ -16,8 +15,8 @@ callbacks.add(
 		}
 		await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
-		const department = LivechatDepartment.findOneById(newDepartmentId, {
-			fields: { ancestors: 1 },
+		const department = await LivechatDepartment.findOneById(newDepartmentId, {
+			projection: { ancestors: 1 },
 		});
 		if (!department) {
 			cbLogger.debug('Skipping callback. No department found');

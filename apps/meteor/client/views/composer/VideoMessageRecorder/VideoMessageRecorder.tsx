@@ -5,7 +5,8 @@ import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-context
 import type { AllHTMLAttributes, RefObject } from 'react';
 import React, { useRef, useEffect, useState } from 'react';
 
-import { VideoRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
+import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
@@ -27,6 +28,14 @@ const videoContainerClass = css`
 		}
 	}
 `;
+
+const getVideoRecordingExtension = () => {
+	const supported = VideoRecorder.getSupportedMimeTypes();
+	if (supported.match(/video\/webm/)) {
+		return 'webm';
+	}
+	return 'mp4';
+};
 
 const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessageRecorderProps) => {
 	const t = useTranslation();
@@ -74,8 +83,8 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 
 	const handleSendRecord = async () => {
 		const cb = async (blob: Blob) => {
-			const fileName = `${t('Video_record')}.webm`;
-			const file = new File([blob], fileName, { type: 'video/webm' });
+			const fileName = `${t('Video_record')}.${getVideoRecordingExtension()}`;
+			const file = new File([blob], fileName, { type: VideoRecorder.getSupportedMimeTypes().split(';')[0] });
 			await chat?.flows.uploadFiles([file]);
 			chat?.composer?.setRecordingVideo(false);
 		};
@@ -93,11 +102,11 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 	};
 
 	useEffect(() => {
-		if (!window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
+		if (!VideoRecorder.getSupportedMimeTypes()) {
 			return dispatchToastMessage({ type: 'error', message: t('Browser_does_not_support_recording_video') });
 		}
 
-		VideoRecorder.start(videoRef.current);
+		VideoRecorder.start(videoRef.current ?? undefined);
 
 		return () => {
 			VideoRecorder.stop();
@@ -108,7 +117,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
 			<Box bg='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
-					<video ref={videoRef} width={320} height={240} />
+					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box mbs={4} display='flex' justifyContent='space-between'>
 					<Button small onClick={handleRecord}>

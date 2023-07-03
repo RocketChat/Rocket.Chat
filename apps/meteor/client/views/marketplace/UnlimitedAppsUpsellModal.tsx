@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 import UpsellModal from '../../components/UpsellModal';
 
-export type UnlimitedAppsUpsellModalProps = {
+type UnlimitedAppsUpsellModalProps = {
 	onClose: () => void;
 };
 

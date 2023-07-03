@@ -5,8 +5,8 @@ import React, { useEffect, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
+import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
-import VerticalBar from '../../../components/VerticalBar';
 import AddUser from './AddUser';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import EditUserWithData from './EditUserWithData';
@@ -34,7 +34,7 @@ const UsersPage = (): ReactElement => {
 		}
 	}, [context, seatsCap, usersRoute]);
 
-	const handleCloseVerticalBar = (): void => {
+	const handleCloseContextualbar = (): void => {
 		usersRoute.push({});
 	};
 
@@ -77,21 +77,21 @@ const UsersPage = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar>
-					<VerticalBar.Header>
-						<VerticalBar.Text>
+				<Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
 							{context === 'new' && t('Add_User')}
 							{context === 'invite' && t('Invite_Users')}
-						</VerticalBar.Text>
-						<VerticalBar.Close onClick={handleCloseVerticalBar} />
-					</VerticalBar.Header>
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <EditUserWithData uid={id} onReload={handleReload} />}
 					{context === 'new' && <AddUser onReload={handleReload} />}
 					{context === 'invite' && <InviteUsers />}
-				</VerticalBar>
+				</Contextualbar>
 			)}
 		</Page>
 	);

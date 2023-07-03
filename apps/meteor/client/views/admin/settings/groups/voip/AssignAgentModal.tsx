@@ -1,4 +1,4 @@
-import { Button, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, Modal, Select, Field, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -23,7 +23,8 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 
 	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
-	const handleAssignment = useMutableCallback(async () => {
+	const handleAssignment = useMutableCallback(async (e) => {
+		e.preventDefault();
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
@@ -37,7 +38,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleAssignment} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Associate_Agent_to_Extension')}</Modal.Title>
 				<Modal.Close onClick={closeModal} />
@@ -67,7 +68,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={closeModal}>{t('Cancel')}</Button>
-					<Button primary disabled={!agent || !extension} onClick={handleAssignment}>
+					<Button primary disabled={!agent || !extension} type='submit'>
 						{t('Associate')}
 					</Button>
 				</Modal.FooterControllers>

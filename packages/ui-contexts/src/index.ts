@@ -47,6 +47,7 @@ export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
+export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
@@ -78,19 +79,20 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { usePasswordPolicy } from './hooks/usePasswordPolicy';
+export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
 export { useAvailableDevices } from './hooks/useAvailableDevices';
 export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
+export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
-export { StreamerEvents } from './ServerContext/streams';
+export { StreamerEvents, StreamNames, StreamKeys, StreamerConfigs, StreamerConfig, StreamerCallbackArgs } from './ServerContext/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';
 
-export interface ITest {
-	test: string;
-}
+export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

@@ -1,6 +1,6 @@
-import { HTTP } from 'meteor/http';
 import { Base64 } from '@rocket.chat/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../lib/logger/system';
@@ -119,15 +119,21 @@ export class Mobex implements ISMSProvider {
 		};
 
 		try {
-			const response = HTTP.call(
-				'GET',
-				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
-			);
-			if (response.statusCode === 200) {
-				result.resultMsg = response.content;
+			const response = await fetch(`${currentAddress}/send`, {
+				params: {
+					username: currentUsername,
+					password: currentPassword,
+					to: strippedTo,
+					from: currentFrom,
+					content: message,
+				},
+			});
+
+			if (response.ok) {
+				result.resultMsg = await response.text();
 				result.isSuccess = true;
 			} else {
-				result.resultMsg = `Could not able to send SMS. Code:  ${response.statusCode}`;
+				result.resultMsg = `Could not able to send SMS. Code:  ${response.status}`;
 			}
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
@@ -154,11 +160,12 @@ export class Mobex implements ISMSProvider {
 		const authToken = Base64.encode(userPass);
 
 		try {
-			const response = await HTTP.call('POST', `${this.restAddress}/secure/sendbatch`, {
+			const response = await fetch(`${this.restAddress}/secure/sendbatch`, {
+				method: 'POST',
 				headers: {
 					Authorization: `Basic ${authToken}`,
 				},
-				data: {
+				body: {
 					messages: [
 						{
 							to: toNumbersArr,
@@ -169,9 +176,9 @@ export class Mobex implements ISMSProvider {
 				},
 			});
 
-			result.isSuccess = true;
+			result.isSuccess = response.ok;
 			result.resultMsg = 'Success';
-			result.response = response;
+			result.response = await response.text();
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
 			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });

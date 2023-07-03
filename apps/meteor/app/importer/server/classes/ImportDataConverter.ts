@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ObjectId } from 'mongodb';
 import type {
@@ -13,14 +12,19 @@ import type {
 	IUserEmail,
 	IImportData,
 	IImportRecordType,
+	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
-import { ImportData, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { Users, Rooms, Subscriptions } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
+import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -48,6 +52,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
+	skipNewUsers?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -79,6 +84,7 @@ export class ImportDataConverter {
 		this._options = options || {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
+			skipNewUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -261,11 +267,11 @@ export class ImportDataConverter {
 			delete updateData.$set;
 		}
 		if (Object.keys(updateData).length > 0) {
-			Users.update({ _id }, updateData);
+			await Users.updateOne({ _id }, updateData);
 		}
 
 		if (userData.utcOffset) {
-			Users.setUtcOffset(_id, userData.utcOffset);
+			await Users.setUtcOffset(_id, userData.utcOffset);
 		}
 
 		if (userData.name || userData.username) {
@@ -281,20 +287,23 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? Accounts.createUser({
+			? await Accounts.createUserAsync({
 					email: userData.emails[0],
 					password,
 			  })
-			: Accounts.createUser({
+			: await Accounts.createUserAsync({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,
-			  });
+			  } as any);
 
-		const user = Users.findOneById(userId, {});
+		const user = await Users.findOneById(userId, {});
+		if (!user) {
+			throw new Error(`User not found: ${userId}`);
+		}
 		await this.updateUser(user, userData);
 
-		addUserToDefaultChannels(user, true);
+		await addUserToDefaultChannels(user, true);
 		return user;
 	}
 
@@ -304,7 +313,7 @@ export class ImportDataConverter {
 
 	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
 		if (data.emails.length) {
-			const emailUser = Users.findOneByEmailAddress(data.emails[0], {});
+			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
 			if (emailUser) {
 				return emailUser;
@@ -338,9 +347,13 @@ export class ImportDataConverter {
 					await this.skipRecord(_id);
 					continue;
 				}
+				if (!existingUser && this._options.skipNewUsers) {
+					await this.skipRecord(_id);
+					continue;
+				}
 
 				if (!data.username) {
-					data.username = generateUsernameSuggestion({
+					data.username = await generateUsernameSuggestion({
 						name: data.name,
 						emails,
 					});
@@ -406,10 +419,10 @@ export class ImportDataConverter {
 		);
 	}
 
-	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
+	async convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): Promise<undefined | IMessageReactions> {
 		const reactions: IMessageReactions = {};
 
-		for (const name in importedReactions) {
+		for await (const name of Object.keys(importedReactions)) {
 			if (!importedReactions.hasOwnProperty(name)) {
 				continue;
 			}
@@ -424,8 +437,8 @@ export class ImportDataConverter {
 				usernames: [],
 			};
 
-			for (const importId of users) {
-				const username = this.findImportedUsername(importId);
+			for await (const importId of users) {
+				const username = await this.findImportedUsername(importId);
 				if (username && !reaction.usernames.includes(username)) {
 					reaction.usernames.push(username);
 				}
@@ -441,10 +454,10 @@ export class ImportDataConverter {
 		}
 	}
 
-	convertMessageReplies(replies: Array<string>): Array<string> {
+	async convertMessageReplies(replies: Array<string>): Promise<Array<string>> {
 		const result: Array<string> = [];
-		for (const importId of replies) {
-			const userId = this.findImportedUserId(importId);
+		for await (const importId of replies) {
+			const userId = await this.findImportedUserId(importId);
 			if (userId && !result.includes(userId)) {
 				result.push(userId);
 			}
@@ -452,14 +465,14 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	convertMessageMentions(message: IImportMessage): Array<IMentionedUser> | undefined {
+	async convertMessageMentions(message: IImportMessage): Promise<Array<IMentionedUser> | undefined> {
 		const { mentions } = message;
 		if (!mentions) {
 			return undefined;
 		}
 
 		const result: Array<IMentionedUser> = [];
-		for (const importId of mentions) {
+		for await (const importId of mentions) {
 			// eslint-disable-next-line no-extra-parens
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
@@ -470,8 +483,8 @@ export class ImportDataConverter {
 			}
 
 			// Loading the name will also store the remaining data on the cache if it's missing, so this won't run two queries
-			const name = this.findImportedUserDisplayName(importId);
-			const data = this.findImportedUser(importId);
+			const name = await this.findImportedUserDisplayName(importId);
+			const data = await this.findImportedUser(importId);
 
 			if (!data) {
 				this._logger.warn(`Mentioned user not found: ${importId}`);
@@ -494,10 +507,10 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	getMentionedChannelData(importId: string): IMentionedChannel | undefined {
+	async getMentionedChannelData(importId: string): Promise<IMentionedChannel | undefined> {
 		// loading the name will also store the id on the cache if it's missing, so this won't run two queries
-		const name = this.findImportedRoomName(importId);
-		const _id = this.findImportedRoomId(importId);
+		const name = await this.findImportedRoomName(importId);
+		const _id = await this.findImportedRoomId(importId);
 
 		if (name && _id) {
 			return {
@@ -507,8 +520,9 @@ export class ImportDataConverter {
 		}
 
 		// If the importId was not found, check if we have a room with that name
-		const room = Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
-		if (room) {
+		const roomName = await getValidRoomName(importId.trim(), undefined, { allowDuplicates: true });
+		const room = await Rooms.findOneByNonValidatedName(roomName, { projection: { name: 1 } });
+		if (room?.name) {
 			this.addRoomToCache(importId, room._id);
 			this.addRoomNameToCache(importId, room.name);
 
@@ -519,15 +533,15 @@ export class ImportDataConverter {
 		}
 	}
 
-	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
+	async convertMessageChannels(message: IImportMessage): Promise<IMentionedChannel[] | undefined> {
 		const { channels } = message;
 		if (!channels) {
 			return;
 		}
 
 		const result: Array<IMentionedChannel> = [];
-		for (const importId of channels) {
-			const { name, _id } = this.getMentionedChannelData(importId) || {};
+		for await (const importId of channels) {
+			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
 
 			if (!_id || !name) {
 				this._logger.warn(`Mentioned room not found: ${importId}`);
@@ -564,13 +578,13 @@ export class ImportDataConverter {
 					throw new Error('importer-message-invalid-timestamp');
 				}
 
-				const creator = this.findImportedUser(data.u._id);
+				const creator = await this.findImportedUser(data.u._id);
 				if (!creator) {
 					this._logger.warn(`Imported user not found: ${data.u._id}`);
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const rid = this.findImportedRoomId(data.rid);
+				const rid = await this.findImportedRoomId(data.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
 				}
@@ -579,8 +593,8 @@ export class ImportDataConverter {
 				}
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-				const mentions = data.mentions && this.convertMessageMentions(data);
-				const channels = data.channels && this.convertMessageChannels(data);
+				const mentions = data.mentions && (await this.convertMessageMentions(data));
+				const channels = data.channels && (await this.convertMessageChannels(data));
 
 				const msgObj: IMessage = {
 					rid,
@@ -595,9 +609,9 @@ export class ImportDataConverter {
 					tmid: data.tmid,
 					tlm: data.tlm,
 					tcount: data.tcount,
-					replies: data.replies && this.convertMessageReplies(data.replies),
+					replies: data.replies && (await this.convertMessageReplies(data.replies)),
 					editedAt: data.editedAt,
-					editedBy: data.editedBy && (this.findImportedUser(data.editedBy) || undefined),
+					editedBy: data.editedBy && ((await this.findImportedUser(data.editedBy)) || undefined),
 					mentions,
 					channels,
 					_importFile: data._importFile,
@@ -613,11 +627,11 @@ export class ImportDataConverter {
 				}
 
 				if (data.reactions) {
-					msgObj.reactions = this.convertMessageReactions(data.reactions);
+					msgObj.reactions = await this.convertMessageReactions(data.reactions);
 				}
 
 				try {
-					insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
@@ -633,7 +647,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await RoomsRaw.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
@@ -641,17 +655,15 @@ export class ImportDataConverter {
 		}
 	}
 
-	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
+	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
 		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
-			Meteor.runAsUser(startedByUserId, () => {
-				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
-			});
+			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
 
-		this.updateRoomId(room._id, roomData);
+		await this.updateRoomId(room._id, roomData);
 	}
 
 	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
@@ -661,18 +673,18 @@ export class ImportDataConverter {
 		}
 	}
 
-	findImportedRoomId(importId: string): string | null {
+	async findImportedRoomId(importId: string): Promise<string | null> {
 		if (this._roomCache.has(importId)) {
 			return this._roomCache.get(importId) as string;
 		}
 
 		const options = {
-			fields: {
+			projection: {
 				_id: 1,
 			},
 		};
 
-		const room = Rooms.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			return this.addRoomToCache(importId, room._id);
 		}
@@ -680,30 +692,32 @@ export class ImportDataConverter {
 		return null;
 	}
 
-	findImportedRoomName(importId: string): string | undefined {
+	async findImportedRoomName(importId: string): Promise<string | undefined> {
 		if (this._roomNameCache.has(importId)) {
 			return this._roomNameCache.get(importId) as string;
 		}
 
 		const options = {
-			fields: {
+			projection: {
 				_id: 1,
 				name: 1,
 			},
 		};
 
-		const room = Rooms.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			if (!this._roomCache.has(importId)) {
 				this.addRoomToCache(importId, room._id);
 			}
-			return this.addRoomNameToCache(importId, room.name);
+			if (room?.name) {
+				return this.addRoomNameToCache(importId, room.name);
+			}
 		}
 	}
 
-	findImportedUser(importId: string): IUserIdentification | null {
+	async findImportedUser(importId: string): Promise<IUserIdentification | null> {
 		const options = {
-			fields: {
+			projection: {
 				_id: 1,
 				username: 1,
 			},
@@ -720,7 +734,7 @@ export class ImportDataConverter {
 			return this._userCache.get(importId) as IUserIdentification;
 		}
 
-		const user = Users.findOneByImportId(importId, options);
+		const user = await Users.findOneByImportId(importId, options);
 		if (user) {
 			return this.addUserToCache(importId, user._id, user.username);
 		}
@@ -728,19 +742,19 @@ export class ImportDataConverter {
 		return null;
 	}
 
-	findImportedUserId(_id: string): string | undefined {
-		const data = this.findImportedUser(_id);
+	async findImportedUserId(_id: string): Promise<string | undefined> {
+		const data = await this.findImportedUser(_id);
 		return data?._id;
 	}
 
-	findImportedUsername(_id: string): string | undefined {
-		const data = this.findImportedUser(_id);
+	async findImportedUsername(_id: string): Promise<string | undefined> {
+		const data = await this.findImportedUser(_id);
 		return data?.username;
 	}
 
-	findImportedUserDisplayName(importId: string): string | undefined {
+	async findImportedUserDisplayName(importId: string): Promise<string | undefined> {
 		const options = {
-			fields: {
+			projection: {
 				_id: 1,
 				name: 1,
 				username: 1,
@@ -751,17 +765,22 @@ export class ImportDataConverter {
 			return this._userDisplayNameCache.get(importId);
 		}
 
-		const user = importId === 'rocket.cat' ? Users.findOneById('rocket.cat', options) : Users.findOneByImportId(importId, options);
+		const user =
+			importId === 'rocket.cat' ? await Users.findOneById('rocket.cat', options) : await Users.findOneByImportId(importId, options);
 		if (user) {
 			if (!this._userCache.has(importId)) {
 				this.addUserToCache(importId, user._id, user.username);
+			}
+
+			if (!user.name) {
+				return;
 			}
 
 			return this.addUserDisplayNameToCache(importId, user.name);
 		}
 	}
 
-	updateRoomId(_id: string, roomData: IImportChannel): void {
+	async updateRoomId(_id: string, roomData: IImportChannel): Promise<void> {
 		const set = {
 			ts: roomData.ts,
 			topic: roomData.topic,
@@ -783,13 +802,13 @@ export class ImportDataConverter {
 		}
 
 		if (roomUpdate.$set || roomUpdate.$addToSet) {
-			Rooms.update({ _id: roomData._id }, roomUpdate);
+			await Rooms.updateOne({ _id: roomData._id }, roomUpdate);
 		}
 	}
 
-	getRoomCreatorId(roomData: IImportChannel, startedByUserId: string): string {
+	async getRoomCreatorId(roomData: IImportChannel, startedByUserId: string): Promise<string> {
 		if (roomData.u) {
-			const creatorId = this.findImportedUserId(roomData.u._id);
+			const creatorId = await this.findImportedUserId(roomData.u._id);
 			if (creatorId) {
 				return creatorId;
 			}
@@ -802,8 +821,8 @@ export class ImportDataConverter {
 		}
 
 		if (roomData.t === 'd') {
-			for (const member of roomData.users) {
-				const userId = this.findImportedUserId(member);
+			for await (const member of roomData.users) {
+				const userId = await this.findImportedUserId(member);
 				if (userId) {
 					return userId;
 				}
@@ -813,10 +832,10 @@ export class ImportDataConverter {
 		throw new Error('importer-channel-invalid-creator');
 	}
 
-	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
+	async insertRoom(roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		// Find the rocketchatId of the user who created this channel
-		const creatorId = this.getRoomCreatorId(roomData, startedByUserId);
-		const members = this.convertImportedIdsToUsernames(roomData.users, roomData.t !== 'd' ? creatorId : undefined);
+		const creatorId = await this.getRoomCreatorId(roomData, startedByUserId);
+		const members = await this.convertImportedIdsToUsernames(roomData.users, roomData.t !== 'd' ? creatorId : undefined);
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
@@ -827,56 +846,65 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, () => {
-				const roomInfo =
-					roomData.t === 'd'
-						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+			let roomInfo;
+			if (roomData.t === 'd') {
+				roomInfo = await createDirectMessage(members, startedByUserId, true);
+			} else {
+				if (!roomData.name) {
+					return;
+				}
+				if (roomData.t === 'p') {
+					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+				} else {
+					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+				}
+			}
 
-				roomData._id = roomInfo.rid;
-			});
+			roomData._id = roomInfo.rid;
 		} catch (e) {
 			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);
 			throw e;
 		}
 
-		this.updateRoomId(roomData._id as 'string', roomData);
+		await this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
-	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
-		return importedIds
-			.map((user) => {
-				if (user === 'rocket.cat') {
-					return user;
-				}
-
-				if (this._userCache.has(user)) {
-					const cache = this._userCache.get(user);
-					if (cache) {
-						return cache.username;
-					}
-				}
-
-				const obj = Users.findOneByImportId(user, { fields: { _id: 1, username: 1 } });
-				if (obj) {
-					this.addUserToCache(user, obj._id, obj.username);
-
-					if (idToRemove && obj._id === idToRemove) {
-						return false;
+	async convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Promise<Array<string>> {
+		return (
+			await Promise.all(
+				importedIds.map(async (user) => {
+					if (user === 'rocket.cat') {
+						return user;
 					}
 
-					return obj.username;
-				}
+					if (this._userCache.has(user)) {
+						const cache = this._userCache.get(user);
+						if (cache) {
+							return cache.username;
+						}
+					}
 
-				return false;
-			})
-			.filter((user) => user);
+					const obj = await Users.findOneByImportId(user, { projection: { _id: 1, username: 1 } });
+					if (obj) {
+						this.addUserToCache(user, obj._id, obj.username);
+
+						if (idToRemove && obj._id === idToRemove) {
+							return false;
+						}
+
+						return obj.username;
+					}
+
+					return false;
+				}),
+			)
+		).filter((user) => user) as string[];
 	}
 
-	findExistingRoom(data: IImportChannel): IRoom {
+	async findExistingRoom(data: IImportChannel): Promise<IRoom | null> {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
-			const room = Rooms.findOneById('GENERAL', {});
+			const room = await Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general
 			if (!room) {
 				throw new Error('importer-channel-general-not-found');
@@ -886,7 +914,7 @@ export class ImportDataConverter {
 		}
 
 		if (data.t === 'd') {
-			const users = this.convertImportedIdsToUsernames(data.users);
+			const users = await this.convertImportedIdsToUsernames(data.users);
 			if (users.length !== data.users.length) {
 				throw new Error('importer-channel-missing-users');
 			}
@@ -894,7 +922,12 @@ export class ImportDataConverter {
 			return Rooms.findDirectRoomContainingAllUsernames(users, {});
 		}
 
-		return Rooms.findOneByNonValidatedName(data.name, {});
+		if (!data.name) {
+			return null;
+		}
+
+		const roomName = await getValidRoomName(data.name.trim(), undefined, { allowDuplicates: true });
+		return Rooms.findOneByNonValidatedName(roomName, {});
 	}
 
 	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
@@ -921,16 +954,16 @@ export class ImportDataConverter {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				const existingRoom = this.findExistingRoom(data);
+				const existingRoom = await this.findExistingRoom(data);
 
 				if (existingRoom) {
-					this.updateRoom(existingRoom, data, startedByUserId);
+					await this.updateRoom(existingRoom, data, startedByUserId);
 				} else {
-					this.insertRoom(data, startedByUserId);
+					await this.insertRoom(data, startedByUserId);
 				}
 
 				if (data.archived && data._id) {
-					this.archiveRoomById(data._id);
+					await this.archiveRoomById(data._id);
 				}
 
 				if (afterImportFn) {
@@ -942,9 +975,9 @@ export class ImportDataConverter {
 		}
 	}
 
-	archiveRoomById(rid: string): void {
-		Rooms.archiveById(rid);
-		Subscriptions.archiveByRoomId(rid);
+	async archiveRoomById(rid: string) {
+		await Rooms.archiveById(rid);
+		await Subscriptions.archiveByRoomId(rid);
 	}
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {

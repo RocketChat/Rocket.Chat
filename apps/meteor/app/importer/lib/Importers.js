@@ -11,7 +11,7 @@ class ImportersContainer {
 	 * overwrite the previous one.
 	 *
 	 * @param {ImporterInfo} info The information related to the importer.
-	 * @param {*} importer The class for the importer, will be undefined on the client.
+	 * @param {*} [importer] The class for the importer, will be undefined on the client.
 	 */
 	add(info, importer) {
 		if (!(info instanceof ImporterInfo)) {

@@ -1,14 +1,14 @@
-import { HTTP } from 'meteor/http';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { mime } from '../../../../app/utils/lib/mimeTypes';
 import { SystemLogger } from '../../../lib/logger/system';
+import { i18n } from '../../../lib/i18n';
 
 type VoxtelesysData = {
 	from: string;
@@ -108,19 +108,19 @@ export class Voxtelesys implements ISMSProvider {
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? await Users.findOne(userId, { projection: { language: 1 } }) : null;
+			const user = userId ? await Users.findOne({ _id: userId }, { projection: { language: 1 } }) : null;
 			const lng = user?.language || defaultLanguage;
 
 			let reason;
 			if (!this.fileUploadEnabled) {
-				reason = TAPi18n.__('FileUpload_Disabled', { lng });
+				reason = i18n.t('FileUpload_Disabled', { lng });
 			} else if (size > MAX_FILE_SIZE) {
-				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
-				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
+			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
+				reason = i18n.t('File_type_is_not_accepted', { lng });
 			}
 
 			if (reason) {
@@ -135,22 +135,23 @@ export class Voxtelesys implements ISMSProvider {
 			headers: {
 				Authorization: `Bearer ${this.authToken}`,
 			},
-			data: {
+			body: {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
 				...(media && { media }),
 			},
+			method: 'POST',
 		};
 
 		try {
-			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
+			await fetch(this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
 		} catch (err) {
 			SystemLogger.error({ msg: 'Error connecting to Voxtelesys SMS API', err });
 		}
 	}
 
-	fileUploadMediaTypeWhiteList() {
+	fileUploadMediaTypeWhiteList(): any {
 		throw new Error('Method not implemented.');
 	}
 

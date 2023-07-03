@@ -1,5 +1,5 @@
-import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import type { LoginService } from '@rocket.chat/ui-contexts';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import type { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
@@ -46,7 +46,7 @@ const userPreferences: Record<string, unknown> = {
 	sidebarSortby: 'activity',
 };
 
-const subscriptions: ISubscription[] = [
+const subscriptions: SubscriptionWithRoom[] = [
 	{
 		_id: '3Bysd8GrmkWBdS9RT',
 		open: true,
@@ -69,6 +69,12 @@ const subscriptions: ISubscription[] = [
 		tunread: [],
 		lowerCaseName: 'general',
 		lowerCaseFName: 'general',
+		estimatedWaitingTimeQueue: 0,
+		livechatData: undefined,
+		priorityWeight: 3,
+		responseBy: undefined,
+		usersCount: 0,
+		waitingResponse: undefined,
 	},
 ];
 

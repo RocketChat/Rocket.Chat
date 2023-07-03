@@ -6,7 +6,7 @@ type ReactModalDescriptor<TProps> = {
 	props?: TProps;
 };
 
-export type ModalDescriptor = ReactModalDescriptor<Record<string, unknown>> | null;
+type ModalDescriptor = ReactModalDescriptor<Record<string, unknown>> | null;
 
 type ModalInstance = {
 	close: () => void;

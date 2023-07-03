@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -899,5 +899,8 @@ export type ChatEndpoints = {
 			offset: number;
 			total: number;
 		};
+	};
+	'/v1/chat.otr': {
+		POST: (params: { roomId: string; type: OtrSystemMessages }) => void;
 	};
 };

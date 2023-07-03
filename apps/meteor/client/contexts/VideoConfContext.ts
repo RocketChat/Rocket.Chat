@@ -11,12 +11,6 @@ export type VideoConfPopupPayload = {
 	isReceiving?: boolean;
 };
 
-export type VideoConfIncomingCall = {
-	callId: string;
-	uid: string;
-	rid: string;
-};
-
 type VideoConfContextValue = {
 	manager: typeof VideoConfManager;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;

@@ -18,13 +18,14 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
+	collapsed,
 }) => {
 	const getURL = useMediaUrl();
 
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata'>
 						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />

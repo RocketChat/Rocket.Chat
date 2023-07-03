@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Messages } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getSingleMessage(mid: IMessage['_id']): IMessage;
+		getSingleMessage(mid: IMessage['_id']): Promise<IMessage | null>;
 	}
 }
 
@@ -23,10 +23,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSingleMessage' });
 		}
 
-		const msg = Messages.findOneById(mid);
+		const msg = await Messages.findOneById(mid);
 
 		if (!msg?.rid) {
-			return undefined;
+			return null;
 		}
 
 		if (!(await canAccessRoomIdAsync(msg.rid, uid))) {

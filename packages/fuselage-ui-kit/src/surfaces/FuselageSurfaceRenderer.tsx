@@ -1,6 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import { Fragment } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
@@ -17,8 +16,10 @@ import MultiStaticSelectElement from '../elements/MultiStaticSelectElement';
 import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import MarkdownTextElement from '../elements/MarkdownTextElement';
+import PlainTextElement from '../elements/PlainTextElement';
 
-type FuselageSurfaceRendererProps = ConstructorParameters<
+export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
@@ -38,7 +39,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   public plain_text(
-    { text = '' }: UiKit.PlainText,
+    textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -46,11 +47,11 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return text ? <Fragment key={index}>{text}</Fragment> : null;
+    return <PlainTextElement key={index} textObject={textObject} />;
   }
 
   public mrkdwn(
-    { text = '' }: UiKit.Markdown,
+    textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -58,7 +59,19 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return text ? <Fragment key={index}>{text}</Fragment> : null;
+    return <MarkdownTextElement key={index} textObject={textObject} />;
+  }
+
+  public text(
+    textObject: UiKit.TextObject,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (textObject.type === 'mrkdwn') {
+      return this.mrkdwn(textObject, context, index);
+    }
+
+    return this.plain_text(textObject, context, index);
   }
 
   actions(

@@ -16,26 +16,26 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	sendSMTPTestEmail() {
+	async sendSMTPTestEmail() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendSMTPTestEmail',
 			});
 		}
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		if (!user?.emails?.[0]?.address) {
 			throw new Meteor.Error('error-invalid-email', 'Invalid email', {
 				method: 'sendSMTPTestEmail',
 			});
 		}
 		try {
-			Mailer.send({
+			await Mailer.send({
 				to: user.emails[0].address,
 				from: settings.get('From_Email'),
 				subject: 'SMTP Test Email',
 				html: '<p>You have successfully sent an email</p>',
 			});
-		} catch ({ message }) {
+		} catch ({ message }: any) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendSMTPTestEmail',
 				message,

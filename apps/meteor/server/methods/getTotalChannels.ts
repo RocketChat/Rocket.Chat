@@ -1,7 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-
-import { Rooms } from '../../app/models/server';
+import { Rooms } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,9 +17,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const query = {
-			t: 'c',
-		};
-		return Rooms.find(query).count();
+		return Rooms.col.countDocuments({ t: 'c' });
 	},
 });

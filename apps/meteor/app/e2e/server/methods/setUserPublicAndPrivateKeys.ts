@@ -1,7 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-
-import { Users } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -11,7 +10,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'e2e.setUserPublicAndPrivateKeys'(keyPair) {
+	async 'e2e.setUserPublicAndPrivateKeys'(keyPair) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -20,6 +19,9 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Users.setE2EPublicAndPrivateKeysByUserId(userId, keyPair);
+		await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
+			private_key: keyPair.private_key,
+			public_key: keyPair.public_key,
+		});
 	},
 });

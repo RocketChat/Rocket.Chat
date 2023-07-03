@@ -81,7 +81,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(handleSaveFile)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSaveFile)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Save_To_Webdav')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />

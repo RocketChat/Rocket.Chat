@@ -1,4 +1,4 @@
-import type { FindCursor, FindOptions } from 'mongodb';
+import type { Document, FindCursor, FindOptions } from 'mongodb';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 import type { FindPaginated } from '@rocket.chat/model-typings';
@@ -8,7 +8,7 @@ export function getUsersInRole(roleId: IRole['_id'], scope?: string): Promise<Fi
 
 export function getUsersInRole(roleId: IRole['_id'], scope: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
 
-export function getUsersInRole<P = IUser>(
+export function getUsersInRole<P extends Document = IUser>(
 	roleId: IRole['_id'],
 	scope: string | undefined,
 	options: FindOptions<P extends IUser ? IUser : P>,

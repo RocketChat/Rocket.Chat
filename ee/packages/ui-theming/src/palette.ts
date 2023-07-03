@@ -64,7 +64,7 @@ export const palette = [
 			{ name: 'status-background-success', token: 'S500', color: '#C0F6E4' },
 			{ name: 'status-background-danger', token: 'D200', color: '#FFC1C9' },
 			{ name: 'status-background-warning', token: 'W200', color: '#FFECAD' },
-			{ name: 'status-background-warning-2', token: 'W100', color: '#FFF6D6' },
+			{ name: 'status-background-warning-2', token: 'W100', color: '#FFF8E0' },
 			{ name: 'status-background-service-1', token: 'S1-200', color: '#FAD1B0' },
 			{ name: 'status-background-service-2', token: 'S2-200', color: '#EDD0F7' },
 			{ name: 'status-background-service-3', token: 'S2-700', color: '#5F1477' },
@@ -87,10 +87,23 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
+			{ name: 'badge-background-level-0', token: '', color: '#E4E7EA' },
 			{ name: 'badge-background-level-1', token: 'N700', color: '#6C727A' },
 			{ name: 'badge-background-level-2', token: '', color: '#1D74F5' },
 			{ name: 'badge-background-level-3', token: '', color: '#F38C39' },
 			{ name: 'badge-background-level-4', token: '', color: '#F5455C' },
+		],
+	},
+	{
+		category: 'Status Bullet',
+		description: 'Used to show user status',
+		list: [
+			{ name: 'status-bullet-online', token: '', color: '#158D65' },
+			{ name: 'status-bullet-away', token: '', color: '#AC892F' },
+			{ name: 'status-bullet-busy', token: '', color: '#DA1F37' },
+			{ name: 'status-bullet-disabled', token: '', color: '#F38C39' },
+			{ name: 'status-bullet-offline', token: '', color: '#AC892F' },
+			{ name: 'status-bullet-loading', token: '', color: '#9ea2a8' },
 		],
 	},
 	{

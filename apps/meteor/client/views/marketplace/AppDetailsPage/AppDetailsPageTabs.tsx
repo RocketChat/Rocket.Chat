@@ -6,14 +6,14 @@ import React from 'react';
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
 
 type AppDetailsPageTabsProps = {
+	context: string;
 	installed: boolean | undefined;
 	isSecurityVisible: boolean;
-	marketplace: unknown;
 	settings: ISettings | undefined;
 	tab: string | undefined;
 };
 
-const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, settings, tab }: AppDetailsPageTabsProps): ReactElement => {
+const AppDetailsPageTabs = ({ context, installed, isSecurityVisible, settings, tab }: AppDetailsPageTabsProps): ReactElement => {
 	const t = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
 
@@ -33,7 +33,7 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 			<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 				{t('Details')}
 			</Tabs.Item>
-			{isAdminUser && (
+			{isAdminUser && context !== 'private' && (
 				<Tabs.Item onClick={(): void => handleTabClick('requests')} selected={tab === 'requests'}>
 					{t('Requests')}
 				</Tabs.Item>
@@ -43,7 +43,7 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 					{t('Security')}
 				</Tabs.Item>
 			)}
-			{marketplace !== false && (
+			{context !== 'private' && (
 				<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 					{t('Releases')}
 				</Tabs.Item>

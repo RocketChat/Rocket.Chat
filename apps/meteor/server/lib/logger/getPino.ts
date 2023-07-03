@@ -5,7 +5,7 @@ import type { Logger } from 'pino';
 import './logQueue';
 
 // add support to multiple params on the log commands, i.e.:
-// logger.info('user', Meteor.user()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
+// logger.info('user', await Meteor.userAsync()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
 function logMethod(this: Logger, args: unknown[], method: any): void {
 	if (args.length === 2 && args[0] instanceof Error) {
 		return method.apply(this, args);

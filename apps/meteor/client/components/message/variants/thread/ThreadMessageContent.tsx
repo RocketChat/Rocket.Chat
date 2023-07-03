@@ -52,7 +52,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<UiKitSurface mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
 			)}
 
-			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} file={normalizedMessage.file} />}
+			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

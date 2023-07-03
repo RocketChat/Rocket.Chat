@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { ChatSubscription } from '../../app/models/client';
 
 Meteor.methods<ServerMethods>({
-	hideRoom(rid) {
+	async hideRoom(rid) {
 		if (!Meteor.userId()) {
 			return 0;
 		}

@@ -8,7 +8,7 @@ import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
 type ChannelToTeamSelectionProps = {
 	teamId: IRoom['teamId'];
-	onChange: (teamId: IRoom['_id']) => void;
+	onChange: (value: string | string[]) => void;
 	onCancel: () => void;
 	onConfirm: () => void;
 };

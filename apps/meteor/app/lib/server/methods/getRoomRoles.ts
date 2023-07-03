@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { Rooms } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomRoles' });
 		}

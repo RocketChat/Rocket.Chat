@@ -1,6 +1,7 @@
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -15,6 +16,7 @@ import {
 } from '../../../server/api/lib/departments';
 import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { DepartmentHelper } from '../../../server/lib/Departments';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -28,8 +30,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const { text, enabled, onlyMyDepartments, excludeDepartmentId, showArchived } = this.queryParams;
 
@@ -58,7 +60,7 @@ API.v1.addRoute(
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department, agents);
+			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -160,8 +162,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const { text, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
@@ -252,9 +254,8 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
-
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const agents = await findDepartmentAgents({
 				userId: this.userId,
@@ -293,7 +294,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { ids } = this.queryParams;
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
 			if (!ids) {
 				return API.v1.failure("The 'ids' param is required");
 			}

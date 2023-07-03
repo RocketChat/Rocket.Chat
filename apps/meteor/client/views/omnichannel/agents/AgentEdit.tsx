@@ -1,13 +1,13 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Icon, Select, ContextualbarFooter, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement } from 'react';
 import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
-import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
 
@@ -113,101 +113,91 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
-			{username && (
-				<Box alignSelf='center'>
-					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
-				</Box>
-			)}
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Name' flexGrow={1} value={name} disabled />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Username')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Username' flexGrow={1} value={username} disabled addon={<Icon name='at' size='x20' />} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Email')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Email' flexGrow={1} value={email} disabled addon={<Icon name='mail' size='x20' />} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Departments')}</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						data-qa='AgentEditTextInput-Departaments'
-						options={options}
-						value={departments}
-						placeholder={t('Select_an_option')}
-						onChange={handleDepartments}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Status')}</Field.Label>
-				<Field.Row>
-					<Select
-						data-qa='AgentEditTextInput-Status'
-						options={[
-							['available', t('Available')],
-							['not-available', t('Not_Available')],
-						]}
-						value={status}
-						placeholder={t('Select_an_option')}
-						onChange={handleStatus}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-
-			{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
-
-			{voipEnabled && (
+		<>
+			<ContextualbarScrollableContent is='form' {...props}>
+				{username && (
+					<Box alignSelf='center'>
+						<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+					</Box>
+				)}
 				<Field>
-					<Field.Label>{t('VoIP_Extension')}</Field.Label>
+					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							data-qa='AgentEditTextInput-VoIP_Extension'
-							flexGrow={1}
-							value={voipExtension as string}
-							onChange={handleVoipExtension}
+						<TextInput data-qa='AgentEditTextInput-Name' value={name} disabled />
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Username')}</Field.Label>
+					<Field.Row>
+						<TextInput data-qa='AgentEditTextInput-Username' value={username} disabled addon={<Icon name='at' size='x20' />} />
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Email')}</Field.Label>
+					<Field.Row>
+						<TextInput data-qa='AgentEditTextInput-Email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Departments')}</Field.Label>
+					<Field.Row>
+						<MultiSelect
+							data-qa='AgentEditTextInput-Departaments'
+							options={options}
+							value={departments}
+							placeholder={t('Select_an_option')}
+							onChange={handleDepartments}
 						/>
 					</Field.Row>
 				</Field>
-			)}
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						<Button
-							data-qa='AgentEditButtonReset'
-							flexGrow={1}
-							type='reset'
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleReset}
-						>
-							{t('Reset')}
-						</Button>
-						<Button
-							data-qa='AgentEditButtonSave'
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleSave}
-						>
-							{t('Save')}
-						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</VerticalBar.ScrollableContent>
+				<Field>
+					<Field.Label>{t('Status')}</Field.Label>
+					<Field.Row>
+						<Select
+							data-qa='AgentEditTextInput-Status'
+							options={[
+								['available', t('Available')],
+								['not-available', t('Not_Available')],
+							]}
+							value={status}
+							placeholder={t('Select_an_option')}
+							onChange={handleStatus}
+						/>
+					</Field.Row>
+				</Field>
+				{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
+				{voipEnabled && (
+					<Field>
+						<Field.Label>{t('VoIP_Extension')}</Field.Label>
+						<Field.Row>
+							<TextInput data-qa='AgentEditTextInput-VoIP_Extension' value={voipExtension as string} onChange={handleVoipExtension} />
+						</Field.Row>
+					</Field>
+				)}
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup wrap>
+					<Button
+						data-qa='AgentEditButtonReset'
+						flexGrow={1}
+						type='reset'
+						disabled={!hasUnsavedChanges && !maxChatUnsaved}
+						onClick={handleReset}
+					>
+						{t('Reset')}
+					</Button>
+					<Button
+						data-qa='AgentEditButtonSave'
+						mie='none'
+						flexGrow={1}
+						disabled={!hasUnsavedChanges && !maxChatUnsaved}
+						onClick={handleSave}
+					>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

@@ -11,10 +11,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
 import { useUserData } from '../../hooks/useUserData';
-import { getUserDisplayName } from '../../lib/getUserDisplayName';
 import type { UserPresence } from '../../lib/presence';
 import { useChat } from '../../views/room/contexts/ChatContext';
 import StatusIndicators from './StatusIndicators';

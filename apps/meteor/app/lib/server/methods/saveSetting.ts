@@ -4,14 +4,14 @@ import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { hasPermissionAsync, hasAllPermission } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		saveSetting(_id: string, value: SettingValue, editor: string): boolean;
+		saveSetting(_id: string, value: SettingValue, editor?: string): Promise<boolean>;
 	}
 }
 
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 
 		if (
 			!(await hasPermissionAsync(uid, 'edit-privileged-setting')) &&
-			!hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])
+			!(await hasAllPermissionAsync(uid, ['manage-selected-settings', getSettingPermissionId(_id)]))
 		) {
 			// TODO use the same function
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {

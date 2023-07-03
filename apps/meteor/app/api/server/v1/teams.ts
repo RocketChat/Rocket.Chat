@@ -11,23 +11,24 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import type { ITeam } from '@rocket.chat/core-typings';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
+import { Users, Rooms } from '@rocket.chat/models';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Rooms, Users } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'teams.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 
 			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
 
@@ -50,7 +51,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
 
@@ -136,9 +137,9 @@ API.v1.addRoute(
 			const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 			if (rooms.length) {
-				rooms.forEach((room) => {
-					Meteor.call('eraseRoom', room);
-				});
+				for await (const room of rooms) {
+					await Meteor.callAsync('eraseRoom', room);
+				}
 			}
 
 			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
@@ -160,18 +161,13 @@ API.v1.addRoute(
 				Match.OneOf(
 					Match.ObjectIncluding({
 						teamId: String,
+						rooms: [String] as [StringConstructor],
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
+						rooms: [String] as [StringConstructor],
 					}),
 				),
-			);
-
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					rooms: [String],
-				}),
 			);
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -274,11 +270,13 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					filter: Match.Maybe(String),
 					type: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
 			const { filter, type } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -336,10 +334,12 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					userId: String,
 					canUserDelete: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -375,7 +375,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			check(
 				this.queryParams,
@@ -410,7 +410,7 @@ API.v1.addRoute(
 			const query = {
 				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
 				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status } : undefined,
+				status: status ? { $in: status as UserStatus[] } : undefined,
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
@@ -441,7 +441,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['add-team-member', 'edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -468,7 +468,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -495,11 +495,11 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
-			const user = Users.findOneActiveById(userId, {});
+			const user = await Users.findOneActiveById(userId, {});
 			if (!user) {
 				return API.v1.failure('invalid-user');
 			}
@@ -577,7 +577,7 @@ API.v1.addRoute(
 				return API.v1.failure('Team not found');
 			}
 
-			const room = Rooms.findOneById(teamInfo.roomId);
+			const room = await Rooms.findOneById(teamInfo.roomId);
 
 			if (!room) {
 				return API.v1.failure('Room not found');
@@ -618,9 +618,9 @@ API.v1.addRoute(
 
 			// If we got a list of rooms to delete along with the team, remove them first
 			if (rooms.length) {
-				rooms.forEach((room) => {
-					Meteor.call('eraseRoom', room);
-				});
+				for await (const room of rooms) {
+					await Meteor.callAsync('eraseRoom', room);
+				}
 			}
 
 			// Move every other room back to the workspace

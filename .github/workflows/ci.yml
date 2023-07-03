@@ -32,12 +32,13 @@ jobs:
       rc-docker-tag-alpine: '${{ steps.docker.outputs.gh-docker-tag }}.alpine'
       node-version: ${{ steps.var.outputs.node-version }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-      # to avoid this, we are using a dummy license, expiring at 2023-06-30
-      enterprise-license: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
+      # to avoid this, we are using a dummy license, expiring at 2024-06-30
+      enterprise-license: WMa5i+/t/LZbYOj8u3XUkivRhWBtWO6ycUjaZoVAw2DxMfdyBIAa2gMMI4x7Z2BrTZIZhFEImfOxcXcgD0QbXHGBJaMI+eYG+eofnVWi2VA7RWbpvWTULgPFgyJ4UEFeCOzVjcBLTQbmMSam3u0RlekWJkfAO0KnmLtsaEYNNA2rz1U+CLI/CdNGfdqrBu5PZZbGkH0KEzyIZMaykOjzvX+C6vd7fRxh23HecwhkBbqE8eQsCBt2ad0qC4MoVXsDaSOmSzGW+aXjuXt/9zjvrLlsmWQTSlkrEHdNkdywm0UkGxqz3+CP99n0WggUBioUiChjMuNMoceWvDvmxYP9Ml2NpYU7SnfhjmMFyXOah8ofzv8w509Y7XODvQBz+iB4Co9YnF3vT96HDDQyAV5t4jATE+0t37EAXmwjTi3qqyP7DLGK/revl+mlcwJ5kS4zZBsm1E4519FkXQOZSyWRnPdjqvh4mCLqoispZ49wKvklDvjPxCSP9us6cVXLDg7NTJr/4pfxLPOkvv7qCgugDvlDx17bXpQFPSDxmpw66FLzvb5Id0dkWjOzrRYSXb0bFWoUQjtHFzmcpFkyVhOKrQ9zA9+Zm7vXmU9Y2l2dK79EloOuHMSYAqsPEag8GMW6vI/cT4iIjHGGDePKnD0HblvTEKzql11cfT/abf2IiaY=
     steps:
       - uses: Bhacaz/checkout-files@v2
         with:
           files: package.json
+          branch: ${{ github.ref }}
 
       - id: var
         run: |
@@ -46,7 +47,7 @@ jobs:
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
           echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
-          NODE_VERSION=$(node -p "require('./package.json').volta.node")
+          NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
@@ -114,6 +115,14 @@ jobs:
       #     sudo apt clean
       #     docker rmi $(docker image ls -aq)
       #     df -h
+
+      - name: Cache vite
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.vite
+          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            vite-local-cache-${{ runner.os }}-
 
       - name: Cache meteor local
         uses: actions/cache@v3
@@ -249,6 +258,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -296,6 +306,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   tests-done:
     name: ✅ Tests Done
@@ -616,3 +627,18 @@ jobs:
           done
 
           echo "::endgroup::"
+
+  trigger-dependent-workflows:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+    steps:
+      - name: Send context to seperate pipeline
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DISTRIBUTION_TOKEN }}
+          event-type: new_release
+          repository: RocketChat/Release.Distributions
+          client-payload: '{"tag": "${{ github.ref_name }}"}'

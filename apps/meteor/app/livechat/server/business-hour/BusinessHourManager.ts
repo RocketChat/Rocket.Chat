@@ -1,32 +1,24 @@
 import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ICronJobs, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { Users } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-
-const cronJobDayDict: Record<string, number> = {
-	Sunday: 0,
-	Monday: 1,
-	Tuesday: 2,
-	Wednesday: 3,
-	Thursday: 4,
-	Friday: 5,
-	Saturday: 6,
-};
+import { businessHourLogger } from '../lib/logger';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
 
 	private behavior: IBusinessHourBehavior;
 
-	private cronJobs: ICronJobs;
+	private cronJobs: AgendaCronJobs;
 
 	private cronJobsCache: string[] = [];
 
-	constructor(cronJobs: ICronJobs) {
+	constructor(cronJobs: AgendaCronJobs) {
 		this.cronJobs = cronJobs;
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
@@ -34,12 +26,13 @@ export class BusinessHourManager {
 
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
+		businessHourLogger.debug('Cron jobs created, setting up callbacks');
 		this.setupCallbacks();
 		await this.behavior.onStartBusinessHours();
 	}
 
 	async stopManager(): Promise<void> {
-		this.removeCronJobs();
+		await this.removeCronJobs();
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
@@ -114,16 +107,23 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-save-agent-department',
 		);
+		callbacks.add(
+			'livechat.onNewAgentCreated',
+			this.behavior.onNewAgentCreated.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-agent-created',
+		);
 	}
 
 	private removeCallbacks(): void {
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove('livechat.onNewAgentCreated', 'business-hour-livechat-on-agent-created');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
-		this.removeCronJobs();
+		await this.removeCronJobs();
 		this.clearCronJobsCache();
 		const [workHours] = await this.behavior.findHoursToCreateJobs();
 		if (!workHours) {
@@ -131,18 +131,26 @@ export class BusinessHourManager {
 		}
 
 		const { start, finish } = workHours;
-		start.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback));
-		finish.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback));
+
+		await Promise.all(start.map(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback)));
+		await Promise.all(finish.map(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback)));
 	}
 
-	private scheduleCronJob(items: string[], day: string, type: string, job: (day: string, hour: string) => void): void {
-		items.forEach((hour) => {
-			const jobName = `${day}/${hour}/${type}`;
-			const time = moment(hour, 'HH:mm');
-			const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
-			this.addToCache(jobName);
-			this.cronJobs.add(jobName, scheduleAt, job);
-		});
+	private async scheduleCronJob(
+		items: string[],
+		day: string,
+		type: 'open' | 'close',
+		job: (day: string, hour: string) => void,
+	): Promise<void> {
+		await Promise.all(
+			items.map((hour) => {
+				const time = moment(hour, 'HH:mm').day(day);
+				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
+				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
+				this.addToCache(jobName);
+				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
+			}),
+		);
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
@@ -157,8 +165,8 @@ export class BusinessHourManager {
 		return this.types.get(type);
 	}
 
-	private removeCronJobs(): void {
-		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
+	private async removeCronJobs(): Promise<void> {
+		await Promise.all(this.cronJobsCache.map((jobName) => this.cronJobs.remove(jobName)));
 	}
 
 	private addToCache(jobName: string): void {

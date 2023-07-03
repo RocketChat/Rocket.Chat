@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
@@ -1303,10 +1306,23 @@ describe('[Rooms]', function () {
 		const suffix = `test-${Date.now()}`;
 		const fnameRoom = `Ελληνικά-${suffix}`;
 		const nameRoom = `Ellinika-${suffix}`;
+		const discussionRoomName = `${nameRoom}-discussion`;
+
+		let testGroup;
 
 		before((done) => {
 			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
-				createRoom({ type: 'p', name: fnameRoom }).end(done);
+				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
+					testGroup = res.body.group;
+					request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: discussionRoomName,
+						})
+						.end(done);
+				});
 			});
 		});
 
@@ -1396,6 +1412,73 @@ describe('[Rooms]', function () {
 					})
 					.end(done);
 			});
+		});
+		it('should filter by only rooms types', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0].t).to.be.equal('p');
+					expect(res.body.rooms.find((room) => room.name === nameRoom)).to.exist;
+					expect(res.body.rooms.find((room) => room.name === discussionRoomName)).to.not.exist;
+				})
+				.end(done);
+		});
+		it('should filter by only name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should filter by type and name at the same query', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should return an empty array when filter by wrong type and correct room name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['c'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(0);
+				})
+				.end(done);
 		});
 	});
 
@@ -1507,6 +1590,71 @@ describe('[Rooms]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.saveRoomSettings', () => {
+		let testChannel;
+		const randomString = `randomString${Date.now()}`;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		it('should update the room settings', (done) => {
+			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					roomAvatar: imageDataUri,
+					featured: true,
+					roomName: randomString,
+					roomTopic: randomString,
+					roomAnnouncement: randomString,
+					roomDescription: randomString,
+					roomType: 'p',
+					readOnly: true,
+					reactWhenReadOnly: true,
+					default: true,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		it('should have reflected on rooms.info', (done) => {
+			request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('name', randomString);
+					expect(res.body.room).to.have.property('topic', randomString);
+					expect(res.body.room).to.have.property('announcement', randomString);
+					expect(res.body.room).to.have.property('description', randomString);
+					expect(res.body.room).to.have.property('t', 'p');
+					expect(res.body.room).to.have.property('featured', true);
+					expect(res.body.room).to.have.property('ro', true);
+					expect(res.body.room).to.have.property('default', true);
+					expect(res.body.room).to.have.property('favorite', true);
+					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
 		});

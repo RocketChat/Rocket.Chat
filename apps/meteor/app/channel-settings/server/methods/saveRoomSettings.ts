@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import type { IRoom, IRoomWithRetentionPolicy, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -24,29 +24,29 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 type RoomSettings = {
 	roomAvatar: string;
-	featured: unknown;
+	featured: boolean;
 	roomName: string | undefined;
-	roomTopic: unknown;
-	roomAnnouncement: unknown;
-	roomCustomFields: unknown;
-	roomDescription: unknown;
-	roomType: unknown;
+	roomTopic: string;
+	roomAnnouncement: string;
+	roomCustomFields: Record<string, any>;
+	roomDescription: string;
+	roomType: IRoom['t'];
 	readOnly: boolean;
-	reactWhenReadOnly: unknown;
-	systemMessages: unknown;
-	default: unknown;
-	joinCode: unknown;
-	streamingOptions: unknown;
-	retentionEnabled: unknown;
-	retentionMaxAge: unknown;
-	retentionExcludePinned: unknown;
-	retentionFilesOnly: unknown;
-	retentionIgnoreThreads: unknown;
-	retentionOverrideGlobal: unknown;
+	reactWhenReadOnly: boolean;
+	systemMessages: MessageTypesValues[];
+	default: boolean;
+	joinCode: string;
+	streamingOptions: NonNullable<IRoom['streamingOptions']>;
+	retentionEnabled: boolean;
+	retentionMaxAge: number;
+	retentionExcludePinned: boolean;
+	retentionFilesOnly: boolean;
+	retentionIgnoreThreads: boolean;
+	retentionOverrideGlobal: boolean;
 	encrypted: boolean;
 	favorite: {
-		favorite: unknown;
-		defaultValue: unknown;
+		favorite: boolean;
+		defaultValue: boolean;
 	};
 };
 
@@ -100,7 +100,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
+			if (!(await roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -224,33 +224,33 @@ const settingSavers: RoomSettingsSavers = {
 			});
 		}
 	},
-	roomTopic({ value, room, rid, user }) {
+	async roomTopic({ value, room, rid, user }) {
 		if (!value && !room.topic) {
 			return;
 		}
 		if (value !== room.topic) {
-			saveRoomTopic(rid, value, user);
+			await saveRoomTopic(rid, value, user);
 		}
 	},
-	roomAnnouncement({ value, room, rid, user }) {
+	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
 		}
 		if (value !== room.announcement) {
-			saveRoomAnnouncement(rid, value, user);
+			await saveRoomAnnouncement(rid, value, user);
 		}
 	},
-	roomCustomFields({ value, room, rid }) {
-		if (value !== (room as { customFields?: unknown }).customFields) {
-			saveRoomCustomFields(rid, value);
+	async roomCustomFields({ value, room, rid }) {
+		if (value !== room.customFields) {
+			await saveRoomCustomFields(rid, value);
 		}
 	},
-	roomDescription({ value, room, rid, user }) {
+	async roomDescription({ value, room, rid, user }) {
 		if (!value && !room.description) {
 			return;
 		}
 		if (value !== room.description) {
-			saveRoomDescription(rid, value, user);
+			await saveRoomDescription(rid, value, user);
 		}
 	},
 	async roomType({ value, room, rid, user }) {
@@ -267,56 +267,56 @@ const settingSavers: RoomSettingsSavers = {
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
-	streamingOptions({ value, rid }) {
-		saveStreamingOptions(rid, value);
+	async streamingOptions({ value, rid }) {
+		await saveStreamingOptions(rid, value);
 	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
 			await saveRoomReadOnly(rid, value, user);
 		}
 	},
-	reactWhenReadOnly({ value, room, rid, user }) {
+	async reactWhenReadOnly({ value, room, rid, user }) {
 		if (value !== room.reactWhenReadOnly) {
-			saveReactWhenReadOnly(rid, value, user);
+			await saveReactWhenReadOnly(rid, value, user);
 		}
 	},
-	systemMessages({ value, room, rid }) {
+	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
-			saveRoomSystemMessages(rid, value);
+			await saveRoomSystemMessages(rid, value);
 		}
 	},
-	joinCode({ value, rid }) {
-		Rooms.setJoinCodeById(rid, String(value));
+	async joinCode({ value, rid }) {
+		await Rooms.setJoinCodeById(rid, String(value));
 	},
-	default({ value, rid }) {
-		Rooms.saveDefaultById(rid, value);
+	async default({ value, rid }) {
+		await Rooms.saveDefaultById(rid, value);
 	},
-	featured({ value, rid }) {
-		Rooms.saveFeaturedById(rid, value);
+	async featured({ value, rid }) {
+		await Rooms.saveFeaturedById(rid, value);
 	},
-	retentionEnabled({ value, rid }) {
-		Rooms.saveRetentionEnabledById(rid, value);
+	async retentionEnabled({ value, rid }) {
+		await Rooms.saveRetentionEnabledById(rid, value);
 	},
-	retentionMaxAge({ value, rid }) {
-		Rooms.saveRetentionMaxAgeById(rid, value);
+	async retentionMaxAge({ value, rid }) {
+		await Rooms.saveRetentionMaxAgeById(rid, value);
 	},
-	retentionExcludePinned({ value, rid }) {
-		Rooms.saveRetentionExcludePinnedById(rid, value);
+	async retentionExcludePinned({ value, rid }) {
+		await Rooms.saveRetentionExcludePinnedById(rid, value);
 	},
-	retentionFilesOnly({ value, rid }) {
-		Rooms.saveRetentionFilesOnlyById(rid, value);
+	async retentionFilesOnly({ value, rid }) {
+		await Rooms.saveRetentionFilesOnlyById(rid, value);
 	},
-	retentionIgnoreThreads({ value, rid }) {
-		Rooms.saveRetentionIgnoreThreadsById(rid, value);
+	async retentionIgnoreThreads({ value, rid }) {
+		await Rooms.saveRetentionIgnoreThreadsById(rid, value);
 	},
-	retentionOverrideGlobal({ value, rid }) {
-		Rooms.saveRetentionOverrideGlobalById(rid, value);
+	async retentionOverrideGlobal({ value, rid }) {
+		await Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, room, rid, user }) {
-		void saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
+	async encrypted({ value, room, rid, user }) {
+		await saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
-	favorite({ value, rid }) {
-		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
+	async favorite({ value, rid }) {
+		await Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
@@ -387,20 +387,24 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	await saver?.(params);
 }
 
-async function saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
-async function saveRoomSettings<RoomSettingName extends keyof RoomSettings>(
+export async function saveRoomSettings(
+	userId: IUser['_id'],
+	rid: IRoom['_id'],
+	settings: Partial<RoomSettings>,
+): Promise<{ result: true; rid: IRoom['_id'] }>;
+export async function saveRoomSettings<RoomSettingName extends keyof RoomSettings>(
+	userId: IUser['_id'],
 	rid: IRoom['_id'],
 	setting: RoomSettingName,
 	value: RoomSettings[RoomSettingName],
 ): Promise<{ result: true; rid: IRoom['_id'] }>;
-async function saveRoomSettings(
+export async function saveRoomSettings(
+	userId: IUser['_id'],
 	rid: IRoom['_id'],
 	settings: Partial<RoomSettings> | keyof RoomSettings,
 	value?: RoomSettings[keyof RoomSettings],
 ): Promise<{ result: true; rid: IRoom['_id'] }> {
-	const uid = Meteor.userId();
-
-	if (!uid) {
+	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.saveRoomName',
 		});
@@ -423,7 +427,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	const room = Rooms.findOneById(rid) as IRoom | undefined;
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -431,7 +435,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	if (!(await hasPermissionAsync(uid, 'edit-room', rid))) {
+	if (!(await hasPermissionAsync(userId, 'edit-room', rid))) {
 		if (!(Object.keys(settings).includes('encrypted') && room.t === 'd')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
 				method: 'saveRoomSettings',
@@ -448,7 +452,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	const user = Meteor.user() as (IUser & Required<Pick<IUser, 'username' | 'name'>>) | null;
+	const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'saveRoomSettings',
@@ -458,7 +462,7 @@ async function saveRoomSettings(
 	// validations
 	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await validate(setting, {
-			userId: uid,
+			userId,
 			value: settings[setting],
 			room,
 			rid,
@@ -475,8 +479,8 @@ async function saveRoomSettings(
 	// saving data
 	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
-			userId: uid,
-			user,
+			userId,
+			user: user as IUser & Required<Pick<IUser, 'username' | 'name'>>,
 			value: settings[setting],
 			room,
 			rid,
@@ -490,5 +494,14 @@ async function saveRoomSettings(
 }
 
 Meteor.methods<ServerMethods>({
-	saveRoomSettings,
+	saveRoomSettings: (...args) => {
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				function: 'RocketChat.saveRoomName',
+			});
+		}
+
+		return saveRoomSettings(userId, ...args);
+	},
 });

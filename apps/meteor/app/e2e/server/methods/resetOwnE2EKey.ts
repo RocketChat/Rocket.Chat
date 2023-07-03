@@ -7,7 +7,7 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'e2e.resetOwnE2EKey'(): boolean;
+		'e2e.resetOwnE2EKey'(): Promise<boolean>;
 	}
 }
 

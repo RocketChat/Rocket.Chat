@@ -1,7 +1,13 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
-import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import {
+	useTranslation,
+	useSetting,
+	usePermission,
+	useEndpoint,
+	useToastMessageDispatch,
+	usePermissionWithScopedRoles,
+} from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -15,7 +21,7 @@ type CreateTeamModalInputs = {
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
-	members?: Exclude<IUser['username'], undefined>[];
+	members?: string[];
 };
 
 const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => {
@@ -26,6 +32,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -123,10 +130,10 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	};
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
 			<Modal.Content mbe='x2'>
 				<FieldGroup>
@@ -203,7 +210,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								control={control}
 								name='encrypted'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch disabled={!canSetReadOnly || !canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
 								)}
 							/>
 						</Box>
@@ -233,21 +240,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Controller
 							control={control}
 							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple
-									value={value}
-									onChange={(member, action): void => {
-										if (!action && value) {
-											if (value.includes(member)) {
-												return;
-											}
-											return onChange([...value, member]);
-										}
-
-										onChange(value?.filter((current) => current !== member));
-									}}
-								/>
-							)}
+							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
 						/>
 					</Field>
 				</FieldGroup>
@@ -255,7 +248,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} onClick={handleSubmit(handleCreateTeam)} primary>
+					<Button disabled={!isButtonEnabled} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

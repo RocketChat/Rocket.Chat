@@ -13,9 +13,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	joinDefaultChannels(silenced) {
+	async joinDefaultChannels(silenced) {
 		check(silenced, Match.Optional(Boolean));
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
+		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
 		await EmojiCustom.removeById(emojiID);
 		void api.broadcast('emoji.deleteCustom', emoji);
 

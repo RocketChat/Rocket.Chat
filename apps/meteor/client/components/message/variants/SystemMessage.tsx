@@ -17,10 +17,10 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { useUserData } from '../../../hooks/useUserData';
-import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../lib/presence';
 import {
 	useIsSelecting,
@@ -111,7 +111,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} file={message.file} />
+						<Attachments attachments={message.attachments} />
 					</MessageSystemBlock>
 				)}
 				{message.actionLinks?.length && (

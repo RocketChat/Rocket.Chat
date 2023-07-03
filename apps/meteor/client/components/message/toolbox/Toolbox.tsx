@@ -8,6 +8,9 @@ import React, { memo, useMemo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
@@ -52,6 +55,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 
 	const chat = useChat();
+	const { addRecentEmoji, emojiListByCategory } = useEmojiPickerData();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const messageActions = await MessageAction.getButtons(
@@ -78,8 +82,19 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return null;
 	}
 
+	const handleSetReaction = (emoji: string) => {
+		sdk.call('setReaction', `:${emoji}:`, message._id);
+		addRecentEmoji(emoji);
+	};
+
+	const recentList = emojiListByCategory.filter(({ key }) => key === 'recent')[0].emojis.list;
+
 	return (
 		<MessageToolbox>
+			{recentList.length > 0 &&
+				recentList.slice(0, 3).map(({ emoji, image }) => {
+					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
+				})}
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}

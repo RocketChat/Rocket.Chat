@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Header } from '@rocket.chat/ui-client';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbox } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
@@ -39,12 +39,12 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 	return (
 		<Header>
 			{slots?.start}
-			<Header.Avatar>
+			<HeaderAvatar>
 				<RoomAvatar room={room} />
-			</Header.Avatar>
+			</HeaderAvatar>
 			{slots?.preContent}
-			<Header.Content>
-				<Header.Content.Row>
+			<HeaderContent>
+				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
 					{room.prid && <ParentRoomWithData room={room} />}
@@ -53,21 +53,21 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 					<Encrypted room={room} />
 					<Translate room={room} />
 					{slots?.insideContent}
-				</Header.Content.Row>
+				</HeaderContentRow>
 				{topic && (
-					<Header.Content.Row>
-						<Header.Subtitle is='h2'>
+					<HeaderContentRow>
+						<HeaderSubtitle is='h2'>
 							<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-						</Header.Subtitle>
-					</Header.Content.Row>
+						</HeaderSubtitle>
+					</HeaderContentRow>
 				)}
-			</Header.Content>
+			</HeaderContent>
 			{slots?.posContent}
-			<Header.ToolBox aria-label={t('Toolbox_room_actions')}>
+			<HeaderToolbox aria-label={t('Toolbox_room_actions')}>
 				{slots?.toolbox?.pre}
 				{slots?.toolbox?.content || <ToolBox room={room} />}
 				{slots?.toolbox?.pos}
-			</Header.ToolBox>
+			</HeaderToolbox>
 			{slots?.end}
 		</Header>
 	);

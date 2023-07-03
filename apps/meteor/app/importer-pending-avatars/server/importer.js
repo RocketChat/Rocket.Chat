@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
-import { Users } from '../../models/server';
+import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 
 export class PendingAvatarImporter extends Base {
 	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const users = Users.findAllUsersWithPendingAvatar();
-		const fileCount = users.count();
+		const users = await Users.findAllUsersWithPendingAvatar();
+		const fileCount = await users.count();
 
 		if (fileCount === 0) {
 			await super.updateProgress(ProgressStep.DONE);
@@ -23,7 +23,7 @@ export class PendingAvatarImporter extends Base {
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
-		Meteor.defer(() => {
+		setImmediate(() => {
 			this.startImport(fileData);
 		});
 
@@ -31,9 +31,9 @@ export class PendingAvatarImporter extends Base {
 	}
 
 	async startImport() {
-		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
+		const pendingFileUserList = await Users.findAllUsersWithPendingAvatar();
 		try {
-			pendingFileUserList.forEach((user) => {
+			for await (const user of pendingFileUserList) {
 				try {
 					const { _pendingAvatarUrl: url, name, _id } = user;
 
@@ -42,21 +42,19 @@ export class PendingAvatarImporter extends Base {
 							return;
 						}
 
-						Meteor.runAsUser(_id, () => {
-							try {
-								Meteor.call('setAvatarFromService', url, undefined, 'url');
-								Users.update({ _id }, { $unset: { _pendingAvatarUrl: '' } });
-							} catch (error) {
-								this.logger.warn(`Failed to set ${name}'s avatar from url ${url}`);
-							}
-						});
+						try {
+							await setAvatarFromServiceWithValidation(_id, url, undefined, 'url');
+							await Users.updateOne({ _id }, { $unset: { _pendingAvatarUrl: '' } });
+						} catch (error) {
+							this.logger.warn(`Failed to set ${name}'s avatar from url ${url}`);
+						}
 					} finally {
-						Promise.await(this.addCountCompleted(1));
+						await this.addCountCompleted(1);
 					}
 				} catch (error) {
 					this.logger.error(error);
 				}
-			});
+			}
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {

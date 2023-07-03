@@ -1,14 +1,49 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	Document,
+	IndexDescription,
+	DeleteResult,
+	UpdateFilter,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);
+	}
+
+	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredFindOne(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredUpdate(
+		_query: Filter<ILivechatDepartment>,
+		_update: UpdateFilter<ILivechatDepartment>,
+		_options: FindOptions<ILivechatDepartment>,
+	): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredRemove(_query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	removeParentAndAncestorById(_id: string): Promise<Document | UpdateResult> {
+		throw new Error('Method not implemented.');
 	}
 
 	protected modelIndexes(): Array<IndexDescription> {
@@ -93,6 +128,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = {
+			enabled: true,
+			businessHourId: { $exists: false },
+		};
+		return this.find(query, options);
+	}
+
 	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
 		businessHourIds: string[],
 		departmentIds: string[],
@@ -161,12 +204,27 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
-	async createOrUpdateDepartment(_id: string, data: ILivechatDepartment): Promise<ILivechatDepartment> {
-		const current = await this.findOneById(_id);
+	async createOrUpdateDepartment(
+		_id: string | null,
+		data: {
+			enabled: boolean;
+			name: string;
+			description?: string;
+			showOnRegistration: boolean;
+			email: string;
+			showOnOfflineForm: boolean;
+			requestTagBeforeClosingChat?: boolean;
+			chatClosingTags?: string[];
+			fallbackForwardDepartment?: string;
+			departmentsAllowedToForward?: string[];
+			type?: string;
+		},
+	): Promise<ILivechatDepartment> {
+		const current = _id ? await this.findOneById(_id) : null;
 
 		const record = {
 			...data,
-		};
+		} as ILivechatDepartment;
 
 		if (_id) {
 			await this.updateOne({ _id }, { $set: record });
@@ -246,10 +304,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, projection && { projection });
 	}
 
-	findEnabledWithAgentsAndBusinessUnit(
+	async findEnabledWithAgentsAndBusinessUnit(
 		_: any,
 		projection: FindOptions<ILivechatDepartment>['projection'] = {},
-	): FindCursor<ILivechatDepartment> {
+	): Promise<FindCursor<ILivechatDepartment>> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
@@ -294,6 +352,47 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean> {
+		const aggregation = [
+			{
+				$match: {
+					enabled: true,
+					_id: departmentId,
+				},
+			},
+			{
+				$lookup: {
+					from: LivechatUnitMonitors.getCollectionName(),
+					localField: 'parentId',
+					foreignField: 'unitId',
+					as: 'monitors',
+					pipeline: [
+						{
+							$match: {
+								monitorId,
+							},
+						},
+					],
+				},
+			},
+			{
+				$match: {
+					monitors: {
+						$exists: true,
+						$ne: [],
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregation).hasNext();
 	}
 }
 
