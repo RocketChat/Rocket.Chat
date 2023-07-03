@@ -109,6 +109,9 @@ const RouterContextMock = ({ children, navigate, currentPath }: RouterContextMoc
 								currentPath.current = buildRoutePath(history.current.stack[history.current.index]);
 							}
 						}),
+					defineRoutes: () => () => undefined,
+					getRoutes: () => [],
+					subscribeToRoutesChange: () => () => undefined,
 				};
 			}, [currentPath, navigate])}
 		>

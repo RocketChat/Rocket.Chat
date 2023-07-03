@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { createContext } from 'react';
 
 export interface IRouterPaths {
@@ -39,6 +40,18 @@ export type To =
 
 type RelativeRoutingType = 'route' | 'path';
 
+export type RouteObject =
+	| {
+			path: RouterPathPattern;
+			id: RouteName;
+			element: ReactNode;
+	  }
+	| {
+			path: '*';
+			id: 'not-found';
+			element: ReactNode;
+	  };
+
 export type RouterContextValue = {
 	subscribeToRouteChange(onRouteChange: () => void): () => void;
 	getLocationPathname(): LocationPathname;
@@ -49,6 +62,9 @@ export type RouterContextValue = {
 	buildRoutePath(to: To): LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
+	defineRoutes(routes: RouteObject[]): () => void;
+	getRoutes(): RouteObject[];
+	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -72,4 +88,9 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	navigate: () => undefined,
+	defineRoutes: () => () => undefined,
+	getRoutes: () => {
+		throw new Error('not implemented');
+	},
+	subscribeToRoutesChange: () => () => undefined,
 });

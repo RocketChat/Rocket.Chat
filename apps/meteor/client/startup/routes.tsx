@@ -1,5 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Meteor } from 'meteor/meteor';
 import React, { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
@@ -25,8 +23,6 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-
-FlowRouter.wait();
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -229,12 +225,9 @@ router.defineRoutes([
 		id: 'oauth/error',
 		element: appLayout.wrap(<OAuthErrorPage />),
 	},
+	{
+		path: '*',
+		id: 'not-found',
+		element: <NotFoundPage />,
+	},
 ]);
-
-FlowRouter.notFound = {
-	action: () => appLayout.renderStandalone(<NotFoundPage />),
-};
-
-Meteor.startup(() => {
-	FlowRouter.initialize();
-});

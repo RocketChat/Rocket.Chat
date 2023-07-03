@@ -181,10 +181,17 @@ declare module 'meteor/kadira:flow-router' {
 		_routesMap: Record<string, Route>;
 
 		_updateCallbacks(): void;
+
+		_current: Current;
 	}
 
 	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
+		_page: {
+			start(): void;
+			stop(): void;
+			show(path: string): void;
+		};
 	};
 }

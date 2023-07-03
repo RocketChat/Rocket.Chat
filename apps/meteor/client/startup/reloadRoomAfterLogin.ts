@@ -21,7 +21,8 @@ Meteor.startup(() => {
 			}
 			const roomType = roomCoordinator.getRouteNameIdentifier(routeName);
 			if (roomType) {
-				router.navigate(0);
+				router; // TODO: fix this
+				// router.navigate(0);
 			}
 		}
 	});

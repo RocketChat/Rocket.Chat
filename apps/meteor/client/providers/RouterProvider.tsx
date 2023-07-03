@@ -5,17 +5,19 @@ import type {
 	RouteParameters,
 	SearchParameters,
 	To,
-	RouterPathPattern,
+	RouteObject,
 } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 import React from 'react';
 
 import { appLayout } from '../lib/appLayout';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
+
+FlowRouter.wait();
 
 const subscribers = new Set<() => void>();
 
@@ -114,35 +116,36 @@ const navigate = (
 	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
-type RouteObject = {
-	path: RouterPathPattern;
-	id: RouteName;
-	element: ReactNode;
-};
-
-interface IRouter extends RouterContextValue {
-	defineRoutes(routes: RouteObject[]): () => void;
-	getRoutes(): RouteObject[];
-	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
-}
-
 const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
 
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
-		FlowRouter.reload();
+		const { path } = FlowRouter.current();
+		FlowRouter._current.path = '';
+		FlowRouter._page.show(path);
+		return;
 	}
+
+	FlowRouter.initialize();
 };
 
 const defineRoutes = (routes: RouteObject[]) => {
-	const flowRoutes = routes.map((route) =>
-		FlowRouter.route(route.path, {
+	const flowRoutes = routes.map((route) => {
+		if (route.path === '*') {
+			FlowRouter.notFound = {
+				action: () => appLayout.renderStandalone(<>{route.element}</>),
+			};
+
+			return FlowRouter.notFound;
+		}
+
+		return FlowRouter.route(route.path, {
 			name: route.id,
 			action: () => appLayout.renderStandalone(<>{route.element}</>),
-		}),
-	);
+		});
+	});
 
 	routes.push(...routes);
 	const index = routes.length - 1;
@@ -153,8 +156,12 @@ const defineRoutes = (routes: RouteObject[]) => {
 	return () => {
 		flowRoutes.forEach((flowRoute) => {
 			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
-			if (flowRoute.name) {
+			if ('name' in flowRoute && flowRoute.name) {
 				delete FlowRouter._routesMap[flowRoute.name];
+			} else {
+				FlowRouter.notFound = {
+					action: () => appLayout.renderStandalone(<></>),
+				};
 			}
 		});
 
@@ -180,7 +187,7 @@ const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
 };
 
 /** @deprecated */
-export const router: IRouter = {
+export const router: RouterContextValue = {
 	subscribeToRouteChange,
 	getLocationPathname,
 	getLocationSearch,
