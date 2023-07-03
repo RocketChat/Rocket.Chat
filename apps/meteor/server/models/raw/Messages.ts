@@ -1649,4 +1649,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 		return this.updateOne(query, update);
 	}
+
+	findVisitorLastMessageByRoomId(rid: string): Promise<IMessage | null> {
+		const query = {
+			rid,
+			token: { $exists: true },
+		};
+
+		return this.findOne(query, { sort: { ts: -1 } });
+	}
 }
