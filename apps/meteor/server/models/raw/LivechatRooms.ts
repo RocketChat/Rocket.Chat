@@ -2044,13 +2044,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					'metrics.response.ft': analyticsData.firstResponseTime,
 				}),
 			},
-			$inc: {
-				...(analyticsData && {
+			...(analyticsData && {
+				$inc: {
 					'metrics.response.total': 1,
 					'metrics.response.tt': analyticsData.responseTime as number,
 					'metrics.reaction.tt': analyticsData.reactionTime as number,
-				}),
-			},
+				},
+			}),
 		};
 
 		// livechat analytics : update last message timestamps
