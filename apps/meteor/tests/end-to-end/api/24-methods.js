@@ -1,7 +1,10 @@
 import { expect } from 'chai';
 
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
+import { createUser, deleteUser } from '../../data/users.helper.js';
+import { createRoom } from '../../data/rooms.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -2281,6 +2284,115 @@ describe('Meteor.methods', function () {
 					const result = JSON.parse(res.body.message);
 					expect(result.result.ro).to.equal(false);
 					done();
+				});
+		});
+	});
+
+	describe('[@addUsersToRoom]', () => {
+		let guestUser;
+		let user;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+			user = await createUser();
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.channel;
+		});
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(guestUser);
+			user = undefined;
+		});
+
+		it('should fail if not logged in', (done) => {
+			request
+				.post(methodCall('addUsersToRoom'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should add a single user to a room', (done) => {
+			request
+				.post(methodCall('addUsersToRoom'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: room._id, users: [user.username] }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(2);
+						})
+						.end(done);
+				})
+				.catch(done);
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(methodCall('addUsersToRoom'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: room._id, users: [guestUser.username] }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
 				});
 		});
 	});

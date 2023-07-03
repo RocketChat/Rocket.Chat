@@ -145,7 +145,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
@@ -187,7 +187,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);

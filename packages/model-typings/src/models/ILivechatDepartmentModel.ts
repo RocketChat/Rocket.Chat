@@ -23,12 +23,28 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		options: FindOptions<ILivechatDepartment>,
 	): FindCursor<ILivechatDepartment>;
 
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+
 	addBusinessHourToDepartmentsByIds(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
 	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult>;
-	createOrUpdateDepartment(_id: string, data: ILivechatDepartment): Promise<ILivechatDepartment>;
+	createOrUpdateDepartment(
+		_id: string | null,
+		data: {
+			enabled: boolean;
+			name: string;
+			description?: string;
+			showOnRegistration: boolean;
+			email: string;
+			showOnOfflineForm: boolean;
+			requestTagBeforeClosingChat?: boolean;
+			chatClosingTags?: string[];
+			fallbackForwardDepartment?: string;
+			departmentsAllowedToForward?: string[];
+		},
+	): Promise<ILivechatDepartment>;
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void>;
@@ -43,4 +59,5 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	findActiveByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
 }

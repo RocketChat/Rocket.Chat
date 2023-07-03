@@ -80,7 +80,7 @@ Meteor.methods<ServerMethods>({
 						$set: {
 							scriptCompiled,
 						},
-						$unset: { scriptError: 1 },
+						$unset: { scriptError: 1 as const },
 					},
 				);
 			} catch (e) {
@@ -96,7 +96,7 @@ Meteor.methods<ServerMethods>({
 							scriptError,
 						},
 						$unset: {
-							scriptCompiled: 1,
+							scriptCompiled: 1 as const,
 						},
 					},
 				);
@@ -159,6 +159,7 @@ Meteor.methods<ServerMethods>({
 					channel: channels,
 					script: integration.script,
 					scriptEnabled: integration.scriptEnabled,
+					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},

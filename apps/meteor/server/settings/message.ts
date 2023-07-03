@@ -200,6 +200,7 @@ export const createMessageSettings = () =>
 		await this.add('Message_ErasureType', 'Delete', {
 			type: 'select',
 			public: true,
+			i18nDescription: 'Message_ErasureType_Description',
 			values: [
 				{
 					key: 'Keep',

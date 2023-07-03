@@ -285,7 +285,8 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = await Users.findOneById(userId);
 
-		const openChats = LivechatRooms.findOpenByAgent(userId);
+		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {});
+		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 		const promises = [];
 		await openChats.forEach((room) => {
 			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
@@ -532,6 +533,9 @@ export const Livechat = {
 		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
 			await Users.setOperator(user._id, true);
 			await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
+
+			callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
 			return user;
 		}
 
@@ -570,14 +574,10 @@ export const Livechat = {
 		const { _id } = user;
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			await Users.setOperator(_id, false);
-			await Users.removeLivechatData(_id);
-			await this.setUserStatusLivechat(_id, 'not-available');
-
 			await Promise.all([
+				Users.removeAgent(_id),
 				LivechatDepartmentAgents.removeByAgentId(_id),
 				LivechatVisitors.removeContactManagerByUsername(username),
-				Users.unsetExtension(_id),
 			]);
 			return true;
 		}
@@ -635,7 +635,8 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		const cursor = LivechatRooms.findByVisitorToken(token);
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
 			await FileUpload.removeFilesByRoomId(room._id);
 			await Messages.removeByRoomId(room._id);
