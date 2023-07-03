@@ -68,4 +68,5 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 			invalidDepartments: string[];
 		}[]
 	>;
+	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
 }
