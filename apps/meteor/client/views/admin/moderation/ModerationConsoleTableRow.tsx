@@ -6,6 +6,7 @@ import { GenericTableCell, GenericTableRow } from '../../../components/GenericTa
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
+import { useIsUserDeleted } from './hooks/useIsUserDeleted';
 
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
@@ -15,6 +16,8 @@ export type ModerationConsoleRowProps = {
 
 const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
 	const { userId: _id, rooms, name, count, message, username, ts } = report;
+
+	const isUserDeleted = useIsUserDeleted(_id);
 
 	const roomNames = rooms.map((room) => {
 		if (room.t === 'd') {
@@ -63,7 +66,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
 			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
-				<ModerationConsoleActions report={report} onClick={onClick} />
+				<ModerationConsoleActions report={report} onClick={onClick} isUserDeleted={isUserDeleted} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

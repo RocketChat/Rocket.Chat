@@ -4,7 +4,7 @@ import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const useResetAvatarAction = (userId: string) => {
+const useResetAvatarAction = (userId: string, isUserDeleted?: boolean) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -45,6 +45,7 @@ const useResetAvatarAction = (userId: string) => {
 	return {
 		label: { label: t('Moderation_Reset_user_avatar'), icon: 'reload' },
 		action: () => confirmResetAvatar(),
+		disabled: !!isUserDeleted,
 	};
 };
 

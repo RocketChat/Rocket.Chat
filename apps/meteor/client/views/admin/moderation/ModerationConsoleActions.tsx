@@ -1,14 +1,20 @@
+import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
 import { Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
+type MCRowActions = {
+	report: IModerationAudit;
+	onClick: (id: IUser['_id']) => void;
+	isUserDeleted: boolean;
+};
+
+const ModerationConsoleActions = ({ report, onClick, isUserDeleted }: MCRowActions): JSX.Element => {
 	const t = useTranslation();
 	const { userId: uid } = report;
 
@@ -25,8 +31,8 @@ const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRow
 					},
 					approve: useDismissUserAction(uid),
 					deleteAll: useDeleteMessagesAction(uid),
-					deactiveUser: useDeactivateUserAction(uid),
-					resetAvatar: useResetAvatarAction(uid),
+					deactiveUser: useDeactivateUserAction(uid, isUserDeleted),
+					resetAvatar: useResetAvatarAction(uid, isUserDeleted),
 				}}
 				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props} />}
 			/>

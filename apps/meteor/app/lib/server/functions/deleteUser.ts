@@ -9,6 +9,7 @@ import {
 	Subscriptions,
 	Users,
 	LivechatUnitMonitors,
+	ModerationReports,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
@@ -25,7 +26,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
-	if (!user) {
+	const actionUserId = Meteor.userId();
+
+	if (!user || !actionUserId) {
 		return;
 	}
 
@@ -54,6 +57,13 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				}
 
 				await Messages.removeByUserId(userId);
+				// hide reports against deleted user messages
+				await ModerationReports.hideReportsByUserId(
+					userId,
+					actionUserId,
+					actionUserId === userId ? 'user deleted own account' : 'user account deleted',
+					'DELETE_USER',
+				);
 				break;
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');

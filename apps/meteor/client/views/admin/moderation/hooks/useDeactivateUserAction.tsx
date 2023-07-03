@@ -4,7 +4,7 @@ import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const useDeactivateUserAction = (userId: string) => {
+const useDeactivateUserAction = (userId: string, isUserDeleted?: boolean) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -59,6 +59,7 @@ const useDeactivateUserAction = (userId: string) => {
 	return {
 		label: { label: t('Moderation_Deactivate_User'), icon: 'ban' },
 		action: () => confirmDeactivateUser(),
+		disabled: !!isUserDeleted,
 	};
 };
 
