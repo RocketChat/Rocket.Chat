@@ -7,6 +7,7 @@ import UpsellModal from '../../../../../client/components/UpsellModal';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
 const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'channels' =>
@@ -23,15 +24,15 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const { tab } = routeParams ?? {};
 
 	const { data } = useIsEnterprise();
-	const setModal = useSetModal();
+	const hasEngagementDashboard = useHasLicenseModule('videoconference-enterprise');
+	const isUpsell = !data?.isEnterprise || !hasEngagementDashboard;
 
+	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const handleModalClose = useCallback(() => {
 		setModal(null);
 		setIsModalOpen(false);
 	}, [setModal]);
-
-	const isUpsell = !data?.isEnterprise;
 
 	useEffect(() => {
 		if (routeName !== 'engagement-dashboard') {
@@ -83,7 +84,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <PageSkeleton />;
 	}
 
-	if (!canViewEngagementDashboard) {
+	if (!canViewEngagementDashboard || !hasEngagementDashboard) {
 		return <NotAuthorizedPage />;
 	}
 

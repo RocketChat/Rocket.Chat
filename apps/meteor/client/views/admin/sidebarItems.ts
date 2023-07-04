@@ -20,6 +20,12 @@ export const {
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
+		href: 'engagement-dashboard',
+		i18nLabel: 'Engagement',
+		icon: 'file-keynote',
+		permissionGranted: (): boolean => hasPermission('view-engagement-dashboard'),
+	},
+	{
 		href: 'moderation-console',
 		i18nLabel: 'Moderation',
 		icon: 'shield-alt',
@@ -61,6 +67,11 @@ export const {
 		i18nLabel: 'Permissions',
 		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		href: 'device-management',
+		i18nLabel: 'Device_Management',
+		icon: 'mobile',
 	},
 	{
 		href: 'admin-email-inboxes',
@@ -123,15 +134,5 @@ export const {
 		icon: 'customize',
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
-	},
-	{
-		href: 'engagement-dashboard',
-		i18nLabel: 'Engagement Dashboard',
-		icon: 'file-keynote',
-	},
-	{
-		href: 'device-management',
-		i18nLabel: 'Device_Management',
-		icon: 'mobile',
 	},
 ]);
