@@ -4,11 +4,12 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
+import { businessHourLogger } from '../lib/logger';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
-	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
+	const currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss');
 
 	return businessHours
 		.filter(
@@ -17,9 +18,9 @@ export const filterBusinessHoursThatMustBeOpened = async (
 				businessHour.workHours
 					.filter((hour) => hour.open)
 					.some((hour) => {
-						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}`, 'dddd:HH:mm');
-						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}`, 'dddd:HH:mm');
-						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
+						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}:00`, 'dddd:HH:mm:ss');
+						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}:00`, 'dddd:HH:mm:ss');
+						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(localTimeFinish);
 					}),
 		)
 		.map((businessHour) => ({
@@ -52,8 +53,10 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 		},
 	});
 	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
+	businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
+	businessHourLogger.debug('Done opening default business hours');
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {

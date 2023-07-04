@@ -96,7 +96,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		if (this.isGroupChat(room)) {
 			return {
-				title: this.roomName(room, userId),
+				title: await this.roomName(room, userId),
 				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
 			};
 		}
@@ -110,4 +110,4 @@ roomCoordinator.add(DirectMessageRoomType, {
 	includeInDashboard() {
 		return true;
 	},
-} as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
+} satisfies AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);

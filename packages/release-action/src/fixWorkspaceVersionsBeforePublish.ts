@@ -13,6 +13,8 @@ import path from 'node:path';
 
 import { getExecOutput } from '@actions/exec';
 
+import { readPackageJson } from './utils';
+
 const DEPENDENCY_TYPES = ['dependencies', 'devDependencies', 'peerDependencies'];
 
 export async function fixWorkspaceVersionsBeforePublish() {
@@ -26,15 +28,13 @@ export async function fixWorkspaceVersionsBeforePublish() {
 	// Get the version of each workspace package.
 	const workspaceVersions = new Map();
 	for await (const workspace of workspaces) {
-		const packageJsonPath = path.join(workspace.location, 'package.json');
-		const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+		const packageJson = await readPackageJson(workspace.location);
 		workspaceVersions.set(workspace.name, packageJson.version);
 	}
 
 	// Replace any `workspace:^` version ranges with the actual version.
 	for await (const workspace of workspaces) {
-		const packageJsonPath = path.join(workspace.location, 'package.json');
-		const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+		const packageJson = await readPackageJson(workspace.location);
 
 		for (const dependencyType of DEPENDENCY_TYPES) {
 			const dependencies = Object.keys(packageJson[dependencyType] ?? {});
@@ -55,6 +55,6 @@ export async function fixWorkspaceVersionsBeforePublish() {
 			}
 		}
 
-		await fs.writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+		await fs.writeFile(path.join(workspace.location, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 	}
 }
