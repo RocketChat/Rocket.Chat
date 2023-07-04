@@ -2815,19 +2815,17 @@ export class UsersRaw extends BaseRaw {
 	// here
 	getActiveLocalUserCount() {
 		return Promise.all([
+			// Count all active users (fast based on index)
 			this.col.countDocuments({
 				active: true,
-				type: {
-					$nin: ['app'],
-				},
-				roles: { $ne: ['guest'] },
 			}),
-			this.col.countDocuments({ federated: true, active: true }),
+			// Count all active that are guests, apps or federated
+			// Fast based on indexes, usually based on guest index as is usually small
 			this.col.countDocuments({
-				isRemote: true,
 				active: true,
-				roles: { $ne: ['guest'] },
+				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
 			}),
+			// Get all active and remove the guests, apps, federated, etc
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
