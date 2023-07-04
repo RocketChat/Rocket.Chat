@@ -3,7 +3,7 @@ import { cloneElement } from 'preact';
 import { createClassName } from '../../helpers';
 import styles from './styles.scss';
 
-export const FormField = ({ required, label, description, error, className, style = {}, children }) => (
+export const FormField = ({ required = false, label = '', description = '', error = '', className = undefined, style = {}, children }) => (
 	<div className={createClassName(styles, 'form-field', { required, error: !!error }, [className])} style={style}>
 		<label className={createClassName(styles, 'form-field__label-wrapper')}>
 			{label ? <span className={createClassName(styles, 'form-field__label')}>{label}</span> : null}

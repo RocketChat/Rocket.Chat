@@ -150,7 +150,7 @@ const CloseChatModal = ({
 					<Field.Error>{errors.comment?.message}</Field.Error>
 				</Field>
 				<Field>
-					<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} />
+					<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} {...(department && { department: department._id })} />
 					<Field.Error>{errors.tags?.message}</Field.Error>
 				</Field>
 				{canSendTranscript && (
