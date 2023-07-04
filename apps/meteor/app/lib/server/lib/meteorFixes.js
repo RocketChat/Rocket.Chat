@@ -1,6 +1,7 @@
 import { MongoInternals } from 'meteor/mongo';
 import { Settings } from '@rocket.chat/models';
-import { throttledCounter } from '@rocket.chat/tools';
+
+import { throttledCounter } from '../../../../lib/utils/throttledCounter';
 
 const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;

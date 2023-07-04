@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import { throttle } from 'underscore';
 
 export function throttledCounter(fn: (counter: number) => unknown, wait: number) {
 	let counter = 0;
