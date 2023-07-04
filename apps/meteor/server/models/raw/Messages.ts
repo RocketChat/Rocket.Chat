@@ -1331,7 +1331,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
-	): Promise<number> {
+	): Promise<{ count: number; selectedMessageIds?: string[] }> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1359,10 +1359,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				await Rooms.decreaseMessageCountById(rid, count);
 			}
 
-			return count;
+			return { count };
 		}
 
-		const messagesToDelete = (
+		const selectedMessageIds = (
 			await this.find(query, {
 				projection: {
 					_id: 1,
@@ -1374,7 +1374,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const count = (
 			await this.deleteMany({
 				_id: {
-					$in: messagesToDelete,
+					$in: selectedMessageIds,
 				},
 			})
 		).deletedCount;
@@ -1384,7 +1384,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			await Rooms.decreaseMessageCountById(rid, count);
 		}
 
-		return count;
+		return { count, selectedMessageIds };
 	}
 
 	removeByUserId(userId: string): Promise<DeleteResult> {
@@ -1466,7 +1466,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1484,11 +1484,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findUnreadThreadMessagesByDate(
+		tmid: string,
+		userId: string,
+		after: Date,
+	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -1500,6 +1508,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
