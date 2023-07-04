@@ -46,10 +46,7 @@ export const listenSessionLogin = () => {
 			projection: { 'name': 1, 'username': 1, 'emails': 1, 'settings.preferences.receiveLoginDetectionEmail': 1 },
 		});
 
-		if (!user) {
-			return;
-		}
-		if (!user.emails?.length) {
+		if (!user?.emails?.length) {
 			return;
 		}
 
