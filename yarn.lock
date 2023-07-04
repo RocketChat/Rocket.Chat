@@ -10109,6 +10109,7 @@ __metadata:
     "@types/lodash": ^4.14.195
     "@types/lodash.debounce": ^4.0.7
     "@types/lodash.get": ^4.4.7
+    "@types/lodash.throttle": ^4
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.8
     "@types/meteor-collection-hooks": ^0.8.6
@@ -10248,6 +10249,7 @@ __metadata:
     lodash.clonedeep: ^4.5.0
     lodash.debounce: ^4.0.8
     lodash.get: ^4.4.2
+    lodash.throttle: ^4.1.1
     mailparser: ^3.4.0
     marked: ^4.2.5
     mem: ^8.1.1
