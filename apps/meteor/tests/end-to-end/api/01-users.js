@@ -1482,37 +1482,33 @@ describe('[Users]', function () {
 
 		let userCredentials;
 		before((done) => {
-			updateSetting('Accounts_Password_Policy_Enabled', true).then(() => {
-				request
-					.post(api('login'))
-					.send({
-						user: user.username,
-						password,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						userCredentials = {};
-						userCredentials['X-Auth-Token'] = res.body.data.authToken;
-						userCredentials['X-User-Id'] = res.body.data.userId;
-					})
-					.end(done);
-			});
+			request
+				.post(api('login'))
+				.send({
+					user: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
 		});
 		after((done) => {
-			updateSetting('Accounts_Password_Policy_Enabled', false).then(() => {
-				request
-					.post(api('users.delete'))
-					.set(credentials)
-					.send({
-						userId: user._id,
-					})
-					.end(done);
-				user = undefined;
-			});
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+				})
+				.end(done);
+			user = undefined;
 		});
 
-		const newPassword = `${password}@Test123`;
+		const newPassword = `${password}test`;
 		const currentPassword = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
 		const editedUsername = `basicInfo.name${+new Date()}`;
 		const editedName = `basic-info-test-name${+new Date()}`;
@@ -1771,232 +1767,214 @@ describe('[Users]', function () {
 			await updateSetting('Accounts_AllowPasswordChange', true);
 		});
 
-		it('should throw an error if the password length is less than the minimum length', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+		describe('[Password Policy]', () => {
+			before(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+			});
 
-			const expectedError = {
-				error: 'error-password-policy-not-met-minLength',
-				message: 'The password does not meet the minimum length password policy.',
-			};
+			after(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', false);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			});
 
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: '2',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
+			it('should throw an error if the password length is less than the minimum length', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-minLength',
+					message: 'The password does not meet the minimum length password policy.',
+				};
 
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '2',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-		it('should throw an error if the password length is greater than the maximum length', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
-			await updateSetting('Accounts_Password_Policy_MaxLength', 5);
-			await sleep(500);
+			it('should throw an error if the password length is greater than the maximum length', async () => {
+				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
+				await sleep(500);
 
-			const expectedError = {
-				error: 'error-password-policy-not-met-maxLength',
-				message: 'The password does not meet the maximum length password policy.',
-			};
+				const expectedError = {
+					error: 'error-password-policy-not-met-maxLength',
+					message: 'The password does not meet the maximum length password policy.',
+				};
 
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'Abc@12345678',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Abc@12345678',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
 
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-			await updateSetting('Accounts_Password_Policy_MaxLength', -1);
-		});
+				await updateSetting('Accounts_Password_Policy_MaxLength', -1);
+			});
 
-		it('should throw an error if the password contains repeating characters', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+			it('should throw an error if the password contains repeating characters', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-repeatingCharacters',
+					message: 'The password contains repeating characters which is against the password policy.',
+				};
 
-			const expectedError = {
-				error: 'error-password-policy-not-met-repeatingCharacters',
-				message: 'The password contains repeating characters which is against the password policy.',
-			};
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'A@123aaaa',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'A@123aaaa',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
+			it('should throw an error if the password does not contain at least one lowercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneLowercase',
+					message: 'The password does not contain at least one lowercase character which is against the password policy.',
+				};
 
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'PASSWORD@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-		it('should throw an error if the password does not contain at least one lowercase character', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+			it('should throw an error if the password does not contain at least one uppercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneUppercase',
+					message: 'The password does not contain at least one uppercase character which is against the password policy.',
+				};
 
-			const expectedError = {
-				error: 'error-password-policy-not-met-oneLowercase',
-				message: 'The password does not contain at least one lowercase character which is against the password policy.',
-			};
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'password@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'PASSWORD@123',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
+			it('should throw an error if the password does not contain at least one numerical character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneNumber',
+					message: 'The password does not contain at least one numerical character which is against the password policy.',
+				};
 
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password@',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-		it('should throw an error if the password does not contain at least one uppercase character', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+			it('should throw an error if the password does not contain at least one special character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneSpecial',
+					message: 'The password does not contain at least one special character which is against the password policy.',
+				};
 
-			const expectedError = {
-				error: 'error-password-policy-not-met-oneUppercase',
-				message: 'The password does not contain at least one uppercase character which is against the password policy.',
-			};
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
 
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'password@123',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
-
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
-
-		it('should throw an error if the password does not contain at least one numerical character', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
-
-			const expectedError = {
-				error: 'error-password-policy-not-met-oneNumber',
-				message: 'The password does not contain at least one numerical character which is against the password policy.',
-			};
-
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'Password@',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
-
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
-
-		it('should throw an error if the password does not contain at least one special character', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
-
-			const expectedError = {
-				error: 'error-password-policy-not-met-oneSpecial',
-				message: 'The password does not contain at least one special character which is against the password policy.',
-			};
-
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: 'Password123',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
-					expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
-				})
-				.expect(400);
-
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
-		});
-
-		it('should be able to update if the password meets all the validation rules', async () => {
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
-
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(userCredentials)
-				.send({
-					data: {
-						currentPassword,
-						newPassword: '123Abc@!',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('user');
-				})
-				.expect(200);
-
-			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			it('should be able to update if the password meets all the validation rules', async () => {
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '123Abc@!',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('user');
+					})
+					.expect(200);
+			});
 		});
 	});
 
