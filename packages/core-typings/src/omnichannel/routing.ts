@@ -18,4 +18,5 @@ export type SelectedAgent = {
 };
 export interface IRoutingMethod {
 	getNextAgent(departmentId?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined>;
+	config?: RoutingMethodConfig;
 }

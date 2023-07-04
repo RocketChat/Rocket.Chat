@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Apps } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import type {
 	CategoryDropDownGroups,
 	CategoryDropdownItem,
@@ -19,7 +19,7 @@ export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList
 
 	const fetchCategories = useCallback(async (): Promise<void> => {
 		try {
-			const fetchedCategories = await Apps.getCategories();
+			const fetchedCategories = await AppClientOrchestratorInstance.getCategories();
 
 			const mappedCategories = fetchedCategories.map((currentCategory) => ({
 				id: currentCategory.id,
