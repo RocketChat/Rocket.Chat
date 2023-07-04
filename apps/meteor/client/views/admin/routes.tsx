@@ -8,12 +8,12 @@ export const registerAdminRoute = createRouteGroup(
 	lazy(() => import('./AdministrationRouter')),
 );
 
-registerAdminRoute('/custom-sounds/:context?/:id?', {
+registerAdminRoute('/sounds/:context?/:id?', {
 	name: 'custom-sounds',
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
-registerAdminRoute('/info', {
+registerAdminRoute('/workspace', {
 	name: 'admin-info',
 	component: lazy(() => import('./info/InformationRoute')),
 });
@@ -47,7 +47,7 @@ registerAdminRoute('/mailer', {
 	component: lazy(() => import('./mailer/MailerRoute')),
 });
 
-registerAdminRoute('/oauth-apps/:context?/:id?', {
+registerAdminRoute('/third-party-login/:context?/:id?', {
 	name: 'admin-oauth-apps',
 	component: lazy(() => import('./oauthApps/OAuthAppsRoute')),
 });
@@ -62,7 +62,7 @@ registerAdminRoute('/user-status/:context?/:id?', {
 	component: lazy(() => import('./customUserStatus/CustomUserStatusRoute')),
 });
 
-registerAdminRoute('/emoji-custom/:context?/:id?', {
+registerAdminRoute('/emoji/:context?/:id?', {
 	name: 'emoji-custom',
 	component: lazy(() => import('./customEmoji/CustomEmojiRoute')),
 });
@@ -82,17 +82,17 @@ registerAdminRoute('/invites', {
 	component: lazy(() => import('./invites/InvitesRoute')),
 });
 
-registerAdminRoute('/cloud/:page?', {
+registerAdminRoute('/registration/:page?', {
 	name: 'cloud',
 	component: lazy(() => import('./cloud/CloudRoute')),
 });
 
-registerAdminRoute('/view-logs', {
+registerAdminRoute('/logs', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });
 
-registerAdminRoute('/federation-dashboard', {
+registerAdminRoute('/federation', {
 	name: 'federation-dashboard',
 	component: lazy(() => import('./federationDashboard/FederationDashboardRoute')),
 });
@@ -117,7 +117,7 @@ registerAdminRoute('/upgrade/:type?', {
 	component: lazy(() => import('./upgrade/UpgradePage')),
 });
 
-registerAdminRoute('/moderation-console/:context?/:id?', {
+registerAdminRoute('/moderation/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
 });

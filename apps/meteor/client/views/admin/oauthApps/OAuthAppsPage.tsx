@@ -19,7 +19,7 @@ const OAuthAppsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('OAuth_Applications')}>
+				<Page.Header title={t('Third_party_login')}>
 					{context && (
 						<Button alignSelf='flex-end' onClick={(): void => router.push({})}>
 							<Icon name='back' />
