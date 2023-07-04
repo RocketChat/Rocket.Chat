@@ -4,6 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.2",
+		"@types/lodash.throttle": "^4",
 		"eslint": "~8.43.0",
 		"jest": "~29.5.0",
 		"ts-jest": "~29.0.5",
@@ -22,6 +23,7 @@
 		"/dist"
 	],
 	"dependencies": {
+		"lodash.throttle": "^4.1.1",
 		"moment-timezone": "^0.5.43"
 	}
 }
