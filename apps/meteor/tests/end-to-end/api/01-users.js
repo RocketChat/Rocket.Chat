@@ -1771,6 +1771,8 @@ describe('[Users]', function () {
 			before(async () => {
 				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+
+				await sleep(500);
 			});
 
 			after(async () => {
