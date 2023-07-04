@@ -38,6 +38,10 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
+		if (connection.loginToken){
+			return;
+		}
+
 		const user = await Users.findOne(
 			{
 				_id: userId,
@@ -51,7 +55,7 @@ export const listenSessionLogin = () => {
 		if (!user) {
 			return;
 		}
-		if (!user.emails?.length || connection.loginToken) {
+		if (!user.emails?.length) {
 			return;
 		}
 
