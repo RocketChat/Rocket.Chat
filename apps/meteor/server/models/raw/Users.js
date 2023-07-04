@@ -1250,6 +1250,16 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
 
+	findOneByIdWithEmailAddress(userId, options) {
+		return this.findOne(
+			{
+				_id: userId,
+				emails: { $exists: true, $ne: [] },
+			},
+			options,
+		);
+	}
+
 	setFederationAvatarUrlById(userId, federationAvatarUrl) {
 		return this.updateOne(
 			{
