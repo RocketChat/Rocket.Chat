@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';
-import { Users } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Users.findOneById(uid, { fields: { _id: 1, utcOffset: 1 } });
+		const user = await Users.findOneById(uid, { projection: { _id: 1, utcOffset: 1 } });
 		return Livechat.Analytics.getAgentOverviewData({ ...options, utcOffset: user?.utcOffset || 0 });
 	},
 });

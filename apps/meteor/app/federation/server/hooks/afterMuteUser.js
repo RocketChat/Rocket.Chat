@@ -17,7 +17,7 @@ async function afterMuteUser(involvedUsers, room) {
 	const { mutedUser } = involvedUsers;
 
 	// Create the mute user event
-	const event = await FederationRoomEvents.createMuteUserEvent(getFederationDomain(), room._id, normalizers.normalizeUser(mutedUser));
+	const event = await FederationRoomEvents.createMuteUserEvent(getFederationDomain(), room._id, await normalizers.normalizeUser(mutedUser));
 
 	// Dispatch event (async)
 	dispatchEvent(room.federation.domains, event);

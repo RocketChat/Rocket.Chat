@@ -57,7 +57,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		// Login again, check the banner to save the generated password and test it
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Save Your Encryption Password"').click();
+		await page.locator('role=banner >> text="Save your encryption password"').click();
 
 		password = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
@@ -65,7 +65,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Save Your Encryption Password"')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
 
 		await poHomeChannel.sidenav.logout();
 
@@ -81,7 +81,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
@@ -120,7 +120,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."')).not.toBeVisible();
+		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
 	});
 });
 
@@ -144,7 +145,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
@@ -186,7 +187,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);

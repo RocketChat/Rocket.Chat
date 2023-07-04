@@ -1,8 +1,8 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -32,7 +32,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Users.findOneById(userId, { fields: { _id: 1, utcOffset: 1 } });
+		const user = await Users.findOneById(userId, { projection: { _id: 1, utcOffset: 1 } });
 
 		return Livechat.Analytics.getAnalyticsChartData({ ...options, utcOffset: user?.utcOffset });
 	},

@@ -17,16 +17,12 @@ export const hasAnyRoleAsync = async (
 	return Roles.isUserInRoles(userId, roleIds, scope);
 };
 
-const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'] | undefined): Promise<boolean> => {
+export const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'] | undefined): Promise<boolean> => {
 	if (Array.isArray(roleId)) {
 		throw new Error('error-invalid-arguments');
 	}
 
 	return hasAnyRoleAsync(userId, [roleId], scope);
 };
-
-export const hasRole = (...args: Parameters<typeof hasRoleAsync>): boolean => Promise.await(hasRoleAsync(...args));
-
-export const hasAnyRole = (...args: Parameters<typeof hasAnyRoleAsync>): boolean => Promise.await(hasAnyRoleAsync(...args));
 
 export const subscriptionHasRole = (sub: ISubscription, role: IRole['_id']): boolean | undefined => sub.roles?.includes(role);

@@ -48,11 +48,11 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 
 	return (
 		<GenericModal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
 			variant='danger'
 			title={t('Report_this_message_question_mark')}
 			onClose={onClose}
 			onCancel={onClose}
-			onConfirm={handleSubmit(handleReportMessage)}
 			confirmText={t('Report_exclamation_mark')}
 		>
 			<Box mbe='x24' className={wordBreak}>

@@ -16,7 +16,7 @@ async function afterLeaveRoom(user, room) {
 
 	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
-	const { users } = getFederatedRoomData(room);
+	const { users } = await getFederatedRoomData(room);
 
 	try {
 		// Get the domains after leave
@@ -34,7 +34,7 @@ async function afterLeaveRoom(user, room) {
 		//
 		// Create the user left event
 		//
-		const normalizedSourceUser = normalizers.normalizeUser(user);
+		const normalizedSourceUser = await normalizers.normalizeUser(user);
 
 		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(localDomain, room._id, normalizedSourceUser, domainsAfterLeave);
 

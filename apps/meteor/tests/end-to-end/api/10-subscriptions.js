@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
-import { adminUsername } from '../../data/user.js';
+import { adminUsername } from '../../data/user';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);

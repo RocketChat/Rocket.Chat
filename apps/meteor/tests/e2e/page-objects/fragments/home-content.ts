@@ -14,6 +14,10 @@ export class HomeContent {
 		this.omnichannelCustomFields = new OmnichannelCustomFields(page);
 	}
 
+	get channelHeader(): Locator {
+		return this.page.locator('main header');
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -24,6 +28,10 @@ export class HomeContent {
 
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
+	}
+
+	get lastUserMessageNotThread(): Locator {
+		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}
 
 	get lastUserMessageBody(): Locator {
@@ -40,6 +48,10 @@ export class HomeContent {
 
 	get btnJoinRoom(): Locator {
 		return this.page.locator('//button[contains(text(), "Join")]');
+	}
+
+	async openRoomInfo(): Promise<void> {
+		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
 
 	async joinRoom(): Promise<void> {
@@ -109,6 +121,14 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
+	get lastThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+	}
+
+	get lastThreadMessagePreviewText(): Locator {
+		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+	}
+
 	get btnOptionEditMessage(): Locator {
 		return this.page.locator('[data-qa-id="edit-message"]');
 	}
@@ -141,8 +161,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="menu-more-actions"]');
 	}
 
+	get userCard(): Locator {
+		return this.page.locator('[data-qa="UserCard"]');
+	}
+
 	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
+		return this.userCard.locator('a');
 	}
 
 	get btnContactInformation(): Locator {
@@ -189,10 +213,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
-	async pickEmoji(emoji: string, section = 'icon-people') {
+	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
-		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tablist >> role=tab[name="${section}"]`).click();
+
+		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
 	async dragAndDropFile(): Promise<void> {
@@ -230,6 +256,10 @@ export class HomeContent {
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.click();
+	}
+
+	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
+		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get takeOmnichannelChatButton(): Locator {

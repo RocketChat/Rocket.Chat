@@ -11,12 +11,19 @@ export class AppActivationBridge extends ActivationBridge {
 		super();
 	}
 
-	protected async appAdded(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appAdded(app.getID());
+	protected async appAdded(_app: ProxiedApp): Promise<void> {
+		// await this.orch.getNotifier().appAdded(app.getID());
+
+		// Calls made via AppActivationBridge should NOT go through
+		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
+		return undefined;
 	}
 
-	protected async appUpdated(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appUpdated(app.getID());
+	protected async appUpdated(_app: ProxiedApp): Promise<void> {
+		// Calls made via AppActivationBridge should NOT go through
+		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
+		// await this.orch.getNotifier().appUpdated(app.getID());
+		return undefined;
 	}
 
 	protected async appRemoved(app: ProxiedApp): Promise<void> {

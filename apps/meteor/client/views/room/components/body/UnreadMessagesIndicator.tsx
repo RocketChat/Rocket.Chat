@@ -1,3 +1,4 @@
+import { Grid, GridItem } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -21,17 +22,15 @@ const UnreadMessagesIndicator = ({
 	const formatTimeAgo = useTimeAgo();
 
 	return (
-		<div className='unread-bar color-primary-action-color background-component-color'>
-			<button type='button' className='jump-to' onClick={onJumpButtonClick}>
-				<span className='jump-to-large'>{t('Jump_to_first_unread')}</span>
-				<span className='jump-to-small'>{t('Jump')}</span>
-			</button>
-			<span className='unread-count-since'>{t('S_new_messages_since_s', count, since ? formatTimeAgo(since) : undefined)}</span>
-			<span className='unread-count'>{t('N_new_messages', count)}</span>
-			<button type='button' className='mark-read' onClick={onMarkAsReadButtonClick}>
+		<Grid color='pure-black' bg='status-background-info'>
+			<GridItem is='button' fontWeight={700} onClick={onJumpButtonClick}>
+				{t('Jump_to_first_unread')}
+			</GridItem>
+			<GridItem textAlign='center'>{t('S_new_messages_since_s', count, since ? formatTimeAgo(since) : undefined)}</GridItem>
+			<GridItem textAlign='end' is='button' fontWeight={700} onClick={onMarkAsReadButtonClick}>
 				{t('Mark_as_read')}
-			</button>
-		</div>
+			</GridItem>
+		</Grid>
 	);
 };
 

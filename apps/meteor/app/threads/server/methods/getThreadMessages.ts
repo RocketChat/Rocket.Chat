@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Rooms } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
@@ -37,10 +36,10 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		const user = Meteor.user();
-		const room = Rooms.findOneById(thread.rid);
+		const user = await Meteor.userAsync();
+		const room = await Rooms.findOneById(thread.rid);
 
-		if (!user || !(await canAccessRoomAsync(room, user))) {
+		if (!user || !room || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 
@@ -48,8 +47,8 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		callbacks.run('beforeReadMessages', thread.rid, user._id);
-		readThread({ userId: user._id, rid: thread.rid, tmid });
+		await callbacks.run('beforeReadMessages', thread.rid, user._id);
+		await readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = await Messages.findVisibleThreadByThreadId(tmid, {
 			...(skip && { skip }),

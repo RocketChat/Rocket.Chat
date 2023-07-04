@@ -36,14 +36,17 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 	return true;
 }
 
-function _setStatusText(userId: any, statusText: string): boolean {
-	return Promise.await(_setStatusTextPromise(userId, statusText));
-}
-
-export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
-	async 0() {
-		// Administrators have permission to change others status, so don't limit those
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
+export const setStatusText = RateLimiter.limitFunction(
+	async function _setStatusText(userId: any, statusText: string) {
+		return _setStatusTextPromise(userId, statusText);
 	},
-});
+	5,
+	60000,
+	{
+		async 0() {
+			// Administrators have permission to change others status, so don't limit those
+			const userId = Meteor.userId();
+			return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
+		},
+	},
+);

@@ -71,7 +71,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const localPassword = Boolean(user?.services?.password?.bcrypt);
+	const localPassword = Boolean(user?.services?.password?.exists);
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -125,6 +125,9 @@ const AccountProfilePage = (): ReactElement => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword?: string): Promise<void> => {
 			try {
+				if (!(values.password === values.confirmationPassword)) {
+					throw new Error(t('Invalid_confirm_pass'));
+				}
 				await saveFn(
 					{
 						...(allowRealNameChange ? { realname } : {}),
@@ -154,29 +157,31 @@ const AccountProfilePage = (): ReactElement => {
 
 		save();
 	}, [
+		values?.password,
+		values?.confirmationPassword,
 		saveFn,
-		allowEmailChange,
-		allowPasswordChange,
 		allowRealNameChange,
-		allowUserStatusMessageChange,
-		bio,
-		canChangeUsername,
-		email,
-		password,
 		realname,
-		statusText,
-		username,
+		allowEmailChange,
 		user,
-		updateAvatar,
-		handleAvatar,
-		dispatchToastMessage,
-		t,
-		customFields,
+		email,
+		allowPasswordChange,
+		password,
+		canChangeUsername,
+		username,
+		allowUserStatusMessageChange,
+		statusText,
 		statusType,
-		commit,
 		nickname,
+		bio,
+		customFields,
 		handlePassword,
 		handleConfirmationPassword,
+		updateAvatar,
+		commit,
+		dispatchToastMessage,
+		t,
+		handleAvatar,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {
@@ -243,7 +248,7 @@ const AccountProfilePage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
-					<Button danger disabled={!hasUnsavedChanges} onClick={reset}>
+					<Button disabled={!hasUnsavedChanges} onClick={reset}>
 						{t('Reset')}
 					</Button>
 					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>

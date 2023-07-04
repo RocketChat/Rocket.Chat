@@ -288,7 +288,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		}
 
 		let { closeInfo, closeSystemMsgData } = await this.getBaseRoomClosingData(closerParam, room, sysMessageId, options);
-		const finalClosingData = this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
+		const finalClosingData = await this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
 		closeInfo = finalClosingData.closeInfo;
 		closeSystemMsgData = finalClosingData.closeSystemMsgData;
 
@@ -306,13 +306,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return true;
 	}
 
-	getRoomClosingData(
+	async getRoomClosingData(
 		closeInfo: IVoipRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		_room: IVoipRoom,
 		_sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		_options?: { comment?: string; tags?: string[] },
-	): { closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
+	): Promise<{ closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
 		return { closeInfo, closeSystemMsgData };
 	}
 

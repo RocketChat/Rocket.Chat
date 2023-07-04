@@ -42,9 +42,16 @@ Meteor.methods<ServerMethods>({
 		check(field, String);
 		check(value, String);
 
-		const getNotificationPrefValue = (field: string, value: unknown) => {
+		const getNotificationPrefValue = async (field: string, value: unknown) => {
 			if (value === 'default') {
-				const userPref = getUserNotificationPreference(Meteor.userId(), field);
+				const userId = Meteor.userId();
+				if (!userId) {
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+						method: 'saveNotificationSettings',
+					});
+				}
+
+				const userPref = await getUserNotificationPreference(userId, field);
 				return userPref?.origin === 'server' ? null : userPref;
 			}
 			return { value, origin: 'subscription' };
@@ -52,28 +59,28 @@ Meteor.methods<ServerMethods>({
 
 		const notifications = {
 			desktopNotifications: {
-				updateMethod: (subscription: ISubscription, value: unknown) =>
+				updateMethod: async (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
-						getNotificationPrefValue('desktop', value),
+						await getNotificationPrefValue('desktop', value),
 						'desktopNotifications',
 						'desktopPrefOrigin',
 					),
 			},
 			mobilePushNotifications: {
-				updateMethod: (subscription: ISubscription, value: unknown) =>
+				updateMethod: async (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
-						getNotificationPrefValue('mobile', value),
+						await getNotificationPrefValue('mobile', value),
 						'mobilePushNotifications',
 						'mobilePrefOrigin',
 					),
 			},
 			emailNotifications: {
-				updateMethod: (subscription: ISubscription, value: unknown) =>
+				updateMethod: async (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
-						getNotificationPrefValue('email', value),
+						await getNotificationPrefValue('email', value),
 						'emailNotifications',
 						'emailPrefOrigin',
 					),

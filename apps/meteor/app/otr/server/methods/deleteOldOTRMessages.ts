@@ -1,9 +1,7 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
-
-import { Subscriptions } from '../../../models/server';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,14 +12,15 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteOldOTRMessages(roomId: IRoom['_id']): Promise<void> {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deleteOldOTRMessages',
 			});
 		}
 
 		const now = new Date();
-		const subscription: ISubscription = Subscriptions.findOneByRoomIdAndUserId(roomId, Meteor.userId());
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 		if (subscription?.t !== 'd') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'deleteOldOTRMessages',

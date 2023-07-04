@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from './ILivechatPriority';
-import type { IOmnichannelRoom } from './IRoom';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IUser } from './IUser';
+import type { SelectedAgent } from './omnichannel/routing';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
@@ -24,6 +24,7 @@ export interface IVisitor {
 	token: string;
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
+	lastMessageTs?: Date;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
@@ -40,11 +41,10 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	locked?: boolean;
 	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
-	defaultAgent?: {
-		agentId: IUser['_id'];
-		username?: IUser['username'];
+	defaultAgent?: SelectedAgent;
+	source: {
+		type: OmnichannelSourceType;
 	};
-
 	// Note: for the sort order to be maintained, we're making priorityWeight and estimatedWaitingTimeQueue required
 	priorityId?: IOmnichannelRoom['priorityId'];
 	priorityWeight: ILivechatPriority['sortItem'];
@@ -52,3 +52,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
+
+export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
+	position?: number;
+	defaultAgent?: { username: string; agentId: string };
+};

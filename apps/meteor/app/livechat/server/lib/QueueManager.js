@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { LivechatRooms, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -12,10 +11,10 @@ const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
-	callbacks.run('livechat.afterInquiryQueued', inquiry);
+	await callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
-export const queueInquiry = async (room, inquiry, defaultAgent) => {
+export const queueInquiry = async (inquiry, defaultAgent) => {
 	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
@@ -47,7 +46,7 @@ export const QueueManager = {
 			}),
 		);
 
-		if (!checkServiceStatus({ guest, agent })) {
+		if (!(await checkServiceStatus({ guest, agent }))) {
 			logger.debug(`Cannot create room for visitor ${guest._id}. No online agents`);
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
@@ -55,7 +54,7 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
@@ -71,10 +70,16 @@ export const QueueManager = {
 
 		await LivechatRooms.updateRoomCount();
 
-		await queueInquiry(room, inquiry, agent);
+		await queueInquiry(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
-		return LivechatRoomsRaw.findOneById(rid);
+		const newRoom = await LivechatRooms.findOneById(rid);
+		if (!newRoom) {
+			logger.error(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
+
+		return newRoom;
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
@@ -108,12 +113,12 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
+		if (servedBy && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
-		LivechatRooms.unarchiveOneById(rid);
-		const room = await LivechatRoomsRaw.findOneById(rid);
+		await LivechatRooms.unarchiveOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {
 			logger.debug(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
@@ -121,7 +126,7 @@ export const QueueManager = {
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 
-		await queueInquiry(room, inquiry, defaultAgent);
+		await queueInquiry(inquiry, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;

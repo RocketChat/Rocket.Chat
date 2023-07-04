@@ -5,7 +5,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-export type EngagementDashboardCardErrorBoundaryProps = {
+type EngagementDashboardCardErrorBoundaryProps = {
 	children?: ReactNode;
 };
 

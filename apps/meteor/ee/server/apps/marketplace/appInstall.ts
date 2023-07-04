@@ -1,4 +1,5 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
@@ -36,9 +37,10 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 	const pendingSentUrl = `${marketplaceBaseUrl}/v1/apps/${appInfo.id}/install`;
 
 	try {
-		HTTP.post(pendingSentUrl, {
+		await fetch(pendingSentUrl, {
+			method: 'POST',
 			headers,
-			data,
+			body: data,
 		});
 
 		// eslint-disable-next-line no-empty

@@ -74,7 +74,7 @@ class NotificationClass {
 						await this.push(notification, item);
 						break;
 					case 'email':
-						this.email(item);
+						await this.email(item);
 						break;
 				}
 			}
@@ -107,8 +107,8 @@ class NotificationClass {
 		});
 	}
 
-	email(item: INotificationItemEmail): void {
-		sendEmailFromData(item.data);
+	async email(item: INotificationItemEmail): Promise<void> {
+		return sendEmailFromData(item.data);
 	}
 
 	async scheduleItem({

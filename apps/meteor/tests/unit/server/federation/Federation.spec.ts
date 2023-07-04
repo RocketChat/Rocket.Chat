@@ -15,10 +15,6 @@ const { Federation } = proxyquire.noCallThru().load('../../../../server/services
 });
 
 describe('Federation[Server] - Federation', () => {
-	beforeEach(() => {
-		Promise.await = (args) => args;
-	});
-
 	afterEach(() => findOneByRoomIdAndUserIdStub.reset());
 
 	describe('#actionAllowed()', () => {

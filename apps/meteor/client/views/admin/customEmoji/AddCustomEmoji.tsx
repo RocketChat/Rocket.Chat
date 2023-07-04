@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
 
@@ -75,7 +75,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	};
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<ContextualbarScrollableContent {...props}>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -116,7 +116,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 					</ButtonGroup>
 				</Field.Row>
 			</Field>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

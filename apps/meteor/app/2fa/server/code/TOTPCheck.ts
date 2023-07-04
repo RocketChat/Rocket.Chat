@@ -15,7 +15,7 @@ export class TOTPCheck implements ICodeCheck {
 		return user.services?.totp?.enabled === true;
 	}
 
-	public verify(user: IUser, code: string): boolean {
+	public async verify(user: IUser, code: string): Promise<boolean> {
 		if (!this.isEnabled(user)) {
 			return false;
 		}
@@ -32,7 +32,7 @@ export class TOTPCheck implements ICodeCheck {
 		});
 	}
 
-	public processInvalidCode(): IProcessInvalidCodeResult {
+	public async processInvalidCode(): Promise<IProcessInvalidCodeResult> {
 		// Nothing to do
 		return {
 			codeGenerated: false,

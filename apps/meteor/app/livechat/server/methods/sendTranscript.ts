@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
 
@@ -26,8 +26,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(uid, {
-			fields: { _id: 1, username: 1, name: 1, utcOffset: 1 },
+		const user = await Users.findOneById(uid, {
+			projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
 		return Livechat.sendTranscript({ token, rid, email, subject, user });
 	},

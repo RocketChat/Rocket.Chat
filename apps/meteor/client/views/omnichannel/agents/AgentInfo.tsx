@@ -3,20 +3,19 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormsSubscription } from '../additionalForms';
-import AgentInfoAction from './AgentInfoAction';
 
 type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
+const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
 	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
 
@@ -36,7 +35,7 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 	const { username, statusLivechat, status: userStatus } = user;
 
 	return (
-		<VerticalBar.ScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p='x24' {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
@@ -61,10 +60,8 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 
 				{MaxChats && <MaxChats data={user} />}
 			</Margins>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 });
 
-export default Object.assign(AgentInfo, {
-	Action: AgentInfoAction,
-});
+export default AgentInfo;

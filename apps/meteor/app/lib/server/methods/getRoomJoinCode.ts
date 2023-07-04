@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getRoomJoinCode(rid: string): string;
+		getRoomJoinCode(rid: string): string | false;
 	}
 }
-
+/* @deprecated */
 Meteor.methods<ServerMethods>({
 	async getRoomJoinCode(rid) {
 		check(rid, String);
@@ -26,8 +27,9 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'getJoinCode' });
 		}
 
-		const [room] = Rooms.findById(rid).fetch();
+		const room = await Rooms.findById(rid);
 
-		return room?.joinCode;
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		return Boolean(room) && (isRoomWithJoinCode(room!) ? room.joinCode : false);
 	},
 });

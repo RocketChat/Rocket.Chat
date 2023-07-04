@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 
 import { useRadioToggle } from '../../hooks/useRadioToggle';
 import RadioButtonList from '../RadioButtonList';
-import RadioDropDownAnchor from './RadioDownAnchor';
 import RadioDropDown from './RadioDropDown';
 
 export default {
@@ -20,8 +19,6 @@ const testGroup = {
 		{ id: 'LRU', label: 'Least recent updated', checked: false },
 	],
 };
-
-export const Anchor: Story = () => <RadioDropDownAnchor group={testGroup} />;
 
 export const List: Story = () => {
 	const [data, setData] = useState(() => testGroup);

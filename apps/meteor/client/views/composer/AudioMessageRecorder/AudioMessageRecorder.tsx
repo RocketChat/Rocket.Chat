@@ -6,7 +6,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder } from '../../../../app/ui/client';
+import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 

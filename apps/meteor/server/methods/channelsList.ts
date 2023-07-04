@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Rooms, Subscriptions, Users } from '../../app/models/server';
 import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
@@ -33,8 +33,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const options: Mongo.Options<IRoom> = {
-			fields: {
+		const options: FindOptions<IRoom> = {
+			projection: {
 				name: 1,
 				t: 1,
 			},
@@ -66,41 +66,44 @@ Meteor.methods<ServerMethods>({
 		if (channelType !== 'private') {
 			if (await hasPermissionAsync(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+					channels = channels.concat(await Rooms.findByTypeAndNameContaining('c', filter, options).toArray());
 				} else {
-					channels = channels.concat(Rooms.findByType('c', options).fetch());
+					channels = channels.concat(await Rooms.findByType('c', options).toArray());
 				}
 			} else if (await hasPermissionAsync(userId, 'view-joined-room')) {
-				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })
-					.fetch()
-					.map((s: ISubscription) => s.rid);
+				const roomIds = (await Subscriptions.findByTypeAndUserId('c', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).toArray());
 				} else {
-					channels = channels.concat(Rooms.findByTypeInIds('c', roomIds, options).fetch());
+					channels = channels.concat(await Rooms.findByTypeInIds('c', roomIds, options).toArray());
 				}
 			}
 		}
 
 		if (channelType !== 'public' && (await hasPermissionAsync(userId, 'view-p-room'))) {
-			const user = Users.findOne(userId, {
-				fields: {
+			const user = await Users.findOne(userId, {
+				projection: {
 					'username': 1,
 					'settings.preferences.sidebarGroupByType': 1,
 				},
 			});
-			const userPref = getUserPreference(user, 'sidebarGroupByType');
+
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'channelsList',
+				});
+			}
+
+			const userPref = await getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } })
-					.fetch()
-					.map((s: ISubscription) => s.rid);
+				const roomIds = (await Subscriptions.findByTypeAndUserId('p', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
 				} else {
-					channels = channels.concat(Rooms.findByTypeInIds('p', roomIds, options).fetch());
+					channels = channels.concat(await Rooms.findByTypeInIds('p', roomIds, options).toArray());
 				}
 			}
 		}

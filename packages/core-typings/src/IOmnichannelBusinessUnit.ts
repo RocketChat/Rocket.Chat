@@ -7,4 +7,6 @@ export interface IOmnichannelBusinessUnit extends IRocketChatRecord {
 	type: string;
 	numMonitors: number;
 	numDepartments: number;
+	// Units don't have ancestors per se, but we need TS to know it can access the property from the collection
+	ancestors?: string[];
 }

@@ -1,20 +1,20 @@
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Settings } from '@rocket.chat/models';
+import { Messages, Settings, Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Messages, Rooms } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { canSendMessage } from '../../../../authorization/server';
+import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
 import { Livechat } from '../../lib/Livechat';
+import { i18n } from '../../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETWebRTCCall },
 	{
 		async get() {
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				this.queryParams.rid,
 				{
 					uid: this.userId,
@@ -43,15 +43,10 @@ API.v1.addRoute(
 				await Settings.incrementValueById('WebRTC_Calls_Count');
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
-				Messages.createWithTypeRoomIdMessageAndUser(
-					'livechat_webrtc_video_call',
-					room._id,
-					TAPi18n.__('Join_my_room_to_start_the_video_call'),
-					this.user,
-					{
-						actionLinks: config.theme.actionLinks.webrtc,
-					},
-				);
+
+				await Message.saveSystemMessage('livechat_webrtc_video_call', room._id, i18n.t('Join_my_room_to_start_the_video_call'), this.user, {
+					actionLinks: config.theme.actionLinks.webrtc,
+				});
 			}
 			const videoCall = {
 				rid: room._id,
@@ -71,7 +66,7 @@ API.v1.addRoute(
 			const { callId } = this.urlParams;
 			const { rid, status } = this.bodyParams;
 
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				rid,
 				{
 					uid: this.userId,

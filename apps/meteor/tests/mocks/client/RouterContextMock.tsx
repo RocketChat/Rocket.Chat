@@ -42,13 +42,23 @@ const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: 
 				return {
 					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
 					queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
-					pushRoute: (...args) => {
-						setCurrentRoute(args);
-						pushRoute?.(...args);
+					pushRoute: (
+						name: string,
+						parameters?: Record<string, string>,
+						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
+					) => {
+						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
+						setCurrentRoute([name, parameters, queryParams]);
+						pushRoute?.(name, parameters, queryParams);
 					},
-					replaceRoute: (...args) => {
-						setCurrentRoute(args);
-						replaceRoute?.(...args);
+					replaceRoute: (
+						name: string,
+						parameters?: Record<string, string>,
+						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
+					) => {
+						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
+						setCurrentRoute([name, parameters, queryParams]);
+						replaceRoute?.(name, parameters, queryParams);
 					},
 					queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
 					queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],

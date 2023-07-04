@@ -13,7 +13,7 @@ import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginServices from './LoginServices';
 
-type LoginErrors =
+export type LoginErrors =
 	| 'error-user-is-not-activated'
 	| 'error-invalid-email'
 	| 'error-login-blocked-for-ip'
@@ -199,7 +199,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Footer>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isLoading} />
+			<LoginServices disabled={loginMutation.isLoading} setError={setErrorOnSubmit} />
 		</Form>
 	);
 };

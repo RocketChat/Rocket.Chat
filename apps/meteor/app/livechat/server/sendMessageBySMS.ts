@@ -5,7 +5,7 @@ import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from './lib/callbackLogger';
+import { callbackLogger } from './lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -42,8 +42,7 @@ callbacks.add(
 
 		let extraData = {};
 		if (message.file) {
-			message = await normalizeMessageFileUpload(message);
-			// @ts-expect-error TODO: investigate from where fileUpload comes
+			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			const { fileUpload, rid, u: { _id: userId } = {} } = message;
 			extraData = Object.assign({}, { rid, userId, fileUpload });
 		}

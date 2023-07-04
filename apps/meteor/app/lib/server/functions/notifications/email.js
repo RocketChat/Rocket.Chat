@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../../mailer/server/api';
@@ -9,6 +8,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { getURL } from '../../../../utils/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
+import { i18n } from '../../../../../server/lib/i18n';
 
 let advice = '';
 let goToMessage = '';
@@ -21,15 +21,15 @@ Meteor.startup(() => {
 	});
 });
 
-function getEmailContent({ message, user, room }) {
+async function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
-	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
+	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const header = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+	const header = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
 		channel: roomName,
 		lng,
@@ -43,10 +43,10 @@ function getEmailContent({ message, user, room }) {
 		let messageContent = escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
-			messageContent = TAPi18n.__('Encrypted_message', { lng });
+			messageContent = i18n.t('Encrypted_message', { lng });
 		}
 
-		message = callbacks.run('renderMessage', message);
+		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
 				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
@@ -57,7 +57,7 @@ function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+		const fileHeader = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
 			username: userName,
 			channel: roomName,
 			lng,
@@ -102,22 +102,26 @@ const getButtonUrl = (room, subscription, message) => {
 	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
 
 	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
-	return getURL(path, {
-		full: true,
-		cloud: settings.get('Offline_Message_Use_DeepLink'),
-		cloud_route: 'room',
-		cloud_params: {
-			rid: room._id,
-			mid: message._id,
+	return getURL(
+		path,
+		{
+			full: true,
+			cloud: settings.get('Offline_Message_Use_DeepLink'),
+			cloud_route: 'room',
+			cloud_params: {
+				rid: room._id,
+				mid: message._id,
+			},
 		},
-	});
+		settings.get('DeepLink_Url'),
+	);
 };
 
 function generateNameEmail(name, email) {
 	return `${String(name).replace(/@/g, '%40').replace(/[<>,]/g, '')} <${email}>`;
 }
 
-export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
+export async function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -129,9 +133,9 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 
 	const emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,
-		room: roomCoordinator.getRoomName(room.t, room),
+		room: await roomCoordinator.getRoomName(room.t, room),
 	});
-	const content = getEmailContent({
+	const content = await getEmailContent({
 		message,
 		user: receiver,
 		room,

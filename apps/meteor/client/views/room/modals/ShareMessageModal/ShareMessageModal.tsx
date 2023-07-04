@@ -1,6 +1,6 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useClipboard } from '@rocket.chat/fuselage-hooks';
+import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -9,19 +9,13 @@ import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
+import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 type ShareMessageProps = {
 	onClose: () => void;
 	permalink: string;
 	message: IMessage;
-};
-
-type roomType = {
-	label: string;
-	value: string;
-	_id: string;
-	type: string;
 };
 
 const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): ReactElement => {
@@ -39,23 +33,15 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 	const rooms = watch('rooms');
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 
-	const onChangeUserOrRoom = useMutableCallback((handleRoomsAndUsers: (rooms: roomType[]) => void, room: roomType, action?: string) => {
-		if (!action) {
-			if (rooms.find((cur: roomType) => cur._id === room._id)) return;
-			return handleRoomsAndUsers([...rooms, room]);
-		}
-		handleRoomsAndUsers(rooms.filter((cur: roomType) => cur._id !== room._id));
-	});
-
 	const sendMessageMutation = useMutation({
 		mutationFn: async () => {
 			const optionalMessage = '';
 			const curMsg = await prependReplies(optionalMessage, [message]);
 
 			return Promise.all(
-				rooms.map(async (room: roomType) => {
+				rooms.map(async (roomId) => {
 					const sendPayload = {
-						roomId: room._id,
+						roomId,
 						text: curMsg,
 					};
 
@@ -76,8 +62,10 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
 
+	const displayName = useUserDisplayName(message.u);
+
 	const attachment = {
-		author_name: message.u?.username,
+		author_name: String(displayName),
 		author_link: '',
 		author_icon: avatarUrl,
 		message_link: '',
@@ -106,11 +94,8 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 							<Controller
 								name='rooms'
 								control={control}
-								render={({ field }): ReactElement => (
-									<UserAndRoomAutoCompleteMultiple
-										value={field.value.map((room: roomType) => room.value)}
-										onChange={(room, action): void => onChangeUserOrRoom(field.onChange, room, action)}
-									/>
+								render={({ field: { value, onChange } }): ReactElement => (
+									<UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} />
 								)}
 							/>
 						</Field.Row>

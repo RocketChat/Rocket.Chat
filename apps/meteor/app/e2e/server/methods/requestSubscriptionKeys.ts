@@ -1,10 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
-
-import { Rooms } from '../../../models/server';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,8 +33,8 @@ Meteor.methods<ServerMethods>({
 			},
 		};
 
-		const rooms: IRoom[] = Rooms.find(query);
-		rooms.forEach((room) => {
+		const rooms = Rooms.find(query);
+		await rooms.forEach((room) => {
 			void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
 		});
 

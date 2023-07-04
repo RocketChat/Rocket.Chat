@@ -9,7 +9,7 @@ import ComposerFederation from './ComposerFederation';
 import ComposerJoinWithPassword from './ComposerJoinWithPassword';
 import type { ComposerMessageProps } from './ComposerMessage';
 import ComposerMessage from './ComposerMessage';
-import ComposerOmnichannel from './ComposerOmnichannel/ComposerOmnichannel';
+import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';

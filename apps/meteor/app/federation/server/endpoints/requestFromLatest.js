@@ -1,4 +1,4 @@
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { FederationRoomEvents } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';

@@ -596,6 +596,99 @@
 	}
 }
 
+.rc-old .container-bars {
+	position: relative;
+	z-index: 2;
+
+	display: none;
+	visibility: hidden;
+	overflow: hidden;
+	flex-direction: column;
+
+	margin: 5px 10px 0;
+
+	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
+	transform: translateY(-10px);
+
+	opacity: 0;
+	border-radius: var(--border-radius);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+
+	font-size: 1em;
+	font-weight: bold;
+
+	&.show {
+		display: flex;
+		visibility: visible;
+
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+
+	& > div {
+		padding: 0 10px;
+
+		line-height: 28px;
+	}
+
+	& .upload-progress {
+		position: relative;
+
+		display: flex;
+
+		height: 28px;
+
+		& .upload-progress-progress {
+			position: absolute;
+			z-index: 1;
+			left: 0;
+
+			width: 0%;
+			height: 100%;
+
+			transition: width, 1s, ease-out;
+		}
+
+		& .upload-progress-text {
+			z-index: 2;
+			right: 0;
+			left: 0;
+
+			overflow: hidden;
+
+			width: 50%;
+
+			height: 100%;
+			padding: 0 10px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			flex-grow: 1;
+
+			& > a {
+				float: right;
+
+				cursor: pointer;
+				text-transform: uppercase;
+			}
+		}
+
+		& .upload-progress-close {
+			position: relative;
+			z-index: 3;
+
+			float: right;
+
+			height: 100%;
+
+			text-transform: uppercase;
+
+			font-weight: bold;
+		}
+	}
+}
+
 .rc-old .flex-tab-main-content {
 	position: relative;
 	z-index: 1;
@@ -700,64 +793,6 @@
 		}
 	}
 
-	& .new-message {
-		position: absolute;
-		z-index: 2;
-		bottom: 8px;
-		left: 50%;
-
-		width: 130px;
-		height: 30px;
-		margin: 0 -65px;
-
-		cursor: pointer;
-		user-select: none;
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: center;
-
-		border-radius: 20px;
-
-		font-size: 0.8em;
-		line-height: 30px;
-
-		&.not {
-			transform: translateY(150%);
-		}
-	}
-
-	& .jump-recent {
-		position: absolute;
-		z-index: 15;
-		right: 20px;
-		bottom: 0;
-		left: 20px;
-
-		height: 24px;
-		padding-right: 20px;
-
-		transition: transform 0.3s ease-out;
-		transform: translateY(0);
-		text-align: right;
-
-		border-top-left-radius: 4px;
-		border-top-right-radius: 4px;
-
-		font-size: 0.8em;
-		line-height: 24px;
-
-		&.not {
-			z-index: 1;
-
-			transform: translateY(150%);
-		}
-
-		& button {
-			cursor: pointer;
-			user-select: none;
-		}
-	}
-
 	& .editing .body {
 		border-radius: var(--border-radius);
 	}
@@ -789,9 +824,25 @@
 	flex-grow: 1;
 }
 
-.full-page,
 .page-loading {
-	background-color: var(--rc-color-primary);
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	display: flex;
+
+	text-align: center;
+
+	background-color: var(--page-loading-background-light);
+
+	align-items: center;
+	justify-content: center;
+
+	@media (prefers-color-scheme: dark) {
+		background: var(--page-loading-background-dark);
+	}
 }
 
 .rc-old.full-page {
@@ -961,12 +1012,12 @@
 }
 
 .rc-old .highlight-text {
-	padding: 2px;
+	padding: 0 2px 2px;
 
-	color: inherit;
+	color: var(--rcx-color-font-pure-white, #ffffff);
 
-	border-radius: 15px;
-	background-color: var(--selection-background);
+	border-radius: var(--border-radius);
+	background-color: var(--rcx-color-badge-background-level-4, #f5455c);
 }
 
 @keyframes zoomIn {
@@ -1084,22 +1135,6 @@
 }
 
 .rc-old .code-mirror-box {
-	& .title {
-		display: none;
-	}
-
-	& .button-fullscreen {
-		display: initial;
-	}
-
-	& .button-restore {
-		display: none;
-	}
-
-	& .buttons {
-		margin: 10px 0;
-	}
-
 	& .CodeMirror {
 		border-width: var(--input-border-width);
 		border-color: var(--input-border-color);
@@ -1107,43 +1142,6 @@
 	}
 
 	&.code-mirror-box-fullscreen {
-		position: fixed;
-		z-index: 100;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: flex;
-
-		flex-direction: column;
-
-		width: auto;
-		height: auto;
-
-		padding: 40px;
-
-		align-items: stretch;
-
-		& .buttons {
-			border-width: 0;
-		}
-
-		& .title {
-			display: initial;
-
-			font-size: 16px;
-			line-height: 50px;
-		}
-
-		& .button-fullscreen {
-			display: none;
-		}
-
-		& .button-restore {
-			display: initial;
-		}
-
 		& .CodeMirror {
 			display: flex;
 			flex-direction: column;
@@ -1235,30 +1233,6 @@
 	.rc-old.main-content {
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		will-change: transform;
-	}
-
-	.rc-old .code-mirror-box.code-mirror-box-fullscreen {
-		left: 0;
-	}
-
-	.rc-old .container-bars .unread-bar {
-		& .unread-count {
-			display: inline-block;
-		}
-
-		& .unread-count-since {
-			display: none;
-		}
-	}
-
-	.rc-old .container-bars .unread-bar > button.jump-to {
-		& .jump-to-small {
-			display: inline-block;
-		}
-
-		& .jump-to-large {
-			display: none;
-		}
 	}
 }
 

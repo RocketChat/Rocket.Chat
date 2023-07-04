@@ -13,7 +13,8 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 const logger = new Logger('LoginProtection');
 
 const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
-	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+	const channelToNotify = settings.get<string>('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
@@ -66,7 +67,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
@@ -109,7 +110,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;

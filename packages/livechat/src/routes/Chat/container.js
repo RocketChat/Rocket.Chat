@@ -7,7 +7,7 @@ import { ModalManager } from '../../components/Modal';
 import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
-import { loadConfig, processUnread } from '../../lib/main';
+import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
@@ -57,7 +57,7 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
-		const newUser = await Livechat.grantVisitor({ visitor });
+		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
 
@@ -79,9 +79,7 @@ class ChatContainer extends Component {
 			parentCall('callback', 'chat-started');
 			return newRoom;
 		} catch (error) {
-			const {
-				data: { error: reason },
-			} = error;
+			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
 				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
@@ -132,7 +130,7 @@ class ChatContainer extends Component {
 			this.stopTypingDebounced.stop();
 			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
 		} catch (error) {
-			const reason = error?.data?.error ?? error.message;
+			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
@@ -143,7 +141,7 @@ class ChatContainer extends Component {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
-			await Livechat.uploadFile({ rid, file });
+			await Livechat.uploadFile(rid, file);
 		} catch (error) {
 			const {
 				data: { reason, sizeAllowed },
@@ -321,16 +319,23 @@ class ChatContainer extends Component {
 	}
 
 	async componentDidUpdate(prevProps) {
-		const { messages, visible, minimized, dispatch } = this.props;
+		const { messages, dispatch, user } = this.props;
 		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
 
-		if (messages && prevMessages && messages.length !== prevMessages.length && visible && !minimized) {
-			const nextLastMessage = messages[messages.length - 1];
-			const lastMessage = prevMessages[prevMessages.length - 1];
-			if (
-				(nextLastMessage && lastMessage && nextLastMessage._id !== lastMessage._id) ||
-				(messages.length === 1 && prevMessages.length === 0)
-			) {
+		const renderedMessages = messages.filter((message) => canRenderMessage(message));
+		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
+		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
+
+		const shouldMarkUnread = shouldMarkAsUnread();
+
+		if (
+			(lastRenderedMessage && lastRenderedMessage.u?._id === user?._id) ||
+			(!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)
+		) {
+			const nextLastMessage = lastRenderedMessage;
+			const lastReadMessage = getLastReadMessage();
+
+			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
 				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
 				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
 			}
@@ -404,6 +409,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 			queueInfo,
 			incomingCallAlert,
 			ongoingCall,
+			messageListPosition,
 		}) => (
 			<ChatContainer
 				ref={ref}
@@ -471,6 +477,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 				limitTextLength={limitTextLength}
 				incomingCallAlert={incomingCallAlert}
 				ongoingCall={ongoingCall}
+				messageListPosition={messageListPosition}
 			/>
 		)}
 	</Consumer>

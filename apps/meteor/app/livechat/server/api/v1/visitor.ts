@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors as VisitorsRaw, LivechatCustomField } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {
@@ -29,20 +30,26 @@ API.v1.addRoute('livechat/visitor', {
 			}),
 		});
 
-		const { token, customFields } = this.bodyParams.visitor;
-		const guest: ILivechatVisitorDTO = { ...this.bodyParams.visitor };
+		const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
+		const guest = {
+			token,
+			...(id && { id }),
+			...(name && { name }),
+			...(email && { email }),
+			...(department && { department }),
+			...(username && { username }),
+			...(connectionData && { connectionData }),
+			...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
+			connectionData: normalizeHttpHeaderData(this.request.headers),
+		};
 
-		if (this.bodyParams.visitor.phone) {
-			guest.phone = { number: this.bodyParams.visitor.phone as string };
-		}
-
-		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = await Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
+		const visitorId = await LivechatTyped.registerGuest(guest);
 
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		if (visitor) {
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = LivechatRooms.findOpenByVisitorToken(visitor?.token).fetch();
+			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
 			await Promise.all(rooms.map((room: IRoom) => Livechat.saveRoomInfo(room, visitor)));
 		}
 
@@ -92,17 +99,21 @@ API.v1.addRoute('livechat/visitor/:token', {
 		if (!visitor) {
 			throw new Meteor.Error('invalid-token');
 		}
-
-		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
-			fields: {
-				name: 1,
-				t: 1,
-				cl: 1,
-				u: 1,
-				usernames: 1,
-				servedBy: 1,
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const rooms = await LivechatRooms.findOpenByVisitorToken(
+			this.urlParams.token,
+			{
+				projection: {
+					name: 1,
+					t: 1,
+					cl: 1,
+					u: 1,
+					usernames: 1,
+					servedBy: 1,
+				},
 			},
-		}).fetch();
+			extraQuery,
+		).toArray();
 
 		// if gdpr is enabled, bypass rooms check
 		if (rooms?.length && !settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -129,16 +140,21 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
-				fields: {
-					name: 1,
-					t: 1,
-					cl: 1,
-					u: 1,
-					usernames: 1,
-					servedBy: 1,
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+			const rooms = await LivechatRooms.findOpenByVisitorToken(
+				this.urlParams.token,
+				{
+					projection: {
+						name: 1,
+						t: 1,
+						cl: 1,
+						u: 1,
+						usernames: 1,
+						servedBy: 1,
+					},
 				},
-			}).fetch();
+				extraQuery,
+			).toArray();
 			return API.v1.success({ rooms });
 		},
 	},

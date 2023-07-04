@@ -175,7 +175,7 @@ describe('Mention Server', () => {
 		});
 	});
 	describe('getChannelbyMentions', () => {
-		it('should return the channel "general"', () => {
+		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
 			};
@@ -185,20 +185,20 @@ describe('Mention Server', () => {
 					name: 'general',
 				},
 			];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
-		it('should return nothing"', () => {
+		it('should return nothing"', async () => {
 			const message = {
 				msg: '#unknow',
 			};
 			const expected = [];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
 	});
 	describe('execute', () => {
-		it('should return the channel "general"', () => {
+		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
 			};
@@ -208,7 +208,7 @@ describe('Mention Server', () => {
 					name: 'general',
 				},
 			];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
 		it('should return nothing"', async () => {

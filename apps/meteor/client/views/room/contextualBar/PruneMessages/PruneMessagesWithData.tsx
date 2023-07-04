@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -22,7 +22,7 @@ export const initialValues = {
 	newerTime: '',
 	olderDate: '',
 	olderTime: '',
-	users: [] as IUser['username'][],
+	users: [],
 	inclusive: false,
 	pinned: false,
 	discussion: false,
@@ -50,18 +50,6 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	const { values, handlers, reset } = useForm(initialValues);
 	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
 		values as typeof initialValues;
-	const { handleUsers } = handlers;
-
-	const onChangeUsers = useMutableCallback((value: IUser['username'], action?: string) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-
-		return handleUsers(users.filter((current) => current !== value));
-	});
 
 	const handlePrune = useMutableCallback((): void => {
 		const handlePruneAction = async (): Promise<void> => {
@@ -196,7 +184,6 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 			callOutText={callOutText}
 			validateText={validateText}
 			users={users}
-			onChangeUsers={onChangeUsers}
 			values={values}
 			handlers={handlers}
 			onClickClose={onClickClose}

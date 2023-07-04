@@ -1,6 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Field } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -30,17 +28,6 @@ const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
 		},
 	});
 
-	const handleChange = useMutableCallback((currentUsername: Exclude<IUser['username'], undefined>, action: 'remove' | undefined) => {
-		const { value, onChange } = usersField;
-
-		if (action === 'remove') {
-			onChange(value.filter((username) => username !== currentUsername));
-			return;
-		}
-
-		onChange([...value, currentUsername]);
-	});
-
 	return (
 		<Field flexShrink={1}>
 			<Field.Label>{t('Users')}</Field.Label>
@@ -48,7 +35,7 @@ const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
 				<UserAutoCompleteMultiple
 					value={usersField.value}
 					error={!!usersFieldState.error}
-					onChange={handleChange}
+					onChange={usersField.onChange}
 					placeholder={t('Username_Placeholder')}
 				/>
 			</Field.Row>

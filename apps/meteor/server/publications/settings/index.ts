@@ -4,8 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { WithId } from 'mongodb';
 
-import { hasAtLeastOnePermission } from '../../../app/authorization/server';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
 
@@ -59,7 +58,7 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		const privilegedSetting = hasAtLeastOnePermission(uid, ['view-privileged-setting', 'edit-privileged-setting']);
+		const privilegedSetting = await hasAtLeastOnePermissionAsync(uid, ['view-privileged-setting', 'edit-privileged-setting']);
 		const manageSelectedSettings = privilegedSetting || (await hasPermissionAsync(uid, 'manage-selected-settings'));
 
 		if (!manageSelectedSettings) {

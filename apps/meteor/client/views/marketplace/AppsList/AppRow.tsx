@@ -79,17 +79,19 @@ const AppRow = (props: App): ReactElement => {
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' withTruncatedText>
-					<Box withTruncatedText>{name}</Box>
+				<Box display='flex' alignItems='center' fontScale='p2m' mie='x16' withTruncatedText>
+					<Box withTruncatedText fontScale='h5' color='title-labels'>
+						{name}
+					</Box>
 				</Box>
-				<Box display='flex' mie='x16' alignItems='center' color='default'>
+				<Box display='flex' mie='x16' alignItems='center'>
 					{bundledIn && Boolean(bundledIn.length) && (
-						<Box display='flex' alignItems='center' color='default'>
+						<Box display='flex' alignItems='center'>
 							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
 					{shortDescription && !isMobile && (
-						<Box is='span' mis='x16'>
+						<Box is='span' mis='x16' fontScale='c1'>
 							{shortDescription}
 						</Box>
 					)}

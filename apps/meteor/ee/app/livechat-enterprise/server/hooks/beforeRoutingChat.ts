@@ -4,7 +4,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
@@ -14,7 +14,7 @@ callbacks.add(
 	'livechat.beforeRouteChat',
 	async (inquiry, agent) => {
 		// check here if department has fallback before queueing
-		if (inquiry?.department && !online(inquiry.department, true, true)) {
+		if (inquiry?.department && !(await online(inquiry.department, true, true))) {
 			cbLogger.debug('No agents online on selected department. Inquiry will use fallback department');
 			const department = await LivechatDepartment.findOneById(inquiry.department);
 
@@ -58,7 +58,7 @@ callbacks.add(
 			return inquiry;
 		}
 
-		if (agent && allowAgentSkipQueue(agent)) {
+		if (agent && (await allowAgentSkipQueue(agent))) {
 			cbLogger.debug(`Skipping callback. Agent ${agent.agentId} can skip queue`);
 			return inquiry;
 		}
