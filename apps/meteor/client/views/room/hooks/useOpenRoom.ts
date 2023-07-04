@@ -1,6 +1,7 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';
@@ -19,6 +20,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const createDirectMessage = useMethod('createDirectMessage');
 	const openRoom = useMethod('openRoom');
 	const directRoute = useRoute('direct');
+
+	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
 	return useQuery(
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
@@ -63,13 +66,14 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { rid: room._id });
 			}
 
+			unsubscribeFromRoomOpenedEvent.current();
+			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
+
 			LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
 
 			if (room._id === RoomManager.opened) {
 				return { rid: room._id };
 			}
-
-			fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
