@@ -41,7 +41,6 @@ import { updateCounter } from '../../../app/statistics/server/functions/updateSt
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
-import { Notifications } from '../../../app/notifications/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { i18n } from '../../lib/i18n';
 
@@ -419,10 +418,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
-		/* deprecated */
-		(Notifications.notifyRoom as any)(rid, callId);
-
-		Notifications.notifyRoom(rid, 'videoconf', callId);
+		void api.broadcast('room.video-conference', { rid, callId });
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
