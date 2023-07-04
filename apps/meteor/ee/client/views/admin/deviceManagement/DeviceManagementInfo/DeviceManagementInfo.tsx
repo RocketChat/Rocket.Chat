@@ -29,7 +29,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 
 	const handleDeviceLogout = useDeviceLogout(sessionId, '/v1/sessions/logout');
 
-	const { name: clientName, os } = device || {};
+	const { name: clientName, os, version: rcVersion } = device || {};
 	const { username, name } = _user || {};
 	const userPresence = usePresence(userId);
 
@@ -46,6 +46,11 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
 						<InfoPanel.Text>{clientName}</InfoPanel.Text>
+					</InfoPanel.Field>
+
+					<InfoPanel.Field>
+						<InfoPanel.Label>{t('Version')}</InfoPanel.Label>
+						<InfoPanel.Text>{rcVersion || '—'}</InfoPanel.Text>
 					</InfoPanel.Field>
 
 					<InfoPanel.Field>
