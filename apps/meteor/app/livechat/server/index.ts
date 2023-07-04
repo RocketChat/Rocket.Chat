@@ -9,7 +9,6 @@ import './hooks/offlineMessageToChannel';
 import './hooks/saveAnalyticsData';
 import './hooks/sendToCRM';
 import './hooks/processRoomAbandonment';
-import './hooks/saveLastVisitorMessageTs';
 import './hooks/markRoomNotResponded';
 import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';
