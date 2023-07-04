@@ -172,7 +172,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+		return this.updateOne(
+			{ _id: inquiryId },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
+		);
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {

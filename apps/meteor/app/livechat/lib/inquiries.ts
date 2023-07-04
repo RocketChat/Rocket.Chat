@@ -6,13 +6,16 @@ type ReturnType =
 	| {
 			priorityWeight: SortOrder;
 			ts: SortOrder;
+			_updatedAt: SortOrder;
 	  }
 	| {
 			estimatedWaitingTimeQueue: SortOrder;
 			ts: SortOrder;
+			_updatedAt: SortOrder;
 	  }
 	| {
 			ts: SortOrder;
+			_updatedAt: SortOrder;
 	  };
 
 export const getOmniChatSortQuery = (
@@ -20,11 +23,11 @@ export const getOmniChatSortQuery = (
 ): ReturnType => {
 	switch (sortByMechanism) {
 		case OmnichannelSortingMechanismSettingType.Priority:
-			return { priorityWeight: 1, ts: 1 };
+			return { priorityWeight: 1, ts: 1, _updatedAt: -1 };
 		case OmnichannelSortingMechanismSettingType.SLAs:
-			return { estimatedWaitingTimeQueue: 1, ts: 1 };
+			return { estimatedWaitingTimeQueue: 1, ts: 1, _updatedAt: -1 };
 		case OmnichannelSortingMechanismSettingType.Timestamp:
 		default:
-			return { ts: 1 };
+			return { ts: 1, _updatedAt: -1 };
 	}
 };
