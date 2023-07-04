@@ -72,6 +72,7 @@ export const {
 		href: 'device-management',
 		i18nLabel: 'Device_Management',
 		icon: 'mobile',
+		permissionGranted: (): boolean => hasPermission('view-device-management'),
 	},
 	{
 		href: 'admin-email-inboxes',

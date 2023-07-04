@@ -24,7 +24,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const { tab } = routeParams ?? {};
 
 	const { data } = useIsEnterprise();
-	const hasEngagementDashboard = useHasLicenseModule('videoconference-enterprise');
+	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard');
 	const isUpsell = !data?.isEnterprise || !hasEngagementDashboard;
 
 	const setModal = useSetModal();

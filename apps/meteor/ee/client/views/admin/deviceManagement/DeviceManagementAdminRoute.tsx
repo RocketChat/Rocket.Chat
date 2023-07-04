@@ -6,6 +6,7 @@ import PageSkeleton from '../../../../../client/components/PageSkeleton';
 import UpsellModal from '../../../../../client/components/UpsellModal';
 import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import DeviceManagementAdminPage from './DeviceManagementAdminPage';
 
 const DeviceManagementAdminRoute = (): ReactElement => {
@@ -13,19 +14,19 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const canViewDeviceManagement = usePermission('view-device-management');
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
 	const { data } = useIsEnterprise();
+	const hasDeviceManagement = useHasLicenseModule('engagement-dashboard');
 
 	const deviceManagementRoute = useRoute('device-management');
 	const upgradeRoute = useRoute('upgrade');
 
 	const setModal = useSetModal();
-
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const handleModalClose = useCallback(() => {
 		setModal(null);
 		setIsModalOpen(false);
 	}, [setModal]);
 
-	const isUpsell = !data?.isEnterprise;
+	const isUpsell = !data?.isEnterprise || !hasDeviceManagement;
 
 	useEffect(() => {
 		const handleConfirmModal = () => {
@@ -62,7 +63,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
-	if (!canViewDeviceManagement) {
+	if (!canViewDeviceManagement || !hasDeviceManagement) {
 		return <NotAuthorizedPage />;
 	}
 
