@@ -36,6 +36,7 @@ import type { AutoUpdateRecord } from './types/IMeteor';
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
+	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;

@@ -95,4 +95,9 @@ export interface LivechatEndpoints {
 		id: string,
 		args: OperationParams<'PUT', '/v1/livechat/message/:_id'>,
 	): Promise<Serialized<OperationResult<'PUT', '/v1/livechat/message/:_id'>>>;
+
+	sendUiInteraction(
+		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
+		appId: string,
+	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>>;
 }
