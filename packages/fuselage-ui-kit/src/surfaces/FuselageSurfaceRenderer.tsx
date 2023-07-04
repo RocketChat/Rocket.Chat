@@ -19,9 +19,8 @@ import StaticSelectElement from '../elements/StaticSelectElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 import RadioButtonElement from '../elements/RadioButtonElement';
 import CheckboxElement from '../elements/CheckboxElement';
-import CalloutElement from '../elements/CalloutElement';
+import CalloutBlock from '../blocks/CalloutBlock';
 import TimePickerElement from '../elements/TimePickerElement';
-import TabNavigationElement from '../elements/TabNavigationElement';
 import MarkdownTextElement from '../elements/MarkdownTextElement';
 import PlainTextElement from '../elements/PlainTextElement';
 
@@ -428,16 +427,16 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   callout(
-    block: UiKit.CalloutElement,
+    block: UiKit.CalloutBlock,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
     }
-
+    
     return (
-      <CalloutElement
+      <CalloutBlock
         key={index}
         block={block}
         context={context}
@@ -458,26 +457,6 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
 
     return (
       <TimePickerElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
-
-  tab_navigation(
-    block: UiKit.TabNavigationElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
-
-    return (
-      <TabNavigationElement
         key={block.actionId || index}
         block={block}
         context={context}

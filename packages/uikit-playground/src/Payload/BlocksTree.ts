@@ -15,9 +15,7 @@ import {
   actionWithToggleSwitch,
   actionWithRadioButton,
   actionWithCheckbox,
-  actionWithCallout,
   actionWithTimePicker,
-  actionWithTabNavigation,
 } from './action';
 import {
   contextWithPlainText,
@@ -26,6 +24,7 @@ import {
   contextWithAllElements,
 } from './context';
 import { divider } from './divider';
+import { callout } from './callout';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import {
   inputWithSingleLineInput,
@@ -121,14 +120,6 @@ const BlocksTree: Item = [
         label: 'checkbox',
         payload: actionWithCheckbox,
       },
-      {
-        label: 'callout',
-        payload: actionWithCallout,
-      },
-      {
-        label: 'tab navigation',
-        payload: actionWithTabNavigation,
-      }
     ],
   },
   {
@@ -290,6 +281,15 @@ const BlocksTree: Item = [
       {
         label: 'Plain',
         payload: divider,
+      },
+    ],
+  },
+  {
+    label: 'callout',
+    branches: [
+      {
+        label: 'Plain',
+        payload: callout,
       },
     ],
   },
