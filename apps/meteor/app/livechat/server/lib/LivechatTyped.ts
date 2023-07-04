@@ -19,6 +19,7 @@ import {
 	Messages,
 	Users,
 	LivechatDepartmentAgents,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
@@ -396,6 +397,7 @@ class LivechatClass {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),

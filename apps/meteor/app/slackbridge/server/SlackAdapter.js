@@ -4,7 +4,7 @@ import https from 'https';
 
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users, ReadReceipts } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
@@ -1006,13 +1006,12 @@ export default class SlackAdapter {
 				],
 			};
 
-			if (!isImporting) {
-				await Messages.setPinnedByIdAndUserId(
-					`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
-					rocketMsgObj.u,
-					true,
-					new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-				);
+			if (!isImporting && slackMessage.attachments[0].channel_id && slackMessage.attachments[0].ts) {
+				const messageId = `slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`;
+				await Messages.setPinnedByIdAndUserId(messageId, rocketMsgObj.u, true, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000));
+				if (settings.get('Message_Read_Receipt_Store_Users')) {
+					await ReadReceipts.setPinnedByMessageId(messageId, true);
+				}
 			}
 
 			return rocketMsgObj;
@@ -1218,12 +1217,11 @@ export default class SlackAdapter {
 						],
 					};
 
-					await Messages.setPinnedByIdAndUserId(
-						`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
-						msgObj.u,
-						true,
-						new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
-					);
+					const messageId = `slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`;
+					await Messages.setPinnedByIdAndUserId(messageId, msgObj.u, true, new Date(parseInt(pin.message.ts.split('.')[0]) * 1000));
+					if (settings.get('Message_Read_Receipt_Store_Users')) {
+						await ReadReceipts.setPinnedByMessageId(messageId, true);
+					}
 				}
 			}
 		}

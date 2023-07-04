@@ -1,4 +1,4 @@
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 
@@ -21,6 +21,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await ReadReceipts.incrementThreadMessagesCountById(tmid);
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 

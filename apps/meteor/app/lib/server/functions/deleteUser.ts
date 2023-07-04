@@ -8,6 +8,7 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
+	ReadReceipts,
 	LivechatUnitMonitors,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -54,6 +55,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				}
 
 				await Messages.removeByUserId(userId);
+				await ReadReceipts.removeByUserId(userId);
 				break;
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');

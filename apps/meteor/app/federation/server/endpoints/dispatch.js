@@ -1,5 +1,5 @@
 import EJSON from 'ejson';
-import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
@@ -325,6 +325,7 @@ const eventHandlers = {
 
 			// Remove the message
 			await Messages.removeById(messageId);
+			await ReadReceipts.removeByMessageId(messageId);
 
 			// Notify the room
 			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });

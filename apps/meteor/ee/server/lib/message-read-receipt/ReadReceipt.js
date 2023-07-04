@@ -65,7 +65,7 @@ export const ReadReceipt = {
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
-		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
+		this.storeReadReceipts([message], roomId, userId, extraData);
 	},
 
 	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
@@ -92,6 +92,10 @@ export const ReadReceipt = {
 				userId,
 				messageId: message._id,
 				ts,
+				...(message.t && { t: message.t }),
+				...(message.pinned && { pinned: true }),
+				...(message.drid && { drid: message.drid }),
+				...(message.tmid && { tmid: message.tmid }),
 				...extraData,
 			}));
 

@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
@@ -86,7 +86,7 @@ export async function cleanRoomHistory({
 		}
 	}
 
-	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
+	const { count, selectedMessageIds } = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 		rid,
 		excludePinned,
 		ignoreDiscussion,
@@ -95,6 +95,16 @@ export async function cleanRoomHistory({
 		fromUsers,
 		ignoreThreads,
 	);
+
+	if (!limit) {
+		const uids = await Users.findByUsernames(fromUsers, { projection: { _id: 1 } })
+			.map((user: IUser) => user._id)
+			.toArray();
+		await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, uids, ignoreThreads);
+	} else if (selectedMessageIds) {
+		await ReadReceipts.removeByMessageIds(selectedMessageIds);
+	}
+
 	if (count) {
 		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
 		await Rooms.resetLastMessageById(rid, lastMessage);
