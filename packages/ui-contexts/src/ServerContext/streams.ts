@@ -17,6 +17,7 @@ import type {
 	IOmnichannelCannedResponse,
 	IIntegrationHistory,
 	IUserDataEvent,
+	ICalendarNotification,
 	IUserStatus,
 	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
@@ -154,6 +155,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
+		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 	];
 
 	'importers': [
