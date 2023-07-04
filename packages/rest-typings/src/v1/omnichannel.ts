@@ -463,13 +463,22 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
-type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
+type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+		viewAll: {
+			type: 'string',
+			nullable: true,
+			enum: ['true', 'false'],
 		},
 		count: {
 			type: 'number',
