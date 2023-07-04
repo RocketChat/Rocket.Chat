@@ -295,6 +295,8 @@ export class SlackImporter extends Importer {
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+
+		return this.progress;
 	}
 
 	parseMentions(newMessage) {
