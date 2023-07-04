@@ -14,7 +14,7 @@ const UserMenuHeader = ({ user }: { user: IUser }) => {
 	const displayName = useUserDisplayName(user);
 
 	return (
-		<Box display='flex' flexDirection='row' alignItems='center' minWidth='x208'>
+		<Box display='flex' flexDirection='row' alignItems='center' minWidth='x208' mbe='neg-x4' mbs='neg-x8'>
 			<Box mie='x4'>
 				<UserAvatar size='x36' username={user?.username || ''} etag={user?.avatarETag} />
 			</Box>
