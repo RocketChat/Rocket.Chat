@@ -1,6 +1,8 @@
 import { MongoInternals } from 'meteor/mongo';
 import { Settings } from '@rocket.chat/models';
 
+import { throttledCounter } from '../../../../lib/utils/throttledCounter';
+
 const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
 const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
@@ -44,6 +46,10 @@ setInterval(() => {
 		});
 }, interval);
 
+const incException = throttledCounter((counter) => {
+	Settings.incrementValueById('Uncaught_Exceptions_Count', counter).catch(console.error);
+}, 10000);
+
 /**
  * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
@@ -58,8 +64,8 @@ setInterval(() => {
  * we will start respecting this and exit the process to prevent these kind of problems.
  */
 
-process.on('unhandledRejection', async (error) => {
-	await Settings.incrementValueById('Uncaught_Exceptions_Count');
+process.on('unhandledRejection', (error) => {
+	incException();
 
 	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);
