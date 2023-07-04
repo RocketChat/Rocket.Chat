@@ -126,9 +126,7 @@ const routesSubscribers = new Set<() => void>();
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
-		const { path } = FlowRouter.current();
-		FlowRouter._current.path = '';
-		FlowRouter._page.show(path);
+		FlowRouter._page.dispatch({ path: FlowRouter._current.path, params: {} });
 		return;
 	}
 

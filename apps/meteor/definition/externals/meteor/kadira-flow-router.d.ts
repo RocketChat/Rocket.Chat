@@ -171,6 +171,7 @@ declare module 'meteor/kadira:flow-router' {
 			start(): void;
 			stop(): void;
 			show(path: string): void;
+			dispatch(ctx: { path: string; params: any }): void;
 		};
 	};
 }
