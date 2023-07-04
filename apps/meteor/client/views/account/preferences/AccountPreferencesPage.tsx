@@ -46,6 +46,7 @@ type CurrentData = {
 	muteFocusedConversations: boolean;
 	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
+	notifyCalendarEvents: boolean;
 };
 
 export type FormSectionProps = {
