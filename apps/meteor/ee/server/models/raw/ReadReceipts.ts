@@ -98,6 +98,10 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		return this.updateMany({ messageId }, { $inc: { tcount: inc } });
 	}
 
+	decrementThreadMessagesCountById(messageId: string, inc = -1): Promise<Document | UpdateResult> {
+		return this.updateMany({ messageId }, { $inc: { tcount: inc } });
+	}
+
 	unsetThreadMessagesCountById(messageId: string): Promise<Document | UpdateResult> {
 		return this.updateMany({ messageId }, { $unset: { tcount: 1 } });
 	}

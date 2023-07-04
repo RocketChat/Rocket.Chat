@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
@@ -98,7 +98,7 @@ export async function cleanRoomHistory({
 
 	if (!limit) {
 		const uids = await Users.findByUsernames(fromUsers, { projection: { _id: 1 } })
-			.map((user: IUser) => user._id)
+			.map((user) => user._id)
 			.toArray();
 		await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, uids, ignoreThreads);
 	} else if (selectedMessageIds) {
