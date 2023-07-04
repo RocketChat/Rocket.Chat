@@ -20,8 +20,7 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-
-import { sleep } from '/lib/utils/sleep.js';
+import { sleep } from '../../../lib/utils/sleep';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
