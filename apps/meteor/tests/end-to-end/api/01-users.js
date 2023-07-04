@@ -1781,7 +1781,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1812,7 +1812,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1842,7 +1842,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1871,7 +1871,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1900,7 +1900,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1929,7 +1929,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1958,7 +1958,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
@@ -1982,7 +1982,7 @@ describe('[Users]', function () {
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						currentPassword,
