@@ -10,7 +10,7 @@ import { useIsUserDeleted } from './hooks/useIsUserDeleted';
 
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
-	onClick: (id: IUser['_id']) => void;
+	onClick: (id: IUser['_id'], isUserDeleted?: boolean) => void;
 	isDesktopOrLarger: boolean;
 };
 
@@ -31,7 +31,14 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	const concatenatedRoomNames = roomNames.join(', ');
 
 	return (
-		<GenericTableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
+		<GenericTableRow
+			key={_id}
+			onKeyDown={(): void => onClick(_id, isUserDeleted)}
+			onClick={(): void => onClick(_id, isUserDeleted)}
+			tabIndex={0}
+			role='link'
+			action
+		>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && (

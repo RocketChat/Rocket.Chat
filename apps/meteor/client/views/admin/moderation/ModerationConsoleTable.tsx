@@ -63,10 +63,10 @@ const ModerationConsoleTable: FC = () => {
 		keepPreviousData: true,
 	});
 
-	const handleClick = useMutableCallback((id): void => {
+	const handleClick = useMutableCallback((id: string, isUserDeleted?: boolean): void => {
 		moderationRoute.push({
 			context: 'info',
-			id,
+			id: isUserDeleted ? `deleted-user_${id}` : id,
 		});
 	});
 

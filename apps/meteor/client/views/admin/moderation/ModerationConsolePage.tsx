@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -13,6 +14,7 @@ const ModerationConsolePage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
+	let userId: IUser['_id'] = id || '';
 
 	const handleRedirect = async (mid: string) => {
 		try {
@@ -24,6 +26,10 @@ const ModerationConsolePage = () => {
 		}
 	};
 
+	if (id?.includes('deleted-user')) {
+		userId = id.replace('deleted-user_', '');
+	}
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -34,7 +40,9 @@ const ModerationConsolePage = () => {
 			</Page>
 			{context && (
 				<Contextualbar>
-					{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}
+					{context === 'info' && id && (
+						<UserMessages userId={userId} onRedirect={handleRedirect} isUserDeleted={id?.includes('deleted-user')} />
+					)}
 					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
 				</Contextualbar>
 			)}

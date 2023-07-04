@@ -6,7 +6,7 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users } from '@rocket.chat/models';
+import { ModerationReports } from '@rocket.chat/models';
 import type { IModerationReport } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -78,7 +78,7 @@ API.v1.addRoute(
 				{ projection: { _id: 1 } },
 			);
 			if (!existingReport) {
-				return API.v1.failure('error-invalid-user');
+				return API.v1.failure('no-report-found-for-this-user');
 			}
 
 			const escapedSelector = escapeRegExp(selector);
@@ -129,9 +129,12 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
+			const existingReport = await ModerationReports.findOne(
+				{ 'message.u._id': userId, '_hidden': { $ne: true } },
+				{ projection: { _id: 1 } },
+			);
+			if (!existingReport) {
+				return API.v1.failure('no-report-found-for-this-user');
 			}
 
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', {

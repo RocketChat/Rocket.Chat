@@ -10,8 +10,15 @@ import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
-// TODO: Missing Error State
-const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
+const UserMessages = ({
+	userId,
+	onRedirect,
+	isUserDeleted = false,
+}: {
+	userId: string;
+	onRedirect: (mid: string) => void;
+	isUserDeleted?: boolean;
+}): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRoute('moderation-console');
@@ -47,25 +54,9 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		reloadUserMessages();
 	});
 
-	const username = useMemo(() => {
-		if (userMessages?.messages[0]?.message?.u?.username) {
-			return userMessages?.messages[0].message.u.username;
-		}
-		return '';
-	}, [userMessages?.messages]);
-
-	const name = useMemo(() => {
-		if (userMessages?.messages[0]?.message?.u?.name) {
-			return userMessages?.messages[0].message.u.name;
-		}
-		return '';
-	}, [userMessages?.messages]);
-
-	const displayName =
-		useUserDisplayName({
-			name,
-			username,
-		}) || userId;
+	const username = useMemo(() => userMessages?.messages[0]?.message?.u?.username ?? '', [userMessages?.messages]);
+	const name = useMemo(() => userMessages?.messages[0]?.message?.u?.name ?? '', [userMessages?.messages]);
+	const displayName = useUserDisplayName({ name, username }) ?? userId;
 
 	return (
 		<>
@@ -75,13 +66,19 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isSuccessUserMessages && userMessages.messages.length > 0 && (
-					<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
-						{t('Moderation_Duplicate_messages_warning')}
-					</Callout>
-				)}{' '}
+					<Box padding={15}>
+						<Callout mb={5} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
+							{t('Moderation_Duplicate_messages_warning')}
+						</Callout>
+						{isUserDeleted && (
+							<Callout type='warning' icon='warning'>
+								{t('Moderation_User_deleted_warning')}
+							</Callout>
+						)}
+					</Box>
+				)}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 				{isSuccessUserMessages &&
-					userMessages.messages.length > 0 &&
 					userMessages.messages.map((message) => (
 						<Box key={message._id}>
 							<ContextMessage
@@ -96,7 +93,9 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 				{isSuccessUserMessages && userMessages.messages.length === 0 && <GenericNoResults />}
 			</Box>
 			<ContextualbarFooter display='flex'>
-				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
+				{isSuccessUserMessages && userMessages.messages.length > 0 && (
+					<MessageContextFooter userId={userId} isUserDeleted={isUserDeleted} />
+				)}
 			</ContextualbarFooter>
 		</>
 	);

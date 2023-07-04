@@ -11,7 +11,12 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
 	const files: string[] = [];
 	const messageIds: string[] = [];
-	for (const message of messages) {
+
+	const promises = messages.map(async (message) => {
+		const foundMessage = await Messages.findOneById(message._id, { projection: { _id: 1 } });
+		if (!foundMessage) {
+			return;
+		}
 		if (message.file) {
 			files.push(message.file._id);
 		}
@@ -19,7 +24,9 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			files.concat(message.files.map((file) => file._id));
 		}
 		messageIds.push(message._id);
-	}
+	});
+
+	await Promise.all(promises);
 	if (keepHistory) {
 		if (showDeletedStatus) {
 			await Promise.all(messageIds.map((id) => Messages.cloneAndSaveAsHistoryById(id, user as any)));
