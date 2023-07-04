@@ -4,7 +4,7 @@ import { lazy } from 'react';
 import { registerAdminRoute } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
-const [registerRoute, unregisterRoute] = registerAdminRoute('/engagement-dashboard/:context?/:tab?', {
+const [registerRoute, unregisterRoute] = registerAdminRoute('/engagement/:context?/:tab?', {
 	name: 'engagement-dashboard',
 	component: lazy(() => import('../views/admin/engagementDashboard/EngagementDashboardRoute')),
 	ready: false,

@@ -45,7 +45,7 @@ const CustomEmojiRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
-				<Page.Header title={t('Custom_Emoji')}>
+				<Page.Header title={t('Emoji')}>
 					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
 						{t('New')}
 					</Button>
