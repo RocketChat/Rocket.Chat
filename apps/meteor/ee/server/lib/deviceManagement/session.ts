@@ -38,19 +38,13 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		if (connection.loginToken){
+		if (connection.loginToken) {
 			return;
 		}
 
-		const user = await Users.findOne(
-			{
-				_id: userId,
-				emails: { $exists: true, $ne: [] },
-			},
-			{
-				projection: { 'name': 1, 'username': 1, 'emails': 1, 'settings.preferences.receiveLoginDetectionEmail': 1 },
-			},
-		);
+		const user = await Users.findOneByIdWithEmailAddress(userId, {
+			projection: { 'name': 1, 'username': 1, 'emails': 1, 'settings.preferences.receiveLoginDetectionEmail': 1 },
+		});
 
 		if (!user) {
 			return;
