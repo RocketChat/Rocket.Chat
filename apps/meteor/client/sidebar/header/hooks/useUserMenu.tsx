@@ -1,19 +1,20 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import React from 'react';
 
+import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
 import { useThemeItems } from './useThemeItems';
-import { useUserStatusItem } from './useUserStatusItem';
 
 export const useUserMenu = (user: IUser) => {
-	const userHeaderItems = useUserStatusItem(user);
 	const statusItems = useStatusItems(user);
 	const themeItems = useThemeItems();
 	const accountItems = useAccountItems();
 
 	return [
 		{
-			items: userHeaderItems,
+			title: <UserMenuHeader user={user} />,
+			items: [],
 		},
 		{
 			title: 'Status',

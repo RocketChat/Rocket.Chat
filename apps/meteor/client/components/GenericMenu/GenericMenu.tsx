@@ -1,7 +1,7 @@
 import type { IconButton } from '@rocket.chat/fuselage';
 import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -15,7 +15,7 @@ type GenericMenuCommonProps = {
 type GenericMenuConditionalProps =
 	| {
 			sections?: {
-				title?: string;
+				title?: ReactNode;
 				items: GenericMenuItemProps[];
 				permission?: boolean | '' | 0 | null | undefined;
 			}[];
@@ -50,7 +50,7 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 					{...props}
 				>
 					{sections.map(({ title, items }, key) => (
-						<MenuSection title={title && (t.has(title) ? t(title) : title)} items={items} key={`${title}-${key}`}>
+						<MenuSection title={typeof title === 'string' && t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
 							{(item) => (
 								<MenuItem key={item.id}>
 									<GenericMenuItem {...item} />
