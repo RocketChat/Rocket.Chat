@@ -15,9 +15,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo, useEffect } from 'react';
 
-import { Importers } from '../../../../app/importer/client/index';
 import Page from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
@@ -29,8 +29,16 @@ function NewImportPage() {
 
 	const [isLoading, setLoading] = useSafely(useState(false));
 	const [fileType, setFileType] = useSafely(useState('upload'));
+
+	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
+	const { data: importers, isLoading: isLoadingImporters } = useQuery(['importers'], async () => listImportersEndpoint(), {
+		refetchOnWindowFocus: false,
+	});
+
+	const options = useMemo(() => importers?.map(({ key, name }) => [key, name]) || [], [importers]);
+
 	const importerKey = useRouteParameter('importerKey');
-	const importer = useMemo(() => Importers.get(importerKey), [importerKey]);
+	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
 
 	const maxFileSize = useSetting('FileUpload_MaxFileSize');
 
@@ -42,10 +50,10 @@ function NewImportPage() {
 	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
-		if (importerKey && !importer) {
+		if (importerKey && !importer && !isLoadingImporters) {
 			newImportRoute.replace();
 		}
-	}, [importer, importerKey, newImportRoute]);
+	}, [importer, importerKey, newImportRoute, isLoadingImporters]);
 
 	const formatMemorySize = useFormatMemorySize();
 
@@ -188,14 +196,12 @@ function NewImportPage() {
 									disabled={isLoading}
 									placeholder={t('Select_an_option')}
 									onChange={handleImporterKeyChange}
-									options={Importers.getAll().map(({ key, name }) => [key, t(name)])}
+									options={options}
 								/>
 							</Field.Row>
 							{importer && (
 								<Field.Hint>
-									{importer.name === 'CSV'
-										? t('Importer_From_Description_CSV')
-										: t('Importer_From_Description', { from: t(importer.name) })}
+									{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
 								</Field.Hint>
 							)}
 						</Field>

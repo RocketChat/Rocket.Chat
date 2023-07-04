@@ -60,8 +60,11 @@ function PrepareImportPage() {
 
 	useEffect(
 		() =>
-			streamer('progress', ({ rate }) => {
-				setProgressRate(rate);
+			streamer('progress', (progress) => {
+				// Ignore any update without the rate since we're not showing any other info anyway
+				if ('rate' in progress) {
+					setProgressRate(progress.rate);
+				}
 			}),
 		[streamer, setProgressRate],
 	);

@@ -1,9 +1,9 @@
 import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
+import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 
-export class CsvImporter extends Base {
+export class CsvImporter extends Importer {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 
@@ -59,13 +59,15 @@ export class CsvImporter extends Base {
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
 				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the channels
@@ -97,7 +99,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.channels': channelsCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the users
@@ -122,7 +125,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the messages
@@ -140,7 +144,8 @@ export class CsvImporter extends Base {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
 					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
-					return increaseProgressCount();
+					increaseProgressCount();
+					continue;
 				}
 
 				let data;
@@ -211,7 +216,6 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
-				return increaseProgressCount();
 			}
 
 			increaseProgressCount();

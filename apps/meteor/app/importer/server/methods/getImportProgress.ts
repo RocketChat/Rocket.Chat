@@ -18,10 +18,9 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportProgress');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	return importer.instance.getProgress();
+	return instance.getProgress();
 };
 
 declare module '@rocket.chat/ui-contexts' {

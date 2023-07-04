@@ -4,10 +4,10 @@ import http from 'http';
 import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
 
-import { Base, ProgressStep, Selection } from '../../importer/server';
+import { Importer, ProgressStep, Selection } from '../../importer/server';
 import { FileUpload } from '../../file-upload/server';
 
-export class PendingFileImporter extends Base {
+export class PendingFileImporter extends Importer {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 		this.userTags = [];

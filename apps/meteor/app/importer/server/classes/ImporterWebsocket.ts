@@ -1,6 +1,11 @@
+import type { IStreamer } from 'meteor/rocketchat:streamer';
+import type { IImportProgress } from '@rocket.chat/core-typings';
+
 import notifications from '../../../notifications/server/lib/Notifications';
 
 class ImporterWebsocketDef {
+	private streamer: IStreamer<'importers'>;
+
 	constructor() {
 		this.streamer = notifications.streamImporters;
 	}
@@ -10,7 +15,7 @@ class ImporterWebsocketDef {
 	 *
 	 * @param {Progress} progress The progress of the import.
 	 */
-	progressUpdated(progress) {
+	progressUpdated(progress: { rate: number } | IImportProgress) {
 		this.streamer.emit('progress', progress);
 	}
 }

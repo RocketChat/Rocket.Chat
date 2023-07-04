@@ -5,9 +5,9 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
 
-import { Base, ProgressStep } from '../../importer/server';
+import { Importer, ProgressStep } from '../../importer/server';
 
-export class HipChatEnterpriseImporter extends Base {
+export class HipChatEnterpriseImporter extends Importer {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 

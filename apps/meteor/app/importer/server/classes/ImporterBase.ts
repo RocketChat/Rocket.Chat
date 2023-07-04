@@ -1,44 +1,59 @@
-import http from 'http';
-import fs from 'fs';
-import https from 'https';
-
-import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
+import type { MatchKeysAndValues } from 'mongodb';
+import { Settings, ImportData, Imports } from '@rocket.chat/models';
+import type { IImport, IImportRecordType, IImportData, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
-import getFileType from 'file-type';
 
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { ImporterInfo } from '../../lib/ImporterInfo';
+import type { ImporterInfo } from '../definitions/ImporterInfo';
+import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/lib/i18n';
 import { Selection, SelectionChannel, SelectionUser } from '..';
 
+type OldSettings = {
+	allowedDomainList?: string | null;
+	allowUsernameChange?: boolean | null;
+	maxFileSize?: number | null;
+	mediaTypeWhiteList?: string | null;
+	mediaTypeBlackList?: string | null;
+};
+
 /**
  * Base class for all of the importers.
  */
-export class Base {
-	/**
-	 * Constructs a new importer, adding an empty collection, AdmZip property, and empty users & channels
-	 *
-	 * @param {string} name The importer's name.
-	 * @param {string} description The i18n string which describes the importer
-	 * @param {string} mimeType The expected file type.
-	 */
-	constructor(info, importRecord) {
-		if (!(info instanceof ImporterInfo)) {
+export class Importer {
+	private reportProgressHandler: ReturnType<typeof setTimeout> | undefined;
+
+	protected AdmZip = AdmZip;
+
+	protected converter: ImportDataConverter;
+
+	protected info: ImporterInfo;
+
+	protected logger: Logger;
+
+	protected users: Record<string, any>;
+
+	protected channels: Record<string, any>;
+
+	protected messages: Record<string, any>;
+
+	protected oldSettings: OldSettings;
+
+	public importRecord: IImport;
+
+	public progress: Progress;
+
+	constructor(info: ImporterInfo, importRecord: IImport) {
+		if (!info.key || !info.importer) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
 
-		this.http = http;
-		this.https = https;
-		this.AdmZip = AdmZip;
-		this.getFileType = getFileType;
 		this.converter = new ImportDataConverter();
 
-		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
 		this.getProgress = this.getProgress.bind(this);
 		this.updateProgress = this.updateProgress.bind(this);
@@ -52,48 +67,24 @@ export class Base {
 		this.converter.setLogger(this.logger);
 
 		this.progress = new Progress(this.info.key, this.info.name);
-		this.collection = RawImports;
-		this.importRecordParam = importRecord;
+		this.importRecord = importRecord;
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
 		this.oldSettings = {};
-	}
 
-	async build() {
-		const userId = Meteor.userId();
-		if (this.importRecordParam) {
-			this.logger.debug('Found existing import operation');
-			this.importRecord = this.importRecordParam;
-			this.progress.step = this.importRecord.status;
-			this.reloadCount();
-		} else {
-			this.logger.debug('Starting new import operation');
-			const importId = (
-				await Imports.insertOne({
-					type: this.info.name,
-					importerKey: this.info.key,
-					ts: Date.now(),
-					status: this.progress.step,
-					valid: true,
-					user: userId,
-				})
-			).insertedId;
-			this.importRecord = await Imports.findOne(importId);
-		}
+		this.progress.step = this.importRecord.status;
+		this.reloadCount();
+
 		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
 	}
 
 	/**
 	 * Registers the file name and content type on the import operation
-	 *
-	 * @param {string} fileName The name of the uploaded file.
-	 * @param {string} contentType The sent file type.
-	 * @returns {Progress} The progress record of the import.
 	 */
-	async startFileUpload(fileName, contentType) {
+	async startFileUpload(fileName: string, contentType?: string): Promise<IImport> {
 		await this.updateProgress(ProgressStep.UPLOADING);
-		return this.updateRecord({ file: fileName, contentType });
+		return this.updateRecord({ file: fileName, ...(contentType ? { contentType } : {}) });
 	}
 
 	/**
@@ -102,46 +93,8 @@ export class Base {
 	 * @param {string} fullFilePath the full path of the uploaded file
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async prepareUsingLocalFile(fullFilePath) {
-		const file = fs.readFileSync(fullFilePath);
-		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
-
-		const { contentType } = this.importRecord;
-		const fileName = this.importRecord.file;
-
-		const data = buffer.toString('base64');
-		const dataURI = `data:${contentType};base64,${data}`;
-
-		return this.prepare(dataURI, contentType, fileName, true);
-	}
-
-	/**
-	 * Takes the uploaded file and extracts the users, channels, and messages from it.
-	 *
-	 * @param {string} dataURI Base64 string of the uploaded file
-	 * @param {string} sentContentType The sent file type.
-	 * @param {string} fileName The name of the uploaded file.
-	 * @param {boolean} skipTypeCheck Optional property that says to not check the type provided.
-	 * @returns {Progress} The progress record of the import.
-	 */
-	async prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
-		await this.collection.deleteMany({});
-		if (!skipTypeCheck) {
-			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
-			this.logger.debug('Uploaded file information is:', fileType);
-			this.logger.debug('Expected file type is:', this.info.mimeType);
-
-			if (!fileType || fileType.mime !== this.info.mimeType) {
-				this.logger.warn(`Invalid file uploaded for the ${this.info.name} importer.`);
-				await this.updateProgress(ProgressStep.ERROR);
-				throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${this.info.name} data from.`, {
-					step: 'prepare',
-				});
-			}
-		}
-
-		await this.updateProgress(ProgressStep.PREPARING_STARTED);
-		return this.updateRecord({ file: fileName });
+	async prepareUsingLocalFile(_fullFilePath: string): Promise<Progress> {
+		return this.updateProgress(ProgressStep.PREPARING_STARTED);
 	}
 
 	/**
@@ -153,7 +106,7 @@ export class Base {
 	 * @param {Selection} importSelection The selection data.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async startImport(importSelection) {
+	async startImport(importSelection: Selection): Promise<Progress> {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
@@ -163,16 +116,21 @@ export class Base {
 				`Channels in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`,
 			);
 		}
+		const startedByUserId = Meteor.userId();
+		if (!startedByUserId) {
+			throw new Error('You must be logged in to do this.');
+		}
 
 		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
-		const startedByUserId = Meteor.userId();
 
-		const beforeImportFn = async (data, type) => {
+		const beforeImportFn = async (data: IImportData, type: IImportRecordType) => {
 			switch (type) {
 				case 'channel': {
-					const id = data.t === 'd' ? '__directMessages__' : data.importIds[0];
+					const channelData = data as IImportChannel;
+
+					const id = channelData.t === 'd' ? '__directMessages__' : channelData.importIds[0];
 					for (const channel of importSelection.channels) {
 						if (channel.channel_id === id) {
 							return channel.do_import;
@@ -182,7 +140,9 @@ export class Base {
 					return false;
 				}
 				case 'user': {
-					const id = data.importIds[0];
+					const userData = data as IImportUser;
+
+					const id = userData.importIds[0];
 					for (const user of importSelection.users) {
 						if (user.user_id === id) {
 							return user.do_import;
@@ -197,7 +157,7 @@ export class Base {
 		};
 
 		const afterImportFn = async () => {
-			return this.addCountCompleted(1);
+			await this.addCountCompleted(1);
 		};
 
 		process.nextTick(async () => {
@@ -237,11 +197,11 @@ export class Base {
 	}
 
 	async backupSettingValues() {
-		const allowedDomainList = await Settings.findOneById('Accounts_AllowedDomainsList').value;
-		const allowUsernameChange = await Settings.findOneById('Accounts_AllowUsernameChange').value;
-		const maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').value;
-		const mediaTypeWhiteList = await Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
-		const mediaTypeBlackList = await Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+		const allowedDomainList = (await Settings.findOneById('Accounts_AllowedDomainsList'))?.value as string | null;
+		const allowUsernameChange = (await Settings.findOneById('Accounts_AllowUsernameChange'))?.value as boolean | null;
+		const maxFileSize = (await Settings.findOneById('FileUpload_MaxFileSize'))?.value as number | null;
+		const mediaTypeWhiteList = (await Settings.findOneById('FileUpload_MediaTypeWhiteList'))?.value as string | null;
+		const mediaTypeBlackList = (await Settings.findOneById('FileUpload_MediaTypeBlackList'))?.value as string | null;
 
 		this.oldSettings = {
 			allowedDomainList,
@@ -252,20 +212,15 @@ export class Base {
 		};
 	}
 
-	async applySettingValues(settingValues) {
+	async applySettingValues(settingValues: OldSettings) {
 		await Settings.updateValueById('Accounts_AllowedDomainsList', settingValues.allowedDomainList ?? '');
-		await Settings.updateValueById('Accounts_AllowUsernameChange', setTimeout.allowUsernameChange ?? true);
+		await Settings.updateValueById('Accounts_AllowUsernameChange', settingValues.allowUsernameChange ?? true);
 		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
 		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');
 		await Settings.updateValueById('FileUpload_MediaTypeBlackList', settingValues.mediaTypeBlackList ?? '');
 	}
 
-	/**
-	 * Gets the progress of this import.
-	 *
-	 * @returns {Progress} The progress record of the import.
-	 */
-	getProgress() {
+	getProgress(): Progress {
 		return this.progress;
 	}
 
@@ -277,23 +232,21 @@ export class Base {
 	 * @param {ProgressStep} step The progress step which this import is currently at.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async updateProgress(step) {
+	async updateProgress(step: IImportProgress['step']): Promise<Progress> {
 		this.progress.step = step;
 
 		this.logger.debug(`${this.info.name} is now at ${step}.`);
 		await this.updateRecord({ status: this.progress.step });
 
-		this.reportProgress();
+		// Do not send the default progress report during the preparing stage - the classes are sending their own report in a different format.
+		if (!ImportPreparingStartedStates.includes(this.progress.step)) {
+			this.reportProgress();
+		}
 
 		return this.progress;
 	}
 
 	reloadCount() {
-		if (!this.importRecord.count) {
-			this.progress.count.total = 0;
-			this.progress.count.completed = 0;
-		}
-
 		this.progress.count.total = this.importRecord.count?.total || 0;
 		this.progress.count.completed = this.importRecord.count?.completed || 0;
 	}
@@ -304,7 +257,7 @@ export class Base {
 	 * @param {number} count The amount to add to the total count of items.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async addCountToTotal(count) {
+	async addCountToTotal(count: number): Promise<Progress> {
 		this.progress.count.total += count;
 		await this.updateRecord({ 'count.total': this.progress.count.total });
 
@@ -317,7 +270,7 @@ export class Base {
 	 * @param {number} count The amount to add to the total count of finished items.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async addCountCompleted(count) {
+	async addCountCompleted(count: number): Promise<Progress> {
 		this.progress.count.completed += count;
 
 		// Only update the database every 500 records
@@ -325,8 +278,8 @@ export class Base {
 		if (this.progress.count.completed % 500 === 0 || this.progress.count.completed >= this.progress.count.total) {
 			await this.updateRecord({ 'count.completed': this.progress.count.completed });
 			this.reportProgress();
-		} else if (!this._reportProgressHandler) {
-			this._reportProgressHandler = setTimeout(() => {
+		} else if (!this.reportProgressHandler) {
+			this.reportProgressHandler = setTimeout(() => {
 				this.reportProgress();
 			}, 250);
 		}
@@ -340,67 +293,28 @@ export class Base {
 	 * Sends an updated progress to the websocket
 	 */
 	reportProgress() {
-		if (this._reportProgressHandler) {
-			clearTimeout(this._reportProgressHandler);
-			this._reportProgressHandler = false;
+		if (this.reportProgressHandler) {
+			clearTimeout(this.reportProgressHandler);
+			this.reportProgressHandler = undefined;
 		}
 		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
 	/**
-	 * Registers error information on a specific user from the import record
-	 *
-	 * @param {int} the user id
-	 * @param {object} an exception object
-	 */
-	async addUserError(userId, error) {
-		await Imports.updateOne(
-			{
-				'_id': this.importRecord._id,
-				'fileData.users.user_id': userId,
-			},
-			{
-				$set: {
-					'fileData.users.$.error': error,
-					'hasErrors': true,
-				},
-			},
-		);
-	}
-
-	async addMessageError(error, msg) {
-		await Imports.updateOne(
-			{
-				_id: this.importRecord._id,
-			},
-			{
-				$push: {
-					errors: {
-						error,
-						msg,
-					},
-				},
-				$set: {
-					hasErrors: true,
-				},
-			},
-		);
-	}
-
-	/**
 	 * Updates the import record with the given fields being `set`.
-	 *
-	 * @param {any} fields The fields to set, it should be an object with key/values.
-	 * @returns {Imports} The import record.
 	 */
-	async updateRecord(fields) {
+	async updateRecord(fields: MatchKeysAndValues<IImport>): Promise<IImport> {
+		if (!this.importRecord) {
+			return this.importRecord;
+		}
+
 		await Imports.update({ _id: this.importRecord._id }, { $set: fields });
 		this.importRecord = await Imports.findOne(this.importRecord._id);
 
 		return this.importRecord;
 	}
 
-	async buildSelection() {
+	async buildSelection(): Promise<Selection> {
 		await this.updateProgress(ProgressStep.USER_SELECTION);
 
 		const users = await ImportData.getAllUsersForSelection();
@@ -412,24 +326,15 @@ export class Base {
 				new SelectionUser(u.data.importIds[0], u.data.username, u.data.emails[0], Boolean(u.data.deleted), u.data.type === 'bot', true),
 		);
 		const selectionChannels = channels.map(
-			(c) =>
-				new SelectionChannel(
-					c.data.importIds[0],
-					c.data.name,
-					Boolean(c.data.archived),
-					true,
-					c.data.t === 'p',
-					undefined,
-					c.data.t === 'd',
-				),
+			(c) => new SelectionChannel(c.data.importIds[0], c.data.name, Boolean(c.data.archived), true, c.data.t === 'p', c.data.t === 'd'),
 		);
 		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
-			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
+			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, true));
 		}
 
-		const results = new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages);
 
 		return results;
 	}

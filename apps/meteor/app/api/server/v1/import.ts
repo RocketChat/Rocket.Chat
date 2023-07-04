@@ -9,11 +9,15 @@ import {
 	isDownloadPendingFilesParamsPOST,
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
+	isImportersListParamsGET,
 } from '@rocket.chat/rest-typings';
 import { Imports } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { Importers } from '../../../importer/server';
+import { startImportOperation } from '../../../importer/server/startImportOperation';
+import { PendingFileImporter } from '../../../importer-pending-files/server/importer';
+import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/importer';
 import {
 	executeUploadImportFile,
 	executeDownloadPublicImportFile,
@@ -22,6 +26,7 @@ import {
 	executeStartImport,
 	executeGetLatestImportOperations,
 } from '../../../importer/server/methods';
+import { translateForUserId } from '../../../../server/lib/translateForUser';
 
 API.v1.addRoute(
 	'uploadImportFile',
@@ -133,9 +138,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
 			}
 
-			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			await importer.instance.build();
-			const count = await importer.instance.prepareFileCount();
+			const operation = await startImportOperation(importer, this.userId);
+			const instance = new PendingFileImporter(importer, operation); // eslint-disable-line new-cap
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -158,9 +163,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
 			}
 
-			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			await importer.instance.build();
-			const count = await importer.instance.prepareFileCount();
+			const operation = await startImportOperation(importer, this.userId);
+			const instance = new PendingAvatarImporter(importer, operation); // eslint-disable-line new-cap
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -182,6 +187,29 @@ API.v1.addRoute(
 			return API.v1.success({
 				operation,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'importers.list',
+	{
+		authRequired: true,
+		validateParams: isImportersListParamsGET,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async get() {
+			const importers = Importers.getAllVisible();
+
+			const translatedImporters = await Promise.all(
+				importers.map(async ({ key, name }) => ({
+					key,
+					name: (await translateForUserId(name, this.userId)) || name,
+				})),
+			);
+
+			return API.v1.success(translatedImporters);
 		},
 	},
 );

@@ -1,12 +1,12 @@
 import _ from 'underscore';
 import { Messages, Settings, ImportData } from '@rocket.chat/models';
 
-import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
+import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
-export class SlackImporter extends Base {
+export class SlackImporter extends Importer {
 	parseData(data) {
 		const dataString = data.toString();
 		try {
