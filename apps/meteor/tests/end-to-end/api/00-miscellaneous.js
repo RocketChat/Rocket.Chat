@@ -142,6 +142,7 @@ describe('miscellaneous', function () {
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
+					'showThreadsInMainChannel',
 					// 'clockMode',
 					'useEmojis',
 					'convertAsciiEmoji',
@@ -172,6 +173,7 @@ describe('miscellaneous', function () {
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
+					'notifyCalendarEvents',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);

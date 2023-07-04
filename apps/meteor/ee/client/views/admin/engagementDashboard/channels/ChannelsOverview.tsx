@@ -1,4 +1,4 @@
-import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
@@ -67,53 +67,53 @@ const ChannelsOverview = (): ReactElement => {
 				)}
 				{(!channels || channels.length) && (
 					<Table>
-						<Table.Head>
-							<Table.Row>
-								<Table.Cell>{'#'}</Table.Cell>
-								<Table.Cell>{t('Channel')}</Table.Cell>
-								<Table.Cell>{t('Created')}</Table.Cell>
-								<Table.Cell>{t('Last_active')}</Table.Cell>
-								<Table.Cell>{t('Messages_sent')}</Table.Cell>
-							</Table.Row>
-						</Table.Head>
-						<Table.Body>
+						<TableHead>
+							<TableRow>
+								<TableCell>{'#'}</TableCell>
+								<TableCell>{t('Channel')}</TableCell>
+								<TableCell>{t('Created')}</TableCell>
+								<TableCell>{t('Last_active')}</TableCell>
+								<TableCell>{t('Messages_sent')}</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
 							{channels?.map(({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
-								<Table.Row key={i}>
-									<Table.Cell>{i + 1}.</Table.Cell>
-									<Table.Cell>
+								<TableRow key={i}>
+									<TableCell>{i + 1}.</TableCell>
+									<TableCell>
 										<Margins inlineEnd='x4'>
 											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
 										</Margins>
 										{name}
-									</Table.Cell>
-									<Table.Cell>{moment(createdAt).format('L')}</Table.Cell>
-									<Table.Cell>{moment(updatedAt).format('L')}</Table.Cell>
-									<Table.Cell>
+									</TableCell>
+									<TableCell>{moment(createdAt).format('L')}</TableCell>
+									<TableCell>{moment(updatedAt).format('L')}</TableCell>
+									<TableCell>
 										{messagesCount} <Growth>{messagesVariation}</Growth>
-									</Table.Cell>
-								</Table.Row>
+									</TableCell>
+								</TableRow>
 							))}
 							{!channels &&
 								Array.from({ length: 5 }, (_, i) => (
-									<Table.Row key={i}>
-										<Table.Cell>
+									<TableRow key={i}>
+										<TableCell>
 											<Skeleton width='100%' />
-										</Table.Cell>
-										<Table.Cell>
+										</TableCell>
+										<TableCell>
 											<Skeleton width='100%' />
-										</Table.Cell>
-										<Table.Cell>
+										</TableCell>
+										<TableCell>
 											<Skeleton width='100%' />
-										</Table.Cell>
-										<Table.Cell>
+										</TableCell>
+										<TableCell>
 											<Skeleton width='100%' />
-										</Table.Cell>
-										<Table.Cell>
+										</TableCell>
+										<TableCell>
 											<Skeleton width='100%' />
-										</Table.Cell>
-									</Table.Row>
+										</TableCell>
+									</TableRow>
 								))}
-						</Table.Body>
+						</TableBody>
 					</Table>
 				)}
 				<Pagination
