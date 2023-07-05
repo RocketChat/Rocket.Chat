@@ -3,6 +3,11 @@ import { Settings, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
+import { throttledCounter } from '../../../../lib/utils/throttledCounter';
+
+const incException = throttledCounter((counter) => {
+	Settings.incrementValueById('Uncaught_Exceptions_Count', counter).catch(console.error);
+}, 10000);
 
 class ErrorHandler {
 	reporting: boolean;
@@ -40,7 +45,7 @@ class ErrorHandler {
 
 	async registerHandlers() {
 		process.on('uncaughtException', async (error) => {
-			await Settings.incrementValueById('Uncaught_Exceptions_Count');
+			incException();
 			if (!this.reporting) {
 				return;
 			}

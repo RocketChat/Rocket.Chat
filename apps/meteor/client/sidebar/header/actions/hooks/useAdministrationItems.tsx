@@ -7,7 +7,7 @@ import type { AccountBoxItem } from '../../../../../app/ui-utils/client/lib/Acco
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
 import Emoji from '../../../../components/Emoji';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
