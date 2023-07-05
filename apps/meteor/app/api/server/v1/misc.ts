@@ -16,6 +16,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -637,7 +638,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
+			const isMailURLSet = !(config.MAIL_URL === 'undefined' || config.MAIL_URL === undefined);
 			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
 			return API.v1.success({ isSMTPConfigured });
 		},

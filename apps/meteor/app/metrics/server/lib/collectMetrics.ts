@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import { Facts } from 'meteor/facts-base';
 import { Statistics } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { Info } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -137,7 +138,7 @@ const was = {
 };
 const updatePrometheusConfig = async (): Promise<void> => {
 	const is = {
-		port: process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port'),
+		port: config.PROMETHEUS_PORT || settings.get('Prometheus_Port'),
 		enabled: settings.get<boolean>('Prometheus_Enabled'),
 		resetInterval: settings.get<number>('Prometheus_Reset_Interval'),
 		collectGC: settings.get<boolean>('Prometheus_Garbage_Collector'),
@@ -166,7 +167,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	if (!was.enabled) {
 		server.listen({
 			port: is.port,
-			host: process.env.BIND_IP || '0.0.0.0',
+			host: config.BIND_IP,
 		});
 
 		timer = setInterval(setPrometheusData, 5000);

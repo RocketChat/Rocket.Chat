@@ -1,4 +1,5 @@
 import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { clientLogger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
@@ -54,7 +55,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 			// Check if the number of domains is allowed
 			if (!checkRoomDomainsLength(domainsAfterAdd)) {
-				throw new Error(`Cannot federate rooms with more than ${process.env.FEDERATED_DOMAINS_LENGTH || 10} domains`);
+				throw new Error(`Cannot federate rooms with more than ${config.FEDERATED_DOMAINS_LENGTH || 10} domains`);
 			}
 
 			//

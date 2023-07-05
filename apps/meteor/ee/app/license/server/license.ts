@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
@@ -246,7 +247,7 @@ class LicenseClass {
 	}
 
 	showLicenses(): void {
-		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
+		if (!config.LICENSE_DEBUG) {
 			return;
 		}
 
@@ -282,7 +283,7 @@ export function addLicense(encryptedLicense: string): boolean {
 			return false;
 		}
 
-		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
+		if (config.LICENSE_DEBUG) {
 			console.log('##### Raw license ->', decrypted);
 		}
 
@@ -292,7 +293,7 @@ export function addLicense(encryptedLicense: string): boolean {
 		return true;
 	} catch (e) {
 		console.error('##### Invalid license');
-		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
+		if (config.LICENSE_DEBUG) {
 			console.error('##### Invalid raw license ->', encryptedLicense, e);
 		}
 		return false;

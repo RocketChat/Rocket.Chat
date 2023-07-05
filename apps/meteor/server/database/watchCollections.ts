@@ -1,3 +1,4 @@
+import { config } from '@rocket.chat/config';
 import {
 	Messages,
 	Users,
@@ -17,13 +18,11 @@ import {
 	LivechatPriority,
 } from '@rocket.chat/models';
 
-const { DBWATCHER_EXCLUDE_COLLECTIONS = '', DBWATCHER_ONLY_COLLECTIONS = '' } = process.env;
-
-const excludeCollections = DBWATCHER_EXCLUDE_COLLECTIONS.split(',')
+const excludeCollections = config.DBWATCHER_EXCLUDE_COLLECTIONS.split(',')
 	.map((collection) => collection.trim())
 	.filter(Boolean);
 
-const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
+const onlyCollections = config.DBWATCHER_ONLY_COLLECTIONS.split(',')
 	.map((collection) => collection.trim())
 	.filter(Boolean);
 

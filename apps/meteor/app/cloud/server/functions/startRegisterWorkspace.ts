@@ -1,5 +1,6 @@
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { config } from '@rocket.chat/config';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
@@ -9,7 +10,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = await retrieveRegistrationStatus();
-	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
+	if ((workspaceRegistered && connectToCloud) || config.TEST_MODE) {
 		await syncWorkspace(true);
 
 		return true;

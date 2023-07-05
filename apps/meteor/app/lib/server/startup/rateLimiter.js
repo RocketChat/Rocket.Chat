@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
+import { config } from '@rocket.chat/config';
 
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
@@ -10,7 +11,7 @@ import { sleep } from '../../../../lib/utils/sleep';
 
 const logger = new Logger('RateLimiter');
 
-const slowDownRate = parseInt(process.env.RATE_LIMITER_SLOWDOWN_RATE);
+const slowDownRate = config.RATE_LIMITER_SLOWDOWN_RATE;
 
 const rateLimiterConsoleLog = ({ msg, reply, input }) => {
 	console.warn('DDP RATE LIMIT:', msg);
@@ -19,7 +20,7 @@ const rateLimiterConsoleLog = ({ msg, reply, input }) => {
 
 const rateLimiterLogger = ({ msg, reply, input }) => logger.info({ msg, reply, input });
 
-const rateLimiterLog = String(process.env.RATE_LIMITER_LOGGER) === 'console' ? rateLimiterConsoleLog : rateLimiterLogger;
+const rateLimiterLog = String(config.RATE_LIMITER_LOGGER) === 'console' ? rateLimiterConsoleLog : rateLimiterLogger;
 
 // Get initial set of names already registered for rules
 const names = new Set(
@@ -228,7 +229,7 @@ const configConnectionByMethod = _.debounce(() => {
 	);
 }, 1000);
 
-if (!process.env.TEST_MODE) {
+if (!config.TEST_MODE) {
 	settings.watchByRegex(/^DDP_Rate_Limit_IP_.+/, configIP);
 	settings.watchByRegex(/^DDP_Rate_Limit_User_[^B].+/, configUser);
 	settings.watchByRegex(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);

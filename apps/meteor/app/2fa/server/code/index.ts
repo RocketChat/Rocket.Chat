@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
@@ -168,7 +169,7 @@ const getSecondFactorMethod = (user: IUser, method: string | undefined, options:
 };
 
 export async function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): Promise<boolean> {
-	if (process.env.TEST_MODE && !options.requireSecondFactor) {
+	if (config.TEST_MODE && !options.requireSecondFactor) {
 		return true;
 	}
 

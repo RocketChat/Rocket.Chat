@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
+import { config } from '@rocket.chat/config';
 
 export const RateLimiterClass = new (class {
 	limitFunction(fn, numRequests, timeInterval, matchers) {
-		if (process.env.TEST_MODE === 'true') {
+		if (config.TEST_MODE) {
 			return fn;
 		}
 		const rateLimiter = new RateLimiter();
@@ -39,7 +40,7 @@ export const RateLimiterClass = new (class {
 	}
 
 	limitMethod(methodName, numRequests, timeInterval, matchers) {
-		if (process.env.TEST_MODE === 'true') {
+		if (config.TEST_MODE) {
 			return;
 		}
 		const match = {

@@ -1,10 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 import _ from 'underscore';
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import { config } from '@rocket.chat/config';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 
-const warn = process.env.NODE_ENV === 'development' || process.env.TEST_MODE;
+const warn = config.isDevelopment || config.TEST_MODE;
 
 type SettingsConfig = {
 	debounce: number;

@@ -7,6 +7,7 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
+import { config } from '@rocket.chat/config';
 
 import { settings } from '../../../../app/settings/server';
 import type { AppServerOrchestrator } from '../orchestrator';
@@ -50,8 +51,7 @@ Meteor.startup(() => {
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		max: (settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') as number) * 60,
 		skip: () =>
-			settings.get('API_Enable_Rate_Limiter') !== true ||
-			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
+			settings.get('API_Enable_Rate_Limiter') !== true || (config.isDevelopment && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
 
 	router.use(apiLimiter);

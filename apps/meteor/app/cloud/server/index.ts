@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { cronJobs } from '@rocket.chat/cron';
+import { config } from '@rocket.chat/config';
 
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
@@ -33,11 +34,11 @@ Meteor.startup(async function () {
 
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
+	if (config.REG_TOKEN && config.REG_TOKEN !== '' && !workspaceRegistered) {
 		try {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
-			if (!(await connectWorkspace(process.env.REG_TOKEN))) {
+			if (!(await connectWorkspace(config.REG_TOKEN))) {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 

@@ -3,6 +3,7 @@ import os from 'os';
 import { Settings } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { config } from '@rocket.chat/config';
 
 import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
@@ -24,8 +25,8 @@ export const getNewUpdates = async () => {
 			osArch: os.arch(),
 			osRelease: os.release(),
 			nodeVersion: process.version,
-			deployMethod: process.env.DEPLOY_METHOD || 'tar',
-			deployPlatform: process.env.DEPLOY_PLATFORM || 'selfinstall',
+			deployMethod: config.DEPLOY_METHOD,
+			deployPlatform: config.DEPLOY_PLATFORM,
 		};
 
 		const token = await getWorkspaceAccessToken();

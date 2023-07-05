@@ -4,6 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -428,7 +429,7 @@ Accounts.validateNewUser(function (user) {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
+export const MAX_RESUME_LOGIN_TOKENS = parseInt(config.MAX_RESUME_LOGIN_TOKENS) || 50;
 
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {

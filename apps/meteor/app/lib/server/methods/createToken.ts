@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { config } from '@rocket.chat/config';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -15,11 +16,7 @@ Meteor.methods<ServerMethods>({
 	async createToken(userId) {
 		const uid = Meteor.userId();
 
-		if (
-			!['yes', 'true'].includes(String(process.env.CREATE_TOKENS_FOR_USERS)) ||
-			!uid ||
-			(uid !== userId && !(await hasPermissionAsync(uid, 'user-generate-access-token')))
-		) {
+		if (!config.CREATE_TOKENS_FOR_USERS || !uid || (uid !== userId && !(await hasPermissionAsync(uid, 'user-generate-access-token')))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'createToken' });
 		}
 		const token = Accounts._generateStampedLoginToken();

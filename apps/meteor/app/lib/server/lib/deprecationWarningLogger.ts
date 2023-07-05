@@ -1,5 +1,6 @@
 import type { Response } from 'meteor/rocketchat:restivus';
 import semver from 'semver';
+import { config } from '@rocket.chat/config';
 
 import { Logger } from '../../../logger/server';
 import { metrics } from '../../../metrics/server';
@@ -8,7 +9,7 @@ const deprecationLogger = new Logger('DeprecationWarning');
 
 type MessageFn<T> = (params: { parameter: string; version: string } & T) => string;
 
-const throwErrorsForVersionsUnder = process.env.ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER;
+const throwErrorsForVersionsUnder = config.ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER;
 
 const writeDeprecationHeader = (res: Response | undefined, type: string, message: string, version: string) => {
 	if (res) {

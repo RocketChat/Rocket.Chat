@@ -5,6 +5,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { incomingLogger } from '../logger';
@@ -361,15 +362,14 @@ class WebHookAPI extends APIClass {
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
-			!process.env.TEST_MODE &&
+			!config.TEST_MODE &&
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
 	}
 
 	async shouldVerifyRateLimit(/* route */) {
 		return (
-			settings.get('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
+			settings.get('API_Enable_Rate_Limiter') === true && (config.isProduction || settings.get('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 

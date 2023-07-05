@@ -11,6 +11,7 @@ import { RateLimiter } from 'meteor/rate-limit';
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -91,7 +92,7 @@ const getRequestIP = (req: Request): string | null => {
 		return remoteAddress || forwardedFor || null;
 	}
 
-	const httpForwardedCount = parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0;
+	const httpForwardedCount = parseInt(String(config.HTTP_FORWARDED_COUNT)) || 0;
 	if (httpForwardedCount <= 0) {
 		return remoteAddress;
 	}
@@ -191,7 +192,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
 			Boolean(version) &&
-			!process.env.TEST_MODE &&
+			!config.TEST_MODE &&
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
 	}
@@ -306,7 +307,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
+			(config.isProduction || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
 			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
 		);
 	}
@@ -648,7 +649,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							result = (API.v1 as Record<string, any>)[apiMethod](
 								typeof e === 'string' ? e : e.message,
 								e.error,
-								process.env.TEST_MODE ? e.stack : undefined,
+								config.TEST_MODE ? e.stack : undefined,
 								e,
 							);
 
@@ -977,7 +978,7 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 			{
 				apiPath: 'api/',
 				useDefaultAuth: true,
-				prettyJson: process.env.NODE_ENV === 'development',
+				prettyJson: config.isDevelopment,
 				defaultOptionsEndpoint,
 				auth: getUserAuth(),
 			},

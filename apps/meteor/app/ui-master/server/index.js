@@ -3,6 +3,7 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { config } from '@rocket.chat/config';
 
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
@@ -26,7 +27,7 @@ Meteor.startup(() => {
 		injectIntoHead('noreferrer', `<meta name="referrer" content="${value}" />`);
 	});
 
-	if (process.env.DISABLE_ANIMATION) {
+	if (config.DISABLE_ANIMATION) {
 		injectIntoHead(
 			'disable-animation',
 			`

@@ -2,6 +2,7 @@ import dnsResolver from 'dns';
 import util from 'util';
 
 import mem from 'mem';
+import { config } from '@rocket.chat/config';
 
 import * as federationErrors from '../functions/errors';
 import { dnsLogger } from './logger';
@@ -15,7 +16,7 @@ const cacheMaxAge = 3600000; // one hour
 const memoizedDnsResolveSRV = mem(dnsResolveSRV, { maxAge: cacheMaxAge });
 const memoizedDnsResolveTXT = mem(dnsResolveTXT, { maxAge: cacheMaxAge });
 
-const hubUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
+const hubUrl = config.isDevelopment ? 'http://localhost:8080' : 'https://hub.rocket.chat';
 
 export async function registerWithHub(peerDomain, url, publicKey) {
 	const body = { domain: peerDomain, url, public_key: publicKey };

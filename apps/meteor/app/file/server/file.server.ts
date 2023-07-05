@@ -9,6 +9,7 @@ import mkdirp from 'mkdirp';
 import type { GridFSBucketReadStream } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
 import type { ObjectId } from 'bson';
+import { config } from '@rocket.chat/config';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -129,7 +130,7 @@ class FileSystem implements IRocketChatFileStore {
 
 	constructor({ absolutePath = '~/uploads' } = {}) {
 		if (absolutePath.split(path.sep)[0] === '~') {
-			const homepath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+			const homepath = config.HOME || config.HOMEPATH || config.USERPROFILE;
 			if (homepath != null) {
 				absolutePath = absolutePath.replace('~', homepath);
 			} else {

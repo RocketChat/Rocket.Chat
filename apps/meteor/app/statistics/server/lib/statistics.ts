@@ -39,6 +39,7 @@ import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/lic
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
+import { config } from '@rocket.chat/config';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -320,8 +321,8 @@ export const statistics = {
 		};
 
 		statistics.deploy = {
-			method: process.env.DEPLOY_METHOD || 'tar',
-			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
+			method: config.DEPLOY_METHOD,
+			platform: config.DEPLOY_PLATFORM,
 		};
 
 		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');

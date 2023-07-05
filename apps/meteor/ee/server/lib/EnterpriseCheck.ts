@@ -1,9 +1,7 @@
 import type { ServiceSchema } from 'moleculer';
-
-const { LICENSE_CHECK_INTERVAL = '20', MAX_FAILS = '2' } = process.env;
+import { config } from '@rocket.chat/config';
 
 let checkFails = 0;
-const maxFails = parseInt(MAX_FAILS) || 2;
 
 export const EnterpriseCheck: ServiceSchema = {
 	name: 'EnterpriseCheck',
@@ -50,7 +48,7 @@ export const EnterpriseCheck: ServiceSchema = {
 				// check failed, so continue
 			}
 
-			if (++checkFails < maxFails) {
+			if (++checkFails < config.MAX_FAILS) {
 				return;
 			}
 
@@ -58,6 +56,6 @@ export const EnterpriseCheck: ServiceSchema = {
 			if (shouldShutdown) {
 				this.broker.fatal('Enterprise license not found. Shutting down...');
 			}
-		}, (parseInt(LICENSE_CHECK_INTERVAL) || 20) * 1000);
+		}, config.LICENSE_CHECK_INTERVAL * 1000);
 	},
 };

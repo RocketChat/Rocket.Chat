@@ -6,6 +6,7 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import type createServer from 'connect';
+import { config } from '@rocket.chat/config';
 
 import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';
@@ -71,7 +72,7 @@ async function handle(req: createServer.IncomingMessage, res: http.ServerRespons
 		return;
 	}
 
-	if (instance.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+	if (instance.extraInformation.host === config.INSTANCE_IP && isDocker() === false) {
 		instance.extraInformation.host = 'localhost';
 	}
 

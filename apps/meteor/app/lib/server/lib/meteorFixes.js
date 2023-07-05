@@ -1,11 +1,12 @@
 import { MongoInternals } from 'meteor/mongo';
 import { Settings } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
 
-const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
-const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
-const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
+const timeoutQuery = parseInt(config.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
+const interval = parseInt(config.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
+const debug = Boolean(config.OBSERVERS_CHECK_DEBUG);
 
 /**
  * When the Observer Driver stuck in QUERYING status it stop processing records
@@ -77,7 +78,7 @@ process.on('unhandledRejection', (error) => {
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
 
-	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+	if (config.isDevelopment || config.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);
 	}
 });

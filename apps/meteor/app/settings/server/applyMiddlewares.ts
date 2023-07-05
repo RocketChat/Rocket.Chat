@@ -1,3 +1,5 @@
+import { config } from '@rocket.chat/config';
+
 import { use } from './Middleware';
 import { settings } from './cached';
 
@@ -8,7 +10,7 @@ settings.watch = use(settings.watch, (context, next) => {
 	return next(_id, callback, ...args);
 });
 
-if (process.env.DEBUG_SETTINGS === 'true') {
+if (config.DEBUG_SETTINGS) {
 	settings.watch = use(settings.watch, function watch(context, next) {
 		const [_id, callback, options] = context;
 		return next(

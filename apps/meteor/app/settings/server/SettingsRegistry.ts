@@ -3,6 +3,7 @@ import { isEqual } from 'underscore';
 import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import { config } from '@rocket.chat/config';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { overwriteSetting } from './functions/overwriteSetting';
@@ -15,19 +16,17 @@ const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
 const wizardRequiredSettings = new Set<string>();
 
-if (process.env.SETTINGS_BLOCKED) {
-	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
+if (config.SETTINGS_BLOCKED) {
+	config.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
 }
 
-if (process.env.SETTINGS_HIDDEN) {
-	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
+if (config.SETTINGS_HIDDEN) {
+	config.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
 }
 
-if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
-	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
+if (config.SETTINGS_REQUIRED_ON_WIZARD) {
+	config.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
-
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 /*
  * @deprecated
@@ -144,7 +143,7 @@ export class SettingsRegistry {
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
+			config.isDevelopment && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
@@ -183,7 +182,7 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${_id}: ${(e as Error).message}`);
+				config.isDevelopment && SystemLogger.error(`Invalid setting stored ${_id}: ${(e as Error).message}`);
 			}
 			return;
 		}

@@ -25,6 +25,7 @@ import moment from 'moment-timezone';
 import type { FindCursor, UpdateFilter } from 'mongodb';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Random } from '@rocket.chat/random';
+import { config } from '@rocket.chat/config';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -237,7 +238,7 @@ class LivechatClass {
 			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
 			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
-		if (process.env.TEST_MODE) {
+		if (config.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
 				room: newRoom,
 				options,

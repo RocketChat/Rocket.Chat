@@ -1,30 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 const {
-	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
-	NOTIFICATIONS_BATCH_SIZE = 100,
-	NOTIFICATIONS_SCHEDULE_DELAY_ONLINE = 120,
-	NOTIFICATIONS_SCHEDULE_DELAY_AWAY = 0,
-	NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE = 0,
-} = process.env;
+	NOTIFICATIONS_WORKER_TIMEOUT,
+	NOTIFICATIONS_BATCH_SIZE,
+	NOTIFICATIONS_SCHEDULE_DELAY_ONLINE,
+	NOTIFICATIONS_SCHEDULE_DELAY_AWAY,
+	NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE,
+} = config;
 
 class NotificationClass {
 	private running = false;
 
-	private cyclePause = Number(NOTIFICATIONS_WORKER_TIMEOUT);
+	private cyclePause = NOTIFICATIONS_WORKER_TIMEOUT;
 
-	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
+	private maxBatchSize = NOTIFICATIONS_BATCH_SIZE;
 
 	private maxScheduleDelaySeconds: { [key: string]: number } = {
-		online: Number(NOTIFICATIONS_SCHEDULE_DELAY_ONLINE),
-		away: Number(NOTIFICATIONS_SCHEDULE_DELAY_AWAY),
-		offline: Number(NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE),
+		online: NOTIFICATIONS_SCHEDULE_DELAY_ONLINE,
+		away: NOTIFICATIONS_SCHEDULE_DELAY_AWAY,
+		offline: NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE,
 	};
 
 	initWorker(): void {

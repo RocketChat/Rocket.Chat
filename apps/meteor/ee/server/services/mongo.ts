@@ -1,9 +1,8 @@
+import { config } from '@rocket.chat/config';
 import { MongoClient } from 'mongodb';
 import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
 
-const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
-
-const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
+const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(config.MONGO_URL)?.[1];
 
 export enum Collections {
 	Subscriptions = 'rocketchat_subscription',
@@ -16,7 +15,7 @@ export enum Collections {
 }
 
 function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
-	const client = new MongoClient(MONGO_URL, options);
+	const client = new MongoClient(config.MONGO_URL, options);
 
 	return client.connect().catch((error) => {
 		// exits the process in case of any error

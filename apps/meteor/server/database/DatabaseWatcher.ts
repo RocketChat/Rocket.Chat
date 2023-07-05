@@ -4,13 +4,14 @@ import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
+import { config } from '@rocket.chat/config';
 
 import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { getWatchCollections } from './watchCollections';
 
-const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
+const instancePing = config.MULTIPLE_INSTANCES_PING_INTERVAL;
 
 const maxDocMs = instancePing * 4; // 4 times the ping interval
 
@@ -24,11 +25,11 @@ export type RealTimeData<T> = {
 	oplog?: true;
 };
 
-const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
+const ignoreChangeStream = config.IGNORE_CHANGE_STREAM;
 
-const useMeteorOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
+const useMeteorOplog = config.USE_NATIVE_OPLOG;
 
-const useFullDocument = ['yes', 'true'].includes(String(process.env.CHANGESTREAM_FULL_DOCUMENT).toLowerCase());
+const useFullDocument = config.CHANGESTREAM_FULL_DOCUMENT;
 
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
@@ -83,7 +84,7 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private async watchOplog(): Promise<void> {
-		if (!process.env.MONGO_OPLOG_URL) {
+		if (!config.MONGO_OPLOG_URL) {
 			throw Error('No $MONGO_OPLOG_URL provided');
 		}
 
@@ -94,7 +95,7 @@ export class DatabaseWatcher extends EventEmitter {
 
 		const dbName = this.db.databaseName;
 
-		const client = new MongoClient(process.env.MONGO_OPLOG_URL, {
+		const client = new MongoClient(config.MONGO_OPLOG_URL, {
 			maxPoolSize: 1,
 		});
 

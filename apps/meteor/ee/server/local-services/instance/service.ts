@@ -5,13 +5,14 @@ import { ServiceBroker, Transporters } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { config } from '@rocket.chat/config';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getTransporter } from './getTransporter';
 import { getLogger } from './getLogger';
 
-const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
+const hostIP = config.INSTANCE_IP ? config.INSTANCE_IP.trim() : 'localhost';
 
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
@@ -29,7 +30,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
+		const tx = getTransporter({ transporter: config.TRANSPORTER, port: config.TCP_PORT, extra: config.TRANSPORTER_EXTRA });
 		if (typeof tx === 'string') {
 			this.transporter = new Transporters.NATS({ url: tx });
 			this.isTransporterTCP = false;
@@ -119,7 +120,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const instance = {
 			host: hostIP,
-			port: String(process.env.PORT).trim(),
+			port: config.PORT,
 			tcpPort: (this.broker.transit?.tx as any)?.nodes?.localNode?.port,
 			os: {
 				type: os.type(),

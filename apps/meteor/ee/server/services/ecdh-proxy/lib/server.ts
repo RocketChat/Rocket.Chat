@@ -9,13 +9,14 @@ import type { Request, Response } from 'express';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import mem from 'mem';
+import { config } from '@rocket.chat/config';
 
 import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
 
 const app = express();
 app.use(cookieParser());
 
-const port = process.env.PORT || 4000;
+const port = config.PORT;
 
 function streamToBuffer(stream: Readable): Promise<Buffer> {
 	return new Promise((resolve) => {
@@ -39,8 +40,8 @@ const getSessionCached = mem(getSession, { maxAge: 1000 });
 const _processRequest = async (session: ServerSession, requestData: Buffer): Promise<string> => session.decrypt(requestData);
 const _processResponse = async (session: ServerSession, responseData: Buffer): Promise<string> => session.encrypt(responseData);
 
-const proxyHostname = process.env.PROXY_HOST || 'localhost';
-const proxyPort = process.env.PROXY_PORT || 3000;
+const proxyHostname = config.PROXY_HOST;
+const proxyPort = config.PROXY_PORT;
 
 const proxy = async function (
 	req: Request,

@@ -3,6 +3,7 @@ import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
 import { EnterpriseCheck } from './lib/EnterpriseCheck';
+import { config } from '@rocket.chat/config';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -15,12 +16,6 @@ const lifecycle: { [k: string]: string } = {
 	started: 'started',
 	stopped: 'stopped',
 };
-
-const {
-	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
-} = process.env;
-
-const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
 
 export class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
@@ -57,7 +52,7 @@ export class NetworkBroker implements IBroker {
 		await this.started;
 
 		try {
-			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
+			await this.broker.waitForServices(method.split('.')[0], config.WAIT_FOR_SERVICES_TIMEOUT);
 		} catch (err) {
 			console.error(err);
 		}

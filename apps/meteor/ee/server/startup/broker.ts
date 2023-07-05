@@ -2,34 +2,35 @@ import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import { config } from '@rocket.chat/config';
 
 import { NetworkBroker } from '../NetworkBroker';
 
 const {
-	MS_NAMESPACE = '',
-	TRANSPORTER = '',
-	CACHE = 'Memory',
+	MS_NAMESPACE,
+	TRANSPORTER,
+	CACHE,
 	// SERIALIZER = 'MsgPack',
-	SERIALIZER = 'EJSON',
-	MOLECULER_LOG_LEVEL = 'warn',
-	BALANCE_STRATEGY = 'RoundRobin',
-	BALANCE_PREFER_LOCAL = 'false',
-	RETRY_FACTOR = '2',
-	RETRY_MAX_DELAY = '1000',
-	RETRY_DELAY = '100',
-	RETRY_RETRIES = '5',
-	RETRY_ENABLED = 'false',
-	REQUEST_TIMEOUT = '10',
-	HEARTBEAT_INTERVAL = '10',
-	HEARTBEAT_TIMEOUT = '30',
-	BULKHEAD_ENABLED = 'false',
-	BULKHEAD_CONCURRENCY = '10',
-	BULKHEAD_MAX_QUEUE_SIZE = '10000',
-	MS_METRICS = 'false',
-	MS_METRICS_PORT = '9458',
-	TRACING_ENABLED = 'false',
-	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
-} = process.env;
+	SERIALIZER,
+	MOLECULER_LOG_LEVEL,
+	BALANCE_STRATEGY,
+	BALANCE_PREFER_LOCAL,
+	RETRY_FACTOR,
+	RETRY_MAX_DELAY,
+	RETRY_DELAY,
+	RETRY_RETRIES,
+	RETRY_ENABLED,
+	REQUEST_TIMEOUT,
+	HEARTBEAT_INTERVAL,
+	HEARTBEAT_TIMEOUT,
+	BULKHEAD_ENABLED,
+	BULKHEAD_CONCURRENCY,
+	BULKHEAD_MAX_QUEUE_SIZE,
+	MS_METRICS,
+	MS_METRICS_PORT,
+	TRACING_ENABLED,
+	SKIP_PROCESS_EVENT_REGISTRATION,
+} = config;
 
 const { Base } = Serializers;
 
@@ -73,10 +74,10 @@ class EJSONSerializer extends Base {
 
 const network = new ServiceBroker({
 	namespace: MS_NAMESPACE,
-	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
+	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION,
 	transporter: TRANSPORTER,
 	metrics: {
-		enabled: MS_METRICS === 'true',
+		enabled: MS_METRICS,
 		reporter: [
 			{
 				type: 'Prometheus',
@@ -95,7 +96,7 @@ const network = new ServiceBroker({
 			pino: {
 				options: {
 					timestamp: pino.stdTimeFunctions.isoTime,
-					...(process.env.NODE_ENV !== 'production'
+					...(!config.isProduction
 						? {
 								transport: {
 									target: 'pino-pretty',
@@ -111,22 +112,22 @@ const network = new ServiceBroker({
 	},
 	registry: {
 		strategy: BALANCE_STRATEGY,
-		preferLocal: BALANCE_PREFER_LOCAL !== 'false',
+		preferLocal: BALANCE_PREFER_LOCAL !== false,
 	},
 
-	requestTimeout: parseInt(REQUEST_TIMEOUT) * 1000,
+	requestTimeout: REQUEST_TIMEOUT * 1000,
 	retryPolicy: {
-		enabled: RETRY_ENABLED === 'true',
-		retries: parseInt(RETRY_RETRIES),
-		delay: parseInt(RETRY_DELAY),
-		maxDelay: parseInt(RETRY_MAX_DELAY),
-		factor: parseInt(RETRY_FACTOR),
+		enabled: RETRY_ENABLED,
+		retries: RETRY_RETRIES,
+		delay: RETRY_DELAY,
+		maxDelay: RETRY_MAX_DELAY,
+		factor: RETRY_FACTOR,
 		check: (err: any): boolean => err && !!err.retryable,
 	},
 
 	maxCallLevel: 100,
-	heartbeatInterval: parseInt(HEARTBEAT_INTERVAL),
-	heartbeatTimeout: parseInt(HEARTBEAT_TIMEOUT),
+	heartbeatInterval: HEARTBEAT_INTERVAL,
+	heartbeatTimeout: HEARTBEAT_TIMEOUT,
 
 	// circuitBreaker: {
 	// 	enabled: false,
@@ -138,13 +139,13 @@ const network = new ServiceBroker({
 	// },
 
 	bulkhead: {
-		enabled: BULKHEAD_ENABLED === 'true',
-		concurrency: parseInt(BULKHEAD_CONCURRENCY),
-		maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
+		enabled: BULKHEAD_ENABLED,
+		concurrency: BULKHEAD_CONCURRENCY,
+		maxQueueSize: BULKHEAD_MAX_QUEUE_SIZE,
 	},
 
 	tracing: {
-		enabled: TRACING_ENABLED === 'true',
+		enabled: TRACING_ENABLED,
 		exporter: {
 			type: 'Jaeger',
 			options: {

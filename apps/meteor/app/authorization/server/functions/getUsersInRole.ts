@@ -3,6 +3,7 @@ import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { compact } from 'lodash';
+import { config } from '@rocket.chat/config';
 
 export function getUsersInRole(roleId: IRole['_id'], scope?: string): Promise<FindCursor<IUser>>;
 
@@ -28,7 +29,7 @@ export async function getUsersInRolePaginated(
 	scope: string | undefined,
 	options?: any | undefined,
 ): Promise<FindPaginated<FindCursor<IUser>>> {
-	if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+	if (config.isDevelopment && (scope === 'Users' || scope === 'Subscriptions')) {
 		throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
 	}
 

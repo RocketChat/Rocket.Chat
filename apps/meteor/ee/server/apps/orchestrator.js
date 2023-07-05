@@ -3,6 +3,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
+import { config } from '@rocket.chat/config';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { settings, settingsRegistry } from '../../../app/settings/server';
@@ -23,7 +24,7 @@ import { canEnableApp } from '../../app/license/server/license';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 
 function isTesting() {
-	return process.env.TEST_MODE === 'true';
+	return config.TEST_MODE;
 }
 
 let appsSourceStorageType;
@@ -41,8 +42,8 @@ export class AppServerOrchestrator {
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
-			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
+		if (config.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
+			this._marketplaceUrl = config.OVERWRITE_INTERNAL_MARKETPLACE_URL;
 		} else {
 			this._marketplaceUrl = 'https://marketplace.rocket.chat';
 		}

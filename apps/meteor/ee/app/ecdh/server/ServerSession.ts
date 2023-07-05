@@ -1,10 +1,12 @@
+import { config } from '@rocket.chat/config';
+
 import { Session } from '../Session';
 
 export class ServerSession extends Session {
 	async init(clientPublic: string): Promise<void> {
 		const sodium = await this.sodium();
 
-		const staticSeed = process.env.STATIC_SEED;
+		const staticSeed = config.STATIC_SEED;
 
 		if (!staticSeed?.trim()) {
 			console.error('STATIC_SEED environment variable is required');
