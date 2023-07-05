@@ -65,7 +65,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		return () => {
 			handleModalClose();
 		};
-	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleModalClose, handleOpenModal, isUpsell, setModal, t, upgradeRoute]);
+	}, [handleModalClose, handleOpenModal, isUpsell]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

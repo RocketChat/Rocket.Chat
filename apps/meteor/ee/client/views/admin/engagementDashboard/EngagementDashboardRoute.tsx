@@ -80,18 +80,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return () => {
 			handleModalClose();
 		};
-	}, [
-		routeName,
-		engagementDashboardRoute,
-		tab,
-		isUpsell,
-		setModal,
-		handleModalClose,
-		t,
-		cloudWorkspaceHadTrial,
-		upgradeRoute,
-		handleOpenModal,
-	]);
+	}, [engagementDashboardRoute, handleModalClose, handleOpenModal, isUpsell, routeName, tab]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
