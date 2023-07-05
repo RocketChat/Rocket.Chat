@@ -10,7 +10,7 @@
 		"jest-environment-jsdom": "~29.5.0",
 		"mongodb": "^4.12.1",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.3"
+		"typescript": "~5.1.6"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -29,7 +29,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-kit": "next",
-		"ajv": "^8.11.0",
+		"ajv": "^8.12.0",
 		"ajv-formats": "^2.1.1"
 	},
 	"volta": {

@@ -7,7 +7,7 @@
 		"eslint": "^8.43.0",
 		"jest": "~29.5.0",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.3"
+		"typescript": "~5.1.6"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -28,7 +28,7 @@
 		"@types/proxy-from-env": "^1.0.1",
 		"http-proxy-agent": "^5.0.0",
 		"https-proxy-agent": "^5.0.1",
-		"node-fetch": "2.3.0",
+		"node-fetch": "2.6.12",
 		"proxy-from-env": "^1.1.0"
 	}
 }

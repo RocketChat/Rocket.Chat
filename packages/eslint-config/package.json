@@ -3,7 +3,7 @@
 	"version": "0.5.0",
 	"description": "Rocket.Chat's JS ESLint config",
 	"devDependencies": {
-		"@babel/eslint-parser": "~7.22.5",
+		"@babel/eslint-parser": "~7.22.6",
 		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "~5.60.0",
 		"@typescript-eslint/parser": "~5.60.0",
