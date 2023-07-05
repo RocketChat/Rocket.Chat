@@ -955,8 +955,8 @@ export type LivechatRoomsProps = {
 
 export type VisitorSearchChatsResult = Pick<
 	IOmnichannelRoom,
-	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
-> & { v: Omit<IOmnichannelRoom['v'], 'lastMessageTs'> };
+	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage' | 'v'
+>;
 
 const LivechatRoomsSchema = {
 	type: 'object',

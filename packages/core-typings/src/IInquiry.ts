@@ -24,7 +24,6 @@ export interface IVisitor {
 	token: string;
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
-	lastMessageTs?: Date;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
