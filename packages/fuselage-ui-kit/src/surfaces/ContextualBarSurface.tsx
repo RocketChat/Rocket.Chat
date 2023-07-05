@@ -10,7 +10,7 @@ type ContextualBarSurfaceProps = {
 const ContextualBarSurface = ({
   children,
 }: ContextualBarSurfaceProps): ReactElement => (
-  <Surface type='modal'>
+  <Surface type='contextualBar'>
     <Margins blockEnd='x16'>{children}</Margins>
   </Surface>
 );
