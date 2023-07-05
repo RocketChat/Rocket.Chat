@@ -3,7 +3,7 @@ import type { ReactNode, ReactElement } from 'react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import type { EmojiByCategory } from '../../app/emoji/client';
-import { emoji, updateRecent, createEmojiList, createPickerEmojis, CUSTOM_CATEGORY } from '../../app/emoji/client';
+import { emoji, getFrequentEmoji, updateRecent, createEmojiList, createPickerEmojis, CUSTOM_CATEGORY } from '../../app/emoji/client';
 import { EmojiPickerContext } from '../contexts/EmojiPickerContext';
 import EmojiPicker from '../views/composer/EmojiPicker/EmojiPicker';
 
@@ -13,10 +13,26 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
+	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 	const [emojiListByCategory, setEmojiListByCategory] = useState<EmojiByCategory[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
+	const [quickReactions, setQuickReactions] = useState<{ emoji: string; image: string }[]>([]);
+
+	const addFrequentEmojis = useCallback(
+		(emoji: string) => {
+			if (frequentEmojis.some(([emojiName]) => emojiName === emoji)) {
+				return setFrequentEmojis(
+					frequentEmojis.map(([emojiName, count]) => {
+						return emojiName === emoji ? [emojiName, count + 1] : [emojiName, count];
+					}),
+				);
+			}
+			return setFrequentEmojis([...frequentEmojis, [emoji, 0]]);
+		},
+		[frequentEmojis, setFrequentEmojis],
+	);
 
 	// TODO: improve this update
 	const updateEmojiListByCategory = useCallback(
@@ -40,6 +56,8 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const addRecentEmoji = useCallback(
 		(_emoji: string) => {
+			addFrequentEmojis(_emoji);
+
 			const recent = recentEmojis || [];
 			const pos = recent.indexOf(_emoji as never);
 
@@ -56,17 +74,23 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			emoji.packages.base.emojisByCategory.recent = recent;
 			updateEmojiListByCategory('recent');
 		},
-		[recentEmojis, setRecentEmojis, updateEmojiListByCategory],
+		[recentEmojis, setRecentEmojis, updateEmojiListByCategory, addFrequentEmojis],
 	);
 
 	useEffect(() => {
+		const sortedFrequent = frequentEmojis.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
+		const freq = getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji));
+		if (freq?.length > 0) {
+			setQuickReactions(freq);
+		}
+
 		if (recentEmojis?.length > 0) {
 			updateRecent(recentEmojis);
 		}
 
 		const emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 		setEmojiListByCategory(emojis);
-	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis]);
+	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis, frequentEmojis]);
 
 	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
@@ -90,6 +114,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			customItemsLimit,
 			setCustomItemsLimit,
 			setActualTone,
+			quickReactions,
 		}),
 		[
 			emojiPicker,
@@ -105,6 +130,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			setCurrentCategory,
 			customItemsLimit,
 			setActualTone,
+			quickReactions,
 		],
 	);
 
