@@ -25,8 +25,10 @@ export interface IVisitor {
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
 
-	// Deprecated Warning: This field is deprecated and will be removed in future versions
-	// use Room.contactLastMessageTs instead
+	/**
+	 * @deprecated
+	 * use `room.contactLastMessageTs` instead
+	 * */
 	lastMessageTs?: Date;
 }
 
