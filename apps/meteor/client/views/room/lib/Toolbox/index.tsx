@@ -42,6 +42,7 @@ export type ToolboxActionConfig = {
 		teamId: IRoom['teamId'];
 	}>;
 	'featured'?: boolean;
+	'type'?: 'organization' | 'communication' | 'customization' | 'apps';
 };
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;

@@ -9,4 +9,5 @@ addAction('mentions', {
 	icon: 'at',
 	template: lazy(() => import('../../views/room/contextualBar/MentionsTab')),
 	order: 9,
+	type: 'organization',
 });

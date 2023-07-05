@@ -17,6 +17,7 @@ addAction('autotranslate', () => {
 						template: lazy(() => import('../../../../client/views/room/contextualBar/AutoTranslate')),
 						order: 20,
 						full: true,
+						type: 'organization',
 				  }
 				: null,
 		[autoTranslateEnabled, hasPermission],

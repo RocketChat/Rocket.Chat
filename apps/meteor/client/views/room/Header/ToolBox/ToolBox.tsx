@@ -1,20 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ComponentProps, ReactElement } from 'react';
-import React, { memo, useRef } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 // used to open the menu option by keyboard
+import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
-import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
-
-const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
-);
+import type { ToolboxActionConfig } from '../../lib/Toolbox';
 
 type ToolBoxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -26,7 +22,6 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
-	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
 	const { actions: mapActions } = useToolboxContext();
 
@@ -35,26 +30,29 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const filteredActions = actions.filter((action) => !action.featured);
 	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
 
-	const hiddenActions: Record<string, ToolboxActionConfig> = Object.fromEntries(
-		(isMobile ? actions : filteredActions.slice(6))
-			.filter((item) => !item.disabled)
-			.map((item) => {
-				hiddenActionRenderers.current = {
-					...hiddenActionRenderers.current,
-					[item.id]: item.renderOption || renderMenuOption,
-				};
-				return [
-					item.id,
-					{
-						label: { title: t(item.title), icon: item.icon },
-						action: (): void => {
-							openTabBar(item.id);
-						},
-						...item,
-					},
-				];
-			}),
-	);
+	const hiddenActions = (isMobile ? actions : filteredActions.slice(6))
+		.filter((item) => !item.disabled && item.id !== 'start-call')
+		.map(({ ...item }) => ({
+			content: t(item.title),
+			icon: item.icon,
+			onClick: (): void => {
+				openTabBar(item.id);
+			},
+			...item,
+		}))
+		.reduce((acc, item) => {
+			const group = item.type ? item.type : '';
+			const section = acc.find((section: { id: string }) => section.id === group);
+			if (section) {
+				section.items.push(item);
+				return acc;
+			}
+
+			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [item] };
+			acc.push(newSection);
+
+			return acc;
+		}, [] as any);
 
 	const actionDefault = useMutableCallback((actionId) => {
 		openTabBar(actionId);
@@ -115,17 +113,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 				return <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{(filteredActions.length > 6 || isMobile) && (
-				<Menu
-					data-qa-id='ToolBox-Menu'
-					tiny={!isMobile}
-					title={t('Options')}
-					maxHeight='initial'
-					className={className}
-					aria-keyshortcuts='alt'
-					tabIndex={-1}
-					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactElement | null => value && (hiddenActionRenderers.current[value](props) as ReactElement)}
-				/>
+				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>
 	);

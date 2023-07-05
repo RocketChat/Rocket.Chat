@@ -18,6 +18,7 @@ addAction('export-messages', ({ room }) => {
 						template: lazy(() => import('../../views/room/contextualBar/ExportMessages')) as LazyExoticComponent<FC>,
 						full: true,
 						order: 12,
+						type: 'communication',
 				  }
 				: null,
 		[hasPermission],
