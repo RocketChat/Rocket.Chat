@@ -249,10 +249,9 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-          REPORTER_ROCKETCHAT_REPORT: 'true'
+          REPORTER_ROCKETCHAT_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
-          # ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
         working-directory: ./apps/meteor
