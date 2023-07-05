@@ -2,7 +2,7 @@ import { RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
