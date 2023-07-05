@@ -10,12 +10,16 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useHandleMenuAction } from '../../../hooks/useHandleMenuAction';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
-import MessageActionMenu from './MessageActionMenu';
+import GenericMenu from '../../GenericMenu';
+import type { GenericMenuItemProps } from '../../GenericMenuItem';
+// import MessageActionMenu from './MessageActionMenu';
+import { useMessageActionMenu } from './actions/hooks/useMessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -72,6 +76,11 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return { message: messageActions, menu: menuActions };
 	});
 
+	const sections = useMessageActionMenu(actionsQueryResult.data?.menu ?? []);
+	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]);
+
+	const handleAction = useHandleMenuAction(items);
+
 	const toolbox = useToolboxContext();
 
 	const selecting = useIsSelecting();
@@ -88,6 +97,8 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	};
 
 	const recentList = emojiListByCategory.filter(({ key }) => key === 'recent')[0].emojis.list;
+
+	// console.log(actionsQueryResult);
 
 	return (
 		<MessageToolbox>
@@ -106,14 +117,14 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 				/>
 			))}
 			{(actionsQueryResult.data?.menu.length ?? 0) > 0 && (
-				<MessageActionMenu
-					options={
-						actionsQueryResult.data?.menu.map((action) => ({
-							...action,
-							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
-						})) ?? []
-					}
-					data-qa-type='message-action-menu-options'
+				<GenericMenu
+					placement='bottom-end'
+					icon='kebab'
+					sections={sections}
+					onAction={handleAction}
+					title={t('More')}
+					// is={Sidebar.TopBar.Action}
+					// {...props}
 				/>
 			)}
 		</MessageToolbox>
