@@ -10,12 +10,12 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin';
 		};
 		'custom-sounds': {
-			pathname: `/admin/custom-sounds${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/custom-sounds/:context?/:id?';
+			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/sounds/:context?/:id?';
 		};
 		'admin-info': {
-			pathname: '/admin/info';
-			pattern: '/admin/info';
+			pathname: '/admin/workspace';
+			pattern: '/admin/workspace';
 		};
 		'admin-import': {
 			pathname: '/admin/import';
@@ -38,8 +38,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/mailer';
 		};
 		'admin-oauth-apps': {
-			pathname: `/admin/oauth-apps${`/${'new' | 'edit'}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/oauth-apps/:context?/:id?';
+			pathname: `/admin/third-party-login${`/${'new' | 'edit'}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/third-party-login/:context?/:id?';
 		};
 		'admin-integrations': {
 			pathname: `/admin/integrations${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
@@ -50,8 +50,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/user-status/:context?/:id?';
 		};
 		'emoji-custom': {
-			pathname: `/admin/emoji-custom${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/emoji-custom/:context?/:id?';
+			pathname: `/admin/emoji${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/emoji/:context?/:id?';
 		};
 		'admin-users': {
 			pathname: `/admin/users${`/${string}` | ''}${`/${string}` | ''}`;
@@ -66,16 +66,16 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/invites';
 		};
 		'cloud': {
-			pathname: `/admin/cloud${`/${string}` | ''}`;
-			pattern: '/admin/cloud/:page?';
+			pathname: `/admin/registration${`/${string}` | ''}`;
+			pattern: '/admin/registration/:page?';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/view-logs';
-			pattern: '/admin/view-logs';
+			pathname: '/admin/logs';
+			pattern: '/admin/logs';
 		};
 		'federation-dashboard': {
-			pathname: '/admin/federation-dashboard';
-			pattern: '/admin/federation-dashboard';
+			pathname: '/admin/federation';
+			pattern: '/admin/federation';
 		};
 		'admin-permissions': {
 			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
@@ -94,8 +94,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/upgrade/:type?';
 		};
 		'moderation-console': {
-			pathname: `/admin/moderation-console${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/moderation-console/:context?/:id?';
+			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/moderation/:context?/:id?';
 		};
 	}
 }

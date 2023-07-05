@@ -8,26 +8,26 @@ export const {
 	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/admin/info',
+		href: '/admin/workspace',
 		i18nLabel: 'Workspace',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
-		href: 'cloud',
+		href: '/admin/registration',
 		i18nLabel: 'Registration',
 		icon: 'cloud-plus',
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
-		href: '/admin/moderation-console',
+		href: '/admin/moderation',
 		i18nLabel: 'Moderation',
 		icon: 'shield-alt',
 		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		href: '/admin/federation-dashboard',
+		href: '/admin/federation',
 		i18nLabel: 'Federation',
 		icon: 'discover',
 		permissionGranted: (): boolean => hasPermission('view-federation-data'),
@@ -76,7 +76,7 @@ export const {
 		permissionGranted: (): boolean => hasAllPermission('access-mailer'),
 	},
 	{
-		href: '/admin/oauth-apps',
+		href: '/admin/third-party-login',
 		i18nLabel: 'Third_party_login',
 		icon: 'login',
 		permissionGranted: (): boolean => hasAllPermission('manage-oauth-apps'),
@@ -100,19 +100,19 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/view-logs',
+		href: '/admin/logs',
 		i18nLabel: 'Logs',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},
 	{
-		href: '/admin/custom-sounds',
+		href: '/admin/sounds',
 		i18nLabel: 'Sounds',
 		icon: 'volume',
 		permissionGranted: (): boolean => hasPermission('manage-sounds'),
 	},
 	{
-		href: '/admin/emoji-custom',
+		href: '/admin/emoji',
 		i18nLabel: 'Emoji',
 		icon: 'emoji',
 		permissionGranted: (): boolean => hasPermission('manage-emoji'),

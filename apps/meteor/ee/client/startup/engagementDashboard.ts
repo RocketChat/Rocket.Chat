@@ -9,7 +9,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
 		'engagement-dashboard': {
 			pattern: '/admin/engagement/:tab?';
-			pathname: `/admin/engagement-dashboard${`/${string}` | ''}`;
+			pathname: `/admin/engagement${`/${string}` | ''}`;
 		};
 	}
 }
