@@ -21,7 +21,7 @@ test.describe('Livechat', () => {
 			await expect(statusCode).toBe(200);
 
 			page = await browser.newPage();
-			poLiveChat = new OmnichannelLiveChat(page);
+			poLiveChat = new OmnichannelLiveChat(page, api);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -36,7 +36,7 @@ test.describe('Livechat', () => {
 
 		test('Send message to online agent', async () => {
 			await test.step('Expect message to be sent by livechat', async () => {
-				await poLiveChat.btnOpenLiveChat('R').click();
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newUser, false);
 
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
@@ -59,7 +59,7 @@ test.describe('Livechat', () => {
 			});
 
 			await test.step('Expect when user minimizes the livechat screen, the composer should be hidden', async () => {
-				await poLiveChat.btnOpenLiveChat('R').click();
+				await poLiveChat.openLiveChat();
 				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 			});
 

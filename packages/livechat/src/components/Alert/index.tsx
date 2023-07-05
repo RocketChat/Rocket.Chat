@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ type AlertProps = {
 	hideCloseButton?: boolean;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	children?: JSXInternal.Element[];
+	children?: ComponentChildren;
 	timeout?: number;
 };
 

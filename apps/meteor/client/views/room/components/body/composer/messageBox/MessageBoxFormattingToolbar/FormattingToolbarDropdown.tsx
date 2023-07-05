@@ -34,7 +34,13 @@ const FormattingToolbarDropdown = ({ composer, items, ...props }: FormattingTool
 						};
 
 						return (
-							<Option key={index} onClick={handleFormattingAction}>
+							<Option
+								key={index}
+								onClick={() => {
+									handleFormattingAction();
+									toggle();
+								}}
+							>
 								<OptionIcon name={'icon' in formatter ? formatter.icon : 'link'} />
 								<OptionContent>{t(formatter.label)}</OptionContent>
 							</Option>
