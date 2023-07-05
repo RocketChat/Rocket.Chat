@@ -1,4 +1,15 @@
-import { ButtonGroup, Button, Box, Field, ToggleSwitch, FieldGroup, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	ButtonGroup,
+	Button,
+	Box,
+	Field,
+	ToggleSwitch,
+	FieldGroup,
+	States,
+	StatesIcon,
+	StatesTitle,
+	Accordion,
+} from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useEffect } from 'react';
@@ -70,17 +81,25 @@ const AccountFeaturePreviewPage = () => {
 							<StatesTitle>{t('No_feature_to_preview')}</StatesTitle>
 						</States>
 					)}
-					<FieldGroup>
+					<Accordion>
 						{featuresPreview.length > 0 &&
-							featuresPreview?.map((feature) => (
-								<Field key={feature.name} display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-									<Field.Label>{t(feature.i18n)}</Field.Label>
-									<Field.Row>
-										<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
-									</Field.Row>
-								</Field>
+							featuresPreview?.map((feature, index) => (
+								<Accordion.Item defaultExpanded={index === 0} key={feature.name} title={feature.group}>
+									<FieldGroup>
+										<Field>
+											<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+												<Field.Label>{t(feature.i18n)}</Field.Label>
+												<Field.Row>
+													<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
+												</Field.Row>
+											</Box>
+											{feature.description && <Field.Hint>{t(feature.description)}</Field.Hint>}
+										</Field>
+									</FieldGroup>
+									<Box is='img' width='100%' height='auto' mbs='x16' src='images/featurePreview/quick-reactions.png' />
+								</Accordion.Item>
 							))}
-					</FieldGroup>
+					</Accordion>
 				</Box>
 			</Page.ScrollableContentWithShadow>
 		</Page>

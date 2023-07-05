@@ -1,12 +1,20 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
-type FeaturePreviewProps = { name: string; value: boolean; i18n: TranslationKey };
+type FeaturePreviewProps = {
+	name: string;
+	i18n: TranslationKey;
+	description: TranslationKey;
+	group: 'messages' | 'navigation';
+	value: boolean;
+};
 
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'quickReactions',
 		i18n: 'Quick_reactions',
+		description: 'Quick_reactions_description',
+		group: 'messages',
 		value: false,
 	},
 ];
