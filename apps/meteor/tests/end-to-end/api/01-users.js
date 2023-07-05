@@ -747,7 +747,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should sort for user statuses and check if user is correctly sorted by name', async () => {
+		it('should sort for user names and check if capitalization is not taken into consideration', async () => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
