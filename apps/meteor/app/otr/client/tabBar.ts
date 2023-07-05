@@ -30,6 +30,7 @@ addAction('otr', (options) => {
 						template,
 						order: 13,
 						full: true,
+						type: 'communication',
 						...(federated && {
 							'data-tooltip': 'OTR_unavailable_for_federation',
 							'disabled': true,

@@ -25,6 +25,7 @@ addAction('clean-history', ({ room }) => {
 						}),
 						template,
 						order: 250,
+						type: 'customization',
 				  }
 				: null,
 		[hasPermission, federated],

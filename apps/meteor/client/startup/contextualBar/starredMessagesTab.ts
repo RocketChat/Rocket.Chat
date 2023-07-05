@@ -9,4 +9,5 @@ addAction('starred-messages', {
 	icon: 'star',
 	template: lazy(() => import('../../views/room/contextualBar/StarredMessagesTab')),
 	order: 10,
+	type: 'organization',
 });

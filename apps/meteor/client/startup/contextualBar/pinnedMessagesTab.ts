@@ -21,6 +21,7 @@ addAction('pinned-messages', ({ room }) => {
 							'disabled': true,
 						}),
 						order: 11,
+						type: 'organization',
 				  }
 				: null,
 		[pinningAllowed, federated],

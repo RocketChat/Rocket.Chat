@@ -64,6 +64,7 @@ addAction('uploaded-files-list', {
 	icon: 'clip',
 	template: lazy(() => import('../../contextualBar/RoomFiles')),
 	order: 7,
+	type: 'organization',
 });
 
 addAction('keyboard-shortcut-list', {
@@ -73,4 +74,5 @@ addAction('keyboard-shortcut-list', {
 	icon: 'keyboard',
 	template: lazy(() => import('../../contextualBar/KeyboardShortcuts')),
 	order: 99,
+	type: 'customization',
 });
