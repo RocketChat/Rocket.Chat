@@ -92,57 +92,158 @@ class PasswordPolicy {
 	}
 
 	validate(password: string | unknown) {
+		type validationMessage = {
+			error: boolean;
+			message?: Record<
+				string,
+				{
+					isValid: boolean;
+					limit?: number | undefined;
+				}
+			>;
+		};
+
+		const validationReturn: validationMessage[] = [];
+
 		if (typeof password !== 'string' || !password.trim().length) {
-			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
+			this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
+
+			validationReturn.push({
+				error: this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy."),
+			});
 		}
 
 		if (!this.enabled) {
 			return true;
 		}
 
-		if (this.minLength >= 1 && password.length < this.minLength) {
-			return this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.');
+		if (this.minLength >= 1 && (password as string).length < this.minLength) {
+			this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.');
+
+			validationReturn.push({
+				error: this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.'),
+				message: {
+					'get-password-policy-minLength': {
+						isValid: false,
+						limit: this.minLength,
+					},
+				},
+			});
 		}
 
-		if (this.maxLength >= 1 && password.length > this.maxLength) {
-			return this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.');
+		if (this.maxLength >= 1 && (password as string).length > this.maxLength) {
+			this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.');
+
+			validationReturn.push({
+				error: this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.'),
+				message: {
+					'get-password-policy-maxLength': {
+						isValid: false,
+						limit: this.maxLength,
+					},
+				},
+			});
 		}
 
-		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password)) {
-			return this.error(
+		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password as string)) {
+			this.error(
 				'error-password-policy-not-met-repeatingCharacters',
 				'The password contains repeating characters which is against the password policy.',
 			);
+
+			validationReturn.push({
+				error: this.error(
+					'error-password-policy-not-met-repeatingCharacters',
+					'The password contains repeating characters which is against the password policy.',
+				),
+				message: {
+					'get-password-policy-forbidRepeatingCharactersCount': {
+						isValid: false,
+						limit: this.forbidRepeatingCharactersCount,
+					},
+				},
+			});
 		}
 
-		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password)) {
-			return this.error(
+		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password as string)) {
+			this.error(
 				'error-password-policy-not-met-oneLowercase',
 				'The password does not contain at least one lowercase character which is against the password policy.',
 			);
+
+			validationReturn.push({
+				error: this.error(
+					'error-password-policy-not-met-oneLowercase',
+					'The password does not contain at least one lowercase character which is against the password policy.',
+				),
+				message: {
+					'get-password-policy-mustContainAtLeastOneLowercase': {
+						isValid: false,
+					},
+				},
+			});
 		}
 
-		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password)) {
-			return this.error(
+		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password as string)) {
+			this.error(
 				'error-password-policy-not-met-oneUppercase',
 				'The password does not contain at least one uppercase character which is against the password policy.',
 			);
+
+			validationReturn.push({
+				error: this.error(
+					'error-password-policy-not-met-oneUppercase',
+					'The password does not contain at least one uppercase character which is against the password policy.',
+				),
+				message: {
+					'get-password-policy-mustContainAtLeastOneUppercase': {
+						isValid: false,
+					},
+				},
+			});
 		}
 
-		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password)) {
-			return this.error(
+		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password as string)) {
+			this.error(
 				'error-password-policy-not-met-oneNumber',
 				'The password does not contain at least one numerical character which is against the password policy.',
 			);
+
+			validationReturn.push({
+				error: this.error(
+					'error-password-policy-not-met-oneNumber',
+					'The password does not contain at least one numerical character which is against the password policy.',
+				),
+				message: {
+					'get-password-policy-mustContainAtLeastOneNumber': {
+						isValid: false,
+					},
+				},
+			});
 		}
 
-		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password)) {
-			return this.error(
+		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string)) {
+			this.error(
 				'error-password-policy-not-met-oneSpecial',
 				'The password does not contain at least one special character which is against the password policy.',
 			);
+
+			validationReturn.push({
+				error: this.error(
+					'error-password-policy-not-met-oneSpecial',
+					'The password does not contain at least one special character which is against the password policy.',
+				),
+				message: {
+					'get-password-policy-mustContainAtLeastOneSpecialCharacter': {
+						isValid: false,
+					},
+				},
+			});
 		}
 
+		if (validationReturn.length !== 0) {
+			return validationReturn;
+		}
 		return true;
 	}
 
