@@ -61,6 +61,7 @@ interface EventLikeCallbackSignatures {
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
+	'livechat.onNewAgentCreated': (agentId: string) => void;
 	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
@@ -91,6 +92,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 }
 
 /**

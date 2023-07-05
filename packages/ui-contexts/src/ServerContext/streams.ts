@@ -17,6 +17,7 @@ import type {
 	IOmnichannelCannedResponse,
 	IIntegrationHistory,
 	IUserDataEvent,
+	ICalendarNotification,
 	IUserStatus,
 	ILivechatInquiryRecord,
 	ILivechatAgent,
@@ -155,6 +156,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
+		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 	];
 
 	'importers': [
