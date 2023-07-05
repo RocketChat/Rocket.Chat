@@ -27,6 +27,7 @@ import type {
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
+	ICalendarNotification,
 	AtLeast,
 	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
@@ -83,6 +84,7 @@ export type EventSignatures = {
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
+	'notify.calendar'(uid: string, data: ICalendarNotification): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
