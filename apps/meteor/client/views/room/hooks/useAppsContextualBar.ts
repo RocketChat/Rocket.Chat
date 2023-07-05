@@ -1,5 +1,5 @@
 import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import { useCurrentRoute } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
@@ -13,13 +13,12 @@ type AppsContextualBarData = {
 };
 
 export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
-	const [, params] = useCurrentRoute();
 	const [payload, setPayload] = useState<IUIKitContextualBarInteraction>();
 	const [appId, setAppId] = useState<string>();
 
 	const { _id: roomId } = useRoom();
 
-	const viewId = params?.context;
+	const viewId = useRouteParameter('context');
 
 	useEffect(() => {
 		if (viewId) {
