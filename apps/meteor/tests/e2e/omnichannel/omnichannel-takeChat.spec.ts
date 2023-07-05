@@ -35,7 +35,7 @@ test.describe('omnichannel-takeChat', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.sidenav.switchStatus('Online online');
 
 		// start a new chat for each test
 		newVisitor = {
@@ -62,7 +62,7 @@ test.describe('omnichannel-takeChat', () => {
 
 	test('expect "user1" to not able able to take chat from queue in-case its user status is offline', async () => {
 		// make "user-1" offline
-		await agent.poHomeChannel.sidenav.switchStatus('offline');
+		await agent.poHomeChannel.sidenav.switchStatus('Offline offline');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
