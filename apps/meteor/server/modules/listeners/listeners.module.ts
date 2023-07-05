@@ -391,6 +391,10 @@ export class ListenersModule {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
 		});
 
+		service.onEvent('notify.calendar', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'calendar', data);
+		});
+
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
