@@ -204,6 +204,13 @@ type ChainedCallbackSignatures = {
 		room: IOmnichannelRoom;
 		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
 	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
+	'roomNameChanged': (room: IRoom) => void;
+	'roomTopicChanged': (room: IRoom) => void;
+	'roomAnnouncementChanged': (room: IRoom) => void;
+	'roomTypeChanged': (room: IRoom) => void;
+	'archiveRoom': (room: IRoom) => void;
+	'unarchiveRoom': (room: IRoom) => void;
+	'roomAvatarChanged': (room: IRoom) => void;
 };
 
 export type Hook =
@@ -217,7 +224,6 @@ export type Hook =
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
-	| 'archiveRoom'
 	| 'beforeActivateUser'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
@@ -242,15 +248,9 @@ export type Hook =
 	| 'onValidateLogin'
 	| 'openBroadcast'
 	| 'renderNotification'
-	| 'roomAnnouncementChanged'
-	| 'roomAvatarChanged'
-	| 'roomNameChanged'
-	| 'roomTopicChanged'
-	| 'roomTypeChanged'
 	| 'setReaction'
 	| 'streamMessage'
 	| 'streamNewMessage'
-	| 'unarchiveRoom'
 	| 'unsetReaction'
 	| 'userAvatarSet'
 	| 'userConfirmationEmailRequested'

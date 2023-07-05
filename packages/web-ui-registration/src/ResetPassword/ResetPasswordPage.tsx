@@ -3,8 +3,8 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
 	useVerifyPassword,
+	useRouter,
 	useRouteParameter,
-	useRoute,
 	useUser,
 	useMethod,
 	useTranslation,
@@ -31,7 +31,7 @@ const ResetPasswordPage = (): ReactElement => {
 
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 
-	const homeRouter = useRoute('home');
+	const router = useRouter();
 
 	const changePasswordReason = getChangePasswordReason(user || {});
 
@@ -58,7 +58,7 @@ const ResetPasswordPage = (): ReactElement => {
 			if (token) {
 				const result = await resetPassword(token, data.password);
 				await loginWithToken(result.token);
-				homeRouter.push({});
+				router.navigate('/home');
 			} else {
 				await setUserPassword(data.password);
 			}

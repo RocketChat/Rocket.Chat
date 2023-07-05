@@ -17,7 +17,7 @@ const getQueryParams = () => {
 
 const ConferencePage = (): ReactElement => {
 	const user = useUser();
-	const defaultRoute = useRoute('/');
+	const defaultRoute = useRoute('home');
 	const setModal = useSetModal();
 	const handleOpenCall = useVideoConfOpenCall();
 	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
