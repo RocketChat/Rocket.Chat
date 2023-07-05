@@ -57,6 +57,8 @@ const getAgent = (triggerAction) => {
 	return agentPromise;
 };
 
+const isInIframe = () => window.self !== window.top;
+
 class Triggers {
 	constructor() {
 		if (!Triggers.instance) {
@@ -172,9 +174,8 @@ class Triggers {
 			trigger.conditions.forEach((condition) => {
 				switch (condition.name) {
 					case 'page-url':
-						const { parentUrl } = store.state;
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (parentUrl && hrefRegExp.test(parentUrl)) {
+						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
 							this.fire(trigger);
 						}
 						break;
@@ -197,9 +198,7 @@ class Triggers {
 	}
 
 	processPageUrlTriggers() {
-		const { parentUrl } = store.state;
-
-		if (!parentUrl) return;
+		if (!this.parentUrl) return;
 
 		this._triggers.forEach((trigger) => {
 			if (trigger.skip) return;
@@ -208,7 +207,7 @@ class Triggers {
 				if (condition.name !== 'page-url') return;
 
 				const hrefRegExp = new RegExp(condition.value, 'g');
-				if (hrefRegExp.test(parentUrl)) {
+				if (hrefRegExp.test(this.parentUrl)) {
 					this.fire(trigger);
 				}
 			});
@@ -221,6 +220,10 @@ class Triggers {
 
 	set enabled(value) {
 		this._enabled = value;
+	}
+
+	get parentUrl() {
+		return isInIframe() ? store.state.parentUrl : window.location.href;
 	}
 }
 

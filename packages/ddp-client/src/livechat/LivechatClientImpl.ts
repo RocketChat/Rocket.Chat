@@ -324,6 +324,16 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		});
 	}
 
+	async sendUiInteraction(
+		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
+		appId: string,
+	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>> {
+		if (!this.token) {
+			throw new Error('Invalid token');
+		}
+		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': this.token } });
+	}
+
 	// API DELETE
 
 	deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>> {
@@ -347,6 +357,11 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		params: OperationParams<'PUT', '/v1/livechat/message/:_id'>,
 	): Promise<Serialized<OperationResult<'PUT', '/v1/livechat/message/:_id'>>> {
 		return this.rest.put(`/v1/livechat/message/${id}`, params);
+	}
+
+	unsubscribeAll(): Promise<unknown> {
+		const subscriptions = Array.from(this.client.subscriptions.keys());
+		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
 
 	static create(url: string, retryOptions = { retryCount: 3, retryTime: 10000 }): LivechatClientImpl {

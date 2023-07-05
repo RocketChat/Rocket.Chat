@@ -40,8 +40,8 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 	});
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
-		await agent1.poHomeOmnichannel.sidenav.switchStatus('online');
-		await agent2.poHomeOmnichannel.sidenav.switchStatus('offline');
+		await agent1.poHomeOmnichannel.sidenav.switchStatus('Online online');
+		await agent2.poHomeOmnichannel.sidenav.switchStatus('Offline offline');
 
 		// start a new chat for each test
 		newVisitor = {
@@ -62,7 +62,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		});
 
 		await test.step('Expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
-			await agent2.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await agent2.poHomeOmnichannel.sidenav.switchStatus('Offline offline');
 
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user2');
@@ -72,7 +72,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		});
 
 		await test.step('Expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {
-			await agent2.poHomeOmnichannel.sidenav.switchStatus('online');
+			await agent2.poHomeOmnichannel.sidenav.switchStatus('Online online');
 
 			await agent1.poHomeOmnichannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
