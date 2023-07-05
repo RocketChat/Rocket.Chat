@@ -3,7 +3,7 @@ name: Publish Final Release
 on:
   push:
     branches:
-      - master
+      - release-automation
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
