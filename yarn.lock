@@ -9392,7 +9392,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.146":
+"@rocket.chat/css-in-js@npm:^0.31.12, @rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.103, @rocket.chat/css-in-js@npm:~0.31.23-dev.154":
   version: 0.31.23
   resolution: "@rocket.chat/css-in-js@npm:0.31.23"
   dependencies:
@@ -9418,7 +9418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.146":
+"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.103, @rocket.chat/css-supports@npm:~0.31.23-dev.154":
   version: 0.31.23
   resolution: "@rocket.chat/css-supports@npm:0.31.23"
   dependencies:
@@ -9647,10 +9647,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.322":
-  version: 0.32.0-dev.322
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.322"
-  checksum: 95a8319aaa4f6fd429c62a594b4094136ec57c519201140ca029bbe44d49cb3fd381fb67d7e20f1341308868794dbc9609dad180c4ab38ddcbd89eea3e78451a
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.330":
+  version: 0.32.0-dev.330
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.330"
+  checksum: 9733eeb0c8f1d8220e13d20c85e9ecf219b6d22e3c339352a080a19cbdc7aae7828ae591884b070c48047fa984383122d8a816e7102a4c38ba6a6ce73f364452
   languageName: node
   linkType: hard
 
@@ -9710,14 +9710,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.372
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.372"
+  version: 0.32.0-dev.380
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.380"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.146
-    "@rocket.chat/css-supports": ~0.31.23-dev.146
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.322
-    "@rocket.chat/memo": ~0.31.23-dev.146
-    "@rocket.chat/styled": ~0.31.23-dev.146
+    "@rocket.chat/css-in-js": ~0.31.23-dev.154
+    "@rocket.chat/css-supports": ~0.31.23-dev.154
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.330
+    "@rocket.chat/memo": ~0.31.23-dev.154
+    "@rocket.chat/styled": ~0.31.23-dev.154
     invariant: ^2.2.4
     react-aria: ~3.23.1
     react-keyed-flatten-children: ^1.3.0
@@ -9729,7 +9729,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 47cdb72c37ee36ebc1dd3daeb8d03950b674dbc3637918dc3d8f6aeead7a56a34db6767e3514e62fc0a9d6a811ef0325cc17c8ffc79532b87f720559ef940ce0
+  checksum: 07be707ad2fab881852d1b4ac49044915b24d5bf82352cc6e3e57526dfbcd13ec3b2d73b362bbe52d122aa5b45d90371838f1e463a443934d573022ac70a57e6
   languageName: node
   linkType: hard
 
@@ -9817,9 +9817,9 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/icons@npm:next":
-  version: 0.32.0-dev.349
-  resolution: "@rocket.chat/icons@npm:0.32.0-dev.349"
-  checksum: 45553695c95ef0aa908b133e7347aff9b3845fe03486e145ed2e717efa1b2fc5044f8d7bd390031cc3e401ecfb89723ef4c158a136f164bf73b4a9653775963d
+  version: 0.32.0-dev.362
+  resolution: "@rocket.chat/icons@npm:0.32.0-dev.362"
+  checksum: 1c2096913e154d0db68b8ccc933294486ff06e250983809ce165f1497df05deec8b5165b47dbefdd013013b4cdf4a3a20f2ac191155b629e5ec4a7bcab5d8870
   languageName: node
   linkType: hard
 
@@ -9957,7 +9957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.146":
+"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.103, @rocket.chat/memo@npm:~0.31.23-dev.154":
   version: 0.31.23
   resolution: "@rocket.chat/memo@npm:0.31.23"
   checksum: 070debb940749a2e4463cf767dd65c6967cea664a5bd67c22a812d611f6c3c46d6fe4bb0bf329e43dcd927493413add37c45ae3b05ec08f0b24e9d7385caebdd
@@ -10762,7 +10762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.146":
+"@rocket.chat/styled@npm:~0.31.23-dev.103, @rocket.chat/styled@npm:~0.31.23-dev.154":
   version: 0.31.23
   resolution: "@rocket.chat/styled@npm:0.31.23"
   dependencies:
@@ -10886,6 +10886,7 @@ __metadata:
     "@types/react-dom": ~17.0.20
     "@types/use-sync-external-store": ^0.0.3
     eslint: ~8.43.0
+    eslint-plugin-react-hooks: ^4.6.0
     jest: ~29.5.0
     mongodb: ^4.12.1
     react: ~17.0.2
@@ -11021,6 +11022,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-react-refresh: ^0.4.1
     eslint4b-prebuilt: ^6.7.2
+    rc-scrollbars: ^1.1.6
     react: ^17.0.2
     react-beautiful-dnd: ^13.1.1
     react-dom: ^17.0.2
@@ -34530,6 +34532,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rc-scrollbars@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "rc-scrollbars@npm:1.1.6"
+  dependencies:
+    dom-css: ^2.1.0
+    raf: ^3.4.1
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 6d511fc14c1f932319ecef13de78e64453af349b2eec962b4d6f515e4bca4ca1b5555b6b875c1b5cae193b15069aff16cd7fa02550084b0e58bbeb398f74b80a
+  languageName: node
+  linkType: hard
+
 "rc@npm:^1.0.1, rc@npm:^1.1.6, rc@npm:^1.2.7":
   version: 1.2.8
   resolution: "rc@npm:1.2.8"
@@ -35948,7 +35963,7 @@ __metadata:
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
-    turbo: ~1.2.16
+    turbo: ~1.10.7
   languageName: unknown
   linkType: soft
 
@@ -39339,136 +39354,66 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-darwin-64@npm:1.2.16"
+"turbo-darwin-64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-darwin-64@npm:1.10.7"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-darwin-arm64@npm:1.2.16"
+"turbo-darwin-arm64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-darwin-arm64@npm:1.10.7"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-freebsd-64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-freebsd-64@npm:1.2.16"
-  conditions: os=freebsd & cpu=x64
-  languageName: node
-  linkType: hard
-
-"turbo-freebsd-arm64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-freebsd-arm64@npm:1.2.16"
-  conditions: os=freebsd & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo-linux-32@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-32@npm:1.2.16"
-  conditions: os=linux & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"turbo-linux-64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-64@npm:1.2.16"
+"turbo-linux-64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-linux-64@npm:1.10.7"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-arm64@npm:1.2.16"
+"turbo-linux-arm64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-linux-arm64@npm:1.10.7"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-arm@npm:1.2.16"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
-"turbo-linux-mips64le@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-mips64le@npm:1.2.16"
-  conditions: os=linux & cpu=mips64el
-  languageName: node
-  linkType: hard
-
-"turbo-linux-ppc64le@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-linux-ppc64le@npm:1.2.16"
-  conditions: os=linux & cpu=ppc64
-  languageName: node
-  linkType: hard
-
-"turbo-windows-32@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-windows-32@npm:1.2.16"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"turbo-windows-64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-windows-64@npm:1.2.16"
+"turbo-windows-64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-windows-64@npm:1.10.7"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.2.16":
-  version: 1.2.16
-  resolution: "turbo-windows-arm64@npm:1.2.16"
+"turbo-windows-arm64@npm:1.10.7":
+  version: 1.10.7
+  resolution: "turbo-windows-arm64@npm:1.10.7"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:~1.2.16":
-  version: 1.2.16
-  resolution: "turbo@npm:1.2.16"
+"turbo@npm:~1.10.7":
+  version: 1.10.7
+  resolution: "turbo@npm:1.10.7"
   dependencies:
-    turbo-darwin-64: 1.2.16
-    turbo-darwin-arm64: 1.2.16
-    turbo-freebsd-64: 1.2.16
-    turbo-freebsd-arm64: 1.2.16
-    turbo-linux-32: 1.2.16
-    turbo-linux-64: 1.2.16
-    turbo-linux-arm: 1.2.16
-    turbo-linux-arm64: 1.2.16
-    turbo-linux-mips64le: 1.2.16
-    turbo-linux-ppc64le: 1.2.16
-    turbo-windows-32: 1.2.16
-    turbo-windows-64: 1.2.16
-    turbo-windows-arm64: 1.2.16
+    turbo-darwin-64: 1.10.7
+    turbo-darwin-arm64: 1.10.7
+    turbo-linux-64: 1.10.7
+    turbo-linux-arm64: 1.10.7
+    turbo-windows-64: 1.10.7
+    turbo-windows-arm64: 1.10.7
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
     turbo-darwin-arm64:
       optional: true
-    turbo-freebsd-64:
-      optional: true
-    turbo-freebsd-arm64:
-      optional: true
-    turbo-linux-32:
-      optional: true
     turbo-linux-64:
       optional: true
-    turbo-linux-arm:
-      optional: true
     turbo-linux-arm64:
-      optional: true
-    turbo-linux-mips64le:
-      optional: true
-    turbo-linux-ppc64le:
-      optional: true
-    turbo-windows-32:
       optional: true
     turbo-windows-64:
       optional: true
@@ -39476,7 +39421,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 245b1b28af153edd14ab35a4812a8651b1e7cbae44ce3f15b53e0a73a3cc9c4ea39734f18c966403496c37876dd57053070b5b7eb736a14f1bc7e1bfd36566f3
+  checksum: 58329caf13b5fef284ccfc21bd1f841023122371d75d2202be809a385aade84fd886cf5c2093323c115c497d503c9c34e1f7ae09e13d06d1dcb4b649883f60dd
   languageName: node
   linkType: hard
 

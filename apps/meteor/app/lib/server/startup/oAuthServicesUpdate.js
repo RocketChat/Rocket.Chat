@@ -53,6 +53,7 @@ async function _OAuthServicesUpdate() {
 				data.channelsMap = settings.get(`${key}-groups_channel_map`);
 				data.channelsAdmin = settings.get(`${key}-channels_admin`);
 				data.mergeUsers = settings.get(`${key}-merge_users`);
+				data.mergeUsersDistinctServices = settings.get(`${key}-merge_users_distinct_services`);
 				data.mapChannels = settings.get(`${key}-map_channels`);
 				data.mergeRoles = settings.get(`${key}-merge_roles`);
 				data.rolesToSync = settings.get(`${key}-roles_to_sync`);
@@ -78,6 +79,7 @@ async function _OAuthServicesUpdate() {
 					channelsMap: data.channelsMap,
 					channelsAdmin: data.channelsAdmin,
 					mergeUsers: data.mergeUsers,
+					mergeUsersDistinctServices: data.mergeUsersDistinctServices,
 					mergeRoles: data.mergeRoles,
 					rolesToSync: data.rolesToSync,
 					accessTokenParam: data.accessTokenParam,
@@ -187,6 +189,7 @@ async function customOAuthServicesInit() {
 					channelsMap: process.env[`${serviceKey}_groups_channel_map`],
 					channelsAdmin: process.env[`${serviceKey}_channels_admin`],
 					mergeUsers: process.env[`${serviceKey}_merge_users`] === 'true',
+					mergeUsersDistinctServices: process.env[`${serviceKey}_merge_users_distinct_services`] === 'true',
 					mapChannels: process.env[`${serviceKey}_map_channels`],
 					mergeRoles: process.env[`${serviceKey}_merge_roles`] === 'true',
 					rolesToSync: process.env[`${serviceKey}_roles_to_sync`],

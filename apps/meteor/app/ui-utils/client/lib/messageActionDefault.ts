@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
@@ -15,6 +14,7 @@ import ReactionList from '../../../../client/views/room/modals/ReactionListModal
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { t } from '../../../utils/lib/i18n';
+import { router } from '../../../../client/providers/RouterProvider';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -36,7 +36,7 @@ Meteor.startup(async function () {
 				'd',
 				{ name: message.u.username },
 				{
-					...FlowRouter.current().queryParams,
+					...router.getSearchParameters(),
 					reply: message._id,
 				},
 			);
