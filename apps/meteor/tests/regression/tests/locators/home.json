@@ -10,6 +10,10 @@
     "team": "Team",
     "marketplace": "Marketplace",
     "channel": "Channel",
-    "discussion": "Discussion"
+    "discussion": "Discussion",
+    "home": "Home"
+  },
+  "dataTestId": {
+    "homeTitle": "PageHeader-title"
   }
 }

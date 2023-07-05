@@ -1,39 +1,25 @@
 import { expect, test } from '@playwright/test';
 import fixtures from '../../../fixtures/marketplace.json';
 import locator from '../../../locators/marketplace.json';
-import { delay, fileUpload } from '../../../support/helpers';
 import {
   goToMarketplace,
   installPrivateApp,
   searchAppPrivate,
-  unistallApp,
+  unistallAppAPI
 } from '../../../support/marketplace/marketplace';
-import { login } from '../../../support/users/user';
+
 test.describe('Private Apps', () => {
-  test.beforeEach(async ({ page }) => {
-    await login(page);
+  test.use({ storageState: 'playwright/.auth/admin.json' });
+  test.beforeEach(async ({ page, request }) => {
+    await page.goto(`${process.env.URL}`);
     await goToMarketplace(page);
+    await unistallAppAPI(request, fixtures.appIdDataLoss);
+    await unistallAppAPI(request, fixtures.appIdFacebook);
   });
-
+  
   test('Upload two Private App', async ({ page }) => {
-    await unistallApp(page, locator.text.dataLoss);
-    await unistallApp(page, locator.text.facebook);
-    await page.getByRole('link', { name: locator.link.privateApp }).click();
-    await page
-      .getByRole('button', { name: locator.button.uploadPrivateApp })
-      .click();
-    await fileUpload(locator.button.browseFiles, fixtures.pathDataloss, page);
-    await page.getByRole('button', { name: locator.button.install }).click();
-    await page.getByRole('button', { name: locator.button.agree }).click();
-
-    await page.getByRole('link', { name: locator.link.privateApp }).click();
-    await page
-      .getByRole('button', { name: locator.button.uploadPrivateApp })
-      .click();
-    await fileUpload(locator.button.browseFiles, fixtures.pathFacebook, page);
-    await page.getByRole('button', { name: locator.button.install }).click();
-    await page.getByRole('button', { name: locator.button.agree }).click();
-    await delay(3000);
+    await installPrivateApp(page, fixtures.pathDataloss);
+    await installPrivateApp(page, fixtures.pathFacebook);
     await searchAppPrivate(page, locator.text.dataLoss);
     expect(
       await page
@@ -49,7 +35,7 @@ test.describe('Private Apps', () => {
   });
 
   test('Uninstall a Private App - Outside Menu', async ({ page }) => {
-    await installPrivateApp(page, locator.text.dataLoss, fixtures.pathDataloss);
+    await installPrivateApp(page, fixtures.pathDataloss);
     await searchAppPrivate(page, locator.text.dataLoss);
     await page.getByTestId(locator.testId.menuSingleApp).click();
     await page.getByText(locator.text.unistall).click();
@@ -66,7 +52,7 @@ test.describe('Private Apps', () => {
   });
 
   test('Uninstall Private App - Inside Menu', async ({ page }) => {
-    await installPrivateApp(page, locator.text.facebook, fixtures.pathFacebook);
+    await installPrivateApp(page, fixtures.pathFacebook);
     await searchAppPrivate(page, locator.text.facebook);
     await page
       .getByRole('link')
@@ -88,10 +74,10 @@ test.describe('Private Apps', () => {
   });
 
   test('Enable and Disable two Private App - Outside Menu', async ({
-    page,
+    page
   }) => {
-    await installPrivateApp(page, locator.text.facebook, fixtures.pathFacebook);
-    await installPrivateApp(page, locator.text.dataLoss, fixtures.pathDataloss);
+    await installPrivateApp(page, fixtures.pathFacebook);
+    await installPrivateApp(page, fixtures.pathDataloss);
 
     //Disable - Facebook
     await searchAppPrivate(page, locator.text.facebook);
@@ -161,8 +147,8 @@ test.describe('Private Apps', () => {
   });
 
   test('Enable and Disable two Private App - Inside Menu', async ({ page }) => {
-    await installPrivateApp(page, locator.text.facebook, fixtures.pathFacebook);
-    await installPrivateApp(page, locator.text.dataLoss, fixtures.pathDataloss);
+    await installPrivateApp(page, fixtures.pathFacebook);
+    await installPrivateApp(page, fixtures.pathDataloss);
 
     //Disable - Facebook
     await searchAppPrivate(page, locator.text.facebook);
@@ -249,7 +235,7 @@ test.describe('Private Apps', () => {
   });
 
   test('Inside menu Private App @unstable', async ({ page }) => {
-    await installPrivateApp(page, locator.text.dataLoss, fixtures.pathDataloss);
+    await installPrivateApp(page, fixtures.pathDataloss);
     await expect(page.getByRole('tab', { name: 'Details' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Security' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();

@@ -1,6 +1,5 @@
 import { request } from '@playwright/test';
 
-const authFile = 'playwright/.auth/admin.json';
 
 export default async function (): Promise<void> {
   const requestContext = await request.newContext({
@@ -20,5 +19,4 @@ export default async function (): Promise<void> {
   process.env.API_TOKEN = token;
   process.env.USERID = userId;
 
-  await requestContext.storageState({ path: authFile });
 }

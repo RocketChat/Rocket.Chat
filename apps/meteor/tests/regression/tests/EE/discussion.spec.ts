@@ -1,13 +1,13 @@
-import { test, expect, request } from '@playwright/test';
-import { login } from '../support/users/user';
-import home from '../locators/home.json';
+import { expect, test } from '@playwright/test';
 import createDiscussion from '../locators/createDiscussion.json';
-import { deleteDiscussion, deleteDiscussionAPI } from '../support/discussions/discussion';
+import home from '../locators/home.json';
 import { createChannelAPI, deleteChannel } from '../support/channels/channel';
+import { deleteDiscussionAPI } from '../support/discussions/discussion';
+test.use({ storageState: 'playwright/.auth/admin.json' });
 
 test.beforeEach(async ({ page, request }) => {
   await createChannelAPI(request, createDiscussion.names.channel); 
-  await login(page);
+  await page.goto(`${process.env.URL}`);
 });
 
 test('Create a discussion', async ({ page }) => {

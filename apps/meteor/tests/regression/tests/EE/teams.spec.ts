@@ -1,12 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { login } from '../support/users/user';
-import { deleteTeam } from '../support/teams/team';
-import home from '../locators/home.json'
+import { expect, test } from '@playwright/test';
 import createTeam from '../locators/createTeam.json';
+import home from '../locators/home.json';
+import { deleteTeam } from '../support/teams/team';
 test.describe('Create Teams', () => {
-  test.beforeEach(async ({ page }) => {
-    await login(page);
-  });
+  test.use({ storageState: 'playwright/.auth/admin.json' });
+test.beforeEach(async ({ page }) => {
+  await page.goto(`${process.env.URL}`);
+
+});
 
   test('Create a Team Private', async ({ page }) => {
     await page.locator(home.button.createNew).click();

@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { login } from '../support/users/user'
-import home from '../locators/home.json';
+import { expect, test } from '@playwright/test';
 import createChannel from '../locators/createChannel.json';
+import home from '../locators/home.json';
 import { deleteChannel } from '../support/channels/channel';
 
+test.use({ storageState: 'playwright/.auth/admin.json' });
 test.beforeEach(async ({ page }) => {
-  await login(page);
-});
+  await page.goto(`${process.env.URL}`);
 
+});
 test('Create a Private Channel', async ({ page }) => {
   await page.locator(home.button.createNew).click();
   await page

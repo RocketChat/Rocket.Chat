@@ -1,4 +1,47 @@
 {
-  "cookies": [],
-  "origins": []
+  "cookies": [
+    {
+      "name": "rc_uid",
+      "value": "bvmLH2MMiKz9iS2Nj",
+      "domain": "candidate.rocket.chat",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rc_token",
+      "value": "QcY9x3wJqEy_EWY-v99B0oZy4UTXJCi-R7SKP1xnNgT",
+      "domain": "candidate.rocket.chat",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://candidate.rocket.chat",
+      "localStorage": [
+        {
+          "name": "userLanguage",
+          "value": "en-US"
+        },
+        {
+          "name": "Meteor.loginToken",
+          "value": "QcY9x3wJqEy_EWY-v99B0oZy4UTXJCi-R7SKP1xnNgT"
+        },
+        {
+          "name": "Meteor.loginTokenExpires",
+          "value": "Mon Oct 02 2023 17:33:32 GMT-0300 (Brasilia Standard Time)"
+        },
+        {
+          "name": "Meteor.userId",
+          "value": "bvmLH2MMiKz9iS2Nj"
+        }
+      ]
+    }
+  ]
 }

@@ -4,6 +4,7 @@ require('dotenv').config();
 
 export default defineConfig({
   globalSetup: require.resolve('./tests/global/global-setup.ts'),
+
   timeout: 80000,
   reporter: [
     [
@@ -95,11 +96,14 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {
+    { name: 'setup', testMatch: 'tests/global/auth.setup.ts' },
+      {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/admin.json',
       },
+      dependencies: ['setup'],
     },
   ],
 });
