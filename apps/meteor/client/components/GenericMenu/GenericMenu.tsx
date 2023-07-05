@@ -1,20 +1,21 @@
-import type { Icon } from '@rocket.chat/fuselage';
+import type { IconButton } from '@rocket.chat/fuselage';
 import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
+import { useHandleMenuAction } from './hooks/useHandleMenuAction';
 
 type GenericMenuCommonProps = {
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: ComponentProps<typeof IconButton>['icon'];
 	title: string;
 };
 type GenericMenuConditionalProps =
 	| {
 			sections?: {
-				title?: string;
+				title?: ReactNode;
 				items: GenericMenuItemProps[];
 				permission?: boolean | '' | 0 | null | undefined;
 			}[];
@@ -27,18 +28,29 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
 
+	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
+
+	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
+	const handleAction = useHandleMenuAction(itemsList || []);
+
 	return (
 		<>
 			{sections && (
-				<MenuV2 icon={icon} title={t.has(title) ? t(title) : title} {...props}>
+				<MenuV2
+					icon={icon}
+					title={t.has(title) ? t(title) : title}
+					onAction={onAction || handleAction}
+					{...(disabledKeys && { disabledKeys })}
+					{...props}
+				>
 					{sections.map(({ title, items }, key) => (
-						<MenuSection title={title && (t.has(title) ? t(title) : title)} items={items} key={`${title}-${key}`}>
+						<MenuSection title={typeof title === 'string' && t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
 							{(item) => (
 								<MenuItem key={item.id}>
 									<GenericMenuItem {...item} />
@@ -49,7 +61,13 @@ const GenericMenu = ({ title, icon = 'menu', ...props }: GenericMenuProps) => {
 				</MenuV2>
 			)}
 			{items && (
-				<MenuV2 icon={icon} title={t.has(title) ? t(title) : title} {...props}>
+				<MenuV2
+					icon={icon}
+					title={t.has(title) ? t(title) : title}
+					onAction={onAction || handleAction}
+					{...(disabledKeys && { disabledKeys })}
+					{...props}
+				>
 					{items.map((item) => (
 						<MenuItem key={item.id}>
 							<GenericMenuItem {...item} />
