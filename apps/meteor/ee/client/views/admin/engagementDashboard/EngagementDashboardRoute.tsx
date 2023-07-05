@@ -84,7 +84,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				router.navigate(
 					{
 						pattern: '/admin/engagement/:context?/:tab?',
-						params: { tab: 'users', context: 'active' },
+						params: { context: 'active', tab: 'users' },
 					},
 					{ replace: true },
 				);
