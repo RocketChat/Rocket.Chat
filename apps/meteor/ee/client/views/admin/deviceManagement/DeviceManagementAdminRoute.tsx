@@ -13,8 +13,10 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewDeviceManagement = usePermission('view-device-management');
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
+
 	const { data } = useIsEnterprise();
 	const hasDeviceManagement = useHasLicenseModule('engagement-dashboard');
+	const isUpsell = !data?.isEnterprise || !hasDeviceManagement;
 
 	const deviceManagementRoute = useRoute('device-management');
 	const upgradeRoute = useRoute('upgrade');
@@ -26,38 +28,44 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		setIsModalOpen(false);
 	}, [setModal]);
 
-	const isUpsell = !data?.isEnterprise || !hasDeviceManagement;
+	const handleConfirmModal = useCallback(() => {
+		handleModalClose();
+		upgradeRoute.push({ type: 'go-fully-featured-registered' });
+	}, [handleModalClose, upgradeRoute]);
+
+	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
+	const handleCancelModal = useCallback(() => {
+		handleModalClose();
+		window.open(talkToSales, '_blank');
+	}, [handleModalClose]);
+
+	const handleOpenModal = useCallback(() => {
+		deviceManagementRoute.replace({ context: 'upsell' });
+		setModal(
+			<UpsellModal
+				title={t('Device_Management')}
+				img='images/device-management.png'
+				subtitle={t('Ensure_secure_workspace_access')}
+				description={t('Manage_which_devices')}
+				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
+				cancelText={t('Talk_to_an_expert')}
+				onConfirm={handleConfirmModal}
+				onCancel={handleCancelModal}
+				onClose={handleModalClose}
+			/>,
+		);
+		setIsModalOpen(true);
+	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleCancelModal, handleConfirmModal, handleModalClose, setModal, t]);
 
 	useEffect(() => {
-		const handleConfirmModal = () => {
-			handleModalClose();
-			upgradeRoute.push({ type: 'go-fully-featured-registered' });
-		};
-
-		const talkToSales = 'https://go.rocket.chat/i/contact-sales';
-		const handleCancelModal = () => {
-			handleModalClose();
-			window.open(talkToSales, '_blank');
-		};
-
 		if (isUpsell) {
-			deviceManagementRoute.replace({ context: 'upsell' });
-			setModal(
-				<UpsellModal
-					title={t('Device_Management')}
-					img='images/Device-management.svg'
-					subtitle={t('Ensure_secure_workspace_access')}
-					description={t('Manage_which_devices')}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-					cancelText={t('Talk_to_an_expert')}
-					onConfirm={handleConfirmModal}
-					onCancel={handleCancelModal}
-					onClose={handleModalClose}
-				/>,
-			);
-			setIsModalOpen(true);
+			handleOpenModal();
 		}
-	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleModalClose, isUpsell, setModal, t, upgradeRoute]);
+
+		return () => {
+			handleModalClose();
+		};
+	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleModalClose, handleOpenModal, isUpsell, setModal, t, upgradeRoute]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

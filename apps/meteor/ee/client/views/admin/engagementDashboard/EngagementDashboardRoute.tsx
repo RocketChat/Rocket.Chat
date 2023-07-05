@@ -18,14 +18,14 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
 
-	const engagementDashboardRoute = useRoute('engagement-dashboard');
-	const upgradeRoute = useRoute('upgrade');
-	const [routeName, routeParams] = useCurrentRoute();
-	const { tab } = routeParams ?? {};
-
 	const { data } = useIsEnterprise();
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard');
 	const isUpsell = !data?.isEnterprise || !hasEngagementDashboard;
+
+	const [routeName, routeParams] = useCurrentRoute();
+	const { tab } = routeParams ?? {};
+	const engagementDashboardRoute = useRoute('engagement-dashboard');
+	const upgradeRoute = useRoute('upgrade');
 
 	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,45 +34,64 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		setIsModalOpen(false);
 	}, [setModal]);
 
+	const handleConfirmModal = useCallback(() => {
+		handleModalClose();
+		upgradeRoute.push({ type: 'go-fully-featured-registered' });
+	}, [handleModalClose, upgradeRoute]);
+
+	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
+	const handleCancelModal = useCallback(() => {
+		handleModalClose();
+		window.open(talkToSales, '_blank');
+	}, [handleModalClose]);
+
+	const handleOpenModal = useCallback(() => {
+		engagementDashboardRoute.replace({ context: 'upsell', tab: 'users' });
+		setModal(
+			<UpsellModal
+				title={t('Engagement_Dashboard')}
+				img='images/engagement.png'
+				subtitle={t('Analyze_practical_usage')}
+				description={t('Enrich_your_workspace')}
+				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
+				cancelText={t('Talk_to_an_expert')}
+				onConfirm={handleConfirmModal}
+				onCancel={handleCancelModal}
+				onClose={handleModalClose}
+			/>,
+		);
+		setIsModalOpen(true);
+	}, [cloudWorkspaceHadTrial, engagementDashboardRoute, handleCancelModal, handleConfirmModal, handleModalClose, setModal, t]);
+
 	useEffect(() => {
 		if (routeName !== 'engagement-dashboard') {
 			return;
 		}
 
-		const handleConfirmModal = () => {
-			handleModalClose();
-			upgradeRoute.push({ type: 'go-fully-featured-registered' });
-		};
-
-		const talkToSales = 'https://go.rocket.chat/i/contact-sales';
-		const handleCancelModal = () => {
-			handleModalClose();
-			window.open(talkToSales, '_blank');
-		};
-
 		if (isUpsell) {
-			engagementDashboardRoute.replace({ context: 'upsell', tab: 'users' });
-			setModal(
-				<UpsellModal
-					title={t('Engagement_Dashboard')}
-					img='images/Engagement.svg'
-					subtitle={t('Analyze_practical_usage')}
-					description={t('Enrich_your_workspace')}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-					cancelText={t('Talk_to_an_expert')}
-					onConfirm={handleConfirmModal}
-					onCancel={handleCancelModal}
-					onClose={handleModalClose}
-				/>,
-			);
-			setIsModalOpen(true);
+			handleOpenModal();
 			return;
 		}
 
 		if (!isValidTab(tab)) {
 			engagementDashboardRoute.replace({ context: 'active', tab: 'users' });
 		}
-	}, [routeName, engagementDashboardRoute, tab, isUpsell, setModal, handleModalClose, t, cloudWorkspaceHadTrial, upgradeRoute]);
+
+		return () => {
+			handleModalClose();
+		};
+	}, [
+		routeName,
+		engagementDashboardRoute,
+		tab,
+		isUpsell,
+		setModal,
+		handleModalClose,
+		t,
+		cloudWorkspaceHadTrial,
+		upgradeRoute,
+		handleOpenModal,
+	]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 

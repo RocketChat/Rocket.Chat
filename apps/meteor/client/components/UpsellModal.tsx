@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import React from 'react';
 
-export type UpsellModalProps = {
+type UpsellModalProps = {
 	children?: ReactNode;
 	tagline?: ReactNode;
 	cancelText?: ReactNode;

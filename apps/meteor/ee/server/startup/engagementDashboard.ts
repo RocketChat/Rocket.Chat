@@ -6,7 +6,6 @@ onToggledFeature('engagement-dashboard', {
 	up: () =>
 		Meteor.startup(async () => {
 			const { prepareAnalytics, attachCallbacks } = await import('../lib/engagementDashboard/startup');
-			// await prepareAuthorization();
 			await prepareAnalytics();
 			attachCallbacks();
 			await import('../api/engagementDashboard');
