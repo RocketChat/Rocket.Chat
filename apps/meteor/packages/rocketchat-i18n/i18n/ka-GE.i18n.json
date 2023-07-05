@@ -1483,8 +1483,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "ეს ფუნქცია დამოკიდებულია \"ჩართეთ ვიზიტორის ნავიგაციის ისტორია, როგორც გზავნილი\"-ზე",
   "Features_Enabled": "ჩართული ფუნქციები",
   "Federation_Dashboard": "ფედერაციის დაფა",
-  "Federation_Discovery_method": "აღმოჩენის მეთოდი",
-  "Federation_Domain": "დომენი",
+
+
   "Federation_Protocol": "პროტოკოლი",
   "Federation_Public_key": "საჯარო გასაღები",
   "FEDERATION_Discovery_Method": "აღმოჩენის მეთოდი",

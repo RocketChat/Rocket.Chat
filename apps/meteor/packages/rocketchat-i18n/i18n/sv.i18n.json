@@ -2104,43 +2104,43 @@
   "Features_Enabled": "Funktioner aktiverade",
   "Federation": "Federation",
   "Federation_Adding_Federated_Users": "Lägger till federerade användare",
-  "Federation_Adding_to_your_server": "Lägger till federation för servern",
-  "Federation_Adding_users_from_another_server": "Lägger till användare från en annan server",
+
+
   "Federation_Changes_needed": "Ändringar krävs av serverns domännamn, mål och port.",
-  "Federation_Channels_Will_Be_Replicated": "De kanalerna replikeras till fjärrservern utan meddelandehistoriken.",
-  "Federation_Configure_DNS": "Konfigurera DNS",
+
+
   "Federation_Dashboard": "Infopanelen Federation",
   "Federation_Description": "Med federation kan ett obegränsat antal arbetsytor kommunicera med varandra.",
-  "Federation_Discovery_method": "Upptäcktsmetod",
-  "Federation_Discovery_method_details": "Du kan använda hubben eller en DNS-post (SRV och en TXT-post). Mer information",
-  "Federation_DNS_info_update": "Den här informationen uppdateras varje minut",
-  "Federation_Domain": "Domän",
-  "Federation_Domain_details": "Lägg till domännamnet som servern ska länkas till.",
-  "Federation_Email": "E-postadress: josef@fjarrdoman.com",
+
+
+
+
+
+
   "Federation_Enable": "Aktivera federation",
   "Federation_Fix_now": "Åtgärda nu!",
   "Federation_Guide_adding_users": "Vi vägleder dig genom hur du lägger till din första federerade användare.",
   "Federation_HTTP_instead_HTTPS": "Om du använder HTTP-protokoll istället för HTTPS",
   "Federation_HTTP_instead_HTTPS_details": "Vi rekommenderar att du använder HTTPS för alla typer av kommunikation, men ibland går det inte. Om du behöver ersätter du i SRV-posten för DNS: protokoll: _http, port: 80",
-  "Federation_Invite_User": "Bjud in användare",
-  "Federation_Invite_Users_To_Private_Rooms": "Från och med nu kan du bjuda in enbart federerade användare till privata rum och diskussioner.",
-  "Federation_Inviting_users_from_another_server": "Bjuda in användare från en annan server",
+
+
+
   "Federation_Is_working_correctly": "Federationsintegreringen fungerar som den ska.",
-  "Federation_Legacy_support": "Stöd för äldre versioner",
+
   "Federation_Must_add_records": "Du måste lägga till följande DNS-poster i servern:",
   "Federation_Protocol": "Protokoll",
   "Federation_Protocol_details": "Vi rekommenderar att du endast använder HTTP under interna och mycket specifika omständigheter.",
   "Federation_Protocol_TXT_record": "TXT-post i protokoll",
   "Federation_Public_key": "Öppen nyckel",
   "Federation_Public_key_details": "Det här är den nyckel du behöver dela med dina kollegor. Vad är den till för?",
-  "Federation_Search_users_you_want_to_connect": "Sök efter användaren du vill ansluta med en kombination av ett användarnamn och en domän eller en e-postadress, till exempel:",
+
   "Federation_slash_commands": "Federeringskommandon",
-  "Federation_SRV_no_support": "Om din DNS-leverantör inte har stöd för SRV-poster med _http eller _https",
-  "Federation_SRV_no_support_details": "Vissa DNS-leverantörer tillåter inte att du anger _https eller _http för SRV-poster. Därför har vi stöd för sådana fall i form av vår gamla metod för lösning av DNS-poster.",
+
+
   "Federation_SRV_records_200": "SRV-post (2.0.0 eller senare)",
   "Federation_Public_key_TXT_record": "TXT-post för öppen nyckel",
-  "Federation_Username": "Användarnamn: minkompisanvändarnamn@annandoman.com",
-  "Federation_You_will_invite_users_without_login_access": "Du kan bjuda in dem till din server utan att de behöver logga in. Dessutom kan du och alla andra på din server chatta med dem.",
+
+
   "FEDERATION_Discovery_Method": "Upptäcktsmetod",
   "FEDERATION_Discovery_Method_Description": "Du kan använda hubben eller en SRV och en TXT-post på dina DNS-poster.",
   "FEDERATION_Domain": "Domän",

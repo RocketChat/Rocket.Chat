@@ -2084,43 +2084,43 @@
   "Features_Enabled": "Aktivierte Funktionen",
   "Federation": "Verbund",
   "Federation_Adding_Federated_Users": "Verbund-Benutzer hinzufügen",
-  "Federation_Adding_to_your_server": "Verbund ihrem Server hinzufügen",
-  "Federation_Adding_users_from_another_server": "Benutzer von einem anderen Server hinzufügen",
+
+
   "Federation_Changes_needed": "Auf Ihrem Server ist es erforderlich den Domänenmane, das Ziel und den Port zu ändern.",
-  "Federation_Channels_Will_Be_Replicated": "Diese Kanäle werden auf den fernen Server ohne den Nachrichtenverlauf repliziert.",
-  "Federation_Configure_DNS": "DNS konfigurieren",
+
+
   "Federation_Dashboard": "Verbund-Dashboard",
   "Federation_Description": "Verbund ermöglicht es einer begrenzten Anzahl von Arbeitsbereichen, miteinander zu kommunizieren.",
-  "Federation_Discovery_method": "Erkennungsmethode",
-  "Federation_Discovery_method_details": "Sie können den Hub oder einen DNS-Eintrag (SRV und einen TXT-Eintrag) verwenden. Mehr erfahren",
-  "Federation_DNS_info_update": "Diese Information wird jede Minute aktualisiert",
-  "Federation_Domain": "Domain",
-  "Federation_Domain_details": "Fügen Sie den Domainnamen hinzu, mit dem dieser Server verknüpft werden soll.",
-  "Federation_Email": "E-Mail-Adresse: joseph@remotedomain.com",
+
+
+
+
+
+
   "Federation_Enable": "Verbund aktivieren",
   "Federation_Fix_now": "Jetzt reparieren!",
   "Federation_Guide_adding_users": "Wir zeigen Ihnen, wie Sie Ihren ersten Verbund-Benutzer hinzufügen.",
   "Federation_HTTP_instead_HTTPS": "Wenn Sie das HTTP-Protokoll statt HTTPS verwenden",
   "Federation_HTTP_instead_HTTPS_details": "Wir empfehlen HTTPS für alle Arten der Kommunikation zu verwenden, aber manchmal ist das nicht möglich. Falls erforderlich, setzen Sie im SRV-DNS-Eintrag das Protokoll: _http, Port: 80",
-  "Federation_Invite_User": "Benutzer einladen",
-  "Federation_Invite_Users_To_Private_Rooms": "Von nun an können Sie Verbund-Benutzer nur noch in private Räume oder Diskussionen einladen.",
-  "Federation_Inviting_users_from_another_server": "Benutzer von einem anderen Server einladen",
+
+
+
   "Federation_Is_working_correctly": "Die Verbundintegration funktioniert ordnungsgemäß.",
-  "Federation_Legacy_support": "Legacy-Unterstützung",
+
   "Federation_Must_add_records": "Sie müssen die folgenden DNS-Einträge auf Ihrem Server hinzufügen:",
   "Federation_Protocol": "Protokoll",
   "Federation_Protocol_details": "Wir empfehlen HTTP nur für interne, sehr spezielle Fälle zu verwenden.",
   "Federation_Protocol_TXT_record": "Protokoll des TXT-Datensatzes",
   "Federation_Public_key": "Öffentlicher Schüssel",
   "Federation_Public_key_details": "Dies ist der Schlüssel, den Sie mit Ihren Kollegen teilen müssen. Wofür ist er?",
-  "Federation_Search_users_you_want_to_connect": "Suchen Sie nach dem Benutzer, den Sie verbinden möchten, verwenden Sie dazu eine Kombination aus Benutzername und Domäne oder eine E-Mail-Adresse, wie:",
+
   "Federation_slash_commands": "Verbund-Anweisungen",
-  "Federation_SRV_no_support": "Wenn Ihr DNS-Anbieter keine SRV-Einträge mit _http oder _https unterstützt",
-  "Federation_SRV_no_support_details": "Einige DNS-Anbieter lassen die Angabe von _https oder _http in SRV-Einträgen nicht zu, so dass wir für diese Fälle unsere alte Methode zur Auflösung von DNS-Einträgen verwenden.",
+
+
   "Federation_SRV_records_200": "SRV-Eintrag (2.0.0 oder neuer)",
   "Federation_Public_key_TXT_record": "Öffentlicher Schlüssel des TXT-Datensatzes",
-  "Federation_Username": "Benutzername: myfriendsusername@anotherdomain.com",
-  "Federation_You_will_invite_users_without_login_access": "Sie laden sie ohne Anmeldezugriff auf Ihren Server ein. Außerdem können Sie und alle anderen auf Ihrem Server mit ihnen chatten.",
+
+
   "FEDERATION_Discovery_Method": "Erkennungsmethode",
   "FEDERATION_Discovery_Method_Description": "Sie können den Hub oder einen SRV- und einen TXT-Eintrag in Ihren DNS-Einträgen verwenden.",
   "FEDERATION_Domain": "Domain",

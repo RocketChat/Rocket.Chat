@@ -1459,8 +1459,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ця функція залежить від увімкненої функції \"Відправляти історію навігації відвідувачів як повідомлення\"",
   "Features_Enabled": "Особливості Включено",
   "Federation_Dashboard": "Інформаційна панель Федерації",
-  "Federation_Discovery_method": "Метод відкриття",
-  "Federation_Domain": "Домен",
+
+
   "Federation_Protocol": "Протокол",
   "Federation_Public_key": "Відкритий ключ",
   "FEDERATION_Discovery_Method": "Метод відкриття",

@@ -1622,8 +1622,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "이 기능은 '방문자 동선 내역을 메시지로 전송'을 사용하도록 설정되어 있습니다.",
   "Features_Enabled": "기능 활성화",
   "Federation_Dashboard": "Federation 대시 보드",
-  "Federation_Discovery_method": "Method 발견",
-  "Federation_Domain": "도메인",
+
+
   "Federation_Protocol": "프로토콜",
   "Federation_Public_key": "공개 키",
   "FEDERATION_Discovery_Method": "Method 발견",

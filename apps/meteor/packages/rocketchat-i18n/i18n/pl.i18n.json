@@ -2004,43 +2004,43 @@
   "Features_Enabled": "Opis Włączone",
   "Federation": "Federacja",
   "Federation_Adding_Federated_Users": "Dodawanie użytkowników sfederowanych",
-  "Federation_Adding_to_your_server": "Dodawanie Federacji do twojego serwera",
-  "Federation_Adding_users_from_another_server": "Dodawanie użytkowników z innego serwera",
+
+
   "Federation_Changes_needed": "Zmiany wymagane na serwerze to: nazwa domeny, target i port.",
-  "Federation_Channels_Will_Be_Replicated": "Kanały te będą replikowane do zdalnego serwera, bez historii wiadomości.",
-  "Federation_Configure_DNS": "Skonfiguruj DNS",
+
+
   "Federation_Dashboard": "Federation Dashboard",
   "Federation_Description": "Federacja umożliwia komunikowanie się ze sobą nieograniczonej liczby obszarów roboczych.",
-  "Federation_Discovery_method": "Discovery Method",
-  "Federation_Discovery_method_details": "Możesz użyć huba lub rekordu DNS (SRV lub TXT). Dowiedz się więcej",
-  "Federation_DNS_info_update": "Te informacje są aktualizowane co 1 minutę",
-  "Federation_Domain": "Domena",
-  "Federation_Domain_details": "Dodaj nazwę domeny, z którą ma być powiązany ten serwer.",
-  "Federation_Email": "Adres e-mail: joseph@remotedomain.com",
+
+
+
+
+
+
   "Federation_Enable": "Włącz Federację",
   "Federation_Fix_now": "Napraw teraz!",
   "Federation_Guide_adding_users": "Podpowiadamy, jak dodać pierwszego użytkownika federacyjnego.",
   "Federation_HTTP_instead_HTTPS": "Jeśli używasz protokołu HTTP zamiast HTTPS",
   "Federation_HTTP_instead_HTTPS_details": "Zalecamy stosowanie protokołu HTTPS dla wszystkich rodzajów komunikacji, ale czasami nie jest to możliwe. Jeśli jest taka potrzeba, we wpisie SRV DNS zastąp: protokół: _http port: 80",
-  "Federation_Invite_User": "Zaproś użytkownika",
-  "Federation_Invite_Users_To_Private_Rooms": "Od teraz możesz zapraszać sfederowanych użytkowników tylko do prywatnych pokoi lub dyskusji.",
-  "Federation_Inviting_users_from_another_server": "Zapraszanie użytkowników z innego serwera",
+
+
+
   "Federation_Is_working_correctly": "Federacja działa poprawnie",
-  "Federation_Legacy_support": "Wsparcie dla starszych",
+
   "Federation_Must_add_records": "Musisz dodać następujące rekordy DNS na swoim serwerze:",
   "Federation_Protocol": "Protokół",
   "Federation_Protocol_details": "Zalecamy stosowanie HTTP tylko w wewnętrznych, bardzo specyficznych przypadkach.",
   "Federation_Protocol_TXT_record": "Protokół rekordu TXT",
   "Federation_Public_key": "Klucz publiczny",
   "Federation_Public_key_details": "To jest klucz, którym musisz się podzielić z innymi. Do czego to służy?",
-  "Federation_Search_users_you_want_to_connect": "Wyszukaj użytkownika, z którym chcesz się połączyć, używając kombinacji nazwy użytkownika i domeny lub adresu e-mail, np:",
+
   "Federation_slash_commands": "Polecenia Federacji",
-  "Federation_SRV_no_support": "Jeśli Twój dostawca DNS nie obsługuje rekordów SRV z _http lub _https",
-  "Federation_SRV_no_support_details": "Niektórzy dostawcy DNS nie pozwalają na ustawienie _https lub _http w rekordach SRV, więc mamy wsparcie dla tych przypadków, używając naszej starej metody rozwiązywania rekordów DNS.",
+
+
   "Federation_SRV_records_200": "Rekord SRV (2.0.0 lub nowszy)",
   "Federation_Public_key_TXT_record": "Klucz publiczny rekordu TXT",
-  "Federation_Username": "Nazwa użytkownika: myfriendsusername@anotherdomain.com",
-  "Federation_You_will_invite_users_without_login_access": "Zaprosisz ich na swój serwer bez dostępu do logowania. Ponadto, Ty i wszyscy inni na Twoim serwerze będą mogli z nimi rozmawiać na czacie.",
+
+
   "FEDERATION_Discovery_Method": "Discovery Method",
   "FEDERATION_Discovery_Method_Description": "Możesz użyć hub lub SRV i TXT dla Twoich rekordów DNS",
   "FEDERATION_Domain": "Domena",

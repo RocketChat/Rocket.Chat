@@ -8,7 +8,6 @@ import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard';
-import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
 
@@ -85,20 +84,19 @@ const InformationPage = memo(function InformationPage({
 					)}
 
 					<Grid>
-						<Grid.Item xl={3}>
+						<Grid.Item xl={4}>
 							<DeploymentCard info={info} statistics={statistics} instances={instances} />
 						</Grid.Item>
-						<Grid.Item xl={3}>
-							<LicenseCard />
+						<Grid.Item xl={4} p={0}>
+							<Grid.Item xl={12} height='50%'>
+								<LicenseCard />
+							</Grid.Item>
+							<Grid.Item xl={12} height='50%'>
+								<SeatsCard />
+							</Grid.Item>
 						</Grid.Item>
-						<Grid.Item xl={6} md={8} xs={4} sm={8}>
+						<Grid.Item xl={4} md={8} xs={4} sm={8}>
 							<UsageCard vertical={false} statistics={statistics} />
-						</Grid.Item>
-						<Grid.Item xl={6}>
-							<FederationCard />
-						</Grid.Item>
-						<Grid.Item xl={3}>
-							<SeatsCard />
 						</Grid.Item>
 					</Grid>
 				</Box>

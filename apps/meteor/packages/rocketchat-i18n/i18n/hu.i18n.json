@@ -2034,43 +2034,43 @@
   "Features_Enabled": "Funkciók engedélyezve",
   "Federation": "Föderáció",
   "Federation_Adding_Federated_Users": "Föderált felhasználók hozzáadása",
-  "Federation_Adding_to_your_server": "Föderáció hozzáadása a kiszolgálójához",
-  "Federation_Adding_users_from_another_server": "Felhasználók hozzáadása egy másik kiszolgálóról",
+
+
   "Federation_Changes_needed": "A kiszolgálón szükséges változtatások a tartománynév, a cél és a port.",
-  "Federation_Channels_Will_Be_Replicated": "Ezek a csatornák a távoli kiszolgálóra lesznek replikálva az üzenetelőzmények nélkül.",
-  "Federation_Configure_DNS": "DNS beállítása",
+
+
   "Federation_Dashboard": "Föderációs vezérlőpult",
   "Federation_Description": "A föderáció lehetővé teszi, hogy korlátlan számú munkaterület kommunikáljon egymással.",
-  "Federation_Discovery_method": "Felfedezési módszer",
-  "Federation_Discovery_method_details": "Használhatja az elosztót vagy egy DNS-rekordot (SRV és TXT bejegyzés). További információk",
-  "Federation_DNS_info_update": "Ez az információ 1 percenként frissül",
-  "Federation_Domain": "Tartomány",
-  "Federation_Domain_details": "A tartománynév hozzáadása, amelyhez ezt a kiszolgálót hozzá kell kapcsolni.",
-  "Federation_Email": "E-mail-cím: jozsef@tavolitartomany.hu",
+
+
+
+
+
+
   "Federation_Enable": "Föderáció engedélyezése",
   "Federation_Fix_now": "Javítás most!",
   "Federation_Guide_adding_users": "Útmutatást adunk arról, hogy hogyan kell hozzáadni az első föderált felhasználót.",
   "Federation_HTTP_instead_HTTPS": "Ha HTTP-protokollt használ a HTTPS helyett",
   "Federation_HTTP_instead_HTTPS_details": "Azt ajánljuk, hogy HTTPS protokollt használjon mindenfajta kommunikációhoz, de néha ez nem lehetséges. Ha szükséges, az SRV DNS-bejegyzésben cserélje ki a protokollt „_http”, a portot „80” értékre.",
-  "Federation_Invite_User": "Felhasználó meghívása",
-  "Federation_Invite_Users_To_Private_Rooms": "Mostantól a föderált felhasználókat csak személyes szobákba vagy megbeszélésekre hívhatja meg.",
-  "Federation_Inviting_users_from_another_server": "Felhasználók meghívása egy másik kiszolgálóról",
+
+
+
   "Federation_Is_working_correctly": "A föderációs integráció megfelelően működik.",
-  "Federation_Legacy_support": "Örökölt támogatás",
+
   "Federation_Must_add_records": "Hozzá kell adnia a következő DNS-rekordokat a kiszolgálóján:",
   "Federation_Protocol": "Protokoll",
   "Federation_Protocol_details": "A HTTP használatát csak belső, nagyon különleges esetekben ajánljuk.",
   "Federation_Protocol_TXT_record": "Protokoll TXT-rekordja",
   "Federation_Public_key": "Nyilvános kulcs",
   "Federation_Public_key_details": "Ez az a kulcs, amelyet meg kell osztania partnereivel. Mire való?",
-  "Federation_Search_users_you_want_to_connect": "Keresse meg azt a felhasználót, akihez kapcsolódni szeretne, egy felhasználónév és egy tartomány vagy e-mail-cím kombinációjával, például:",
+
   "Federation_slash_commands": "Föderációs parancsok",
-  "Federation_SRV_no_support": "Ha a DNS-szolgáltatója nem támogatja a _http vagy _https SRV-rekordokat",
-  "Federation_SRV_no_support_details": "Néhány DNS-szolgáltató nem engedélyezi a _https vagy _http beállítását az SRV-rekordokban, ezért ezekre az esetekre is van támogatásunk a régi DNS-rekord feloldási módszerünkkel.",
+
+
   "Federation_SRV_records_200": "SRV-rekord (2.0.0 vagy újabb)",
   "Federation_Public_key_TXT_record": "Nyilvános kulcs TXT-rekordja",
-  "Federation_Username": "Felhasználónév: ismerosfelhasznaloneve@masiktartomany.hu",
-  "Federation_You_will_invite_users_without_login_access": "Meg fogja hívni őket a kiszolgálójára bejelentkezési hozzáférés nélkül. Továbbá Ön és a kiszolgálóján mindenki más képes lesz velük csevegni.",
+
+
   "FEDERATION_Discovery_Method": "Felfedezési módszer",
   "FEDERATION_Discovery_Method_Description": "Használhatja az elosztót vagy egy SRV és egy TXT-bejegyzést a DNS-rekordjaiban.",
   "FEDERATION_Domain": "Tartomány",

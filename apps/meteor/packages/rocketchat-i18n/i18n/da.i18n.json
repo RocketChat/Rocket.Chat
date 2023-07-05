@@ -1573,8 +1573,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Denne funktion afhænger af \"Send besøgendes navigationshistorik som en besked\" er aktiveret.",
   "Features_Enabled": "Funktioner aktiveret",
   "Federation_Dashboard": "Federation Dashboard",
-  "Federation_Discovery_method": "Opdagelsesmetode",
-  "Federation_Domain": "Domæne",
+
+
   "Federation_Protocol": "Protokol",
   "Federation_Public_key": "Offentlig nøgle",
   "FEDERATION_Discovery_Method": "Opdagelsesmetode",

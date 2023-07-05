@@ -1316,8 +1316,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Esse recurso depende de \"Enviar histórico de navegação do visitante como uma mensagem\" para ser activado.",
   "Features_Enabled": "Funcionalidades habilitadas",
   "Federation_Dashboard": "Painel de Federação",
-  "Federation_Discovery_method": "Método de Descoberta",
-  "Federation_Domain": "Domínio",
+
+
   "Federation_Protocol": "Protocolo",
   "Federation_Public_key": "Chave Pública",
   "FEDERATION_Discovery_Method": "Método de Descoberta",

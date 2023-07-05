@@ -1335,8 +1335,8 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Bu özellik, \"Ziyaretçi Gezinme Geçmişini İleti Olarak Gönder\" seçeneğinin etkinleştirilmesine bağlıdır.",
   "Features_Enabled": "Özellikler Etkin",
   "Federation_Dashboard": "Federasyon Panosu",
-  "Federation_Discovery_method": "Keşif Yöntemi",
-  "Federation_Domain": "Alan Adı",
+
+
   "Federation_Protocol": "İletişim Kuralları",
   "Federation_Public_key": "Herkese Açık Anahtar",
   "FEDERATION_Discovery_Method": "Keşif Yöntemi",

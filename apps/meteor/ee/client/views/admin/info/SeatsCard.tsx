@@ -29,21 +29,19 @@ const SeatsCard = (): ReactElement | null => {
 			<Card.Title>{t('Seats_usage')}</Card.Title>
 			<Card.Body>
 				<Card.Col>
-					<Card.Col.Section>
-						<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
-							{!seatsCap ? (
-								<Skeleton variant='rect' width='x112' height='x112' />
-							) : (
-								<UsagePieGraph
-									label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
-									used={seatsCap.activeUsers}
-									total={seatsCap.maxActiveUsers}
-									size={140}
-									color={color}
-								/>
-							)}
-						</Box>
-					</Card.Col.Section>
+					<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
+						{!seatsCap ? (
+							<Skeleton variant='rect' width='x112' height='x112' />
+						) : (
+							<UsagePieGraph
+								label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
+								used={seatsCap.activeUsers}
+								total={seatsCap.maxActiveUsers}
+								size={140}
+								color={color}
+							/>
+						)}
+					</Box>
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>

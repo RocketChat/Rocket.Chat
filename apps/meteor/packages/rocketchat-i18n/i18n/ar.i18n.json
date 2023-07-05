@@ -1858,41 +1858,41 @@
   "Features_Enabled": "الميزات الممكّنة",
   "Federation": "اتحاد",
   "Federation_Adding_Federated_Users": "إضافة مستخدمين متحدين",
-  "Federation_Adding_to_your_server": "إضافة اتحاد إلى الخادم الخاص بك",
-  "Federation_Adding_users_from_another_server": "إضافة مستخدمين من خادم آخر",
+
+
   "Federation_Changes_needed": "التغييرات المطلوبة على الخادم الخاص بك هي اسم المجال والهدف والمنفذ.",
-  "Federation_Channels_Will_Be_Replicated": "سيتم نسخ هذه القنوات إلى الخادم البعيد، دون محفوظات الرسائل.",
-  "Federation_Configure_DNS": "تكوين DNS",
+
+
   "Federation_Dashboard": "لوحة معلومات الاتحاد",
-  "Federation_Discovery_method": "طريقة الاكتشاف",
-  "Federation_Discovery_method_details": "يمكنك استخدام المركز أو سجل DNS (إدخال SRV وTXT). تعرف على المزيد",
-  "Federation_DNS_info_update": "يتم تحديث هذه المعلومات كل دقيقة واحدة",
-  "Federation_Domain": "النطاق",
-  "Federation_Domain_details": "أضف اسم النطاق الذي يجب ربط هذا الخادم به.",
-  "Federation_Email": "عنوان البريد الإلكتروني: joseph@remotedomain.com",
+
+
+
+
+
+
   "Federation_Enable": "تمكين الاتحاد",
   "Federation_Fix_now": "إصلاح الآن!",
   "Federation_Guide_adding_users": "إننا نوجهك بشأن كيفية إضافة المستخدم المتحد الأول.",
   "Federation_HTTP_instead_HTTPS": "إذا كنت تستخدم بروتوكول HTTP بدلاً من HTTPS",
   "Federation_HTTP_instead_HTTPS_details": "ننصحك باستخدام HTTPS لجميع أنواع الاتصالات، لكن هذا غير ممكن في بعض الأحيان. إذا كنت بحاجة إليه، فمن إدخال DNS SRV اجعل: البروتوكول: ‎_http المنفذ: 80",
-  "Federation_Invite_User": "دعوة مستخدم",
-  "Federation_Invite_Users_To_Private_Rooms": "من الآن فصاعدًا، يمكنك دعوة المستخدمين المتحدين فقط إلى الغرف أو المناقشات الخاصة.",
-  "Federation_Inviting_users_from_another_server": "دعوة مستخدمين من خادم مختلف",
+
+
+
   "Federation_Is_working_correctly": "تكامل الاتحاد يعمل بشكل صحيح.",
-  "Federation_Legacy_support": "الدعم المكتسب",
+
   "Federation_Must_add_records": "تلزمك إضافة سجلات DNS التالية على الخادم الخاص بك:",
   "Federation_Protocol": "البروتوكول",
   "Federation_Protocol_details": "إننا ننصح فقط باستخدام HTTP في حالات داخلية محددة للغاية.",
   "Federation_Protocol_TXT_record": "سجل TXT للبروتوكول",
   "Federation_Public_key": "المفتاح العام",
   "Federation_Public_key_details": "هذا هو المفتاح الذي تحتاج إلى مشاركته مع نظرائك. ما الغرض منه؟",
-  "Federation_Search_users_you_want_to_connect": "ابحث عن المستخدم الذي تريد الاتصال به باستخدام تركيبة مكونة من اسم المستخدم والنطاق أو عنوان البريد الإلكتروني، مثل:",
-  "Federation_SRV_no_support": "إذا كان مزود DNS الخاص بك لا يدعم سجلات SRV مع ‎_http أو ‎_https",
-  "Federation_SRV_no_support_details": "لن يسمح بعض موفري DNS بتعيين ‎_https أو ‎_http على سجلات SRV، ومن ثم وفرنا دعمًا لهذه الحالات، باستخدام طريقة حل سجل DNS القديمة.",
+
+
+
   "Federation_SRV_records_200": "سجل SRV (2.0.0 أو الإصدار الأحدث)",
   "Federation_Public_key_TXT_record": "سجل TXT للمفتاح العام",
-  "Federation_Username": "اسم المستخدم: myfriendsusername@anotherdomain.com",
-  "Federation_You_will_invite_users_without_login_access": "ستقوم بدعوته إلى الخادم الخاص بك دون الوصول إلى تسجيل الدخول. كما سيمكنك أنت وكل شخص آخر على خادمك الدردشة معه.",
+
+
   "FEDERATION_Discovery_Method": "طريقة الاكتشاف",
   "FEDERATION_Discovery_Method_Description": "يمكنك استخدام المركز أو إدخال SRV وTXT على سجلات DNS لديك.",
   "FEDERATION_Domain": "النطاق",

@@ -2102,43 +2102,43 @@
   "Features_Enabled": "Ominaisuudet käytössä",
   "Federation": "Liittoutuminen",
   "Federation_Adding_Federated_Users": "Lisätään liittoutuneita käyttäjiä",
-  "Federation_Adding_to_your_server": "Lisätään liittoutumista palvelimeen",
-  "Federation_Adding_users_from_another_server": "Lisätään käyttäjiä toisesta palvelimesta",
+
+
   "Federation_Changes_needed": "Palvelimen toimialuenimi, kohde ja portti tarvitsevat muutoksia.",
-  "Federation_Channels_Will_Be_Replicated": "Kyseiset kanavat replokoidaan etäpalvelimeen ilman viestihistoriaa.",
-  "Federation_Configure_DNS": "Määritä DNS",
+
+
   "Federation_Dashboard": "Liittoutumisen koontinäyttö",
   "Federation_Description": "Liittoutumisen ansiosta rajoittamaton määrä työtiloja voi olla yhteydessä keskenään.",
-  "Federation_Discovery_method": "Etsintätapa",
-  "Federation_Discovery_method_details": "Voit käyttää keskitintä tai DNS-tietuetta (SRV- ja TXT-merkintä). Lue lisää",
-  "Federation_DNS_info_update": "Tämä tieto päivittyy 1 minuutin välein",
-  "Federation_Domain": "Toimialue",
-  "Federation_Domain_details": "Lisää toimialuenimi, johon tämä palvelin on liitettävä.",
-  "Federation_Email": "Sähköpostiosoite: matti.mallikas@etätoimialue.fi",
+
+
+
+
+
+
   "Federation_Enable": "Ota liittoutuminen käyttöön",
   "Federation_Fix_now": "Korjaa heti!",
   "Federation_Guide_adding_users": "Autamme sinua lisäämään ensimmäisen liittoutuneen käyttäjän.",
   "Federation_HTTP_instead_HTTPS": "Jos käytät HTTP-yhteyskäytäntöä HTTPS-yhteyskäytännön sijasta",
   "Federation_HTTP_instead_HTTPS_details": "Suosittelemme HTTPS:n käyttöä kaikessa viestinnässä, mutta joskus se ei ole mahdollista. Tarvittaessa korvaa SRV DNS -merkinnässä: yhteyskäytäntö: _http portti: 80",
-  "Federation_Invite_User": "Kutsu käyttäjä",
-  "Federation_Invite_Users_To_Private_Rooms": "Tästä lähtien voit kutsua liittoutuneita käyttäjiä vain yksityisiin huoneisiin tai keskusteluihin.",
-  "Federation_Inviting_users_from_another_server": "Kutsutaan käyttäjiä eri palvelimesta",
+
+
+
   "Federation_Is_working_correctly": "Liittoutumisen integrointi toimii oikein.",
-  "Federation_Legacy_support": "Vanha tuki",
+
   "Federation_Must_add_records": "Sinun on lisättävä palvelimeen seuraavat DNS-tietueet:",
   "Federation_Protocol": "Yhteyskäytäntö",
   "Federation_Protocol_details": "Suosittelemme HTTP:n käyttöä vain sisäisissä, hyvin erityisissä tapauksissa.",
   "Federation_Protocol_TXT_record": "Yhteyskäytännön TXT-tietue",
   "Federation_Public_key": "Julkinen avain",
   "Federation_Public_key_details": "Tämä on avain, joka sinun on jaettava vertaistesi kanssa. Mitä varten se on?",
-  "Federation_Search_users_you_want_to_connect": "Etsi yhdistettävä käyttäjä käyttämällä käyttäjätunnuksen ja toimialueen tai sähköpostiosoitteen yhdistelmää, kuten:",
+
   "Federation_slash_commands": "Liittoutumiskomennot",
-  "Federation_SRV_no_support": "Jos DNS-palveluntarjoaja ei tue SRV-tietueita, joissa on _http tai _https",
-  "Federation_SRV_no_support_details": "Jotkin DNS-palveluntarjoajat eivät salli _https- tai _http-koodien asettamista SRV-tietueisiin, joten meillä on tuki näitä tapauksia varten käyttämällä vanhaa DNS-tietueiden selvitystapaa.",
+
+
   "Federation_SRV_records_200": "SRV-tietue (2.0.0 tai uudempi)",
   "Federation_Public_key_TXT_record": "Julkisen avaimen TXT-tietue",
-  "Federation_Username": "Käyttäjätunnus: vastaanottaja@muutoimialue.fi",
-  "Federation_You_will_invite_users_without_login_access": "Kutsut heidät palvelimeesi ilman kirjautumisoikeutta. Lisäksi sinä ja kaikki muut palvelimessasi voitte keskustella heidän kanssaan.",
+
+
   "FEDERATION_Discovery_Method": "Etsintätapa",
   "FEDERATION_Discovery_Method_Description": "Voit käyttää keskitintä tai SRV- ja TXT-merkintää DNS-tietueissasi.",
   "FEDERATION_Domain": "Toimialue",

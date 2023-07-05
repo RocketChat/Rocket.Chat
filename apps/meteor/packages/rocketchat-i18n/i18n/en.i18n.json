@@ -2144,19 +2144,19 @@
   "Features_Enabled": "Features Enabled",
   "Federation": "Federation",
   "Federation_Adding_Federated_Users": "Adding Federated Users",
-  "Federation_Adding_to_your_server": "Adding Federation to your Server",
-  "Federation_Adding_users_from_another_server": "Adding users from another server",
+
+
   "Federation_Changes_needed": "Changes needed on your Server the Domain Name, Target and Port.",
-  "Federation_Channels_Will_Be_Replicated": "Those channels are going to be replicated to the remote server, without the message history.",
-  "Federation_Configure_DNS": "Configure DNS",
+
+
   "Federation_Dashboard": "Federation Dashboard",
   "Federation_Description": "Federation allows an unlimited number of workspaces to communicate with each other.",
-  "Federation_Discovery_method": "Discovery Method",
-  "Federation_Discovery_method_details": "You can use the hub or a DNS record (SRV and a TXT entry). Learn more",
-  "Federation_DNS_info_update": "This Info is updated every 1 minute",
-  "Federation_Domain": "Domain",
-  "Federation_Domain_details": "Add the domain name that this server should be linked to.",
-  "Federation_Email": "E-mail address: joseph@remotedomain.com",
+
+
+
+
+
+
   "Federation_Enable": "Enable Federation",
   "Federation_Example_matrix_server": "Example: matrix.org",
   "Federation_Fix_now": "Fix now!",
@@ -2164,26 +2164,26 @@
   "Federation_Guide_adding_users": "We guide you on how to add your first federated user.",
   "Federation_HTTP_instead_HTTPS": "If you use HTTP protocol instead HTTPS",
   "Federation_HTTP_instead_HTTPS_details": "We recommend to use HTTPS for all kinds of communications, but sometimes that is not possible. If you need, in the SRV DNS entry replace: the protocol: _http the port: 80",
-  "Federation_Invite_User": "Invite User",
-  "Federation_Invite_Users_To_Private_Rooms": "From now on, you can invite federated users only to private rooms or discussions.",
-  "Federation_Inviting_users_from_another_server": "Inviting users from a different server",
+
+
+
   "Federation_Is_working_correctly": "Federation integration is working correctly.",
-  "Federation_Legacy_support": "Legacy Support",
+
   "Federation_Must_add_records": "You must add the following DNS records on your server:",
   "Federation_Protocol": "Protocol",
   "Federation_Protocol_details": "We only recommend using HTTP on internal, very specific cases.",
   "Federation_Protocol_TXT_record": "Protocol TXT Record",
   "Federation_Public_key": "Public Key",
   "Federation_Public_key_details": "This is the key you need to share with your peers. What is it for?",
-  "Federation_Search_users_you_want_to_connect": "Search for the user you want to connect using a combination of a username and a domain or an e-mail address, like:",
+
   "Federation_Search_federated_rooms": "Search federated rooms",
   "Federation_slash_commands": "Federation commands",
-  "Federation_SRV_no_support": "If your DNS provider does not support SRV records with _http or _https",
-  "Federation_SRV_no_support_details": "Some DNS providers will not allow setting _https or _http on SRV records, so we have support for those cases, using our old DNS record resolution method.",
+
+
   "Federation_SRV_records_200": "SRV Record (2.0.0 or newer)",
   "Federation_Public_key_TXT_record": "Public Key TXT Record",
-  "Federation_Username": "Username: myfriendsusername@anotherdomain.com",
-  "Federation_You_will_invite_users_without_login_access": "You will invite them to your server without login access. Also, you and everyone else on your server will be able to chat with them.",
+
+
   "FEDERATION_Discovery_Method": "Discovery Method",
   "FEDERATION_Discovery_Method_Description": "You can use the hub or a SRV and a TXT entry on your DNS records.",
   "FEDERATION_Domain": "Domain",
