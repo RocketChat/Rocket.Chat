@@ -23,7 +23,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
 	if (!dbInquiry) {
-		logger.debug(`Inquiry with id ${inquiry._id} not found`);
+		logger.error(`Inquiry with id ${inquiry._id} not found`);
 		throw new Error('inquiry-not-found');
 	}
 
@@ -41,8 +41,8 @@ type queueManager = {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
 		};
-		agent: SelectedAgent | undefined;
-		extraData: Record<string, unknown> | undefined;
+		agent?: SelectedAgent;
+		extraData?: Record<string, unknown>;
 	}) => Promise<IOmnichannelRoom>;
 	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
 };
@@ -77,7 +77,7 @@ export const QueueManager: queueManager = {
 
 		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		if (!room) {
-			logger.debug(`Room for visitor ${guest._id} not found`);
+			logger.error(`Room for visitor ${guest._id} not found`);
 			throw new Error('room-not-found');
 		}
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
@@ -92,7 +92,7 @@ export const QueueManager: queueManager = {
 			}),
 		);
 		if (!inquiry) {
-			logger.debug(`Inquiry for visitor ${guest._id} not found`);
+			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
 		}
 
@@ -114,7 +114,7 @@ export const QueueManager: queueManager = {
 
 	async unarchiveRoom(archivedRoom) {
 		if (!archivedRoom) {
-			logger.debug('No room to unarchive');
+			logger.error('No room to unarchive');
 			throw new Error('no-room-to-unarchive');
 		}
 
@@ -126,7 +126,7 @@ export const QueueManager: queueManager = {
 
 		logger.debug(`Attempting to unarchive room with id ${rid}`);
 
-		const oldInquiry = await LivechatInquiry.findOneByRoomId(rid, {});
+		const oldInquiry = await LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1 } });
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
@@ -150,7 +150,7 @@ export const QueueManager: queueManager = {
 		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		if (!inquiry) {
-			logger.debug(`Inquiry for visitor ${guest._id} not found`);
+			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
 		}
 
