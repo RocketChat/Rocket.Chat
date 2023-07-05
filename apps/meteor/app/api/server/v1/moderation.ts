@@ -73,14 +73,6 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const existingReport = await ModerationReports.findOne(
-				{ 'message.u._id': userId, '_hidden': { $ne: true } },
-				{ projection: { _id: 1 } },
-			);
-			if (!existingReport) {
-				return API.v1.failure('no-report-found-for-this-user');
-			}
-
 			const escapedSelector = escapeRegExp(selector);
 
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, escapedSelector, {
@@ -90,6 +82,15 @@ API.v1.addRoute(
 			});
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			if (total === 0) {
+				return API.v1.success({
+					messages: [],
+					count: 0,
+					offset,
+					total: 0,
+				});
+			}
 
 			const uniqueMessages: ReportMessage[] = [];
 			const visited = new Set<string>();
@@ -123,19 +124,11 @@ API.v1.addRoute(
 			// TODO change complicated params
 			const { userId, reason } = this.bodyParams;
 
-			const sanitizedReason = reason?.trim() ? reason : 'No reason provided';
+			const sanitizedReason = reason?.trim() || 'No reason provided';
 
 			const { user: moderator } = this;
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
-
-			const existingReport = await ModerationReports.findOne(
-				{ 'message.u._id': userId, '_hidden': { $ne: true } },
-				{ projection: { _id: 1 } },
-			);
-			if (!existingReport) {
-				return API.v1.failure('no-report-found-for-this-user');
-			}
 
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', {
 				offset,
@@ -146,7 +139,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			if (total === 0) {
-				return API.v1.failure('No reported messages found for this user.');
+				return API.v1.failure('no-report-found');
 			}
 
 			await deleteReportedMessages(

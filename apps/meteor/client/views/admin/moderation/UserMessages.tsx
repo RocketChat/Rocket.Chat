@@ -54,8 +54,8 @@ const UserMessages = ({
 		reloadUserMessages();
 	});
 
-	const username = useMemo(() => userMessages?.messages[0]?.message?.u?.username ?? '', [userMessages?.messages]);
-	const name = useMemo(() => userMessages?.messages[0]?.message?.u?.name ?? '', [userMessages?.messages]);
+	const username = useMemo(() => userMessages?.messages[0]?.message?.u?.username, [userMessages?.messages]);
+	const name = useMemo(() => userMessages?.messages[0]?.message?.u?.name, [userMessages?.messages]);
 	const displayName = useUserDisplayName({ name, username }) ?? userId;
 
 	return (
