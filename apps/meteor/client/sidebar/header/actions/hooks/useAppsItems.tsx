@@ -4,7 +4,7 @@ import React from 'react';
 
 import { triggerActionButtonAction } from '../../../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
 
 type useAppsItemsProps = {
