@@ -68,18 +68,14 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
-	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
-	await callbacks.run('afterDeleteMessage', deletedMsg, room);
-
-	// decrease message count
-	await Rooms.decreaseMessageCountById(message.rid, 1);
-
 	if (showDeletedStatus) {
 		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
 		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	} else {
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
+
+	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {
@@ -88,6 +84,11 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted);
 		}
 	}
+
+	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+
+	// decrease message count
+	await Rooms.decreaseMessageCountById(message.rid, 1);
 
 	if (bridges) {
 		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
