@@ -1,6 +1,104 @@
 import { lazy } from 'react';
 
+import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { createRouteGroup } from '../../lib/createRouteGroup';
+
+declare module '@rocket.chat/ui-contexts' {
+	interface IRouterPaths {
+		'admin-index': {
+			pathname: '/admin';
+			pattern: '/admin';
+		};
+		'custom-sounds': {
+			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/sounds/:context?/:id?';
+		};
+		'admin-info': {
+			pathname: '/admin/workspace';
+			pattern: '/admin/workspace';
+		};
+		'admin-import': {
+			pathname: '/admin/import';
+			pattern: '/admin/import';
+		};
+		'admin-import-new': {
+			pathname: `/admin/import/new${`/${string}` | ''}`;
+			pattern: '/admin/import/new/:importerKey?';
+		};
+		'admin-import-prepare': {
+			pathname: '/admin/import/prepare';
+			pattern: '/admin/import/prepare';
+		};
+		'admin-import-progress': {
+			pathname: '/admin/import/progress';
+			pattern: '/admin/import/progress';
+		};
+		'admin-mailer': {
+			pathname: '/admin/mailer';
+			pattern: '/admin/mailer';
+		};
+		'admin-oauth-apps': {
+			pathname: `/admin/third-party-login${`/${'new' | 'edit'}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/third-party-login/:context?/:id?';
+		};
+		'admin-integrations': {
+			pathname: `/admin/integrations${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/integrations/:context?/:type?/:id?';
+		};
+		'user-status': {
+			pathname: `/admin/user-status${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/user-status/:context?/:id?';
+		};
+		'emoji-custom': {
+			pathname: `/admin/emoji${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/emoji/:context?/:id?';
+		};
+		'admin-users': {
+			pathname: `/admin/users${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/users/:context?/:id?';
+		};
+		'admin-rooms': {
+			pathname: `/admin/rooms${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/rooms/:context?/:id?';
+		};
+		'invites': {
+			pathname: '/admin/invites';
+			pattern: '/admin/invites';
+		};
+		'cloud': {
+			pathname: `/admin/registration${`/${string}` | ''}`;
+			pattern: '/admin/registration/:page?';
+		};
+		'admin-view-logs': {
+			pathname: '/admin/logs';
+			pattern: '/admin/logs';
+		};
+		'federation-dashboard': {
+			pathname: '/admin/federation';
+			pattern: '/admin/federation';
+		};
+		'admin-permissions': {
+			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/permissions/:context?/:_id?';
+		};
+		'admin-email-inboxes': {
+			pathname: `/admin/email-inboxes${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/email-inboxes/:context?/:_id?';
+		};
+		'admin-settings': {
+			pathname: `/admin/settings${`/${string}` | ''}`;
+			pattern: '/admin/settings/:group?';
+		};
+		'upgrade': {
+			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
+			pattern: '/admin/upgrade/:type?';
+		};
+		'moderation-console': {
+			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/moderation/:context?/:id?';
+		};
+	}
+}
 
 export const registerAdminRoute = createRouteGroup(
 	'admin',

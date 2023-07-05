@@ -1,4 +1,4 @@
-import { useCurrentRoute, useRoute, usePermission, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -22,10 +22,8 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard');
 	const isUpsell = !data?.isEnterprise || !hasEngagementDashboard;
 
-	const [routeName, routeParams] = useCurrentRoute();
-	const { tab } = routeParams ?? {};
-	const engagementDashboardRoute = useRoute('engagement-dashboard');
-	const upgradeRoute = useRoute('upgrade');
+	const router = useRouter();
+	const tab = useRouteParameter('tab');
 
 	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,8 +34,11 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const handleConfirmModal = useCallback(() => {
 		handleModalClose();
-		upgradeRoute.push({ type: 'go-fully-featured-registered' });
-	}, [handleModalClose, upgradeRoute]);
+		router.navigate({
+			pathname: '/admin/upgrade',
+			params: { type: 'go-fully-featured-registered' },
+		});
+	}, [handleModalClose, router]);
 
 	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
 	const handleCancelModal = useCallback(() => {
@@ -46,7 +47,10 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [handleModalClose]);
 
 	const handleOpenModal = useCallback(() => {
-		engagementDashboardRoute.replace({ context: 'upsell', tab: 'users' });
+		router.navigate({
+			pattern: '/admin/engagement/:context?/:tab?',
+			params: { context: 'upsell', tab: 'users' },
+		});
 		setModal(
 			<UpsellModal
 				title={t('Engagement_Dashboard')}
@@ -61,26 +65,36 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [cloudWorkspaceHadTrial, engagementDashboardRoute, handleCancelModal, handleConfirmModal, handleModalClose, setModal, t]);
+	}, [cloudWorkspaceHadTrial, handleCancelModal, handleConfirmModal, handleModalClose, router, setModal, t]);
 
 	useEffect(() => {
-		if (routeName !== 'engagement-dashboard') {
-			return;
-		}
+		router.subscribeToRouteChange(() => {
+			if (router.getRouteName() !== 'engagement-dashboard') {
+				return;
+			}
 
-		if (isUpsell) {
-			handleOpenModal();
-			return;
-		}
+			if (isUpsell) {
+				handleOpenModal();
+				return;
+			}
 
-		if (!isValidTab(tab)) {
-			engagementDashboardRoute.replace({ context: 'active', tab: 'users' });
-		}
+			const { tab } = router.getRouteParameters();
+
+			if (!isValidTab(tab)) {
+				router.navigate(
+					{
+						pattern: '/admin/engagement/:context?/:tab?',
+						params: { tab: 'users', context: 'active' },
+					},
+					{ replace: true },
+				);
+			}
+		});
 
 		return () => {
 			handleModalClose();
 		};
-	}, [engagementDashboardRoute, handleModalClose, handleOpenModal, isUpsell, routeName, tab]);
+	}, [handleModalClose, handleOpenModal, isUpsell, router]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
@@ -99,7 +113,17 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	eventStats({
 		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
-	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ context: 'active', tab })} />;
+	return (
+		<EngagementDashboardPage
+			tab={tab}
+			onSelectTab={(tab) =>
+				router.navigate({
+					pattern: '/admin/engagement/:context?/:tab?',
+					params: { context: 'active', tab },
+				})
+			}
+		/>
+	);
 };
 
 export default EngagementDashboardRoute;

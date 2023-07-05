@@ -26,6 +26,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { queueLogger } from './logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -201,7 +202,7 @@ export const LivechatEnterprise = {
 	) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }) : null;
+		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -276,6 +277,11 @@ export const LivechatEnterprise = {
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		// Disable event
+		if (department?.enabled && !departmentDB?.enabled) {
+			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
