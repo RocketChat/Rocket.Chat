@@ -1,6 +1,5 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
@@ -13,6 +12,7 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import UiKitModal from '../../../client/views/modal/uikit/UiKitModal';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { router } from '../../../client/providers/RouterProvider';
 
 const events = new Emitter();
 
@@ -124,7 +124,14 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			},
 		});
 
-		FlowRouter.setParams({ tab: 'app', context: viewId });
+		router.navigate({
+			name: router.getRouteName(),
+			params: {
+				...router.getRouteParameters(),
+				tab: 'app',
+				context: viewId,
+			},
+		});
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
