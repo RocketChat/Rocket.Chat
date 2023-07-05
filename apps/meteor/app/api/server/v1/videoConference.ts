@@ -26,6 +26,10 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-params');
 			}
 
+			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+				return API.v1.unauthorized();
+			}
+
 			try {
 				const providerName = videoConfProviders.getActiveProvider();
 

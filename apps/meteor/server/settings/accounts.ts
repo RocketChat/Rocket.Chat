@@ -686,6 +686,12 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Omnichannel_transcript_email',
 			});
+
+			await this.add('Accounts_Default_User_Preferences_notifyCalendarEvents', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notify_Calendar_Events',
+			});
 		});
 
 		await this.section('Avatar', async function () {

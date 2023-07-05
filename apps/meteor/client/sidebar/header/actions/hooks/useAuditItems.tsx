@@ -1,6 +1,6 @@
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 type useAuditItemsProps = {
 	showAudit: boolean;

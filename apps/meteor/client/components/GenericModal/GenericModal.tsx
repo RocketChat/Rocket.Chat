@@ -98,7 +98,7 @@ const GenericModal: FC<GenericModalProps> = ({
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
-					{!wrapperFunction && (
+					{!wrapperFunction && onConfirm && (
 						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
