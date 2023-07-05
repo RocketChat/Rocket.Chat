@@ -43,7 +43,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
 	const { data } = useIsEnterprise();
 
-	const isEnterprise = data?.isEnterprise ?? false;
+	const isEnterpriseLicense = data?.isEnterprise ?? false;
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -298,8 +298,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}),
 		};
 
-		const isEnterpriseFeasible = app.isEnterpriseOnly && isEnterprise;
-		const shouldBeAbleToEnable = app.installed && isAdminUser && !isAppEnabled && isEnterpriseFeasible;
+		const isEnterprise = app.isEnterpriseOnly && isEnterpriseLicense;
+		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterprise;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -341,7 +341,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						action: handleDisable,
 					},
 				}),
-			...(shouldBeAbleToEnable && {
+			...(isPossibleToEnableApp && {
 				enable: {
 					label: (
 						<>
@@ -390,7 +390,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		button.label,
 		handleAcquireApp,
 		requestedEndUser,
-		isEnterprise,
+		isEnterpriseLicense,
 		isAppEnabled,
 		context,
 		handleViewLogs,
