@@ -24,6 +24,10 @@ export interface IVisitor {
 	token: string;
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
+
+	// Deprecated Warning: This field is deprecated and will be removed in future versions
+	// use Room.contactLastMessageTs instead
+	lastMessageTs?: Date;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
