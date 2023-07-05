@@ -10886,6 +10886,7 @@ __metadata:
     "@types/react-dom": ~17.0.20
     "@types/use-sync-external-store": ^0.0.3
     eslint: ~8.43.0
+    eslint-plugin-react-hooks: ^4.6.0
     jest: ~29.5.0
     mongodb: ^4.12.1
     react: ~17.0.2
@@ -11021,6 +11022,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-react-refresh: ^0.4.1
     eslint4b-prebuilt: ^6.7.2
+    rc-scrollbars: ^1.1.6
     react: ^17.0.2
     react-beautiful-dnd: ^13.1.1
     react-dom: ^17.0.2
@@ -34527,6 +34529,19 @@ __metadata:
     react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: d2b3710868f70ed7c154768bd03825b543d7804ef1c95086ee9cd851f66a046e1b4dbc9e153f9797e1706a11d263db4a645eff485d16bf1c095754e6e771f5ad
+  languageName: node
+  linkType: hard
+
+"rc-scrollbars@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "rc-scrollbars@npm:1.1.6"
+  dependencies:
+    dom-css: ^2.1.0
+    raf: ^3.4.1
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 6d511fc14c1f932319ecef13de78e64453af349b2eec962b4d6f515e4bca4ca1b5555b6b875c1b5cae193b15069aff16cd7fa02550084b0e58bbeb398f74b80a
   languageName: node
   linkType: hard
 
