@@ -205,7 +205,6 @@ const UsersSetPreferencesParamsPostSchema = {
 						properties: {
 							name: { type: 'string' },
 							value: { type: 'boolean' },
-							i18n: { type: 'string' },
 						},
 					},
 					nullable: true,
