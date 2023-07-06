@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
@@ -73,6 +73,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		menuOptions !== undefined &&
 		Object.values(menuOptions)
 			.map(({ ...item }) => ({
+				key: item.label.label,
 				content: item.label.label,
 				icon: item.label.icon,
 				onClick: item.action,
@@ -86,19 +87,19 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 					return acc;
 				}
 
-				const newSection = { id: group, title: '', items: [item] };
+				const newSection = { key: item.key, id: group, title: '', items: [item] };
 				acc.push(newSection);
 
 				return acc;
 			}, [] as any);
 
 	const menu = useMemo(() => {
-		if (!menuOptions) {
+		if (!menuActions) {
 			return null;
 		}
 
 		return (
-			<GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-end' />
+			<GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-start' />
 
 			// <Menu
 			// 	flexShrink={0}
@@ -109,7 +110,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 			// 	options={menuOptions}
 			// />
 		);
-	}, [menuActions, menuOptions, t]);
+	}, [menuActions, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
