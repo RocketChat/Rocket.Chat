@@ -9,7 +9,7 @@ import { test, expect } from '../utils/test';
 
 const createContact = (generateToken = false) => ({
 	id: null,
-	name: `${faker.person.firstName()} ${faker.name.lastName()}`,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	email: faker.internet.email().toLowerCase(),
 	phone: faker.phone.number('+############'),
 	token: generateToken ? createToken() : null,

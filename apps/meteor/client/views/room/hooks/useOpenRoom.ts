@@ -42,8 +42,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const $set: Record<string, unknown> = {};
-			const $unset: Record<string, unknown> = {};
+			const $set: any = {};
+			const $unset: any = {};
 
 			for (const key of Object.keys(roomFields)) {
 				if (key in roomData) {
