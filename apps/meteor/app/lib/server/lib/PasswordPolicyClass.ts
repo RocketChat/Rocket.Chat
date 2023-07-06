@@ -91,10 +91,9 @@ class PasswordPolicy {
 		return false;
 	}
 
-	validate(password: string | unknown) {
+	sendErrorMessage(password: string) {
 		type validationMessage = {
-			error: boolean;
-			message?: Record<
+			message: Record<
 				string,
 				{
 					isValid: boolean;
@@ -105,23 +104,12 @@ class PasswordPolicy {
 
 		const validationReturn: validationMessage[] = [];
 
-		if (typeof password !== 'string' || !password.trim().length) {
-			this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
-
-			validationReturn.push({
-				error: this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy."),
-			});
-		}
-
 		if (!this.enabled) {
 			return true;
 		}
 
 		if (this.minLength >= 1 && (password as string).length < this.minLength) {
-			this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.');
-
 			validationReturn.push({
-				error: this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.'),
 				message: {
 					'get-password-policy-minLength': {
 						isValid: false,
@@ -132,10 +120,7 @@ class PasswordPolicy {
 		}
 
 		if (this.maxLength >= 1 && (password as string).length > this.maxLength) {
-			this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.');
-
 			validationReturn.push({
-				error: this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.'),
 				message: {
 					'get-password-policy-maxLength': {
 						isValid: false,
@@ -146,16 +131,7 @@ class PasswordPolicy {
 		}
 
 		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password as string)) {
-			this.error(
-				'error-password-policy-not-met-repeatingCharacters',
-				'The password contains repeating characters which is against the password policy.',
-			);
-
 			validationReturn.push({
-				error: this.error(
-					'error-password-policy-not-met-repeatingCharacters',
-					'The password contains repeating characters which is against the password policy.',
-				),
 				message: {
 					'get-password-policy-forbidRepeatingCharactersCount': {
 						isValid: false,
@@ -166,16 +142,7 @@ class PasswordPolicy {
 		}
 
 		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password as string)) {
-			this.error(
-				'error-password-policy-not-met-oneLowercase',
-				'The password does not contain at least one lowercase character which is against the password policy.',
-			);
-
 			validationReturn.push({
-				error: this.error(
-					'error-password-policy-not-met-oneLowercase',
-					'The password does not contain at least one lowercase character which is against the password policy.',
-				),
 				message: {
 					'get-password-policy-mustContainAtLeastOneLowercase': {
 						isValid: false,
@@ -185,16 +152,7 @@ class PasswordPolicy {
 		}
 
 		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password as string)) {
-			this.error(
-				'error-password-policy-not-met-oneUppercase',
-				'The password does not contain at least one uppercase character which is against the password policy.',
-			);
-
 			validationReturn.push({
-				error: this.error(
-					'error-password-policy-not-met-oneUppercase',
-					'The password does not contain at least one uppercase character which is against the password policy.',
-				),
 				message: {
 					'get-password-policy-mustContainAtLeastOneUppercase': {
 						isValid: false,
@@ -204,16 +162,7 @@ class PasswordPolicy {
 		}
 
 		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password as string)) {
-			this.error(
-				'error-password-policy-not-met-oneNumber',
-				'The password does not contain at least one numerical character which is against the password policy.',
-			);
-
 			validationReturn.push({
-				error: this.error(
-					'error-password-policy-not-met-oneNumber',
-					'The password does not contain at least one numerical character which is against the password policy.',
-				),
 				message: {
 					'get-password-policy-mustContainAtLeastOneNumber': {
 						isValid: false,
@@ -223,16 +172,7 @@ class PasswordPolicy {
 		}
 
 		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string)) {
-			this.error(
-				'error-password-policy-not-met-oneSpecial',
-				'The password does not contain at least one special character which is against the password policy.',
-			);
-
 			validationReturn.push({
-				error: this.error(
-					'error-password-policy-not-met-oneSpecial',
-					'The password does not contain at least one special character which is against the password policy.',
-				),
 				message: {
 					'get-password-policy-mustContainAtLeastOneSpecialCharacter': {
 						isValid: false,
@@ -244,6 +184,61 @@ class PasswordPolicy {
 		if (validationReturn.length !== 0) {
 			return validationReturn;
 		}
+		return true;
+	}
+
+	validate(password: string | unknown) {
+		if (typeof password !== 'string' || !password.trim().length) {
+			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
+		}
+
+		if (!this.enabled) {
+			return true;
+		}
+
+		if (this.minLength >= 1 && (password as string).length < this.minLength) {
+			return this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.');
+		}
+
+		if (this.maxLength >= 1 && (password as string).length > this.maxLength) {
+			return this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.');
+		}
+
+		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password as string)) {
+			return this.error(
+				'error-password-policy-not-met-repeatingCharacters',
+				'The password contains repeating characters which is against the password policy.',
+			);
+		}
+
+		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password as string)) {
+			return this.error(
+				'error-password-policy-not-met-oneLowercase',
+				'The password does not contain at least one lowercase character which is against the password policy.',
+			);
+		}
+
+		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password as string)) {
+			return this.error(
+				'error-password-policy-not-met-oneUppercase',
+				'The password does not contain at least one uppercase character which is against the password policy.',
+			);
+		}
+
+		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password as string)) {
+			return this.error(
+				'error-password-policy-not-met-oneNumber',
+				'The password does not contain at least one numerical character which is against the password policy.',
+			);
+		}
+
+		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string)) {
+			return this.error(
+				'error-password-policy-not-met-oneSpecial',
+				'The password does not contain at least one special character which is against the password policy.',
+			);
+		}
+
 		return true;
 	}
 

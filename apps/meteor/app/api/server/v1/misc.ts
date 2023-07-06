@@ -232,7 +232,7 @@ API.v1.addRoute(
 				});
 			}
 			const hideIcon = icon === 'false';
-			if (hideIcon && (!name || !name.trim())) {
+			if (hideIcon && !name?.trim()) {
 				return API.v1.failure('Name cannot be empty when icon is hidden');
 			}
 
