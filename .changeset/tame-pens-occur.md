@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/model-typings": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/model-typings": minor
 ---
 
-fix: Delete read receipts on messages deletion
+Fixed read receipts not getting deleted after corresponding message is deleted
