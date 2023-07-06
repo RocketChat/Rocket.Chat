@@ -568,6 +568,9 @@ export class LDAPEEManager extends LDAPManager {
 		const users = await UsersRaw.findLDAPUsers().toArray();
 		const { updateExistingUsers, removeDeletedUsers } = settings;
 
+		// In order to avoid mass deletions by mistake, usrs should only be deleted if the setting is active and we could find any other user
+		const ldapRecords = await this.countLDAPRecords(ldap);
+
 		for await (const user of users) {
 			const ldapUsers = await this.findLDAPMultipleUsers(ldap, user);
 			const ldapUser = ldapUsers?.[0];
@@ -575,7 +578,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (updateExistingUsers && isUniqueLdapUser) {
 				this.updateExistingUser(ldapUser, user, converter);
-			} else if (removeDeletedUsers && !ldapUser) {
+			} else if (removeDeletedUsers && !ldapUser && ldapRecords) {
 				await this.removeDeletedUser(user);
 			}
 		}
@@ -588,6 +591,18 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static async removeDeletedUser(user: IUser): Promise<void> {
 		await deleteUser(user._id, true);
+	}
+
+	private static async countLDAPRecords(ldap: LDAPConnection): Promise<number> {
+		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
+
+		const searchOptions = {
+			filter: ldap.getUserFilter('*'),
+			scope: ldap.options.userSearchScope || 'sub',
+			sizeLimit: ldap.options.searchSizeLimit,
+		};
+
+		return ldap.searchAndCount(baseDN, searchOptions);
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
