@@ -106,22 +106,6 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 	});
 };
 
-export const deleteDepartment = (departmentId: string): Promise<unknown> => {
-	return new Promise((resolve, reject) => {
-		request
-			.delete(api(`livechat/department/${departmentId}`))
-			.set(credentials)
-			.send()
-			.expect(200)
-			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body);
-			});
-	});
-};
-
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request

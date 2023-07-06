@@ -7,9 +7,12 @@ import { isEnterprise } from '../../../license/server/license';
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept) => dept.agentId);
+	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)
+	// Then find the agents that are not in any of those departments
+
+	const departmentIds = (await LivechatDepartment.findNotArchived({ projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+	const agentIdsWithDepartment = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(departmentIds);
 
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
@@ -62,7 +65,10 @@ const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_i
 	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
+export const openBusinessHour = async (
+	businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>,
+	updateLivechatStatus = true,
+): Promise<void> => {
 	const agentIds = await getAgentIdsToHandle(businessHour);
 	businessHourLogger.debug({
 		msg: 'Opening business hour',
@@ -72,7 +78,9 @@ export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour,
 	});
 
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+	if (updateLivechatStatus) {
+		await Users.updateLivechatStatusBasedOnBusinessHours();
+	}
 };
 
 export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
