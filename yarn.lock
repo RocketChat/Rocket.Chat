@@ -9266,7 +9266,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.39.1":
+"@rocket.chat/apps-engine@npm:1.39.1, @rocket.chat/apps-engine@npm:^1.39.1":
   version: 1.39.1
   resolution: "@rocket.chat/apps-engine@npm:1.39.1"
   dependencies:
@@ -9524,13 +9524,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/emitter@npm:0.31.22":
-  version: 0.31.22
-  resolution: "@rocket.chat/emitter@npm:0.31.22"
-  checksum: 0c14b4fffb3a89189b4f03a43be49c77f37889738fc31a0495c0591c8df232e456c2657365bed06d1396b97540c6a80a185009b9d3124c1f33c8dfac2a44d9d3
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/emitter@npm:next":
   version: 0.31.23-dev.103
   resolution: "@rocket.chat/emitter@npm:0.31.23-dev.103"
@@ -9570,13 +9563,8 @@ __metadata:
   resolution: "@rocket.chat/federation-service@workspace:ee/apps/federation-service"
   dependencies:
     "@rocket.chat/core-services": "workspace:^"
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/model-typings": "workspace:^"
-    "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/federation": "workspace:^"
     "@types/eslint": ^8.4.10
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -9595,22 +9583,36 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation@workspace:ee/packages/federation":
+"@rocket.chat/federation@workspace:^, @rocket.chat/federation@workspace:ee/packages/federation":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/federation@workspace:ee/packages/federation"
   dependencies:
+    "@rocket.chat/apps-engine": ^1.39.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
+    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@types/emojione": ^2.2.6
     "@types/jest": ~29.5.2
+    "@types/js-yaml": ^4
+    "@types/marked": ^5
     "@types/node": ^14.18.51
+    "@types/sanitize-html": ^2
+    "@types/uuid": ^9
+    emojione: ^4.5.0
     eslint: ~8.43.0
+    fastq: ^1.15.0
     jest: ~29.5.0
+    js-yaml: ^4.1.0
+    marked: ^5.1.0
     mongodb: ^4.12.1
+    sanitize-html: ^2.11.0
     ts-jest: ~29.0.5
     typescript: ~5.1.3
+    uuid: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -10831,15 +10833,6 @@ __metadata:
     typescript: ~5.1.3
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/string-helpers@npm:0.31.22":
-  version: 0.31.22
-  resolution: "@rocket.chat/string-helpers@npm:0.31.22"
-  dependencies:
-    tslib: ^2.3.1
-  checksum: 5c574c9b8d0b72b44e48ff91dfa83c3648d1fbc2757fc5959ea8a18fafa5959a843e89551aa3e2b7a612b6e1d929f60b5dd8dc0f522841640b7ddd0b90c31faa
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/string-helpers@npm:next":
   version: 0.31.23-dev.103
@@ -13590,7 +13583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-yaml@npm:^4.0.5":
+"@types/js-yaml@npm:^4, @types/js-yaml@npm:^4.0.5":
   version: 4.0.5
   resolution: "@types/js-yaml@npm:4.0.5"
   checksum: 7dcac8c50fec31643cc9d6444b5503239a861414cdfaa7ae9a38bc22597c4d850c4b8cec3d82d73b3fbca408348ce223b0408d598b32e094470dfffc6d486b4d
@@ -13741,6 +13734,13 @@ __metadata:
   version: 4.0.8
   resolution: "@types/marked@npm:4.0.8"
   checksum: 68278fa7acaa5d920cdc239d675b5daf842e0ad4779e4848cd617d9baf2ac1afccb5a264c331e37d80031d647e1640cb983cd31e73d45b28552670b4853fad8e
+  languageName: node
+  linkType: hard
+
+"@types/marked@npm:^5":
+  version: 5.0.0
+  resolution: "@types/marked@npm:5.0.0"
+  checksum: 4828a51186074ac18bd04e2f84aff17e97ec72b227f9f4be0cedff6de6fe0fec016250bc22b2ae5d40d7cf0e6de1853df5d437f2dfe983cd96928763c75e6e47
   languageName: node
   linkType: hard
 
@@ -14201,7 +14201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sanitize-html@npm:^2.9.0":
+"@types/sanitize-html@npm:^2, @types/sanitize-html@npm:^2.9.0":
   version: 2.9.0
   resolution: "@types/sanitize-html@npm:2.9.0"
   dependencies:
@@ -14485,6 +14485,13 @@ __metadata:
   version: 8.3.4
   resolution: "@types/uuid@npm:8.3.4"
   checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9":
+  version: 9.0.2
+  resolution: "@types/uuid@npm:9.0.2"
+  checksum: 1754bcf3444e1e3aeadd6e774fc328eb53bc956665e2e8fb6ec127aa8e1f43d9a224c3d22a9a6233dca8dd81a12dc7fed4d84b8876dd5ec82d40f574f7ff8b68
   languageName: node
   linkType: hard
 
@@ -23067,6 +23074,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fastq@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "fastq@npm:1.15.0"
+  dependencies:
+    reusify: ^1.0.4
+  checksum: 0170e6bfcd5d57a70412440b8ef600da6de3b2a6c5966aeaf0a852d542daff506a0ee92d6de7679d1de82e644bce69d7a574a6c93f0b03964b5337eed75ada1a
+  languageName: node
+  linkType: hard
+
 "faye-websocket@npm:^0.11.3":
   version: 0.11.4
   resolution: "faye-websocket@npm:0.11.4"
@@ -29361,6 +29377,15 @@ __metadata:
   bin:
     marked: bin/marked.js
   checksum: dd7da20a3983c66b516463fad5dc8d15dc70e137d20b6dc491e134f671e84bd2ed5f859e2c35f21e56830a122e4356b9e574bcde49b72b7ad6bc121a215a1a98
+  languageName: node
+  linkType: hard
+
+"marked@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "marked@npm:5.1.0"
+  bin:
+    marked: bin/marked.js
+  checksum: ecb2b36a4758f725000400113f5107e89512b897251207e514c22605319bdddb6554fe3e68bd73b0d08f855582946e001adddfbfc7080a556a492950fb4b3a09
   languageName: node
   linkType: hard
 
@@ -36357,6 +36382,20 @@ __metadata:
   bin:
     sane: ./src/cli.js
   checksum: 97716502d456c0d38670a902a4ea943d196dcdf998d1e40532d8f3e24e25d7eddfd4c3579025a1eee8eac09a48dfd05fba61a2156c56704e7feaa450eb249f7c
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "sanitize-html@npm:2.11.0"
+  dependencies:
+    deepmerge: ^4.2.2
+    escape-string-regexp: ^4.0.0
+    htmlparser2: ^8.0.0
+    is-plain-object: ^5.0.0
+    parse-srcset: ^1.0.2
+    postcss: ^8.3.11
+  checksum: 44807f22b0feb5a6a883b4bc04bcd8690ec3bbd6dacb24d6e52226ffe0c0e4fad43d6a882ce60e3884a327fae2de01e67e566e3a211491add50ff0160be2e98a
   languageName: node
   linkType: hard
 

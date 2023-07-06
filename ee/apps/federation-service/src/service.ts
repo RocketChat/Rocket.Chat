@@ -18,9 +18,10 @@ const PORT = process.env.PORT || 3552;
 	api.setBroker(broker);
 
 	// need to import service after models are registered
-	const { FederationService } = await import('./FederationService');
+	const { FederationService } = await import('@rocket.chat/federation');
+	const service = await FederationService.createFederationService();
 
-	api.registerService(new FederationService());
+	api.registerService(service);
 
 	await api.start();
 
