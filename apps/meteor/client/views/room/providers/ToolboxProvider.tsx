@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserId, useSetting, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
@@ -21,11 +21,10 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	});
 	const { listen, actions } = useToolboxActions(room);
 
-	const [routeName, params, queryStringParams] = useCurrentRoute();
-	const router = useRoute(routeName || '');
+	const router = useRouter();
 
-	const tab = params?.tab;
-	const context = params?.context;
+	const tab = useRouteParameter('tab');
+	const context = useRouteParameter('context');
 
 	const activeTabBar = useMemo(
 		(): [ToolboxActionConfig | undefined, string?] => [tab ? (list.get(tab) as ToolboxActionConfig) : undefined, context],
@@ -33,14 +32,21 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	);
 
 	const close = useMutableCallback(() => {
-		router.push(
-			{
-				...params,
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
 				tab: '',
 				context: '',
 			},
-			queryStringParams,
-		);
+			search: router.getSearchParameters(),
+		});
 	});
 
 	const open = useMutableCallback((actionId: string, context?: string) => {
@@ -48,16 +54,23 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			return close();
 		}
 
-		const { layout } = queryStringParams || {};
-		const queryString = layout ? { layout } : undefined;
-		router.push(
-			{
-				...params,
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		const { layout } = router.getSearchParameters();
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
 				tab: actionId,
 				context: context ?? '',
 			},
-			queryString,
-		);
+			search: layout ? { layout } : undefined,
+		});
 	});
 
 	const openRoomInfo = useMutableCallback((username?: string) => {
