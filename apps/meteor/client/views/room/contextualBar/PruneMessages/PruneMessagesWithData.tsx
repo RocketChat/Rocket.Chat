@@ -18,10 +18,14 @@ const getTimeZoneOffset = (): string => {
 };
 
 export const initialValues = {
-	newerDate: '',
-	newerTime: '',
-	olderDate: '',
-	olderTime: '',
+	newer: {
+		date: '',
+		time: '',
+	},
+	older: {
+		date: '',
+		time: '',
+	},
 	users: [],
 	inclusive: false,
 	pinned: false,
@@ -48,7 +52,16 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	const [counter, setCounter] = useState(0);
 
 	const methods = useForm({ defaultValues: initialValues });
-	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } = methods.watch();
+	const {
+		newer: { date: newerDate, time: newerTime },
+		older: { date: olderDate, time: olderTime },
+		users,
+		inclusive,
+		pinned,
+		discussion,
+		threads,
+		attached,
+	} = methods.watch();
 
 	const handlePrune = useMutableCallback((): void => {
 		const handlePruneAction = async (): Promise<void> => {
