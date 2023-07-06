@@ -4,11 +4,16 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { isEnterprise } from '../../../license/server/license';
+import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept: any) => dept.agentId);
+	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)
+	// Then find the agents that are not in any of those departments
+
+	const departmentIds = (await LivechatDepartment.findNotArchived({ projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+	const agentIdsWithDepartment = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(departmentIds);
+
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
 			'livechat-agent',
@@ -17,34 +22,75 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 			},
 			{ projection: { _id: 1 } },
 		).toArray()
-	).map((user: any) => user._id);
+	).map((user) => user._id);
+
 	return agentIdsWithoutDepartment;
 };
 
-const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
+const getAllAgentIdsWithDepartmentNotConnectedToBusinessHour = async (): Promise<string[]> => {
+	const activeDepartmentsWithoutBusinessHour = (
+		await LivechatDepartment.findActiveDepartmentsWithoutBusinessHour({
+			projection: { _id: 1 },
+		}).toArray()
+	).map((dept) => dept._id);
+
+	const agentIdsWithDepartmentNotConnectedToBusinessHour = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(
+		activeDepartmentsWithoutBusinessHour,
+	);
+	return agentIdsWithDepartmentNotConnectedToBusinessHour;
+};
+
+const getAllAgentIdsForDefaultBusinessHour = async (): Promise<string[]> => {
+	const [withoutDepartment, withDepartmentNotConnectedToBusinessHour] = await Promise.all([
+		getAllAgentIdsWithoutDepartment(),
+		getAllAgentIdsWithDepartmentNotConnectedToBusinessHour(),
+	]);
+
+	return [...new Set([...withoutDepartment, ...withDepartmentNotConnectedToBusinessHour])];
+};
+
+const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
-		return getAllAgentIdsWithoutDepartment();
+		return getAllAgentIdsForDefaultBusinessHour();
 	}
 	const departmentIds = (
 		await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, {
 			projection: { _id: 1 },
 		}).toArray()
-	).map((dept: any) => dept._id);
+	).map((dept) => dept._id);
 	return (
 		await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
 			projection: { agentId: 1 },
 		}).toArray()
-	).map((dept: any) => dept.agentId);
+	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
-	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+export const openBusinessHour = async (
+	businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>,
+	updateLivechatStatus = true,
+): Promise<void> => {
+	const agentIds = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug({
+		msg: 'Opening business hour',
+		businessHour: businessHour._id,
+		totalAgents: agentIds.length,
+		top10AgentIds: agentIds.slice(0, 10),
+	});
+
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+	if (updateLivechatStatus) {
+		await Users.updateLivechatStatusBasedOnBusinessHours();
+	}
 };
 
-export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
+export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
+	businessHourLogger.debug({
+		msg: 'Closing business hour',
+		businessHour: businessHour._id,
+		totalAgents: agentIds.length,
+		top10AgentIds: agentIds.slice(0, 10),
+	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };

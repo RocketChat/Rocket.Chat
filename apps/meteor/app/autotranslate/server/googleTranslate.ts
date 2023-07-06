@@ -126,8 +126,6 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
@@ -142,7 +140,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
-						q: msgs,
+						q: message.msg.split('\n'),
 					},
 				});
 				if (!result.ok) {
@@ -189,7 +187,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
-						q: encodeURIComponent(attachment.description || attachment.text || ''),
+						q: attachment.description || attachment.text || '',
 					},
 				});
 				if (!result.ok) {

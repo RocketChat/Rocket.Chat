@@ -842,9 +842,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -878,9 +875,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
@@ -968,6 +962,7 @@ export class UsersRaw extends BaseRaw {
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
 		const query = {
 			_id: userId,
+			statusDefault: { $ne: 'offline' },
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
@@ -984,15 +979,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return (
-			(await this.find({
-				_id: agentId,
-				openBusinessHours: {
-					$exists: true,
-					$not: { $size: 0 },
-				},
-			}).count()) > 0
-		);
+		const query = {
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+		return (await this.col.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -1254,6 +1248,16 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByResetToken(token, options) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
+	}
+
+	findOneByIdWithEmailAddress(userId, options) {
+		return this.findOne(
+			{
+				_id: userId,
+				emails: { $exists: true, $ne: [] },
+			},
+			options,
+		);
 	}
 
 	setFederationAvatarUrlById(userId, federationAvatarUrl) {
@@ -1640,12 +1644,9 @@ export class UsersRaw extends BaseRaw {
 				customFields: 1,
 				status: 1,
 				livechat: 1,
+				...(showAgentEmail && { emails: 1 }),
 			},
 		};
-
-		if (showAgentEmail) {
-			options.fields.emails = 1;
-		}
 
 		return this.findOne(query, options);
 	}
@@ -2824,9 +2825,17 @@ export class UsersRaw extends BaseRaw {
 	// here
 	getActiveLocalUserCount() {
 		return Promise.all([
-			this.col.countDocuments({ active: true }),
-			this.col.countDocuments({ federated: true }),
-			this.col.countDocuments({ isRemote: true }),
+			// Count all active users (fast based on index)
+			this.col.countDocuments({
+				active: true,
+			}),
+			// Count all active that are guests, apps or federated
+			// Fast based on indexes, usually based on guest index as is usually small
+			this.col.countDocuments({
+				active: true,
+				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
+			}),
+			// Get all active and remove the guests, apps, federated, etc
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
@@ -2878,5 +2887,21 @@ export class UsersRaw extends BaseRaw {
 
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
+	}
+
+	removeAgent(_id) {
+		const update = {
+			$set: {
+				operator: false,
+			},
+			$unset: {
+				livechat: 1,
+				statusLivechat: 1,
+				extension: 1,
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
 	}
 }

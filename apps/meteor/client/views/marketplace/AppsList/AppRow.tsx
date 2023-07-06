@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box, Palette } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 import semver from 'semver';
@@ -16,27 +16,29 @@ import BundleChips from '../BundleChips';
 const AppRow = (props: App): ReactElement => {
 	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 	const breakpoints = useBreakpoints();
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
+
+	const router = useRouter();
 	const context = useRouteParameter('context');
 
 	const isMobile = !breakpoints.includes('md');
 
-	const handleNavigateToAppInfo = (): void => {
-		context &&
-			router.push({
+	const handleNavigateToAppInfo = () => {
+		if (!context) {
+			return;
+		}
+		router.navigate({
+			name: 'marketplace',
+			params: {
 				context,
 				page: 'info',
 				version: marketplaceVersion || version,
 				id,
 				tab: 'details',
-			});
+			},
+		});
 	};
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLOrSVGElement>): void => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLOrSVGElement>) => {
 		if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
 			return;
 		}
@@ -44,7 +46,7 @@ const AppRow = (props: App): ReactElement => {
 		handleNavigateToAppInfo();
 	};
 
-	const preventClickPropagation = (e: MouseEvent<HTMLOrSVGElement>): void => {
+	const preventClickPropagation = (e: MouseEvent<HTMLOrSVGElement>) => {
 		e.stopPropagation();
 	};
 

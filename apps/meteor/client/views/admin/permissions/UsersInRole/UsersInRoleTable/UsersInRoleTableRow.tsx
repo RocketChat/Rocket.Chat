@@ -1,10 +1,11 @@
 import type { IUserInRole } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
+import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 
 type UsersInRoleTableRowProps = {
@@ -21,8 +22,8 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 	});
 
 	return (
-		<TableRow key={_id} tabIndex={0} role='link'>
-			<TableCell withTruncatedText>
+		<GenericTableRow key={_id} tabIndex={0} role='link'>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
 					<Box display='flex' withTruncatedText mi='x8'>
@@ -39,14 +40,14 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 						</Box>
 					</Box>
 				</Box>
-			</TableCell>
-			<TableCell withTruncatedText>{email}</TableCell>
-			<TableCell withTruncatedText>
+			</GenericTableCell>
+			<GenericTableCell withTruncatedText>{email}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
 				<Button small square secondary danger onClick={handleRemove}>
 					<Icon name='trash' size='x20' />
 				</Button>
-			</TableCell>
-		</TableRow>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
 };
 

@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
@@ -13,7 +13,7 @@ import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/Toolbox
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />
+	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
 type ToolBoxProps = {
@@ -88,16 +88,15 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <Header.ToolBox.Action {...props} />;
+				return <HeaderToolboxAction {...props} key={id} />;
 			})}
-			{featuredActions.length > 0 && <Header.ToolBox.Divider />}
+			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, 'data-tooltip': tooltip }, index) => {
 				const props = {
 					id,
@@ -107,14 +106,13 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					index,
 					pressed: id === tab?.id,
 					action,
-					key: id,
 					disabled,
 					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);
 				}
-				return <Header.ToolBox.Action {...props} />;
+				return <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{(filteredActions.length > 6 || isMobile) && (
 				<Menu

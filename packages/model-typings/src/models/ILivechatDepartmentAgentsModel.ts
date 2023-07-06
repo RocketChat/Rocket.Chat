@@ -87,4 +87,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined>;
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	countByDepartmentId(departmentId: string): Promise<number>;
+	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
+	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
+	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]>;
 }

@@ -24,6 +24,7 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
+		showThreadsInMainChannel?: boolean;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -40,6 +41,7 @@ export type UsersSetPreferencesParamsPOST = {
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
+		notifyCalendarEvents?: boolean;
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
@@ -124,6 +126,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					},
 					nullable: true,
 				},
+				showThreadsInMainChannel: {
+					type: 'boolean',
+					nullable: true,
+				},
 				desktopNotificationRequireInteraction: {
 					type: 'boolean',
 					nullable: true,
@@ -196,6 +202,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				receiveLoginDetectionEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				notifyCalendarEvents: {
 					type: 'boolean',
 					nullable: true,
 				},

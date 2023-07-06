@@ -26,5 +26,7 @@ export default i18next
 			fallbackLng: 'en',
 			react: {
 				useSuspense: false,
+				bindI18n: 'loaded languageChanged',
+				bindI18nStore: 'added',
 			}
 		});

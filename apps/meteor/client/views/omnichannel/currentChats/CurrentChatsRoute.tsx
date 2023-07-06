@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,7 +8,9 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
 	GenericTableHeader,
@@ -16,7 +18,6 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 } from '../../../components/GenericTable';
-import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
@@ -157,7 +158,7 @@ const CurrentChatsRoute = (): ReactElement => {
 		[customFields, itemsPerPage, params, sortBy, sortDirection, current],
 	);
 
-	const result = useCurrentChats(query);
+	const { data, isLoading, isSuccess } = useCurrentChats(query);
 
 	const onRowClick = useMutableCallback((_id) => {
 		directoryRoute.push({ id: _id });
@@ -207,122 +208,138 @@ const CurrentChatsRoute = (): ReactElement => {
 		[canRemoveClosedChats, onRowClick, isPriorityEnabled, t],
 	);
 
+	const headers = (
+		<>
+			{isPriorityEnabled && (
+				<GenericTableHeaderCell
+					key='priorityWeight'
+					direction={sortDirection}
+					active={sortBy === 'priorityWeight'}
+					onClick={setSort}
+					sort='priorityWeight'
+					w='x100'
+					alignItems='center'
+				>
+					{t('Priority')}
+				</GenericTableHeaderCell>
+			)}
+			<GenericTableHeaderCell
+				key='fname'
+				direction={sortDirection}
+				active={sortBy === 'fname'}
+				onClick={setSort}
+				sort='fname'
+				data-qa='current-chats-header-name'
+			>
+				{t('Name')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='departmentId'
+				direction={sortDirection}
+				active={sortBy === 'departmentId'}
+				onClick={setSort}
+				sort='departmentId'
+				data-qa='current-chats-header-department'
+			>
+				{t('Department')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='servedBy'
+				direction={sortDirection}
+				active={sortBy === 'servedBy'}
+				onClick={setSort}
+				sort='servedBy'
+				data-qa='current-chats-header-servedBy'
+			>
+				{t('Served_By')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='ts'
+				direction={sortDirection}
+				active={sortBy === 'ts'}
+				onClick={setSort}
+				sort='ts'
+				data-qa='current-chats-header-startedAt'
+			>
+				{t('Started_At')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='lm'
+				direction={sortDirection}
+				active={sortBy === 'lm'}
+				onClick={setSort}
+				sort='lm'
+				data-qa='current-chats-header-lastMessage'
+			>
+				{t('Last_Message')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='open'
+				direction={sortDirection}
+				active={sortBy === 'open'}
+				onClick={setSort}
+				sort='open'
+				w='x100'
+				data-qa='current-chats-header-status'
+			>
+				{t('Status')}
+			</GenericTableHeaderCell>
+			{canRemoveClosedChats && (
+				<GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove'>
+					{t('Remove')}
+				</GenericTableHeaderCell>
+			)}
+		</>
+	);
+
 	if (!canViewCurrentChats) {
 		return <NotAuthorizedPage />;
 	}
 
-	return id && id !== 'custom-fields' ? (
-		<Chat rid={id} />
-	) : (
+	if (id && id !== 'custom-fields') {
+		return <Chat rid={id} />;
+	}
+
+	// TODO: Missing error state
+	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Current_Chats')} />
-				<Box pi='24px'>
+				<Page.Content>
 					<FilterByText
 						setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
 						setCustomFields={setCustomFields}
 						customFields={customFields}
 						hasCustomFields={hasCustomFields}
 					/>
-				</Box>
-				<Page.Content>
-					<GenericTable>
-						<GenericTableHeader>
-							{isPriorityEnabled && (
-								<GenericTableHeaderCell
-									key='priorityWeight'
-									direction={sortDirection}
-									active={sortBy === 'priorityWeight'}
-									onClick={setSort}
-									sort='priorityWeight'
-									w='x100'
-									alignItems='center'
-								>
-									{t('Priority')}
-								</GenericTableHeaderCell>
-							)}
-							<GenericTableHeaderCell
-								key='fname'
-								direction={sortDirection}
-								active={sortBy === 'fname'}
-								onClick={setSort}
-								sort='fname'
-								data-qa='current-chats-header-name'
-							>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='departmentId'
-								direction={sortDirection}
-								active={sortBy === 'departmentId'}
-								onClick={setSort}
-								sort='departmentId'
-								data-qa='current-chats-header-department'
-							>
-								{t('Department')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='servedBy'
-								direction={sortDirection}
-								active={sortBy === 'servedBy'}
-								onClick={setSort}
-								sort='servedBy'
-								data-qa='current-chats-header-servedBy'
-							>
-								{t('Served_By')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='ts'
-								direction={sortDirection}
-								active={sortBy === 'ts'}
-								onClick={setSort}
-								sort='ts'
-								data-qa='current-chats-header-startedAt'
-							>
-								{t('Started_At')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='lm'
-								direction={sortDirection}
-								active={sortBy === 'lm'}
-								onClick={setSort}
-								sort='lm'
-								data-qa='current-chats-header-lastMessage'
-							>
-								{t('Last_Message')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell
-								key='open'
-								direction={sortDirection}
-								active={sortBy === 'open'}
-								onClick={setSort}
-								sort='open'
-								w='x100'
-								data-qa='current-chats-header-status'
-							>
-								{t('Status')}
-							</GenericTableHeaderCell>
-							{canRemoveClosedChats && (
-								<GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove'>
-									{t('Remove')}
-								</GenericTableHeaderCell>
-							)}
-						</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
-							{result.isLoading && <GenericTableLoadingTable headerCells={4} />}
-							{result.isSuccess && result.data.rooms.map((room) => renderRow({ ...room }))}
-						</GenericTableBody>
-					</GenericTable>
-					{result.isSuccess && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.data.total}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-							{...paginationProps}
-						/>
+					{isLoading && (
+						<GenericTable>
+							<GenericTableHeader>{headers}</GenericTableHeader>
+							<GenericTableBody>
+								<GenericTableLoadingTable headerCells={6} />
+							</GenericTableBody>
+						</GenericTable>
 					)}
+					{isSuccess && data.rooms.length > 0 && (
+						<>
+							<GenericTable>
+								<GenericTableHeader>{headers}</GenericTableHeader>
+								<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
+									{data.rooms.map((room) => renderRow({ ...room }))}
+								</GenericTableBody>
+							</GenericTable>
+							<Pagination
+								divider
+								current={current}
+								itemsPerPage={itemsPerPage}
+								count={data.total}
+								onSetItemsPerPage={setItemsPerPage}
+								onSetCurrent={setCurrent}
+								{...paginationProps}
+							/>
+						</>
+					)}
+					{isSuccess && data.rooms.length === 0 && <GenericNoResults />}
 				</Page.Content>
 			</Page>
 			{id === 'custom-fields' && hasCustomFields && (
