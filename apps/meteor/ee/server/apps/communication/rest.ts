@@ -1144,10 +1144,10 @@ export class AppsRestApi {
 
 					const [data] = await request.json();
 
-					const prl = manager.getOneById(this.urlParams.id);
+					const prl = manager.getOneById(appId);
 
 					if (!prl) {
-						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
 					const storedApp = prl.getStorageItem();
