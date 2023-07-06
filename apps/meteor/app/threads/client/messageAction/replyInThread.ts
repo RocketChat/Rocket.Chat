@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { router } from '../../../../client/providers/RouterProvider';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {
@@ -20,9 +20,13 @@ Meteor.startup(function () {
 			action(e, props) {
 				const { message = messageArgs(this).msg } = props;
 				e.stopPropagation();
-				FlowRouter.setParams({
-					tab: 'thread',
-					context: message.tmid || message._id,
+				router.navigate({
+					name: router.getRouteName()!,
+					params: {
+						...router.getRouteParameters(),
+						tab: 'thread',
+						context: message.tmid || message._id,
+					},
 				});
 			},
 			condition({ subscription, room }) {

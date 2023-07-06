@@ -357,8 +357,16 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.col.countDocuments({ departmentId });
 	}
 
+	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: false } });
+	}
+
+	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: true } });
+	}
+
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
-		return this.col.distinct('agentId', { departmentId: { $in: departmentIds } });
+		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 }
 
