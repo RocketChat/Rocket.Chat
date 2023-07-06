@@ -1,4 +1,4 @@
-import { usePermission, useRouteParameter, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -16,7 +16,6 @@ const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'cha
 const EngagementDashboardRoute = (): ReactElement | null => {
 	const t = useTranslation();
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
-	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
 
 	const { data } = useIsEnterprise();
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard');
@@ -27,24 +26,6 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const handleModalClose = useCallback(() => {
-		setModal(null);
-		setIsModalOpen(false);
-	}, [setModal]);
-
-	const handleConfirmModal = useCallback(() => {
-		handleModalClose();
-		router.navigate({
-			pathname: '/admin/upgrade',
-			params: { type: 'go-fully-featured-registered' },
-		});
-	}, [handleModalClose, router]);
-
-	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
-	const handleCancelModal = useCallback(() => {
-		handleModalClose();
-		window.open(talkToSales, '_blank');
-	}, [handleModalClose]);
 
 	const handleOpenModal = useCallback(() => {
 		router.navigate({
@@ -57,15 +38,11 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				img='images/engagement.png'
 				subtitle={t('Analyze_practical_usage')}
 				description={t('Enrich_your_workspace')}
-				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-				cancelText={t('Talk_to_an_expert')}
-				onConfirm={handleConfirmModal}
-				onCancel={handleCancelModal}
-				onClose={handleModalClose}
+				onCloseEffect={() => setIsModalOpen(false)}
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [cloudWorkspaceHadTrial, handleCancelModal, handleConfirmModal, handleModalClose, router, setModal, t]);
+	}, [router, setModal, t]);
 
 	useEffect(() => {
 		router.subscribeToRouteChange(() => {
@@ -92,9 +69,9 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		});
 
 		return () => {
-			handleModalClose();
+			setModal(null);
 		};
-	}, [handleModalClose, handleOpenModal, isUpsell, router]);
+	}, [handleOpenModal, isUpsell, router, setModal]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 

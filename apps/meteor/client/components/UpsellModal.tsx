@@ -1,8 +1,8 @@
 import type { Icon } from '@rocket.chat/fuselage';
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 type UpsellModalProps = {
 	children?: ReactNode;
@@ -16,7 +16,8 @@ type UpsellModalProps = {
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
 	onClose?: () => void;
-	onConfirm: () => void;
+	onConfirm?: () => void;
+	onCloseEffect?: () => void;
 };
 
 const UpsellModal = ({
@@ -31,11 +32,36 @@ const UpsellModal = ({
 	onCancel,
 	onConfirm,
 	onClose = onCancel,
+	onCloseEffect,
 }: UpsellModalProps) => {
 	const t = useTranslation();
+	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
+
+	const router = useRouter();
+	const setModal = useSetModal();
+
+	const handleModalClose = useCallback(() => {
+		setModal(null);
+		if (onCloseEffect) {
+			onCloseEffect();
+		}
+	}, [onCloseEffect, setModal]);
+
+	const handleConfirmModal = useCallback(() => {
+		handleModalClose();
+		router.navigate({
+			pathname: '/admin/upgrade/go-fully-featured-registered',
+		});
+	}, [handleModalClose, router]);
+
+	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
+	const handleCancelModal = useCallback(() => {
+		handleModalClose();
+		window.open(talkToSales, '_blank');
+	}, [handleModalClose]);
 
 	return (
-		<Modal.Backdrop onClick={onClose}>
+		<Modal.Backdrop onClick={onClose ?? handleModalClose}>
 			<Modal>
 				<Modal.Header>
 					{icon && <Modal.Icon name={icon} />}
@@ -43,7 +69,7 @@ const UpsellModal = ({
 						<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
 						<Modal.Title>{title}</Modal.Title>
 					</Modal.HeaderText>
-					<Modal.Close title={t('Close')} onClick={onClose} />
+					<Modal.Close title={t('Close')} onClick={onClose ?? handleModalClose} />
 				</Modal.Header>
 				<Modal.Content>
 					<Modal.HeroImage src={img} />
@@ -57,16 +83,13 @@ const UpsellModal = ({
 				</Modal.Content>
 				<Modal.Footer>
 					<Modal.FooterControllers>
-						{onCancel && (
-							<Button secondary onClick={onCancel}>
-								{cancelText ?? t('Close')}
-							</Button>
-						)}
-						{onConfirm && (
-							<Button primary onClick={onConfirm}>
-								{confirmText ?? t('Talk_to_sales')}
-							</Button>
-						)}
+						<Button secondary onClick={onCancel ?? handleCancelModal}>
+							{cancelText ?? t('Talk_to_an_expert')}
+						</Button>
+
+						<Button primary onClick={onConfirm ?? handleConfirmModal}>
+							{confirmText ?? cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
+						</Button>
 					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>

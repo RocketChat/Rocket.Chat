@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -12,7 +12,6 @@ import DeviceManagementAdminPage from './DeviceManagementAdminPage';
 const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewDeviceManagement = usePermission('view-device-management');
-	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
 
 	const { data } = useIsEnterprise();
 	const hasDeviceManagement = useHasLicenseModule('engagement-dashboard');
@@ -22,24 +21,6 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 
 	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const handleModalClose = useCallback(() => {
-		setModal(null);
-		setIsModalOpen(false);
-	}, [setModal]);
-
-	const handleConfirmModal = useCallback(() => {
-		handleModalClose();
-		router.navigate({
-			pathname: '/admin/upgrade',
-			params: { type: 'go-fully-featured-registered' },
-		});
-	}, [handleModalClose, router]);
-
-	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
-	const handleCancelModal = useCallback(() => {
-		handleModalClose();
-		window.open(talkToSales, '_blank');
-	}, [handleModalClose]);
 
 	const handleOpenModal = useCallback(() => {
 		router.navigate(
@@ -55,15 +36,11 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 				img='images/device-management.png'
 				subtitle={t('Ensure_secure_workspace_access')}
 				description={t('Manage_which_devices')}
-				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-				cancelText={t('Talk_to_an_expert')}
-				onConfirm={handleConfirmModal}
-				onCancel={handleCancelModal}
-				onClose={handleModalClose}
+				onCloseEffect={() => setIsModalOpen(false)}
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [cloudWorkspaceHadTrial, handleCancelModal, handleConfirmModal, handleModalClose, router, setModal, t]);
+	}, [router, setModal, t]);
 
 	useEffect(() => {
 		if (isUpsell) {
@@ -71,9 +48,9 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		}
 
 		return () => {
-			handleModalClose();
+			setModal(null);
 		};
-	}, [handleModalClose, handleOpenModal, isUpsell]);
+	}, [handleOpenModal, isUpsell, setModal]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;
