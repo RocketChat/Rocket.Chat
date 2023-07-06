@@ -12,7 +12,7 @@ type MultiSelectCustomAnchorProps = {
 	maxCount: number;
 } & ComponentProps<typeof Button>;
 
-export const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
+const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
 	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
@@ -43,3 +43,5 @@ export const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustom
 		</Button>
 	);
 });
+
+export default MultiSelectCustomAnchor;

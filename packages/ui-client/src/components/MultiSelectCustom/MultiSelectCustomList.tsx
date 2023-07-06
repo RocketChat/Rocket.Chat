@@ -7,7 +7,7 @@ import { Fragment, useCallback, useEffect, useState } from 'react';
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
-export const MultiSelectCustomList = ({
+const MultiSelectCustomList = ({
 	options,
 	onSelected,
 	searchBarText,
@@ -65,3 +65,5 @@ export const MultiSelectCustomList = ({
 		</Tile>
 	);
 };
+
+export default MultiSelectCustomList;

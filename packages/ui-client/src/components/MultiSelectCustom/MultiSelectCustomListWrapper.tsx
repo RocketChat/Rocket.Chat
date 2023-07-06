@@ -14,7 +14,7 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
-export const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
+const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
 	function MultiSelectCustomListWrapper({ children, onClose }, ref) {
 		const target = useRef<HTMLElement>(null);
 		useOutsideClick([target], onClose);
@@ -26,3 +26,5 @@ export const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<t
 		);
 	},
 );
+
+export default MultiSelectCustomListWrapper;

@@ -3,9 +3,9 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
 import { useCallback, useRef } from 'react';
 
-import { MultiSelectCustomAnchor } from './MultiSelectCustomAnchor';
-import { MultiSelectCustomList } from './MultiSelectCustomList';
-import { MultiSelectCustomListWrapper } from './MultiSelectCustomListWrapper';
+import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
+import MultiSelectCustomList from './MultiSelectCustomList';
+import MultiSelectCustomListWrapper from './MultiSelectCustomListWrapper';
 
 const isValidReference = (reference: RefObject<HTMLElement>, e: { target: Node | null }): boolean => {
 	const isValidTarget = Boolean(e.target);
