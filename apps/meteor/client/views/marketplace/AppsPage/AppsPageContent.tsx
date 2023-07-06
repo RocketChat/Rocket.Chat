@@ -1,5 +1,5 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
@@ -27,11 +27,7 @@ const AppsPageContent = (): ReactElement => {
 	const [text, setText] = useDebouncedState('', 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 
@@ -119,8 +115,14 @@ const AppsPageContent = (): ReactElement => {
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
-	const handleReturn = (): void => {
-		router.push({ context: 'explore', page: 'list' });
+	const handleReturn = () => {
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context: 'explore',
+				page: 'list',
+			},
+		});
 	};
 
 	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
