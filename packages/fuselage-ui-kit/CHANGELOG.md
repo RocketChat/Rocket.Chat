@@ -1,5 +1,20 @@
 # Change Log
 
+## 1.0.0
+
+### Minor Changes
+
+- [#29697](https://github.com/RocketChat/Rocket.Chat/pull/29697) [`dbdf45b0e5`](https://github.com/RocketChat/Rocket.Chat/commit/dbdf45b0e59c81582274b640c286c8240aa2beda) Thanks [@tiagoevanp](https://github.com/tiagoevanp)! - feat: Introduce contextualBar surface renderer for UiKit blocks
+
+- [#29413](https://github.com/RocketChat/Rocket.Chat/pull/29413) [`c0fa567246`](https://github.com/RocketChat/Rocket.Chat/commit/c0fa567246209cc0b714c3dad67b28c6d14d43b8) Thanks [@tiagoevanp](https://github.com/tiagoevanp)! - Introducing i18n to UiKit text renderers
+
+### Patch Changes
+
+- Updated dependencies [[`e14ec50816`](https://github.com/RocketChat/Rocket.Chat/commit/e14ec50816ef34ee1df61cb8e824cb2a55ff6db9), [`9ea8088f062`](https://github.com/RocketChat/Rocket.Chat/commit/9ea8088f0621900fa7a11156a89f7447482e4df8), [`cde2539619`](https://github.com/RocketChat/Rocket.Chat/commit/cde253961940855cbf94ed10a84ddd1b1b9ff613)]:
+  - @rocket.chat/ui-contexts@1.0.0
+  - @rocket.chat/gazzodown@1.0.0
+  - @rocket.chat/ui-video-conf@1.0.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
