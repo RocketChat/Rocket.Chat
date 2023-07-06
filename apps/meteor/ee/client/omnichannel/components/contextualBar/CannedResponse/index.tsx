@@ -1,5 +1,5 @@
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
 import type { FC, MouseEvent } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
@@ -14,8 +14,7 @@ import CannedResponseList from './CannedResponseList';
 
 export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	const room = useRoom();
-	const [name] = useCurrentRoute();
-	const channelRoute = useRoute(name || '');
+	const router = useRouter();
 	const setModal = useSetModal();
 
 	const options = useCannedResponseFilterOptions() as [string, string][];
@@ -37,10 +36,13 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	const onClickItem = useMutableCallback((data) => {
 		const { _id: context } = data;
 
-		channelRoute?.push({
-			id: room._id,
-			tab: 'canned-responses',
-			context,
+		router.navigate({
+			name: router.getRouteName() ?? 'live',
+			params: {
+				id: room._id,
+				tab: 'canned-responses',
+				context,
+			},
 		});
 	});
 
