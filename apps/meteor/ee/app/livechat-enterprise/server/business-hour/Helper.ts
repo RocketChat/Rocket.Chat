@@ -78,6 +78,7 @@ export const openBusinessHour = async (
 	});
 
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
+	await Users.makeAgentsWithinBusinessHourAvailable(agentIds);
 	if (updateLivechatStatus) {
 		await Users.updateLivechatStatusBasedOnBusinessHours();
 	}

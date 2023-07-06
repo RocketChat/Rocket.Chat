@@ -9213,9 +9213,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
+"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:ee/packages/api-client":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/api-client@workspace:packages/api-client"
+  resolution: "@rocket.chat/api-client@workspace:ee/packages/api-client"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
@@ -9427,13 +9427,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client":
+"@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:ee/packages/ddp-client":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
+  resolution: "@rocket.chat/ddp-client@workspace:ee/packages/ddp-client"
   dependencies:
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/ui-contexts": "workspace:^"
     "@swc/core": ^1.3.66
     "@swc/jest": ^0.2.26
     "@types/jest": ^29.5.2
@@ -10895,6 +10894,7 @@ __metadata:
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/rest-typings": "workspace:^"
