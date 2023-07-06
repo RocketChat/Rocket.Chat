@@ -36,8 +36,10 @@ export const useTagsList = (
 				count: end + start,
 				...(options.department && { department: options.department }),
 			});
+
 			return {
 				items: tags.map<any>((tag: any) => ({
+					_id: tag._id,
 					label: tag.name,
 					value: tag._id,
 					_updatedAt: new Date(tag._updatedAt),
