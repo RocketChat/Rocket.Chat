@@ -12,11 +12,7 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 	const files: string[] = [];
 	const messageIds: string[] = [];
 
-	const promises = messages.map(async (message) => {
-		const foundMessage = await Messages.findOneById(message._id, { projection: { _id: 1 } });
-		if (!foundMessage) {
-			return;
-		}
+	for (const message of messages) {
 		if (message.file) {
 			files.push(message.file._id);
 		}
@@ -24,12 +20,16 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			files.concat(message.files.map((file) => file._id));
 		}
 		messageIds.push(message._id);
-	});
+	}
 
-	await Promise.all(promises);
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			await Promise.all(messageIds.map((id) => Messages.cloneAndSaveAsHistoryById(id, user as any)));
+			const existingMessages = await Messages.find({ _id: { $in: messageIds } }).toArray();
+
+			if (existingMessages.length === 0) {
+				return;
+			}
+			await Promise.all(existingMessages.map((msg) => Messages.cloneAndSaveAsHistoryById(msg._id, user as any)));
 		} else {
 			await Messages.setHiddenByIds(messageIds, true);
 		}
