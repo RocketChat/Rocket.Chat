@@ -568,7 +568,7 @@ export class LDAPEEManager extends LDAPManager {
 		const users = await UsersRaw.findLDAPUsers().toArray();
 		const { updateExistingUsers, removeDeletedUsers } = settings;
 
-		// In order to avoid mass deletions by mistake, usrs should only be deleted if the setting is active and we could find any other user
+		// In order to avoid mass deletions by mistake, users should only be deleted if the setting is active and we could find any other user
 		const ldapRecords = await this.countLDAPRecords(ldap);
 
 		for await (const user of users) {
