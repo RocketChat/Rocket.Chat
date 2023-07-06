@@ -33,6 +33,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const hiddenActions = (isMobile ? actions : filteredActions.slice(6))
 		.filter((item) => !item.disabled && item.id !== 'start-call')
 		.map(({ ...item }) => ({
+			key: item.id,
 			content: t(item.title),
 			icon: item.icon,
 			onClick: (): void => {
@@ -48,7 +49,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 				return acc;
 			}
 
-			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [item] };
+			const newSection = { id: group, key: item.key, title: group === 'apps' ? t('Apps') : '', items: [item] };
 			acc.push(newSection);
 
 			return acc;
