@@ -575,7 +575,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (updateExistingUsers && isUniqueLdapUser) {
 				this.updateExistingUser(ldapUser, user, converter);
-			} else if (removeDeletedUsers && !ldapUsers) {
+			} else if (removeDeletedUsers && !ldapUser) {
 				await this.removeDeletedUser(user);
 			}
 		}
