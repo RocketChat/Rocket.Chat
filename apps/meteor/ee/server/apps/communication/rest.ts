@@ -1125,14 +1125,22 @@ export class AppsRestApi {
 					}
 
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const appId = this.urlParams.id;
-					const { version } = this.bodyParams;
+					const { id: appId } = this.urlParams;
+					const { version, status } = this.bodyParams;
 
 					const headers = getDefaultHeaders();
 
-					const request = await fetch(`${baseUrl}/v1/apps/${appId}?appVersion=${version}`, {
+					const mktAppsUrl = new URL(`${baseUrl}/v1/apps/${appId}`);
+
+					mktAppsUrl.searchParams.set('appVersion', String(version));
+
+					const request = await fetch(mktAppsUrl.toString(), {
 						headers,
 					});
+
+					if (!request.ok) {
+						return API.v1.failure('Unable to retrieve app from marketplace');
+					}
 
 					const [data] = await request.json();
 
@@ -1144,13 +1152,13 @@ export class AppsRestApi {
 
 					const storedApp = prl.getStorageItem();
 
-					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(this.bodyParams.status)) {
+					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(status)) {
 						if (!isEnterprise() && data.isEnterpriseOnly) {
 							return API.v1.failure('Invalid environment for enabling enterprise app');
 						}
 					}
 
-					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
+					if (AppStatusUtils.isEnabled(status)) {
 						if (!(await canEnableApp(storedApp))) {
 							return API.v1.failure('Enabled apps have been maxed out');
 						}
