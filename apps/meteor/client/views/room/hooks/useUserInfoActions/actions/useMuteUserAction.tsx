@@ -104,6 +104,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 					label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					action,
+					type: 'management',
 			  }
 			: undefined;
 	}, [

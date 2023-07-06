@@ -40,6 +40,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 					label: t('Start_call'),
 					icon: 'phone' as const,
 					action,
+					type: 'communication',
 			  }
 			: undefined;
 	}, [t, room, dispatchPopup, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);
