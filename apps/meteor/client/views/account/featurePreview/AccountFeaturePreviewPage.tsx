@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import {
 	ButtonGroup,
 	Button,
@@ -10,6 +11,7 @@ import {
 	StatesTitle,
 	Accordion,
 } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useEffect, Fragment } from 'react';
@@ -90,29 +92,40 @@ const AccountFeaturePreviewPage = () => {
 						</States>
 					)}
 					{featuresPreview.length > 0 && (
-						<Accordion>
-							{grouppedFeaturesPreview?.map(([group, featuresPreview], index) => (
-								<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group)}>
-									<FieldGroup>
-										{featuresPreview.map((feature) => (
-											<Fragment key={feature.name}>
-												<Field>
-													<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-														<Field.Label>{t(feature.i18n)}</Field.Label>
-														<Field.Row>
-															<Box mie='x12'>{t('Enable')}</Box>
-															<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
-														</Field.Row>
-													</Box>
-													{feature.description && <Field.Hint mbs='x12'>{t(feature.description)}</Field.Hint>}
-												</Field>
-												{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs='x16' src={feature.imageUrl} />}
-											</Fragment>
-										))}
-									</FieldGroup>
-								</Accordion.Item>
-							))}
-						</Accordion>
+						<>
+							<Box
+								className={css`
+									white-space: break-spaces;
+								`}
+								pbe='x24'
+								fontScale='p1'
+							>
+								{t('Feature_preview_page_description')}
+							</Box>
+							<Accordion>
+								{grouppedFeaturesPreview?.map(([group, featuresPreview], index) => (
+									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+										<FieldGroup>
+											{featuresPreview.map((feature) => (
+												<Fragment key={feature.name}>
+													<Field>
+														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+															<Field.Label>{t(feature.i18n)}</Field.Label>
+															<Field.Row>
+																<Box mie='x12'>{t('Enabled')}</Box>
+																<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
+															</Field.Row>
+														</Box>
+														{feature.description && <Field.Hint mbs='x12'>{t(feature.description)}</Field.Hint>}
+													</Field>
+													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs='x16' src={feature.imageUrl} />}
+												</Fragment>
+											))}
+										</FieldGroup>
+									</Accordion.Item>
+								))}
+							</Accordion>
+						</>
 					)}
 				</Box>
 			</Page.ScrollableContentWithShadow>

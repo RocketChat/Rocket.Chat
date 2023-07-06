@@ -32,7 +32,11 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 		content: t('Feature_preview'),
 		onClick: handleFeaturePreview,
 		...(unseenFeatures > 0 && {
-			addon: () => <Badge variant='primary'>{unseenFeatures}</Badge>,
+			addon: () => (
+				<Badge variant='primary' aria-label={t('Unseen_features')}>
+					{unseenFeatures}
+				</Badge>
+			),
 		}),
 	};
 
