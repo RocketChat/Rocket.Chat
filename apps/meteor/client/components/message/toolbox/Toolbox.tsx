@@ -46,9 +46,9 @@ type ToolboxProps = {
 
 const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
+	const user = useUser();
 
 	const settings = useSettings();
-	const user = useUser();
 
 	const context = getMessageContext(message, room, messageContext);
 
@@ -82,6 +82,8 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return null;
 	}
 
+	const isReactionAllowed = actionsQueryResult.data?.message.find(({ id }) => id === 'reaction-message');
+
 	const handleSetReaction = (emoji: string) => {
 		sdk.call('setReaction', `:${emoji}:`, message._id);
 		addRecentEmoji(emoji);
@@ -89,9 +91,10 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 
 	return (
 		<MessageToolbox>
-			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
-				return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
-			})}
+			{isReactionAllowed &&
+				quickReactions.slice(0, 3).map(({ emoji, image }) => {
+					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
+				})}
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
