@@ -16,18 +16,18 @@ import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
-import type { FeaturePreviewProps } from '../../../hooks/useFeaturePreview';
-import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
+import type { FeaturePreviewProps } from '../../../hooks/useFeaturePreviewList';
+import { useFeaturePreviewList } from '../../../hooks/useFeaturePreviewList';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { features, newFeatures } = useFeaturePreview();
+	const { features, unseenFeatures } = useFeaturePreviewList();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	useEffect(() => {
-		if (newFeatures) {
+		if (unseenFeatures) {
 			const featuresPreview = features.map((feature) => ({
 				name: feature.name,
 				value: feature.value,
@@ -35,7 +35,7 @@ const AccountFeaturePreviewPage = () => {
 
 			void setUserPreferences({ data: { featuresPreview } });
 		}
-	}, [setUserPreferences, features, newFeatures]);
+	}, [setUserPreferences, features, unseenFeatures]);
 
 	const {
 		watch,

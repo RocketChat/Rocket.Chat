@@ -10,7 +10,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useFeaturePreviewValue } from '../../../hooks/useFeaturePreviewValue';
+import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -50,7 +50,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const user = useUser();
 	const settings = useSettings();
 
-	const quickReactionsEnabled = useFeaturePreviewValue('quickReactions');
+	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
 	const context = getMessageContext(message, room, messageContext);
 

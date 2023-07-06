@@ -4,13 +4,13 @@ import { useLogout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
-import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
+import { useFeaturePreviewList, defaultFeaturesPreview } from '../../../hooks/useFeaturePreviewList';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account-index');
 	const featurePreviewRoute = useRoute('feature-preview');
-	const { newFeatures, defaultFeaturesPreview } = useFeaturePreview();
+	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
 
 	const logout = useLogout();
 
@@ -31,8 +31,8 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 		icon: 'flask' as const,
 		content: t('Feature_preview'),
 		onClick: handleFeaturePreview,
-		...(newFeatures > 0 && {
-			addon: () => <Badge variant='primary'>{newFeatures}</Badge>,
+		...(unseenFeatures > 0 && {
+			addon: () => <Badge variant='primary'>{unseenFeatures}</Badge>,
 		}),
 	};
 
@@ -43,7 +43,7 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			content: t('My_Account'),
 			onClick: handleMyAccount,
 		},
-		...(defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
+		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 		{
 			id: 'logout',
 			icon: 'sign-out',

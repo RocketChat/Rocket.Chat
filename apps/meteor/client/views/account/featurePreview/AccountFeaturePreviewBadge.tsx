@@ -1,16 +1,20 @@
 import { Badge } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
+import { useFeaturePreviewList } from '../../../hooks/useFeaturePreviewList';
 
 const AccountFeaturePreviewBadge = () => {
-	const { newFeatures } = useFeaturePreview();
+	const { unseenFeatures } = useFeaturePreviewList();
 
-	if (!newFeatures) {
+	if (!unseenFeatures) {
 		return null;
 	}
 
-	return <Badge variant='primary'>{newFeatures}</Badge>;
+	return (
+		<Badge variant='primary' aria-label='Unseen Features'>
+			{unseenFeatures}
+		</Badge>
+	);
 };
 
 export default AccountFeaturePreviewBadge;
