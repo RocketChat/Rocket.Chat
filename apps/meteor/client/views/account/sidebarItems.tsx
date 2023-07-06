@@ -48,10 +48,10 @@ export const {
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['send-omnichannel-chat-transcript', 'request-pdf-transcript']),
 	},
 	{
-		href: 'feature-preview',
+		href: '/account/feature-preview',
 		i18nLabel: 'Feature_preview',
-		icon: 'eye',
+		icon: 'flask',
 		badge: () => <AccountFeaturePreviewBadge />,
-		permissionGranted: () => defaultFeaturesPreview?.length > 0,
+		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
 ]);

@@ -1,11 +1,14 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
-type FeaturePreviewProps = {
-	name: string;
+export type FeaturesAvailable = 'quickReactions';
+
+export type FeaturePreviewProps = {
+	name: FeaturesAvailable;
 	i18n: TranslationKey;
 	description: TranslationKey;
-	group: 'messages' | 'navigation';
+	group: 'Message' | 'Navigation';
+	imageUrl?: string;
 	value: boolean;
 };
 
@@ -14,12 +17,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		name: 'quickReactions',
 		i18n: 'Quick_reactions',
 		description: 'Quick_reactions_description',
-		group: 'messages',
+		group: 'Message',
+		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
 	},
 ];
 
 export const useFeaturePreview = () => {
+	const featurePreviewEnabled = useSetting('Accounts_AllowFeaturePreview');
 	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
 	const newFeatures = defaultFeaturesPreview.filter(
@@ -30,6 +35,10 @@ export const useFeaturePreview = () => {
 		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
 		return { ...feature, ...userFeature };
 	});
+
+	if (!featurePreviewEnabled) {
+		return { newFeatures: 0, features: [], defaultFeaturesPreview: [] };
+	}
 
 	return { newFeatures, features: mergedFeatures, defaultFeaturesPreview };
 };
