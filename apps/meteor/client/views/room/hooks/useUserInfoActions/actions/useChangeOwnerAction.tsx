@@ -109,6 +109,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
 						action: changeOwnerAction,
+						type: 'privileges',
 				  }
 				: undefined,
 		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],

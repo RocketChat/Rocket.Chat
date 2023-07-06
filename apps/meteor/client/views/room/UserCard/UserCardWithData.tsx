@@ -1,12 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
+import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -23,6 +24,7 @@ type UserCardWithDataProps = {
 };
 
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
+	const t = useTranslation();
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
@@ -67,22 +69,47 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(userActions);
 
+	const menuActions =
+		menuOptions !== undefined &&
+		Object.values(menuOptions)
+			.map(({ ...item }) => ({
+				content: item.label.label,
+				icon: item.label.icon,
+				onClick: item.action,
+				...item,
+			}))
+			.reduce((acc, item) => {
+				const group = item.type ? item.type : '';
+				const section = acc.find((section: { id: string }) => section.id === group);
+				if (section) {
+					section.items.push(item);
+					return acc;
+				}
+
+				const newSection = { id: group, title: '', items: [item] };
+				acc.push(newSection);
+
+				return acc;
+			}, [] as any);
+
 	const menu = useMemo(() => {
 		if (!menuOptions) {
 			return null;
 		}
 
 		return (
-			<Menu
-				flexShrink={0}
-				maxHeight='initial'
-				mi='x2'
-				key='menu'
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-				options={menuOptions}
-			/>
+			<GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-end' />
+
+			// <Menu
+			// 	flexShrink={0}
+			// 	maxHeight='initial'
+			// 	mi='x2'
+			// 	key='menu'
+			// 	renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
+			// 	options={menuOptions}
+			// />
 		);
-	}, [menuOptions]);
+	}, [menuActions, menuOptions, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (

@@ -45,6 +45,7 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 						label: t('Direct_Message'),
 						icon: 'balloon' as const,
 						action: openDirectMessage,
+						type: 'communication',
 				  }
 				: undefined,
 		[openDirectMessage, shouldOpenDirectMessage, t],
