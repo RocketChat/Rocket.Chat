@@ -83,6 +83,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				},
 				sparse: true,
 			},
+			{
+				key: {
+					archived: 1,
+				},
+				sparse: true,
+			},
 		];
 	}
 
@@ -121,6 +127,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId };
 		return this.find(query, options);
+	}
+
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
+		const query = { businessHourId, _id: { $ne: departmentId } };
+		return this.col.countDocuments(query);
 	}
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
@@ -236,7 +247,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
 		}
 
-		return Object.assign(record, { _id });
+		const latestDept = await this.findOneById(_id);
+		if (!latestDept) {
+			throw new Error(`Department ${_id} not found`);
+		}
+
+		return latestDept;
 	}
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult> {
@@ -352,6 +368,66 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+		const query = { archived: { $ne: false } };
+
+		return this.find(query, options);
+	}
+
+	getBusinessHoursWithDepartmentStatuses(): Promise<
+		{
+			_id: string;
+			validDepartments: string[];
+			invalidDepartments: string[];
+		}[]
+	> {
+		return this.col
+			.aggregate<{ _id: string; validDepartments: string[]; invalidDepartments: string[] }>([
+				{
+					$match: {
+						businessHourId: {
+							$exists: true,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$businessHourId',
+						validDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [
+											{
+												$eq: ['$enabled', true],
+											},
+											{
+												$ne: ['$archived', true],
+											},
+										],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+						invalidDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [{ $eq: ['$enabled', false] }, { $eq: ['$archived', true] }],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+					},
+				},
+			])
+			.toArray();
 	}
 
 	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean> {

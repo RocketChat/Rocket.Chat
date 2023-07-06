@@ -24,9 +24,9 @@ const InvitePage = (): ReactElement => {
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 	const userId = useUserId();
-	const homeRoute = useRoute('/');
-	const groupRoute = useRoute('/group/:name/:tab?/:context?');
-	const channelRoute = useRoute('/channel/:name/:tab?/:context?');
+	const homeRoute = useRoute('home');
+	const groupRoute = useRoute('group');
+	const channelRoute = useRoute('channel');
 
 	const { isLoading, data } = useQuery(
 		['invite', token],

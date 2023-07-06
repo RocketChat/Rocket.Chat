@@ -1,5 +1,3 @@
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
-import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
@@ -14,6 +12,8 @@ import { ConnectionImpl } from '../Connection';
 import { AccountImpl } from '../types/Account';
 import { TimeoutControl } from '../TimeoutControl';
 import type { ClientStream } from '../types/ClientStream';
+import type { ServerMethodReturn, ServerMethods } from '../types/methods';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '../types/streams';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -357,6 +357,11 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		params: OperationParams<'PUT', '/v1/livechat/message/:_id'>,
 	): Promise<Serialized<OperationResult<'PUT', '/v1/livechat/message/:_id'>>> {
 		return this.rest.put(`/v1/livechat/message/${id}`, params);
+	}
+
+	unsubscribeAll(): Promise<unknown> {
+		const subscriptions = Array.from(this.client.subscriptions.keys());
+		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
 
 	static create(url: string, retryOptions = { retryCount: 3, retryTime: 10000 }): LivechatClientImpl {

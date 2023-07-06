@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
-import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
+
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -21,6 +20,8 @@ import { ClientStreamImpl } from '../ClientStream';
 import { AccountImpl } from '../types/Account';
 import { TimeoutControl } from '../TimeoutControl';
 import type { ClientStream } from '../types/ClientStream';
+import type { ServerMethodReturn, ServerMethods } from '../types/methods';
+import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '../types/streams';
 
 declare module '../ClientStream' {
 	interface ClientStream {

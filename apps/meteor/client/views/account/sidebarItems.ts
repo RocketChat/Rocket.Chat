@@ -9,36 +9,36 @@ export const {
 	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
 	{
-		href: 'preferences',
+		href: '/account/preferences',
 		i18nLabel: 'Preferences',
 		icon: 'customize',
 	},
 	{
-		href: 'profile',
+		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
 	},
 	{
-		href: 'security',
+		href: '/account/security',
 		i18nLabel: 'Security',
 		icon: 'lock',
 		permissionGranted: (): boolean => settings.get('Accounts_TwoFactorAuthentication_Enabled') || settings.get('E2E_Enable'),
 	},
 	{
-		href: 'integrations',
+		href: '/account/integrations',
 		i18nLabel: 'Integrations',
 		icon: 'code',
 		permissionGranted: (): boolean => settings.get('Webdav_Integration_Enabled'),
 	},
 	{
-		href: 'tokens',
+		href: '/account/tokens',
 		i18nLabel: 'Personal_Access_Tokens',
 		icon: 'key',
 		permissionGranted: (): boolean => hasPermission('create-personal-access-tokens'),
 	},
 	{
-		href: 'omnichannel',
+		href: '/account/omnichannel',
 		i18nLabel: 'Omnichannel',
 		icon: 'headset',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['send-omnichannel-chat-transcript', 'request-pdf-transcript']),
