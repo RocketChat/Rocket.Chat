@@ -13,23 +13,29 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
-	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 	const [emojiListByCategory, setEmojiListByCategory] = useState<EmojiByCategory[]>([]);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
-	const [quickReactions, setQuickReactions] = useState<{ emoji: string; image: string }[]>([]);
+
+	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
+
+	const [quickReactions, setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
+		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
+	);
 
 	const addFrequentEmojis = useCallback(
 		(emoji: string) => {
-			if (frequentEmojis.some(([emojiName]) => emojiName === emoji)) {
-				return setFrequentEmojis(
-					frequentEmojis.map(([emojiName, count]) => {
-						return emojiName === emoji ? [emojiName, count + 1] : [emojiName, count];
-					}),
-				);
-			}
-			return setFrequentEmojis([...frequentEmojis, [emoji, 0]]);
+			const empty: [string, number][] = frequentEmojis.some(([emojiName]) => emojiName === emoji) ? [] : [[emoji, 0]];
+
+			const sortedFrequent = [...empty, ...frequentEmojis]
+				.map(([emojiName, count]) => {
+					return (emojiName === emoji ? [emojiName, Math.min(count + 5, 100)] : [emojiName, Math.max(count - 1, 0)]) as [string, number];
+				})
+				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
+
+			setFrequentEmojis(sortedFrequent);
+			setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
 		},
 		[frequentEmojis, setFrequentEmojis],
 	);
@@ -78,12 +84,6 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 	);
 
 	useEffect(() => {
-		const sortedFrequent = frequentEmojis.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
-		const freq = getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji));
-		if (freq?.length > 0) {
-			setQuickReactions(freq);
-		}
-
 		if (recentEmojis?.length > 0) {
 			updateRecent(recentEmojis);
 		}
