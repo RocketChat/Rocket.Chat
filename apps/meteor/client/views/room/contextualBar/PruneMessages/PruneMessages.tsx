@@ -2,7 +2,7 @@ import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuse
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
 import {
@@ -15,7 +15,6 @@ import {
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
-import type { initialValues } from './PruneMessagesWithData';
 
 type PruneMessagesProps = {
 	callOutText?: string;
@@ -27,15 +26,12 @@ type PruneMessagesProps = {
 
 const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
 	const t = useTranslation();
-	const { watch, setValue, control } = useFormContext();
-	const { newerDate, newerTime, olderDate, olderTime } = watch() as typeof initialValues;
+	const { register, control } = useFormContext();
 
-	const handleFieldValues = useCallback((field) => (e: any) => setValue(field, e.target.value), [setValue]);
-
-	const handleNewerDate = handleFieldValues('newerDate');
-	const handleNewerTime = handleFieldValues('newerTime');
-	const handleOlderDate = handleFieldValues('olderDate');
-	const handleOlderTime = handleFieldValues('olderTime');
+	const registerNewerDate = useMemo(() => register('newerDate'), [register]);
+	const registerNewerTime = useMemo(() => register('newerTime'), [register]);
+	const registerOlderDate = useMemo(() => register('olderDate'), [register]);
+	const registerOlderTime = useMemo(() => register('olderTime'), [register]);
 
 	const inclusiveCheckboxId = useUniqueId();
 	const pinnedCheckboxId = useUniqueId();
@@ -53,13 +49,13 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 			<ContextualbarScrollableContent>
 				<PruneMessagesDateTimeRow
 					label={t('Newer_than')}
-					dateTime={{ date: newerDate, time: newerTime }}
-					handleDateTime={{ date: handleNewerDate, time: handleNewerTime }}
+					registerDate={registerNewerDate}
+					registerTime={registerNewerTime}
 				/>
 				<PruneMessagesDateTimeRow
 					label={t('Older_than')}
-					dateTime={{ date: olderDate, time: olderTime }}
-					handleDateTime={{ date: handleOlderDate, time: handleOlderTime }}
+					registerDate={registerOlderDate}
+					registerTime={registerOlderTime}
 				/>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
