@@ -639,18 +639,32 @@ export const Livechat = {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
-			await Promise.allSettled([
+			const result = await Promise.allSettled([
 				FileUpload.removeFilesByRoomId(room._id),
 				Messages.removeByRoomId(room._id),
 				ReadReceipts.removeByRoomId(room._id),
 			]);
+
+			for (const r of result) {
+				if (r.status === 'rejected') {
+					this.logger.error(`Error removing room ${room._id}: ${r.reason}`);
+					throw new Meteor.Error('error-cleaning-room-history', 'Error cleaning room history');
+				}
+			}
 		}
 
-		await Promise.allSettled([
+		const result = await Promise.allSettled([
 			Subscriptions.removeByVisitorToken(token),
 			LivechatRooms.removeByVisitorToken(token),
 			LivechatInquiry.removeByVisitorToken(token),
 		]);
+
+		for (const r of result) {
+			if (r.status === 'rejected') {
+				this.logger.error(`Error cleaning guest ${_id} history: ${r.reason}`);
+				throw new Meteor.Error('error-cleaning-guest-history', 'Error cleaning guest history');
+			}
+		}
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
