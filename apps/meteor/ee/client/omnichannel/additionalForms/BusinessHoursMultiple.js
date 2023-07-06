@@ -30,7 +30,7 @@ const BusinessHoursMultiple = ({ values = {}, handlers = {}, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Departments')}</Field.Label>
 				<Field.Row>
-					<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} />
+					<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} enabled={true} />
 				</Field.Row>
 			</Field>
 		</>
