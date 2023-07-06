@@ -103,10 +103,10 @@ const AccountFeaturePreviewPage = () => {
 								{t('Feature_preview_page_description')}
 							</Box>
 							<Accordion>
-								{grouppedFeaturesPreview?.map(([group, featuresPreview], index) => (
+								{grouppedFeaturesPreview?.map(([group, features], index) => (
 									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 										<FieldGroup>
-											{featuresPreview.map((feature) => (
+											{features.map((feature) => (
 												<Fragment key={feature.name}>
 													<Field>
 														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
