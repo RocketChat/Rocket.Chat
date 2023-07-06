@@ -12,10 +12,11 @@ import {
 } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
+import type { FeaturePreviewProps } from '../../../hooks/useFeaturePreview';
 import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 
 const AccountFeaturePreviewPage = () => {
@@ -64,6 +65,13 @@ const AccountFeaturePreviewPage = () => {
 		setValue('featuresPreview', updated, { shouldDirty: true });
 	};
 
+	const grouppedFeaturesPreview = Object.entries(
+		featuresPreview.reduce((result, currentValue) => {
+			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
+			return result;
+		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
+	);
+
 	return (
 		<Page>
 			<Page.Header title={t('Feature_preview')}>
@@ -81,25 +89,31 @@ const AccountFeaturePreviewPage = () => {
 							<StatesTitle>{t('No_feature_to_preview')}</StatesTitle>
 						</States>
 					)}
-					<Accordion>
-						{featuresPreview.length > 0 &&
-							featuresPreview?.map((feature, index) => (
-								<Accordion.Item defaultExpanded={index === 0} key={feature.name} title={feature.group}>
+					{featuresPreview.length > 0 && (
+						<Accordion>
+							{grouppedFeaturesPreview?.map(([group, featuresPreview], index) => (
+								<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group)}>
 									<FieldGroup>
-										<Field>
-											<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-												<Field.Label>{t(feature.i18n)}</Field.Label>
-												<Field.Row>
-													<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
-												</Field.Row>
-											</Box>
-											{feature.description && <Field.Hint>{t(feature.description)}</Field.Hint>}
-										</Field>
+										{featuresPreview.map((feature) => (
+											<Fragment key={feature.name}>
+												<Field>
+													<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+														<Field.Label>{t(feature.i18n)}</Field.Label>
+														<Field.Row>
+															<Box mie='x12'>{t('Enable')}</Box>
+															<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
+														</Field.Row>
+													</Box>
+													{feature.description && <Field.Hint mbs='x12'>{t(feature.description)}</Field.Hint>}
+												</Field>
+												{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs='x16' src={feature.imageUrl} />}
+											</Fragment>
+										))}
 									</FieldGroup>
-									<Box is='img' width='100%' height='auto' mbs='x16' src='images/featurePreview/quick-reactions.png' />
 								</Accordion.Item>
 							))}
-					</Accordion>
+						</Accordion>
+					)}
 				</Box>
 			</Page.ScrollableContentWithShadow>
 		</Page>

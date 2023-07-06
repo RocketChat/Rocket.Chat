@@ -32,6 +32,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/omnichannel';
 			pattern: '/account/omnichannel';
 		};
+		'feature-preview': {
+			pathname: '/account/feature-preview';
+			pattern: '/account/feature-preview';
+		};
 	}
 }
 
