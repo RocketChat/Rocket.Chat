@@ -236,5 +236,4 @@ registerAdminRoute('/engagement/:context?/:tab?', {
 registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
-	ready: false,
 });

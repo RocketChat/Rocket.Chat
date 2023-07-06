@@ -1,4 +1,4 @@
-import { usePermission, useRoute, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -18,8 +18,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const hasDeviceManagement = useHasLicenseModule('engagement-dashboard');
 	const isUpsell = !data?.isEnterprise || !hasDeviceManagement;
 
-	const deviceManagementRoute = useRoute('device-management');
-	const upgradeRoute = useRoute('upgrade');
+	const router = useRouter();
 
 	const setModal = useSetModal();
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,8 +29,11 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 
 	const handleConfirmModal = useCallback(() => {
 		handleModalClose();
-		upgradeRoute.push({ type: 'go-fully-featured-registered' });
-	}, [handleModalClose, upgradeRoute]);
+		router.navigate({
+			pathname: '/admin/upgrade',
+			params: { type: 'go-fully-featured-registered' },
+		});
+	}, [handleModalClose, router]);
 
 	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
 	const handleCancelModal = useCallback(() => {
@@ -40,7 +42,13 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	}, [handleModalClose]);
 
 	const handleOpenModal = useCallback(() => {
-		deviceManagementRoute.replace({ context: 'upsell' });
+		router.navigate(
+			{
+				pattern: '/admin/device-management/:context?/:id?',
+				params: { context: 'upsell' },
+			},
+			{ replace: true },
+		);
 		setModal(
 			<UpsellModal
 				title={t('Device_Management')}
@@ -55,7 +63,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [cloudWorkspaceHadTrial, deviceManagementRoute, handleCancelModal, handleConfirmModal, handleModalClose, setModal, t]);
+	}, [cloudWorkspaceHadTrial, handleCancelModal, handleConfirmModal, handleModalClose, router, setModal, t]);
 
 	useEffect(() => {
 		if (isUpsell) {
