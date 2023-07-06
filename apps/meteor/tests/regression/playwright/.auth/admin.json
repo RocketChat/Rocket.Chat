@@ -12,7 +12,7 @@
     },
     {
       "name": "rc_token",
-      "value": "QcY9x3wJqEy_EWY-v99B0oZy4UTXJCi-R7SKP1xnNgT",
+      "value": "DsL_o0MXBm0fgTxjAv8e6f-OOk4hpk1g7RHd565Vw-5",
       "domain": "candidate.rocket.chat",
       "path": "/",
       "expires": -1,
@@ -31,11 +31,11 @@
         },
         {
           "name": "Meteor.loginToken",
-          "value": "QcY9x3wJqEy_EWY-v99B0oZy4UTXJCi-R7SKP1xnNgT"
+          "value": "DsL_o0MXBm0fgTxjAv8e6f-OOk4hpk1g7RHd565Vw-5"
         },
         {
           "name": "Meteor.loginTokenExpires",
-          "value": "Mon Oct 02 2023 17:33:32 GMT-0300 (Brasilia Standard Time)"
+          "value": "Wed Oct 04 2023 16:00:34 GMT-0300 (Brasilia Standard Time)"
         },
         {
           "name": "Meteor.userId",
