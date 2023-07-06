@@ -1,34 +1,23 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { useVerifyPassword } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
-type validationMessage = {
-	error: boolean;
-	message?: Record<
-		string,
-		{
-			isValid: boolean;
-			limit?: number | undefined;
-		}
-	>;
-};
 
 type PasswordVerifierProps = {
 	password: string;
-	passwordVerifications: validationMessage[];
+	passwordVerifications: ReturnType<typeof useVerifyPassword>;
 };
 
 export const PasswordVerifier = ({ password, passwordVerifications }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 
-	const handleRenderPasswordVerification = (passwordVerifications: validationMessage[]) => {
+	const handleRenderPasswordVerification = (passwordVerifications: ReturnType<typeof useVerifyPassword>) => {
 		const verifications = [];
 
 		if (!passwordVerifications) return null;
 
 		for (const verification in passwordVerifications) {
 			if (passwordVerifications[verification]) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				const { isValid, limit } = passwordVerifications[verification].message!;
+				const { isValid, limit } = passwordVerifications[verification];
 
 				verifications.push(
 					<Box

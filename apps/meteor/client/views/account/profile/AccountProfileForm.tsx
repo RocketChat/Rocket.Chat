@@ -3,13 +3,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint, useVerifyPassword } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { passwordPolicy } from '../../../../app/lib/server';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -62,7 +61,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
 		values as AccountFormValues;
 
-	const passwordVerifications = passwordPolicy.validate(password);
+	const passwordVerifications = useVerifyPassword(password);
 
 	const {
 		handleRealname,

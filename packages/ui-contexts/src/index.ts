@@ -80,6 +80,7 @@ export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
 export { usePasswordPolicy } from './hooks/usePasswordPolicy';
+export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
 export { useAvailableDevices } from './hooks/useAvailableDevices';
