@@ -36,7 +36,7 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 				text: filter,
 				offset: start,
 				count: end + start,
-				...(viewAll && { viewAll }),
+				...(viewAll && { viewAll: 'true' }),
 				...(department && { department }),
 			});
 			return {
