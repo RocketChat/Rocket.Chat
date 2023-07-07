@@ -22,7 +22,7 @@ type UpsellModalProps = {
 	onCloseEffect?: () => void;
 };
 
-const UpsellModal = ({
+const GenericUpsellModal = ({
 	tagline,
 	title,
 	subtitle,
@@ -76,11 +76,11 @@ const UpsellModal = ({
 				<Modal.Content>
 					<Modal.HeroImage src={img} />
 					{subtitle && (
-						<Box is='h3' fontScale='h3'>
+						<Box is='h3' fontScale='h3' mbe='x16'>
 							{subtitle}
 						</Box>
 					)}
-					<br />
+
 					{description && <Box fontScale='p2'>{description}</Box>}
 				</Modal.Content>
 				<Modal.Footer>
@@ -99,4 +99,4 @@ const UpsellModal = ({
 	);
 };
 
-export default UpsellModal;
+export default GenericUpsellModal;

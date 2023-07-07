@@ -2,8 +2,8 @@ import { usePermission, useRouteParameter, useRouter, useSetModal, useTranslatio
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
-import UpsellModal from '../../../../../client/components/UpsellModal';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
@@ -33,7 +33,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			params: { context: 'upsell', tab: 'users' },
 		});
 		setModal(
-			<UpsellModal
+			<GenericUpsellModal
 				title={t('Engagement_Dashboard')}
 				img='images/engagement.png'
 				subtitle={t('Analyze_practical_usage')}

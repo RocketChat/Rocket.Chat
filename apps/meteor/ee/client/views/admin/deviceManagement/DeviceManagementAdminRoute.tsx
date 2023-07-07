@@ -2,8 +2,8 @@ import { usePermission, useRouter, useSetModal, useTranslation } from '@rocket.c
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
-import UpsellModal from '../../../../../client/components/UpsellModal';
 import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -31,7 +31,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 			{ replace: true },
 		);
 		setModal(
-			<UpsellModal
+			<GenericUpsellModal
 				title={t('Device_Management')}
 				img='images/device-management.png'
 				subtitle={t('Ensure_secure_workspace_access')}
