@@ -9,6 +9,7 @@ import React, { memo } from 'react';
 
 // used to open the menu option by keyboard
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
 import type { ToolboxActionConfig } from '../../lib/Toolbox';
 
@@ -16,6 +17,11 @@ type ToolBoxProps = {
 	className?: ComponentProps<typeof Box>['className'];
 	room?: IRoom;
 };
+
+type MenuActionsProps = {
+	id: string;
+	items: GenericMenuItemProps[];
+}[];
 
 const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const t = useTranslation();
@@ -53,7 +59,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 			acc.push(newSection);
 
 			return acc;
-		}, [] as any);
+		}, [] as MenuActionsProps);
 
 	const actionDefault = useMutableCallback((actionId) => {
 		openTabBar(actionId);
