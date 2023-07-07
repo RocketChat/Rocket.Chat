@@ -3,7 +3,8 @@ import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import UserAvatarButton from './UserAvatarButton';
+import UserAvatarWithStatus from './UserAvatarWithStatus';
+import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
 import CreateRoom from './actions/CreateRoom';
 import Directory from './actions/Directory';
@@ -12,19 +13,14 @@ import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
 
-// TODO: Remove styles from here
 const HeaderWithData = (): ReactElement => {
-	const user = useUser();
 	const t = useTranslation();
+	const user = useUser();
 
 	return (
 		<>
-			<Sidebar.TopBar.Section
-				{...{
-					style: { flexShrink: 0 },
-				}}
-			>
-				<UserAvatarButton />
+			<Sidebar.TopBar.Section>
+				{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />
 					<Search title={t('Search')} />

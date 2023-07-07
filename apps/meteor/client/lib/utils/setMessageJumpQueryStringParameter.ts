@@ -1,6 +1,15 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { router } from '../../providers/RouterProvider';
 
 export const setMessageJumpQueryStringParameter = async (msg: IMessage['_id'] | null) => {
-	FlowRouter.setQueryParams({ msg });
+	const { msg: _, ...search } = router.getSearchParameters();
+
+	router.navigate(
+		{
+			pathname: router.getLocationPathname(),
+			search: msg ? { ...search, msg } : search,
+		},
+		{ replace: true },
+	);
 };
