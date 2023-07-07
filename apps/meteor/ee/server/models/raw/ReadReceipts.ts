@@ -92,10 +92,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		return this.deleteMany(query);
 	}
 
-	setPinnedByMessageId(messageId: string, pinned?: boolean): Promise<Document | UpdateResult> {
-		if (pinned == null) {
-			pinned = true;
-		}
+	setPinnedByMessageId(messageId: string, pinned = true): Promise<Document | UpdateResult> {
 		return this.updateMany({ messageId }, { $set: { pinned } });
 	}
 
