@@ -9950,11 +9950,11 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.277
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.277"
+  version: 0.32.0-dev.296
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.296"
   dependencies:
     tldts: ~5.7.112
-  checksum: c1e34dbe2dd23142c565088a86f4243501364a95de456e0b8add3cec78cd44545747b4ed7add7a1403667c14193a1bac52d2a98add85f0cf3cd9844fc9c03095
+  checksum: 2a40090b0b5b94e531da3bd1433c6f60b98f19b85eb9ca81db8706fcf360d8245c97fde2257a6c39e9be7fa4a630eede5abf679847ef3c923594c7156f8eb334
   languageName: node
   linkType: hard
 

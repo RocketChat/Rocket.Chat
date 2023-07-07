@@ -4,6 +4,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import BoldSpan from './BoldSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
+import EmojiSpan from './EmojiSpan';
 
 const styles = StyleSheet.create({
 	italic: {
@@ -11,31 +12,52 @@ const styles = StyleSheet.create({
 	},
 });
 
+type MessageBlock =
+	| MessageParser.Emoji
+	| MessageParser.ChannelMention
+	| MessageParser.UserMention
+	| MessageParser.Link
+	| MessageParser.MarkupExcluding<MessageParser.Italic>;
+
 type ItalicSpanProps = {
-	children: (MessageParser.Link | MessageParser.MarkupExcluding<MessageParser.Italic>)[];
+	children: MessageBlock[];
 };
 
 const ItalicSpan = ({ children }: ItalicSpanProps) => (
-	<View style={styles.italic}>
+	<>
 		{children.map((child, index) => {
-			switch (child.type) {
-				case 'LINK':
-					return <LinkSpan key={index} label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />;
-
-				case 'PLAIN_TEXT':
-					return <Text key={index}>{child.value}</Text>;
-
-				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
-
-				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
-
-				default:
-					return null;
+			if (child.type === 'LINK' || child.type === 'PLAIN_TEXT' || child.type === 'STRIKE' || child.type === 'BOLD') {
+				return (
+					<View style={styles.italic} key={index}>
+						{renderBlockComponent(child, index)}
+					</View>
+				);
 			}
+			return renderBlockComponent(child, index);
 		})}
-	</View>
+	</>
 );
+
+const renderBlockComponent = (child: MessageBlock, index: number) => {
+	switch (child.type) {
+		case 'LINK':
+			return <LinkSpan key={index} label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />;
+
+		case 'PLAIN_TEXT':
+			return <Text key={index}>{child.value}</Text>;
+
+		case 'STRIKE':
+			return <StrikeSpan key={index} children={child.value} />;
+
+		case 'BOLD':
+			return <BoldSpan key={index} children={child.value} />;
+
+		case 'EMOJI':
+			return <EmojiSpan key={index} {...child} />;
+
+		default:
+			return null;
+	}
+};
 
 export default ItalicSpan;
