@@ -16,6 +16,7 @@ import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
+import { useTagsLabels } from '../hooks/useTagsLabels';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -33,7 +34,6 @@ function ChatInfo({ id, route }) {
 
 	const {
 		ts,
-		tags,
 		closedAt,
 		departmentId,
 		v,
@@ -49,6 +49,7 @@ function ChatInfo({ id, route }) {
 		queuedAt,
 	} = room || { room: { v: {} } };
 
+	const tags = useTagsLabels(room?.tags);
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
