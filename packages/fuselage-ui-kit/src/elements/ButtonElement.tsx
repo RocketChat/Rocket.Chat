@@ -15,7 +15,7 @@ const ButtonElement = ({
   const [{ loading }, action] = useUiKitState(block, context);
   const { style, url, text, value, secondary } = block;
 
-  if (block.url) {
+  if (url) {
     return (
       <Button
         is='a'
