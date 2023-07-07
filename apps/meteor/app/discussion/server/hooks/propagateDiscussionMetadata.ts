@@ -1,4 +1,4 @@
-import { Messages, Rooms, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deleteRoom } from '../../../lib/server';
@@ -99,14 +99,4 @@ callbacks.add(
 	},
 	callbacks.priority.LOW,
 	'CleanDiscussionMessage',
-);
-
-callbacks.add(
-	'afterDeleteRoom',
-	async (rid) => {
-		await ReadReceipts.removeByRoomId(rid);
-		return rid;
-	},
-	callbacks.priority.LOW,
-	'DeleteReadReceipts',
 );
