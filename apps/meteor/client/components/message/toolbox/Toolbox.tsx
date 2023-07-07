@@ -10,6 +10,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -46,9 +47,10 @@ type ToolboxProps = {
 
 const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
-
-	const settings = useSettings();
 	const user = useUser();
+	const settings = useSettings();
+
+	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
 	const context = getMessageContext(message, room, messageContext);
 
@@ -82,6 +84,8 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return null;
 	}
 
+	const isReactionAllowed = actionsQueryResult.data?.message.find(({ id }) => id === 'reaction-message');
+
 	const handleSetReaction = (emoji: string) => {
 		sdk.call('setReaction', `:${emoji}:`, message._id);
 		addRecentEmoji(emoji);
@@ -89,9 +93,11 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 
 	return (
 		<MessageToolbox>
-			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
-				return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
-			})}
+			{quickReactionsEnabled &&
+				isReactionAllowed &&
+				quickReactions.slice(0, 3).map(({ emoji, image }) => {
+					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
+				})}
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
