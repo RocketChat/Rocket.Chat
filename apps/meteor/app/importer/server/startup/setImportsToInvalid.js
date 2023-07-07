@@ -1,17 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Imports, RawImports } from '@rocket.chat/models';
+import { Imports } from '@rocket.chat/models';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-
-async function runDrop(fn) {
-	try {
-		await fn();
-	} catch (e) {
-		SystemLogger.error('error', e); // TODO: Remove
-		// ignored
-	}
-}
 
 Meteor.startup(async function () {
 	const lastOperation = await Imports.findLastImport();
@@ -26,13 +16,7 @@ Meteor.startup(async function () {
 
 	if (idToKeep) {
 		await Imports.invalidateOperationsExceptId(idToKeep);
-
-		// Clean up all the raw import data, except for the last operation
-		await runDrop(() => RawImports.deleteMany({ import: { $ne: idToKeep } }));
 	} else {
 		await Imports.invalidateAllOperations();
-
-		// Clean up all the raw import data
-		await runDrop(() => RawImports.deleteMany({}));
 	}
 });
