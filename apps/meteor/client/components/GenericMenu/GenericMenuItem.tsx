@@ -11,10 +11,12 @@ export type GenericMenuItemProps = {
 	status?: ReactNode;
 	disabled?: boolean;
 	description?: ReactNode;
+	gap?: boolean;
 };
 
-const GenericMenuItem = ({ icon, content, addon, status }: GenericMenuItemProps) => (
+const GenericMenuItem = ({ icon, content, addon, status, gap }: GenericMenuItemProps) => (
 	<>
+		{gap && <MenuItemColumn />}
 		{icon && <MenuItemIcon name={icon} />}
 		{status && <MenuItemColumn>{status}</MenuItemColumn>}
 		{content && <MenuItemContent>{content}</MenuItemContent>}
