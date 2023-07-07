@@ -43,7 +43,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	if (deletedMsg?.tmid) {
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
-		await ReadReceipts.decrementThreadMessagesCountById(deletedMsg.tmid);
 	}
 
 	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages

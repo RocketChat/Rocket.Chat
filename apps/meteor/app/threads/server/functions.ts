@@ -21,7 +21,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
-	await ReadReceipts.incrementThreadMessagesCountById(tmid);
+	await ReadReceipts.setAsThreadById(tmid);
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 

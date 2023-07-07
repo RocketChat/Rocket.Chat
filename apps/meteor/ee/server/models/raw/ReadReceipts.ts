@@ -77,7 +77,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 
 		if (ignoreThreads) {
 			query.tmid = { $exists: false };
-			query.tcount = { $exists: false };
+			query.thread = { $ne: true };
 		}
 
 		if (users.length) {
@@ -94,15 +94,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		return this.updateMany({ messageId }, { $set: { pinned } });
 	}
 
-	incrementThreadMessagesCountById(messageId: string, inc = 1): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $inc: { tcount: inc } });
-	}
-
-	decrementThreadMessagesCountById(messageId: string, inc = -1): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $inc: { tcount: inc } });
-	}
-
-	unsetThreadMessagesCountById(messageId: string): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $unset: { tcount: 1 } });
+	setAsThreadById(messageId: string): Promise<Document | UpdateResult> {
+		return this.updateMany({ messageId }, { $set: { thread: true } });
 	}
 }
