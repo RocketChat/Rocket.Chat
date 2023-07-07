@@ -15,7 +15,7 @@
     {
       "file": "apps/meteor/client/views/room/components/body/RoomBody.tsx",
       "description": "### Chat/Room Layout\n\n- The \"RoomBody.tsx\" file is straightforward to comprehend. You can easily navigate through the components and grasp their functionalities.\n\n- The majority of the code in this file revolves around message rendering and handling various chat-related actions.",
-      "line": 539,
+      "line": 543,
       "selection": {
         "start": {
           "line": 464,
@@ -30,7 +30,7 @@
     {
       "file": "apps/meteor/client/views/room/components/body/RoomBody.tsx",
       "description": "### Composer Container\n\n- At the bottom of the \"RoomBody.tsx\" file, there is a component responsible for rendering the Message Composer. It accepts several props, including the room ID and subscription details. These props help verify whether the user is allowed to send messages in the given context.\n\n- The Message Composer component also manages the size and layout of the composer, allowing users to comfortably compose and send messages. It provides functionality to retrieve the previous and next messages for reference or navigation purposes.\n\n```\n    <ComposerContainer />\n```\n\n- **Note**  ComposerContainer is also built from combination multiple components, we will explore components and see how data is sent.\n",
-      "line": 630
+      "line": 635
     },
     {
       "file": "apps/meteor/client/views/room/components/body/composer/ComposerContainer.tsx",
@@ -45,7 +45,7 @@
     {
       "file": "apps/meteor/client/views/room/components/body/composer/ComposerMessage.tsx",
       "description": "## MessageBox Component\n\n- At the bottom of the code, there is a \"MessageBox\" component, which represents the actual chat message box. Its presence is crucial for the proper functioning of the Composer. If you were to comment out or remove the \"MessageBox\" component and run the server, you would observe that the Composer functionality would no longer be available.\n\n- The \"MessageBox\" component plays a pivotal role in enabling users to compose and send messages within the chat interface. It provides the necessary user interface elements, such as input fields and buttons, to facilitate message composition and submission.",
-      "line": 80
+      "line": 81
     },
     {
       "file": "apps/meteor/client/views/room/components/body/composer/messageBox/MessageBox.tsx",
@@ -55,7 +55,7 @@
     {
       "file": "apps/meteor/client/views/room/components/body/composer/messageBox/MessageBox.tsx",
       "description": "## Sending Message\n\n#### Rocket chat's Room/channel message composers have multiple options such as uploading files, Writing text messages and Quoted messages, And then we have a send button at the right corner of composer which sends what you have entered.\n\n#### To understand how the send button works for sending a simple text message:\n\n- When the send button is clicked, an event is triggered.\n- The event handler associated with the send button retrieves the text message entered by the user.\n- The text message is then processed and prepared for sending.\n- The necessary information, such as the room/channel ID, sender details, and the text message content, is included.\n- The prepared message is sent to the server via an appropriate network request or function call.\n- The server receives the message and performs further processing, including broadcasting it to the relevant recipients in the room/channel.\nThe message is displayed in the chat interface for all participants to view.",
-      "line": 345,
+      "line": 347,
       "selection": {
         "start": {
           "line": 3,
@@ -70,16 +70,16 @@
     {
       "file": "apps/meteor/client/views/room/components/body/composer/messageBox/MessageBox.tsx",
       "description": "## Message Input \n\n- The MessageComposerInput component plays a crucial role in handling user inputs within the message composer. It is responsible for capturing various types of inputs and encompasses multiple associated actions.\n\n#### The MessageComposerInput component enables users to interact with the message composer through different actions, such as:\n\n1. **Typing and Editing**: Users can enter and edit text within the composer input field.\n\n2. **Formatting**: It may support various formatting options like bold, italic, bullet points, etc., allowing users to apply formatting to their messages.\n\n3. **Mentions**: Users can mention specific individuals or groups within the message by using the appropriate syntax or by selecting them from a list.\n\n4. **Emojis**: It may provide an emoji picker or support emoji shorthand, allowing users to insert emojis into their messages.\n\n5. **Attachments**: Users can attach files or media to their messages, such as images, documents, or videos.",
-      "line": 380
+      "line": 382
     },
     {
       "file": "apps/meteor/client/views/room/components/body/composer/messageBox/MessageBox.tsx",
       "description": "### The Send Button\n\n- To send any message you need to click send button or hit Enter/Return key, when you click send button **handleSendMessage** method/function is called.\n```\n    <MessageComposerAction\n        onClick={handleSendMessage}\n        ....\n    />\n```",
-      "line": 428
+      "line": 430
     },
     {
       "file": "apps/meteor/client/views/room/components/body/composer/messageBox/MessageBox.tsx",
-      "description": "## handleSendMessage Function\n\n- This is the function which sends messages further, it Gets text from chat.composer.text where chat is actully using useChat() which is coming from [ChatAPI](./apps/meteor/client/lib/chats/ChatAPI.ts) consisting of multiple functions.\n\n#### The handleSendMessage function is responsible for processing and sending the message to the intended recipients. It performs the following actions:\n\n1. Retrieves the content of the message entered by the user.\n2. Collects additional information needed for sending the message, such as the room/channel ID, sender details, and any associated metadata.\n3. Packages the message data into a suitable format for transmission.\n4. Initiates the process of sending the message, it goes through a WebSocket connection.\n5. The message is then transmitted to the server for further processing.\n6. The server handles the message, ensuring it is delivered to the specified room/channel and received by the intended recipients.\n7. Once the message is successfully sent, it may trigger updates to the chat interface, including displaying the sent message in the conversation history.\n\n- Here we have \n    ```\n        const chat = useChat(); // useChat is a Context using ChatAPI.\n        const text = chat.composer?.text ?? ''; //Text is getting information from useChat Context.\n\n        onSend?.({  // onSend was recieved as prop and hence we are returning with some value and a boolean tshow\n\t\t\tvalue: text,\n\t\t\ttshow,\n\t\t});\n    ```\n",
+      "description": "## handleSendMessage Function\n\n- This is the function which sends messages further, it Gets text from chat.composer.text where chat is actully using useChat() which is coming from [ChatAPI](./apps/meteor/client/lib/chats/ChatAPI.ts) consisting of multiple functions.\n\n#### The handleSendMessage function is responsible for processing and sending the message to the intended recipients. It performs the following actions:\n\n1. Retrieves the content of the message entered by the user.\n2. Collects additional information needed for sending the message, such as the room/channel ID, sender details, and any associated metadata.\n3. Packages the message data into a suitable format for transmission.\n4. Initiates the process of sending the message, it goes through a **[WebSocket](https://www.wallarm.com/what/a-simple-explanation-of-what-a-websocket-is)** connection.\n5. The message is then transmitted to the server for further processing.\n6. The server handles the message, ensuring it is delivered to the specified room/channel and received by the intended recipients.\n7. Once the message is successfully sent, it may trigger updates to the chat interface, including displaying the sent message in the conversation history.\n\n- Here we have \n ```\n const chat = useChat(); // useChat is a Context using ChatAPI.\n const text = chat.composer?.text ?? ''; //Text is getting information from useChat Context.\n\n onSend?.({ // onSend was recieved as prop and hence we are returning with some value and a boolean tshow\n\t\t\tvalue: text,\n\t\t\ttshow,\n\t\t});\n ```\n",
       "line": 159
     },
     {
