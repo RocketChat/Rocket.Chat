@@ -8,6 +8,7 @@ import React, { useMemo, useRef } from 'react';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -22,6 +23,20 @@ type UserCardWithDataProps = {
 	open: (e: UIEvent) => void;
 	onClose: () => void;
 };
+
+type MenuActionProps = {
+	key: React.ReactNode;
+	id: string;
+	title: string;
+	items: {
+		id: string;
+		key: React.ReactNode;
+		content: React.ReactNode;
+		icon: string | undefined;
+		onClick: () => void;
+		type: string | undefined;
+	}[];
+}[];
 
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const t = useTranslation();
@@ -72,12 +87,13 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	const menuActions =
 		menuOptions !== undefined &&
 		Object.values(menuOptions)
-			.map(({ ...item }) => ({
+			.map((item) => ({
+				id: item.label.label as string,
 				key: item.label.label,
 				content: item.label.label,
 				icon: item.label.icon,
 				onClick: item.action,
-				...item,
+				type: item.type,
 			}))
 			.reduce((acc, item) => {
 				const group = item.type ? item.type : '';
@@ -91,25 +107,14 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 				acc.push(newSection);
 
 				return acc;
-			}, [] as any);
+			}, [] as MenuActionProps);
 
 	const menu = useMemo(() => {
 		if (!menuActions) {
 			return null;
 		}
 
-		return (
-			<GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-start' />
-
-			// <Menu
-			// 	flexShrink={0}
-			// 	maxHeight='initial'
-			// 	mi='x2'
-			// 	key='menu'
-			// 	renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-			// 	options={menuOptions}
-			// />
-		);
+		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-start' />;
 	}, [menuActions, t]);
 
 	const actions = useMemo(() => {
