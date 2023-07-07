@@ -13,6 +13,7 @@ import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
+import { useReportUser } from './actions/useReportUser';
 
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -31,6 +32,7 @@ export const useUserInfoActions = (
 	const muteUserOption = useMuteUserAction(user, rid);
 	const removeUserOption = useRemoveUserAction(user, rid, reload);
 	const callOption = useCallAction(user);
+	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return useMemo(
@@ -44,6 +46,7 @@ export const useUserInfoActions = (
 			...(ignoreUserOption && { ignoreUser: ignoreUserOption }),
 			...(muteUserOption && { muteUser: muteUserOption }),
 			...(blockUserOption && { toggleBlock: blockUserOption }),
+			...(reportUserOption && { reportUser: reportUserOption }),
 			...(removeUserOption && { removeUser: removeUserOption }),
 		}),
 		[
@@ -57,6 +60,7 @@ export const useUserInfoActions = (
 			muteUserOption,
 			blockUserOption,
 			removeUserOption,
+			reportUserOption,
 			openModerationConsoleOption,
 		],
 	);
