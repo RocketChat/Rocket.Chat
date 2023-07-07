@@ -36,7 +36,7 @@ type QuoteAttachmentProps = {
 };
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
-	const format = useTimeAgo();
+	const formatTime = useTimeAgo();
 
 	return (
 		<>
@@ -61,7 +61,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 								fontScale='c1'
 								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
 							>
-								{format(attachment.ts)}
+								{formatTime(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>

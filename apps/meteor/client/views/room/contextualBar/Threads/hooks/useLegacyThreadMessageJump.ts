@@ -1,22 +1,30 @@
-import { useCurrentRoute, useQueryStringParameter, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useRef, useEffect } from 'react';
 
 import { waitForElement } from '../../../../../lib/utils/waitForElement';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
 
 export const useLegacyThreadMessageJump = ({ enabled = true }: { enabled?: boolean }) => {
-	const mid = useQueryStringParameter('msg');
-
-	const [currentRouteName, currentRouteParams, currentRouteQueryStringParams] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No route name');
-	}
-	const currentRoute = useRoute(currentRouteName);
+	const router = useRouter();
+	const mid = useSearchParameter('msg');
 
 	const clearQueryStringParameter = () => {
-		const newQueryStringParams = { ...currentRouteQueryStringParams };
-		delete newQueryStringParams.msg;
-		currentRoute.replace(currentRouteParams, newQueryStringParams);
+		const name = router.getRouteName();
+
+		if (!name) {
+			return;
+		}
+
+		const { msg: _, ...search } = router.getSearchParameters();
+
+		router.navigate(
+			{
+				name,
+				params: router.getRouteParameters(),
+				search,
+			},
+			{ replace: true },
+		);
 	};
 
 	const parentRef = useRef<HTMLElement>(null);
