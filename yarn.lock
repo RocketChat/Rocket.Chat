@@ -4165,17 +4165,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/changelog-github@npm:^0.4.8":
-  version: 0.4.8
-  resolution: "@changesets/changelog-github@npm:0.4.8"
-  dependencies:
-    "@changesets/get-github-info": ^0.5.2
-    "@changesets/types": ^5.2.1
-    dotenv: ^8.1.0
-  checksum: 8a357cc08757e0eeca267ee05141f68bef936582abef8b78a5d30d99f5a86e41b7d3debba70992b73b2f57b0fc6201ec1cc3c65116930167ee3197b427b865c5
-  languageName: node
-  linkType: hard
-
 "@changesets/cli@npm:^2.26.1":
   version: 2.26.1
   resolution: "@changesets/cli@npm:2.26.1"
@@ -4253,16 +4242,6 @@ __metadata:
     fs-extra: ^7.0.1
     semver: ^5.4.1
   checksum: d7abb1da21804fd66b1458e46be2f2aec741145a43500b0463a5acfbb420ac5ce776a7328fa660ad4e6e811f933bd6f36e7bbaf00fb3f591d46f0b8e7108fdcd
-  languageName: node
-  linkType: hard
-
-"@changesets/get-github-info@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "@changesets/get-github-info@npm:0.5.2"
-  dependencies:
-    dataloader: ^1.4.0
-    node-fetch: ^2.5.0
-  checksum: 067e07eeaecdbedbd1c715513c4aa6206a941bd1d3af292d067792808c6fa6644caad2b35fba614a44892559c031c234df8028f8d2abd4cb2682d48080ef5df3
   languageName: node
   linkType: hard
 
@@ -20149,13 +20128,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "dataloader@npm:1.4.0"
-  checksum: e2c93d43afde68980efc0cd9ff48e9851116e27a9687f863e02b56d46f7e7868cc762cd6dcbaf4197e1ca850a03651510c165c2ae24b8e9843fd894002ad0e20
-  languageName: node
-  linkType: hard
-
 "date-fns@npm:^2.15.0, date-fns@npm:^2.28.0":
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
@@ -21058,7 +21030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^8.0.0, dotenv@npm:^8.1.0":
+"dotenv@npm:^8.0.0":
   version: 8.6.0
   resolution: "dotenv@npm:8.6.0"
   checksum: 38e902c80b0666ab59e9310a3d24ed237029a7ce34d976796349765ac96b8d769f6df19090f1f471b77a25ca391971efde8a1ea63bb83111bd8bec8e5cc9b2cd
@@ -30812,7 +30784,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.5.0, node-fetch@npm:^2.6.11":
+"node-fetch@npm:^2.6.11":
   version: 2.6.11
   resolution: "node-fetch@npm:2.6.11"
   dependencies:
@@ -35958,7 +35930,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
-    "@changesets/changelog-github": ^0.4.8
     "@changesets/cli": ^2.26.1
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
