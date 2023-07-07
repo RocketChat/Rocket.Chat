@@ -61,8 +61,8 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	} else {
 		if (!showDeletedStatus) {
 			await Messages.removeById(message._id);
-			await ReadReceipts.removeByMessageId(message._id);
 		}
+		await ReadReceipts.removeByMessageId(message._id);
 
 		for await (const file of files) {
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
