@@ -8,8 +8,9 @@ import { triggerActionButtonAction } from '../../../app/ui-message/client/Action
 import { AccountBox } from '../../../app/ui-utils/client';
 import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
-import GenericMenu from '../../components/GenericMenu';
-import { useHandleMenuAction } from '../../hooks/useHandleMenuAction';
+import GenericMenu from '../../components/GenericMenu/GenericMenu';
+import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
+import NavbarAction from '../../components/Navbar/NavbarAction';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useAppRequestStats } from '../../views/marketplace/hooks/useAppRequestStats';
 
@@ -72,7 +73,6 @@ const NavbarMarketplaceAction = () => {
 		};
 		return {
 			id: item.actionId + key,
-			// icon: item.icon as GenericMenuItemProps['icon'],
 			content: (t.has(item.name) && t(item.name)) || item.name,
 			onClick: action,
 		};
@@ -88,16 +88,16 @@ const NavbarMarketplaceAction = () => {
 
 	if (!showApps) {
 		return (
-			<li role='menuitem'>
+			<NavbarAction>
 				<IconButton icon='store' disabled />
-			</li>
+			</NavbarAction>
 		);
 	}
 
 	return (
-		<li role='menuitem'>
-			<GenericMenu title={t('Marketplace')} icon='store' onAction={handleAction} items={menuItems} />
-		</li>
+		<NavbarAction>
+			<GenericMenu medium title={t('Marketplace')} icon='store' onAction={handleAction} items={menuItems} />
+		</NavbarAction>
 	);
 };
 

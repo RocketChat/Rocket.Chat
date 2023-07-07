@@ -3,6 +3,7 @@ import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useFeaturePreview } from '../../hooks/useFeaturePreview';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
@@ -16,13 +17,12 @@ import Sort from './actions/Sort';
 const HeaderWithData = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
+	const navigationBarEnabled = useFeaturePreview('navigationBar');
 
-	return (
-		<>
+	if (navigationBarEnabled) {
+		return (
 			<Sidebar.TopBar.Section>
-				{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
-				<Sidebar.TopBar.Actions>
-					<Home title={t('Home')} />
+				<Sidebar.TopBar.Actions justifyContent='end' width='100%'>
 					<Search title={t('Search')} />
 					{user && (
 						<>
@@ -35,7 +35,26 @@ const HeaderWithData = (): ReactElement => {
 					{!user && <Login title={t('Login')} />}
 				</Sidebar.TopBar.Actions>
 			</Sidebar.TopBar.Section>
-		</>
+		);
+	}
+
+	return (
+		<Sidebar.TopBar.Section>
+			{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
+			<Sidebar.TopBar.Actions>
+				<Home title={t('Home')} />
+				<Search title={t('Search')} />
+				{user && (
+					<>
+						<Directory title={t('Directory')} />
+						<Sort title={t('Display')} />
+						<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
+						<Administration title={t('Administration')} />
+					</>
+				)}
+				{!user && <Login title={t('Login')} />}
+			</Sidebar.TopBar.Actions>
+		</Sidebar.TopBar.Section>
 	);
 };
 

@@ -5,6 +5,8 @@ import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPalet
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
+import Navbar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
@@ -15,6 +17,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 	const channelRoute = useRoute('channel');
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
+	const navigationBarEnabled = useFeaturePreview('navigationBar');
 
 	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
 
@@ -48,7 +51,12 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		>
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
-			{!removeSidenav ? <Sidebar /> : null}
+			{!removeSidenav ? (
+				<>
+					{navigationBarEnabled && <Navbar />}
+					<Sidebar />
+				</>
+			) : null}
 			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
 			</div>
