@@ -1,8 +1,10 @@
 import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import type { RouteName } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
@@ -22,16 +24,20 @@ import { FormSkeleton } from '../../components/FormSkeleton';
 type ContactInfoProps = {
 	id: string;
 	rid?: string;
-	route?: string;
+	route?: RouteName;
 };
 
 const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const routePath = useRoute(route || 'omnichannel-directory');
+	const router = useRouter();
 	const liveRoute = useRoute('live');
-	const [currentRouteName] = useCurrentRoute();
+
+	const currentRouteName = useSyncExternalStore(
+		router.subscribeToRouteChange,
+		useCallback(() => router.getRouteName(), [router]),
+	);
 
 	const formatDate = useFormatDate();
 	const isCallReady = useIsCallReady();
@@ -56,19 +62,26 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
 
-		routePath.push(
-			route
-				? {
-						tab: 'contact-profile',
-						context: 'edit',
-						id: roomId,
-				  }
-				: {
-						page: 'contacts',
-						id: contactId,
-						bar: 'edit',
-				  },
-		);
+		if (route) {
+			router.navigate({
+				name: route,
+				params: {
+					tab: 'contact-profile',
+					context: 'edit',
+					id: roomId,
+				},
+			});
+			return;
+		}
+
+		router.navigate({
+			name: 'omnichannel-directory',
+			params: {
+				page: 'contacts',
+				id: contactId,
+				bar: 'edit',
+			},
+		});
 	});
 
 	if (isInitialLoading) {
