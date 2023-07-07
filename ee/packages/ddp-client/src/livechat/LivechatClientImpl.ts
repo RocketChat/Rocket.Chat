@@ -1,5 +1,3 @@
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
-import type { ServerMethods, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
@@ -14,6 +12,8 @@ import { ConnectionImpl } from '../Connection';
 import { AccountImpl } from '../types/Account';
 import { TimeoutControl } from '../TimeoutControl';
 import type { ClientStream } from '../types/ClientStream';
+import type { ServerMethodReturn, ServerMethods } from '../types/methods';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '../types/streams';
 
 declare module '../ClientStream' {
 	interface ClientStream {
