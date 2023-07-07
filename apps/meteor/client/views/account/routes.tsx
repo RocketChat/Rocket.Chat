@@ -32,6 +32,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/omnichannel';
 			pattern: '/account/omnichannel';
 		};
+		'feature-preview': {
+			pathname: '/account/feature-preview';
+			pattern: '/account/feature-preview';
+		};
 	}
 }
 
@@ -69,4 +73,9 @@ registerAccountRoute('/tokens', {
 registerAccountRoute('/omnichannel', {
 	name: 'omnichannel',
 	component: lazy(() => import('./omnichannel/OmnichannelPreferencesPage')),
+});
+
+registerAccountRoute('/feature-preview', {
+	name: 'feature-preview',
+	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
 });
