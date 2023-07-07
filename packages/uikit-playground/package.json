@@ -14,7 +14,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
-    "@rocket.chat/css-in-js": "^0.31.12",
+    "@rocket.chat/css-in-js": "next",
     "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "next",
     "@rocket.chat/fuselage-polyfills": "next",
