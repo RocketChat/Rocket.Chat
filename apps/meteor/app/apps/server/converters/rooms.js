@@ -38,11 +38,15 @@ export class AppRoomsConverter {
 		let v;
 		if (room.visitor) {
 			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
+			// For the patch, we're temporarily storing the last message timestamp in the unmapped properties
+			// We'll refactor this later in next versions
+			const lastMessageTs = room?._unmappedProperties_?.lastMessageTs;
 			v = {
 				_id: visitor._id,
 				username: visitor.username,
 				token: visitor.token,
 				status: visitor.status || 'online',
+				...(lastMessageTs && { lastMessageTs }),
 			};
 		}
 
@@ -109,6 +113,12 @@ export class AppRoomsConverter {
 	async convertRoom(room) {
 		if (!room) {
 			return undefined;
+		}
+
+		// Add room.v.lastMessageTs to room.lastMessageTs if it exists so that the converter doesn't override it
+		// This is a temporary fix until we can refactor this properly
+		if (room.v?.lastMessageTs) {
+			room.lastMessageTs = room.v.lastMessageTs;
 		}
 
 		const map = {
