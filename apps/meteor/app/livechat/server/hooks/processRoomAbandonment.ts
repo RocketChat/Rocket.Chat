@@ -85,12 +85,11 @@ callbacks.add(
 			return params;
 		}
 
-		const contactLastMessageAt = room.contactLastMessageAt || room.v?.lastMessageTs;
-		if (!contactLastMessageAt) {
+		if (!room.v?.lastMessageTs) {
 			return params;
 		}
 
-		const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, contactLastMessageAt);
+		const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v?.lastMessageTs);
 		if (!agentLastMessage) {
 			return params;
 		}

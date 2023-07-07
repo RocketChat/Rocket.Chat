@@ -176,9 +176,8 @@ export const processWaitingQueue = async (department: string | undefined, inquir
 };
 
 export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
-	const contactLastMessageAt = room.contactLastMessageAt || room.v?.lastMessageTs;
 	if (
-		!contactLastMessageAt ||
+		!room.v?.lastMessageTs ||
 		!settings.get('Livechat_abandoned_rooms_action') ||
 		settings.get('Livechat_abandoned_rooms_action') === 'none'
 	) {
@@ -196,7 +195,7 @@ export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom)
 		return;
 	}
 
-	const willBeAbandonedAt = moment(contactLastMessageAt).add(Number(secondsToAdd), 'seconds').toDate();
+	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
 	await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 

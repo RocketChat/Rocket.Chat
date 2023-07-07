@@ -2383,13 +2383,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteOne(query);
 	}
 
-	setVisitorLastMessageTimestampByRoomId(roomId: string, contactLastMessageAt: Date) {
+	setVisitorLastMessageTimestampByRoomId(roomId: string, lastMessageTs: Date) {
 		const query = {
 			_id: roomId,
 		};
 		const update = {
 			$set: {
-				contactLastMessageAt,
+				'v.lastMessageTs': lastMessageTs,
 			},
 		};
 

@@ -260,9 +260,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// which is controlled by Livechat_auto_transfer_chat_timeout setting
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
-
-	// The timestamp when the contact last sent a message
-	contactLastMessageAt?: Date;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
