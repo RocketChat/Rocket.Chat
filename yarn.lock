@@ -4121,6 +4121,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cbor-extract/cbor-extract-darwin-arm64@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-darwin-arm64@npm:2.1.1"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@cbor-extract/cbor-extract-darwin-x64@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-darwin-x64@npm:2.1.1"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@cbor-extract/cbor-extract-linux-arm64@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-linux-arm64@npm:2.1.1"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@cbor-extract/cbor-extract-linux-arm@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-linux-arm@npm:2.1.1"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@cbor-extract/cbor-extract-linux-x64@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-linux-x64@npm:2.1.1"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@cbor-extract/cbor-extract-win32-x64@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@cbor-extract/cbor-extract-win32-x64@npm:2.1.1"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@changesets/apply-release-plan@npm:^6.1.3":
   version: 6.1.3
   resolution: "@changesets/apply-release-plan@npm:6.1.3"
@@ -9145,6 +9187,7 @@ __metadata:
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     bcrypt: ^5.0.1
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     eslint: ~8.43.0
     eventemitter3: ^4.0.7
@@ -9265,6 +9308,7 @@ __metadata:
     "@types/eslint": ~8.40.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     eslint: ~8.43.0
     eventemitter3: ^4.0.7
@@ -9450,6 +9494,7 @@ __metadata:
     "@types/sharp": ^0.30.5
     "@types/uuid": ^8.3.4
     "@types/ws": ^8.5.5
+    cbor-x: ^1.5.3
     colorette: ^1.4.0
     ejson: ^2.2.3
     eslint: ~8.43.0
@@ -10144,6 +10189,7 @@ __metadata:
     bson: ^4.6.4
     busboy: ^1.6.0
     bytebuffer: 5.0.1
+    cbor-x: ^1.5.3
     chai: ^4.3.7
     chai-as-promised: ^7.1.1
     chai-datetime: ^1.8.0
@@ -10413,6 +10459,7 @@ __metadata:
     "@types/eslint": ~8.40.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.43.0
@@ -10509,6 +10556,7 @@ __metadata:
     "@types/eslint": ~8.40.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     eslint: ~8.43.0
     eventemitter3: ^4.0.7
@@ -10570,6 +10618,7 @@ __metadata:
     "@types/eslint": ~8.40.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.43.0
@@ -10709,6 +10758,7 @@ __metadata:
     "@types/eslint": ~8.40.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
+    cbor-x: ^1.5.3
     ejson: ^2.2.3
     eslint: ~8.43.0
     eventemitter3: ^4.0.7
@@ -18066,6 +18116,49 @@ __metadata:
     tunnel-agent: ^0.6.0
     url-to-options: ^1.0.1
   checksum: 8be9811b9b21289f49062905771e664c05221fa406b57a1b5debc41e90fc4318b73dc42fc3f3719c7fce882d9cd76a22e8183d0632a6f1772777e01caea62107
+  languageName: node
+  linkType: hard
+
+"cbor-extract@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "cbor-extract@npm:2.1.1"
+  dependencies:
+    "@cbor-extract/cbor-extract-darwin-arm64": 2.1.1
+    "@cbor-extract/cbor-extract-darwin-x64": 2.1.1
+    "@cbor-extract/cbor-extract-linux-arm": 2.1.1
+    "@cbor-extract/cbor-extract-linux-arm64": 2.1.1
+    "@cbor-extract/cbor-extract-linux-x64": 2.1.1
+    "@cbor-extract/cbor-extract-win32-x64": 2.1.1
+    node-gyp: latest
+    node-gyp-build-optional-packages: 5.0.3
+  dependenciesMeta:
+    "@cbor-extract/cbor-extract-darwin-arm64":
+      optional: true
+    "@cbor-extract/cbor-extract-darwin-x64":
+      optional: true
+    "@cbor-extract/cbor-extract-linux-arm":
+      optional: true
+    "@cbor-extract/cbor-extract-linux-arm64":
+      optional: true
+    "@cbor-extract/cbor-extract-linux-x64":
+      optional: true
+    "@cbor-extract/cbor-extract-win32-x64":
+      optional: true
+  bin:
+    download-cbor-prebuilds: bin/download-prebuilds.js
+  checksum: 283d9cdb3c716b171b5ad8666673f4ac373f975b51d9a38233d280c6f9381d66c6af4c011a561d993c4be6e427e34681bc3c5af194b9da0c9ab3401d424b7988
+  languageName: node
+  linkType: hard
+
+"cbor-x@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "cbor-x@npm:1.5.3"
+  dependencies:
+    cbor-extract: ^2.1.1
+  dependenciesMeta:
+    cbor-extract:
+      optional: true
+  checksum: 16f0da10e2ac7e642df788202fd08b4c2b3d608a5f717bf2882865d678b1224eb5ebf4e8f6774dec209fafbf3b7f48d248b720a0d5486bf5ef38a0238a97a93e
   languageName: node
   linkType: hard
 
@@ -28277,7 +28370,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 
@@ -30820,6 +30913,17 @@ __metadata:
     lodash: ^4.17.21
     request: ^2.88.0
   checksum: 6d964935cea1fe761f9fdef067eabde32b6d5aa7d97bd26b34862f608bb8d986082cc551745961dda35c2c585927e0b6873f6ec49be76a57f0b596d776fc414f
+  languageName: node
+  linkType: hard
+
+"node-gyp-build-optional-packages@npm:5.0.3":
+  version: 5.0.3
+  resolution: "node-gyp-build-optional-packages@npm:5.0.3"
+  bin:
+    node-gyp-build-optional-packages: bin.js
+    node-gyp-build-optional-packages-optional: optional.js
+    node-gyp-build-optional-packages-test: build-test.js
+  checksum: be3f0235925c8361e5bc1a03848f5e24815b0df8aa90bd13f1eac91cd86264bbb8b7689ca6cd083b02c8099c7b54f9fb83066c7bb77c2389dc4eceab921f084f
   languageName: node
   linkType: hard
 

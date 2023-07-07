@@ -26,6 +26,7 @@ to: ee/apps/<%= name %>/package.json
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "0.31.22",
 		"@types/node": "^14.18.21",
+		"cbor-x": "^1.5.3",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",

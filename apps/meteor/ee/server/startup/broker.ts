@@ -10,7 +10,7 @@ const {
 	TRANSPORTER = '',
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
-	SERIALIZER = 'EJSON',
+	SERIALIZER = 'CBOR',
 	MOLECULER_LOG_LEVEL = 'warn',
 	BALANCE_STRATEGY = 'RoundRobin',
 	BALANCE_PREFER_LOCAL = 'false',
