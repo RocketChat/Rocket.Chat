@@ -11,7 +11,10 @@ import { MatrixRoomType } from '../../../../../../server/services/federation/inf
 const DEFAULT_TIMEOUT_IN_MS = 10000;
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {
+	constructor(
+		protected internalSettings: RocketChatSettingsAdapter,
+		protected eventHandler: (event: AbstractMatrixEvent) => Promise<void>,
+	) {
 		super(internalSettings, eventHandler);
 	}
 

@@ -26,7 +26,7 @@ import type {
 import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
-import type { PersistentQueue } from '../../../infrastructure/queue/PersistentQueue';
+import type { Queue } from '../../../infrastructure/queue';
 import { getMessageRedactionHandler } from '../message/receiver/message-redaction-helper';
 import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
 
@@ -38,7 +38,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
-		protected federationQueueInstance: PersistentQueue,
+		protected federationQueueInstance: Queue,
 		protected bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);

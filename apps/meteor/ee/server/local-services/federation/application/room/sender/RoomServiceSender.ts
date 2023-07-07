@@ -20,7 +20,7 @@ import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/servic
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import type { PersistentQueue } from '../../../../../../../server/services/federation/infrastructure/queue/PersistentQueue';
+import type { Queue } from '../../../../../../../server/services/federation/infrastructure/queue';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(
@@ -30,7 +30,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
-		protected internalQueueForJoinExternalPublicRoom: PersistentQueue,
+		protected internalQueueForJoinExternalPublicRoom: Queue,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);

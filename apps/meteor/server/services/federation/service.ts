@@ -1,7 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
 
-import type { PersistentQueue } from './infrastructure/queue/PersistentQueue';
+import type { Queue } from './infrastructure/queue';
 import type { IFederationBridge } from './domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -20,7 +20,7 @@ import { FederationFactory } from './infrastructure/Factory';
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
 
-	private internalQueueInstance: PersistentQueue;
+	private internalQueueInstance: Queue;
 
 	private internalSettingsAdapter: RocketChatSettingsAdapter;
 
@@ -56,11 +56,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected abstract onDisableFederation(): Promise<void>;
 
-	constructor(
-		federationBridge: IFederationBridge,
-		internalQueueInstance: PersistentQueue,
-		internalSettingsAdapter: RocketChatSettingsAdapter,
-	) {
+	constructor(federationBridge: IFederationBridge, internalQueueInstance: Queue, internalSettingsAdapter: RocketChatSettingsAdapter) {
 		super();
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;

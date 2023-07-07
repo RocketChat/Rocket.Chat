@@ -1,6 +1,6 @@
-import { MongoInternals } from 'meteor/mongo';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
+import { db } from '../../../database/utils';
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
@@ -16,7 +16,7 @@ import {
 	MatrixRoomPowerLevelsChangedHandler,
 	MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
-import { PersistentQueue } from './queue/PersistentQueue';
+import { Queue } from './queue';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
@@ -59,10 +59,8 @@ export class FederationFactory {
 		return new RocketChatNotificationAdapter();
 	}
 
-	public static buildFederationQueue(): PersistentQueue {
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
-		return new PersistentQueue(db, 'matrix_event');
+	public static buildFederationQueue(): Queue {
+		return new Queue(db, 'matrix_event');
 	}
 
 	public static buildRoomServiceReceiver(
@@ -72,7 +70,7 @@ export class FederationFactory {
 		internalFileAdapter: RocketChatFileAdapter,
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
-		federationQueueInstance: PersistentQueue,
+		federationQueueInstance: Queue,
 		bridge: IFederationBridge,
 	): FederationRoomServiceReceiver {
 		return new FederationRoomServiceReceiver(
@@ -185,7 +183,7 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: PersistentQueue): IFederationBridge {
+	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: Queue): IFederationBridge {
 		return new MatrixBridge(internalSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 

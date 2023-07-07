@@ -11,7 +11,7 @@ import type { IFederationBridgeEE } from './domain/IFederationBridge';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
 import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
-import type { PersistentQueue } from '../../../../server/services/federation/infrastructure/queue/PersistentQueue';
+import type { Queue } from '../../../../server/services/federation/infrastructure/queue';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalUserServiceEE: FederationUserServiceEE;
@@ -24,7 +24,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 	protected internalUserAdapterEE: RocketChatUserAdapterEE;
 
-	protected internalQueueForJoinExternalPublicRoom: PersistentQueue;
+	protected internalQueueForJoinExternalPublicRoom: Queue;
 
 	constructor() {
 		const internalQueueInstance = FederationFactoryEE.buildFederationQueue();

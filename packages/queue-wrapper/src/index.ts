@@ -4,18 +4,24 @@ import MessageQueue from 'mongo-message-queue';
 
 import { Logger } from './logger';
 
-export type HealthAggResult = {
-	total: number;
-	type: string;
-	status: 'Rejected' | 'In progress';
-};
-
-export interface IQueueWrapper {
-	queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void>;
-	queueInfo(): Promise<HealthAggResult[]>;
+/**
+ * IPersistentQueue
+ *
+ * Interface for the necessary methods to write a queue interaction
+ */
+export interface IPersistentQueue {
+	startWorkersWith(processingMethod: any): Promise<void>;
+	addToQueue(task: Record<string, any>): Promise<void>;
 }
 
-export class QueueWrapper implements IQueueWrapper {
+/**
+ * QueueWrapper
+ *
+ * Intentend to be used only as the base class for queue interactions
+ * It handles the configuration to run the `mongo-message-queue` lib
+ * and the connection to the DB
+ */
+export abstract class QueueWrapper {
 	protected queue: MessageQueue;
 
 	protected retryCount = 5;
@@ -25,18 +31,17 @@ export class QueueWrapper implements IQueueWrapper {
 
 	private queueCollection = '_queue';
 
-	private logger: typeof Logger;
+	private logger = Logger;
 
-	constructor(private readonly db: Db, collectionName: string, maxWorkers = 5) {
-		this.logger = Logger;
+	constructor(private readonly db: Db, maxWorkers = 5) {
 		this.queue = new MessageQueue();
-		this.queue.collectionName = collectionName ? `${this.queueCollection}_${collectionName}` : this.queueCollection;
+		this.queue.collectionName = this.queueCollection;
 		this.queue.maxWorkers = maxWorkers;
 		this.queue.databasePromise = async () => this.db;
 	}
 
 	// Registers Workers with the processingMethod for a given type of Work
-	public async registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void> {
+	protected async registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void> {
 		this.logger.info(`Registering workers for "${workType}"`);
 
 		this.queue.registerWorker(workType, async (queueItem: Work<{ data: any }>): Promise<ValidResult> => {
@@ -67,37 +72,10 @@ export class QueueWrapper implements IQueueWrapper {
 		});
 	}
 
-	// Library doesnt create indexes by itself, for some reason
-	// This should create the indexes we need and improve queue perf on reading
-	async createIndexes(): Promise<void> {
-		this.logger.info(`Creating indexes for ${this.queue.collectionName}`);
-
-		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
-		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
-		await this.db.collection(this.queue.collectionName).createIndex({ nextReceivableTime: 1 }, { sparse: true });
-		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
-	}
-
 	// Queues a work of type "X" to be processed by the Workers
-	async queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void> {
+	protected async queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${workType}`);
 
 		await this.queue.enqueue<typeof data>(workType, { ...data });
-	}
-
-	async queueInfo(): Promise<HealthAggResult[]> {
-		return this.db
-			.collection(this.queue.collectionName)
-			.aggregate<HealthAggResult>([
-				{
-					$addFields: {
-						status: { $cond: [{ $ifNull: ['$rejectionReason', false] }, 'Rejected', 'In progress'] },
-					},
-				},
-				{ $group: { _id: { type: '$type', status: '$status' }, elements: { $push: '$$ROOT' }, total: { $sum: 1 } } },
-				// Project from each group the type, status and total of elements
-				{ $project: { _id: 0, type: '$_id.type', status: '$_id.status', total: 1 } },
-			])
-			.toArray();
 	}
 }
