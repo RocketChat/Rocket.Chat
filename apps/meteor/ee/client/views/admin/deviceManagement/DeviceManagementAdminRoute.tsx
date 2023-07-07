@@ -43,14 +43,20 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	}, [router, setModal, t]);
 
 	useEffect(() => {
-		if (isUpsell) {
-			handleOpenModal();
-		}
+		router.subscribeToRouteChange(() => {
+			if (router.getRouteName() !== 'device-management') {
+				return;
+			}
+
+			if (isUpsell) {
+				handleOpenModal();
+			}
+		});
 
 		return () => {
 			setModal(null);
 		};
-	}, [handleOpenModal, isUpsell, setModal]);
+	}, [handleOpenModal, isUpsell, router, setModal]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

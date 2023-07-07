@@ -4,6 +4,8 @@ import { useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import React, { useCallback } from 'react';
 
+import ModalBackdrop from './modal/ModalBackdrop';
+
 type UpsellModalProps = {
 	children?: ReactNode;
 	tagline?: ReactNode;
@@ -61,7 +63,7 @@ const UpsellModal = ({
 	}, [handleModalClose]);
 
 	return (
-		<Modal.Backdrop onClick={onClose ?? handleModalClose}>
+		<ModalBackdrop onDismiss={onClose ?? handleModalClose}>
 			<Modal>
 				<Modal.Header>
 					{icon && <Modal.Icon name={icon} />}
@@ -93,7 +95,7 @@ const UpsellModal = ({
 					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>
-		</Modal.Backdrop>
+		</ModalBackdrop>
 	);
 };
 
