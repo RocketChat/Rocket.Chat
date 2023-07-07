@@ -4,4 +4,4 @@
 "@rocket.chat/rest-typings": patch
 ---
 
-fix: Omnichannel Visitor Abandonment feature not working for apps
+improve: System messages for omni-visitor abandonment feature

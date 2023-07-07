@@ -25,7 +25,6 @@ export interface IVisitor {
 	status: 'online' | 'busy' | 'away' | 'offline';
 	phone?: string | null;
 
-	// The timestamp when the contact last sent a message
 	lastMessageTs?: Date;
 }
 
