@@ -1,6 +1,7 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
-import type { StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
+
+import type { StreamerCallbackArgs } from '../../types/streams';
 
 export type LivechatRoomEvents<T> = StreamerCallbackArgs<'livechat-room', `${string}`> extends [infer A]
 	? A extends { type: T; data: unknown }

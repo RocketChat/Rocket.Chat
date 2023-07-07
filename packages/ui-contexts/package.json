@@ -22,6 +22,7 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/rest-typings": "workspace:^",
