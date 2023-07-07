@@ -1,7 +1,6 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"jsx": "react-jsx", // TODO: remove?
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},

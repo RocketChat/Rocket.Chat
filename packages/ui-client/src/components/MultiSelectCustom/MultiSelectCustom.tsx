@@ -66,7 +66,7 @@ type DropDownProps = {
 	searchBarText?: TranslationKey;
 };
 
-const MultiSelectCustom = ({
+export const MultiSelectCustom = ({
 	dropdownOptions,
 	defaultTitle,
 	selectedOptionsTitle,
@@ -134,5 +134,3 @@ const MultiSelectCustom = ({
 		</>
 	);
 };
-
-export default MultiSelectCustom;

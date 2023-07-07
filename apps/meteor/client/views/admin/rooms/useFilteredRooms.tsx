@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isPublicRoom, isDiscussion, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-
-import type { OptionProp } from '../../../../../../packages/ui-client/src/components/MultiSelectCustom/MultiSelectCustom';
+import type { OptionProp } from '@rocket.chat/ui-client';
 
 const filterRoomsByPrivate = (room: Partial<IRoom>): boolean => !isPublicRoom(room);
 const filterRoomsByPublic = (room: Partial<IRoom>): boolean => isPublicRoom(room);
