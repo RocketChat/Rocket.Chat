@@ -48,7 +48,7 @@ export async function startPatchRelease({
 
 		core.info('creating pull request');
 		await octokit.rest.pulls.create({
-			base: 'master',
+			base: 'release-automation',
 			head: newBranch,
 			title: finalPrTitle,
 			body: '',

@@ -55,6 +55,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 			<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
 				{t('Client')}
 			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key={'rcVersion'}>{t('Version')}</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
 			</GenericTableHeaderCell>,
@@ -91,6 +92,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
 						deviceOSName={session?.device?.os?.name}
+						rcVersion={session?.device?.version}
 						loginAt={session.loginAt}
 						onReload={reload}
 					/>

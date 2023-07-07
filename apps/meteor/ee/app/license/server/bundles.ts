@@ -14,7 +14,8 @@ export type BundleFeature =
 	| 'oauth-enterprise'
 	| 'federation'
 	| 'videoconference-enterprise'
-	| 'message-read-receipt';
+	| 'message-read-receipt'
+	| 'outlook-calendar';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
@@ -38,6 +39,7 @@ const bundles: IBundle = {
 		'federation',
 		'videoconference-enterprise',
 		'message-read-receipt',
+		'outlook-calendar',
 	],
 	pro: [],
 };

@@ -2,7 +2,7 @@ import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engi
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
@@ -22,7 +22,7 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 export type AccountBoxItem = {
 	name: TranslationKey;
 	icon: ComponentProps<typeof Icon>['name'];
-	href: string;
+	href: LocationPathname;
 	sideNav?: string;
 	condition: () => boolean;
 };
