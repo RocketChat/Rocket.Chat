@@ -1,4 +1,4 @@
-import type { StreamNames, StreamerEvents, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
+import type { StreamNames, StreamerEvents, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
 import { useContext, useMemo } from 'react';
 
 import { ServerContext } from '../ServerContext';

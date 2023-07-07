@@ -3,7 +3,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from '../lib/callbackLogger';
+import { callbackLogger } from '../lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',

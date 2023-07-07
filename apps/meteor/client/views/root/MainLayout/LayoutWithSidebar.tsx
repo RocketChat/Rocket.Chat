@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal, useRoute } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
 import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import type { ReactElement, ReactNode } from 'react';
@@ -9,10 +9,9 @@ import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
 
 	const modal = useCurrentModal();
-	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
+	const currentRoutePath = useCurrentRoutePath();
 	const channelRoute = useRoute('channel');
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');

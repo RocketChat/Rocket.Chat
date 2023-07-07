@@ -171,4 +171,8 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		}
 		return this.col.find(query, options).toArray();
 	}
+
+	disableBusinessHour(businessHourId: string): Promise<any> {
+		return this.updateOne({ _id: businessHourId }, { $set: { active: false } });
+	}
 }

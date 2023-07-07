@@ -19,6 +19,7 @@ type EmojiPickerContextValue = {
 	customItemsLimit: number;
 	setCustomItemsLimit: (limit: number) => void;
 	setActualTone: (tone: number) => void;
+	quickReactions: { emoji: string; image: string }[];
 };
 
 export const EmojiPickerContext = createContext<EmojiPickerContextValue | undefined>(undefined);
@@ -54,4 +55,5 @@ export const useEmojiPickerData = () => ({
 	customItemsLimit: useEmojiPickerContext().customItemsLimit,
 	setCustomItemsLimit: useEmojiPickerContext().setCustomItemsLimit,
 	setActualTone: useEmojiPickerContext().setActualTone,
+	quickReactions: useEmojiPickerContext().quickReactions,
 });
