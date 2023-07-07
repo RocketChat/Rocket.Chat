@@ -3,7 +3,7 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { cloudConsoleUrl } from '../constants';
+import { CLOUD_CONSOLE_URL } from '../../../../lib/constants';
 import RegisteredWorkspaceModal from '../modals/RegisteredWorkspaceModal';
 
 type RegisterWorkspaceMenuProps = {
@@ -35,7 +35,7 @@ const RegisterWorkspaceMenu = ({
 		<ButtonGroup>
 			{isWorkspaceRegistered && isConnectedToCloud && (
 				<>
-					<Button role='link' onClick={() => handleLinkClick(cloudConsoleUrl)}>
+					<Button role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
 						<Icon name='new-window' size='x20' pie={4} />
 						{t('Cloud')}
 					</Button>
