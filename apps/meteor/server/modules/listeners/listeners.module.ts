@@ -132,6 +132,13 @@ export class ListenersModule {
 			},
 		);
 
+		service.onEvent('room.video-conference', ({ rid, callId }) => {
+			/* deprecated */
+			(notifications.notifyRoom as any)(rid, callId);
+
+			notifications.notifyRoom(rid, 'videoconf', callId);
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
 			if (!status || !username) {
@@ -382,6 +389,10 @@ export class ListenersModule {
 
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
+		});
+
+		service.onEvent('notify.calendar', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'calendar', data);
 		});
 
 		service.onEvent('connector.statuschanged', (enabled): void => {

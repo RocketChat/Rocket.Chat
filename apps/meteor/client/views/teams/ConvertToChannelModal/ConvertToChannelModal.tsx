@@ -1,10 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import GenericModal from '../../../components/GenericModal';
+import GenericModalSkeleton from '../../../components/GenericModal/GenericModalSkeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import BaseConvertToChannelModal from './BaseConvertToChannelModal';
@@ -18,18 +16,12 @@ type ConvertToChannelModalProps = {
 };
 
 const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCancel, onConfirm, teamId, userId }) => {
-	const t = useTranslation();
-
 	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', {
 		params: useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
 	});
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return (
-			<GenericModal variant='warning' onClose={onClose} title={<Skeleton width='50%' />} confirmText={t('Cancel')} onConfirm={onClose}>
-				<Skeleton width='full' />
-			</GenericModal>
-		);
+		return <GenericModalSkeleton onClose={onClose} />;
 	}
 
 	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;

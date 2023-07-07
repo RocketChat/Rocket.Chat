@@ -1,13 +1,12 @@
-import { useTranslation, useRoute, useMethod, useSetModal, useRole } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, useMethod, useSetModal, useRole, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
 import type { AccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
 import Emoji from '../../../../components/Emoji';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
@@ -16,6 +15,7 @@ type useAdministrationItemProps = {
 	showWorkspace: boolean;
 };
 export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAdministrationItemProps): GenericMenuItemProps[] => {
+	const router = useRouter();
 	const t = useTranslation();
 
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
@@ -74,7 +74,7 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 	const accountBoxItem: GenericMenuItemProps[] = accountBoxItems.map((item, key) => {
 		const action = () => {
 			if (item.href) {
-				FlowRouter.go(item.href);
+				router.navigate(item.href);
 			}
 		};
 		return {
