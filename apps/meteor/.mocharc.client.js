@@ -34,9 +34,9 @@ module.exports = {
 	slow: 200,
 	spec: [
 		'client/**/*.spec.{ts,tsx}',
-		'!client/hooks/*.spec.{ts,tsx}',
 		'tests/unit/client/**/*.spec.{ts,tsx}',
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
 	],
+	exclude: ['client/hooks/*.spec.{ts,tsx}'],
 };
