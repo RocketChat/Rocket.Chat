@@ -89,6 +89,14 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/settings${`/${string}` | ''}`;
 			pattern: '/admin/settings/:group?';
 		};
+		'device-management': {
+			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/device-management/:context?/:id?';
+		};
+		'engagement-dashboard': {
+			pattern: '/admin/engagement/:context?/:tab?';
+			pathname: `/admin/engagement${`/${string}` | ''}${`/${string}` | ''}`;
+		};
 		'upgrade': {
 			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
 			pattern: '/admin/upgrade/:type?';
@@ -218,4 +226,14 @@ registerAdminRoute('/upgrade/:type?', {
 registerAdminRoute('/moderation/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
+});
+
+registerAdminRoute('/engagement/:context?/:tab?', {
+	name: 'engagement-dashboard',
+	component: lazy(() => import('../../../ee/client/views/admin/engagementDashboard/EngagementDashboardRoute')),
+});
+
+registerAdminRoute('/device-management/:context?/:id?', {
+	name: 'device-management',
+	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
 });

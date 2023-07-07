@@ -20,6 +20,12 @@ export const {
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
+		href: '/admin/engagement',
+		i18nLabel: 'Engagement',
+		icon: 'file-keynote',
+		permissionGranted: (): boolean => hasPermission('view-engagement-dashboard'),
+	},
+	{
 		href: '/admin/moderation',
 		i18nLabel: 'Moderation',
 		icon: 'shield-alt',
@@ -61,6 +67,12 @@ export const {
 		i18nLabel: 'Permissions',
 		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		href: '/admin/device-management',
+		i18nLabel: 'Device_Management',
+		icon: 'mobile',
+		permissionGranted: (): boolean => hasPermission('view-device-management'),
 	},
 	{
 		href: '/admin/email-inboxes',

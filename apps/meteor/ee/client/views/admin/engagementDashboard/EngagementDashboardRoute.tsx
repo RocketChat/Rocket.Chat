@@ -1,40 +1,77 @@
-import { usePermission, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
+import PageSkeleton from '../../../../../client/components/PageSkeleton';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
+import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
 const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'channels' =>
 	typeof tab === 'string' && ['users', 'messages', 'channels'].includes(tab);
 
 const EngagementDashboardRoute = (): ReactElement | null => {
+	const t = useTranslation();
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
+
+	const { data } = useIsEnterprise();
+	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard');
+	const isUpsell = !data?.isEnterprise || !hasEngagementDashboard;
+
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
 
-	useEffect(
-		() =>
-			router.subscribeToRouteChange(() => {
-				if (router.getRouteName() !== 'engagement-dashboard') {
-					return;
-				}
+	const setModal = useSetModal();
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-				const { tab } = router.getRouteParameters();
+	const handleOpenModal = useCallback(() => {
+		router.navigate({
+			pattern: '/admin/engagement/:context?/:tab?',
+			params: { context: 'upsell', tab: 'users' },
+		});
+		setModal(
+			<GenericUpsellModal
+				title={t('Engagement_Dashboard')}
+				img='images/engagement.png'
+				subtitle={t('Analyze_practical_usage')}
+				description={t('Enrich_your_workspace')}
+				onCloseEffect={() => setIsModalOpen(false)}
+			/>,
+		);
+		setIsModalOpen(true);
+	}, [router, setModal, t]);
 
-				if (!isValidTab(tab)) {
-					router.navigate(
-						{
-							pattern: '/admin/engagement-dashboard/:tab?',
-							params: { tab: 'users' },
-						},
-						{ replace: true },
-					);
-				}
-			}),
-		[router],
-	);
+	useEffect(() => {
+		router.subscribeToRouteChange(() => {
+			if (router.getRouteName() !== 'engagement-dashboard') {
+				return;
+			}
+
+			if (isUpsell) {
+				handleOpenModal();
+				return;
+			}
+
+			const { tab } = router.getRouteParameters();
+
+			if (!isValidTab(tab)) {
+				router.navigate(
+					{
+						pattern: '/admin/engagement/:context?/:tab?',
+						params: { context: 'active', tab: 'users' },
+					},
+					{ replace: true },
+				);
+			}
+		});
+
+		return () => {
+			setModal(null);
+		};
+	}, [handleOpenModal, isUpsell, router, setModal]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
@@ -42,7 +79,11 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return null;
 	}
 
-	if (!canViewEngagementDashboard) {
+	if (isModalOpen) {
+		return <PageSkeleton />;
+	}
+
+	if (!canViewEngagementDashboard || !hasEngagementDashboard) {
 		return <NotAuthorizedPage />;
 	}
 
@@ -54,8 +95,8 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			tab={tab}
 			onSelectTab={(tab) =>
 				router.navigate({
-					pattern: '/admin/engagement-dashboard/:tab?',
-					params: { tab },
+					pattern: '/admin/engagement/:context?/:tab?',
+					params: { context: 'active', tab },
 				})
 			}
 		/>
