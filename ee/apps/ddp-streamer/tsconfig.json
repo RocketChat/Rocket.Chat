@@ -6,5 +6,8 @@
 		"outDir": "./dist"
 	},
 	"include": ["./src/**/*", "./definition", "../../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
-	"exclude": ["./dist", "./ecosystem.config.js"]
+	"exclude": ["./dist", "./ecosystem.config.js"],
+	"ts-node": {
+		"transpileOnly": true
+	}
 }

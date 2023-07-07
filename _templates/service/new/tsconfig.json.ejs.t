@@ -8,5 +8,8 @@ to: ee/apps/<%= name %>/tsconfig.json
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],
-	"exclude": ["./dist"]
+	"exclude": ["./dist"],
+	"ts-node": {
+		"transpileOnly": true
+	}
 }
