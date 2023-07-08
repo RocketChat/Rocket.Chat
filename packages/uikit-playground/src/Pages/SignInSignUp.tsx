@@ -26,7 +26,7 @@ const labels = {
 const SignInSignUp = ({ route }: { route: string }) => {
   const navigate = useNavigate();
   const clickHandler = () => {
-    navigate(`/${route === routes.login ? routes.signup : routes.login}`);
+    navigate(route === routes.login ? routes.signup : routes.login);
   };
   return (
     <Flex.Container justifyContent="center" alignItems="center">

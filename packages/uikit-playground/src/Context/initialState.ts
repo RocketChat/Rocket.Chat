@@ -2,6 +2,7 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
+import getDate from '../utils/getDate';
 
 export type idType = string;
 
@@ -34,19 +35,24 @@ export type actionPreviewType = {
   view?: readonly LayoutBlock[];
 };
 
-export type ScreensType = {
-  [key: idType]: {
-    payload: readonly LayoutBlock[];
-    id: idType;
-    name: string;
-    surface: SurfaceOptions;
-    actionPreview: actionPreviewType;
-    changedByEditor?: boolean;
-  };
+export type ScreenType = {
+  payload: readonly LayoutBlock[];
+  id: idType;
+  name: string;
+  surface: SurfaceOptions;
+  actionPreview: actionPreviewType;
+  date: string;
+  changedByEditor?: boolean;
 };
 
+export type ScreensType = {
+  [key: idType]: ScreenType;
+};
+
+export type ProjectType = { id: idType; name: string; screens: idType[], date: string};
+
 export type ProjectsType = {
-  [key: idType]: { id: idType; name: string; screens: idType[] };
+  [key: idType]: ProjectType;
 };
 
 export type initialStateType = {
@@ -82,16 +88,18 @@ export const initialState: initialStateType = {
   projects: {
     [initialProjectId]: {
       id: initialProjectId,
-      name: 'Project1',
+      name: 'Untitled Project',
       screens: [initialScreenId],
+      date: getDate(),
     },
   },
   screens: {
     [initialScreenId]: {
       payload: [],
       id: initialScreenId,
-      name: 'Screen1',
+      name: 'Untitled Screen',
       surface: SurfaceOptions.Message,
+      date: getDate(),
       actionPreview: {},
     },
   },

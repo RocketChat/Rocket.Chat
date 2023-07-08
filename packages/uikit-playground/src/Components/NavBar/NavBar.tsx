@@ -1,5 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Tile, Flex, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import {
+  Box,
+  Tile,
+  Flex,
+  ButtonGroup,
+  Button,
+  Icon,
+} from '@rocket.chat/fuselage';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { FC } from 'react';
 import React, { useContext } from 'react';
@@ -22,7 +29,7 @@ const NabBar: FC = () => {
       <Box
         position="relative"
         width={'100%'}
-        height={'min(60px, 25vw)'}
+        height={'var(--navbar-height)'}
         is={Tile}
         padding={0}
         zIndex={3}
@@ -31,8 +38,9 @@ const NabBar: FC = () => {
           user-select: none;
         `}
       >
-        <Logo />
-        <Divider />
+        <Button onClick={() => navigate(routes.home)} mis="20px" small square>
+          <Icon name="home" size="x24" />
+        </Button>
         <Box
           flexGrow={1}
           minWidth="15px"

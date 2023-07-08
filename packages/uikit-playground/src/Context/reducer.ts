@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
 import type { initialStateType } from './initialState';
 import {
@@ -19,8 +18,15 @@ import {
   CreateNewScreenAction,
   DuplicateScreenAction,
   DeleteScreenAction,
+  RenameScreenAction,
   EditorTabsToggleAction,
+  CreateNewProjectAction,
+  ActiveProjectAction,
+  DuplicateProjectAction,
+  DeleteProjectAction,
+  RenameProjectAction,
 } from './action';
+import getDate from '../utils/getDate';
 
 type IAction =
   | IsMobileAction
@@ -38,7 +44,13 @@ type IAction =
   | ActiveScreenAction
   | CreateNewScreenAction
   | DuplicateScreenAction
-  | DeleteScreenAction;
+  | DeleteScreenAction
+  | RenameScreenAction
+  | CreateNewProjectAction
+  | ActiveProjectAction
+  | DuplicateProjectAction
+  | DeleteProjectAction
+  | RenameProjectAction;
 
 export enum ActionTypes {
   IsMobile,
@@ -57,6 +69,12 @@ export enum ActionTypes {
   CreateNewScreen,
   DuplicateScreen,
   DeleteScreen,
+  RenameScreen,
+  CreateNewProject,
+  ActiveProject,
+  DeleteProject,
+  DuplicateProject,
+  RenameProject,
 }
 
 const reducer = (state: initialStateType, action: IAction) => {
@@ -148,6 +166,10 @@ const reducer = (state: initialStateType, action: IAction) => {
         activeScreen: id,
       };
     }
+    case ActionTypes.RenameScreen: {
+      state.screens[action?.payload?.id].name = action.payload.name;
+      return { ...state };
+    }
     case ActionTypes.DeleteScreen: {
       delete state.screens[action.payload];
       state.projects[activeProject].screens = [
@@ -166,6 +188,81 @@ const reducer = (state: initialStateType, action: IAction) => {
       }
       return { ...state };
     }
+
+    case ActionTypes.CreateNewProject: {
+      const activeProjectId = getUniqueId();
+      const activeScreenId = getUniqueId();
+      return {
+        ...state,
+        projects: {
+          ...state.projects,
+          [activeProjectId]: {
+            id: activeProjectId,
+            name: action?.payload || 'Untitled Project',
+            screens: [activeScreenId],
+            date: getDate(),
+          },
+        },
+        activeProject: activeProjectId,
+        screens: {
+          ...state.screens,
+          [activeScreenId]: {
+            id: activeScreenId,
+            name: 'Untitled Screen',
+            date: getDate(),
+            payload: [],
+          },
+        },
+      };
+    }
+    case ActionTypes.ActiveProject:
+      return {
+        ...state,
+        activeProject: action.payload,
+        activeScreen: state.projects[action.payload].screens[0],
+      };
+
+    case ActionTypes.DuplicateProject: {
+      const activeProjectId = getUniqueId();
+      const screensIds = state.projects[action.payload.id].screens;
+      const newScreensIds = screensIds.map(() => getUniqueId());
+      const screens = _.cloneDeep(state.screens);
+      newScreensIds.forEach((id, index) => {
+        screens[id] = {
+          ...screens[screensIds[index]],
+          date: getDate(),
+          id,
+        };
+      });
+
+      return {
+        ...state,
+        projects: {
+          ...state.projects,
+          [activeProjectId]: {
+            id: activeProjectId,
+            name: action?.payload.name || 'Untitled Project',
+            screens: newScreensIds,
+            date: getDate(),
+          },
+        },
+        activeProject: activeProjectId,
+        screens: screens,
+      };
+    }
+
+      case ActionTypes.DeleteProject: {
+        delete state.projects[action.payload];
+        return {
+          ...state,
+          activeProject: '',
+          activeScreen: '',
+        }
+      }
+      case ActionTypes.RenameProject: {
+        state.projects[action.payload.id].name = action.payload.name;
+        return { ...state };
+      }
     default:
       return state;
   }

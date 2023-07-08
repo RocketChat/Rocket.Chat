@@ -1,8 +1,9 @@
 const routes = {
-  home: '',
-  login: 'login',
-  flow: 'flow',
-  signup: 'createnewworkspace',
+  home: '/home',
+  project: '/:project',
+  login: '/login',
+  flow: '/flow',
+  signup: '/createnewworkspace',
 };
 
 export default routes;

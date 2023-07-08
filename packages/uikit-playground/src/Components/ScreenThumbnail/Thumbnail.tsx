@@ -1,13 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactNode } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 import React, { useRef, useMemo } from 'react';
 
 interface ThumbnailProps {
   of: ReactNode;
 }
 
-const Thumbnail: React.FC<ThumbnailProps> = ({ of }) => {
+const Thumbnail: React.FC<ThumbnailProps & ComponentProps<typeof Box>> = ({
+  of,
+  ...props
+}) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,7 +26,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ of }) => {
   }, [elementRef.current?.offsetHeight, elementRef.current?.offsetWidth]);
 
   return (
-    <Box overflow="hidden" ref={parentRef}>
+    <Box overflow="hidden" ref={parentRef} {...props}>
       <Box
         className={css`
           transform: scale(${scale});

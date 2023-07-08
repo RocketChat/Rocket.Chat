@@ -14,6 +14,12 @@ export { createNewScreenAction } from './createNewScreenAction';
 export { activeScreenAction } from './activeScreenAction';
 export { duplicateScreenAction } from './duplicateScreenAction';
 export { deleteScreenAction } from './deleteScreenAction';
+export {renameScreenAction} from './renameScreenAction';
+export { createNewProjectAction } from './createNewProjectAction';
+export { activeProjectAction } from './activeProjectAction';
+export { duplicateProjectAction } from './duplicateProjectAction';
+export { deleteProjectAction } from './deleteProjectAction';
+export { renameProjectAction } from './renameProjectAction';
 
 export type { IsMobileAction } from './isMobileAction';
 export type { IsTabletAction } from './isTabletAction';
@@ -31,3 +37,10 @@ export type { CreateNewScreenAction } from './createNewScreenAction';
 export type { ActiveScreenAction } from './activeScreenAction';
 export type { DuplicateScreenAction } from './duplicateScreenAction';
 export type { DeleteScreenAction } from './deleteScreenAction';
+export type { RenameScreenAction } from './renameScreenAction';
+export type { CreateNewProjectAction } from './createNewProjectAction';
+export type { ActiveProjectAction } from './activeProjectAction';
+export type { DuplicateProjectAction } from './duplicateProjectAction';
+export type { DeleteProjectAction } from './deleteProjectAction';
+export type { RenameProjectAction } from './renameProjectAction';
+

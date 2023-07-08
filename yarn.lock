@@ -9038,7 +9038,8 @@ __metadata:
     "@rocket.chat/icons": next
     "@rocket.chat/logo": next
     "@rocket.chat/styled": next
-    "@rocket.chat/ui-contexts": "workspace:~"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@types/prettier": ^2
     "@types/react": ~17.0.62
     "@types/react-beautiful-dnd": ^13.1.4
     "@types/react-dom": ~17.0.20
@@ -9051,6 +9052,8 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-react-refresh: ^0.4.1
     eslint4b-prebuilt: ^6.7.2
+    moment: ^2.29.4
+    prettier: ^2.8.8
     rc-scrollbars: ^1.1.6
     react: ^17.0.2
     react-beautiful-dnd: ^13.1.1
@@ -31362,7 +31365,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.7.1, prettier@npm:~2.8.8":
+"prettier@npm:^2.7.1, prettier@npm:^2.8.8, prettier@npm:~2.8.8":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:

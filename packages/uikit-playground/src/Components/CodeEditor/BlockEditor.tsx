@@ -55,7 +55,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         {}
       );
     }
-  }, [screens[activeScreen]?.payload]);
+  }, [screens[activeScreen]?.payload, activeScreen]);
 
   useEffect(() => {
     setValue(JSON.stringify(screens[activeScreen]?.payload, undefined, 4), {});

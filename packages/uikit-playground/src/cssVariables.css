@@ -11,4 +11,6 @@
     --default-border: 1px solid #e6e6e6;
     --elements-border: 1px solid #b9b8b8;
     --elements-box-shadow:  0px 0px 8px 1px #ddd;
+    --navbar-height: min(60px, 25vw);
+    --content-height: calc(100vh - var(--navbar-height));
   }
