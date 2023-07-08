@@ -1,10 +1,10 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { triggerActionButtonAction } from '../../../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
+import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
 
 type useAppsItemsProps = {
@@ -13,8 +13,14 @@ type useAppsItemsProps = {
 	showMarketplace?: boolean;
 };
 
-export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketplace }: useAppsItemsProps): GenericMenuItemProps[] => {
+export const useAppsItems = ({ appBoxItems }: useAppsItemsProps): GenericMenuItemProps[] => {
 	const t = useTranslation();
+
+	const hasManageAppsPermission = usePermission('manage-apps');
+	const hasAccessMarketplacePermission = usePermission('access-marketplace');
+
+	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
+	const actionManager = useUiKitActionManager();
 
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
@@ -54,25 +60,23 @@ export const useAppsItems = ({ appBoxItems, appsManagementAllowed, showMarketpla
 	};
 
 	const appItems: GenericMenuItemProps[] = appBoxItems.map((item: IAppAccountBoxItem, key: number) => {
-		const action = () => {
-			triggerActionButtonAction({
-				rid: '',
-				mid: '',
-				actionId: item.actionId,
-				appId: item.appId,
-				payload: { context: item.context },
-			});
-		};
 		return {
 			id: item.actionId + key,
 			icon: item.icon as GenericMenuItemProps['icon'],
 			content: (t.has(item.name) && t(item.name)) || item.name,
-			onClick: action,
+			onClick: () => {
+				actionManager?.triggerActionButtonAction({
+					actionId: item.actionId,
+					appId: item.appId,
+					payload: { context: item.context },
+				});
+			},
 		};
 	});
+
 	return [
 		...(showMarketplace ? marketPlaceItems : []),
-		...(appsManagementAllowed ? [appsManagementItem] : []),
+		...(hasManageAppsPermission ? [appsManagementItem] : []),
 		...(appBoxItems.length ? appItems : []),
 	];
 };
