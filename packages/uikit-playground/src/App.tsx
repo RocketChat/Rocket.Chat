@@ -12,15 +12,11 @@ import routes from './Routes/Routes';
 import Home from './Pages/Home';
 import { context, isMobileAction, isTabletAction } from './Context';
 import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
-import NavMenu from './Components/navMenu/NavMenu';
-import NavBar from './Components/NavBar';
 import { Box } from '@rocket.chat/fuselage';
+import FlowDiagram from './Pages/FlowDiagram';
 
 function App() {
-  const {
-    state: { navMenuToggle },
-    dispatch,
-  } = useContext(context);
+  const { dispatch } = useContext(context);
 
   const [isMobile, isTablet] = useMediaQueries(
     '(max-width: 630px)',
@@ -38,8 +34,6 @@ function App() {
     <Box w="100vw" h="100vh" display="flex" flexDirection="column">
       <ToastBarProvider>
         <BrowserRouter>
-          <NavBar />
-          {navMenuToggle && <NavMenu />}
           <Routes>
             <Route element={<HomeLayout />}>
               <Route
@@ -53,8 +47,9 @@ function App() {
             </Route>
             {/* <Route element={<ProtectedLayout />}> */}
             <Route path={routes.home} element={<Home />} />
+            <Route path={routes.flow} element={<FlowDiagram />} />
             <Route path={routes.project} element={<Playground />} />
-            <Route path={`*`} element={<Playground />} />
+            <Route path={`*`} element={<Home />} />
             {/* </Route> */}
           </Routes>
         </BrowserRouter>

@@ -8,7 +8,7 @@ export const ProtectedLayout = () => {
   const outlet = useOutlet();
 
   if (!user) {
-    return <Navigate to={`/${routes.login}`} />;
+    return <Navigate to={`${routes.login}`} />;
   }
 
   return <>{outlet}</>;

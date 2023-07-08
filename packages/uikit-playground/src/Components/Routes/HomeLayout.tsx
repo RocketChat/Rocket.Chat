@@ -8,7 +8,7 @@ export const HomeLayout = () => {
   const outlet = useOutlet();
 
   if (user) {
-    return <Navigate to={`/${routes.home}`} replace />;
+    return <Navigate to={`${routes.home}`} replace />;
   }
 
   return <>{outlet}</>;

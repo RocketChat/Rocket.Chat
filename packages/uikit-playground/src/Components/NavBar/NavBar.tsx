@@ -9,14 +9,12 @@ import {
 } from '@rocket.chat/fuselage';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { context, updatePayloadAction } from '../../Context';
 import { openCreateNewScreenAction } from '../../Context/action/openCreateNewScreenAction';
 import routes from '../../Routes/Routes';
-import Divider from './Divider';
-import Logo from './Logo';
 import RightNavBtn from './RightNavBtn';
 
 const NabBar: FC = () => {
@@ -58,7 +56,7 @@ const NabBar: FC = () => {
                 <Button
                   small
                   onClick={() => {
-                    navigate(`/${routes.flow}`);
+                    navigate(`${routes.flow}`);
                   }}
                 >
                   Flow

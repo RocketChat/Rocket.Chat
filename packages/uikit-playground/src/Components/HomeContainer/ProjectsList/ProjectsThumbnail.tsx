@@ -35,7 +35,6 @@ const ProjectsThumbnail = ({
   const { dispatch } = useContext(context);
   const toast = useToastBarDispatch();
   const activeProjectHandler = () => {
-    dispatch(activeProjectAction(id));
     navigate(`/${id}`);
   };
 
