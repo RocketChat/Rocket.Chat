@@ -10,18 +10,16 @@ import { Logger } from './logger';
  * Interface for the necessary methods to write a queue interaction
  */
 export interface IPersistentQueue {
-	startWorkersWith(processingMethod: any): Promise<void>;
-	addToQueue(task: Record<string, any>): Promise<void>;
+	registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void>;
+	queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void>;
 }
 
 /**
  * QueueWrapper
  *
- * Intentend to be used only as the base class for queue interactions
- * It handles the configuration to run the `mongo-message-queue` lib
- * and the connection to the DB
+ * Handles the interaction with the `mongo-message-queue` lib
  */
-export abstract class QueueWrapper {
+export class QueueWrapper implements IPersistentQueue {
 	protected queue: MessageQueue;
 
 	protected retryCount = 5;
@@ -33,13 +31,13 @@ export abstract class QueueWrapper {
 
 	constructor(maxWorkers = 5) {
 		this.queue = new MessageQueue();
+		this.queue.databasePromise = async () => PersistentQueue.getDb();
 		this.queue.collectionName = PersistentQueue.getCollectionName();
 		this.queue.maxWorkers = maxWorkers;
-		this.queue.databasePromise = async () => PersistentQueue.getDb();
 	}
 
 	// Registers Workers with the processingMethod for a given type of Work
-	protected async registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void> {
+	public async registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void> {
 		this.logger.info(`Registering workers for "${workType}"`);
 
 		this.queue.registerWorker(workType, async (queueItem: Work<{ data: any }>): Promise<ValidResult> => {
@@ -71,7 +69,7 @@ export abstract class QueueWrapper {
 	}
 
 	// Queues a work of type "X" to be processed by the Workers
-	protected async queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void> {
+	public async queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${workType}`);
 
 		await this.queue.enqueue<typeof data>(workType, { ...data });
