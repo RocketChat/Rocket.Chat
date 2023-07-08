@@ -1,6 +1,6 @@
-import type { Db } from 'mongodb';
 import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
+import { PersistentQueue } from '@rocket.chat/models';
 
 import { Logger } from './logger';
 
@@ -29,15 +29,13 @@ export abstract class QueueWrapper {
 	// Default delay is 5 seconds
 	protected retryDelay = 5000;
 
-	private queueCollection = '_queue';
-
 	private logger = Logger;
 
-	constructor(private readonly db: Db, maxWorkers = 5) {
+	constructor(maxWorkers = 5) {
 		this.queue = new MessageQueue();
-		this.queue.collectionName = this.queueCollection;
+		this.queue.collectionName = PersistentQueue.getCollectionName();
 		this.queue.maxWorkers = maxWorkers;
-		this.queue.databasePromise = async () => this.db;
+		this.queue.databasePromise = async () => PersistentQueue.getDb();
 	}
 
 	// Registers Workers with the processingMethod for a given type of Work

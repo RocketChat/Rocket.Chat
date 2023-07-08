@@ -1,4 +1,5 @@
 import type {
+	Db,
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
@@ -44,6 +45,8 @@ export interface IBaseModel<
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
 > {
 	col: Collection<T>;
+
+	getDb(): Db;
 
 	getCollectionName(): string;
 

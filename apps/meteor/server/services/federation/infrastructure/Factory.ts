@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { db } from '../../../database/utils';
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
@@ -60,7 +59,7 @@ export class FederationFactory {
 	}
 
 	public static buildFederationQueue(): Queue {
-		return new Queue(db, 'matrix_event');
+		return new Queue('matrix_event');
 	}
 
 	public static buildRoomServiceReceiver(

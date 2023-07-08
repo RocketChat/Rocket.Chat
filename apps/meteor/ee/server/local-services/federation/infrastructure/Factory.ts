@@ -1,6 +1,5 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
-import { db } from '../../../../../server/database/utils';
 import { FederationDirectMessageRoomServiceSender } from '../application/room/sender/DirectMessageRoomServiceSender';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
@@ -35,7 +34,7 @@ export class FederationFactoryEE extends FederationFactory {
 	}
 
 	public static buildInternalQueueAdapter(): Queue {
-		return new Queue(db, 'matrix_join_external_public_room');
+		return new Queue('matrix_join_external_public_room');
 	}
 
 	public static buildRoomServiceSenderEE(
