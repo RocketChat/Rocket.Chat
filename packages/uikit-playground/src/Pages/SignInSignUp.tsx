@@ -30,7 +30,7 @@ const SignInSignUp = ({ route }: { route: string }) => {
   };
   return (
     <Flex.Container justifyContent="center" alignItems="center">
-      <Box w="100%" h="100%">
+      <Box w="100%" flexGrow={1}>
         <Flex.Container
           justifyContent="start"
           alignItems="center"
