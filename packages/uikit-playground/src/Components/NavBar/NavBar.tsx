@@ -18,7 +18,10 @@ import routes from '../../Routes/Routes';
 import RightNavBtn from './RightNavBtn';
 
 const NabBar: FC = () => {
-  const { state, dispatch } = useContext(context);
+  const {
+    state: { isMobile, activeProject, screens, activeScreen },
+    dispatch,
+  } = useContext(context);
   const toast = useToastBarDispatch();
   const navigate = useNavigate();
 
@@ -46,7 +49,7 @@ const NabBar: FC = () => {
           justifyContent={'flex-end'}
         >
           <Box display="flex" height="100%">
-            {!state?.isMobile && (
+            {!isMobile && (
               <ButtonGroup
                 pie={'20px'}
                 className={css`
@@ -56,7 +59,7 @@ const NabBar: FC = () => {
                 <Button
                   small
                   onClick={() => {
-                    navigate(`${routes.flow}`);
+                    navigate(`/${activeProject}/${routes.flow}`);
                   }}
                 >
                   Flow
@@ -90,9 +93,7 @@ const NabBar: FC = () => {
                   small
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      JSON.stringify(
-                        state?.screens[state.activeScreen]?.payload
-                      )
+                      JSON.stringify(screens[activeScreen]?.payload)
                     );
                     toast({
                       type: 'success',

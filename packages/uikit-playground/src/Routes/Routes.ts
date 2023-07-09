@@ -1,8 +1,9 @@
 const routes = {
   home: '/home',
-  project: ':project',
+  project: 'project',
+  projectId: ':projectId',
   login: '/login',
-  flow: '/flow',
+  flow: 'flow',
   signup: '/createnewworkspace',
 };
 

@@ -1,19 +1,17 @@
-import React from 'react';
-
 const ConnectionLine = ({
   fromX,
   fromY,
   toX,
   toY,
 }: {
-  fromX: number,
-  fromY: number,
-  fromPosition: string,
-  toX: number,
-  toY: number,
-  toPosition: string,
-  connectionLineType: string,
-  connectionLineStyle?: any,
+  fromX: number;
+  fromY: number;
+  fromPosition: string;
+  toX: number;
+  toY: number;
+  toPosition: string;
+  connectionLineType: string;
+  connectionLineStyle?: any;
 }) => (
   <g>
     <path

@@ -1,33 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Box } from '@rocket.chat/fuselage';
-import { useContext, type FC, useEffect } from 'react';
+import { useContext, type Fc } from 'react';
 
 import ComponentSideBar from '../Components/ComponentSideBar';
 import CreateNewScreenContainer from '../Components/CreateNewScreen/CreateNewScreenContainer';
 import Preview from '../Components/Preview';
 import Templates from '../Components/Templates';
-import { useNavigate, useParams } from 'react-router-dom';
-import { activeProjectAction, context } from '../Context';
-import routes from '../Routes/Routes';
+import { context } from '../Context';
 import NavMenu from '../Components/navMenu/NavMenu';
 import NavBar from '../Components/NavBar';
 
 const Playground: FC = () => {
   const {
-    state: { navMenuToggle, projects },
-    dispatch,
+    state: { navMenuToggle },
   } = useContext(context);
-  const { project: projectId = '' } = useParams();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!projects[projectId]) navigate(routes.home);
-    else dispatch(activeProjectAction(projectId));
-  }, []);
 
   return (
     <>
-      {' '}
       <NavBar />
       {navMenuToggle && <NavMenu />}
       <Box position="relative" width={'100%'} flexGrow={1}>

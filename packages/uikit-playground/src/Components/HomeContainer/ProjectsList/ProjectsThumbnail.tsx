@@ -9,15 +9,14 @@ import {
   renameProjectAction,
 } from '../../../Context';
 import { ChangeEvent, useContext, useState } from 'react';
-import { activeProjectAction } from '../../../Context/action/activeProjectAction';
 import { useNavigate } from 'react-router-dom';
-import routes from '../../../Routes/Routes';
 import { formatDate } from '../../../utils/formatDate';
 import EditMenu from '../../ScreenThumbnail/EditMenu';
 import EditableLabel from '../../ScreenThumbnail/EditableLabel/EditableLabel';
 import { css } from '@rocket.chat/css-in-js';
 import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import routes from '../../../Routes/Routes';
 
 const ProjectsThumbnail = ({
   id,
@@ -35,7 +34,7 @@ const ProjectsThumbnail = ({
   const { dispatch } = useContext(context);
   const toast = useToastBarDispatch();
   const activeProjectHandler = () => {
-    navigate(`/${id}`);
+    navigate(`/${id}/${routes.project}`);
   };
 
   const duplicateScreenHandler = () => {

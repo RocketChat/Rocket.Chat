@@ -14,6 +14,7 @@ import { context, isMobileAction, isTabletAction } from './Context';
 import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import { Box } from '@rocket.chat/fuselage';
 import FlowDiagram from './Pages/FlowDiagram';
+import { ProjectSpecificLayout } from './Components/Routes/ProjectSpecificLayout';
 
 function App() {
   const { dispatch } = useContext(context);
@@ -47,8 +48,10 @@ function App() {
             </Route>
             {/* <Route element={<ProtectedLayout />}> */}
             <Route path={routes.home} element={<Home />} />
-            <Route path={routes.flow} element={<FlowDiagram />} />
-            <Route path={routes.project} element={<Playground />} />
+            <Route path={routes.projectId} element={<ProjectSpecificLayout />}>
+              <Route path={routes.flow} element={<FlowDiagram />} />
+              <Route path={routes.project} element={<Playground />} />
+            </Route>
             <Route path={`*`} element={<Home />} />
             {/* </Route> */}
           </Routes>

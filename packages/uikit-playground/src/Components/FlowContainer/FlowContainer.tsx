@@ -1,7 +1,6 @@
 import { useCallback, useContext, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
-  Controls,
   Background,
   useNodesState,
   useEdgesState,
@@ -14,6 +13,7 @@ import { context } from '../../Context';
 import ConnectionLine from './ConnectionLine';
 import UIKitWrapper from './UIKitWrapper';
 import { FlowParams, createNodesAndEdges } from './utils';
+import ControlButton from './ControlButtons';
 
 const nodeTypes = {
   custom: UIKitWrapper,
@@ -80,7 +80,7 @@ const FlowContainer = () => {
         connectionLineComponent={ConnectionLine}
       >
         <MiniMap zoomable pannable />
-        <Controls />
+        <ControlButton />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </>
