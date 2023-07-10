@@ -6,6 +6,7 @@ import { useEffect, useRef, useMemo } from 'react';
 
 import { addButton, removeButton } from '../../app/ui-message/client/ActionButtonSyncer';
 import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
+import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
@@ -120,4 +121,47 @@ export const useUserDropdownAppsActionButtons = () => {
 		...result,
 		data,
 	} as UseQueryResult<GenericMenuItemProps[]>;
+};
+
+export const useMessageActionAppsActionButtons = (context?: MessageActionContext) => {
+	const result = useAppActionButtons('messageAction');
+	const actionManager = useUiKitActionManager();
+	const room = useRoom();
+
+	const data = useMemo(
+		() =>
+			result.data
+				?.filter((action) => {
+					if (
+						context &&
+						!(action.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred']).includes(context as any)
+					) {
+						return false;
+					}
+					return applyButtonFilters(action, room);
+				})
+				.map((action) => {
+					const item: MessageActionConfig = {
+						icon: undefined as any,
+						id: getIdForActionButton(action),
+						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
+						action: (_, params) => {
+							void actionManager.triggerActionButtonAction({
+								rid: params.message.rid,
+								tmid: params.message.tmid,
+								actionId: action.actionId,
+								appId: action.appId,
+								payload: { context: action.context },
+							});
+						},
+					};
+
+					return item;
+				}),
+		[actionManager, context, result.data, room],
+	);
+	return {
+		...result,
+		data,
+	} as UseQueryResult<MessageActionConfig[]>;
 };

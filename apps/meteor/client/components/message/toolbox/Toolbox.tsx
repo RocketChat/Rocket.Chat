@@ -10,7 +10,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-// import { useAppActionButtons } from '../../../hooks/useAppActionButtons';
+import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
@@ -60,7 +60,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const chat = useChat();
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
-	// const actionButtonApps = useAppActionButtons('messageAction');
+	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	// console.log(actionButtonApps.data);
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
@@ -102,24 +102,23 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
 					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
 				})}
-			{actionsQueryResult.data?.message.map((action) => (
-				<MessageToolboxItem
-					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
-					key={action.id}
-					icon={action.icon}
-					title={t(action.label)}
-					data-qa-id={action.label}
-					data-qa-type='message-action-menu'
-				/>
-			))}
-			{(actionsQueryResult.data?.menu.length ?? 0) > 0 && (
+			{actionsQueryResult.isSuccess &&
+				actionsQueryResult.data.message.map((action) => (
+					<MessageToolboxItem
+						onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
+						key={action.id}
+						icon={action.icon}
+						title={t(action.label)}
+						data-qa-id={action.label}
+						data-qa-type='message-action-menu'
+					/>
+				))}
+			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
-					options={
-						actionsQueryResult.data?.menu.map((action) => ({
-							...action,
-							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
-						})) ?? []
-					}
+					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
+						...action,
+						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+					}))}
 					data-qa-type='message-action-menu-options'
 				/>
 			)}
