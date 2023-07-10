@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import type { ReactElement, ReactNode } from 'react';
-import React, { Suspense } from 'react';
+import { Children, Suspense, cloneElement } from 'react';
 
 import { useFeaturePreview } from '../../hooks/useFeaturePreview';
 import { FeaturesAvailable } from '../../hooks/useFeaturePreviewList';
@@ -8,8 +8,8 @@ import { FeaturesAvailable } from '../../hooks/useFeaturePreviewList';
 export const FeaturePreview = ({ feature, children }: { feature: FeaturesAvailable; children: ReactElement[] }) => {
 	const featureToggleEnabled = useFeaturePreview(feature);
 
-	const toggledChildren = React.Children.map(children, (child) =>
-		React.cloneElement(child, {
+	const toggledChildren = Children.map(children, (child) =>
+		cloneElement(child, {
 			featureToggleEnabled,
 		}),
 	);
