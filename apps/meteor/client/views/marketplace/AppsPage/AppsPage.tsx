@@ -1,4 +1,4 @@
-import { useTranslation, useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -11,15 +11,11 @@ type AppsContext = 'explore' | 'installed' | 'enterprise' | 'private';
 const AppsPage = (): ReactElement => {
 	const t = useTranslation();
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const context = useRouteParameter('context');
+	const context = useRouteParameter('context') as AppsContext;
 
 	return (
 		<Page background='tint'>
-			<MarketplaceHeader title={t(`Apps_context_${context as AppsContext}`)} />
+			<MarketplaceHeader title={t(`Apps_context_${context}`)} />
 			<Page.Content paddingInline='0'>
 				<AppsPageContent />
 			</Page.Content>
