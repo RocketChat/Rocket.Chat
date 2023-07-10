@@ -33,9 +33,26 @@ type FindTagsByIdParams = {
 
 type FindTagsByIdResult = ILivechatTag | null;
 
-// If viewAll is true, then all tags will be returned, regardless of department
-// If viewAll is false, then all public tags will be returned, and
-//  if department is specified, then all department tags will be returned
+// If viewAll is true
+//  -> & user has access to all tags
+//      -> then all tags will be returned
+//          -> Pages:
+//              - Admin > Omnichannel > Tags
+//              - Current chat's panel, filter by tags
+//              - Canned response creation
+//  -> & user does not have access to all tags
+//      -> then only public tags will be returned (unauthorized access - no page uses this)
+// If viewAll is false
+// -> & user has access to all tags
+//      -> & department is not specified
+//          -> only public tags will be returned (Pages: Close chat modal tag selection for chats not associated with a department being closed by manager)
+//      -> & department is specified
+//          -> only tags associated with the department will be returned (Page: Close chat modal tag selection for chats associated with a department being closed by manager)
+// -> & user does not have access to all tags (same as viewAll = false & user has access to all tags)
+//      -> & department is not specified
+//          -> only public tags will be returned (Page: Close chat modal tag selection for chats not associated with a department being closed by agent)
+//      -> & department is specified
+//          -> only tags associated with the department will be returned (Page: Close chat modal tag selection for chats associated with a department being closed by agent)
 export async function findTags({
 	userId,
 	text,
