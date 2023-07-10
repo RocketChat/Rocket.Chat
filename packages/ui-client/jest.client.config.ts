@@ -5,7 +5,18 @@ export default {
 	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 	testMatch: ['<rootDir>/src/**/**.spec.[jt]s?(x)'],
 	transform: {
-		'^.+\\.(t|j)sx?$': '@swc/jest',
+		'^.+\\.(t|j)sx?$': [
+			'@swc/jest',
+			{
+				jsc: {
+					transform: {
+						react: {
+							runtime: 'automatic',
+						},
+					},
+				},
+			},
+		],
 	},
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
