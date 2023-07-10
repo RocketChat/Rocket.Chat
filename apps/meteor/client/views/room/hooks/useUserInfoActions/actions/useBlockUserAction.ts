@@ -39,12 +39,13 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		() =>
 			roomCanBlock && uid !== ownUserId
 				? {
-						label: t(isUserBlocked ? 'Unblock' : 'Block'),
+						// id: t(isUserBlocked ? 'Unblock' : 'Block'),
+						content: t(isUserBlocked ? 'Unblock' : 'Block'),
 						icon: 'ban' as const,
-						action: toggleBlockUserAction,
+						onClick: toggleBlockUserAction,
 				  }
 				: undefined,
-		[isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid],
+		[isUserBlocked, ownUserId, rid, roomCanBlock, t, toggleBlockUserAction, uid],
 	);
 
 	return toggleBlockUserOption;

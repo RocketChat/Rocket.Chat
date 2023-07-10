@@ -24,19 +24,19 @@ type UserCardWithDataProps = {
 	onClose: () => void;
 };
 
-type MenuActionProps = {
-	key: React.ReactNode;
-	id: string;
-	title: string;
-	items: {
-		id: string;
-		key: React.ReactNode;
-		content: React.ReactNode;
-		icon: string | undefined;
-		onClick: () => void;
-		type: string | undefined;
-	}[];
-}[];
+// type MenuActionProps = {
+// 	key: React.ReactNode;
+// 	id: string;
+// 	title: string;
+// 	items: {
+// 		id: string;
+// 		key: React.ReactNode;
+// 		content: React.ReactNode;
+// 		icon: string | undefined;
+// 		onClick: () => void;
+// 		type: string | undefined;
+// 	}[];
+// }[];
 
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const t = useTranslation();
@@ -88,11 +88,10 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		menuOptions !== undefined &&
 		Object.values(menuOptions)
 			.map((item) => ({
-				id: item.label.label as string,
-				key: item.label.label,
-				content: item.label.label,
-				icon: item.label.icon,
-				onClick: item.action,
+				id: item.content as string,
+				content: item.content,
+				icon: item.icon,
+				onClick: item.onClick,
 				type: item.type,
 			}))
 			.reduce((acc, item) => {
@@ -103,11 +102,11 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 					return acc;
 				}
 
-				const newSection = { key: item.key, id: group, title: '', items: [item] };
+				const newSection = { id: group, title: '', items: [item] };
 				acc.push(newSection);
 
 				return acc;
-			}, [] as MenuActionProps);
+			}, [] as any);
 
 	const menu = useMemo(() => {
 		if (!menuActions) {

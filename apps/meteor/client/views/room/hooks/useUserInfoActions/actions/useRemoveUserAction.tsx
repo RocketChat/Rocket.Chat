@@ -88,15 +88,15 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanRemove && userCanRemove
 				? {
-						label: (
-							<Box color='status-font-on-danger'>
-								<Icon mie='x4' name='cross' size='x20' />
-								{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
-							</Box>
-						),
-						// label: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
-						// icon: 'cross' as const,
-						action: removeUserOptionAction,
+						// content: (
+						// 	<Box color='status-font-on-danger'>
+						// 		<Icon mie='x4' name='cross' size='x20' />
+						// 		{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
+						// 	</Box>
+						// ),
+						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
+						icon: 'cross' as const,
+						onClick: removeUserOptionAction,
 						type: 'management',
 				  }
 				: undefined,

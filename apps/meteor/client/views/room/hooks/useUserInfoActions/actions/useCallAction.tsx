@@ -37,9 +37,9 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 
 		return room && !isRoomFederated(room) && user._id !== ownUserId
 			? {
-					label: t('Start_call'),
+					content: t('Start_call'),
 					icon: 'phone' as const,
-					action,
+					onClick: action,
 					type: 'communication',
 			  }
 			: undefined;
