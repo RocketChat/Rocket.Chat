@@ -1,6 +1,6 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -10,6 +10,7 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
+import { router } from '../providers/RouterProvider';
 import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
 
 const commands = {
@@ -24,8 +25,14 @@ const commands = {
 			return ret;
 		}, {} as Record<string, string>);
 
-		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
-		FlowRouter.go(newPath, undefined, { ...FlowRouter.current().queryParams, ...newParams });
+		const newPath = newUrl.pathname.replace(
+			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
+			'',
+		) as LocationPathname;
+		router.navigate({
+			pathname: newPath,
+			search: { ...router.getSearchParameters(), ...newParams },
+		});
 	},
 
 	'set-user-status'(data: { status: UserStatus }) {
@@ -75,7 +82,7 @@ const commands = {
 			}
 			void callbacks.run('afterLogoutCleanUp', user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
-			return FlowRouter.go('home');
+			return router.navigate('/home');
 		});
 	},
 

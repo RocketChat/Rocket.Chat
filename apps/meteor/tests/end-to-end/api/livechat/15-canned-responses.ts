@@ -6,6 +6,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createCannedResponse } from '../../../data/livechat/canned-responses';
 import { IS_EE } from '../../../e2e/config/constants';
+import { removeTag, saveTags } from '../../../data/livechat/tags';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', function () {
 	this.retries(0);
@@ -72,11 +73,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should return a canned response matching the params provided (tags)', async () => {
 			const response = await createCannedResponse();
-			const { body } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': response.tags[0] }).expect(200);
+			const { body } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': response.tags?.[0] }).expect(200);
 			expect(body).to.have.property('success', true);
 			expect(body.cannedResponses).to.be.an('array').with.lengthOf(1);
 			expect(body.cannedResponses[0]).to.have.property('_id');
-			expect(body.cannedResponses[0]).to.have.property('tags').that.is.an('array').which.includes(response.tags[0]);
+			expect(body.cannedResponses[0]).to.have.property('tags').that.is.an('array').which.includes(response.tags?.[0]);
 		});
 		it('should return a canned response matching the params provided (text)', async () => {
 			const response = await createCannedResponse();
@@ -128,6 +129,42 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.send({ shortcut: 'shortcutxx', scope: 'user', tags: ['tag'], text: 'text' })
 				.expect(400);
+		});
+		it('should save a canned response related to an EE tag', async () => {
+			const tag = await saveTags();
+
+			const { body } = await request
+				.post(api('canned-responses'))
+				.set(credentials)
+				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+
+			expect(getResult).to.have.property('success', true);
+			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(1);
+			expect(getResult.cannedResponses[0]).to.have.property('_id');
+			expect(getResult.cannedResponses[0]).to.have.property('tags').that.is.an('array').which.includes(tag.name);
+		});
+		it('should not include removed tags in the response', async () => {
+			const tag = await saveTags();
+
+			const { body } = await request
+				.post(api('canned-responses'))
+				.set(credentials)
+				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+
+			await removeTag(tag._id);
+
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+
+			expect(getResult).to.have.property('success', true);
+			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(0);
 		});
 	});
 
