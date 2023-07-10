@@ -16,9 +16,9 @@ import type { Block } from '@rocket.chat/ui-kit';
 import type { Dispatch, SyntheticEvent, ContextType } from 'react';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
+import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import Apps from './Apps';
-import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 
 type FieldStateValue = string | Array<string> | undefined;
 type FieldState = { value: FieldStateValue; blockId: string };

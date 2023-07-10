@@ -6,12 +6,12 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement, ReactEventHandler } from 'react';
 import React from 'react';
 
+import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import ModalBlock from './ModalBlock';
 import type { ActionManagerState } from './hooks/useActionManagerState';
 import { useActionManagerState } from './hooks/useActionManagerState';
 import { useValues } from './hooks/useValues';
-import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 
 const UiKitModal = (props: ActionManagerState): ReactElement => {
 	const actionManager = useUiKitActionManager();

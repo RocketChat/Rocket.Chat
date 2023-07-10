@@ -5,6 +5,7 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 // import React, { Context, FC, useMemo } from 'react';
 import type { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 

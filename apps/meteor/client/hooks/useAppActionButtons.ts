@@ -32,6 +32,8 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 		stream.current = apps('actions/changed', () => {
 			queryClient.invalidateQueries(['apps', 'actionButtons']);
 		});
+
+		return [];
 	});
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
