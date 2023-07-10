@@ -1,0 +1,65 @@
+name: Playwright Tests
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  test:
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Create env file
+      working-directory: ./packages/regression/src
+      run: |
+        touch .env
+        echo URL="https://candidate.rocket.chat" >> .env
+        echo USER_ADMIN="automationCandidate" >> .env
+        echo PASSWORD_ADMIN=${{secrets.PASSWORD_ADMIN}} >> .env
+    - name: Run Playwright tests
+      working-directory: ./packages/regression/src
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: report_candidate
+        path:  test-results/
+        retention-days: 30
+  test_Unstable:
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Create env file
+      working-directory: ./packages/regression/src
+      run: |
+        touch .env
+        echo URL="https://unstable.rocket.chat" >> .env
+        echo USER_ADMIN="automationCandidate" >> .env
+        echo PASSWORD_ADMIN=${{secrets.PASSWORD_ADMIN}} >> .env
+    - name: Run Playwright tests
+      working-directory: ./packages/regression/src
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: report_unstable
+        path:  test-results/
+        retention-days: 30
+

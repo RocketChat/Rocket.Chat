@@ -15,7 +15,7 @@ export default defineConfig({
 			{
 				name: 'My Test Report',
 				outputFile: './test-results/report.html',
-				visitor: (data: any, metadata: any, collect: any) => {
+				visitor: (data: any, _metadata: any, collect: any) => {
 					const parserOptions = {
 						sourceType: 'module',
 						plugins: ['typescript'],
