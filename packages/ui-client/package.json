@@ -26,7 +26,7 @@
 		"@types/babel__core": "~7.20.1",
 		"@types/jest": "~29.5.2",
 		"@types/react": "~17.0.62",
-		"@types/react-dom": "^18.2.5",
+		"@types/react-dom": "~17.0.20",
 		"eslint": "~8.43.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-react": "~7.32.2",
