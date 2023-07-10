@@ -44,10 +44,11 @@ const EditMenu = ({
   return (
     <Box
       position="absolute"
-      insetBlockStart="5px"
-      insetInlineEnd="5px"
+      insetBlockStart="0px"
+      insetInlineEnd="0px"
       zIndex={100}
       ref={containerRef}
+      className="rc-edit-menu"
       onClick={() => setIsOpen(true)}
     >
       <Button ref={buttonRef} square mini>

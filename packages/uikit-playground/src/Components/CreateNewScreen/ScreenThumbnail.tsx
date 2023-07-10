@@ -58,16 +58,16 @@ const ScreenThumbnail = ({
   };
   return (
     <Box position="relative">
-      <EditMenu
-        name={name}
-        date={screen.date}
-        onChange={onChangeNameHandler}
-        onDuplicate={duplicateScreenHandler}
-        onDelete={deleteScreenHandler}
-        onBlur={nameSaveHandler}
-        labelProps={{ fontScale: 'h5' }}
-      />
       <ScreenThumbnailWrapper onClick={activateScreenHandler}>
+        <EditMenu
+          name={name}
+          date={screen.date}
+          onChange={onChangeNameHandler}
+          onDuplicate={duplicateScreenHandler}
+          onDelete={deleteScreenHandler}
+          onBlur={nameSaveHandler}
+          labelProps={{ fontScale: 'h5' }}
+        />
         <Thumbnail of={renderPayload({ payload: screen.payload })} />
       </ScreenThumbnailWrapper>
     </Box>

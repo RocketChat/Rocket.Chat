@@ -69,20 +69,21 @@ const ProjectsThumbnail = ({
       `}
       position="relative"
     >
-      <EditMenu
-        name={name}
-        date={date}
-        onChange={onChangeNameHandler}
-        onDuplicate={duplicateScreenHandler}
-        onDelete={deleteScreenHandler}
-        onBlur={nameSaveHandler}
-        labelProps={{ fontScale: 'h5' }}
-      />
       <ScreenThumbnailWrapper
         onClick={activeProjectHandler}
         width={'200px'}
         height="260px"
+        padding="30px"
       >
+        <EditMenu
+          name={name}
+          date={date}
+          onChange={onChangeNameHandler}
+          onDuplicate={duplicateScreenHandler}
+          onDelete={deleteScreenHandler}
+          onBlur={nameSaveHandler}
+          labelProps={{ fontScale: 'h5' }}
+        />
         <Thumbnail of={RenderPayload({ payload })} />
         <Box onClick={(e) => e.stopPropagation()}></Box>
       </ScreenThumbnailWrapper>

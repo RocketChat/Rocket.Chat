@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 
 interface ThumbnailProps {
   of: ReactNode;
@@ -13,24 +13,23 @@ const Thumbnail: React.FC<ThumbnailProps & ComponentProps<typeof Box>> = ({
 }) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState(1);
 
-  const scale = useMemo(() => {
+  useEffect(() => {
     const pw = parentRef.current?.parentElement?.offsetWidth || 0;
-    const ph = parentRef.current?.parentElement?.offsetHeight || 0;
 
     const width = elementRef.current?.offsetWidth || 0;
-    const height = elementRef.current?.offsetHeight || 0;
 
-    const scale = Math.min(pw / width, ph / height);
-    return scale;
-  }, [elementRef.current?.offsetHeight, elementRef.current?.offsetWidth]);
+    setScale(pw / width);
+  }, [of]);
 
   return (
-    <Box overflow="hidden" ref={parentRef} {...props}>
+    <Box overflow="hidden" position="relative" ref={parentRef} {...props}>
       <Box
+        w={'max-content'}
         className={css`
           transform: scale(${scale});
-          transform-origin: top;
+          transform-origin: 0% 0%;
           pointer-events: none;
         `}
         ref={elementRef}
