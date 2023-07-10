@@ -1,0 +1,6 @@
+{
+	"pathDataloss": "tests/fixtures/marketplace/data-loss-prevention.zip",
+	"pathFacebook": "tests/fixtures/marketplace/facebook.zip",
+	"appIdDataLoss": "8a30dc27-0cfe-4639-8e30-c7efb60c17f4",
+	"appIdFacebook": "de0ce645-5408-4de1-9395-9b923131ea9b"
+}

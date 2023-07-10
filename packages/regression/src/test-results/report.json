@@ -1,0 +1,1380 @@
+{
+    "name": "My Test Report",
+    "date": 1688998348373,
+    "dateH": "7/10/2023, 11:12:28 AM",
+    "duration": 43189,
+    "durationH": "43.2s",
+    "cwd": "/home/janaina/Documents/RC/Rocket.Chat/packages/regression/src",
+    "outputFile": "./test-results/report.html",
+    "outputDir": "./test-results",
+    "metadata": {
+        "totalTime": 40366.89100000076
+    },
+    "system": {
+        "cpu": {
+            "color": "#117DBB",
+            "count": 12,
+            "model": "Intel(R) Core(TM) i5-10600K CPU @ 4.10GHz",
+            "speed": 4499
+        },
+        "mem": {
+            "color": "#8B12AE",
+            "total": 25096200192
+        },
+        "arch": "x64",
+        "platform": "linux",
+        "release": "5.19.0-46-generic",
+        "type": "Linux",
+        "version": "#47~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jun 21 15:35:31 UTC 2",
+        "uptime": 8931.05,
+        "hostname": "janaina-System-Product-Name",
+        "pid": 55177,
+        "node": "18.3.0",
+        "v8": "10.2.154.4-node.8",
+        "timestampStart": 1688998348373,
+        "ticks": [
+            {
+                "cpu": {
+                    "percent": 10.58
+                },
+                "mem": {
+                    "free": 14122950656
+                },
+                "timestamp": 1688998350375
+            },
+            {
+                "cpu": {
+                    "percent": 15.85
+                },
+                "mem": {
+                    "free": 14226165760
+                },
+                "timestamp": 1688998352378
+            },
+            {
+                "cpu": {
+                    "percent": 27.37
+                },
+                "mem": {
+                    "free": 14110957568
+                },
+                "timestamp": 1688998354381
+            },
+            {
+                "cpu": {
+                    "percent": 12.91
+                },
+                "mem": {
+                    "free": 14096453632
+                },
+                "timestamp": 1688998356384
+            },
+            {
+                "cpu": {
+                    "percent": 18.97
+                },
+                "mem": {
+                    "free": 14037966848
+                },
+                "timestamp": 1688998358386
+            },
+            {
+                "cpu": {
+                    "percent": 12.21
+                },
+                "mem": {
+                    "free": 14035779584
+                },
+                "timestamp": 1688998360389
+            },
+            {
+                "cpu": {
+                    "percent": 22.62
+                },
+                "mem": {
+                    "free": 14207938560
+                },
+                "timestamp": 1688998362391
+            },
+            {
+                "cpu": {
+                    "percent": 25.3
+                },
+                "mem": {
+                    "free": 14144040960
+                },
+                "timestamp": 1688998364393
+            },
+            {
+                "cpu": {
+                    "percent": 25.3
+                },
+                "mem": {
+                    "free": 14062641152
+                },
+                "timestamp": 1688998366396
+            },
+            {
+                "cpu": {
+                    "percent": 15.91
+                },
+                "mem": {
+                    "free": 14022578176
+                },
+                "timestamp": 1688998368398
+            },
+            {
+                "cpu": {
+                    "percent": 17.49
+                },
+                "mem": {
+                    "free": 13998608384
+                },
+                "timestamp": 1688998370400
+            },
+            {
+                "cpu": {
+                    "percent": 20.35
+                },
+                "mem": {
+                    "free": 13966618624
+                },
+                "timestamp": 1688998372401
+            },
+            {
+                "cpu": {
+                    "percent": 17.5
+                },
+                "mem": {
+                    "free": 13982191616
+                },
+                "timestamp": 1688998374404
+            },
+            {
+                "cpu": {
+                    "percent": 11.83
+                },
+                "mem": {
+                    "free": 13944057856
+                },
+                "timestamp": 1688998376406
+            },
+            {
+                "cpu": {
+                    "percent": 22.06
+                },
+                "mem": {
+                    "free": 13930414080
+                },
+                "timestamp": 1688998378408
+            },
+            {
+                "cpu": {
+                    "percent": 21.73
+                },
+                "mem": {
+                    "free": 14000664576
+                },
+                "timestamp": 1688998380410
+            },
+            {
+                "cpu": {
+                    "percent": 21.42
+                },
+                "mem": {
+                    "free": 13989191680
+                },
+                "timestamp": 1688998382412
+            },
+            {
+                "cpu": {
+                    "percent": 23.18
+                },
+                "mem": {
+                    "free": 13983674368
+                },
+                "timestamp": 1688998384414
+            },
+            {
+                "cpu": {
+                    "percent": 21.71
+                },
+                "mem": {
+                    "free": 13957423104
+                },
+                "timestamp": 1688998386415
+            },
+            {
+                "cpu": {
+                    "percent": 15.14
+                },
+                "mem": {
+                    "free": 14011793408
+                },
+                "timestamp": 1688998388417
+            },
+            {
+                "cpu": {
+                    "percent": 18.56
+                },
+                "mem": {
+                    "free": 14018760704
+                },
+                "timestamp": 1688998390419
+            },
+            {
+                "cpu": {
+                    "percent": 26.38
+                },
+                "mem": {
+                    "free": 14076358656
+                },
+                "timestamp": 1688998391559
+            }
+        ],
+        "workers": 1,
+        "jobs": [
+            {
+                "caseId": "5c7cf5fcb1b2cbabefb9",
+                "parallelIndex": 0,
+                "workerIndex": 0,
+                "timestamp": 1688998350389,
+                "duration": 11025
+            },
+            {
+                "caseId": "90fa98a09ac85918ad86",
+                "parallelIndex": 0,
+                "workerIndex": 1,
+                "timestamp": 1688998361683,
+                "duration": 28819
+            }
+        ],
+        "cwd": "/home/janaina/Documents/RC/Rocket.Chat/packages/regression/src",
+        "configFile": "playwright.config.ts",
+        "playwright": "1.35.1",
+        "monocart": "1.7.4",
+        "testDir": "tests",
+        "outputFile": "test-results/report.html",
+        "outputDir": "test-results",
+        "timestampEnd": 1688998391562
+    },
+    "artifacts": [],
+    "trends": [],
+    "columns": [
+        {
+            "id": "caseType",
+            "name": "",
+            "width": 36,
+            "sortable": false,
+            "align": "center",
+            "formatter": "iconCaseType",
+            "detailed": false
+        },
+        {
+            "id": "title",
+            "name": "Title",
+            "searchable": true,
+            "width": 350,
+            "maxWidth": 1230,
+            "detailed": false
+        },
+        {
+            "id": "type",
+            "name": "Type",
+            "width": 50,
+            "sortable": false,
+            "align": "center",
+            "formatter": "iconType",
+            "detailed": false
+        },
+        {
+            "id": "jira",
+            "name": "JIRA Key",
+            "width": 100,
+            "searchable": true,
+            "styleMap": "font-weight:normal;"
+        },
+        {
+            "id": "duration",
+            "name": "Duration",
+            "align": "right",
+            "sortAsc": false,
+            "formatter": "duration",
+            "detailed": false
+        },
+        {
+            "id": "errors",
+            "name": "Errors",
+            "width": 60,
+            "align": "center",
+            "comparer": "errors",
+            "formatter": "errors",
+            "detailed": false
+        },
+        {
+            "id": "logs",
+            "name": "Logs",
+            "width": 60,
+            "align": "center",
+            "comparer": "logs",
+            "formatter": "logs",
+            "detailed": false
+        },
+        {
+            "id": "annotations",
+            "name": "Annotations",
+            "width": 100,
+            "markdown": true,
+            "searchable": true,
+            "comparer": "annotations",
+            "formatter": "annotations",
+            "detailed": false
+        },
+        {
+            "id": "attachments",
+            "name": "Attachments",
+            "width": 100,
+            "align": "center",
+            "formatter": "attachments",
+            "detailed": false
+        },
+        {
+            "id": "status",
+            "name": "Status",
+            "align": "center",
+            "detailed": false
+        },
+        {
+            "id": "expectedStatus",
+            "name": "Expected",
+            "align": "center",
+            "detailed": false
+        },
+        {
+            "id": "outcome",
+            "name": "Outcome",
+            "align": "center",
+            "width": 85,
+            "detailed": false
+        },
+        {
+            "id": "retry",
+            "name": "Retry",
+            "align": "center",
+            "width": 50,
+            "detailed": false
+        },
+        {
+            "id": "location",
+            "name": "Location",
+            "classMap": "mcr-location",
+            "width": 200,
+            "maxWidth": 1981,
+            "detailed": false,
+            "searchable": true
+        },
+        {
+            "id": "description",
+            "name": "Description",
+            "width": 300,
+            "markdown": true,
+            "searchable": true
+        }
+    ],
+    "rows": [
+        {
+            "id": "fgumzw1w2sdvaqcagp30",
+            "title": "setup",
+            "type": "suite",
+            "suiteType": "project",
+            "caseNum": 1,
+            "subs": [
+                {
+                    "id": "c0175e90403c27c360ed",
+                    "title": "global/auth.setup.ts",
+                    "type": "suite",
+                    "suiteType": "file",
+                    "caseNum": 1,
+                    "subs": [
+                        {
+                            "id": "5c7cf5fcb1b2cbabefb9",
+                            "title": "authenticate",
+                            "type": "case",
+                            "caseType": "passed",
+                            "ok": true,
+                            "outcome": "expected",
+                            "expectedStatus": "passed",
+                            "location": "tests/global/auth.setup.ts:7:6",
+                            "timestamps": [
+                                1688998350389,
+                                1688998361414
+                            ],
+                            "duration": 11025,
+                            "timeout": 80000,
+                            "retry": 0,
+                            "status": "passed",
+                            "stepNum": 15,
+                            "stepFailed": 0,
+                            "stepSubs": true,
+                            "subs": [
+                                {
+                                    "id": "w7l9er8cg8b4o2ac6cyi",
+                                    "title": "Before Hooks",
+                                    "type": "step",
+                                    "stepType": "hook",
+                                    "duration": 103,
+                                    "location": "",
+                                    "subs": [
+                                        {
+                                            "id": "9y32jsego2d40srexlfo",
+                                            "title": "fixture: browser",
+                                            "type": "step",
+                                            "stepType": "fixture",
+                                            "duration": 22,
+                                            "location": "",
+                                            "subs": [
+                                                {
+                                                    "id": "spek0mr2io65xihxdbkp",
+                                                    "title": "browserType.connect",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 20,
+                                                    "location": ""
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "zz1rixaid36wubvzg62r",
+                                            "title": "fixture: context",
+                                            "type": "step",
+                                            "stepType": "fixture",
+                                            "duration": 25,
+                                            "location": ""
+                                        },
+                                        {
+                                            "id": "za9p01e3dpbaw9xsc29l",
+                                            "title": "fixture: page",
+                                            "type": "step",
+                                            "stepType": "fixture",
+                                            "duration": 40,
+                                            "location": "",
+                                            "subs": [
+                                                {
+                                                    "id": "kmrecnrhl2sdxmc2hga0",
+                                                    "title": "browserContext.newPage",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 39,
+                                                    "location": ""
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "4cotdasiglur6y1qu66j",
+                                    "title": "page.goto(https://candidate.rocket.chat)",
+                                    "type": "step",
+                                    "stepType": "pw:api",
+                                    "duration": 6038,
+                                    "location": "tests/support/users/user.ts:6:13"
+                                },
+                                {
+                                    "id": "p77qj1qcilosfimhyzn9",
+                                    "title": "locator.getByPlaceholder('example@example.com').fill",
+                                    "type": "step",
+                                    "stepType": "pw:api",
+                                    "duration": 1867,
+                                    "location": "tests/support/users/user.ts:7:54"
+                                },
+                                {
+                                    "id": "qpta04lezukxwuwxbhr7",
+                                    "title": "locator.getByLabel('Password').fill",
+                                    "type": "step",
+                                    "stepType": "pw:api",
+                                    "duration": 15,
+                                    "location": "tests/support/users/user.ts:8:51"
+                                },
+                                {
+                                    "id": "vxv9dwkty95gd4zl5tdj",
+                                    "title": "locator.getByRole('button', { name: 'Login' }).first().click",
+                                    "type": "step",
+                                    "stepType": "pw:api",
+                                    "duration": 57,
+                                    "location": "tests/support/users/user.ts:9:75"
+                                },
+                                {
+                                    "id": "z5v2bxix5umjf3m1mlsd",
+                                    "title": "expect.toBeVisible",
+                                    "type": "step",
+                                    "stepType": "expect",
+                                    "duration": 2888,
+                                    "location": "tests/global/auth.setup.ts:9:67"
+                                },
+                                {
+                                    "id": "99npexdyp70lbg4ve950",
+                                    "title": "browserContext.storageState",
+                                    "type": "step",
+                                    "stepType": "pw:api",
+                                    "duration": 45,
+                                    "location": "tests/global/auth.setup.ts:10:23"
+                                },
+                                {
+                                    "id": "h3hv93xikfd3ii6kyvvg",
+                                    "title": "After Hooks",
+                                    "type": "step",
+                                    "stepType": "hook",
+                                    "duration": 2,
+                                    "location": "",
+                                    "subs": [
+                                        {
+                                            "id": "y4lx3tuf78cskid8ngr8",
+                                            "title": "fixture: page",
+                                            "type": "step",
+                                            "stepType": "fixture",
+                                            "duration": 0,
+                                            "location": ""
+                                        },
+                                        {
+                                            "id": "pl5x8pghh10eibkg06s3",
+                                            "title": "fixture: context",
+                                            "type": "step",
+                                            "stepType": "fixture",
+                                            "duration": 0,
+                                            "location": ""
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "location": "tests/global/auth.setup.ts:0:0"
+                }
+            ]
+        },
+        {
+            "id": "b4uoba1n4smtqcfq6an1",
+            "title": "chromium",
+            "type": "suite",
+            "suiteType": "project",
+            "caseNum": 1,
+            "subs": [
+                {
+                    "id": "a8dbf2b03ae17ce95b49",
+                    "title": "EE/admin/marketplace/private.spec.ts",
+                    "type": "suite",
+                    "suiteType": "file",
+                    "caseNum": 1,
+                    "subs": [
+                        {
+                            "id": "a8dbf2b03ae17ce95b49",
+                            "title": "Private Apps",
+                            "type": "suite",
+                            "suiteType": "describe",
+                            "caseNum": 1,
+                            "subs": [
+                                {
+                                    "id": "90fa98a09ac85918ad86",
+                                    "title": "Enable and Disable two Private App - Outside Menu",
+                                    "type": "case",
+                                    "caseType": "passed",
+                                    "ok": true,
+                                    "outcome": "expected",
+                                    "expectedStatus": "passed",
+                                    "location": "tests/EE/admin/marketplace/private.spec.ts:51:6",
+                                    "timestamps": [
+                                        1688998361683,
+                                        1688998390502
+                                    ],
+                                    "duration": 28819,
+                                    "timeout": 80000,
+                                    "retry": 0,
+                                    "status": "passed",
+                                    "stepNum": 79,
+                                    "stepFailed": 0,
+                                    "stepSubs": true,
+                                    "subs": [
+                                        {
+                                            "id": "tm3tg6lbkko8oqa6fxxe",
+                                            "title": "Before Hooks",
+                                            "type": "step",
+                                            "stepType": "hook",
+                                            "duration": 9780,
+                                            "location": "",
+                                            "subs": [
+                                                {
+                                                    "id": "j0jdado5zurrdryyv8zj",
+                                                    "title": "beforeEach hook",
+                                                    "type": "step",
+                                                    "stepType": "hook",
+                                                    "duration": 9779,
+                                                    "location": "tests/EE/admin/marketplace/private.spec.ts:9:7",
+                                                    "subs": [
+                                                        {
+                                                            "id": "txx6cukpnri1o1pam8md",
+                                                            "title": "fixture: browser",
+                                                            "type": "step",
+                                                            "stepType": "fixture",
+                                                            "duration": 24,
+                                                            "location": "",
+                                                            "subs": [
+                                                                {
+                                                                    "id": "r70nq7ol2spkqyvlufng",
+                                                                    "title": "browserType.connect",
+                                                                    "type": "step",
+                                                                    "stepType": "pw:api",
+                                                                    "duration": 21,
+                                                                    "location": ""
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "id": "90ifowkbobawfowizzhk",
+                                                            "title": "fixture: context",
+                                                            "type": "step",
+                                                            "stepType": "fixture",
+                                                            "duration": 90,
+                                                            "location": ""
+                                                        },
+                                                        {
+                                                            "id": "byr8kp6covz8iooga3ml",
+                                                            "title": "fixture: page",
+                                                            "type": "step",
+                                                            "stepType": "fixture",
+                                                            "duration": 41,
+                                                            "location": "",
+                                                            "subs": [
+                                                                {
+                                                                    "id": "8bsfcav4o5cr2zlju3mw",
+                                                                    "title": "browserContext.newPage",
+                                                                    "type": "step",
+                                                                    "stepType": "pw:api",
+                                                                    "duration": 39,
+                                                                    "location": ""
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "id": "bk8psdvh1yekct2hc8gy",
+                                                            "title": "fixture: request",
+                                                            "type": "step",
+                                                            "stepType": "fixture",
+                                                            "duration": 3,
+                                                            "location": "",
+                                                            "subs": [
+                                                                {
+                                                                    "id": "6gwu1g7iqqhtm87nxaf8",
+                                                                    "title": "apiRequest.newContext",
+                                                                    "type": "step",
+                                                                    "stepType": "pw:api",
+                                                                    "duration": 2,
+                                                                    "location": ""
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "id": "z7vpn43ws7css7j0v2pm",
+                                                            "title": "page.goto(https://candidate.rocket.chat)",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 5763,
+                                                            "location": "tests/EE/admin/marketplace/private.spec.ts:10:14"
+                                                        },
+                                                        {
+                                                            "id": "i7bppf61e3c1ss3yihdj",
+                                                            "title": "locator.getByRole('button', { name: 'Administration' }).click",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 2499,
+                                                            "location": "tests/support/marketplace/marketplace.ts:50:71"
+                                                        },
+                                                        {
+                                                            "id": "0tvlvgqnf1col6348mod",
+                                                            "title": "locator.getByTestId('dropdown').getByText('Marketplace').click",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 73,
+                                                            "location": "tests/support/marketplace/marketplace.ts:51:83"
+                                                        },
+                                                        {
+                                                            "id": "aujwip1upljzqbwwh5m5",
+                                                            "title": "apiRequestContext.delete(/api/apps/8a30dc27-0cfe-4639-8e30-c7efb60c17f4)",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 699,
+                                                            "location": "tests/support/marketplace/marketplace.ts:31:22"
+                                                        },
+                                                        {
+                                                            "id": "psx20zqtnnutdg62huu0",
+                                                            "title": "apiRequestContext.delete(/api/apps/de0ce645-5408-4de1-9395-9b923131ea9b)",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 562,
+                                                            "location": "tests/support/marketplace/marketplace.ts:31:22"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "m9j2p66oz1arfkqg6qez",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 66,
+                                            "location": "tests/support/marketplace/marketplace.ts:40:66"
+                                        },
+                                        {
+                                            "id": "wanpks64gtixac0d8q9o",
+                                            "title": "locator.getByRole('button', { name: 'Upload Private App' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 277,
+                                            "location": "tests/support/marketplace/marketplace.ts:41:76"
+                                        },
+                                        {
+                                            "id": "ohthu4mvgzilwusqh3eg",
+                                            "title": "page.waitForEvent",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 63,
+                                            "location": "tests/support/helpers.ts:10:34",
+                                            "subs": [
+                                                {
+                                                    "id": "m3wqfo1n2ds3bg4xdbbk",
+                                                    "title": "locator.getByRole('button', { name: 'Browse Files' }).click",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 50,
+                                                    "location": "tests/support/helpers.ts:11:55"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "uqah60zqr4nnq78rpkf4",
+                                            "title": "fileChooser.setFiles",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 2,
+                                            "location": "tests/support/helpers.ts:13:20"
+                                        },
+                                        {
+                                            "id": "iffnysadiqyim15hfare",
+                                            "title": "elementHandle.setInputFiles",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 49,
+                                            "location": "tests/support/helpers.ts:13:2"
+                                        },
+                                        {
+                                            "id": "l5qw50dnin6lz0gzz7c2",
+                                            "title": "locator.getByRole('button', { name: 'Install' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 89,
+                                            "location": "tests/support/marketplace/marketplace.ts:43:67"
+                                        },
+                                        {
+                                            "id": "juqhp13qpmr3tue0ngc4",
+                                            "title": "page.waitForResponse",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 7245,
+                                            "location": "tests/support/marketplace/marketplace.ts:44:31",
+                                            "subs": [
+                                                {
+                                                    "id": "qub4zzcum5o99unk2lte",
+                                                    "title": "locator.getByRole('button', { name: 'Agree' }).click",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 235,
+                                                    "location": "tests/support/marketplace/marketplace.ts:45:65"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "j021s7wzboqp2qbv0qcx",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 870,
+                                            "location": "tests/support/marketplace/marketplace.ts:40:66"
+                                        },
+                                        {
+                                            "id": "3xb2g34rrrusvf7yob6b",
+                                            "title": "locator.getByRole('button', { name: 'Upload Private App' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 74,
+                                            "location": "tests/support/marketplace/marketplace.ts:41:76"
+                                        },
+                                        {
+                                            "id": "nomdenke9dljw3vrzqog",
+                                            "title": "page.waitForEvent",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 51,
+                                            "location": "tests/support/helpers.ts:10:34",
+                                            "subs": [
+                                                {
+                                                    "id": "shf6dupero8qfe5ovonk",
+                                                    "title": "locator.getByRole('button', { name: 'Browse Files' }).click",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 39,
+                                                    "location": "tests/support/helpers.ts:11:55"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "8ewy843lxv1s27sqdlf8",
+                                            "title": "fileChooser.setFiles",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 2,
+                                            "location": "tests/support/helpers.ts:13:20"
+                                        },
+                                        {
+                                            "id": "v4iutjidwshm3i0wmmkr",
+                                            "title": "elementHandle.setInputFiles",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 13,
+                                            "location": "tests/support/helpers.ts:13:2"
+                                        },
+                                        {
+                                            "id": "txbzn82k67gmccxyq71x",
+                                            "title": "locator.getByRole('button', { name: 'Install' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 52,
+                                            "location": "tests/support/marketplace/marketplace.ts:43:67"
+                                        },
+                                        {
+                                            "id": "4gghwr8taerqn1y1c8qk",
+                                            "title": "page.waitForResponse",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 1472,
+                                            "location": "tests/support/marketplace/marketplace.ts:44:31",
+                                            "subs": [
+                                                {
+                                                    "id": "u9xpomidrtwyepq97lf6",
+                                                    "title": "locator.getByRole('button', { name: 'Agree' }).click",
+                                                    "type": "step",
+                                                    "stepType": "pw:api",
+                                                    "duration": 225,
+                                                    "location": "tests/support/marketplace/marketplace.ts:45:65"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "qx81x6mmz5k3v02oq8p5",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 99,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "kwop66ktqd0v6jmc6pj4",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 13,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "9e8a3iw3g8huus3xrtyg",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 1309,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "mdyl2t626lovanx1dcjs",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).getByTestId('menu').click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 16,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:60:5"
+                                        },
+                                        {
+                                            "id": "64uoqsevwfzupv06buzy",
+                                            "title": "locator.click(ol[role='listbox'] >> li[value='disable'])",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 304,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:61:75"
+                                        },
+                                        {
+                                            "id": "pbcesuu5hzad603c52oj",
+                                            "title": "locator.getByRole('button', { name: 'Yes' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 66,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:62:64"
+                                        },
+                                        {
+                                            "id": "58bh1kjvjzu40glnguia",
+                                            "title": "expect.toBeVisible",
+                                            "type": "step",
+                                            "stepType": "expect",
+                                            "duration": 364,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:63:102"
+                                        },
+                                        {
+                                            "id": "ypbuio0aoyli3qzjm4hk",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 111,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "pegt51plst4oum540v4u",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 9,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "6pq3hsuq67dx5fag1qz1",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 9,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "sv9tzp5i5ebcdy7luqpv",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger Disabled' }).isVisible",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 8,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:65:80"
+                                        },
+                                        {
+                                            "id": "5t8novnhg09gzqzqf9f7",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 95,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "tb6emqszq3crka3qyce9",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 24,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "4l5u71wvs2v6slfdm5i7",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 7,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "oq8z34gxgwze6ivmm5g4",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).getByTestId('menu').click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 49,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:72:5"
+                                        },
+                                        {
+                                            "id": "gakicq3agx2iec5hggs6",
+                                            "title": "locator.click(ol[role='listbox'] >> li[value='disable'])",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 287,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:73:75"
+                                        },
+                                        {
+                                            "id": "xd6r6bjjsm19ey35dc3f",
+                                            "title": "locator.getByRole('button', { name: 'Yes' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 47,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:74:64"
+                                        },
+                                        {
+                                            "id": "fuzqgpjw5qwyxdbiazj9",
+                                            "title": "expect.toBeVisible",
+                                            "type": "step",
+                                            "stepType": "expect",
+                                            "duration": 364,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:75:104"
+                                        },
+                                        {
+                                            "id": "gh01lv9dcxyghcfsuxsy",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 88,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "m6yeiaucv4yydx9gwvm5",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 11,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "c8w16lsnehjhnvh0ra29",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 10,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "atrwduxtol3wqqwz5d0r",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention Disabled' }).isVisible",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 7,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:77:80"
+                                        },
+                                        {
+                                            "id": "rtnonf8nlz1te9iutasm",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 91,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "wiywtb2jj0djxq4zv1lh",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 12,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "80lrtgflh179ooxwtiu8",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 11,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "y8t8zy9kthcbo48q1f6u",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).getByTestId('menu').click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 52,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:84:5"
+                                        },
+                                        {
+                                            "id": "5qk70y5h61jo4dm7j3u3",
+                                            "title": "locator.click(ol[role='listbox'] >> li[value='enable'])",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 280,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:85:74"
+                                        },
+                                        {
+                                            "id": "hqz2qx4jqymxtz6pdqix",
+                                            "title": "expect.toBeVisible",
+                                            "type": "step",
+                                            "stepType": "expect",
+                                            "duration": 363,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:86:101"
+                                        },
+                                        {
+                                            "id": "zdo4c7aym6qv2t5xk9p2",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 88,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "7pt4ihxao29cjc2b85v9",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 17,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "pves9buqxxk6n6mdzulr",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 10,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "in8hqtgc6v7rvu5anyva",
+                                            "title": "locator.getByRole('link', { name: 'Facebook Messenger Enabled ' }).isVisible",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 5,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:88:79"
+                                        },
+                                        {
+                                            "id": "k97uabzm73pcr9zizvrn",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 98,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "1a2iee6ajnnsi1o36op8",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 14,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "4bpofxk6pe2l1dtdd970",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 8,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "8azkdp9k214yeau08sfn",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).getByTestId('menu').click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 45,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:95:5"
+                                        },
+                                        {
+                                            "id": "bnz0ltyip6oumx95vh6a",
+                                            "title": "locator.click(ol[role='listbox'] >> li[value='enable'])",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 299,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:96:74"
+                                        },
+                                        {
+                                            "id": "ch80trry7sbej9vvnew9",
+                                            "title": "expect.toBeVisible",
+                                            "type": "step",
+                                            "stepType": "expect",
+                                            "duration": 3871,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:97:103"
+                                        },
+                                        {
+                                            "id": "iowe3z7b3qcrtpz21ote",
+                                            "title": "locator.getByRole('link', { name: 'Private Apps' }).click",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 85,
+                                            "location": "tests/support/marketplace/marketplace.ts:24:66"
+                                        },
+                                        {
+                                            "id": "owuqw616jxvu9ohx7n5q",
+                                            "title": "locator.getByPlaceholder('Search private apps').fill",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 12,
+                                            "location": "tests/support/marketplace/marketplace.ts:25:68"
+                                        },
+                                        {
+                                            "id": "1f6o44u7yutg7sy096m8",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention' }).waitFor",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 9,
+                                            "location": "tests/support/marketplace/marketplace.ts:27:12"
+                                        },
+                                        {
+                                            "id": "65nr5a59ej2gmu5i4bh1",
+                                            "title": "locator.getByRole('link', { name: 'Data Loss Prevention Enabled' }).isVisible",
+                                            "type": "step",
+                                            "stepType": "pw:api",
+                                            "duration": 5,
+                                            "location": "tests/EE/admin/marketplace/private.spec.ts:99:79"
+                                        },
+                                        {
+                                            "id": "hqmednvtfbsguhu0z3zw",
+                                            "title": "After Hooks",
+                                            "type": "step",
+                                            "stepType": "hook",
+                                            "duration": 3,
+                                            "location": "",
+                                            "subs": [
+                                                {
+                                                    "id": "10mu0tmylemfvib14dph",
+                                                    "title": "fixture: request",
+                                                    "type": "step",
+                                                    "stepType": "fixture",
+                                                    "duration": 1,
+                                                    "location": "",
+                                                    "subs": [
+                                                        {
+                                                            "id": "88h2elhl9u8xron3eq9g",
+                                                            "title": "apiRequestContext.dispose",
+                                                            "type": "step",
+                                                            "stepType": "pw:api",
+                                                            "duration": 1,
+                                                            "location": ""
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "9y6ufcxby77jvhrw6yo4",
+                                                    "title": "fixture: page",
+                                                    "type": "step",
+                                                    "stepType": "fixture",
+                                                    "duration": 0,
+                                                    "location": ""
+                                                },
+                                                {
+                                                    "id": "r0rsdlq11ettryi7b7xq",
+                                                    "title": "fixture: context",
+                                                    "type": "step",
+                                                    "stepType": "fixture",
+                                                    "duration": 0,
+                                                    "location": ""
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "location": "tests/EE/admin/marketplace/private.spec.ts:7:6"
+                        }
+                    ],
+                    "location": "tests/EE/admin/marketplace/private.spec.ts:0:0"
+                }
+            ]
+        }
+    ],
+    "formatters": {
+        "jira": "(v, rowItem, columnItem) => {\n          const key = rowItem[columnItem.id];\n          return `<a href=\"https://rocketchat.atlassian.net/${key}\" target=\"_blank\">${v}</a>`;\n        }"
+    },
+    "suiteTypes": [
+        "project",
+        "file",
+        "describe",
+        "shard"
+    ],
+    "caseTypes": [
+        "passed",
+        "flaky",
+        "skipped",
+        "failed"
+    ],
+    "traceViewerUrl": "https://trace.playwright.dev/?trace={traceUrl}",
+    "tags": {},
+    "summary": {
+        "tests": {
+            "name": "Tests",
+            "value": 2,
+            "nav": true,
+            "id": "tests"
+        },
+        "passed": {
+            "name": "Passed",
+            "value": 2,
+            "color": "green",
+            "nav": true,
+            "id": "passed",
+            "percent": "100.0%"
+        },
+        "flaky": {
+            "name": "Flaky",
+            "value": 0,
+            "color": "orange",
+            "nav": true,
+            "id": "flaky",
+            "percent": "0.0%"
+        },
+        "skipped": {
+            "name": "Skipped",
+            "value": 0,
+            "color": "gray",
+            "nav": true,
+            "id": "skipped",
+            "percent": "0.0%"
+        },
+        "failed": {
+            "name": "Failed",
+            "value": 0,
+            "color": "#d00",
+            "nav": true,
+            "id": "failed",
+            "percent": "0.0%"
+        },
+        "steps": {
+            "name": "Steps",
+            "value": 94,
+            "id": "steps"
+        },
+        "suites": {
+            "name": "Suites",
+            "value": 2,
+            "id": "suites"
+        },
+        "projects": {
+            "name": "Projects",
+            "description": "Suite type is project",
+            "value": 2,
+            "id": "projects"
+        },
+        "files": {
+            "name": "Files",
+            "description": "Suite type is file",
+            "value": 2,
+            "id": "files"
+        },
+        "describes": {
+            "name": "Describes",
+            "description": "Suite type is describe",
+            "value": 1,
+            "id": "describes"
+        },
+        "shards": {
+            "name": "Shards",
+            "description": "Suite type is shard (only in shading mode)",
+            "value": 0,
+            "id": "shards"
+        },
+        "retries": {
+            "name": "Retries",
+            "value": 0,
+            "id": "retries"
+        },
+        "errors": {
+            "name": "Errors",
+            "value": 0,
+            "id": "errors"
+        },
+        "logs": {
+            "name": "Logs",
+            "value": 0,
+            "id": "logs"
+        },
+        "attachments": {
+            "name": "Attachments",
+            "value": 0,
+            "id": "attachments"
+        }
+    },
+    "pieChart": {
+        "ns": "mcr-pie",
+        "width": 360,
+        "height": 150,
+        "margin": 10,
+        "svg": "<svg viewBox=\"0 0 360 150\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><g class=\"mcr-pie-path-passed\"><path d=\"M75,75 L75,10 A65,65 0 1 1 75,140 A65,65 0 1 1 75,10 z\" fill=\"green\" opacity=\"0.8\" /><animateTransform from=\"0,0\" to=\"0,0\" pos=\"0,10\" attributeName=\"transform\" type=\"translate\" dur=\"0.2s\" fill=\"freeze\" repeatCount=\"1\" restart=\"always\" /></g><g class=\"mcr-pie-path-flaky\"><path d=\"\" fill=\"orange\" opacity=\"0.8\" /><animateTransform from=\"0,0\" to=\"0,0\" pos=\"0,-10\" attributeName=\"transform\" type=\"translate\" dur=\"0.2s\" fill=\"freeze\" repeatCount=\"1\" restart=\"always\" /></g><g class=\"mcr-pie-path-skipped\"><path d=\"\" fill=\"gray\" opacity=\"0.8\" /><animateTransform from=\"0,0\" to=\"0,0\" pos=\"0,-10\" attributeName=\"transform\" type=\"translate\" dur=\"0.2s\" fill=\"freeze\" repeatCount=\"1\" restart=\"always\" /></g><g class=\"mcr-pie-path-failed\"><path d=\"\" fill=\"#d00\" opacity=\"0.8\" /><animateTransform from=\"0,0\" to=\"0,0\" pos=\"0,-10\" attributeName=\"transform\" type=\"translate\" dur=\"0.2s\" fill=\"freeze\" repeatCount=\"1\" restart=\"always\" /></g><g transform=\"translate(160 10)\"><g class=\"mcr-pie-legend-passed\" transform=\"translate(0 0)\"><circle cx=\"10\" cy=\"16\" r=\"10\" fill=\"green\" opacity=\"0.8\" /><text x=\"30\" y=\"16\" alignment-baseline=\"middle\">Passed</text><text x=\"115\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"middle\">2</text><text x=\"190\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"end\">100.0%</text></g><g class=\"mcr-pie-legend-flaky\" transform=\"translate(0 32)\"><circle cx=\"10\" cy=\"16\" r=\"10\" fill=\"orange\" opacity=\"0.8\" /><text x=\"30\" y=\"16\" alignment-baseline=\"middle\">Flaky</text><text x=\"115\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"middle\">0</text><text x=\"190\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"end\">0.0%</text></g><g class=\"mcr-pie-legend-skipped\" transform=\"translate(0 64)\"><circle cx=\"10\" cy=\"16\" r=\"10\" fill=\"gray\" opacity=\"0.8\" /><text x=\"30\" y=\"16\" alignment-baseline=\"middle\">Skipped</text><text x=\"115\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"middle\">0</text><text x=\"190\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"end\">0.0%</text></g><g class=\"mcr-pie-legend-failed\" transform=\"translate(0 96)\"><circle cx=\"10\" cy=\"16\" r=\"10\" fill=\"#d00\" opacity=\"0.8\" /><text x=\"30\" y=\"16\" alignment-baseline=\"middle\">Failed</text><text x=\"115\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"middle\">0</text><text x=\"190\" y=\"16\" alignment-baseline=\"middle\" text-anchor=\"end\">0.0%</text></g></g></svg>"
+    }
+}
