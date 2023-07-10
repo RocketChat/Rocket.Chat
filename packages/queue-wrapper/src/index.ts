@@ -36,7 +36,11 @@ export class QueueWrapper implements IPersistentQueue {
 		this.queue.maxWorkers = maxWorkers;
 	}
 
-	// Registers Workers with the processingMethod for a given type of Work
+	/**
+	 * registerWorkers
+	 * @param workType: the type of work which will be processed from the queue
+	 * @param processingMethod: the handler for the work to be processed by the worker
+	 */
 	public async registerWorkers(workType: string, processingMethod: (params: any) => Promise<void>): Promise<void> {
 		this.logger.info(`Registering workers for "${workType}"`);
 
@@ -68,7 +72,11 @@ export class QueueWrapper implements IPersistentQueue {
 		});
 	}
 
-	// Queues a work of type "X" to be processed by the Workers
+	/**
+	 * queueWork
+	 * @param workType: the type of work which will be added to the queue
+	 * @param data: actual work to be processed by the workers
+	 */
 	public async queueWork<T extends Record<string, unknown>>(workType: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${workType}`);
 

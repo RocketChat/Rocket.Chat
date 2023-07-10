@@ -10,7 +10,7 @@ export class Queue {
 
 	private queue: IPersistentQueue;
 
-	constructor(workType: string, maxWorkers: 1) {
+	constructor(workType: string, maxWorkers = 1) {
 		this.queue = new QueueWrapper(maxWorkers);
 		this.workType = workType;
 	}
