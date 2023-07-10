@@ -3,15 +3,10 @@ import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contex
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
-import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
-import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
-import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
-import { waitUntilFind } from '../../../lib/utils/waitUntilFind';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -53,6 +48,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				}
 			}
 
+			const { ChatRoom, ChatSubscription } = await import('../../../../app/models/client');
+
 			ChatRoom.upsert({ _id: roomData._id }, { $set, $unset });
 			const room = ChatRoom.findOne({ _id: roomData._id });
 
@@ -60,11 +57,16 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new TypeError('room is undefined');
 			}
 
+			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
+
 			if (room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
 				await LegacyRoomManager.close(type + reference);
 				throw new RoomNotFoundError(undefined, { rid: room._id });
 			}
+
+			const { RoomManager } = await import('../../../lib/RoomManager');
+			const { fireGlobalEvent } = await import('../../../lib/utils/fireGlobalEvent');
 
 			unsubscribeFromRoomOpenedEvent.current();
 			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
@@ -95,6 +97,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				}
 
 				const { rid } = await createDirectMessage(...reference.split(', '));
+				const { ChatSubscription } = await import('../../../../app/models/client');
+				const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
 				await waitUntilFind(() => ChatSubscription.findOne({ rid }));
 				directRoute.push({ rid }, (prev) => prev);
 			},
