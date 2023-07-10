@@ -9,16 +9,18 @@ import { RecordList } from '../../../client/lib/lists/RecordList';
 type TagsListOptions = {
 	filter: string;
 	department?: string;
+	viewAll?: boolean;
 };
 
-export const useTagsList = (
-	options: TagsListOptions,
-): {
+type UseTagsListResult = {
 	itemsList: RecordList<ILivechatTagRecord>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
-} => {
+};
+
+export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
+	const { viewAll, department, filter } = options;
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatTagRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatTagRecord>()), []);
 
@@ -31,10 +33,11 @@ export const useTagsList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { tags, total } = await getTags({
-				text: options.filter,
+				text: filter,
 				offset: start,
 				count: end + start,
-				...(options.department && { department: options.department }),
+				...(viewAll && { viewAll: 'true' }),
+				...(department && { department }),
 			});
 
 			return {
@@ -47,7 +50,7 @@ export const useTagsList = (
 				itemCount: total,
 			};
 		},
-		[getTags, options.filter, options.department],
+		[getTags, filter, viewAll, department],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
