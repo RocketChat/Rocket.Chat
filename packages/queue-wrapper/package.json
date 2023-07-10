@@ -22,6 +22,8 @@
 		"/dist"
 	],
 	"dependencies": {
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"mongo-message-queue": "^1.0.0",
 		"mongodb": "^4.12.1",
 		"pino": "^8.4.2"
