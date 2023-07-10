@@ -72,7 +72,7 @@ const Surface: FC = () => {
   };
 
   return (
-    <Box padding="20px">
+    <Box w="100%" h="100%" padding="20px">
       <UiKitContext.Provider
         value={{
           action: (a) => {

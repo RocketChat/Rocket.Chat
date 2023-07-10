@@ -19,5 +19,9 @@ const container: containerType = {
     type: 'modal',
     text: '',
   },
+  [SurfaceOptions.ContextualBar]: {
+    type: 'ContextualBar',
+    text: '',
+  },
 };
 export default container;

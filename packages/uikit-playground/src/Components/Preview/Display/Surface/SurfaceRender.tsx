@@ -5,6 +5,7 @@ import BannerSurface from './BannerSurface';
 import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
 import { SurfaceOptions } from './constant';
+import ContextualBarSurface from './ContextualBarSurface';
 
 const SurfaceRender = ({
   type = SurfaceOptions.Message,
@@ -21,6 +22,9 @@ const SurfaceRender = ({
       <BannerSurface>{children}</BannerSurface>
     )}
     {SurfaceOptions.Modal === type && <ModalSurface>{children}</ModalSurface>}
+    {SurfaceOptions.ContextualBar === type && (
+      <ContextualBarSurface>{children}</ContextualBarSurface>
+    )}
   </>
 );
 export default SurfaceRender;
