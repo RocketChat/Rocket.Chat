@@ -21,6 +21,19 @@
 - Updated dependencies [12d97e16c2]
   - @rocket.chat/core-typings@6.3.0-rc.0
 
+## 6.2.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.2.9
+
+## 6.2.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @rocket.chat/core-typings@6.2.7
+
 ## 6.2.6
 
 ### Patch Changes
