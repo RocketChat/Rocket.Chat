@@ -3,8 +3,10 @@ import React from 'react';
 
 import AutoCompleteTagsMultiple from './AutoCompleteTagsMultiple';
 
-const CurrentChatTags: FC<{ value: Array<string>; handler: () => void }> = ({ value, handler }) => (
-	<AutoCompleteTagsMultiple onChange={handler} value={value} />
+type CurrentChatTagsProps = { value: Array<string>; handler: () => void; department?: string; viewAll?: boolean };
+
+const CurrentChatTags: FC<CurrentChatTagsProps> = ({ value, handler, department, viewAll }) => (
+	<AutoCompleteTagsMultiple onChange={handler} value={value} department={department} viewAll={viewAll} />
 );
 
 export default CurrentChatTags;

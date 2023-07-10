@@ -1,5 +1,22 @@
 # Change Log
 
+## 1.0.0-rc.0
+
+### Minor Changes
+
+- dbdf45b0e5: feat: Introduce contextualBar surface renderer for UiKit blocks
+- c0fa567246: Introducing i18n to UiKit text renderers
+
+### Patch Changes
+
+- Updated dependencies [e14ec50816]
+- Updated dependencies [9ea8088f06]
+- Updated dependencies [e01bbcca54]
+- Updated dependencies [cde2539619]
+  - @rocket.chat/ui-contexts@1.0.0-rc.0
+  - @rocket.chat/gazzodown@1.0.0-rc.0
+  - @rocket.chat/ui-video-conf@1.0.0-rc.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

@@ -38,4 +38,5 @@ module.exports = {
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
 	],
+	exclude: ['client/hooks/*.spec.{ts,tsx}'],
 };
