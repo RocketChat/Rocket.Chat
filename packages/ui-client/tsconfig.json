@@ -1,9 +1,24 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
+		"target": "es2018",
+		"module": "esNext",
+		"lib": ["esnext", "dom"],
+
+		"allowJs": true,
+		"checkJs": false,
+		"jsx": "react-jsx",
+		"noEmit": true,
+
+		/* Strict Type-Checking Options */
+		"strictPropertyInitialization": false,
+
+		/* Additional Checks */
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
 		"rootDir": "./src",
-		"outDir": "./dist",
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["./dist/**/*"],
+	"exclude": ["./dist/**/*"]
 }

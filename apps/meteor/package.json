@@ -73,6 +73,7 @@
 		"@playwright/test": "^1.22.2",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/livechat": "workspace:^",
+		"@rocket.chat/mock-providers": "workspace:^",
 		"@settlin/spacebars-loader": "^1.0.9",
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/addon-interactions": "~6.5.16",

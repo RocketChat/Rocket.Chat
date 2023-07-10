@@ -2,8 +2,8 @@
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense } from 'react';
 
-import { useFeaturePreview } from '../hooks/useFeaturePreview';
-import type { FeaturesAvailable } from '../hooks/useFeaturePreviewList';
+import { useFeaturePreview } from '../../hooks/useFeaturePreview';
+import { FeaturesAvailable } from '../../hooks/useFeaturePreviewList';
 
 export const FeaturePreview = ({ feature, children }: { feature: FeaturesAvailable; children: ReactElement[] }) => {
 	const featureToggleEnabled = useFeaturePreview(feature);
