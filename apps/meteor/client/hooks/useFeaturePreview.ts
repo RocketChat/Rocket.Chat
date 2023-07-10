@@ -4,6 +4,7 @@ import type { FeaturesAvailable, FeaturePreviewProps } from './useFeaturePreview
 
 export const useFeaturePreview = (featureName: FeaturesAvailable) => {
 	const featurePreviewEnabled = useSetting('Accounts_AllowFeaturePreview');
+
 	const features = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
 	const currentFeature = features?.find((feature) => feature.name === featureName);
@@ -13,7 +14,6 @@ export const useFeaturePreview = (featureName: FeaturesAvailable) => {
 	}
 
 	if (!currentFeature) {
-		console.error(`Feature ${featureName} not found`);
 		return false;
 	}
 

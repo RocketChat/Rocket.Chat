@@ -40,7 +40,8 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const handleAction = useHandleMenuAction(itemsList || []);
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
-	const handleItems = (items: GenericMenuItemProps[]) => (hasIcon ? items.map((item) => ({ ...item, gap: !item.icon })) : items);
+	const handleItems = (items: GenericMenuItemProps[]) =>
+		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
 
 	return (
 		<>

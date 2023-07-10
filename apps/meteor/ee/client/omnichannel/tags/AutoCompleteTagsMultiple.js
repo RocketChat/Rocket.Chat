@@ -8,7 +8,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 const AutoCompleteTagMultiple = (props) => {
-	const { value, onlyMyTags = false, onChange = () => {}, department } = props;
+	const { value, onlyMyTags = false, onChange = () => {}, department, viewAll = false } = props;
 
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
@@ -16,7 +16,10 @@ const AutoCompleteTagMultiple = (props) => {
 	const debouncedTagsFilter = useDebouncedValue(tagsFilter, 500);
 
 	const { itemsList: tagsList, loadMoreItems: loadMoreTags } = useTagsList(
-		useMemo(() => ({ filter: debouncedTagsFilter, onlyMyTags, department }), [debouncedTagsFilter, onlyMyTags, department]),
+		useMemo(
+			() => ({ filter: debouncedTagsFilter, onlyMyTags, department, viewAll }),
+			[debouncedTagsFilter, onlyMyTags, department, viewAll],
+		),
 	);
 
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
