@@ -1027,6 +1027,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.insertOne(nRecord);
 	}
 
+	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
+		record._hidden = true;
+		// @ts-expect-error - :)
+		record.parent = record._id;
+		// @ts-expect-error - :)
+		record.editedAt = new Date();
+		// @ts-expect-error - :)
+		record.editedBy = {
+			_id: user._id,
+			username: user.username,
+		};
+
+		const { _id: ignoreId, ...nRecord } = record;
+		return this.insertOne(nRecord);
+	}
+
 	// UPDATE
 	setHiddenById(_id: string, hidden: boolean): Promise<UpdateResult> {
 		if (hidden == null) {

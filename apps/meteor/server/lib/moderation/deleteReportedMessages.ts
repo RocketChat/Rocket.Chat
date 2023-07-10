@@ -24,12 +24,15 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			const existingMessages = await Messages.find({ _id: { $in: messageIds } }).toArray();
+			const msgCursor = Messages.find({ _id: { $in: messageIds } });
 
-			if (existingMessages.length === 0) {
-				return;
+			const processDocument = async (doc: IMessage) => {
+				await Messages.cloneAndSaveAsHistoryByRecord(doc, user as any);
+			};
+
+			for await (const doc of msgCursor) {
+				await processDocument(doc);
 			}
-			await Promise.all(existingMessages.map((msg) => Messages.cloneAndSaveAsHistoryById(msg._id, user as any)));
 		} else {
 			await Messages.setHiddenByIds(messageIds, true);
 		}
