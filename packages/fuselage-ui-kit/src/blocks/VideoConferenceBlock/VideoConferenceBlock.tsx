@@ -24,7 +24,7 @@ import { kitContext } from '../..';
 
 type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
-const MAX_USERS = 6;
+const MAX_USERS = 3;
 
 const VideoConferenceBlock = ({
   block,
