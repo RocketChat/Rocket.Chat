@@ -1,11 +1,6 @@
-# @rocket.chat/api-client
+# @rocket.chat/ddp-client
 
-## 0.1.0-rc.0
-
-### Minor Changes
-
-- 40cebcc0f1: Moved from patch monkey solution to official one
-- 40cebcc0f1: ask for totp if the provided one is invalid
+## 0.0.2-rc.0
 
 ### Patch Changes
 
@@ -17,15 +12,9 @@
 - Updated dependencies [eecd9fc99a]
 - Updated dependencies [6a474ff952]
 - Updated dependencies [9da856cc67]
+- Updated dependencies [40cebcc0f1]
 - Updated dependencies [12d97e16c2]
+- Updated dependencies [40cebcc0f1]
 - Updated dependencies [0645f42e12]
-  - @rocket.chat/core-typings@6.3.0-rc.0
   - @rocket.chat/rest-typings@6.3.0-rc.0
-
-## 0.0.2
-
-### Patch Changes
-
-- Updated dependencies []:
-  - @rocket.chat/core-typings@6.2.6
-  - @rocket.chat/rest-typings@6.2.6
+  - @rocket.chat/api-client@0.1.0-rc.0
