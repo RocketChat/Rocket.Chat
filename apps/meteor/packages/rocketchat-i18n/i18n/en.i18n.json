@@ -1024,6 +1024,7 @@
   "Cloud_login_to_cloud": "Login to Rocket.Chat Cloud",
   "Cloud_logout": "Logout of Rocket.Chat Cloud",
   "Cloud_manually_input_token": "Enter the token received from the Cloud Console.",
+  "Cloud_portal": "Cloud portal",
   "Cloud_register_error": "There has been an error trying to process your request. Please try again later.",
   "Cloud_Register_manually": "Register Offline",
   "Cloud_register_offline_finish_helper": "After completing the registration process in the Cloud Console you should be presented with some text. Please paste it here to finish the registration.",

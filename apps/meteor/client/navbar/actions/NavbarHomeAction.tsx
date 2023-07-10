@@ -4,7 +4,7 @@ import { useRouter, useLayout, useSetting, useTranslation } from '@rocket.chat/u
 import type { HTMLAttributes, VFC } from 'react';
 import React from 'react';
 
-import NavbarAction from '../../components/Navbar/NavbarAction';
+import { NavbarAction } from '../../components/Navbar';
 
 const NavbarHomeAction: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const t = useTranslation();

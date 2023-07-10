@@ -1,7 +1,8 @@
 import { Skeleton, Badge, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
@@ -10,13 +11,16 @@ import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/Accoun
 import { isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
-import NavbarAction from '../../components/Navbar/NavbarAction';
+import { NavbarAction } from '../../components/Navbar';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useAppRequestStats } from '../../views/marketplace/hooks/useAppRequestStats';
 
-const NavbarMarketplaceAction = () => {
+const NavbarMarketplaceAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const t = useTranslation();
+	const router = useRouter();
 	const marketplaceRoute = useRoute('marketplace');
+	const routeName = router.getRouteName();
+
 	const appRequestStats = useAppRequestStats();
 
 	const page = 'list';
@@ -88,15 +92,22 @@ const NavbarMarketplaceAction = () => {
 
 	if (!showApps) {
 		return (
-			<NavbarAction>
+			<NavbarAction {...props}>
 				<IconButton icon='store' disabled />
 			</NavbarAction>
 		);
 	}
 
 	return (
-		<NavbarAction>
-			<GenericMenu medium title={t('Marketplace')} icon='store' onAction={handleAction} items={menuItems} />
+		<NavbarAction {...props}>
+			<GenericMenu
+				pressed={routeName === 'marketplace'}
+				medium
+				title={t('Marketplace')}
+				icon='store'
+				onAction={handleAction}
+				items={menuItems}
+			/>
 		</NavbarAction>
 	);
 };
