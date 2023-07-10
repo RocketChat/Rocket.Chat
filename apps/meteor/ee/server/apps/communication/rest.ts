@@ -1120,41 +1120,44 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
 				async post() {
+					let marketPlaceAppInfo = null;
 					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
 
 					const baseUrl = orchestrator.getMarketplaceUrl();
 					const { id: appId } = this.urlParams;
-					const { version, status } = this.bodyParams;
+					const { status } = this.bodyParams;
 
 					const headers = getDefaultHeaders();
 
-					const mktAppsUrl = new URL(`${baseUrl}/v1/apps/${appId}`);
-
-					mktAppsUrl.searchParams.set('appVersion', String(version));
-
-					const request = await fetch(mktAppsUrl.toString(), {
-						headers,
-					});
-
-					if (!request.ok) {
-						return API.v1.failure('Unable to retrieve app from marketplace');
-					}
-
-					const [data] = await request.json();
-
 					const prl = manager.getOneById(appId);
-
 					if (!prl) {
 						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
 					const storedApp = prl.getStorageItem();
 
+					const { version } = prl.getInfo();
+
+					const appInfosURL = new URL(`${baseUrl}/v1/apps/${appId}`);
+
+					appInfosURL.searchParams.set('appVersion', String(version));
+
+					const appInfoResponse = await fetch(appInfosURL.toString(), {
+						headers,
+					});
+
+					if (appInfoResponse?.ok) {
+						const [data] = appInfoResponse ? await appInfoResponse.json() : null;
+						marketPlaceAppInfo = data;
+					}
+
 					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(status)) {
-						if (!isEnterprise() && data.isEnterpriseOnly) {
-							return API.v1.failure('Invalid environment for enabling enterprise app');
+						if (marketPlaceAppInfo) {
+							if (!isEnterprise() && marketPlaceAppInfo.isEnterpriseOnly) {
+								return API.v1.failure('Invalid environment for enabling enterprise app');
+							}
 						}
 					}
 

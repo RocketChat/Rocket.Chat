@@ -298,8 +298,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}),
 		};
 
-		const isEnterprise = app.isEnterpriseOnly && isEnterpriseLicense;
-		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterprise;
+		const isEnterpriseOrNot = (app.isEnterpriseOnly && false) || !app.isEnterpriseOnly;
+		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -387,7 +387,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		t,
 		handleSubscription,
-		button.label,
 		handleAcquireApp,
 		requestedEndUser,
 		isEnterpriseLicense,
