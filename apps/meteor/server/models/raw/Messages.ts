@@ -6,6 +6,7 @@ import type {
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
+	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -1602,7 +1603,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
 
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage> {
+	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport> {
 		const query = {
 			'_importFile.downloadUrl': {
 				$exists: true,
@@ -1618,7 +1619,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query);
+		return this.find<IMessageWithPendingFileImport>(query);
 	}
 
 	countAllImportedMessagesWithFilesToDownload(): Promise<number> {

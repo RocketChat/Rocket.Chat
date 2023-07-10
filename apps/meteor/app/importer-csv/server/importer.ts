@@ -1,18 +1,24 @@
 import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import type { IImport } from '@rocket.chat/core-typings';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
 
 export class CsvImporter extends Importer {
-	constructor(info, importRecord) {
+	private csvParser: (csv: string) => string[];
+
+	constructor(info: ImporterInfo, importRecord: IImport) {
 		super(info, importRecord);
 
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
@@ -42,10 +48,10 @@ export class CsvImporter extends Importer {
 		let channelsCount = 0;
 		const dmRooms = new Map();
 		const roomIds = new Map();
-		const usedUsernames = new Set();
-		const availableUsernames = new Set();
+		const usedUsernames = new Set<string>();
+		const availableUsernames = new Set<string>();
 
-		const getRoomId = (roomName) => {
+		const getRoomId = (roomName: string) => {
 			if (!roomIds.has(roomName)) {
 				roomIds.set(roomName, Random.id());
 			}
@@ -117,6 +123,7 @@ export class CsvImporter extends Importer {
 					const name = u[2].trim();
 
 					await this.converter.addUser({
+						type: 'user',
 						importIds: [username],
 						emails: [email],
 						username,
@@ -148,7 +155,7 @@ export class CsvImporter extends Importer {
 					continue;
 				}
 
-				let data;
+				let data: { username: string; ts: string; text: string; otherUsername?: string; isDirect?: true }[];
 				const msgGroupData = item[1].split('.')[0]; // messages
 				let isDirect = false;
 
@@ -172,6 +179,10 @@ export class CsvImporter extends Importer {
 
 				if (isDirect) {
 					for await (const msg of data) {
+						if (!msg.otherUsername) {
+							continue;
+						}
+
 						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
 
 						if (!dmRooms.has(sourceId)) {
@@ -247,7 +258,8 @@ export class CsvImporter extends Importer {
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
 			await super.updateProgress(ProgressStep.ERROR);
-			return super.getProgress();
 		}
+
+		return super.getProgress();
 	}
 }

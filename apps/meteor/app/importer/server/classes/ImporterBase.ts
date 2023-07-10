@@ -90,7 +90,7 @@ export class Importer {
 	/**
 	 * Takes the uploaded file and extracts the users, channels, and messages from it.
 	 *
-	 * @param {string} fullFilePath the full path of the uploaded file
+	 * @param {string} _fullFilePath the full path of the uploaded file
 	 * @returns {Progress} The progress record of the import.
 	 */
 	async prepareUsingLocalFile(_fullFilePath: string): Promise<Progress> {

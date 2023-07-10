@@ -1,12 +1,17 @@
 import fs from 'fs';
 
+import type { IImport, IImportUser } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { Importer, ProgressStep } from '../../importer/server';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import { RocketChatFile } from '../../file/server';
 
 export class SlackUsersImporter extends Importer {
-	constructor(info, importRecord) {
+	private csvParser: (csv: string) => string[];
+
+	constructor(info: ImporterInfo, importRecord: IImport) {
 		super(info, importRecord);
 
 		const { parse } = require('csv-parse/lib/sync');
@@ -14,7 +19,7 @@ export class SlackUsersImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
 		await this.converter.clearImportData();
 
 		const file = fs.readFileSync(fullFilePath);
@@ -26,10 +31,10 @@ export class SlackUsersImporter extends Importer {
 		const data = buffer.toString('base64');
 		const dataURI = `data:${contentType};base64,${data}`;
 
-		return this.prepare(dataURI, contentType, fileName, true);
+		return this.prepare(dataURI, fileName || '');
 	}
 
-	async prepare(dataURI, sentContentType, fileName) {
+	async prepare(dataURI: string, fileName: string): Promise<Progress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 		await this.updateRecord({ file: fileName });
@@ -54,7 +59,7 @@ export class SlackUsersImporter extends Importer {
 
 			const name = user[7] || user[8] || username;
 
-			const newUser = {
+			const newUser: IImportUser = {
 				emails: [email],
 				importIds: [email],
 				username,
@@ -88,6 +93,7 @@ export class SlackUsersImporter extends Importer {
 		await super.updateProgress(ProgressStep.USER_SELECTION);
 		await super.addCountToTotal(userCount);
 		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
-		return super.updateRecord({ 'count.users': userCount });
+		await super.updateRecord({ 'count.users': userCount });
+		return super.getProgress();
 	}
 }

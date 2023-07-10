@@ -2,6 +2,7 @@ import { Users } from '@rocket.chat/models';
 
 import { Importer, ProgressStep, Selection } from '../../importer/server';
 import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
 
 export class PendingAvatarImporter extends Importer {
 	async prepareFileCount() {
@@ -19,18 +20,18 @@ export class PendingAvatarImporter extends Importer {
 		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		await this.addCountToTotal(fileCount);
 
-		const fileData = new Selection(this.name, [], [], fileCount);
+		const fileData = new Selection(this.info.name, [], [], fileCount);
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		setImmediate(() => {
-			this.startImport(fileData);
+			void this.startImport(fileData);
 		});
 
 		return fileCount;
 	}
 
-	async startImport() {
+	async startImport(importSelection: Selection): Promise<Progress> {
 		const pendingFileUserList = await Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {
@@ -38,8 +39,8 @@ export class PendingAvatarImporter extends Importer {
 					const { _pendingAvatarUrl: url, name, _id } = user;
 
 					try {
-						if (!url || !url.startsWith('http')) {
-							return;
+						if (!url?.startsWith('http')) {
+							continue;
 						}
 
 						try {
@@ -55,11 +56,11 @@ export class PendingAvatarImporter extends Importer {
 					this.logger.error(error);
 				}
 			}
-		} catch (error) {
+		} catch (error: any) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {
 				this.logger.info('CursorNotFound');
-				return this.startImport();
+				return this.startImport(importSelection);
 			}
 
 			await super.updateProgress(ProgressStep.ERROR);

@@ -3,15 +3,16 @@ import http from 'http';
 
 import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
+import type { IImport, MessageAttachment, IUpload } from '@rocket.chat/core-typings';
 
 import { Importer, ProgressStep, Selection } from '../../importer/server';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import { FileUpload } from '../../file-upload/server';
 
 export class PendingFileImporter extends Importer {
-	constructor(info, importRecord) {
+	constructor(info: ImporterInfo, importRecord: IImport) {
 		super(info, importRecord);
-		this.userTags = [];
-		this.bots = {};
 	}
 
 	async prepareFileCount() {
@@ -27,19 +28,19 @@ export class PendingFileImporter extends Importer {
 		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		await this.addCountToTotal(fileCount);
 
-		const fileData = new Selection(this.name, [], [], fileCount);
+		const fileData = new Selection(this.info.name, [], [], fileCount);
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		setImmediate(() => {
-			this.startImport(fileData);
+			void this.startImport(fileData);
 		});
 
 		return fileCount;
 	}
 
-	async startImport() {
-		const downloadedFileIds = [];
+	async startImport(importSelection: Selection): Promise<Progress> {
+		const downloadedFileIds: string[] = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;
 
@@ -52,7 +53,7 @@ export class PendingFileImporter extends Importer {
 				return;
 			}
 
-			return new Promise((resolve) => {
+			return new Promise<void>((resolve) => {
 				const handler = setInterval(() => {
 					if (count + 1 >= maxFileCount) {
 						return;
@@ -68,15 +69,13 @@ export class PendingFileImporter extends Importer {
 			});
 		};
 
-		const completeFile = async (details) => {
+		const completeFile = async (details: { size: number }) => {
 			await this.addCountCompleted(1);
 			count--;
 			currentSize -= details.size;
 		};
 
-		const logError = (error) => {
-			this.logger.error(error);
-		};
+		const logError = this.logger.error.bind(this.logger);
 
 		try {
 			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
@@ -86,16 +85,16 @@ export class PendingFileImporter extends Importer {
 
 					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
 						await this.addCountCompleted(1);
-						return;
+						continue;
 					}
 
 					const url = _importFile.downloadUrl;
-					if (!url || !url.startsWith('http')) {
+					if (!url?.startsWith('http')) {
 						await this.addCountCompleted(1);
-						return;
+						continue;
 					}
 
-					const details = {
+					const details: { message_id: string; name: string; size: number; userId: string; rid: string; type?: string } = {
 						message_id: `${message._id}-file-${_importFile.id}`,
 						name: _importFile.name || Random.id(),
 						size: _importFile.size || 0,
@@ -106,6 +105,7 @@ export class PendingFileImporter extends Importer {
 					const requestModule = /https/i.test(url) ? https : http;
 					const fileStore = FileUpload.getStore('Uploads');
 					const reportProgress = this.reportProgress.bind(this);
+					const getMessageAttachment = this.getMessageAttachment.bind(this);
 
 					nextSize = details.size;
 					await waitForFiles();
@@ -119,7 +119,7 @@ export class PendingFileImporter extends Importer {
 							details.type = contentType;
 						}
 
-						const rawData = [];
+						const rawData: Uint8Array[] = [];
 						res.on('data', (chunk) => {
 							rawData.push(chunk);
 
@@ -136,30 +136,8 @@ export class PendingFileImporter extends Importer {
 								// Bypass the fileStore filters
 								const file = await fileStore._doInsert(details, Buffer.concat(rawData));
 
-								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
-								const attachment = {
-									title: file.name,
-									title_link: url,
-								};
-
-								if (/^image\/.+/.test(file.type)) {
-									attachment.image_url = url;
-									attachment.image_type = file.type;
-									attachment.image_size = file.size;
-									attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-								}
-
-								if (/^audio\/.+/.test(file.type)) {
-									attachment.audio_url = url;
-									attachment.audio_type = file.type;
-									attachment.audio_size = file.size;
-								}
-
-								if (/^video\/.+/.test(file.type)) {
-									attachment.video_url = url;
-									attachment.video_type = file.type;
-									attachment.video_size = file.size;
-								}
+								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+								const attachment = getMessageAttachment(file, url);
 
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);
@@ -173,10 +151,10 @@ export class PendingFileImporter extends Importer {
 					this.logger.error(error);
 				}
 			}
-		} catch (error) {
+		} catch (error: any) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {
-				return this.startImport();
+				return this.startImport(importSelection);
 			}
 
 			await super.updateProgress(ProgressStep.ERROR);
@@ -185,5 +163,45 @@ export class PendingFileImporter extends Importer {
 
 		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
+	}
+
+	getMessageAttachment(file: IUpload, url: string): MessageAttachment {
+		if (file.type) {
+			if (/^image\/.+/.test(file.type)) {
+				return {
+					title: file.name,
+					title_link: url,
+					image_url: url,
+					image_type: file.type,
+					image_size: file.size,
+					image_dimensions: file.identify ? file.identify.size : undefined,
+				};
+			}
+
+			if (/^audio\/.+/.test(file.type)) {
+				return {
+					title: file.name,
+					title_link: url,
+					audio_url: url,
+					audio_type: file.type,
+					audio_size: file.size,
+				};
+			}
+
+			if (/^video\/.+/.test(file.type)) {
+				return {
+					title: file.name,
+					title_link: url,
+					video_url: url,
+					video_type: file.type,
+					video_size: file.size,
+				};
+			}
+		}
+
+		return {
+			title: file.name,
+			title_link: url,
+		};
 	}
 }
