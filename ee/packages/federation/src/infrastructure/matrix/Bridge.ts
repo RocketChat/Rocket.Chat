@@ -1,8 +1,15 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
+import type {
+	IExternalUserProfileInformation,
+	IFederationBridge,
+	IFederationBridgeRegistrationFile,
+	IFederationPublicRoomsResult,
+	IFederationSearchPublicRoomsParams,
+} from '../../domain/IFederationBridge';
 // import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
@@ -16,11 +23,12 @@ import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameCh
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
+import { MATRIX_POWER_LEVELS } from './definitions/MatrixPowerLevels';
 
 let MatrixUserInstance: any;
 
 const DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS = 180000;
-
+const DEFAULT_TIMEOUT_IN_MS_FOR_SEARCHING_ROOMS = 10000;
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -556,5 +564,74 @@ export class MatrixBridge implements IFederationBridge {
 			'namespaces': registrationFile.listenTo,
 			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
+	}
+
+	private mountPowerLevelRulesWithMinimumPowerLevelForEachAction(): Record<string, any> {
+		return {
+			ban: MATRIX_POWER_LEVELS.MODERATOR,
+			events_default: MATRIX_POWER_LEVELS.USER,
+			historical: MATRIX_POWER_LEVELS.ADMIN,
+			invite: MATRIX_POWER_LEVELS.MODERATOR,
+			kick: MATRIX_POWER_LEVELS.MODERATOR,
+			redact: MATRIX_POWER_LEVELS.MODERATOR,
+			state_default: MATRIX_POWER_LEVELS.MODERATOR,
+			users_default: MATRIX_POWER_LEVELS.USER,
+			events: {
+				'm.room.avatar': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.canonical_alias': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.encryption': MATRIX_POWER_LEVELS.ADMIN,
+				'm.room.history_visibility': MATRIX_POWER_LEVELS.ADMIN,
+				'm.room.name': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.power_levels': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.server_acl': MATRIX_POWER_LEVELS.ADMIN,
+				'm.room.tombstone': MATRIX_POWER_LEVELS.ADMIN,
+			},
+		};
+	}
+
+	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {
+		const intent = this.bridgeInstance.getIntent(externalCreatorId);
+		const privateRoomTypes = [RoomType.DIRECT_MESSAGE, RoomType.PRIVATE_GROUP];
+
+		const visibility = privateRoomTypes.includes(roomType) ? MatrixRoomVisibility.PRIVATE : MatrixRoomVisibility.PUBLIC;
+		const matrixRoomType = privateRoomTypes.includes(roomType) ? MatrixRoomType.PRIVATE : MatrixRoomType.PUBLIC;
+
+		const matrixRoom = await intent.createRoom({
+			createAsClient: true,
+			options: {
+				name: roomName,
+				topic: roomTopic,
+				room_alias_name: `${roomName}${Date.now()}`,
+				visibility,
+				preset: matrixRoomType,
+				creation_content: {
+					was_internally_programatically_created: true,
+				},
+				power_level_content_override: this.mountPowerLevelRulesWithMinimumPowerLevelForEachAction(),
+				...(roomTopic ? { topic: roomTopic } : {}),
+			},
+		});
+		await intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
+
+		return matrixRoom.room_id;
+	}
+
+	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {
+		const { serverName, limit = 50, roomName, pageToken } = params;
+		try {
+			return await this.bridgeInstance.getIntent().matrixClient.doRequest(
+				'POST',
+				`/_matrix/client/r0/publicRooms?server=${serverName}`,
+				{},
+				{
+					filter: { generic_search_term: roomName },
+					limit,
+					...(pageToken ? { since: pageToken } : {}),
+				},
+				DEFAULT_TIMEOUT_IN_MS_FOR_SEARCHING_ROOMS,
+			);
+		} catch (error) {
+			throw new Error('invalid-server-name');
+		}
 	}
 }

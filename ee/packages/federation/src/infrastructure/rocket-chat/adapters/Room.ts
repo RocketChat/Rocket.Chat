@@ -332,4 +332,8 @@ export class RocketChatRoomAdapter {
 	// 		scope: federatedRoom.getInternalId(),
 	// 	};
 	// }
+
+	public async createLocalDirectMessageRoom(_members: string[], _creatorId: string): Promise<void> {
+		// await createDirectMessage(members, creatorId);
+	}
 }

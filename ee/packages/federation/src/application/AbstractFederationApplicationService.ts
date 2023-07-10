@@ -5,6 +5,7 @@ import type { IFederationBridge } from '../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import type { IFederationInviteeDto } from './room/input/RoomSenderDto';
 
 export abstract class AbstractFederationApplicationService {
 	protected internalHomeServerDomain: string;
@@ -109,5 +110,38 @@ export abstract class AbstractFederationApplicationService {
 		}
 		await this.internalUserAdapter.updateFederationAvatar(internalUser._id, externalFileUri);
 		await this.bridge.setUserAvatar(externalInviter.getExternalId(), externalFileUri);
+	}
+
+	protected async createUsersLocallyOnly(invitees: IFederationInviteeDto[]): Promise<void> {
+		const externalUsersToBeCreatedLocally = invitees.filter(
+			(invitee) =>
+				!FederatedUser.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
+		);
+
+		for await (const invitee of externalUsersToBeCreatedLocally) {
+			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(invitee.rawInviteeId);
+
+			const name = externalUserProfileInformation?.displayName || invitee.normalizedInviteeId;
+			const username = invitee.normalizedInviteeId;
+			const existsOnlyOnProxyServer = false;
+
+			await this.internalUserAdapter.createLocalUser(
+				FederatedUser.createLocalInstanceOnly({
+					username,
+					name,
+					existsOnlyOnProxyServer,
+				}),
+			);
+
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(invitee.rawInviteeId);
+			if (!federatedUser) {
+				return;
+			}
+			await this.updateUserAvatarInternally(federatedUser, externalUserProfileInformation?.avatarUrl);
+			await this.updateUserDisplayNameInternally(federatedUser, externalUserProfileInformation?.displayName);
+		}
 	}
 }

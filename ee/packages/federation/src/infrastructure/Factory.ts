@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
@@ -32,6 +32,9 @@ import { FederationUserServiceReceiver } from '../application/user/receiver/User
 import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { FederationUserServiceSender } from '../application/user/sender/UserServiceSender';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
+import { RocketChatQueueAdapter } from './rocket-chat/adapters/Queue';
+import { FederationDirectMessageRoomServiceSender } from '../application/room/sender/DirectMessageRoomServiceSender';
+import { FederationUserService } from '../application/user/UserService';
 
 export class FederationFactory {
 	public static buildInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -52,6 +55,10 @@ export class FederationFactory {
 
 	public static buildInternalFileAdapter(): RocketChatFileAdapter {
 		return new RocketChatFileAdapter();
+	}
+
+	public static buildInternalQueueAdapter(): RocketChatQueueAdapter {
+		return new RocketChatQueueAdapter();
 	}
 
 	public static buildInternalNotificationAdapter(): RocketChatNotificationAdapter {
@@ -91,6 +98,7 @@ export class FederationFactory {
 		internalMessageAdapter: RocketChatMessageAdapter,
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
+		internalQueueAdapter: RocketChatQueueAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(
@@ -100,6 +108,7 @@ export class FederationFactory {
 			internalMessageAdapter,
 			internalSettingsAdapter,
 			internalNotificationAdapter,
+			internalQueueAdapter,
 			bridge,
 		);
 	}
@@ -112,6 +121,22 @@ export class FederationFactory {
 		bridge: IFederationBridge,
 	): FederationUserServiceSender {
 		return new FederationUserServiceSender(internalRoomAdapter, internalUserAdapter, internalFileAdapter, internalSettingsAdapter, bridge);
+	}
+
+	public static buildDirectMessageRoomServiceSender(
+		internalRoomAdapter: RocketChatRoomAdapter,
+		internalUserAdapter: RocketChatUserAdapter,
+		internalFileAdapter: RocketChatFileAdapter,
+		internalSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridge,
+	): FederationDirectMessageRoomServiceSender {
+		return new FederationDirectMessageRoomServiceSender(
+			internalRoomAdapter,
+			internalUserAdapter,
+			internalFileAdapter,
+			internalSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildMessageServiceSender(
@@ -164,6 +189,15 @@ export class FederationFactory {
 			internalSettingsAdapter,
 			bridge,
 		);
+	}
+
+	public static buildUserService(
+		internalSettingsAdapter: RocketChatSettingsAdapter,
+		internalUserAdapter: RocketChatUserAdapter,
+		internalFileAdapter: RocketChatFileAdapter,
+		bridge: IFederationBridge,
+	): FederationUserService {
+		return new FederationUserService(internalSettingsAdapter, internalFileAdapter, internalUserAdapter, bridge);
 	}
 
 	public static buildRoomInternalValidator(
@@ -250,6 +284,45 @@ export class FederationFactory {
 		);
 	}
 
+	public static setupListenersForLocalActionsWhenValidLicense(
+		roomServiceSender: FederationRoomServiceSender,
+		dmRoomServiceSender: FederationDirectMessageRoomServiceSender,
+		settingsAdapter: RocketChatSettingsAdapter,
+	): void {
+		const homeServerDomain = settingsAdapter.getHomeServerDomain();
+		FederationHooks.onFederatedRoomCreated(async (room: IRoom, owner: IUser, originalMemberList: string[]) =>
+			roomServiceSender.onRoomCreated(
+				FederationRoomSenderConverter.toOnRoomCreationDto(owner._id, owner.username || '', room._id, originalMemberList, homeServerDomain),
+			),
+		);
+		FederationHooks.onUsersAddedToARoom(async (room: IRoom, members: IUser[] | Username[], owner?: IUser) =>
+			roomServiceSender.onUsersAddedToARoom(
+				FederationRoomSenderConverter.toOnAddedUsersToARoomDto(
+					owner?._id || '',
+					owner?.username || '',
+					room._id,
+					members,
+					homeServerDomain,
+				),
+			),
+		);
+		FederationHooks.beforeDirectMessageRoomCreate(async (members: IUser[] | string[]) =>
+			dmRoomServiceSender.beforeDirectMessageRoomCreation(
+				FederationRoomSenderConverter.toBeforeDirectMessageCreatedDto(members, homeServerDomain),
+			),
+		);
+		FederationHooks.onDirectMessageRoomCreated(async (room: IRoom, ownerId: IUser['_id'], members: IUser[] | string[]) =>
+			dmRoomServiceSender.onDirectMessageRoomCreation(
+				FederationRoomSenderConverter.toOnDirectMessageCreatedDto(ownerId, room._id, members, homeServerDomain),
+			),
+		);
+		FederationHooks.beforeAddUserToARoom(async (user: IUser | string, room: IRoom, inviter?: IUser) =>
+			roomServiceSender.beforeAddUserToARoom(
+				FederationRoomSenderConverter.toBeforeAddUserToARoomDto([user], room, homeServerDomain, inviter),
+			),
+		);
+	}
+
 	public static setupValidators(roomInternalHooksValidator: FederationRoomInternalValidator): void {
 		FederationHooks.canAddFederatedUserToNonFederatedRoom((user: IUser | string, room: IRoom) =>
 			roomInternalHooksValidator.canAddFederatedUserToNonFederatedRoom(user, room),
@@ -260,13 +333,5 @@ export class FederationFactory {
 		FederationHooks.canCreateDirectMessageFromUI((members: (IUser | string)[]) =>
 			roomInternalHooksValidator.canCreateDirectMessageFromUI(members),
 		);
-	}
-
-	public static removeCEValidators(): void {
-		FederationHooks.removeCEValidation();
-	}
-
-	public static removeAllListeners(): void {
-		FederationHooks.removeAllListeners();
 	}
 }

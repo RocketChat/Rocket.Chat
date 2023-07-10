@@ -1,5 +1,6 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IFederationService } from '@rocket.chat/core-services';
+import { License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
+import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
 import type { IFederationBridge } from './domain/IFederationBridge';
@@ -14,11 +15,14 @@ import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 import { FederationFactory } from './infrastructure/Factory';
+import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
+import { FederationSearchPublicRoomsInputDto } from './application/room/input/RoomInputDto';
+import type { FederationUserService } from './application/user/UserService';
 
-export abstract class AbstractFederationService extends ServiceClassInternal {
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private cancelSettingsObserver: () => void = () => {};
-	// private cancelSettingsObserver: () => void;
+export class FederationService extends ServiceClassInternal implements IFederationService {
+	protected name = 'federation';
+
+	private cancelSettingsObserver: () => void;
 
 	private internalQueueInstance: InMemoryQueue;
 
@@ -27,6 +31,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	private internalRoomServiceSender: FederationRoomServiceSender;
 
 	private internalUserServiceSender: FederationUserServiceSender;
+
+	private internalUserService: FederationUserService;
 
 	private internalRoomAdapter: RocketChatRoomAdapter;
 
@@ -38,31 +44,23 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	private internalNotificationAdapter: RocketChatNotificationAdapter;
 
+	private directMessageRoomServiceSender: FederationDirectMessageRoomServiceSender;
+
 	private isRunning = false;
 
 	protected PROCESSING_CONCURRENCY = 1;
 
 	protected bridge: IFederationBridge;
 
-	protected abstract setupInternalEphemeralListeners(): Promise<void>;
-
-	protected abstract setupInternalValidators(): Promise<void>;
-
-	protected abstract setupInternalActionListeners(): Promise<void>;
-
-	protected abstract onEnableFederation(): Promise<void>;
-
-	protected abstract onDisableFederation(): Promise<void>;
-
-	constructor(
-		federationBridge: IFederationBridge,
-		internalQueueInstance: InMemoryQueue,
-		internalSettingsAdapter: RocketChatSettingsAdapter,
-	) {
+	constructor() {
 		super();
+		const internalQueueInstance = FederationFactory.buildFederationQueue();
+		const internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
+		const bridge = FederationFactory.buildFederationBridge(internalSettingsAdapter, internalQueueInstance);
+
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
-		this.bridge = federationBridge;
+		this.bridge = bridge;
 		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter();
 		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
 		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter();
@@ -75,6 +73,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalMessageAdapter,
 			this.internalSettingsAdapter,
 			this.internalNotificationAdapter,
+			FederationFactory.buildInternalQueueAdapter(),
 			this.bridge,
 		);
 		this.internalUserServiceSender = FederationFactory.buildUserServiceSender(
@@ -82,6 +81,19 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalUserAdapter,
 			this.internalFileAdapter,
 			this.internalSettingsAdapter,
+			this.bridge,
+		);
+		this.directMessageRoomServiceSender = FederationFactory.buildDirectMessageRoomServiceSender(
+			this.internalRoomAdapter,
+			this.internalUserAdapter,
+			this.internalFileAdapter,
+			this.internalSettingsAdapter,
+			this.bridge,
+		);
+		this.internalUserService = FederationFactory.buildUserService(
+			this.internalSettingsAdapter,
+			this.internalUserAdapter,
+			this.internalFileAdapter,
 			this.bridge,
 		);
 		this.setEventListeners();
@@ -117,6 +129,19 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			'federation.userRoleChanged',
 			async (data: Record<string, any>): Promise<void> => FederationHooks.afterRoomRoleChanged(this.internalRoomServiceSender, data),
 		);
+
+		this.onEvent('license.module', async ({ module, valid }) => {
+			if (module !== 'federation') {
+				return;
+			}
+			if (valid) {
+				await this.onValidEnterpriseLicenseAdded();
+			}
+		});
+	}
+
+	protected isFederationEnabled(): boolean {
+		return this.internalSettingsAdapter.isFederationEnabled();
 	}
 
 	private async onFederationEnabledSettingChange(isFederationEnabled: boolean): Promise<void> {
@@ -178,40 +203,14 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
 	}
 
-	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
-		return this.internalSettingsAdapter;
+	private async hasValidLicense(): Promise<boolean> {
+		return License.hasLicense('federation');
 	}
 
-	protected getInternalRoomServiceSender(): FederationRoomServiceSender {
-		return this.internalRoomServiceSender;
-	}
-
-	protected getInternalUserServiceSender(): FederationUserServiceSender {
-		return this.internalUserServiceSender;
-	}
-
-	protected getInternalRoomAdapter(): RocketChatRoomAdapter {
-		return this.internalRoomAdapter;
-	}
-
-	protected getInternalUserAdapter(): RocketChatUserAdapter {
-		return this.internalUserAdapter;
-	}
-
-	protected getInternalMessageAdapter(): RocketChatMessageAdapter {
-		return this.internalMessageAdapter;
-	}
-
-	protected getInternalNotificationAdapter(): RocketChatNotificationAdapter {
-		return this.internalNotificationAdapter;
-	}
-
-	protected getInternalFileAdapter(): RocketChatFileAdapter {
-		return this.internalFileAdapter;
-	}
-
-	protected isFederationEnabled(): boolean {
-		return this.internalSettingsAdapter.isFederationEnabled();
+	private async checkRequiredLicense(): Promise<void> {
+		if (!(await this.hasValidLicense())) {
+			throw new Error('Federation Enterprise is not enabled');
+		}
 	}
 
 	protected async setupFederation(): Promise<void> {
@@ -232,29 +231,19 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected async cleanUpHandlers(): Promise<void> {
 		this.internalQueueInstance.setHandler(this.noop.bind(this), this.PROCESSING_CONCURRENCY);
 	}
-}
-
-abstract class AbstractBaseFederationService extends AbstractFederationService {
-	constructor() {
-		const internalQueueInstance = FederationFactory.buildFederationQueue();
-		const internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
-		const bridge = FederationFactory.buildFederationBridge(internalSettingsAdapter, internalQueueInstance);
-
-		super(bridge, internalQueueInstance, internalSettingsAdapter);
-	}
 
 	protected async setupInternalEphemeralListeners(): Promise<void> {
-		await this.getInternalNotificationAdapter().subscribeToUserTypingEventsOnFederatedRooms(
-			this.getInternalNotificationAdapter().broadcastUserTypingOnRoom.bind(this.getInternalNotificationAdapter()),
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
+			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 		);
 	}
 
 	protected async setupInternalValidators(): Promise<void> {
 		const federationRoomInternalValidator = FederationFactory.buildRoomInternalValidator(
-			this.getInternalRoomAdapter(),
-			this.getInternalUserAdapter(),
-			this.getInternalFileAdapter(),
-			this.getInternalSettingsAdapter(),
+			this.internalRoomAdapter,
+			this.internalUserAdapter,
+			this.internalFileAdapter,
+			this.internalSettingsAdapter,
 			this.bridge,
 		);
 		FederationFactory.setupValidators(federationRoomInternalValidator);
@@ -262,17 +251,17 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 
 	protected async setupInternalActionListeners(): Promise<void> {
 		const federationMessageServiceSender = FederationFactory.buildMessageServiceSender(
-			this.getInternalRoomAdapter(),
-			this.getInternalUserAdapter(),
-			this.getInternalSettingsAdapter(),
-			this.getInternalMessageAdapter(),
+			this.internalRoomAdapter,
+			this.internalUserAdapter,
+			this.internalSettingsAdapter,
+			this.internalMessageAdapter,
 			this.bridge,
 		);
-		FederationFactory.setupListenersForLocalActions(this.getInternalRoomServiceSender(), federationMessageServiceSender);
+		FederationFactory.setupListenersForLocalActions(this.internalRoomServiceSender, federationMessageServiceSender);
 	}
 
 	protected async onEnableFederation(): Promise<void> {
-		await super.setupFederation();
+		await this.setupFederation();
 		await this.startFederation();
 	}
 
@@ -286,35 +275,32 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 		}
 		await this.bridge.start();
 		this.bridge.logFederationStartupInfo('Running Federation V2');
-		// await import('./infrastructure/rocket-chat/slash-commands');
+		const { addDefaultFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
+		addDefaultFederationSlashCommand();
 	}
 
 	private async stopFederation(): Promise<void> {
-		FederationFactory.removeAllListeners();
+		FederationHooks.removeAllListeners();
 		await this.bridge.stop();
-		await super.cleanUpHandlers();
+		await this.cleanUpHandlers();
 	}
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		await super.cleanUpSettingObserver();
+		await this.cleanUpSettingObserver();
 	}
 
 	public async created(): Promise<void> {
-		await super.setupFederation();
+		await this.setupFederation();
 		await this.startFederation();
 	}
-}
-
-export class FederationService extends AbstractBaseFederationService implements IFederationService {
-	protected name = 'federation';
 
 	public async createDirectMessageRoomAndInviteUser(
 		internalInviterId: string,
 		internalRoomId: string,
 		externalInviteeId: string,
 	): Promise<void> {
-		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
+		return this.internalRoomServiceSender.createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
 	}
@@ -323,5 +309,81 @@ export class FederationService extends AbstractBaseFederationService implements 
 		const federationService = new FederationService();
 		await federationService.initialize();
 		return federationService;
+	}
+
+	private async onValidEnterpriseLicenseAdded(): Promise<void> {
+		FederationFactory.setupListenersForLocalActionsWhenValidLicense(
+			this.internalRoomServiceSender,
+			this.directMessageRoomServiceSender,
+			this.internalSettingsAdapter,
+		);
+		const { addDMMultipleFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
+		addDMMultipleFederationSlashCommand();
+		FederationHooks.removeFreeValidation();
+		// TODO: add also the EE endpoints
+	}
+
+	public async createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void> {
+		await this.checkRequiredLicense();
+		await this.directMessageRoomServiceSender.createInternalLocalDirectMessageRoom(
+			FederationRoomSenderConverter.toCreateDirectMessageDto(internalUserId, invitees),
+		);
+	}
+
+	public async searchPublicRooms(
+		serverName?: string,
+		roomName?: string,
+		pageToken?: string,
+		count?: number,
+	): Promise<
+		FederationPaginatedResult<{
+			rooms: IFederationPublicRooms[];
+		}>
+	> {
+		await this.checkRequiredLicense();
+		return this.internalRoomServiceSender.searchPublicRooms(
+			new FederationSearchPublicRoomsInputDto({
+				serverName,
+				roomName,
+				pageToken,
+				count,
+			}),
+		);
+	}
+
+	public async getSearchedServerNamesByInternalUserId(
+		internalUserId: string,
+	): Promise<{ name: string; default: boolean; local: boolean }[]> {
+		await this.checkRequiredLicense();
+		return this.internalUserService.getSearchedServerNamesByInternalUserId(internalUserId);
+	}
+
+	public async addSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
+		await this.checkRequiredLicense();
+		return this.internalUserService.addSearchedServerNameByInternalUserId(internalUserId, serverName);
+	}
+
+	public async removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
+		await this.checkRequiredLicense();
+		return this.internalUserService.removeSearchedServerNameByInternalUserId(internalUserId, serverName);
+	}
+
+	public async scheduleJoinExternalPublicRoom(
+		internalUserId: string,
+		externalRoomId: string,
+		roomName?: string,
+		pageToken?: string,
+	): Promise<void> {
+		await this.checkRequiredLicense();
+		await this.internalRoomServiceSender.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId, roomName, pageToken);
+	}
+
+	public async joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void> {
+		await this.checkRequiredLicense();
+
+		const { internalUserId, externalRoomId, roomName, pageToken } = input;
+		await this.internalRoomServiceSender.joinExternalPublicRoom(
+			FederationRoomSenderConverter.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
+		);
 	}
 }
