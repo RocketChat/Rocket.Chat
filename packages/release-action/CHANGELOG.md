@@ -1,5 +1,20 @@
 # @rocket.chat/release-action
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- 956dbb5520: New action to publish package releases
+
+### Minor Changes
+
+- 0f2f37d4db: Use `release-automation` branch to perform the release
+
+### Patch Changes
+
+- 677919a23e: Use CI user PAT token
+- 677919a23e: Update versions in configured files
+
 ## 1.0.0
 
 ### Major Changes
