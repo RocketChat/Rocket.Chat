@@ -2,7 +2,7 @@ name: Github vulnerabilities and jira board integration
 
 on:
   schedule:
-    - cron: '0 18 * * MON'
+    - cron: '*/15 * * * *'
       
 jobs:
   IntegrateSecurityVulnerabilities:
