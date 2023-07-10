@@ -50,8 +50,10 @@ export class AppUserBridge extends UserBridge {
 		this.orch.debugLog(`The App ${appId} is deleting all bot users`);
 
 		const appUsers = await getUserCreatedByApp(appId, type);
+
 		if (appUsers.length) {
 			this.orch.debugLog(`The App ${appId} is deleting ${appUsers.length} users`);
+			// ignoring passing the current user id, as the app user is the one that is being removed
 			await Promise.all(appUsers.map((appUser) => deleteUser(appUser._id)));
 			return true;
 		}
@@ -101,6 +103,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
+			// ignoring passing the current user id, as the app user is the one that is being removed
 			await deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);

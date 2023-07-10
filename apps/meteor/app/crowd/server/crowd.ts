@@ -226,6 +226,7 @@ export class CROWD {
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowdUsername);
 						setImmediate(async function () {
+							// ignoring passing current uid since this is a background task
 							await deleteUser(user._id);
 							logger.info('User removed:', crowdUsername);
 						});

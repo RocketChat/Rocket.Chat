@@ -21,14 +21,12 @@ import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { i18n } from '../../../../server/lib/i18n';
 
-export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
+export async function deleteUser(userId: string, confirmRelinquish = false, currentUid?: string): Promise<void> {
 	const user = await Users.findOneById(userId, {
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
-	const actionUserId = Meteor.userId();
-
-	if (!user || !actionUserId) {
+	if (!user) {
 		return;
 	}
 
@@ -60,8 +58,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				// hide reports against deleted user messages
 				await ModerationReports.hideReportsByUserId(
 					userId,
-					actionUserId,
-					actionUserId === userId ? 'user deleted own account' : 'user account deleted',
+					currentUid || userId,
+					currentUid === userId ? 'user deleted own account' : 'user account deleted',
 					'DELETE_USER',
 				);
 				break;
