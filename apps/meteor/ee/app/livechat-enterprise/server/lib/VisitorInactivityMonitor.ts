@@ -157,7 +157,6 @@ export class VisitorInactivityMonitor {
 	}
 
 	private async getDefaultAbandonedCustomMessage(abandonmentAction: 'close' | 'on-hold', visitorId: string) {
-		this.logger.debug(`Getting default abandoned custom message for ${abandonmentAction}`);
 
 		const visitor = await LivechatVisitors.findOneById(visitorId, {
 			projection: {
