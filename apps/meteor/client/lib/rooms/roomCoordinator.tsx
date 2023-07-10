@@ -19,7 +19,7 @@ import type {
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
 import RoomRoute from '../../views/room/RoomRoute';
-import MainLayout from '../../views/root/MainLayout/MainLayout';
+import MainLayout from '../../views/root/MainLayout';
 import { appLayout } from '../appLayout';
 
 class RoomCoordinatorClient extends RoomCoordinator {
