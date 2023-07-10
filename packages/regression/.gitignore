@@ -10,7 +10,9 @@
 #!.yarn/cache
 .pnp.*
 node_modules/
-/test-results/
-/playwright-report/
 /playwright/.cache/
 .env
+test-results/
+src/playwright/
+src/test-results/
+

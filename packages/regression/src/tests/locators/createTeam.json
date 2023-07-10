@@ -1,11 +1,11 @@
 {
-  "button": {
-    "create": "Create"
-  },
-  "placeholder": {
-    "teamName": "Team Name"
-  },
-  "toggle": {
-    "private": "label > i"
-  }
+	"button": {
+		"create": "Create"
+	},
+	"placeholder": {
+		"teamName": "Team Name"
+	},
+	"toggle": {
+		"private": "label > i"
+	}
 }
