@@ -43,6 +43,7 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
+		"testunit": "yarn jest --config jest.client.config.ts",
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
 		"storybook": "start-storybook -p 6006",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
