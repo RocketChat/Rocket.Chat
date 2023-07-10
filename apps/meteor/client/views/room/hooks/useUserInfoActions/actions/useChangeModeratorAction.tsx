@@ -122,9 +122,9 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		() =>
 			(isRoomFederated(room) && roomCanSetModerator) || (!isRoomFederated(room) && roomCanSetModerator && userCanSetModerator)
 				? {
-						label: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
+						content: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
 						icon: 'shield-blank' as const,
-						action: changeModeratorAction,
+						onClick: changeModeratorAction,
 						type: 'privileges',
 				  }
 				: undefined,

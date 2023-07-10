@@ -3,23 +3,25 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useMemo } from 'react';
 
 export type Action = {
-	label: ReactNode;
+	content: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
-	action: () => void;
+	onClick: () => void;
 	type?: string;
 };
 
 type MenuOption = {
-	label: { label: ReactNode; icon?: string };
-	action: () => void;
+	content: ReactNode;
+	icon?: string;
+	onClick: () => void;
 	type?: string;
 };
 
-const mapOptions = ([key, { action, label, icon, type }]: [string, Action]): [string, MenuOption] => [
+const mapOptions = ([key, { onClick, content, icon, type }]: [string, Action]): [string, MenuOption] => [
 	key,
 	{
-		label: { label, icon }, // TODO fuselage
-		action,
+		content,
+		icon,
+		onClick,
 		type,
 	},
 ];
