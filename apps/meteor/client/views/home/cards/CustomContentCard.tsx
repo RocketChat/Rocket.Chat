@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -17,6 +17,8 @@ const CustomContentCard = (): ReactElement | null => {
 	const isCustomContentBodyEmpty = customContentBody === '';
 	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
+
+	const settingsRoute = useRoute('admin-settings');
 
 	const setCustomContentVisible = useSettingSetValue('Layout_Home_Custom_Block_Visible');
 	const setCustomContentOnly = useSettingSetValue('Layout_Custom_Body_Only');
@@ -63,7 +65,7 @@ const CustomContentCard = (): ReactElement | null => {
 				</Box>
 				<Card.FooterWrapper>
 					<Card.Footer>
-						<Button role='link' is='a' href='/admin/settings/Layout' title={t('Layout_Home_Page_Content')}>
+						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
 							{t('Customize_Content')}
 						</Button>
 						<Button

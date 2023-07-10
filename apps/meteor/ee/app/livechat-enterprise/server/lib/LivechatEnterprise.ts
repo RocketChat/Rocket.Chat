@@ -135,6 +135,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
+		await callbacks.run('livechat.afterTagRemoved', tag);
 		return LivechatTag.removeById(_id);
 	},
 
