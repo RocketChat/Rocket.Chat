@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/stream-hub-service",
 	"private": true,
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Rocket.Chat Stream Hub service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",

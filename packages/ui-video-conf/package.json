@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.5",

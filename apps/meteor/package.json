@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.3.0-develop",
+	"version": "6.3.0",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
