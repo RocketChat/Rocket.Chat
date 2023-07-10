@@ -1,30 +1,20 @@
-import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { Notifications } from '../../app/notifications/client';
 import * as ActionManager from '../../app/ui-message/client/ActionManager';
 import { ActionManagerContext } from '../contexts/ActionManagerContext';
+import { useAppActionButtons } from '../hooks/useAppActionButtons';
+import { useAppSlashCommands } from '../hooks/useAppSlashCommands';
+import { useAppUiKitInteraction } from '../hooks/useAppUiKitInteraction';
 
 type ActionManagerProviderProps = {
 	children?: ReactNode;
 };
 
 const ActionManagerProvider = ({ children }: ActionManagerProviderProps): ReactElement => {
-	const uid = useUserId();
-	useEffect(() => {
-		if (!uid) {
-			return;
-		}
-
-		Notifications.onUser('uiInteraction', ({ type, ...data }) => {
-			ActionManager.handlePayloadUserInteraction(type, data);
-		});
-
-		return () => {
-			Notifications.unUser('uiInteraction');
-		};
-	});
+	useAppActionButtons();
+	useAppSlashCommands();
+	useAppUiKitInteraction(ActionManager.handlePayloadUserInteraction);
 
 	return <ActionManagerContext.Provider value={ActionManager}>{children}</ActionManagerContext.Provider>;
 };

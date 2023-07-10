@@ -11,7 +11,7 @@ import { sdk } from '../../utils/client/lib/SDKClient';
 import { router } from '../../../client/providers/RouterProvider';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 
-const UiKitModal = lazy(import('../../../client/views/modal/uikit/UiKitModal'));
+const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 
 const events = new Emitter();
 

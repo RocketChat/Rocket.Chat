@@ -10,6 +10,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+// import { useAppActionButtons } from '../../../hooks/useAppActionButtons';
 import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
@@ -59,6 +60,9 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const chat = useChat();
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
+	// const actionButtonApps = useAppActionButtons('messageAction');
+
+	// console.log(actionButtonApps.data);
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const messageActions = await MessageAction.getButtons(
 			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },

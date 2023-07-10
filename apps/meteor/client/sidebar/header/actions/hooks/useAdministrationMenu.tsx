@@ -58,11 +58,7 @@ export const useAdministrationMenu = () => {
 	const showApps = hasAccessMarketplacePermission || hasManageAppsPermission || !!appBoxItems.length;
 
 	const administrationItems = useAdministrationItems({ accountBoxItems: adminBoxItems, showWorkspace });
-	const appItems = useAppsItems({
-		appBoxItems,
-		appsManagementAllowed: hasManageAppsPermission,
-		showMarketplace: hasAccessMarketplacePermission || hasManageAppsPermission,
-	});
+	const appItems = useAppsItems();
 	const auditItems = useAuditItems({ showAudit: hasAuditPermission, showAuditLog: hasAuditLogPermission });
 
 	const sections = [
