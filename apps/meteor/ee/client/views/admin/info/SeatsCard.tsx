@@ -7,11 +7,14 @@ import React from 'react';
 
 import UsagePieGraph from '../../../../../client/views/admin/info/UsagePieGraph';
 import { useRequestSeatsLink } from '../users/useRequestSeatsLink';
-import { useSeatsCap } from '../users/useSeatsCap';
+import type { SeatCapProps } from '../users/useSeatsCap';
 
-const SeatsCard = (): ReactElement | null => {
+type SeatsCardProps = {
+	seatsCap: SeatCapProps | undefined;
+};
+
+const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 	const t = useTranslation();
-	const seatsCap = useSeatsCap();
 	const requestSeatsLink = useRequestSeatsLink();
 
 	const seatsLeft = seatsCap && Math.max(seatsCap.maxActiveUsers - seatsCap.activeUsers, 0);
@@ -19,10 +22,6 @@ const SeatsCard = (): ReactElement | null => {
 	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
 
 	const color = isNearLimit ? colors.d500 : undefined;
-
-	if (seatsCap && seatsCap.maxActiveUsers === Infinity) {
-		return null;
-	}
 
 	return (
 		<Card>
@@ -45,7 +44,7 @@ const SeatsCard = (): ReactElement | null => {
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>
-				<ButtonGroup align='end'>
+				<ButtonGroup>
 					<ExternalLink to={requestSeatsLink}>
 						<Button small primary>
 							{t('Request_seats')}
