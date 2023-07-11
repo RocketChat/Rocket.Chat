@@ -1,11 +1,10 @@
-import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
-import { bhLogger } from '../lib/logger';
 
 type IBusinessHoursExtraProperties = {
 	timezoneName: string;
@@ -59,7 +58,11 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
 
+		// Now will check if the department which we're currently adding to BH is not
+		// associated with any other BH. If it is, then it will remove the old BH from all user's
+		// cache. It will not add the new BH right now as it will be done in afterSaveBusinessHour.
 		await this.removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(toAdd);
+
 		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
 
 		businessHourToReturn._id = businessHourId;
@@ -98,29 +101,19 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(departmentsToRemove, businessHourId);
 	}
 
-	// This func will check if the department which we're currently adding to BH is not
-	// associated with any other BH. If it is, then it will remove the old BH from all user's
-	// cache. It will not add the new BH right now as it will be done in afterSaveBusinessHour.
 	private async removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(departments: string[]): Promise<void> {
-		for await (const department of departments) {
-			const departmentDB = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(department, {
+		const oldBHIds = await (
+			await LivechatDepartment.findInIds(departments, {
 				projection: {
 					businessHourId: 1,
 				},
-			});
-			if (!departmentDB?.businessHourId) {
-				bhLogger.debug({
-					msg: ' department not found or no BH attached. skipping',
-					departmentId: department,
-				});
-				continue;
-			}
+			}).toArray()
+		)
+			?.filter((dept) => dept?.businessHourId)
+			.map((dept) => dept.businessHourId);
 
-			const agentIds = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments([department]);
-
-			await Users.removeBusinessHourByAgentIds(agentIds, departmentDB.businessHourId);
-			await Users.updateLivechatStatusBasedOnBusinessHours(agentIds);
-		}
+		await Users.closeAgentsBusinessHoursByBusinessHourIds(oldBHIds);
+		await Users.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {
