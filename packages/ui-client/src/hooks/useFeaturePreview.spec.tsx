@@ -45,96 +45,79 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 };
 
 it('should return false if featurePreviewEnabled is false', () => {
-	const { result } = renderHook(
-		() => {
-			return useFeaturePreview('quickReactions');
-		},
-		{
-			wrapper: ({ children }) => (
-				<MockedSettingsContext
-					settings={{
-						Accounts_AllowFeaturePreview: false,
-					}}
-				>
-					<MockedUserContext userPreferences={{}}>{children}</MockedUserContext>
-				</MockedSettingsContext>
-			),
-		},
-	);
+	const { result } = renderHook(() => useFeaturePreview('quickReactions'), {
+		wrapper: ({ children }) => (
+			<MockedSettingsContext
+				settings={{
+					Accounts_AllowFeaturePreview: false,
+				}}
+			>
+				<MockedUserContext userPreferences={{}}>{children}</MockedUserContext>
+			</MockedSettingsContext>
+		),
+	});
 
 	expect(result.all[0]).toBe(false);
 });
 
 it('should return false if featurePreviewEnabled is true but feature is not in userPreferences', () => {
-	const { result } = renderHook(
-		() => {
-			return useFeaturePreview('quickReactions');
-		},
-		{
-			wrapper: ({ children }) => (
-				<MockedSettingsContext
-					settings={{
-						Accounts_AllowFeaturePreview: false,
+	const { result } = renderHook(() => useFeaturePreview('quickReactions'), {
+		wrapper: ({ children }) => (
+			<MockedSettingsContext
+				settings={{
+					Accounts_AllowFeaturePreview: false,
+				}}
+			>
+				<MockedUserContext
+					userPreferences={{
+						featuresPreview: [
+							{
+								name: 'quickReactions',
+								value: true,
+							},
+						],
 					}}
 				>
-					<MockedUserContext
-						userPreferences={{
-							featuresPreview: [
-								{
-									name: 'quickReactions',
-									value: true,
-								},
-							],
-						}}
-					>
-						{children}
-					</MockedUserContext>
-				</MockedSettingsContext>
-			),
-		},
-	);
+					{children}
+				</MockedUserContext>
+			</MockedSettingsContext>
+		),
+	});
 
 	expect(result.all[0]).toBe(false);
 });
 
 it('should return true if featurePreviewEnabled is true and feature is in userPreferences', () => {
-	const { result } = renderHook(
-		() => {
-			return useFeaturePreview('quickReactions');
-		},
-		{
-			wrapper: ({ children }) => (
-				<MockedSettingsContext
-					settings={{
-						Accounts_AllowFeaturePreview: true,
+	const { result } = renderHook(() => useFeaturePreview('quickReactions'), {
+		wrapper: ({ children }) => (
+			<MockedSettingsContext
+				settings={{
+					Accounts_AllowFeaturePreview: true,
+				}}
+			>
+				<MockedUserContext
+					userPreferences={{
+						featuresPreview: [
+							{
+								name: 'quickReactions',
+								value: true,
+							},
+						],
 					}}
 				>
-					<MockedUserContext
-						userPreferences={{
-							featuresPreview: [
-								{
-									name: 'quickReactions',
-									value: true,
-								},
-							],
-						}}
-					>
-						{children}
-					</MockedUserContext>
-				</MockedSettingsContext>
-			),
-		},
-	);
+					{children}
+				</MockedUserContext>
+			</MockedSettingsContext>
+		),
+	});
 
 	expect(result.all[0]).toBe(true);
 });
 
-const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => {
-	return {
-		...userContextValue,
-		...(userPreferences && { queryPreference: (id) => [() => () => undefined, () => userPreferences[id as unknown as string] as any] }),
-	};
-};
+const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => ({
+	...userContextValue,
+	...(userPreferences && { queryPreference: (id) => [() => () => undefined, () => userPreferences[id as unknown as string] as any] }),
+});
 
 const createSettingContextValue = ({ settings }: { settings?: Record<string, ISetting['value']> }): ContextType<typeof SettingsContext> => {
 	const cache = new Map<string, ISetting['value']>();
@@ -162,9 +145,7 @@ export const MockedSettingsContext = ({
 }: {
 	children: React.ReactNode;
 	settings?: Record<string, ISetting['value']>;
-}) => {
-	return <SettingsContext.Provider value={createSettingContextValue({ settings })}>{children}</SettingsContext.Provider>;
-};
+}) => <SettingsContext.Provider value={createSettingContextValue({ settings })}>{children}</SettingsContext.Provider>;
 
 export const MockedUserContext = ({
 	userPreferences,
@@ -172,6 +153,4 @@ export const MockedUserContext = ({
 }: {
 	children: React.ReactNode;
 	userPreferences?: Record<string, unknown>;
-}) => {
-	return <UserContext.Provider value={createUserContextValue({ userPreferences })}>{children}</UserContext.Provider>;
-};
+}) => <UserContext.Provider value={createUserContextValue({ userPreferences })}>{children}</UserContext.Provider>;

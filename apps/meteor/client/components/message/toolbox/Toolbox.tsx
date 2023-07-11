@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -10,7 +11,6 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useFeaturePreview } from '../../../hooks/useFeaturePreview';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
