@@ -48,6 +48,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanIgnore && uid !== ownUserId
 				? {
+						id: user._id,
 						content: t(isIgnored ? 'Unignore' : 'Ignore'),
 						icon: 'ban' as const,
 						onClick: ignoreUserAction,

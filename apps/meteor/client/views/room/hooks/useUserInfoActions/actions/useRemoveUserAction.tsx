@@ -99,6 +99,7 @@ export const useRemoveUserAction = (
 						// 		{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
 						// 	</Box>
 						// ),
+						id: '',
 						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
 						icon: 'cross' as const,
 						onClick: removeUserOptionAction,

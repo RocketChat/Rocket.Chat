@@ -43,6 +43,7 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 		() =>
 			shouldOpenDirectMessage
 				? {
+						id: user._id,
 						content: t('Direct_Message'),
 						icon: 'balloon' as const,
 						onClick: openDirectMessage,

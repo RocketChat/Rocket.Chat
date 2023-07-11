@@ -19,6 +19,7 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction 
 	};
 
 	return {
+		id: '',
 		content: t('Moderation_Action_View_reports'),
 		icon: 'warning' as const,
 		onClick: redirectModerationConsoleAction,

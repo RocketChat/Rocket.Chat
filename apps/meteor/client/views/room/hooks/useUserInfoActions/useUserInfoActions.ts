@@ -23,23 +23,6 @@ export type UserInfoAction = {
 	type?: string;
 };
 
-type UserMenuOption = {
-	content: ReactNode;
-	icon?: string;
-	onClick: () => void;
-	type?: string;
-};
-
-const mapUserOptions = ([key, { onClick, content, icon, type }]: [string, UserInfoAction]): [string, UserMenuOption] => [
-	key,
-	{
-		content,
-		icon,
-		onClick,
-		type,
-	},
-];
-
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
 	rid: IRoom['_id'],
@@ -89,8 +72,8 @@ export const useUserInfoActions = (
 		const entries = Object.entries(userinfoActions);
 
 		const options = entries.slice(0, 2);
-		const menuOptions = entries.slice(2, entries.length).map(mapUserOptions);
-		const menu = menuOptions.length ? Object.fromEntries(menuOptions) : undefined;
+		const slicedOptions = entries.slice(2, entries.length);
+		const menu = slicedOptions.length ? Object.fromEntries(slicedOptions) : undefined;
 
 		const menuActions =
 			menu !== undefined &&
