@@ -79,11 +79,6 @@ export async function findTags({
 		});
 
 		if (department && !filteredDepartmentIds.includes(department)) {
-			helperLogger.debug({
-				msg: 'User is attempting to access tags for a department they do not have access to. Ignoring department filter and returning public tags only.',
-				userId,
-				department,
-			});
 			department = undefined;
 		}
 	}
