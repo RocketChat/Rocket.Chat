@@ -9,7 +9,6 @@ import React, { memo, useMemo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
