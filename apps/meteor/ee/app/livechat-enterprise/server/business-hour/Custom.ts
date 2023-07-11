@@ -109,7 +109,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 				},
 			}).toArray()
 		)
-			?.filter((dept) => dept?.businessHourId)
+			.filter((dept) => dept?.businessHourId)
 			.map((dept) => dept.businessHourId);
 
 		await Users.closeAgentsBusinessHoursByBusinessHourIds(oldBHIds);
