@@ -25,6 +25,7 @@ import type {
 	Document,
 	UpdateFilter,
 } from 'mongodb';
+import { isDeletedMessage } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms } from '@rocket.chat/models';
 
@@ -1362,22 +1363,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return count;
 		}
 
-		const messagesToDelete = (
-			await this.find(query, {
-				projection: {
-					_id: 1,
-				},
-				limit,
-			}).toArray()
-		).map(({ _id }) => _id);
+		const messagesToDelete = await this.find(query, {
+			projection: {
+				_id: 1,
+				_hidden: 1,
+				t: 1,
+				editedAt: 1,
+				editedBy: 1,
+			},
+			limit,
+		}).toArray();
 
-		const count = (
-			await this.deleteMany({
-				_id: {
-					$in: messagesToDelete,
-				},
-			})
-		).deletedCount;
+		const notCountedMessages = messagesToDelete.filter((message) => message._hidden === true || isDeletedMessage(message)).length;
+		const messagesIdsToDelete = messagesToDelete.map(({ _id }) => _id);
+
+		const count =
+			(
+				await this.deleteMany({
+					_id: {
+						$in: messagesIdsToDelete,
+					},
+				})
+			).deletedCount - notCountedMessages;
 
 		if (count) {
 			// decrease message count
