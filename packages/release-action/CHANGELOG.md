@@ -1,5 +1,28 @@
 # @rocket.chat/release-action
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- 956dbb5520: New action to publish package releases
+
+### Minor Changes
+
+- 0f2f37d4db: Use `release-automation` branch to perform the release
+
+### Patch Changes
+
+- 677919a23e: Use CI user PAT token
+- 677919a23e: Update versions in configured files
+
+## 1.0.1
+
+### Patch Changes
+
+- [#29596](https://github.com/RocketChat/Rocket.Chat/pull/29596) [`a19359b3f5`](https://github.com/RocketChat/Rocket.Chat/commit/a19359b3f5b09270fe1644df0706c6b1ebb979ef) Thanks [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)! - Use CI user PAT token
+
+- [#29596](https://github.com/RocketChat/Rocket.Chat/pull/29596) [`a19359b3f5`](https://github.com/RocketChat/Rocket.Chat/commit/a19359b3f5b09270fe1644df0706c6b1ebb979ef) Thanks [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)! - Update versions in configured files
+
 ## 1.0.0
 
 ### Major Changes
