@@ -22,7 +22,7 @@ export const {
 	{
 		href: '/admin/engagement',
 		i18nLabel: 'Engagement',
-		icon: 'file-keynote',
+		icon: 'dashboard',
 		permissionGranted: (): boolean => hasPermission('view-engagement-dashboard'),
 	},
 	{
