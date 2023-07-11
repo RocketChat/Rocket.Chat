@@ -20,7 +20,7 @@ const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof B
 		useOutsideClick([target], onClose);
 		const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
 		return (
-			<Box ref={target} style={style} minWidth={224} zIndex='99999'>
+			<Box ref={target} style={style} minWidth='x224' zIndex='99999'>
 				{children}
 			</Box>
 		);

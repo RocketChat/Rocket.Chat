@@ -27,8 +27,6 @@ const MultiSelectCustomList = ({
 
 	const filteredOptions = useFilteredOptions(optionSearch, options);
 
-	// TODO: check if the search bar margins are correct with the Design team
-
 	return (
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{searchBarText && (
@@ -48,12 +46,12 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle ? (
-						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
+						<Box mi='x12' mb='x4' fontScale='p2b' color='default' minWidth='x224'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
+							<Box minWidth='x224' pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} />

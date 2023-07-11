@@ -32,6 +32,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			bg='surface-light'
 			mis='x9'
 			h='x40'
+			minWidth='x224'
 			{...props}
 		>
 			{selectedOptionsCount > 0 && selectedOptionsCount !== maxCount - 1

@@ -1,7 +1,7 @@
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction, ReactNode } from 'react';
-import React, { useCallback, useState, useEffect } from 'react';
+import type { Dispatch, ReactElement, ReactNode, SetStateAction } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const FilterByTypeAndText = ({
 	setFilter,
@@ -21,16 +21,26 @@ const FilterByTypeAndText = ({
 	}, [setFilter, text]);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexWrap='wrap' alignItems='center'>
-			<TextInput
-				flexGrow={2}
-				minWidth='x240'
-				placeholder={t('Search_Rooms')}
-				addon={<Icon name='magnifier' size='x20' />}
-				onChange={handleChange}
-				value={text}
-			/>
-			{children}
+		<Box
+			mb='x16'
+			is='form'
+			onSubmit={useCallback((e) => e.preventDefault(), [])}
+			display='flex'
+			flexWrap='wrap'
+			alignItems='center'
+			w='full'
+		>
+			<Box display='flex' flexWrap='wrap' flexGrow={1}>
+				<TextInput
+					flexGrow={2}
+					minWidth='x224'
+					placeholder={t('Search_Rooms')}
+					addon={<Icon name='magnifier' size='x20' />}
+					onChange={handleChange}
+					value={text}
+				/>
+				{children}
+			</Box>
 		</Box>
 	);
 };
