@@ -15,7 +15,7 @@ test.describe('engagement-dashboard', () => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace')
 		await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort());
-		await page.locator('a[href="/admin/engagement"]').click();
+		await page.locator('a[href="/admin/engagement/users"]').click();
 	});
 	test('expect to trigger fallback error component', async ({ page }) => {
 		await test.step('expect to show 4 fallback errors components inside widget at Users Tab', async () => {
