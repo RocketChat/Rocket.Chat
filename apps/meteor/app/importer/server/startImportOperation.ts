@@ -9,7 +9,7 @@ export const startImportOperation = async (info: ImporterInfo, userId: IUser['_i
 		await Imports.insertOne({
 			type: info.name,
 			importerKey: info.key,
-			ts: Date.now(),
+			ts: new Date(),
 			status: ProgressStep.NEW,
 			valid: true,
 			user: userId,

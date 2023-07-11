@@ -53,6 +53,7 @@ export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
 	skipNewUsers?: boolean;
+	usersPerPage?: number;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -79,6 +80,8 @@ export class ImportDataConverter {
 	public get options(): IConverterOptions {
 		return this._options;
 	}
+
+	public aborted = false;
 
 	constructor(options?: IConverterOptions) {
 		this._options = options || {
@@ -326,9 +329,21 @@ export class ImportDataConverter {
 		}
 	}
 
-	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
-		const users = (await this.getUsersToImport()) as IImportUserRecord[];
+	public async convertUsers(callbacks: IConversionCallbacks = {}): Promise<void> {
+		if (!this._options.usersPerPage) {
+			const users = (await this.getUsersToImport()) as IImportUserRecord[];
+			return this.convertUserList(users, callbacks);
+		}
+
+		//
+	}
+
+	protected async convertUserList(users: IImportUserRecord[], { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		for await (const { data, _id } of users) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
 					await this.skipRecord(_id);
@@ -568,6 +583,10 @@ export class ImportDataConverter {
 		const messages = await this.getMessagesToImport();
 
 		for await (const { data, _id } of messages) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'message'))) {
 					await this.skipRecord(_id);
@@ -937,6 +956,10 @@ export class ImportDataConverter {
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
 		for await (const { data, _id } of channels) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'channel'))) {
 					await this.skipRecord(_id);

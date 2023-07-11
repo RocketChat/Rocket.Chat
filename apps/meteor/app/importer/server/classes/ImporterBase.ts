@@ -126,8 +126,17 @@ export class Importer {
 		const started = Date.now();
 
 		const beforeImportFn = async (data: IImportData, type: IImportRecordType) => {
+			if (this.importRecord.valid === false) {
+				this.converter.aborted = true;
+				throw new Error('The import operation is no longer valid.');
+			}
+
 			switch (type) {
 				case 'channel': {
+					if (!importSelection.channels) {
+						return true;
+					}
+
 					const channelData = data as IImportChannel;
 
 					const id = channelData.t === 'd' ? '__directMessages__' : channelData.importIds[0];
@@ -140,6 +149,10 @@ export class Importer {
 					return false;
 				}
 				case 'user': {
+					if (!importSelection.users) {
+						return true;
+					}
+
 					const userData = data as IImportUser;
 
 					const id = userData.importIds[0];
@@ -158,6 +171,11 @@ export class Importer {
 
 		const afterImportFn = async () => {
 			await this.addCountCompleted(1);
+
+			if (this.importRecord.valid === false) {
+				this.converter.aborted = true;
+				throw new Error('The import operation is no longer valid.');
+			}
 		};
 
 		process.nextTick(async () => {
@@ -273,9 +291,11 @@ export class Importer {
 	async addCountCompleted(count: number): Promise<Progress> {
 		this.progress.count.completed += count;
 
-		// Only update the database every 500 records
+		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
+
+		// Only update the database every 500 messages (or 50 users/channels)
 		// Or the completed is greater than or equal to the total amount
-		if (this.progress.count.completed % 500 === 0 || this.progress.count.completed >= this.progress.count.total) {
+		if (this.progress.count.completed % range === 0 || this.progress.count.completed >= this.progress.count.total) {
 			await this.updateRecord({ 'count.completed': this.progress.count.completed });
 			this.reportProgress();
 		} else if (!this.reportProgressHandler) {
