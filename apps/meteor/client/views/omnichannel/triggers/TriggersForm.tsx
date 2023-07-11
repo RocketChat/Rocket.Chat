@@ -62,6 +62,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			['page-url', t('Visitor_page_URL')],
 			['time-on-site', t('Visitor_time_on_site')],
 			['chat-opened-by-visitor', t('Chat_opened_by_visitor')],
+			['after-starting-chat', t('After_starting_chat')],
 		],
 		[t],
 	);

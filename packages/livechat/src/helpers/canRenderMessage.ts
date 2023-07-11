@@ -25,3 +25,6 @@ const msgTypesNotRendered = [
 ];
 
 export const canRenderMessage = ({ t }: { t: string }) => !msgTypesNotRendered.includes(t);
+
+export const canRenderTriggerMessage = (user: { token: string }) => (message: { triggerAfterStartChat: boolean }) =>
+	!!user && message.triggerAfterStartChat;

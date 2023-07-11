@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
@@ -447,7 +447,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages && messages.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}
