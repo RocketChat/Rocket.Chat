@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -46,16 +47,17 @@ type ToolboxProps = {
 
 const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
-
-	const settings = useSettings();
 	const user = useUser();
+	const settings = useSettings();
+
+	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
 	const context = getMessageContext(message, room, messageContext);
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 
 	const chat = useChat();
-	const { addRecentEmoji, emojiListByCategory } = useEmojiPickerData();
+	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const messageActions = await MessageAction.getButtons(
@@ -82,17 +84,18 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return null;
 	}
 
+	const isReactionAllowed = actionsQueryResult.data?.message.find(({ id }) => id === 'reaction-message');
+
 	const handleSetReaction = (emoji: string) => {
 		sdk.call('setReaction', `:${emoji}:`, message._id);
 		addRecentEmoji(emoji);
 	};
 
-	const recentList = emojiListByCategory.filter(({ key }) => key === 'recent')[0].emojis.list;
-
 	return (
 		<MessageToolbox>
-			{recentList.length > 0 &&
-				recentList.slice(0, 3).map(({ emoji, image }) => {
+			{quickReactionsEnabled &&
+				isReactionAllowed &&
+				quickReactions.slice(0, 3).map(({ emoji, image }) => {
 					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
 				})}
 			{actionsQueryResult.data?.message.map((action) => (
