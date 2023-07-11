@@ -4,7 +4,7 @@ import React from 'react';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import RegisterWorkspace from './RegisterWorkspace';
 
-function CloudRoute() {
+const CloudRoute = () => {
 	const canManageCloud = usePermission('manage-cloud');
 
 	if (!canManageCloud) {
@@ -12,6 +12,6 @@ function CloudRoute() {
 	}
 
 	return <RegisterWorkspace />;
-}
+};
 
 export default CloudRoute;

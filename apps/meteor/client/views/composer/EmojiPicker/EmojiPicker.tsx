@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
-import React, { useLayoutEffect, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
 import type { EmojiItem, EmojiCategoryPosition } from '../../../../app/emoji/client';
@@ -59,13 +59,13 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setRecentEmojis,
 		actualTone,
 		currentCategory,
-		emojiListByCategory,
+		getEmojiListsByCategory,
 		customItemsLimit,
 		setActualTone,
 		setCustomItemsLimit,
 	} = useEmojiPickerData();
 
-	useEffect(() => () => handleRemovePreview(), []);
+	useEffect(() => () => handleRemovePreview(), [handleRemovePreview]);
 
 	const scrollCategories = useMediaQuery('(width < 340px)');
 
@@ -126,16 +126,12 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		onClose();
 	};
 
-	const showInitialCategory = useCallback((customEmojiList) => {
-		handleGoToCategory(customEmojiList.length > 0 ? 0 : 1);
-	}, []);
-
 	useEffect(() => {
 		if (recentEmojis.length === 0 && currentCategory === 'recent') {
-			const customEmojiList = emojiListByCategory.filter(({ key }) => key === 'rocket');
-			showInitialCategory(customEmojiList);
+			const customEmojiList = getEmojiListsByCategory().filter(({ key }) => key === 'rocket');
+			handleGoToCategory(customEmojiList.length > 0 ? 0 : 1);
 		}
-	}, [actualTone, recentEmojis, emojiListByCategory, currentCategory, setRecentEmojis, showInitialCategory]);
+	}, [actualTone, recentEmojis, getEmojiListsByCategory, currentCategory, setRecentEmojis]);
 
 	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
@@ -216,7 +212,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 					{!searching && (
 						<CategoriesResult
 							ref={virtuosoRef}
-							emojiListByCategory={emojiListByCategory}
+							emojiListByCategory={getEmojiListsByCategory()}
 							categoriesPosition={categoriesPosition}
 							customItemsLimit={customItemsLimit}
 							handleLoadMore={handleLoadMore}

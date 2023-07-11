@@ -205,6 +205,10 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Accounts_AllowFeaturePreview', false, {
+			type: 'boolean',
+			public: true,
+		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
