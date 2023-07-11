@@ -1,12 +1,13 @@
 import { route } from 'preact-router';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import type { Control, FieldErrors, FieldValues, SubmitHandler } from 'react-hook-form';
+import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
-import { Form, FormField, TextInput, SelectInput } from '../../components/Form';
+import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
+import type { CustomField } from '../../components/Form/CustomFields';
 import Screen from '../../components/Screen';
 import { createClassName, sortArrayByColumn } from '../../components/helpers';
 import CustomFields from '../../lib/customFields';
@@ -21,74 +22,6 @@ type department = {
 	name: string;
 	[key: string]: unknown;
 };
-
-type CustomField = {
-	_id: string;
-	required?: boolean;
-	label?: string;
-	type: string;
-	options?: string[];
-	defaultValue?: string;
-	regexp?: RegExp;
-};
-
-type RenderCustomFieldsProps = {
-	customFields: CustomField[];
-	loading: boolean;
-	control: Control;
-	errors: FieldErrors<FieldValues>;
-};
-
-const renderCustomFields = ({ customFields, loading, control, errors }: RenderCustomFieldsProps) =>
-	customFields.map(({ _id, required = false, label, type, options, regexp, defaultValue }) => {
-		const { t } = useTranslation();
-		switch (type) {
-			case 'input':
-				return (
-					<FormField label={label} required={required} key={_id} error={errors?.[_id]?.message?.toString()}>
-						<Controller
-							name={_id}
-							control={control}
-							defaultValue={defaultValue}
-							rules={{
-								required,
-								...(regexp && {
-									pattern: {
-										value: regexp,
-										message: t('invalid', { field: label }),
-									},
-								}),
-							}}
-							render={({ field }) => (
-								<TextInput name={_id} placeholder={t('insert_your_field_here', { field: label })} disabled={loading} field={field} />
-							)}
-						/>
-					</FormField>
-				);
-			// TODO: typeguards for different types of custom fields
-			case 'select':
-				return (
-					<FormField label={label} required={required} key={_id} error={errors?.[_id]?.message?.toString()}>
-						<Controller
-							name={_id}
-							control={control}
-							rules={{ required }}
-							defaultValue={defaultValue}
-							render={({ field }) => (
-								<SelectInput
-									name={_id}
-									placeholder={t('choose_an_option')}
-									options={(options as string[])?.map((option: string) => ({ value: option, label: option }))}
-									disabled={loading}
-									field={field}
-								/>
-							)}
-						/>
-					</FormField>
-				);
-		}
-		return null;
-	});
 
 type ContextReturn = {
 	config: {
@@ -317,7 +250,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 							</FormField>
 						) : null}
 
-						{customFields && renderCustomFields({ customFields, loading, control, errors })}
+						{customFields && <CustomFieldsForm customFields={customFields} loading={loading} control={control} errors={errors} />}
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
 					</Form>
 				</Screen.Content>

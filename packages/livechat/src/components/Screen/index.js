@@ -10,7 +10,7 @@ import { createClassName } from '../helpers';
 import ScreenHeader from './Header';
 import styles from './styles.scss';
 
-export const ScreenContent = ({ children, nopadding, triggered = false, full }) => (
+export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
 	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 

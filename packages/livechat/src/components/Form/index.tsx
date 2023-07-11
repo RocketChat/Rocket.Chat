@@ -35,3 +35,4 @@ export { TextInput } from './TextInput';
 export { MultilineTextInput } from './MultilineTextInput';
 export { PasswordInput } from './PasswordInput';
 export { SelectInput } from './SelectInput';
+export { CustomFields } from './CustomFields';
