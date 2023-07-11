@@ -28,10 +28,6 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const handleOpenModal = useCallback(() => {
-		router.navigate({
-			pattern: '/admin/engagement/:context?/:tab?',
-			params: { context: 'upsell', tab: 'users' },
-		});
 		setModal(
 			<GenericUpsellModal
 				title={t('Engagement_Dashboard')}
@@ -42,7 +38,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [router, setModal, t]);
+	}, [setModal, t]);
 
 	useEffect(() => {
 		router.subscribeToRouteChange(() => {
@@ -60,8 +56,8 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			if (!isValidTab(tab)) {
 				router.navigate(
 					{
-						pattern: '/admin/engagement/:context?/:tab?',
-						params: { context: 'active', tab: 'users' },
+						pattern: '/admin/engagement/:tab?',
+						params: { tab: 'users' },
 					},
 					{ replace: true },
 				);
@@ -74,10 +70,6 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [handleOpenModal, isUpsell, router, setModal]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
-
-	if (!isValidTab(tab)) {
-		return null;
-	}
 
 	if (isModalOpen) {
 		return <PageSkeleton />;
@@ -92,11 +84,11 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	});
 	return (
 		<EngagementDashboardPage
-			tab={tab}
+			tab={tab as 'users' | 'messages' | 'channels'}
 			onSelectTab={(tab) =>
 				router.navigate({
-					pattern: '/admin/engagement/:context?/:tab?',
-					params: { context: 'active', tab },
+					pattern: '/admin/engagement/:tab?',
+					params: { tab },
 				})
 			}
 		/>

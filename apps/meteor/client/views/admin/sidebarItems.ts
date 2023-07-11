@@ -20,7 +20,7 @@ export const {
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
-		href: '/admin/engagement',
+		href: '/admin/engagement/users',
 		i18nLabel: 'Engagement',
 		icon: 'dashboard',
 		permissionGranted: (): boolean => hasPermission('view-engagement-dashboard'),

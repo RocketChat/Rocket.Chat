@@ -23,13 +23,6 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const handleOpenModal = useCallback(() => {
-		router.navigate(
-			{
-				pattern: '/admin/device-management/:context?/:id?',
-				params: { context: 'upsell' },
-			},
-			{ replace: true },
-		);
 		setModal(
 			<GenericUpsellModal
 				title={t('Device_Management')}
@@ -40,7 +33,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 			/>,
 		);
 		setIsModalOpen(true);
-	}, [router, setModal, t]);
+	}, [setModal, t]);
 
 	useEffect(() => {
 		router.subscribeToRouteChange(() => {

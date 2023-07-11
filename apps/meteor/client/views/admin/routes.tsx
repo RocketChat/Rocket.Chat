@@ -90,12 +90,12 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/settings/:group?';
 		};
 		'device-management': {
-			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/device-management/:context?/:id?';
+			pathname: `/admin/device-management${`/${string}` | ''}`;
+			pattern: '/admin/device-management/:id?';
 		};
 		'engagement-dashboard': {
-			pattern: '/admin/engagement/:context?/:tab?';
-			pathname: `/admin/engagement${`/${string}` | ''}${`/${string}` | ''}`;
+			pathname: `/admin/engagement${`/${string}` | ''}`;
+			pattern: '/admin/engagement/:tab?';
 		};
 		'upgrade': {
 			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
@@ -228,12 +228,12 @@ registerAdminRoute('/moderation/:context?/:id?', {
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
 });
 
-registerAdminRoute('/engagement/:context?/:tab?', {
+registerAdminRoute('/engagement/:tab?', {
 	name: 'engagement-dashboard',
 	component: lazy(() => import('../../../ee/client/views/admin/engagementDashboard/EngagementDashboardRoute')),
 });
 
-registerAdminRoute('/device-management/:context?/:id?', {
+registerAdminRoute('/device-management/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
 });
