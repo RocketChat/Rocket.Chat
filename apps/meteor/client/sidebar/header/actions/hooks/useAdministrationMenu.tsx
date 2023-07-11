@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 
 import { AccountBox } from '../../../../../app/ui-utils/client';
 import type { IAppAccountBoxItem, AccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
@@ -39,6 +39,7 @@ const ADMIN_PERMISSIONS = [
 ];
 
 export const useAdministrationMenu = () => {
+	const t = useTranslation();
 	const getAccountBoxItems = useMutableCallback(() => AccountBox.getItems());
 	const accountBoxItems = useReactiveValue(getAccountBoxItems);
 
@@ -58,17 +59,13 @@ export const useAdministrationMenu = () => {
 	const showApps = hasAccessMarketplacePermission || hasManageAppsPermission || !!appBoxItems.length;
 
 	const administrationItems = useAdministrationItems({ accountBoxItems: adminBoxItems, showWorkspace });
-	const appItems = useAppsItems({
-		appBoxItems,
-		appsManagementAllowed: hasManageAppsPermission,
-		showMarketplace: hasAccessMarketplacePermission || hasManageAppsPermission,
-	});
+	const appItems = useAppsItems();
 	const auditItems = useAuditItems({ showAudit: hasAuditPermission, showAuditLog: hasAuditLogPermission });
 
 	const sections = [
-		{ title: 'Administration', items: administrationItems, permission: showAdmin },
-		{ title: 'Apps', items: appItems, permission: showApps },
-		{ title: 'Audit', items: auditItems, permission: showAudit },
+		{ title: t('Administration'), items: administrationItems, permission: showAdmin },
+		{ title: t('Apps'), items: appItems, permission: showApps },
+		{ title: t('Audit'), items: auditItems, permission: showAudit },
 	];
 
 	return sections.filter(({ permission }) => permission);
