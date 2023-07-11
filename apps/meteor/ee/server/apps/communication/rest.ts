@@ -5,6 +5,7 @@ import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/A
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
@@ -354,6 +355,7 @@ export class AppsRestApi {
 
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
 							marketplaceInfo = (await marketplaceResponse.json()) as any;
+							console.log('🚀 ~ file: rest.ts:357 ~ AppsRestApi ~ post ~ marketplaceInfo:', marketplaceInfo);
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: any) {
 							return API.v1.failure(err.message);
@@ -413,6 +415,7 @@ export class AppsRestApi {
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
+					console.log('🚀 ~ file: rest.ts:419 ~ AppsRestApi ~ post ~ info:', info);
 
 					return API.v1.success({
 						app: info,
@@ -880,6 +883,7 @@ export class AppsRestApi {
 						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
+						console.log('🚀 ~ file: rest.ts:883 ~ AppsRestApi ~ post ~ result:', result);
 
 						if (!request.ok) {
 							throw new Error(result.error);
@@ -1120,7 +1124,6 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
 				async post() {
-					let marketPlaceAppInfo = null;
 					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
@@ -1140,22 +1143,26 @@ export class AppsRestApi {
 
 					const { version } = prl.getInfo();
 
-					const appInfosURL = new URL(`${baseUrl}/v1/apps/${appId}`);
+					const { isEnterpriseOnly: isStoredAppEnterpriseOnly } = storedApp.marketplaceInfo as IMarketplaceInfo;
 
-					appInfosURL.searchParams.set('appVersion', String(version));
+					let isAppEnterpriseOnly = isStoredAppEnterpriseOnly ?? false;
 
-					const appInfoResponse = await fetch(appInfosURL.toString(), {
-						headers,
-					});
+					if (!isEnterprise()) {
+						const appInfosURL = new URL(`${baseUrl}/v1/apps/${appId}`);
 
-					if (appInfoResponse?.ok) {
-						const [data] = appInfoResponse ? await appInfoResponse.json() : null;
-						marketPlaceAppInfo = data;
-					}
+						appInfosURL.searchParams.set('appVersion', String(version));
+						const appInfoResponse = await fetch(appInfosURL.toString(), {
+							headers,
+						});
 
-					if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(status)) {
-						if (marketPlaceAppInfo) {
-							if (!isEnterprise() && marketPlaceAppInfo.isEnterpriseOnly) {
+						if (appInfoResponse?.ok) {
+							const [data] = await appInfoResponse.json();
+
+							isAppEnterpriseOnly = data?.isEnterpriseOnly;
+						}
+
+						if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(status)) {
+							if (isAppEnterpriseOnly) {
 								return API.v1.failure('Invalid environment for enabling enterprise app');
 							}
 						}

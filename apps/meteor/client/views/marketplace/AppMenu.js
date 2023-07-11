@@ -298,7 +298,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}),
 		};
 
-		const isEnterpriseOrNot = (app.isEnterpriseOnly && false) || !app.isEnterpriseOnly;
+		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
 		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
 
 		const installedAppOptions = {
