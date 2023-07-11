@@ -22,9 +22,7 @@ export default {
 
 export const Default: Story<ComponentProps<typeof Form>> = (args) => {
 	const {
-		// register,
 		handleSubmit,
-		// watch,
 		formState: { errors },
 		control,
 		reset,

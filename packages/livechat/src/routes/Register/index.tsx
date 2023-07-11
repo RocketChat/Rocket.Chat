@@ -23,6 +23,9 @@ type department = {
 	[key: string]: unknown;
 };
 
+// Custom field as in the form payload
+type FormPayloadCustomField = { [key: string]: string };
+
 type ContextReturn = {
 	config: {
 		departments?: department[];
@@ -112,7 +115,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		name: string;
 		email: string;
 		department: string;
-		customFields: { [key: string]: string };
+		customFields: FormPayloadCustomField;
 	}) => {
 		const fields = {
 			name,
@@ -199,7 +202,6 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 											placeholder={t('insert_your_field_here', { field: t('name') })}
 											disabled={loading}
 											field={field}
-											// onInput={(target: HTMLInputElement) => setName(target.value)}
 										/>
 									)}
 								/>
@@ -256,13 +258,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 				</Screen.Content>
 			</div>
 			<Screen.Footer>
-				<Button
-					loading={loading}
-					form='register'
-					submit
-					full
-					disabled={!isDirty || !isValid || loading || isSubmitting || Object.keys(errors).length > 0}
-				>
+				<Button loading={loading} form='register' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 					{t('start_chat')}
 				</Button>
 			</Screen.Footer>
