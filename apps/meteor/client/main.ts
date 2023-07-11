@@ -1,10 +1,6 @@
-import './polyfills';
-
-import '../lib/oauthRedirectUriClient';
-import './lib/meteorCallWrapper';
-import './importPackages';
-
 import '../ee/client';
+import './polyfills';
+import './importPackages';
 import './methods';
 import './startup';
 import './views/admin';

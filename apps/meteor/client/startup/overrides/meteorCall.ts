@@ -2,7 +2,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 

@@ -1,5 +1,4 @@
 import '../lib/rooms/roomTypes';
-import './absoluteUrl';
 import './accounts';
 import './actionButtons';
 import './afterLogoutCleanUp';
@@ -20,6 +19,7 @@ import './messageTypes';
 import './notifications';
 import './oauth';
 import './otr';
+import './overrides';
 import './reloadRoomAfterLogin';
 import './roles';
 import './rootUrlChange';
