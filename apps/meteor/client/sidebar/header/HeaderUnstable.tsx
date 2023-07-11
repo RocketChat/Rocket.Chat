@@ -9,7 +9,7 @@ import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
 
-const Header = (): ReactElement => {
+const HeaderUnstable = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -30,4 +30,4 @@ const Header = (): ReactElement => {
 	);
 };
 
-export default memo(Header);
+export default memo(HeaderUnstable);

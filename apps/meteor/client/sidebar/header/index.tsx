@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { lazy, memo } from 'react';
 
 const Header = lazy(() => import('./Header'));
-const HeaderPreview = lazy(() => import('./HeaderPreview'));
+const HeaderUnstable = lazy(() => import('./HeaderUnstable'));
 
 const HeaderWrapper = (): ReactElement => {
 	return (
@@ -12,7 +12,7 @@ const HeaderWrapper = (): ReactElement => {
 				<Header />
 			</FeaturePreviewOff>
 			<FeaturePreviewOn>
-				<HeaderPreview />
+				<HeaderUnstable />
 			</FeaturePreviewOn>
 		</FeaturePreview>
 	);

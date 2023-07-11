@@ -21,12 +21,6 @@ const Navbar = () => {
 				{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
 			</Box>
 			<NavbarHomeAction />
-			{/* <li role='menuitem'>
-				<IconButton medium icon='team' aria-label='team' />
-			</li>
-			<li role='menuitem'>
-				<IconButton title='Omnichannel' medium icon='headset' aria-label='omnichannel' />
-			</li> */}
 			<NavbarMarketplaceAction />
 			{isAdmin && <NavbarRegistrationAction />}
 			<NavbarAuditAction />
