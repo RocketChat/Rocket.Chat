@@ -30,10 +30,10 @@ const FilterByTypeAndText = ({
 			alignItems='center'
 			w='full'
 		>
-			<Box display='flex' flexWrap='wrap' flexGrow={1}>
+			<Box display='flex' flexWrap='wrap' flexGrow={1} flexShrink={1}>
 				<TextInput
 					flexGrow={2}
-					minWidth='x224'
+					minWidth='x448'
 					placeholder={t('Search_Rooms')}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleChange}
