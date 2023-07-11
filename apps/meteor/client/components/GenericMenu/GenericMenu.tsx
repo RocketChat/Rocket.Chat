@@ -39,6 +39,10 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || []);
 
+	const hasIcon = itemsList.some(({ icon }) => icon);
+	const handleItems = (items: GenericMenuItemProps[]) =>
+		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
+
 	return (
 		<>
 			{sections && (
@@ -50,7 +54,11 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 					{...props}
 				>
 					{sections.map(({ title, items }, key) => (
-						<MenuSection title={typeof title === 'string' && t.has(title) ? t(title) : title} items={items} key={`${title}-${key}`}>
+						<MenuSection
+							title={typeof title === 'string' && t.has(title) ? t(title) : title}
+							items={handleItems(items)}
+							key={`${title}-${key}`}
+						>
 							{(item) => (
 								<MenuItem key={item.id}>
 									<GenericMenuItem {...item} />
@@ -68,7 +76,7 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 					{...(disabledKeys && { disabledKeys })}
 					{...props}
 				>
-					{items.map((item) => (
+					{handleItems(items).map((item) => (
 						<MenuItem key={item.id}>
 							<GenericMenuItem {...item} />
 						</MenuItem>
