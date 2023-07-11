@@ -4,6 +4,7 @@ import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSu
 import { useMemo } from 'react';
 
 import type { Action } from '../../../../hooks/useActionSpread';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 const getShouldOpenDirectMessage = (
 	currentSubscription?: ISubscription,
@@ -16,7 +17,7 @@ const getShouldOpenDirectMessage = (
 	return (canOpenDm && directMessageIsNotAlreadyOpen) ?? false;
 };
 
-export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const currentSubscription = useUserSubscription(rid);

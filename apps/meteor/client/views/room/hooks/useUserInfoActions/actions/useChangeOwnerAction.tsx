@@ -12,6 +12,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -33,7 +34,7 @@ const getWarningModalForFederatedRooms = (
 );
 
 // TODO: Remove endpoint concatenation
-export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;

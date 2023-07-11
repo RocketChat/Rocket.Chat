@@ -13,7 +13,6 @@ import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import { useActionSpread } from '../../hooks/useActionSpread';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
@@ -82,47 +81,24 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	});
 
 	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(userActions);
 
-	const menuActions =
-		menuOptions !== undefined &&
-		Object.values(menuOptions)
-			.map((item) => ({
-				id: item.content as string,
-				content: item.content,
-				icon: item.icon,
-				onClick: item.onClick,
-				type: item.type,
-			}))
-			.reduce((acc, item) => {
-				const group = item.type ? item.type : '';
-				const section = acc.find((section: { id: string }) => section.id === group);
-				if (section) {
-					section.items.push(item);
-					return acc;
-				}
-
-				const newSection = { id: group, title: '', items: [item] };
-				acc.push(newSection);
-
-				return acc;
-			}, [] as any);
+	console.log({ userActions });
 
 	const menu = useMemo(() => {
-		if (!menuActions) {
+		if (!userActions) {
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuActions} placement='bottom-start' />;
-	}, [menuActions, t]);
+		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={userActions.menuActions} placement='bottom-start' />;
+	}, [userActions, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
 			<UserCard.Action key={key} label={label} aria-label={label} onClick={action} icon={icon} />
 		);
 
-		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu]);
+		return [...userActions.actions.map(mapAction), menu].filter(Boolean);
+	}, [userActions.actions, menu]);
 
 	return (
 		<>

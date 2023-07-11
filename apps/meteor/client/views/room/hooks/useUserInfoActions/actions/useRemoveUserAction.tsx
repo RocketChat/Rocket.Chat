@@ -13,9 +13,14 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 // TODO: Remove endpoint concatenation
-export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload?: () => void): Action | undefined => {
+export const useRemoveUserAction = (
+	user: Pick<IUser, '_id' | 'username'>,
+	rid: IRoom['_id'],
+	reload?: () => void,
+): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const currentUser = useUser();

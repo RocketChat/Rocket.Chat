@@ -4,12 +4,13 @@ import { useTranslation, usePermission, useUserRoom, useUserSubscription } from 
 import { useMemo } from 'react';
 
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
-import type { Action } from '../../../../hooks/useActionSpread';
+// import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 // TODO: Remove endpoint concatenation
-export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
