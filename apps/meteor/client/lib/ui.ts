@@ -1,7 +1,7 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
 
-import type { MessageActionConditionProps, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
-import { type MessageActionConfig } from '../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConditionProps, MessageActionContext, MessageActionConfig } from '../../app/ui-utils/client/lib/MessageAction';
+import type { ISlashCommandAddParams } from '../../app/utils/lib/slashCommand';
 import type { ToolboxAction } from '../views/room/lib/Toolbox';
 
 const addMessageAction = (config: MessageActionConfig) => {
@@ -51,6 +51,52 @@ const removeRoomAction = (id: string) => {
 	});
 };
 
+const addSlashCommand = <T extends string>(params: ISlashCommandAddParams<T>) => {
+	import('../../app/utils/lib/slashCommand').then(({ slashCommands }) => {
+		slashCommands.add(params);
+	});
+
+	return () => {
+		import('../../app/utils/lib/slashCommand').then(({ slashCommands }) => {
+			delete slashCommands.commands[params.command];
+		});
+	};
+};
+
+const removeSlashCommand = (command: string) => {
+	import('../../app/utils/lib/slashCommand').then(({ slashCommands }) => {
+		delete slashCommands.commands[command];
+	});
+};
+
+const runSlashCommand = async ({
+	command,
+	message,
+	params,
+	triggerId,
+	userId,
+}: {
+	command: string;
+	params: string;
+	message: RequiredField<Partial<IMessage>, 'rid' | '_id'>;
+	userId: string;
+	triggerId?: string | undefined;
+}) => {
+	const { slashCommands } = await import('../../app/utils/lib/slashCommand');
+	return slashCommands.run({
+		command,
+		message,
+		params,
+		triggerId,
+		userId,
+	});
+};
+
+const getSlashCommands = async () => {
+	const { slashCommands } = await import('../../app/utils/lib/slashCommand');
+	return slashCommands.commands;
+};
+
 export const ui = {
 	addMessageAction,
 	removeMessageAction,
@@ -58,4 +104,8 @@ export const ui = {
 	getMessageLinkById,
 	addRoomAction,
 	removeRoomAction,
+	addSlashCommand,
+	removeSlashCommand,
+	runSlashCommand,
+	getSlashCommands,
 } as const;

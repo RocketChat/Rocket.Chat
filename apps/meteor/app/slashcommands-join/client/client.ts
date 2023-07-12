@@ -1,8 +1,8 @@
 import type { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'join',
 	options: {
 		description: 'Join_the_given_channel',
@@ -13,7 +13,7 @@ slashCommands.add({
 		if ((err as Meteor.Error).error === 'error-user-already-in-room') {
 			params.cmd = 'open';
 			params.msg.msg = params.msg.msg.replace('join', 'open');
-			return void slashCommands.run({ command: 'open', params: params.params, message: params.msg, triggerId: '', userId: params.userId });
+			return void ui.runSlashCommand({ command: 'open', params: params.params, message: params.msg, triggerId: '', userId: params.userId });
 		}
 	},
 });

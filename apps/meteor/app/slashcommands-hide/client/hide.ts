@@ -1,6 +1,6 @@
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'hide',
 	options: {
 		description: 'Hide_room',

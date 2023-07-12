@@ -2,7 +2,7 @@ import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { slashCommands } from '../../app/utils/lib/slashCommand';
+import { ui } from '../lib/ui';
 
 const stop = (...args: (() => void)[]) => args.forEach((s) => s());
 
@@ -39,7 +39,7 @@ export const useAppSlashCommands = () => {
 
 	useQuery(['apps', 'slashCommands'], () => getSlashCommands(), {
 		onSuccess(data) {
-			data.commands.forEach((command) => slashCommands.add(command));
+			data.commands.forEach((command) => ui.addSlashCommand(command));
 		},
 	});
 };

@@ -1,10 +1,10 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'status',
 	callback: async function Status({ params, userId }: SlashCommandCallbackParams<'status'>): Promise<void> {
 		if (!userId) {

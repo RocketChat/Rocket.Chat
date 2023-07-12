@@ -1,13 +1,14 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { ui } from '../../../client/lib/ui';
+
 /*
  * Shrug is a named function that will replace /shrug commands
  * @param {Object} message - The message object
  */
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'shrug',
 	callback: async ({ message, params }: SlashCommandCallbackParams<'shrug'>): Promise<void> => {
 		const msg = message;

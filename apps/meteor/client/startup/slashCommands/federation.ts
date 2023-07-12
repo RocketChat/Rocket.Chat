@@ -1,20 +1,14 @@
-import { slashCommands } from '../../../app/utils/lib/slashCommand';
+import { ui } from '../../lib/ui';
 
-const callback = undefined;
-const result = undefined;
-const providesPreview = false;
-const previewer = undefined;
-const previewCallback = undefined;
-
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'federation',
-	callback,
+	callback: undefined,
 	options: {
 		description: 'Federation_slash_commands',
 		params: '#command (dm) #user',
 	},
-	result,
-	providesPreview,
-	previewer,
-	previewCallback,
+	result: undefined,
+	providesPreview: false,
+	previewer: undefined,
+	previewCallback: undefined,
 });

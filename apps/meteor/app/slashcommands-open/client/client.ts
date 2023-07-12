@@ -2,12 +2,12 @@ import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocke
 import type { Mongo } from 'meteor/mongo';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { router } from '../../../client/providers/RouterProvider';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'open',
 	callback: async function Open({ params }: SlashCommandCallbackParams<'open'>): Promise<void> {
 		const dict: Record<string, RoomType[]> = {

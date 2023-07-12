@@ -1,13 +1,13 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { ui } from '../../../client/lib/ui';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'topic',
 	callback: async function Topic({ params, message }: SlashCommandCallbackParams<'topic'>): Promise<void> {
 		if (hasPermission('edit-room', message.rid)) {

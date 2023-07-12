@@ -1,6 +1,6 @@
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'invite-all-to',
 	options: {
 		description: 'Invite_user_to_join_channel_all_to',
@@ -8,7 +8,8 @@ slashCommands.add({
 		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
 	},
 });
-slashCommands.add({
+
+ui.addSlashCommand({
 	command: 'invite-all-from',
 	options: {
 		description: 'Invite_user_to_join_channel_all_from',

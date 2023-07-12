@@ -19,8 +19,8 @@ import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/c
 import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
-import { slashCommands } from '../../../../app/utils/client';
 import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
+import { ui } from '../../../lib/ui';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
@@ -274,9 +274,10 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				triggerAnywhere: false,
 				renderItem: ({ item }) => <ComposerPopupSlashCommand {...item} />,
 				getItemsFromLocal: async (filter: string) => {
-					return Object.keys(slashCommands.commands)
+					const commands = await ui.getSlashCommands();
+					return Object.keys(commands)
 						.map((command) => {
-							const item = slashCommands.commands[command];
+							const item = commands[command];
 							return {
 								_id: command,
 								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',

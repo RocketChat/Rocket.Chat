@@ -8,7 +8,7 @@ import type {
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
 
-interface ISlashCommandAddParams<T extends string> {
+export interface ISlashCommandAddParams<T extends string> {
 	command: string;
 	callback?: SlashCommand<T>['callback'];
 	options?: SlashCommandOptions;

@@ -1,6 +1,6 @@
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { ui } from '../../../client/lib/ui';
 
-slashCommands.add({
+ui.addSlashCommand({
 	command: 'unarchive',
 	options: {
 		description: 'Unarchive',
