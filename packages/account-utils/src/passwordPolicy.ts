@@ -1,7 +1,7 @@
 import PasswordPolicy from '@rocket.chat/account-utils';
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
+import { settings } from './settings/server';
 
 export const passwordPolicy = new PasswordPolicy.PasswordPolicy({
 	enabled: false,
