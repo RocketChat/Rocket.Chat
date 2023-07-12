@@ -6,21 +6,18 @@ export type Action = {
 	label: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
 	action: () => void;
-	type?: string;
 };
 
 type MenuOption = {
 	label: { label: ReactNode; icon?: string };
 	action: () => void;
-	type?: string;
 };
 
-const mapOptions = ([key, { action, label, icon, type }]: [string, Action]): [string, MenuOption] => [
+const mapOptions = ([key, { action, label, icon }]: [string, Action]): [string, MenuOption] => [
 	key,
 	{
 		label: { label, icon }, // TODO fuselage
 		action,
-		type,
 	},
 ];
 
