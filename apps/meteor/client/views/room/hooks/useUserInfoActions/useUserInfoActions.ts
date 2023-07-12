@@ -16,7 +16,6 @@ import { useRedirectModerationConsole } from './actions/useRedirectModerationCon
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 
 export type UserInfoAction = {
-	id: string;
 	content: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;

@@ -6,7 +6,6 @@ import { useMemo } from 'react';
 import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 
@@ -38,7 +37,6 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 
 		return room && !isRoomFederated(room) && user._id !== ownUserId
 			? {
-					id: user._id,
 					content: t('Start_call'),
 					icon: 'phone' as const,
 					onClick: action,

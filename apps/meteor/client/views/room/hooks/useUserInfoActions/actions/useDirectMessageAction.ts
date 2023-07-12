@@ -3,7 +3,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { Action } from '../../../../hooks/useActionSpread';
 import type { UserInfoAction } from '../useUserInfoActions';
 
 const getShouldOpenDirectMessage = (
@@ -43,7 +42,6 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 		() =>
 			shouldOpenDirectMessage
 				? {
-						id: user._id,
 						content: t('Direct_Message'),
 						icon: 'balloon' as const,
 						onClick: openDirectMessage,

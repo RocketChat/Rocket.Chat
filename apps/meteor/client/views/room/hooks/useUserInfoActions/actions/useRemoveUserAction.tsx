@@ -10,7 +10,6 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction } from '../useUserInfoActions';
@@ -99,7 +98,6 @@ export const useRemoveUserAction = (
 						// 		{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
 						// 	</Box>
 						// ),
-						id: '',
 						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
 						icon: 'cross' as const,
 						onClick: removeUserOptionAction,

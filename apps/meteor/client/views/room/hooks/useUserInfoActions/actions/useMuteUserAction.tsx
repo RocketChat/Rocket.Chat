@@ -15,7 +15,6 @@ import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction } from '../useUserInfoActions';
 
@@ -102,7 +101,6 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 		return roomCanMute && userCanMute
 			? {
-					id: user._id,
 					content: t(isMuted ? 'Unmute_user' : 'Mute_user'),
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					onClick: action,

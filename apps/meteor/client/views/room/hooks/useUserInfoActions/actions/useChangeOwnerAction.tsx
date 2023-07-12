@@ -9,7 +9,6 @@ import React, { useCallback, useMemo } from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction } from '../useUserInfoActions';
@@ -107,7 +106,6 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		() =>
 			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
 				? {
-						id: user._id,
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
 						onClick: changeOwnerAction,

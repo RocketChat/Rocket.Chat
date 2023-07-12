@@ -3,7 +3,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useMethod, useToastMessageDispatch, useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction } from '../useUserInfoActions';
 
@@ -40,7 +39,6 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		() =>
 			roomCanBlock && uid !== ownUserId
 				? {
-					id: user._id,
 						content: t(isUserBlocked ? 'Unblock' : 'Block'),
 						icon: 'ban' as const,
 						onClick: toggleBlockUserAction,
