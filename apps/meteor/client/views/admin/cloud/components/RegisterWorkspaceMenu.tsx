@@ -2,7 +2,8 @@ import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { cloudConsoleUrl } from '../constants';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { CLOUD_CONSOLE_URL } from '../../../../lib/constants';
 import RegisteredWorkspaceModal from '../modals/RegisteredWorkspaceModal';
 
 type RegisterWorkspaceMenuProps = {
@@ -28,11 +29,13 @@ const RegisterWorkspaceMenu = ({
 		setModal(<RegisteredWorkspaceModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
+	const handleLinkClick = useExternalLink();
+
 	return (
 		<ButtonGroup>
 			{isWorkspaceRegistered && isConnectedToCloud && (
 				<>
-					<Button is='a' href={cloudConsoleUrl} target='_blank' rel='noopener noreferrer'>
+					<Button role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
 						<Icon name='new-window' size='x20' pie={4} />
 						{t('Cloud')}
 					</Button>

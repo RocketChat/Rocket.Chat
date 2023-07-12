@@ -44,6 +44,7 @@ addAction('start-call', ({ room }) => {
 	const isRinging = useVideoConfIsRinging();
 	const federated = isRoomFederated(room);
 	const canPostReadOnly = usePermission('post-readonly', room._id);
+	const canStartCall = usePermission('call-management', room._id);
 
 	const ownUser = room.uids && room.uids.length === 1;
 
@@ -57,7 +58,7 @@ addAction('start-call', ({ room }) => {
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
 
-	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
+	const enableOption = enabled && canStartCall && (!user?.username || !room.muted?.includes(user.username));
 
 	const groups = useStableArray(
 		[

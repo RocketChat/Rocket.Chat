@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { emoji } from '../../emoji/client';
-import { getEmojiConfig, isSetNotNull } from '../lib/rocketchat';
 import { getUserPreference } from '../../utils/client';
+import { isSetNotNull } from '../lib/isSetNotNull';
+import { getEmojiConfig } from '../lib/getEmojiConfig';
 
 const config = getEmojiConfig();
 
@@ -18,16 +19,11 @@ if (emoji.packages.emojione) {
 
 	// RocketChat.emoji.list is the collection of emojis from all emoji packages
 	for (const [key, currentEmoji] of Object.entries(config.emojione.emojioneList)) {
-		// @ts-expect-error - emojione types
 		currentEmoji.emojiPackage = 'emojione';
-		// @ts-expect-error - emojione types
 		emoji.list[key] = currentEmoji;
 
-		// @ts-expect-error - emojione types
 		if (currentEmoji.shortnames) {
-			// @ts-expect-error - emojione types
 			currentEmoji.shortnames.forEach((shortname: string) => {
-				// @ts-expect-error - emojione types
 				emoji.list[shortname] = currentEmoji;
 			});
 		}
