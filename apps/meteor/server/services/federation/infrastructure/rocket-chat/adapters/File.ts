@@ -1,5 +1,5 @@
 import { Avatars, Uploads } from '@rocket.chat/models';
-import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
+import type { FileProp, IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../../../../../app/file-upload/server/methods/sendFileMessage';
@@ -23,7 +23,7 @@ export class RocketChatFileAdapter {
 			try {
 				const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
 
-				resolve({ files, attachments });
+				resolve({ files: files as FileProp[], attachments });
 			} catch (error) {
 				reject(error);
 			}

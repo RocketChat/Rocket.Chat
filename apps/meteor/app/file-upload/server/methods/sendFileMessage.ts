@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast, FileProp } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
@@ -25,7 +25,14 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
-): Promise<Record<string, any>> => {
+): Promise<{
+	files: {
+		_id: string;
+		name: string | undefined;
+		type: string | undefined;
+	}[];
+	attachments: MessageAttachment[];
+}> => {
 	validateFileRequiredFields(file);
 
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
@@ -169,8 +176,8 @@ export const sendFileMessage = async (
 	const msg = await executeSendMessage(userId, {
 		rid: roomId,
 		ts: new Date(),
-		file: files[0],
-		files,
+		file: files[0] as FileProp,
+		files: files as FileProp[],
 		attachments,
 		...msgData,
 		msg: msgData.msg ?? '',
