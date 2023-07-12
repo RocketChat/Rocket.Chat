@@ -65,7 +65,7 @@ const GenericUpsellModal = ({
 			const onClose = onCloseRef.current;
 			onClose?.();
 		};
-	}, [onCloseEffect]);
+	}, []);
 
 	return (
 		<Modal>
