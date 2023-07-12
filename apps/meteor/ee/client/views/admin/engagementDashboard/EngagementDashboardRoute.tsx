@@ -41,28 +41,22 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [setModal, t]);
 
 	useEffect(() => {
-		router.subscribeToRouteChange(() => {
-			if (router.getRouteName() !== 'engagement-dashboard') {
-				return;
-			}
+		if (isUpsell) {
+			handleOpenModal();
+			return;
+		}
 
-			if (isUpsell) {
-				handleOpenModal();
-				return;
-			}
+		const { tab } = router.getRouteParameters();
 
-			const { tab } = router.getRouteParameters();
-
-			if (!isValidTab(tab)) {
-				router.navigate(
-					{
-						pattern: '/admin/engagement/:tab?',
-						params: { tab: 'users' },
-					},
-					{ replace: true },
-				);
-			}
-		});
+		if (!isValidTab(tab)) {
+			router.navigate(
+				{
+					pattern: '/admin/engagement/:tab?',
+					params: { tab: 'users' },
+				},
+				{ replace: true },
+			);
+		}
 
 		return () => {
 			setModal(null);

@@ -90,8 +90,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/settings/:group?';
 		};
 		'device-management': {
-			pathname: `/admin/device-management${`/${string}` | ''}`;
-			pattern: '/admin/device-management/:id?';
+			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/device-management/:context?/:id?';
 		};
 		'engagement-dashboard': {
 			pathname: `/admin/engagement${`/${string}` | ''}`;
@@ -233,7 +233,7 @@ registerAdminRoute('/engagement/:tab?', {
 	component: lazy(() => import('../../../ee/client/views/admin/engagementDashboard/EngagementDashboardRoute')),
 });
 
-registerAdminRoute('/device-management/:id?', {
+registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
 });
