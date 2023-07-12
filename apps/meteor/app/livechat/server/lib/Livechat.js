@@ -740,6 +740,8 @@ export const Livechat = {
 			});
 		}
 
+		// TODO: these kind of actions should be on events instead of here
+		await LivechatDepartmentAgents.enableAgentsByDepartmentId(_id);
 		return LivechatDepartmentRaw.unarchiveDepartment(_id);
 	},
 
@@ -754,7 +756,11 @@ export const Livechat = {
 			});
 		}
 
-		return LivechatDepartmentRaw.archiveDepartment(_id);
+		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
+		await LivechatDepartmentRaw.archiveDepartment(_id);
+
+		this.logger.debug({ msg: 'Running livechat.afterDepartmentArchived callback for department:', departmentId: _id });
+		await callbacks.run('livechat.afterDepartmentArchived', department);
 	},
 
 	showConnecting() {

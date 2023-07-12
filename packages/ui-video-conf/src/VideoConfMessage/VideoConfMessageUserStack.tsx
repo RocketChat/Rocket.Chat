@@ -3,7 +3,7 @@ import { Avatar, Box } from '@rocket.chat/fuselage';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { ReactElement, memo } from 'react';
 
-const MAX_USERS = 6;
+const MAX_USERS = 3;
 
 const VideoConfMessageUserStack = ({ users }: { users: Serialized<IVideoConferenceUser>[] }): ReactElement => {
 	const getUserAvatarPath = useUserAvatarPath();
