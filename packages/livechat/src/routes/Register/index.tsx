@@ -10,18 +10,12 @@ import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsFo
 import type { CustomField } from '../../components/Form/CustomFields';
 import Screen from '../../components/Screen';
 import { createClassName, sortArrayByColumn } from '../../components/helpers';
+import type { department } from '../../definitions/departments';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
-
-// TODO: Properly type departments in livechat
-type department = {
-	_id: string;
-	name: string;
-	[key: string]: unknown;
-};
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
@@ -114,7 +108,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 	}: {
 		name: string;
 		email: string;
-		department: string;
+		department?: string;
 		customFields: FormPayloadCustomField;
 	}) => {
 		const fields = {
