@@ -29,7 +29,7 @@ class PasswordPolicy {
 
 	throwError: boolean;
 
-	private _forbidRepeatingCharactersCount: number;
+	private _forbidRepeatingCharactersCount: number | undefined;
 
 	constructor({
 		enabled = false,

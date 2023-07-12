@@ -1,7 +1,5 @@
-import crypto from 'crypto';
+import { hashLoginToken } from './hashLoginToken';
+import PasswordPolicy from './PasswordPolicyClass';
+import { passwordPolicy } from './passwordPolicy';
 
-export function hashLoginToken(loginToken: string): string {
-	const hash = crypto.createHash('sha256');
-	hash.update(loginToken);
-	return hash.digest('base64');
-}
+export { hashLoginToken, PasswordPolicy, passwordPolicy };

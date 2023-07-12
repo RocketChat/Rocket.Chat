@@ -325,7 +325,6 @@
 		"file-type": "^16.5.4",
 		"filenamify": "^4.3.0",
 		"filesize": "9.0.11",
-		"generate-password": "^1.7.0",
 		"google-libphonenumber": "^3.2.32",
 		"googleapis": "^104.0.0",
 		"gravatar": "^1.8.2",
