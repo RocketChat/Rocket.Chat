@@ -11,6 +11,8 @@ import {
 	StatesTitle,
 	Accordion,
 } from '@rocket.chat/fuselage';
+import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
+import { useFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -18,8 +20,6 @@ import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
-import type { FeaturePreviewProps } from '../../../hooks/useFeaturePreviewList';
-import { useFeaturePreviewList } from '../../../hooks/useFeaturePreviewList';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
