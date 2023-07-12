@@ -1,7 +1,7 @@
+import type { Ref } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { useState } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
-import type { ControllerRenderProps } from 'react-hook-form';
 
 import ArrowIcon from '../../../icons/arrowDown.svg';
 import { createClassName } from '../../helpers';
@@ -16,9 +16,10 @@ type SelectInputProps = {
 	error?: boolean;
 	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
+	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
+	ref: Ref<HTMLSelectElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field?: ControllerRenderProps<{ [key: string]: string }, any>;
 	value?: string;
 };
 
@@ -30,12 +31,12 @@ export const SelectInput = ({
 	small,
 	error,
 	onInput,
+	onBlur,
+	onChange = () => undefined,
 	className,
 	style = {},
-	field,
-	onChange = () => undefined,
 	value,
-	...props
+	ref,
 }: SelectInputProps) => {
 	const [internalValue, setInternalValue] = useState(value);
 
@@ -55,13 +56,14 @@ export const SelectInput = ({
 		setInternalValue((event.target as HTMLSelectElement)?.value);
 	};
 
-	return field ? (
+	return (
 		<div className={createClassName(styles, 'select-input', {}, [className])} style={style}>
 			<select
 				name={name}
 				value={internalValue}
 				disabled={disabled}
 				onChange={handleChange}
+				onBlur={onBlur}
 				onInput={onInput}
 				className={createClassName(styles, 'select-input__select', {
 					disabled,
@@ -69,29 +71,7 @@ export const SelectInput = ({
 					small,
 					placeholder: !internalValue,
 				})}
-				{...props}
-			>
-				<option value='' disabled hidden>
-					{placeholder}
-				</option>
-				{SelectOptions}
-			</select>
-			<ArrowIcon className={createClassName(styles, 'select-input__arrow')} />
-		</div>
-	) : (
-		<div className={createClassName(styles, 'select-input', {}, [className])} style={style}>
-			<select
-				name={name}
-				disabled={disabled}
-				className={createClassName(styles, 'select-input__select', {
-					disabled,
-					error,
-					small,
-					placeholder: !internalValue,
-				})}
-				// TODO: find a better way to handle the difference between react and preact on TS
-				{...(field as any)}
-				{...props}
+				ref={ref}
 			>
 				<option value='' disabled hidden>
 					{placeholder}

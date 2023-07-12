@@ -138,11 +138,10 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 							control={control}
 							render={({ field }) => (
 								<SelectInput
-									name='department'
 									options={departments.map(({ _id, name }) => ({ value: _id, label: name }))}
 									placeholder={t('choose_a_department')}
 									disabled={loading}
-									field={field}
+									{...field}
 								/>
 							)}
 						/>

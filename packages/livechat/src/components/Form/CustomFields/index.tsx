@@ -50,17 +50,14 @@ export const CustomFields = ({ customFields, loading, control, errors }: RenderC
 					render={({ field }) => {
 						switch (type) {
 							case 'input':
-								return (
-									<TextInput name={_id} placeholder={t('insert_your_field_here', { field: label })} disabled={loading} field={field} />
-								);
+								return <TextInput placeholder={t('insert_your_field_here', { field: label })} disabled={loading} {...field} />;
 							case 'select':
 								return (
 									<SelectInput
-										name={_id}
 										placeholder={t('choose_an_option')}
 										options={(options as string[])?.map((option: string) => ({ value: option, label: option }))}
 										disabled={loading}
-										field={field}
+										{...field}
 									/>
 								);
 						}

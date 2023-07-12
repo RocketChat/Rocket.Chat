@@ -1,18 +1,23 @@
+import type { Ref } from 'preact';
+import type { TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
-import type { ControllerRenderProps } from 'react-hook-form';
 
 import { createClassName } from '../../helpers';
 
 type MultilineTextInputProps = {
-	name: string;
+	rows?: number;
+	name?: string;
+	value?: string;
 	placeholder?: string;
 	disabled?: boolean;
 	small?: boolean;
-	rows?: number;
 	error?: boolean;
+	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLTextAreaElement, Event>>;
+	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLTextAreaElement, Event>>;
+	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLTextAreaElement, Event>>;
+	ref?: Ref<HTMLTextAreaElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	field: ControllerRenderProps<{ [key: string]: string }, any>;
 };
 
 export const MultilineTextInput = ({
@@ -24,7 +29,11 @@ export const MultilineTextInput = ({
 	error,
 	className,
 	style = {},
-	field,
+	onChange,
+	onInput,
+	onBlur,
+	ref,
+	value,
 }: MultilineTextInputProps) => (
 	<textarea
 		rows={rows}
@@ -33,7 +42,10 @@ export const MultilineTextInput = ({
 		disabled={disabled}
 		className={createClassName(null, 'text-input', { disabled, error, small }, [className])}
 		style={style}
-		// TODO: find a better way to handle the difference between react and preact on TS
-		{...(field as any)}
+		onChange={onChange}
+		onInput={onInput}
+		onBlur={onBlur}
+		ref={ref}
+		value={value}
 	/>
 );

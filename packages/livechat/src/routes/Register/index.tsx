@@ -191,12 +191,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 									defaultValue={guestName}
 									rules={{ required: true }}
 									render={({ field }) => (
-										<TextInput
-											name='name'
-											placeholder={t('insert_your_field_here', { field: t('name') })}
-											disabled={loading}
-											field={field}
-										/>
+										<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
 									)}
 								/>
 							</FormField>
@@ -213,12 +208,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 										validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
 									}}
 									render={({ field }) => (
-										<TextInput
-											name='email'
-											placeholder={t('insert_your_field_here', { field: t('email') })}
-											disabled={loading}
-											field={field}
-										/>
+										<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
 									)}
 								/>
 							</FormField>
@@ -232,14 +222,13 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 									defaultValue={getDepartmentDefault()}
 									render={({ field }) => (
 										<SelectInput
-											name='department'
 											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
 												value: _id,
 												label: name,
 											}))}
 											placeholder={t('choose_an_option')}
 											disabled={loading}
-											field={field}
+											{...field}
 										/>
 									)}
 								/>

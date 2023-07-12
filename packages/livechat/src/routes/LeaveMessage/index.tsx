@@ -125,7 +125,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 							// defaultValue={guestName}
 							rules={{ required: true }}
 							render={({ field }) => (
-								<TextInput name='name' placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} field={field} />
+								<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
 							)}
 						/>
 					</FormField>
@@ -140,7 +140,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 								validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
 							}}
 							render={({ field }) => (
-								<TextInput name='email' placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} field={field} />
+								<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
 							)}
 						/>
 					</FormField>
@@ -152,14 +152,13 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 								control={control}
 								render={({ field }) => (
 									<SelectInput
-										name='department'
 										options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
 											value: _id,
 											label: name,
 										}))}
 										placeholder={t('choose_an_option')}
 										disabled={loading}
-										field={field}
+										{...field}
 									/>
 								)}
 							/>
@@ -170,9 +169,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 							name='message'
 							control={control}
 							rules={{ required: true }}
-							render={({ field }) => (
-								<MultilineTextInput name='message' rows={4} placeholder={t('write_your_message')} disabled={loading} field={field} />
-							)}
+							render={({ field }) => <MultilineTextInput rows={4} placeholder={t('write_your_message')} disabled={loading} {...field} />}
 						/>
 					</FormField>
 				</Form>
