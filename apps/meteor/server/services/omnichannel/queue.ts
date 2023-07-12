@@ -14,7 +14,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 	private queues: (string | undefined)[] = [];
 
-	delay() {
+	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout');
 		return timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 	}
@@ -40,12 +40,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		this.running = false;
 	}
 
-	async getActiveQueues() {
+	private async getActiveQueues() {
 		// undefined = public queue(without department)
 		return ([undefined] as typeof this.queues).concat(await LivechatInquiry.getDistinctQueuedDepartments({}));
 	}
 
-	async nextQueue() {
+	private async nextQueue() {
 		if (!this.queues.length) {
 			queueLogger.debug('No more registered queues. Refreshing');
 			this.queues = await this.getActiveQueues();
@@ -54,7 +54,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.queues.shift();
 	}
 
-	async execute() {
+	private async execute() {
 		if (!this.running) {
 			queueLogger.debug('Queue stopped. Cannot execute');
 			return;
@@ -67,7 +67,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	}
 
-	async checkQueue(queue: string | undefined) {
+	private async checkQueue(queue: string | undefined) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
 			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
@@ -111,7 +111,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		void (routingSupportsAutoAssign ? this.start() : this.stop());
 	}
 
-	async processWaitingQueue(department: string | undefined, inquiry: InquiryWithAgentInfo) {
+	private async processWaitingQueue(department: string | undefined, inquiry: InquiryWithAgentInfo) {
 		const queue = department || 'Public';
 		queueLogger.debug(`Processing items on queue ${queue}`);
 
