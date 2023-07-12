@@ -2,7 +2,7 @@ import type { Icon } from '@rocket.chat/fuselage';
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 type UpsellModalProps = {
 	children?: ReactNode;
@@ -57,11 +57,13 @@ const GenericUpsellModal = ({
 		window.open(talkToSales, '_blank');
 	}, [handleModalClose]);
 
+	const onCloseRef = useRef(onCloseEffect ?? handleModalClose);
+	onCloseRef.current = onCloseEffect ?? handleModalClose;
+
 	useEffect(() => {
 		return () => {
-			if (onCloseEffect) {
-				onCloseEffect();
-			}
+			const onClose = onCloseRef.current;
+			onClose?.();
 		};
 	}, [onCloseEffect]);
 
