@@ -13,6 +13,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return [
 			{ key: { 'ts': 1, 'reports.ts': 1 } },
 			{ key: { 'message.u._id': 1, 'ts': 1 } },
+			{ key: { 'reportedUser._id': 1, 'ts': 1 } },
 			{ key: { 'message.rid': 1, 'ts': 1 } },
 			{ key: { userId: 1, ts: 1 } },
 			{ key: { 'message._id': 1, 'ts': 1 } },
@@ -29,13 +30,28 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			message,
 			description,
 			reportedBy,
+			// reportedUser: message.u,
 			room,
 			ts: new Date(),
 		};
 		return this.insertOne(record);
 	}
 
-	findReportsGroupedByUser(
+	createWithDescriptionAndUser(
+		reportedUser: IModerationReport['reportedUser'],
+		description: string,
+		reportedBy: IModerationReport['reportedBy'],
+	): ReturnType<BaseRaw<IModerationReport>['insertOne']> {
+		const record = {
+			description,
+			reportedBy,
+			reportedUser,
+			ts: new Date(),
+		};
+		return this.insertOne(record);
+	}
+
+	findMessageReportsGroupedByUser(
 		latest: Date,
 		oldest: Date,
 		selector: string,

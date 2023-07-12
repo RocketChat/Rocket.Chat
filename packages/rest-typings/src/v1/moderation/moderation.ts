@@ -5,6 +5,7 @@ import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
 import type { ReportHistoryPropsGET } from './ReportHistoryProps';
 import type { ReportMessageHistoryParamsGET } from './ReportMessageHistoryParams';
 import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
+import type { ModerationReportUserPOST } from './ModerationReportUserPOST';
 import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
 import type { ReportInfoParams } from './ReportInfoParams';
 
@@ -38,5 +39,8 @@ export type ModerationEndpoints = {
 		GET: (params: ReportInfoParams) => {
 			report: IModerationReport | null;
 		};
+	};
+	'/v1/moderation.reportUser': {
+		POST: (params: ModerationReportUserPOST) => void;
 	};
 };
