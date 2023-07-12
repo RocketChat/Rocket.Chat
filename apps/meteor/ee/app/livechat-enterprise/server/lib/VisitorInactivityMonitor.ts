@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
