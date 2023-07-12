@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 class PasswordPolicy {
 	regex: {
@@ -245,7 +246,7 @@ class PasswordPolicy {
 	getPasswordPolicy() {
 		type dataType = {
 			enabled: boolean;
-			policy: [string, { [key: string]: number }?][];
+			policy: [TranslationKey, { [key: string]: number }?][];
 		};
 
 		const data: dataType = {
