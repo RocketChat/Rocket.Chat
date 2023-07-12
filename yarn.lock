@@ -10903,9 +10903,11 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.294
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.294"
-  checksum: cf58890f3fbcfdff3df9436a33c4aa333de34369f89902107dee74c50c11b8af793c9c80a8df5046ffcabf0fd90111f31a6fc2030876e838e43ec4c6a5703fc4
+  version: 0.32.0-dev.322
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.322"
+  peerDependencies:
+    "@rocket.chat/icons": "*"
+  checksum: 7dd68a0d8bae600e20bfd98aee5c25873aa7dc4764c03a375830279f238830cf43026df3df41df7d4b433360d8cbc9e9e6925c38d2ef65152dcd6401c251d889
   languageName: node
   linkType: hard
 

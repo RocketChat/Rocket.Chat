@@ -20,7 +20,7 @@ const TimePickerElement = ({
     <InputBox
       type='time'
       error={error}
-      value={value as string}
+      value={value}
       disabled={loading}
       id={actionId}
       name={actionId}

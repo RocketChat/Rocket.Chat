@@ -9,7 +9,31 @@ export const actionWithCheckbox: readonly LayoutBlock[] = [
         appId: 'app-id',
         blockId: 'block-id',
         actionId: 'action-id',
-        value: true,
+        options: [
+          {
+            text: {
+              type: 'plain_text',
+              text: 'Option 1',
+            },
+            value: 'value-1',
+          },
+          {
+            text: {
+              type: 'plain_text',
+              text: 'Option initial',
+            },
+            value: 'value-2',
+          },
+        ],
+        initialOptions: [
+          {
+            text: {
+              type: 'plain_text',
+              text: 'Option initial',
+            },
+            value: 'value-2',
+          },
+        ],
       },
     ],
   },
