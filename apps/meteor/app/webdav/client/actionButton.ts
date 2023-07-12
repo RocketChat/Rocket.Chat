@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { getURL } from '../../utils/client';
 import { WebdavAccounts } from '../../models/client';
 import { settings } from '../../settings/client';
-import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveToWebdav from '../../../client/views/room/webdav/SaveToWebdavModal';
+import { ui } from '../../../client/lib/ui';
 
 Meteor.startup(function () {
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'webdav-upload',
 		icon: 'upload',
 		label: 'Save_To_Webdav',

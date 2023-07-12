@@ -3,19 +3,19 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
-import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { ui } from '../../../client/lib/ui';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
-			return MessageAction.removeButton('start-discussion');
+			return ui.removeMessageAction('start-discussion');
 		}
 
-		MessageAction.addButton({
+		ui.addMessageAction({
 			id: 'start-discussion',
 			icon: 'discussion',
 			label: 'Discussion_start',

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { ui } from '../../../client/lib/ui';
 
-Meteor.startup(function () {
-	MessageAction.addButton({
+Meteor.startup(() => {
+	ui.addMessageAction({
 		id: 'reaction-message',
 		icon: 'add-reaction',
 		label: 'Add_Reaction',

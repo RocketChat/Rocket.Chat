@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../app/settings/client';
-import { MessageAction } from '../../../app/ui-utils/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { ui } from '../../../client/lib/ui';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import ReadReceiptsModal from '../../../client/views/room/modals/ReadReceiptsModal';
 
@@ -12,10 +12,11 @@ Meteor.startup(() => {
 		const enabled = settings.get('Message_Read_Receipt_Store_Users');
 
 		if (!enabled) {
-			return MessageAction.removeButton('receipt-detail');
+			ui.removeMessageAction('receipt-detail');
+			return;
 		}
 
-		MessageAction.addButton({
+		ui.addMessageAction({
 			id: 'receipt-detail',
 			icon: 'info-circled',
 			label: 'Info',

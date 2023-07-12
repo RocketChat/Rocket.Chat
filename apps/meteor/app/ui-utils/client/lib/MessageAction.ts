@@ -24,6 +24,7 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 };
 
 type MessageActionGroup = 'message' | 'menu';
+
 export type MessageActionContext =
 	| 'message'
 	| 'threads'
@@ -36,7 +37,7 @@ export type MessageActionContext =
 	| 'videoconf'
 	| 'search';
 
-type MessageActionConditionProps = {
+export type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser | undefined;
 	room: IRoom;
@@ -90,7 +91,7 @@ export const MessageAction = new (class {
 			group: string (message or menu)
    */
 
-	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
+	private buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
 		if (!config?.id) {
@@ -122,26 +123,14 @@ export const MessageAction = new (class {
 		});
 	}
 
-	updateButton(id: MessageActionConfig['id'], config: MessageActionConfig): void {
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			if (btns[id]) {
-				btns[id] = Object.assign(btns[id], config);
-				return this.buttons.set(btns);
-			}
-		});
-	}
+	private _getButtons = mem(
+		(): MessageActionConfigList => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+		{
+			maxAge: 1000,
+		},
+	);
 
-	getButtonById(id: MessageActionConfig['id']): MessageActionConfig | undefined {
-		const allButtons = this.buttons.get();
-		return allButtons[id];
-	}
-
-	_getButtons = mem((): MessageActionConfigList => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)), {
-		maxAge: 1000,
-	});
-
-	async getButtonsByCondition(
+	private async getButtonsByCondition(
 		prop: MessageActionConditionProps,
 		arr: MessageActionConfigList = MessageAction._getButtons(),
 	): Promise<MessageActionConfigList> {
@@ -156,14 +145,14 @@ export const MessageAction = new (class {
 			.map(([button]) => button);
 	}
 
-	getButtonsByGroup = mem(
+	private getButtonsByGroup = mem(
 		function (group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
 			return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 		},
 		{ maxAge: 1000 },
 	);
 
-	getButtonsByContext(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
+	private getButtonsByContext(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
 		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
 	}
 
@@ -178,12 +167,6 @@ export const MessageAction = new (class {
 			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
 		}
 		return allButtons;
-	}
-
-	resetButtons(): void {
-		mem.clear(this._getButtons);
-		mem.clear(this.getButtonsByGroup);
-		return this.buttons.set({});
 	}
 
 	async getPermaLink(msgId: string): Promise<string> {

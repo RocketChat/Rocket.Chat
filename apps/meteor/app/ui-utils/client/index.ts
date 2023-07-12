@@ -1,6 +1,5 @@
 import './lib/messageActionDefault';
 
-export { MessageAction } from './lib/MessageAction';
 export { messageBox } from './lib/messageBox';
 export { readMessage } from './lib/readMessages';
 export { LegacyRoomManager } from './lib/LegacyRoomManager';

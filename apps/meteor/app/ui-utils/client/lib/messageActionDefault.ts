@@ -8,13 +8,13 @@ import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ChatRoom, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
-import { MessageAction } from './MessageAction';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { t } from '../../../utils/lib/i18n';
 import { router } from '../../../../client/providers/RouterProvider';
+import { ui } from '../../../../client/lib/ui';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -24,7 +24,7 @@ const getMainMessageText = (message: IMessage): IMessage => {
 };
 
 Meteor.startup(async function () {
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
@@ -63,14 +63,14 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'share-message',
 		icon: 'arrow-forward',
 		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
+			const permalink = await ui.getMessageLinkById(message._id);
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
@@ -86,7 +86,7 @@ Meteor.startup(async function () {
 		group: ['message', 'menu'],
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
@@ -114,7 +114,7 @@ Meteor.startup(async function () {
 		group: ['message', 'menu'],
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'permalink',
 		icon: 'permalink',
 		label: 'Get_link',
@@ -123,7 +123,7 @@ Meteor.startup(async function () {
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;
-				const permalink = await MessageAction.getPermaLink(message._id);
+				const permalink = await ui.getMessageLinkById(message._id);
 				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: t('Copied') });
 			} catch (e) {
@@ -137,7 +137,7 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'copy',
 		icon: 'copy',
 		label: 'Copy',
@@ -156,7 +156,7 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
@@ -198,7 +198,7 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
@@ -225,7 +225,7 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'report-message',
 		icon: 'report',
 		label: 'Report',
@@ -251,7 +251,7 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
-	MessageAction.addButton({
+	ui.addMessageAction({
 		id: 'reaction-list',
 		icon: 'emoji',
 		label: 'Reactions',

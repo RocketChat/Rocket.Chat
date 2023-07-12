@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { MessageAction } from '../../../app/ui-utils/client/lib/MessageAction';
+import { ui } from '../ui';
 
 export const prependReplies = async (msg: string, replies: IMessage[] = []): Promise<string> => {
 	const chunks = await Promise.all(
 		replies.map(async ({ _id }) => {
-			const permalink = await MessageAction.getPermaLink(_id);
+			const permalink = await ui.getMessageLinkById(_id);
 
 			return `[ ](${permalink})`;
 		}),

@@ -8,9 +8,9 @@ import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { ui } from '../../../lib/ui';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -64,12 +64,12 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const messageActions = await MessageAction.getButtons(
+		const messageActions = await ui.getMessageActions(
 			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
 			context,
 			'message',
 		);
-		const menuActions = await MessageAction.getButtons(
+		const menuActions = await ui.getMessageActions(
 			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
 			context,
 			'menu',
