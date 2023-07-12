@@ -10,7 +10,7 @@ type EmojiPickerContextValue = {
 	handlePreview: (emoji: string, name: string) => void;
 	handleRemovePreview: () => void;
 	addRecentEmoji: (emoji: string) => void;
-	emojiListByCategory: EmojiByCategory[];
+	getEmojiListsByCategory: () => EmojiByCategory[];
 	recentEmojis: string[];
 	setRecentEmojis: (emoji: string[]) => void;
 	actualTone: number;
@@ -44,16 +44,32 @@ export const usePreviewEmoji = () => ({
 	handleRemovePreview: useEmojiPickerContext().handleRemovePreview,
 });
 
-export const useEmojiPickerData = () => ({
-	addRecentEmoji: useEmojiPickerContext().addRecentEmoji,
-	emojiListByCategory: useEmojiPickerContext().emojiListByCategory,
-	recentEmojis: useEmojiPickerContext().recentEmojis,
-	setRecentEmojis: useEmojiPickerContext().setRecentEmojis,
-	actualTone: useEmojiPickerContext().actualTone,
-	currentCategory: useEmojiPickerContext().currentCategory,
-	setCurrentCategory: useEmojiPickerContext().setCurrentCategory,
-	customItemsLimit: useEmojiPickerContext().customItemsLimit,
-	setCustomItemsLimit: useEmojiPickerContext().setCustomItemsLimit,
-	setActualTone: useEmojiPickerContext().setActualTone,
-	quickReactions: useEmojiPickerContext().quickReactions,
-});
+export const useEmojiPickerData = () => {
+	const {
+		actualTone,
+		addRecentEmoji,
+		currentCategory,
+		customItemsLimit,
+		getEmojiListsByCategory,
+		quickReactions,
+		recentEmojis,
+		setActualTone,
+		setCurrentCategory,
+		setCustomItemsLimit,
+		setRecentEmojis,
+	} = useEmojiPickerContext();
+
+	return {
+		addRecentEmoji,
+		getEmojiListsByCategory,
+		recentEmojis,
+		setRecentEmojis,
+		actualTone,
+		currentCategory,
+		setCurrentCategory,
+		customItemsLimit,
+		setCustomItemsLimit,
+		setActualTone,
+		quickReactions,
+	};
+};
