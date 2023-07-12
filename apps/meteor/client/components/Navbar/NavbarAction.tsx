@@ -3,7 +3,7 @@ import React from 'react';
 
 export const NavbarAction: FC = ({ children, ...props }) => {
 	return (
-		<li role='menuitem' {...props}>
+		<li style={{ position: 'relative' }} role='menuitem' {...props}>
 			{children}
 		</li>
 	);

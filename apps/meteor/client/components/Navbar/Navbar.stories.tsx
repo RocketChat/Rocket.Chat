@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import Navbar from './Navbar';
+import { Navbar } from './Navbar';
 
 export default {
 	title: 'Components/Navbar',
