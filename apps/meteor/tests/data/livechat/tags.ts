@@ -25,8 +25,8 @@ export const saveTags = (departments: string[] = []): Promise<ILivechatTag> => {
 	});
 };
 
-export const removeTag = (id: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
+export const removeTag = (id: string): Promise<boolean> => {
+	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:removeTag`))
 			.set(credentials)
@@ -43,6 +43,7 @@ export const removeTag = (id: string): Promise<void> => {
 					return reject(err);
 				}
 				resolve(JSON.parse(res.body.message).result);
-			});
+			}
+		);
 	});
 };
