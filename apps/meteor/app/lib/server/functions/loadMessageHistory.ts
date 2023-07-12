@@ -53,10 +53,10 @@ export async function loadMessageHistory({
 	let firstUnread;
 
 	if (ls) {
-		const firstMessage = messages[messages.length - 1];
+		// const firstMessage = messages[messages.length - 1];
+		const firstMessage = messages[0];
 
 		const lastSeen = new Date(ls);
-
 		if (firstMessage && new Date(firstMessage.ts) > lastSeen) {
 			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
@@ -79,7 +79,6 @@ export async function loadMessageHistory({
 				hiddenMessageTypes,
 				showThreadMessages,
 			);
-
 			firstUnread = (await unreadMessages.toArray())[0];
 			unreadNotLoaded = totalCursor;
 		}

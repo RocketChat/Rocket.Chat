@@ -137,10 +137,11 @@ class RoomHistoryManagerClass extends Emitter {
 		let ls = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
+		console.log({subscription});
 		if (subscription) {
 			({ ls } = subscription);
 		}
-
+		console.log('ls - ', ls);
 		const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
 		const result = await callWithErrorHandling(
 			'loadHistory',

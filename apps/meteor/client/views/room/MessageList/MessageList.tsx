@@ -5,7 +5,7 @@ import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-c
 import type { ReactElement, ComponentProps } from 'react';
 import React, { Fragment, memo } from 'react';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
+import { MessageTypes, RoomHistoryManager } from '../../../../app/ui-utils/client';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
@@ -31,6 +31,10 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
+	const { firstUnread } = RoomHistoryManager.getRoom(rid);
+	const firstUnreadMessage = firstUnread?.get();
+	console.log({ firstUnreadMessage });
+
 	return (
 		<MessageListProvider scrollMessageList={scrollMessageList}>
 			<SelectedMessagesProvider>
@@ -53,12 +57,11 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 
 					return (
 						<Fragment key={message._id}>
-							{showDivider && (
-								<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+							{showDivider || firstUnreadMessage?._id === message._id && (
+								<MessageDivider unreadLabel={firstUnread || message._id === firstUnreadMessage?._id ? t('Unread_Messages').toLowerCase() : undefined}>
 									{newDay && formatDate(message.ts)}
 								</MessageDivider>
 							)}
-
 							{visible && (
 								<RoomMessage
 									message={message}

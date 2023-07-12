@@ -93,6 +93,7 @@ class ReadMessage extends Emitter {
 
 		return sdk.rest.post('/v1/subscriptions.read', { rid }).then(() => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
+			// RoomHistoryManager.getRoom(rid).firstUnread.set(undefined);
 			return this.emit(rid);
 		});
 	}
