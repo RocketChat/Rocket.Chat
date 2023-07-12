@@ -5,7 +5,6 @@ export const callout: readonly LayoutBlock[] = [
     type: 'callout',
     appId: 'app-id',
     blockId: 'block-id',
-    value: 'Callout',
     title: {
       type: 'plain_text',
       text: 'Callout Title',
@@ -14,5 +13,6 @@ export const callout: readonly LayoutBlock[] = [
       type: 'plain_text',
       text: 'Callout Text',
     },
+    icon: 'rocket',
   },
 ];
