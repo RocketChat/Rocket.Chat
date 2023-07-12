@@ -14,13 +14,7 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-/**
- * @deprecated Feature preview
- * @description Should be removed when the feature became part of the core
- * @memberof navigationBar
- */
-
-const UserAvatarWithStatus = () => {
+const UserAvatarWithStatusUnstable = () => {
 	const user = useUser();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
@@ -35,7 +29,7 @@ const UserAvatarWithStatus = () => {
 			aria-label='User menu'
 			data-qa='sidebar-avatar-button'
 		>
-			{username && <UserAvatar size='x24' username={username} etag={avatarETag} />}
+			{username && <UserAvatar size='x32' username={username} etag={avatarETag} />}
 			<Box
 				className={css`
 					bottom: 0;
@@ -45,7 +39,7 @@ const UserAvatarWithStatus = () => {
 				alignItems='center'
 				display='flex'
 				overflow='hidden'
-				size={12}
+				size={16}
 				borderWidth='default'
 				position='absolute'
 				bg='surface-tint'
@@ -60,4 +54,4 @@ const UserAvatarWithStatus = () => {
 	);
 };
 
-export default UserAvatarWithStatus;
+export default UserAvatarWithStatusUnstable;
