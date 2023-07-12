@@ -16,7 +16,7 @@ import type { Block } from '@rocket.chat/ui-kit';
 import type { Dispatch, SyntheticEvent, ContextType } from 'react';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
-import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import Apps from './Apps';
 
@@ -101,6 +101,7 @@ const AppsWithData = ({
 	payload: IUIKitContextualBarInteraction;
 	appId: string;
 }): JSX.Element => {
+	const actionManager = useUiKitActionManager();
 	const closeTabBar = useTabBarClose();
 
 	const [state, setState] = useState<ViewState>(payload);
@@ -118,10 +119,10 @@ const AppsWithData = ({
 			setState(data as IUIKitContextualBarInteraction);
 		};
 
-		on(viewId, handleUpdate);
+		actionManager.on(viewId, handleUpdate);
 
 		return (): void => {
-			off(viewId, handleUpdate);
+			actionManager.off(viewId, handleUpdate);
 		};
 	}, [state, viewId]);
 
@@ -141,7 +142,7 @@ const AppsWithData = ({
 	};
 
 	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }: ActionParams) => {
-		triggerBlockAction({
+		actionManager.triggerBlockAction({
 			container: {
 				type: UIKitIncomingInteractionContainerType.VIEW,
 				id: viewId,
@@ -158,7 +159,7 @@ const AppsWithData = ({
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
 				await debouncedBlockAction({ actionId, appId, value, blockId });
 			} else {
-				await triggerBlockAction({
+				await actionManager.triggerBlockAction({
 					container: {
 						type: UIKitIncomingInteractionContainerType.VIEW,
 						id: viewId,
@@ -187,7 +188,7 @@ const AppsWithData = ({
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
 		closeTabBar();
-		triggerSubmitView({
+		actionManager.triggerSubmitView({
 			viewId,
 			appId,
 			payload: {
@@ -203,7 +204,7 @@ const AppsWithData = ({
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
 		closeTabBar();
-		return triggerCancel({
+		return actionManager.triggerCancel({
 			appId,
 			viewId,
 			view: {
@@ -217,7 +218,7 @@ const AppsWithData = ({
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
 		closeTabBar();
-		return triggerCancel({
+		return actionManager.triggerCancel({
 			appId,
 			viewId,
 			view: {

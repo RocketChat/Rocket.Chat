@@ -159,7 +159,7 @@ export const updateRecent = (recentList: string[]) => {
 const getEmojiRender = (emojiName: string) => {
 	const emojiPackageName = emoji.list[emojiName]?.emojiPackage;
 	const emojiPackage = emoji.packages[emojiPackageName];
-	return emojiPackage.render(emojiName);
+	return emojiPackage?.render(emojiName);
 };
 
 export const getFrequentEmoji = (frequentEmoji: string[]) => {
