@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Background,
@@ -9,7 +9,7 @@ import ReactFlow, {
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
-import { context } from '../../Context';
+import { context, updateFlowEdgesAction } from '../../Context';
 import ConnectionLine from './ConnectionLine';
 import UIKitWrapper from './UIKitWrapper';
 import { FlowParams, createNodesAndEdges } from './utils';
@@ -21,29 +21,32 @@ const nodeTypes = {
 
 const FlowContainer = () => {
   const {
-    state: { screens },
+    state: { screens, projects, activeProject },
+    dispatch,
   } = useContext(context);
 
-  const { nodes: initialNodes } = createNodesAndEdges(screens);
+  const { nodes: initialNodes } = createNodesAndEdges(
+    projects[activeProject].screens.map((id) => screens[id])
+  );
 
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    projects[activeProject].flowEdges
+  );
   const edgeUpdateSuccessful = useRef(true);
 
   const onConnect = useCallback(
     (params) => {
+      window.console.log({ params });
       if (params.source === params.target) return;
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            type: FlowParams.edgeType,
-            markerEnd: FlowParams.markerEnd,
-            style: FlowParams.style,
-          },
-          eds
-        )
-      );
+      const newEdge = {
+        ...params,
+        type: FlowParams.edgeType,
+        markerEnd: FlowParams.markerEnd,
+        style: FlowParams.style,
+      };
+      dispatch(updateFlowEdgesAction(newEdge));
+      setEdges((eds) => addEdge(newEdge, eds));
     },
     [setEdges]
   );

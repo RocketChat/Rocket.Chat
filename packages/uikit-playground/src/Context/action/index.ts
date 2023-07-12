@@ -20,6 +20,7 @@ export { activeProjectAction } from './activeProjectAction';
 export { duplicateProjectAction } from './duplicateProjectAction';
 export { deleteProjectAction } from './deleteProjectAction';
 export { renameProjectAction } from './renameProjectAction';
+export { updateFlowEdgesAction } from './updateFlowEdgesAction';
 
 export type { IsMobileAction } from './isMobileAction';
 export type { IsTabletAction } from './isTabletAction';
@@ -43,4 +44,5 @@ export type { ActiveProjectAction } from './activeProjectAction';
 export type { DuplicateProjectAction } from './duplicateProjectAction';
 export type { DeleteProjectAction } from './deleteProjectAction';
 export type { RenameProjectAction } from './renameProjectAction';
+export type { UpdateFlowEdgesAction } from './updateFlowEdgesAction';
 

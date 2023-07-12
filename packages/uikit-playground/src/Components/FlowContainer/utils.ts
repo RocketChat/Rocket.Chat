@@ -1,11 +1,11 @@
 import { MarkerType } from 'reactflow';
 
-import type { ScreensType } from '../../Context/initialState';
+import type { ScreenType } from '../../Context/initialState';
 
-export function createNodesAndEdges(screens: ScreensType) {
+export function createNodesAndEdges(screens: ScreenType[]) {
   const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
-  const nodes = Object.values(screens).map((screen, i) => {
+  const nodes = screens.map((screen, i) => {
     const degrees = i * (360 / 8);
     const radians = degrees * (Math.PI / 180);
     const x = 250 * Math.cos(radians) + center.x;

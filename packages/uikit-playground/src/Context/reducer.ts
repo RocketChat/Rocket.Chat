@@ -25,6 +25,7 @@ import {
   DuplicateProjectAction,
   DeleteProjectAction,
   RenameProjectAction,
+  UpdateFlowEdgesAction,
 } from './action';
 import getDate from '../utils/getDate';
 
@@ -50,7 +51,8 @@ type IAction =
   | ActiveProjectAction
   | DuplicateProjectAction
   | DeleteProjectAction
-  | RenameProjectAction;
+  | RenameProjectAction
+  | UpdateFlowEdgesAction;
 
 export enum ActionTypes {
   IsMobile,
@@ -75,6 +77,7 @@ export enum ActionTypes {
   DeleteProject,
   DuplicateProject,
   RenameProject,
+  UpdateFlowEdges,
 }
 
 const reducer = (state: initialStateType, action: IAction) => {
@@ -261,6 +264,14 @@ const reducer = (state: initialStateType, action: IAction) => {
       }
       case ActionTypes.RenameProject: {
         state.projects[action.payload.id].name = action.payload.name;
+        return { ...state };
+      }
+
+      case ActionTypes.UpdateFlowEdges: {
+        let prevEdges = state.projects[activeProject].flowEdges;
+        prevEdges = [...prevEdges, action.payload]
+        window.console.log(prevEdges);
+        state.projects[activeProject].flowEdges = prevEdges;
         return { ...state };
       }
     default:
