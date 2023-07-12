@@ -1,9 +1,9 @@
 import { lazy, useMemo } from 'react';
 
-import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../../client/lib/ui';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
 
-addAction('game-center', () => {
+ui.addRoomAction('game-center', () => {
 	const result = useExternalComponentsQuery();
 
 	const template = lazy(() => import('./GameCenter'));

@@ -1,8 +1,8 @@
 import { lazy } from 'react';
 
-import { addAction } from '../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../client/lib/ui';
 
-addAction('room-info', {
+ui.addRoomAction('room-info', {
 	groups: ['live' /* , 'voip'*/],
 	id: 'room-info',
 	title: 'Room_Info',
@@ -11,7 +11,7 @@ addAction('room-info', {
 	order: 0,
 });
 
-addAction('voip-room-info', {
+ui.addRoomAction('voip-room-info', {
 	groups: ['voip'],
 	id: 'voip-room-info',
 	title: 'Call_Information',
@@ -20,7 +20,7 @@ addAction('voip-room-info', {
 	order: 0,
 });
 
-addAction('contact-chat-history', {
+ui.addRoomAction('contact-chat-history', {
 	groups: ['live' /* , 'voip'*/],
 	id: 'contact-chat-history',
 	title: 'Contact_Chat_History',

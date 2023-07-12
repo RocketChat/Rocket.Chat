@@ -2,11 +2,11 @@ import { useMemo, lazy } from 'react';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../../client/lib/ui';
 
 const template = lazy(() => import('../../../../client/views/room/contextualBar/PruneMessages'));
 
-addAction('clean-history', ({ room }) => {
+ui.addRoomAction('clean-history', ({ room }) => {
 	const hasPermission = usePermission('clean-channel-history', room._id);
 	const federated = isRoomFederated(room);
 

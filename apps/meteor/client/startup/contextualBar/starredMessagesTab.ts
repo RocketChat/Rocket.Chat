@@ -1,8 +1,8 @@
 import { lazy } from 'react';
 
-import { addAction } from '../../views/room/lib/Toolbox';
+import { ui } from '../../lib/ui';
 
-addAction('starred-messages', {
+ui.addRoomAction('starred-messages', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'starred-messages',
 	title: 'Starred_Messages',

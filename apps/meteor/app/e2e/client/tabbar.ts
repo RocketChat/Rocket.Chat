@@ -3,11 +3,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
 import { e2e } from './rocketchat.e2e';
+import { ui } from '../../../client/lib/ui';
 
-addAction('e2e', ({ room }) => {
+ui.addRoomAction('e2e', ({ room }) => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eReady = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
 	const canToggleE2e = usePermission('toggle-room-e2e-encryption', room._id);

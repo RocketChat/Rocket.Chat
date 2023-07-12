@@ -5,12 +5,12 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
 import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
+import { ui } from '../../../client/lib/ui';
 
-addAction('calls', ({ room }) => {
+ui.addRoomAction('calls', ({ room }) => {
 	const t = useTranslation();
 	const hasLicense = useHasLicenseModule('videoconference-enterprise');
 	const federated = isRoomFederated(room);
@@ -35,7 +35,7 @@ addAction('calls', ({ room }) => {
 	);
 });
 
-addAction('start-call', ({ room }) => {
+ui.addRoomAction('start-call', ({ room }) => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchWarning = useVideoConfWarning();

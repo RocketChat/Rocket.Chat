@@ -1,9 +1,9 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo, lazy } from 'react';
 
-import { addAction } from '.';
+import { ui } from '../../../../lib/ui';
 
-addAction('rocket-search', {
+ui.addRoomAction('rocket-search', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
@@ -12,7 +12,7 @@ addAction('rocket-search', {
 	order: 6,
 });
 
-addAction('user-info', {
+ui.addRoomAction('user-info', {
 	groups: ['direct'],
 	id: 'user-info',
 	title: 'User_Info',
@@ -21,7 +21,7 @@ addAction('user-info', {
 	order: 1,
 });
 
-addAction('contact-profile', {
+ui.addRoomAction('contact-profile', {
 	groups: ['live' /* , 'voip'*/],
 	id: 'contact-profile',
 	title: 'Contact_Info',
@@ -30,7 +30,7 @@ addAction('contact-profile', {
 	order: 1,
 });
 
-addAction('user-info-group', {
+ui.addRoomAction('user-info-group', {
 	groups: ['direct_multiple'],
 	id: 'user-info-group',
 	title: 'Members',
@@ -39,7 +39,7 @@ addAction('user-info-group', {
 	order: 1,
 });
 
-addAction('members-list', ({ room }) => {
+ui.addRoomAction('members-list', ({ room }) => {
 	const hasPermission = usePermission('view-broadcast-member-list', room._id);
 	return useMemo(
 		() =>
@@ -57,7 +57,7 @@ addAction('members-list', ({ room }) => {
 	);
 });
 
-addAction('uploaded-files-list', {
+ui.addRoomAction('uploaded-files-list', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'uploaded-files-list',
 	title: 'Files',
@@ -66,7 +66,7 @@ addAction('uploaded-files-list', {
 	order: 7,
 });
 
-addAction('keyboard-shortcut-list', {
+ui.addRoomAction('keyboard-shortcut-list', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',

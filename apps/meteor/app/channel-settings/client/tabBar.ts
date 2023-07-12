@@ -1,9 +1,9 @@
 import type { FC, LazyExoticComponent } from 'react';
 import { lazy } from 'react';
 
-import { addAction } from '../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../client/lib/ui';
 
-addAction('channel-settings', {
+ui.addRoomAction('channel-settings', {
 	groups: ['channel', 'group'],
 	id: 'channel-settings',
 	anonymous: true,

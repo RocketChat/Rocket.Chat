@@ -1,9 +1,9 @@
 import type { FC, LazyExoticComponent } from 'react';
 import { lazy } from 'react';
 
-import { addAction } from '../../../room/lib/Toolbox';
+import { ui } from '../../../../lib/ui';
 
-addAction('team-info', {
+ui.addRoomAction('team-info', {
 	groups: ['team'],
 	id: 'team-info',
 	anonymous: true,

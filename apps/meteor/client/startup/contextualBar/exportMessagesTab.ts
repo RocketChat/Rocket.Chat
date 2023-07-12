@@ -2,9 +2,9 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { LazyExoticComponent, FC } from 'react';
 import { useMemo, lazy } from 'react';
 
-import { addAction } from '../../views/room/lib/Toolbox';
+import { ui } from '../../lib/ui';
 
-addAction('export-messages', ({ room }) => {
+ui.addRoomAction('export-messages', ({ room }) => {
 	const hasPermission = usePermission('mail-messages', room._id);
 	return useMemo(
 		() =>

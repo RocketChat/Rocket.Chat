@@ -1,9 +1,9 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
-import { addAction } from '../room/lib/Toolbox';
+import { ui } from '../../lib/ui';
 
-addAction('outlookCalendar', () => {
+ui.addRoomAction('outlookCalendar', () => {
 	const outlookCalendarEnabled = useSetting('Outlook_Calendar_Enabled');
 
 	return useMemo(

@@ -4,11 +4,11 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import OTR from './OTR';
-import { addAction } from '../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../client/lib/ui';
 
 const template = lazy(() => import('../../../client/views/room/contextualBar/OTR'));
 
-addAction('otr', (options) => {
+ui.addRoomAction('otr', (options) => {
 	const room = options.room as unknown as ISubscription & IRoom;
 	const federated = isRoomFederated(room);
 	const enabled = useSetting('OTR_Enable') as boolean;

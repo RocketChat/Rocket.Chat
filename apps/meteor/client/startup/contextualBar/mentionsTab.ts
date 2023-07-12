@@ -1,8 +1,8 @@
 import { lazy } from 'react';
 
-import { addAction } from '../../views/room/lib/Toolbox';
+import { ui } from '../../lib/ui';
 
-addAction('mentions', {
+ui.addRoomAction('mentions', {
 	groups: ['channel', 'group', 'team'],
 	id: 'mentions',
 	title: 'Mentions',

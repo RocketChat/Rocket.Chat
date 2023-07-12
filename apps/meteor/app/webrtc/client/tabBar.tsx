@@ -2,10 +2,10 @@ import { useMemo, useCallback } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { ui } from '../../../client/lib/ui';
 
-addAction('webRTCVideo', ({ room }) => {
+ui.addRoomAction('webRTCVideo', ({ room }) => {
 	const enabled = useSetting('WebRTC_Enabled') && useSetting('Omnichannel_call_provider') === 'WebRTC' && room.servedBy;
 	const federated = isRoomFederated(room);
 

@@ -2,9 +2,9 @@ import { lazy, useMemo } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { useHasLicenseModule } from '../../../client/hooks/useHasLicenseModule';
-import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../../client/lib/ui';
 
-addAction('canned-responses', () => {
+ui.addRoomAction('canned-responses', () => {
 	const hasLicense = useHasLicenseModule('canned-responses');
 	const enabled = useSetting('Canned_Responses_Enable');
 

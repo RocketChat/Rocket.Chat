@@ -6,7 +6,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 
-import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { ui } from '../../../../client/lib/ui';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {
@@ -20,7 +20,7 @@ const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['vari
 
 const template = lazy(() => import('../../../../client/views/room/contextualBar/Threads')) as LazyExoticComponent<FC>;
 
-addAction('thread', (options) => {
+ui.addRoomAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription & IRoom;
 	const federated = isRoomFederated(room);
 	const threadsEnabled = useSetting('Threads_enabled');
