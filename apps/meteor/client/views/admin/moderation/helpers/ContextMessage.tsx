@@ -12,18 +12,18 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
+import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
+import ReportReasonCollapsible from './ReportReasonCollapsible';
 
 const ContextMessage = ({
 	message,
 	room,
-	handleClick,
 	onRedirect,
 	onChange,
 }: {
 	message: any;
 	room: IModerationReport['room'];
-	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
 }): JSX.Element => {
@@ -74,10 +74,12 @@ const ContextMessage = ({
 						{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 						{message.attachments && <Attachments attachments={message.attachments} />}
 					</Message.Body>
+					<ReportReasonCollapsible>
+						<MessageReportInfo msgId={message._id} />
+					</ReportReasonCollapsible>
 				</Message.Container>
 				<MessageToolboxWrapper>
 					<Message.Toolbox>
-						<MessageToolboxItem icon='document-eye' title={t('Moderation_View_reports')} onClick={() => handleClick(message._id)} />
 						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
 						<MessageToolboxItem icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</Message.Toolbox>
