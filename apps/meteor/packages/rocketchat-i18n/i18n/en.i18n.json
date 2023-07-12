@@ -5849,6 +5849,7 @@
   "Disable_at_least_more_apps": "You will need to disable at least {{numberOfExceededApps}} other apps or upgrade to Enterprise to enable this app.",
   "Community_Private_apps_limit_exceeded": "Community edition app limit has been exceeded.",
   "Theme_match_system": "Match system",
+  "Theme_high_contrast": "High contrast",
   "Join_your_team": "Join your team",
   "Create_a_password": "Create a password",
   "Create_an_account": "Create an account",

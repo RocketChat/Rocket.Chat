@@ -11,7 +11,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList');
-	const themePreference = useUserPreference<'light' | 'dark' | 'auto'>('themeAppearence');
+	const themePreference = useUserPreference<'light' | 'dark' | 'auto' | 'high-contrast'>('themeAppearence');
 
 	const options = useMemo(
 		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]) as SelectOption[],
@@ -41,6 +41,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 		['auto', t('Theme_match_system')],
 		['light', t('Theme_light')],
 		['dark', t('Theme_dark')],
+		['high-contrast', t('Theme_high_contrast')],
 	];
 
 	return (

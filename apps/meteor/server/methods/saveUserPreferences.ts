@@ -34,7 +34,7 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
-	themeAppearence: 'auto' | 'light' | 'dark';
+	themeAppearence: 'auto' | 'light' | 'dark' | 'high-contrast';
 	receiveLoginDetectionEmail: boolean;
 	notifyCalendarEvents: boolean;
 };

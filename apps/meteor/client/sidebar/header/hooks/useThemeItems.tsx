@@ -29,5 +29,11 @@ export const useThemeItems = (): GenericMenuItemProps[] => {
 			content: t('Theme_match_system'),
 			addon: <RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />,
 		},
+		{
+			id: 'high-contrast',
+			icon: 'circle-half',
+			content: t('Theme_high_contrast'),
+			addon: <RadioButton checked={selectedTheme === 'high-contrast'} onChange={setTheme('high-contrast')} m='x4' />,
+		},
 	];
 };

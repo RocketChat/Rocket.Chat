@@ -1,4 +1,4 @@
-export const paletteHighContrast = [
+export const palette = [
 	{
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
@@ -191,8 +191,8 @@ export const paletteHighContrast = [
 	},
 ];
 
-export const defaultPalette = {
-	...paletteHighContrast.reduce(
+export const paletteHighContrast = {
+	...palette.reduce(
 		(rec, group) => ({
 			...rec,
 			...group.list.reduce(
