@@ -49,6 +49,16 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	// if coming from old username, update all references
 	if (previousUsername) {
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
+			const fileStore = FileUpload.getStore('Avatars');
+			const previousFile = await fileStore.model.findOneByName(previousUsername);
+			const file = await fileStore.model.findOneByName(username);
+			if (file) {
+				await fileStore.model.deleteFile(file._id);
+			}
+			if (previousFile) {
+				await fileStore.model.updateFileNameById(previousFile._id, username);
+			}
+
 			await Messages.updateAllUsernamesByUserId(user._id, username);
 			await Messages.updateUsernameOfEditByUserId(user._id, username);
 
@@ -64,16 +74,6 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			await Subscriptions.setUserUsernameByUserId(user._id, username);
 
 			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
-
-			const fileStore = FileUpload.getStore('Avatars');
-			const previousFile = await fileStore.model.findOneByName(previousUsername);
-			const file = await fileStore.model.findOneByName(username);
-			if (file) {
-				await fileStore.model.deleteFile(file._id);
-			}
-			if (previousFile) {
-				await fileStore.model.updateFileNameById(previousFile._id, username);
-			}
 		}
 
 		// update other references if either the name or username has changed

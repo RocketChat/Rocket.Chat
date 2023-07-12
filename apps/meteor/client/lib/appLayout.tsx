@@ -22,19 +22,23 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 	}
 
 	render(element: ReactElement): void {
-		this.setCurrentValue(
+		this.setCurrentValue(this.wrap(element));
+	}
+
+	renderStandalone(element: ReactElement): void {
+		this.setCurrentValue(element);
+	}
+
+	wrap(element: ReactElement): ReactElement {
+		return (
 			<>
 				<ConnectionStatusBar />
 				<BannerRegion />
 				{element}
 				<PortalsWrapper />
 				<ModalRegion />
-			</>,
+			</>
 		);
-	}
-
-	renderStandalone(element: ReactElement): void {
-		this.setCurrentValue(element);
 	}
 }
 

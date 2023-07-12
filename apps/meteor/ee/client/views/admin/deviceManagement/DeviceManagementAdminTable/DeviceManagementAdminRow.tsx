@@ -17,6 +17,7 @@ type DeviceRowProps = {
 	deviceType?: string;
 	deviceOSName?: string;
 	loginAt: string;
+	rcVersion?: string;
 	onReload: () => void;
 };
 
@@ -28,6 +29,7 @@ const DeviceManagementAdminRow = ({
 	deviceType = 'browser',
 	deviceOSName = '',
 	loginAt,
+	rcVersion,
 	onReload,
 }: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
@@ -69,6 +71,7 @@ const DeviceManagementAdminRow = ({
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</GenericTableCell>
+			<GenericTableCell>{rcVersion}</GenericTableCell>
 			<GenericTableCell>{deviceOSName}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{username}</GenericTableCell>
 			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}

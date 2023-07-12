@@ -2,8 +2,12 @@ import type { Item } from '../Components/DropDown/types';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,
+  actionWithButtonSecondary,
   actionWithButtonDanger,
   actionWithButtonAsLink,
+  actionWithButtonWarning,
+  actionWithButtonSuccess,
+  actionWithButtonSecondaryWithVariant,
   actionWithMenu,
   // actionWithImage,
   // actionWithSingleLineInput,
@@ -47,6 +51,9 @@ import {
   sectionWithButtonDefault,
   sectionWithButtonPrimary,
   sectionWithButtonDanger,
+  sectionWithButtonWarning,
+  sectionWithButtonSuccess,
+  sectionWithButtonSecondaryWithVariant,
   sectionWithButtonAsLink,
   sectionWithImage,
   sectionWithMenu,
@@ -69,8 +76,24 @@ const BlocksTree: Item = [
             payload: actionWithButtonPrimary,
           },
           {
+            label: 'secondary',
+            payload: actionWithButtonSecondary,
+          },
+          {
             label: 'danger',
             payload: actionWithButtonDanger,
+          },
+          {
+            label: 'warning',
+            payload: actionWithButtonWarning,
+          },
+          {
+            label: 'success',
+            payload: actionWithButtonSuccess,
+          },
+          {
+            label: 'secondary with variant',
+            payload: actionWithButtonSecondaryWithVariant,
           },
           {
             label: 'as Link',
@@ -156,6 +179,18 @@ const BlocksTree: Item = [
           {
             label: 'danger',
             payload: sectionWithButtonDanger,
+          },
+          {
+            label: 'warning',
+            payload: sectionWithButtonWarning,
+          },
+          {
+            label: 'success',
+            payload: sectionWithButtonSuccess,
+          },
+          {
+            label: 'secondary with variant',
+            payload: sectionWithButtonSecondaryWithVariant,
           },
           {
             label: 'as Link',

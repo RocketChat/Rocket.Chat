@@ -1,13 +1,12 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
-	useRoute,
-	useQueryStringParameter,
 	useEndpoint,
 	useUpload,
 	useTranslation,
-	useCurrentRoute,
 	useRouteParameter,
+	useRouter,
+	useSearchParameter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -30,20 +29,14 @@ function AppInstallPage() {
 
 	const reload = useAppsReload();
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-
-	const router = useRoute(currentRouteName);
-	const upgradeRoute = useRoute('upgrade');
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 
 	const setModal = useSetModal();
 
-	const appId = useQueryStringParameter('id');
-	const queryUrl = useQueryStringParameter('url');
+	const appId = useSearchParameter('id');
+	const queryUrl = useSearchParameter('url');
 
 	const [installing, setInstalling] = useState(false);
 
@@ -87,7 +80,14 @@ function AppInstallPage() {
 			handleAPIError(e);
 		}
 
-		router.push({ context: 'private', page: 'info', id: appId || app.app.id });
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context: 'private',
+				page: 'info',
+				id: appId || app.app.id,
+			},
+		});
 
 		reload();
 
@@ -177,7 +177,12 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					router.navigate({
+						name: 'upgrade',
+						params: {
+							type: 'go-fully-featured-registered',
+						},
+					});
 					setModal(null);
 				}}
 			/>,
@@ -185,7 +190,13 @@ function AppInstallPage() {
 	};
 
 	const handleCancel = () => {
-		router.push({ context, page: 'list' });
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context,
+				page: 'list',
+			},
+		});
 	};
 
 	return (
