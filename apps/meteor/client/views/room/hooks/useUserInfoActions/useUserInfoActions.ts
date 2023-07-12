@@ -27,43 +27,43 @@ export const useUserInfoActions = (
 	rid: IRoom['_id'],
 	reload?: () => void,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const blockUserOption = useBlockUserAction(user, rid);
-	const changeLeaderOption = useChangeLeaderAction(user, rid);
-	const changeModeratorOption = useChangeModeratorAction(user, rid);
-	const openModerationConsoleOption = useRedirectModerationConsole(user._id);
-	const changeOwnerOption = useChangeOwnerAction(user, rid);
-	const openDirectMessageOption = useDirectMessageAction(user, rid);
-	const ignoreUserOption = useIgnoreUserAction(user, rid);
-	const muteUserOption = useMuteUserAction(user, rid);
-	const removeUserOption = useRemoveUserAction(user, rid, reload);
-	const callOption = useCallAction(user);
+	const blockUser = useBlockUserAction(user, rid);
+	const changeLeader = useChangeLeaderAction(user, rid);
+	const changeModerator = useChangeModeratorAction(user, rid);
+	const openModerationConsole = useRedirectModerationConsole(user._id);
+	const changeOwner = useChangeOwnerAction(user, rid);
+	const openDirectMessage = useDirectMessageAction(user, rid);
+	const ignoreUser = useIgnoreUserAction(user, rid);
+	const muteUser = useMuteUserAction(user, rid);
+	const removeUser = useRemoveUserAction(user, rid, reload);
+	const call = useCallAction(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	const userinfoActions = useMemo(
 		() => ({
-			...(openDirectMessageOption && !isLayoutEmbedded && { openDirectMessage: openDirectMessageOption }),
-			...(callOption && { call: callOption }),
-			...(changeOwnerOption && { changeOwner: changeOwnerOption }),
-			...(changeLeaderOption && { changeLeader: changeLeaderOption }),
-			...(changeModeratorOption && { changeModerator: changeModeratorOption }),
-			...(openModerationConsoleOption && { openModerationConsole: openModerationConsoleOption }),
-			...(ignoreUserOption && { ignoreUser: ignoreUserOption }),
-			...(muteUserOption && { muteUser: muteUserOption }),
-			...(blockUserOption && { toggleBlock: blockUserOption }),
-			...(removeUserOption && { removeUser: removeUserOption }),
+			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
+			...(call && { call }),
+			...(changeOwner && { changeOwner }),
+			...(changeLeader && { changeLeader }),
+			...(changeModerator && { changeModerator }),
+			...(openModerationConsole && { openModerationConsole }),
+			...(ignoreUser && { ignoreUser }),
+			...(muteUser && { muteUser }),
+			...(blockUser && { toggleBlock: blockUser }),
+			...(removeUser && { removeUser }),
 		}),
 		[
-			openDirectMessageOption,
+			openDirectMessage,
 			isLayoutEmbedded,
-			callOption,
-			changeOwnerOption,
-			changeLeaderOption,
-			changeModeratorOption,
-			ignoreUserOption,
-			muteUserOption,
-			blockUserOption,
-			removeUserOption,
-			openModerationConsoleOption,
+			call,
+			changeOwner,
+			changeLeader,
+			changeModerator,
+			ignoreUser,
+			muteUser,
+			blockUser,
+			removeUser,
+			openModerationConsole,
 		],
 	);
 
