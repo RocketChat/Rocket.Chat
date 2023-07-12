@@ -9,6 +9,7 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { router } from '../../../providers/RouterProvider';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
@@ -60,7 +61,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarBack onClick={() => window.history.go(-1)} />
+				<ContextualbarBack onClick={() => router.navigate(-1)} />
 				<ContextualbarTitle>{t('Report')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => moderationRoute.push({})} />
 			</ContextualbarHeader>

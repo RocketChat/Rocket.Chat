@@ -1,12 +1,14 @@
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { RouterContext } from '../RouterContext';
 
 export const useRouteParameter = (name: string): string | undefined => {
-	const { queryRouteParameter } = useContext(RouterContext);
+	const router = useContext(RouterContext);
 
-	const [subscribe, getSnapshot] = useMemo(() => queryRouteParameter(name), [queryRouteParameter, name]);
+	const getSnapshot = useCallback(() => {
+		return router.getRouteParameters()[name];
+	}, [router, name]);
 
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useSyncExternalStore(router.subscribeToRouteChange, getSnapshot);
 };

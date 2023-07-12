@@ -124,6 +124,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
+		await callbacks.run('livechat.afterTagRemoved', tag);
 		return LivechatTag.removeById(_id);
 	},
 
@@ -191,7 +192,7 @@ export const LivechatEnterprise = {
 	) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }) : null;
+		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -266,6 +267,11 @@ export const LivechatEnterprise = {
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		// Disable event
+		if (department?.enabled && !departmentDB?.enabled) {
+			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
