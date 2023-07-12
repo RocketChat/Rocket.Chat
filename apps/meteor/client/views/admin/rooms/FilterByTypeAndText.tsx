@@ -21,19 +21,12 @@ const FilterByTypeAndText = ({
 	}, [setFilter, text]);
 
 	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			display='flex'
-			flexWrap='wrap'
-			alignItems='center'
-			w='full'
-		>
-			<Box display='flex' flexWrap='wrap' flexGrow={1} flexShrink={1}>
+		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexWrap='wrap' alignItems='center'>
+			<Box display='flex' flexWrap='wrap' flexGrow={1}>
 				<TextInput
 					flexGrow={2}
 					minWidth='x448'
+					alignItems='center'
 					placeholder={t('Search_Rooms')}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleChange}
