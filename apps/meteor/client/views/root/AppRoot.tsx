@@ -8,6 +8,7 @@ import OutermostErrorBoundary from './OutermostErrorBoundary';
 import PageLoading from './PageLoading';
 
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
+const EnterpriseProvider = lazy(() => import('../../../ee/client/views/root/EnterpriseProvider'));
 const AppLayout = lazy(() => import('./AppLayout'));
 
 const AppRoot = (): ReactElement => (
@@ -42,7 +43,9 @@ const AppRoot = (): ReactElement => (
 		<Suspense fallback={<PageLoading />}>
 			<QueryClientProvider client={queryClient}>
 				<MeteorProvider>
-					<AppLayout />
+					<EnterpriseProvider>
+						<AppLayout />
+					</EnterpriseProvider>
 				</MeteorProvider>
 			</QueryClientProvider>
 		</Suspense>

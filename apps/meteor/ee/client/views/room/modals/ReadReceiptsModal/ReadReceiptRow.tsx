@@ -4,9 +4,9 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
+import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
+import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
+import { useUserDisplayName } from '../../../../../../client/hooks/useUserDisplayName';
 
 const hoverStyle = css`
 	&:hover {

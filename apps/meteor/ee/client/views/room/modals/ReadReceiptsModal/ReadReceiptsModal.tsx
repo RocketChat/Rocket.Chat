@@ -1,11 +1,11 @@
-import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import GenericModal from '../../../../components/GenericModal';
+import GenericModal from '../../../../../../client/components/GenericModal';
 import ReadReceiptRow from './ReadReceiptRow';
 
 type ReadReceiptsModalProps = {
@@ -19,7 +19,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 
 	const getReadReceipts = useMethod('getReadReceipts');
 
-	const readReceiptsResult = useQuery<ReadReceipt[], Error>(['read-receipts', messageId], () => getReadReceipts({ messageId }));
+	const readReceiptsResult = useQuery(['read-receipts', messageId], () => getReadReceipts({ messageId }));
 
 	useEffect(() => {
 		if (readReceiptsResult.isError) {

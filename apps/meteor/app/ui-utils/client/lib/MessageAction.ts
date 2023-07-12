@@ -7,21 +7,14 @@ import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, I
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Keys as IconName } from '@rocket.chat/icons';
 
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
+import { ChatMessage, ChatRoom, ChatSubscription } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-
-const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
-	try {
-		const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId });
-		return message;
-	} catch {
-		return null;
-	}
-};
+import { RoomNotFoundError } from '../../../../client/lib/errors/RoomNotFoundError';
+import { MessageNotFoundError } from '../../../../client/lib/errors/MessageNotFoundError';
 
 type MessageActionGroup = 'message' | 'menu';
 
@@ -79,18 +72,7 @@ export type MessageActionConfig = {
 
 type MessageActionConfigList = MessageActionConfig[];
 
-export const MessageAction = new (class {
-	/*
-  	config expects the following keys (only id is mandatory):
-  		id (mandatory)
-  		icon: string
-  		label: string
-  		action: function(event, instance)
-  		condition: function(message)
-			order: integer
-			group: string (message or menu)
-   */
-
+export const MessageAction = new (class MessageAction {
 	private buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
@@ -132,7 +114,7 @@ export const MessageAction = new (class {
 
 	private async getButtonsByCondition(
 		prop: MessageActionConditionProps,
-		arr: MessageActionConfigList = MessageAction._getButtons(),
+		arr: MessageActionConfigList = this._getButtons(),
 	): Promise<MessageActionConfigList> {
 		return (
 			await Promise.all(
@@ -146,7 +128,7 @@ export const MessageAction = new (class {
 	}
 
 	private getButtonsByGroup = mem(
-		function (group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
+		(group: MessageActionGroup, arr: MessageActionConfigList = this._getButtons()): MessageActionConfigList => {
 			return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 		},
 		{ maxAge: 1000 },
@@ -161,7 +143,7 @@ export const MessageAction = new (class {
 		context: MessageActionContext,
 		group: MessageActionGroup,
 	): Promise<MessageActionConfigList> {
-		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
+		const allButtons = group ? this.getButtonsByGroup(group) : this._getButtons();
 
 		if (props.message) {
 			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
@@ -169,25 +151,33 @@ export const MessageAction = new (class {
 		return allButtons;
 	}
 
-	async getPermaLink(msgId: string): Promise<string> {
-		if (!msgId) {
+	private static async getMessage(mid: string): Promise<Serialized<IMessage> | undefined> {
+		try {
+			const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId: mid });
+			return message;
+		} catch {
+			return undefined;
+		}
+	}
+
+	async getPermaLink(mid: string): Promise<string> {
+		if (!mid) {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || (await getMessage(msgId));
-		if (!msg) {
-			throw new Error('message-not-found');
-		}
-		const roomData = ChatRoom.findOne({
-			_id: msg.rid,
-		});
-
-		if (!roomData) {
-			throw new Error('room-not-found');
+		const message = ChatMessage.findOne(mid) || (await MessageAction.getMessage(mid));
+		if (!message) {
+			throw new MessageNotFoundError('Message not found', { mid });
 		}
 
-		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
-		return `${roomURL}?msg=${msgId}`;
+		const room = ChatRoom.findOne({ _id: message.rid });
+
+		if (!room) {
+			throw new RoomNotFoundError('Room not found', { rid: message.rid });
+		}
+
+		const subData = ChatSubscription.findOne({ 'rid': room._id, 'u._id': Meteor.userId() });
+		const roomURL = roomCoordinator.getURL(room.t, { ...(subData || room), tab: '' });
+		return `${roomURL}?msg=${mid}`;
 	}
 })();
