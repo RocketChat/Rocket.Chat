@@ -17,7 +17,13 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		reportedBy: IModerationReport['reportedBy'],
 	): ReturnType<IBaseModel<IModerationReport>['insertOne']>;
 
-	findReportsGroupedByUser(
+	createWithDescriptionAndUser(
+		reportedUser: Exclude<IModerationReport['reportedUser'], undefined>,
+		description: string,
+		reportedBy: IModerationReport['reportedBy'],
+	): ReturnType<IBaseModel<IModerationReport>['insertOne']>;
+
+	findMessageReportsGroupedByUser(
 		latest: Date,
 		oldest: Date,
 		selector: string,
@@ -27,7 +33,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
 	findReportsByMessageId(
-		messageId: IModerationReport['message']['_id'],
+		messageId: IMessage['_id'],
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
 		options?: FindOptions<IModerationReport>,
@@ -40,12 +46,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
-	hideReportsByMessageId(
-		messageId: IModerationReport['message']['_id'],
-		userId: string,
-		reason: string,
-		action: string,
-	): Promise<UpdateResult | Document>;
+	hideReportsByMessageId(messageId: IMessage['_id'], userId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 
 	hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 }
