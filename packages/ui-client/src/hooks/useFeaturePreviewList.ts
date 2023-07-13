@@ -1,7 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'quickReactions';
+export type FeaturesAvailable = 'quickReactions' | 'navigationBar';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -18,6 +18,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Quick_reactions',
 		description: 'Quick_reactions_description',
 		group: 'Message',
+		imageUrl: 'images/featurePreview/quick-reactions.png',
+		value: false,
+	},
+	{
+		name: 'navigationBar',
+		i18n: 'Navigation_bar',
+		description: 'Navigation_bar_description',
+		group: 'Navigation',
 		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
 	},

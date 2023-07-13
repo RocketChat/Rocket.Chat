@@ -36,9 +36,9 @@
     "use-subscription": "^1.8.0"
   },
   "devDependencies": {
-    "@types/react": "^17.0.62",
+    "@types/react": "~17.0.62",
     "@types/react-beautiful-dnd": "^13.1.4",
-    "@types/react-dom": "^17.0.20",
+    "@types/react-dom": "~17.0.20",
     "@types/use-subscription": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "~5.60.0",
     "@typescript-eslint/parser": "~5.60.0",
