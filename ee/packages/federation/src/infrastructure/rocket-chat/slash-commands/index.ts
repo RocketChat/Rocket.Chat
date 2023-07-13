@@ -22,7 +22,10 @@
 // 	},
 // });
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const addDefaultFederationSlashCommand = (): void => {};
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const addDMMultipleFederationSlashCommand = (): void => {};
 
 // const EE_FEDERATION_COMMANDS = {
