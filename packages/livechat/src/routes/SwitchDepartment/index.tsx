@@ -1,10 +1,10 @@
-import { Livechat } from '@rocket.chat/sdk';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput } from '../../components/Form';
@@ -80,7 +80,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		return typeof result.success === 'boolean' && result.success;
 	};
 
-	const onSubmit = async ({ department }: { department: department }) => {
+	const onSubmit = async ({ department }: { department: string }) => {
 		const confirm = await confirmChangeDepartment();
 		if (!confirm) {
 			return;
@@ -96,6 +96,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
+			console.log(result);
 			const { success } = result;
 			if (!success) {
 				throw t('no_available_agents_to_transfer');

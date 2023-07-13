@@ -15,7 +15,7 @@ type PasswordInputProps = {
 	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
-	ref: Ref<HTMLInputElement>;
+	ref?: Ref<HTMLInputElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
 };

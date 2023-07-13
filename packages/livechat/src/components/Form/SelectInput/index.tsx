@@ -17,7 +17,7 @@ type SelectInputProps = {
 	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
 	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLSelectElement, Event>>;
-	ref: Ref<HTMLSelectElement>;
+	ref?: Ref<HTMLSelectElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
 	value?: string;
