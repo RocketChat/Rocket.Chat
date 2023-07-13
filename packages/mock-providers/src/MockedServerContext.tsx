@@ -33,6 +33,7 @@ export const MockedServerContext = ({
 					}) => {
 						return handleRequest(args);
 					},
+					getStream: () => () => undefined,
 				} as any
 			}
 		>
