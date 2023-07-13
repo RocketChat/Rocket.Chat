@@ -3,9 +3,7 @@ export default {
 
 	testEnvironment: 'jsdom',
 	modulePathIgnorePatterns: ['<rootDir>/dist/'],
-	testMatch: [
-		'<rootDir>/client/sidebar/**/**.spec.[jt]s?(x)',
-	],
+	testMatch: ['<rootDir>/client/sidebar/**/**.spec.[jt]s?(x)'],
 	transform: {
 		'^.+\\.(t|j)sx?$': '@swc/jest',
 	},

@@ -13,9 +13,7 @@ import { useAppsItems } from './useAppsItems';
 it('should return and empty array if the user does not have `manage-apps` and `access-marketplace` permission', () => {
 	const { result } = renderHook(
 		() => {
-			return useAppsItems({
-				appBoxItems: [],
-			});
+			return useAppsItems();
 		},
 		{
 			wrapper: ({ children }) => (
@@ -36,9 +34,7 @@ it('should return and empty array if the user does not have `manage-apps` and `a
 it('should return `marketplace` and `installed` items if the user has `access-marketplace` permission', () => {
 	const { result } = renderHook(
 		() => {
-			return useAppsItems({
-				appBoxItems: [],
-			});
+			return useAppsItems();
 		},
 		{
 			wrapper: ({ children }) => (
@@ -70,9 +66,7 @@ it('should return `marketplace` and `installed` items if the user has `access-ma
 it('should return `marketplace` and `installed` items if the user has `manage-apps` permission', () => {
 	const { result } = renderHook(
 		() => {
-			return useAppsItems({
-				appBoxItems: [],
-			});
+			return useAppsItems();
 		},
 		{
 			wrapper: ({ children }) => (
