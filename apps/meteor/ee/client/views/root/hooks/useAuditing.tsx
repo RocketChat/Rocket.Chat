@@ -2,18 +2,11 @@ import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React, { lazy, useEffect } from 'react';
 
 import { appLayout } from '../../../../../client/lib/appLayout';
-import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import MainLayout from '../../../../../client/views/root/MainLayout';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AuditPage = lazy(() => import('../../audit/AuditPage'));
 const AuditLogPage = lazy(() => import('../../audit/AuditLogPage'));
-
-const PermissionGuard = ({ children, permission }: { children: React.ReactNode; permission: string }) => {
-	const canView = usePermission(permission);
-
-	return canView ? <>{children}</> : <NotAuthorizedPage />;
-};
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -30,10 +23,12 @@ declare module '@rocket.chat/ui-contexts' {
 
 export const useAuditing = () => {
 	const licensed = useHasLicenseModule('auditing') === true;
+	const permittedToAudit = usePermission('can-audit');
+	const permittedToAuditLog = usePermission('can-audit-log');
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!licensed) {
+		if (!licensed || !permittedToAudit) {
 			return;
 		}
 
@@ -43,23 +38,28 @@ export const useAuditing = () => {
 				id: 'audit-home',
 				element: appLayout.wrap(
 					<MainLayout>
-						<PermissionGuard permission='can-audit'>
-							<AuditPage />
-						</PermissionGuard>
+						<AuditPage />
 					</MainLayout>,
 				),
 			},
+		]);
+	}, [licensed, permittedToAudit, router]);
+
+	useEffect(() => {
+		if (!licensed || !permittedToAuditLog) {
+			return;
+		}
+
+		return router.defineRoutes([
 			{
 				path: '/audit-log',
 				id: 'audit-log',
 				element: appLayout.wrap(
 					<MainLayout>
-						<PermissionGuard permission='can-audit-log'>
-							<AuditLogPage />
-						</PermissionGuard>
+						<AuditLogPage />
 					</MainLayout>,
 				),
 			},
 		]);
-	}, [licensed, router]);
+	}, [licensed, permittedToAuditLog, router]);
 };
