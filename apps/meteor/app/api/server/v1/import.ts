@@ -10,8 +10,10 @@ import {
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
 	isImportersListParamsGET,
+	isImportAddUsersParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Imports } from '@rocket.chat/models';
+import { Import } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { Importers } from '../../../importer/server';
@@ -71,7 +73,7 @@ API.v1.addRoute(
 		async post() {
 			const { input } = this.bodyParams;
 
-			await executeStartImport({ input });
+			await executeStartImport({ input }, this.userId);
 
 			return API.v1.success();
 		},
@@ -210,6 +212,86 @@ API.v1.addRoute(
 			);
 
 			return API.v1.success(translatedImporters);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.clear',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			await Import.clear();
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.new',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			const operation = await Import.newOperation(this.userId, 'api', 'api');
+
+			return API.v1.success({ operation });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.status',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async get() {
+			const status = await Import.status();
+			console.log('status is ', typeof status);
+			console.log(status);
+
+			return API.v1.success(status);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.addUsers',
+	{
+		authRequired: true,
+		validateParams: isImportAddUsersParamsPOST,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			const { users } = this.bodyParams;
+
+			await Import.addUsers(users);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.run',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			await Import.run(this.userId);
+
+			return API.v1.success();
 		},
 	},
 );

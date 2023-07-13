@@ -9,3 +9,4 @@ export * from './GetLatestImportOperationsParamsGET';
 export * from './ImportersListParamsGET';
 export * from './StartImportParamsPOST';
 export * from './UploadImportFileParamsPOST';
+export * from './ImportAddUsersParamsPOST';

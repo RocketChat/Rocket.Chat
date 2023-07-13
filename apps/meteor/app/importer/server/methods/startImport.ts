@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
 
-export const executeStartImport = async ({ input }: StartImportParamsPOST) => {
+export const executeStartImport = async ({ input }: StartImportParamsPOST, userId: string) => {
 	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'startImport');
@@ -28,7 +28,7 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST) => {
 			new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import, channel.is_private, channel.is_direct),
 	);
 	const selection = new Selection(importer.name, usersSelection, channelsSelection, 0);
-	await instance.startImport(selection);
+	await instance.startImport(selection, userId);
 };
 
 declare module '@rocket.chat/ui-contexts' {
@@ -50,6 +50,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'startImport');
 		}
 
-		return executeStartImport({ input });
+		return executeStartImport({ input }, userId);
 	},
 });

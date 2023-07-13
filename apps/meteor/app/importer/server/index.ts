@@ -10,3 +10,10 @@ import './startup/setImportsToInvalid';
 import './startup/store';
 
 export { Importer, Importers, ImporterWebsocket, ProgressStep, Selection, SelectionChannel, SelectionUser };
+
+Importers.add({
+	key: 'api',
+	name: 'API',
+	visible: false,
+	importer: Importer,
+});

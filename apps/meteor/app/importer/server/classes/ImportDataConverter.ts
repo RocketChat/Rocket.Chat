@@ -330,12 +330,8 @@ export class ImportDataConverter {
 	}
 
 	public async convertUsers(callbacks: IConversionCallbacks = {}): Promise<void> {
-		if (!this._options.usersPerPage) {
-			const users = (await this.getUsersToImport()) as IImportUserRecord[];
-			return this.convertUserList(users, callbacks);
-		}
-
-		//
+		const users = (await this.getUsersToImport()) as IImportUserRecord[];
+		return this.convertUserList(users, callbacks);
 	}
 
 	protected async convertUserList(users: IImportUserRecord[], { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {

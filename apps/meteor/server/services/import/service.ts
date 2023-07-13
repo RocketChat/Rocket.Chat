@@ -105,7 +105,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 		}
 	}
 
-	public async addUsers(users: IImportUser[]): Promise<void> {
+	public async addUsers(users: Omit<IImportUser, '_id' | 'services' | 'customFields'>[]): Promise<void> {
 		if (!users.length) {
 			return;
 		}
@@ -126,7 +126,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 		await Imports.setOperationStatus(operation._id, 'importer_user_selection');
 	}
 
-	public async run(): Promise<void> {
+	public async run(userId: string): Promise<void> {
 		const operation = await Imports.findLastImport();
 		if (!operation?.valid) {
 			throw new Error('error-operation-not-found');
@@ -144,6 +144,6 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 		const selection = new Selection(importer.name, [], [], 0);
-		await instance.startImport(selection);
+		await instance.startImport(selection, userId);
 	}
 }

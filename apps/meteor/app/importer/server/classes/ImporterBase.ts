@@ -106,7 +106,7 @@ export class Importer {
 	 * @param {Selection} importSelection The selection data.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	async startImport(importSelection: Selection): Promise<Progress> {
+	async startImport(importSelection: Selection, startedByUserId: string): Promise<Progress> {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
@@ -116,7 +116,6 @@ export class Importer {
 				`Channels in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`,
 			);
 		}
-		const startedByUserId = Meteor.userId();
 		if (!startedByUserId) {
 			throw new Error('You must be logged in to do this.');
 		}
@@ -150,6 +149,9 @@ export class Importer {
 				}
 				case 'user': {
 					if (!importSelection.users) {
+						return true;
+					}
+					if (importSelection.users.length === 0 && this.info.key === 'api') {
 						return true;
 					}
 
