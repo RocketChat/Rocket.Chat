@@ -45,7 +45,7 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 # 🛠️ Local development
 
-##  Prerequisites
+## Important Prerequisites 
 
 You can follow these instructions to setup a dev environment:
 
