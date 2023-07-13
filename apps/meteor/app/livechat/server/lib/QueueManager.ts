@@ -126,7 +126,7 @@ export const QueueManager: queueManager = {
 
 		logger.debug(`Attempting to unarchive room with id ${rid}`);
 
-		const oldInquiry = await LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1 } });
+		const oldInquiry = await LivechatInquiry.findOneByRoomId<Pick<ILivechatInquiryRecord, '_id'>>(rid, { projection: { _id: 1 } });
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
