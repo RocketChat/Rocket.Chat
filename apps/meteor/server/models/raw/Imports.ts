@@ -49,7 +49,7 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 		return this.updateMany({ valid: { $ne: false }, status: { $nin: statusList } }, { $set: { valid: false } });
 	}
 
-	findAllPendingOperations(options: FindOptions<any> = {}): FindCursor<any> {
+	findAllPendingOperations(options: FindOptions<IImport> = {}): FindCursor<IImport> {
 		return this.find({ valid: true }, options);
 	}
 
@@ -59,6 +59,17 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 			{
 				$inc: {
 					'count.total': increaseBy,
+				},
+			},
+		);
+	}
+
+	async setOperationStatus(id: string, status: IImport['status']): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: id },
+			{
+				$set: {
+					status,
 				},
 			},
 		);

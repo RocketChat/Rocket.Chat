@@ -288,7 +288,7 @@ export class ImportDataConverter {
 
 	// TODO
 	async insertUser(userData: IImportUser): Promise<IUser> {
-		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+		const password = userData.password ?? `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? await Accounts.createUserAsync({
 					email: userData.emails[0],

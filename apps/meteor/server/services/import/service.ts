@@ -1,9 +1,13 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { Imports, ImportData } from '@rocket.chat/models';
-import type { IImportUser, IImport } from '@rocket.chat/core-typings';
+import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typings';
+import type { IImportService } from '@rocket.chat/core-services';
 import { ObjectId } from 'mongodb';
 
-export class VideoConfService extends ServiceClassInternal {
+import { Importers } from '../../../app/importer/server/classes/ImportersContainer';
+import { Selection } from '../../../app/importer/server/classes/ImporterSelection';
+
+export class ImportService extends ServiceClassInternal implements IImportService {
 	protected name = 'import';
 
 	public async clear(): Promise<void> {
@@ -11,7 +15,7 @@ export class VideoConfService extends ServiceClassInternal {
 		await ImportData.col.deleteMany({});
 	}
 
-	public async new(userId: string, name: string, key: string): Promise<IImport> {
+	public async newOperation(userId: string, name: string, key: string): Promise<IImport> {
 		// Make sure there's no other operation running
 		await this.clear();
 
@@ -68,7 +72,7 @@ export class VideoConfService extends ServiceClassInternal {
 		}
 	}
 
-	public async status(): Promise<any> {
+	public async status(): Promise<ImportStatus> {
 		const operation = await Imports.findLastImport();
 
 		if (!operation) {
@@ -85,9 +89,8 @@ export class VideoConfService extends ServiceClassInternal {
 		};
 	}
 
-	private async assertsValidStateForNewData(): Promise<void> {
-		const operation = await Imports.findLastImport();
-		if (!operation.valid) {
+	private assertsValidStateForNewData(operation: IImport | null): asserts operation is IImport {
+		if (!operation?.valid) {
 			throw new Error('Import operation not initialized.');
 		}
 		const state = this.getStateOfOperation(operation);
@@ -103,7 +106,13 @@ export class VideoConfService extends ServiceClassInternal {
 	}
 
 	public async addUsers(users: IImportUser[]): Promise<void> {
-		await this.assertsValidStateForNewData();
+		if (!users.length) {
+			return;
+		}
+
+		const operation = await Imports.findLastImport();
+
+		this.assertsValidStateForNewData(operation);
 
 		await ImportData.col.insertMany(
 			users.map((data) => ({
@@ -112,9 +121,29 @@ export class VideoConfService extends ServiceClassInternal {
 				dataType: 'user',
 			})),
 		);
+
+		await Imports.increaseTotalCount(operation._id, users.length);
+		await Imports.setOperationStatus(operation._id, 'importer_user_selection');
 	}
 
 	public async run(): Promise<void> {
-		
+		const operation = await Imports.findLastImport();
+		if (!operation?.valid) {
+			throw new Error('error-operation-not-found');
+		}
+
+		if (operation.status !== 'importer_user_selection') {
+			throw new Error('error-invalid-operation-status');
+		}
+
+		const { importerKey } = operation;
+		const importer = Importers.get(importerKey);
+		if (!importer) {
+			throw new Error('error-importer-not-defined');
+		}
+
+		const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+		const selection = new Selection(importer.name, [], [], 0);
+		await instance.startImport(selection);
 	}
 }

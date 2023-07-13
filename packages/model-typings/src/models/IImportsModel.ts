@@ -4,10 +4,12 @@ import type { IImport } from '@rocket.chat/core-typings';
 import type { IBaseModel } from './IBaseModel';
 
 export interface IImportsModel extends IBaseModel<IImport> {
-	findLastImport(): Promise<any | undefined>;
+	findLastImport(): Promise<IImport | null>;
 	hasValidOperationInStatus(allowedStatus: IImport['status'][]): Promise<boolean>;
 	invalidateAllOperations(): Promise<UpdateResult | Document>;
 	invalidateOperationsExceptId(id: string): Promise<UpdateResult | Document>;
 	invalidateOperationsNotInStatus(status: string | string[]): Promise<UpdateResult | Document>;
-	findAllPendingOperations(options: FindOptions<any>): FindCursor<any>;
+	findAllPendingOperations(options: FindOptions<IImport>): FindCursor<IImport>;
+	increaseTotalCount(id: string, increaseBy?: number): Promise<UpdateResult>;
+	setOperationStatus(id: string, status: IImport['status']): Promise<UpdateResult>;
 }
