@@ -34,7 +34,6 @@ const MultiSelectCustomList = ({
 					<Box mi='x8' mbs='x4' display='flex' flexWrap='wrap' alignItems='center'>
 						<TextInput
 							flexGrow={2}
-							minWidth='x224'
 							placeholder={t(searchBarText)}
 							addon={<Icon name='magnifier' size='x20' />}
 							onChange={handleChange}
@@ -46,12 +45,12 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle ? (
-						<Box mi='x12' mb='x4' fontScale='p2b' color='default' minWidth='x224'>
+						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box minWidth='x224' pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
+							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} />

@@ -22,7 +22,7 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import FilterByTypeAndText from './FilterByTypeAndText';
+import FilterByRoomName from './FilterByRoomName';
 import { useFilteredRooms } from './useFilteredRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -282,25 +282,38 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	return (
 		<>
-			<FilterByTypeAndText setFilter={setRoomFilter}>
-				<MultiSelectCustom
-					dropdownOptions={roomTypeOptions}
-					defaultTitle={'All_rooms' as any}
-					selectedOptionsTitle='Rooms'
-					selectedOptions={selectedOptions}
-					setSelectedOptions={setSelectedOptions}
-					customSetSelected={setRoomTypeOptions}
-				/>
+			<Box
+				mb='x16'
+				is='form'
+				onSubmit={useCallback((e) => e.preventDefault(), [])}
+				display='flex'
+				flexWrap='wrap'
+				alignItems='center'
+				justifyContent='center'
+			>
+				<FilterByRoomName setFilter={setRoomFilter} />
+				<Box minWidth='x224' pi='x4'>
+					<MultiSelectCustom
+						dropdownOptions={roomTypeOptions}
+						defaultTitle={'All_rooms' as any}
+						selectedOptionsTitle='Rooms'
+						setSelectedOptions={setSelectedOptions}
+						selectedOptions={selectedOptions}
+						customSetSelected={setRoomTypeOptions}
+					/>
+				</Box>
 
-				<MultiSelectCustom
-					dropdownOptions={roomVisibilityOptions}
-					defaultTitle={'All_visible' as any}
-					selectedOptionsTitle='Visible'
-					selectedOptions={selectedOptions}
-					setSelectedOptions={setSelectedOptions}
-					customSetSelected={setRoomVisibilityOptions}
-				/>
-			</FilterByTypeAndText>
+				<Box minWidth='x224' pi='x4'>
+					<MultiSelectCustom
+						dropdownOptions={roomVisibilityOptions}
+						defaultTitle={'All_visible' as any}
+						selectedOptionsTitle='Visible'
+						setSelectedOptions={setSelectedOptions}
+						selectedOptions={selectedOptions}
+						customSetSelected={setRoomVisibilityOptions}
+					/>
+				</Box>
+			</Box>
 
 			{isLoading && (
 				<GenericTable>

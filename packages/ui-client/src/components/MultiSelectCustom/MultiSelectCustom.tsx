@@ -118,10 +118,11 @@ export const MultiSelectCustom = ({
 	const count = dropdownOptions.filter((option) => option.checked).length;
 
 	return (
-		<Box minWidth='x224' display='flex' flexGrow={1}>
+		<Box display='flex' flexGrow={1} position='relative'>
 			<MultiSelectCustomAnchor
 				ref={reference}
 				onClick={toggleCollapsed as any}
+				collapsed={collapsed}
 				defaultTitle={defaultTitle}
 				selectedOptionsTitle={selectedOptionsTitle}
 				selectedOptionsCount={count}

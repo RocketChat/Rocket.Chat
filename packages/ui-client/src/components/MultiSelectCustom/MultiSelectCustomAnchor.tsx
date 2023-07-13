@@ -1,11 +1,13 @@
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, Icon, Palette } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEventHandler } from 'react';
+import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 type MultiSelectCustomAnchorProps = {
-	onClick?: MouseEventHandler<HTMLElement>;
+	onClick?: (value: boolean) => void;
+	collapsed: boolean;
 	defaultTitle: TranslationKey;
 	selectedOptionsTitle: TranslationKey;
 	selectedOptionsCount: number;
@@ -13,10 +15,23 @@ type MultiSelectCustomAnchorProps = {
 } & ComponentProps<typeof Button>;
 
 const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
-	{ onClick, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
+	{ onClick, collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
 	const t = useTranslation();
+
+	const inputStyle = collapsed
+		? css`
+				&,
+				&:hover,
+				&:active,
+				&:focus {
+					border-color: ${Palette.stroke['stroke-highlight'].toString()};
+					border-width: 2px;
+					box-shadow: 0 0 0 2px ${Palette.shadow['shadow-highlight'].toString()};
+				}
+		  `
+		: '';
 
 	return (
 		<Button
@@ -30,9 +45,8 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			borderColor='none'
 			borderWidth='x1'
 			bg='surface-light'
-			mis='x9'
 			h='x40'
-			minWidth='x224'
+			className={inputStyle}
 			{...props}
 		>
 			{selectedOptionsCount > 0 && selectedOptionsCount !== maxCount - 1
