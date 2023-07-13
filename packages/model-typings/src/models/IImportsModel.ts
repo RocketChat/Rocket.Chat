@@ -10,6 +10,6 @@ export interface IImportsModel extends IBaseModel<IImport> {
 	invalidateOperationsExceptId(id: string): Promise<UpdateResult | Document>;
 	invalidateOperationsNotInStatus(status: string | string[]): Promise<UpdateResult | Document>;
 	findAllPendingOperations(options: FindOptions<IImport>): FindCursor<IImport>;
-	increaseTotalCount(id: string, increaseBy?: number): Promise<UpdateResult>;
+	increaseTotalCount(id: string, recordType: 'users' | 'channels' | 'messages', increaseBy?: number): Promise<UpdateResult>;
 	setOperationStatus(id: string, status: IImport['status']): Promise<UpdateResult>;
 }

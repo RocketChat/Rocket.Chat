@@ -255,8 +255,6 @@ API.v1.addRoute(
 	{
 		async get() {
 			const status = await Import.status();
-			console.log('status is ', typeof status);
-			console.log(status);
 
 			return API.v1.success(status);
 		},

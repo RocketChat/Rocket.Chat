@@ -122,7 +122,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			})),
 		);
 
-		await Imports.increaseTotalCount(operation._id, users.length);
+		await Imports.increaseTotalCount(operation._id, 'users', users.length);
 		await Imports.setOperationStatus(operation._id, 'importer_user_selection');
 	}
 

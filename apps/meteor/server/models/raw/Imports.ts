@@ -53,12 +53,13 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 		return this.find({ valid: true }, options);
 	}
 
-	async increaseTotalCount(id: string, increaseBy = 1): Promise<UpdateResult> {
+	async increaseTotalCount(id: string, recordType: 'users' | 'channels' | 'messages', increaseBy = 1): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: id },
 			{
 				$inc: {
 					'count.total': increaseBy,
+					[`count.${recordType}`]: increaseBy,
 				},
 			},
 		);
