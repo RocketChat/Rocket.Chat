@@ -3569,6 +3569,8 @@
   "Name_optional": "Name (optional)",
   "Name_Placeholder": "Please enter your name...",
   "Navigation": "Navigation",
+  "Navigation_bar": "Navigation bar",
+	"Navigation_bar_description": "Introducing the navigation bar — a higher-level navigation designed to help users quickly find what they need. With its compact design and intuitive organization, this streamlined sidebar optimizes screen space while providing easy access to essential software features and sections.",
   "Navigation_History": "Navigation History",
   "Next": "Next",
   "Never": "Never",
