@@ -6,6 +6,16 @@
 
 - 5e429d9c78: feat: Add setting to synchronize LDAP info on OAuth logins
 
+## 0.0.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.2.10
+- @rocket.chat/rest-typings@6.2.10
+- @rocket.chat/models@0.0.5
+
+## 0.0.4
+
 ### Patch Changes
 
 - 9da856cc67: fix: Resume on-hold chat not working with max-chat's allowed per agent config

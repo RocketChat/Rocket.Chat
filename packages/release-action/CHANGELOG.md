@@ -15,6 +15,12 @@
 - 677919a23e: Use CI user PAT token
 - 677919a23e: Update versions in configured files
 
+## 1.1.0
+
+### Minor Changes
+
+- 63c91f24a9: Use `release-automation` branch to perform the release
+
 ## 1.0.1
 
 ### Patch Changes
