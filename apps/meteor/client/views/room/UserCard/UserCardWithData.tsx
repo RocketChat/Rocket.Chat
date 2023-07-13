@@ -8,7 +8,6 @@ import React, { useMemo, useRef } from 'react';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -22,20 +21,6 @@ type UserCardWithDataProps = {
 	open: (e: UIEvent) => void;
 	onClose: () => void;
 };
-
-// type MenuActionProps = {
-// 	key: React.ReactNode;
-// 	id: string;
-// 	title: string;
-// 	items: {
-// 		id: string;
-// 		key: React.ReactNode;
-// 		content: React.ReactNode;
-// 		icon: string | undefined;
-// 		onClick: () => void;
-// 		type: string | undefined;
-// 	}[];
-// }[];
 
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const t = useTranslation();
@@ -80,23 +65,26 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		onClose?.();
 	});
 
-	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
+	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
+		{ _id: user._id ?? '', username: user.username },
+		rid,
+	);
 
 	const menu = useMemo(() => {
-		if (!userActions) {
+		if (!menuOptions) {
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={userActions.menuActions} placement='bottom-start' />;
-	}, [userActions, t]);
+		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuOptions} placement='bottom-start' />;
+	}, [menuOptions, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => {
-			return <UserCard.Action title={content} key={key} content={content} aria-label={content} onClick={onClick} icon={icon} />;
+			return <UserCard.Action title={content} key={key} label={content} aria-label={content} onClick={onClick} icon={icon} />;
 		};
 
-		return [...userActions.actions.map(mapAction), menu].filter(Boolean);
-	}, [userActions.actions, menu]);
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return (
 		<>

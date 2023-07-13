@@ -3,6 +3,7 @@ import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 import { useMemo } from 'react';
 
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useCallAction } from './actions/useCallAction';
@@ -22,6 +23,12 @@ export type UserInfoAction = {
 	type?: string;
 	color?: string;
 };
+
+type UserMenuAction = {
+	id: string;
+	title: string;
+	items: GenericMenuItemProps[];
+}[];
 
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -98,7 +105,7 @@ export const useUserInfoActions = (
 					acc.push(newSection);
 
 					return acc;
-				}, [] as any);
+				}, [] as UserMenuAction);
 
 		return { actions: options, menuActions };
 	}, [userinfoActions]);
