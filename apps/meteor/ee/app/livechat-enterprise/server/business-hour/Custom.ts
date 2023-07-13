@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
@@ -46,6 +46,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		const departments = departmentsToApplyBusinessHour?.split(',').filter(Boolean) || [];
 		const businessHourToReturn = { ...businessHourData, departmentsToApplyBusinessHour };
 		delete businessHourData.departments;
+
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
 		const currentDepartments = (
 			await LivechatDepartment.findByBusinessHourId(businessHourId, {
@@ -54,8 +55,16 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		).map((dept) => dept._id);
 		const toRemove = [...currentDepartments.filter((dept) => !departments.includes(dept))];
 		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
+
 		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
+
+		// Now will check if the department which we're currently adding to BH is not
+		// associated with any other BH. If it is, then it will remove the old BH from all user's
+		// cache. It will not add the new BH right now as it will be done in afterSaveBusinessHour.
+		await this.removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(toAdd);
+
 		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
+
 		businessHourToReturn._id = businessHourId;
 		return businessHourToReturn;
 	}
@@ -90,6 +99,21 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			return;
 		}
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(departmentsToRemove, businessHourId);
+	}
+
+	private async removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(departments: string[]): Promise<void> {
+		const oldBHIds = await (
+			await LivechatDepartment.findInIds(departments, {
+				projection: {
+					businessHourId: 1,
+				},
+			}).toArray()
+		)
+			.filter((dept) => dept?.businessHourId)
+			.map((dept) => dept.businessHourId);
+
+		await Users.closeAgentsBusinessHoursByBusinessHourIds(oldBHIds);
+		await Users.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {
