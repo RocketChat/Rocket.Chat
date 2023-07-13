@@ -2562,6 +2562,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR ხელმისაწვდომია მხოლოდ როდესაც ორივე მომხმარებელი ონლაინ არის",
   "Outgoing_WebHook": "გამავალი WebHook",
   "Outgoing_WebHook_Description": "მიიღეთ მონაცემები Rocket.Chat– დან რეალურ დროში.",
+  "Outlook_Calendar_Enabled": "ჩართულია",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "შეცვალეთ ლინკი რომელზეც ფაილები აიტვირთება. ეს ლინკი ასევე გამოიყენება გადმოწერებისთვის თუ სხვა CDN არ არის მოწოდებული",
   "Page_title": "გვერდის სათაური",
   "Page_URL": "გვერდის URL",
