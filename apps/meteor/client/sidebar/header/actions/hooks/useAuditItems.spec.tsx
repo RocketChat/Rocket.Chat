@@ -38,9 +38,9 @@ it('should return auditItems if have license and permissions', async () => {
 		wrapper: ({ children }) => (
 			<QueryClientProvider client={queryClient}>
 				<MockedServerContext
-					handleMethod={(methodName) => {
+					handleMethod={async (methodName, ..._: unknown[]) => {
 						if (methodName === 'license:getModules') {
-							return ['auditing'];
+							return ['auditing'] as any;
 						}
 
 						throw new Error('Method not mocked');

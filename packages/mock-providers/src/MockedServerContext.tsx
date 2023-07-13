@@ -10,15 +10,15 @@ export const MockedServerContext = ({
 	handleMethod,
 	children,
 }: {
-	handleRequest: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
+	handleRequest?: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 		method: TMethod;
 		pathPattern: TPathPattern;
 		keys: UrlParams<TPathPattern>;
 		params: OperationParams<TMethod, TPathPattern>;
 	}) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
-	handleMethod: <MethodName extends ServerMethodName>(
-		_methodName: MethodName,
-		..._args: ServerMethodParameters<MethodName>
+	handleMethod?: <MethodName extends ServerMethodName>(
+		methodName: MethodName,
+		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
 	children: React.ReactNode;
 }): any => {
@@ -28,8 +28,8 @@ export const MockedServerContext = ({
 			value={
 				{
 					absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
-					callMethod: <MethodName extends ServerMethodName>(_methodName: MethodName, ..._args: ServerMethodParameters<MethodName>) => {
-						return handleMethod(_methodName, ..._args);
+					callMethod: <MethodName extends ServerMethodName>(methodName: MethodName, ...args: ServerMethodParameters<MethodName>) => {
+						return handleMethod?.(methodName, ...args);
 					},
 					callEndpoint: async <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 						method: TMethod;
@@ -37,7 +37,7 @@ export const MockedServerContext = ({
 						keys: UrlParams<TPathPattern>;
 						params: OperationParams<TMethod, TPathPattern>;
 					}) => {
-						return handleRequest(args);
+						return handleRequest?.(args);
 					},
 				} as any
 			}
