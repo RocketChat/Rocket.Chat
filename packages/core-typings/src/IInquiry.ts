@@ -18,6 +18,9 @@ export enum LivechatInquiryStatus {
 	OPEN = 'open',
 }
 
+// This is a subset of the IVisitor interface + channel related fields
+// IMPORTANT: If you're adding a new field here, make sure to update the
+// apps-engine's room converter to include it too
 export interface IVisitor {
 	_id: string;
 	username: string;

@@ -18,6 +18,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
 
       - name: Setup NodeJS
@@ -29,7 +30,7 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build
+      - name: Build packages
         run: yarn build
 
       - name: Publish final release
