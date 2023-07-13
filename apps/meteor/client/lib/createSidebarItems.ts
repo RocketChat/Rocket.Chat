@@ -47,7 +47,7 @@ export const createSidebarItems = (
 
 	const unregisterSidebarItem = (i18nLabel: SidebarItem['i18nLabel']): void => {
 		const index = items.findIndex((item) => item.i18nLabel === i18nLabel);
-		delete items[index];
+		items.splice(index, 1);
 		updateCb();
 	};
 
