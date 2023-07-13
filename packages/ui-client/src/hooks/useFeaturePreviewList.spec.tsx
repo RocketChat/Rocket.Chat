@@ -99,7 +99,7 @@ it('should ignore removed feature previews', () => {
 	expect(result.current).toEqual(
 		expect.objectContaining({
 			featurePreviewEnabled: true,
-			unseenFeatures: 1,
+			unseenFeatures: defaultFeaturesPreview.length,
 			features: defaultFeaturesPreview,
 		}),
 	);
