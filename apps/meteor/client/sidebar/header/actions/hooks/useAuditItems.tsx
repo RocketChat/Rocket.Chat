@@ -10,10 +10,7 @@ import type { GenericMenuItemProps } from '../../../../components/GenericMenu/Ge
  */
 
 export const useAuditItems = (): GenericMenuItemProps[] => {
-	console.log('qualquer coisa');
 	const hasAuditLicense = useHasLicenseModule('auditing') === true;
-
-	console.log('hasAuditLicense', hasAuditLicense);
 
 	const hasAuditPermission = usePermission('can-audit') && hasAuditLicense;
 	const hasAuditLogPermission = usePermission('can-audit-log') && hasAuditLicense;

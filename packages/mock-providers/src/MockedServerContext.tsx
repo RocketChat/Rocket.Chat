@@ -29,7 +29,6 @@ export const MockedServerContext = ({
 				{
 					absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 					callMethod: <MethodName extends ServerMethodName>(_methodName: MethodName, ..._args: ServerMethodParameters<MethodName>) => {
-						console.log('callMethod');
 						return handleMethod(_methodName, ..._args);
 					},
 					callEndpoint: async <TMethod extends Method, TPathPattern extends PathPattern>(args: {

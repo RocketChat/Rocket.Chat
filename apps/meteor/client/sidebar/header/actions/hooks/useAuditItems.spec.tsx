@@ -33,15 +33,14 @@ const queryClient = new QueryClient({
 // 	expect(result.all[0]).toEqual([]);
 // });
 
-it('should return auditItems if have license and permissions', () => {
-	const { result } = renderHook(() => useAuditItems(), {
+it('should return auditItems if have license and permissions', async () => {
+	const { result, waitFor } = renderHook(() => useAuditItems(), {
 		wrapper: ({ children }) => (
 			<QueryClientProvider client={queryClient}>
 				<MockedServerContext
 					handleMethod={(methodName) => {
 						if (methodName === 'license:getModules') {
-							console.log('entrei');
-							return true;
+							return ['auditing'];
 						}
 
 						throw new Error('Method not mocked');
@@ -57,7 +56,7 @@ it('should return auditItems if have license and permissions', () => {
 		),
 	});
 
-	console.log(result.current);
+	await waitFor(() => Boolean(result.current.length));
 	expect(result.current).toHaveLength(2);
 });
 
