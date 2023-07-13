@@ -12,7 +12,7 @@ const NavbarHomeAction: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) =
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');
 
-	const routeName = router.getRouteName();
+	const routeName = router.getLocationPathname();
 
 	const handleHome = useMutableCallback(() => {
 		sidebar.toggle();
@@ -21,7 +21,13 @@ const NavbarHomeAction: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) =
 
 	return showHome ? (
 		<NavbarAction {...props}>
-			<IconButton pressed={routeName === 'home'} title={t('Home')} medium icon='home' onClick={handleHome} />
+			<IconButton
+				pressed={['/home', '/live', '/direct', '/group', '/channel'].some((name) => routeName?.startsWith(name))}
+				title={t('Home')}
+				medium
+				icon='home'
+				onClick={handleHome}
+			/>
 		</NavbarAction>
 	) : null;
 };

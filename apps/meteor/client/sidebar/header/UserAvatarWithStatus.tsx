@@ -16,7 +16,7 @@ const anon = {
 
 /**
  * @deprecated Feature preview
- * @description Should be removed when the feature became part of the core
+ * @description Should be moved to the core when the feature is ready
  * @memberof navigationBar
  */
 

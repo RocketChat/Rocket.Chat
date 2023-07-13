@@ -1,5 +1,5 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -11,20 +11,20 @@ import Sort from './actions/Sort';
 
 const HeaderUnstable = (): ReactElement => {
 	const t = useTranslation();
-	const user = useUser();
+	const uid = useUserId();
 
 	return (
 		<Sidebar.TopBar.Section>
 			<Sidebar.TopBar.Actions justifyContent='end' width='100%'>
 				<Search title={t('Search')} />
-				{user && (
+				{uid && (
 					<>
 						<Directory title={t('Directory')} />
 						<Sort title={t('Display')} />
 						<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
 					</>
 				)}
-				{!user && <Login title={t('Login')} />}
+				{!uid && <Login title={t('Login')} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.Section>
 	);

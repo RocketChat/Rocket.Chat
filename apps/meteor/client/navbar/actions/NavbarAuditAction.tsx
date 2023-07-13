@@ -13,10 +13,7 @@ const NavbarAuditAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const router = useRouter();
 	const routerName = router.getRouteName();
 
-	const auditItems = useAuditItems().map((item) => {
-		delete item.icon;
-		return item;
-	});
+	const auditItems = useAuditItems();
 
 	const handleAction = useHandleMenuAction(auditItems);
 
@@ -27,6 +24,7 @@ const NavbarAuditAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 				medium
 				title={t('Audit')}
 				icon='document-eye'
+				placement='right-start'
 				onAction={handleAction}
 				items={auditItems}
 			/>

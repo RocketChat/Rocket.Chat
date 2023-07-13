@@ -13,10 +13,7 @@ const NavbarMarketplaceAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const router = useRouter();
 	const routeName = router.getRouteName();
 
-	const appItems = useAppsItems().map((item) => {
-		delete item.icon;
-		return item;
-	});
+	const appItems = useAppsItems();
 
 	const handleAction = useHandleMenuAction(appItems);
 
@@ -39,6 +36,7 @@ const NavbarMarketplaceAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 				icon='store'
 				onAction={handleAction}
 				items={appItems}
+				placement='right-start'
 			/>
 		</NavbarAction>
 	);
