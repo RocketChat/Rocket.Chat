@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -45,13 +45,10 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	const dispatchToastMessage = useToastMessageDispatch();
 	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');
 
-	const [fromDate, setFromDate] = useState(new Date('0001-01-01T00:00:00Z'));
-	const [toDate, setToDate] = useState(new Date('9999-12-31T23:59:59Z'));
-	const [callOutText, setCallOutText] = useState<string | undefined>();
-	const [validateText, setValidateText] = useState<string | undefined>();
 	const [counter, setCounter] = useState(0);
 
 	const methods = useForm({ defaultValues: initialValues });
+
 	const {
 		newer: { date: newerDate, time: newerTime },
 		older: { date: olderDate, time: olderTime },
@@ -63,8 +60,16 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 		attached,
 	} = methods.watch();
 
+	const fromDate = useMemo(() => {
+		return new Date(`${newerDate || '0001-01-01'}T${newerTime || '00:00'}:00${getTimeZoneOffset()}`);
+	}, [newerDate, newerTime]);
+
+	const toDate = useMemo(() => {
+		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
+	}, [olderDate, olderTime]);
+
 	const handlePrune = useMutableCallback((): void => {
-		const handlePruneAction = async (): Promise<void> => {
+		const handlePruneAction = async () => {
 			const limit = DEFAULT_PRUNE_LIMIT;
 
 			try {
@@ -93,9 +98,9 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 
 				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 				methods.reset();
-				closeModal();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
 				closeModal();
 			}
 		};
@@ -113,17 +118,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 		);
 	});
 
-	useEffect(() => {
-		if (newerDate) {
-			setFromDate(new Date(`${newerDate}T${newerTime || '00:00'}:00${getTimeZoneOffset()}`));
-		}
-
-		if (olderDate) {
-			setToDate(new Date(`${olderDate}T${olderTime || '24:00'}:00${getTimeZoneOffset()}`));
-		}
-	}, [newerDate, newerTime, olderDate, olderTime]);
-
-	useEffect(() => {
+	const callOutText = useMemo(() => {
 		const exceptPinned = pinned ? ` ${t('except_pinned', {})}` : '';
 		const ifFrom = users.length
 			? ` ${t('if_they_are_from', {
@@ -134,62 +129,65 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 		const filesOrMessages = t(attached ? 'files' : 'messages', {});
 
 		if (newerDate && olderDate) {
-			setCallOutText(
+			return (
 				t('Prune_Warning_between', {
 					postProcess: 'sprintf',
 					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
 				}) +
-					exceptPinned +
-					ifFrom,
+				exceptPinned +
+				ifFrom
 			);
-		} else if (newerDate) {
-			setCallOutText(
+		}
+
+		if (newerDate) {
+			return (
 				t('Prune_Warning_after', {
 					postProcess: 'sprintf',
 					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT')],
 				}) +
-					exceptPinned +
-					ifFrom,
+				exceptPinned +
+				ifFrom
 			);
-		} else if (olderDate) {
-			setCallOutText(
+		}
+
+		if (olderDate) {
+			return (
 				t('Prune_Warning_before', {
 					postProcess: 'sprintf',
 					sprintf: [filesOrMessages, name, moment(toDate).format('L LT')],
 				}) +
-					exceptPinned +
-					ifFrom,
-			);
-		} else {
-			setCallOutText(
-				t('Prune_Warning_all', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name)],
-				}) +
-					exceptPinned +
-					ifFrom,
+				exceptPinned +
+				ifFrom
 			);
 		}
 
+		return (
+			t('Prune_Warning_all', {
+				postProcess: 'sprintf',
+				sprintf: [filesOrMessages, room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name)],
+			}) +
+			exceptPinned +
+			ifFrom
+		);
+	}, [attached, fromDate, newerDate, olderDate, pinned, room, t, toDate, users]);
+
+	const validateText = useMemo(() => {
 		if (fromDate > toDate) {
-			return setValidateText(
-				t('Newer_than_may_not_exceed_Older_than', {
-					postProcess: 'sprintf',
-					sprintf: [],
-				}),
-			);
-		}
-		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
-			return setValidateText(
-				t('error-invalid-date', {
-					postProcess: 'sprintf',
-					sprintf: [],
-				}),
-			);
+			return t('Newer_than_may_not_exceed_Older_than', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			});
 		}
 
-		setValidateText(undefined);
-	}, [newerDate, olderDate, fromDate, toDate, attached, t, pinned, users, room]);
+		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+			return t('error-invalid-date', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			});
+		}
+
+		return undefined;
+	}, [fromDate, t, toDate]);
 
 	return (
 		<FormProvider {...methods}>

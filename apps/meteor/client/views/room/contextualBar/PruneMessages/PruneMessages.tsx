@@ -26,7 +26,7 @@ type PruneMessagesProps = {
 
 const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
 	const t = useTranslation();
-	const { control } = useFormContext();
+	const { control, register } = useFormContext();
 
 	const inclusiveCheckboxId = useUniqueId();
 	const pinnedCheckboxId = useUniqueId();
@@ -56,51 +56,31 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				</Field>
 				<Field>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='inclusive'
-							render={({ field: { onChange, value } }) => <CheckBox id={inclusiveCheckboxId} checked={value} onChange={onChange} />}
-						/>
+						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
 						<Field.Label htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='pinned'
-							render={({ field: { onChange, value } }) => <CheckBox id={pinnedCheckboxId} checked={value} onChange={onChange} />}
-						/>
+						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
 						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='discussion'
-							render={({ field: { onChange, value } }) => <CheckBox id={discussionCheckboxId} checked={value} onChange={onChange} />}
-						/>
+						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
 						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='threads'
-							render={({ field: { onChange, value } }) => <CheckBox id={threadsCheckboxId} checked={value} onChange={onChange} />}
-						/>
+						<CheckBox id={threadsCheckboxId} {...register('threads')} />
 						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='attached'
-							render={({ field: { onChange, value } }) => <CheckBox id={attachedCheckboxId} checked={value} onChange={onChange} />}
-						/>
+						<CheckBox id={attachedCheckboxId} {...register('attached')} />
 						<Field.Label htmlFor={attachedCheckboxId}>{t('Files_only')}</Field.Label>
 					</Field.Row>
 				</Field>

@@ -49,7 +49,7 @@
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006 --no-version-updates",
 		"docker:start": "docker-compose up"
 	},
 	"license": "MIT",

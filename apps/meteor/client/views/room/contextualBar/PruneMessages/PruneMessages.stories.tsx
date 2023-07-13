@@ -12,22 +12,24 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => {
+			const methods = useForm({
+				defaultValues: {
+					pinned: true,
+				},
+			});
+
+			return (
+				<FormProvider {...methods}>
+					<Contextualbar height='100vh'>{fn()}</Contextualbar>
+				</FormProvider>
+			);
+		},
+	],
 } as ComponentMeta<typeof PruneMessages>;
 
-const Template: ComponentStory<typeof PruneMessages> = (args) => {
-	const methods = useForm({
-		defaultValues: {
-			pinned: true,
-		},
-	});
-
-	return (
-		<FormProvider {...methods}>
-			<PruneMessages {...args} />
-		</FormProvider>
-	);
-};
+const Template: ComponentStory<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
 
 export const Default = Template.bind({});
 
