@@ -16,7 +16,7 @@ const ToggleSwitchElement = ({
   const { options, initialOptions } = block;
 
   return (
-    <form>
+    <>
       {options.map((option: UiKit.Option) => {
         const isChecked = initialOptions?.some(
           (initialOption) => initialOption.value === option.value
@@ -39,7 +39,7 @@ const ToggleSwitchElement = ({
           </Box>
         );
       })}
-    </form>
+    </>
   );
 };
 

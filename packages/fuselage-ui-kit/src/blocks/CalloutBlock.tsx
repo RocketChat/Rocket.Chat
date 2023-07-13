@@ -12,8 +12,9 @@ const CalloutBlock = ({
 }: CalloutBlockProps): ReactElement => {
   return (
     <Callout
-      // title={block.title.text}
       type={block.variant}
+      icon={block.icon}
+      title={block.title?.text}
     >
       {surfaceRenderer.renderTextObject(block.text, 0, UiKit.BlockContext.NONE)}
     </Callout>

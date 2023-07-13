@@ -16,7 +16,7 @@ const CheckboxElement = ({
   const { options, initialOptions } = block;
 
   return (
-    <form>
+    <>
       {options.map((option: UiKit.Option) => {
         const isChecked = initialOptions?.some(
           (initialOption) => initialOption.value === option.value
@@ -40,7 +40,7 @@ const CheckboxElement = ({
           </Box>
         );
       })}
-    </form>
+    </>
   );
 };
 

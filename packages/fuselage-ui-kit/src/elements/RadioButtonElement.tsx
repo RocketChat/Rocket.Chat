@@ -16,7 +16,7 @@ const RadioButtonElement = ({
   const { options, initialOption } = block;
 
   return (
-    <form>
+    <>
       {options.map((option: UiKit.Option) => {
         return (
           <Box key={option.value} pb='x4'>
@@ -36,7 +36,7 @@ const RadioButtonElement = ({
           </Box>
         );
       })}
-    </form>
+    </>
   );
 };
 
