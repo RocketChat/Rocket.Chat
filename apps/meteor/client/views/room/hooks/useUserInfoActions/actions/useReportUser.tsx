@@ -22,7 +22,11 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): A
 		async (description: string) => {
 			reportUser({ description, userId: uid });
 		},
-		{ onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') }) },
+		{
+			onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') }),
+			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+			onSettled: () => setModal(),
+		},
 	);
 
 	const openReportUserModal = useMemo(() => {

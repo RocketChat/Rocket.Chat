@@ -1,4 +1,5 @@
 import { Box, Button, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,12 @@ type ReportUserModalProps = {
 };
 
 const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModalProps) => {
-	const { register, getValues } = useForm({
+	const {
+		register,
+		getValues,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
 		defaultValues: {
 			description: '',
 		},
@@ -24,14 +30,13 @@ const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModal
 	const onClickConfirm = () => {
 		const { description } = getValues();
 		onConfirm(description);
-		onClose();
 	};
 
 	const displayName = useUserDisplayName({ username, name });
 	const { t } = useTranslation();
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(onClickConfirm)} {...props} />}>
 			<Modal.Header>
 				<Modal.Icon name='warning' color='danger' />
 				<Modal.HeaderText fontScale='h3'>{t('Report_User')}</Modal.HeaderText>
@@ -44,17 +49,22 @@ const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModal
 				<TextAreaInput
 					rows={3}
 					placeholder={t('Why_do_you_want_to_report_question_mark')}
-					{...register('description', { required: t('Please_provide_a_reason') })}
+					{...register('description', { required: t('Please_fill_out_reason_for_report') })}
 					width='full'
 					mbe='x4'
 				/>
+				{errors.description && (
+					<Box fontScale='p2' color='danger'>
+						{errors.description.message}
+					</Box>
+				)}
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button danger onClick={onClickConfirm}>
+					<Button danger type='submit'>
 						{t('Report')}
 					</Button>
 				</Modal.FooterControllers>
