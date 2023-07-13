@@ -1,4 +1,4 @@
-import { type IRoom } from '@rocket.chat/core-typings';
+import { type IRoom, isDiscussion } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -39,14 +39,18 @@ const roomTypeI18nMap = {
 	c: 'Channel',
 	d: 'Direct',
 	p: 'Group',
-	discussion: 'Discussion',
 } as const;
 
-const getRoomType = (room: IRoom): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
+const getRoomType = (
+	room: IRoom,
+): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
 	if (room.teamMain) {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
-	return roomTypeI18nMap[room.t as keyof typeof roomTypeI18nMap];
+	if (isDiscussion(room)) {
+		return 'Discussion';
+	}
+	return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
 };
 
 const getRoomDisplayName = (room: IRoom): string | undefined =>
