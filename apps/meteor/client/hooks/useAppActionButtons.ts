@@ -145,6 +145,7 @@ export const useRoomActionAppsActionButtons = (context?: MessageActionContext) =
 									appId: action.appId,
 									payload: { context: action.context },
 								}),
+							type: 'apps',
 						},
 					];
 					return item;
