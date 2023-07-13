@@ -8,14 +8,14 @@ import { useActionSpread } from '../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username'>;
+	user: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
 };
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions({ _id: user._id, username: user.username }, rid, backToList),
+		useUserInfoActions({ _id: user._id, username: user.username, name: user.name }, rid, backToList),
 	);
 
 	const menu = useMemo(() => {

@@ -64,7 +64,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		onClose?.();
 	});
 
-	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
+	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username, name: user.name }, rid);
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(userActions);
 
 	const menu = useMemo(() => {

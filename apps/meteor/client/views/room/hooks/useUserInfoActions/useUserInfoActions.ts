@@ -16,7 +16,7 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 
 export const useUserInfoActions = (
-	user: Pick<IUser, '_id' | 'username'>,
+	user: Pick<IUser, '_id' | 'username' | 'name'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
 ): {

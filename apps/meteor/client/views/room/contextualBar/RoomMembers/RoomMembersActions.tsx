@@ -8,13 +8,14 @@ import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type RoomMembersActionsProps = {
 	username: IUser['username'];
+	name: IUser['name'];
 	_id: IUser['_id'];
 	rid: IRoom['_id'];
 	reload: () => void;
 };
 
-const RoomMembersActions = ({ username, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
-	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username }, rid, reload), 0);
+const RoomMembersActions = ({ username, name, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
+	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username, name }, rid, reload), 0);
 	if (!menuOptions) {
 		return null;
 	}

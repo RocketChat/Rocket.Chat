@@ -1,37 +1,54 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Action } from '../../../../hooks/useActionSpread';
-import ReportUserModal from './reportUserModal';
+import ReportUserModal from '../../../contextualBar/UserInfo/ReportUserModal';
 
-export const useReportUser = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
-	const { _id: uid, username } = user;
+export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): Action | undefined => {
+	const { _id: uid, username, name } = user;
 	const ownUserId = useUserId();
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
 
-	const reportUser = useMemo(() => {
-		const action = () => {
-			const onConfirm = () => console.log('Report User -> ', uid);
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-			return setModal(<ReportUserModal uid={uid} username={username} onConfirm={onConfirm} onCancel={closeModal} />);
-		};
+	const reportUser = useEndpoint('POST', '/v1/moderation.reportUser');
+	const reportUserMutation = useMutation(
+		['reportUser', uid],
+		async (description: string) => {
+			reportUser({ description, userId: uid });
+		},
+		{ onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') }) },
+	);
+
+	const openReportUserModal = useMemo(() => {
+		const action = () =>
+			setModal(
+				<ReportUserModal
+					uid={uid}
+					username={username || ''}
+					onConfirm={reportUserMutation.mutate}
+					name={name}
+					onClose={() => setModal()}
+				/>,
+			);
 
 		return ownUserId !== uid
 			? {
 					label: (
 						<Box color='status-font-on-danger'>
 							<Icon mie='x4' name='warning' size='x20' />
-							Report User
+							{t('Report_User')}
 						</Box>
 					),
 					action,
 			  }
 			: undefined;
-	}, [ownUserId, uid, username, closeModal, setModal]);
+	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, name]);
 
-	return reportUser;
+	return openReportUserModal;
 };
