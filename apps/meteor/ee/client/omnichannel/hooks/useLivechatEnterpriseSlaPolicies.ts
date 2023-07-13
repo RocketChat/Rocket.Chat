@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const useLivechatEnterpriseSlaPolicies = () => {
-	const licensed = useHasLicenseModule('livechat-enterprise');
+	const licensed = useHasLicenseModule('livechat-enterprise') === true;
 	const permittedToManage = usePermission('manage-livechat-sla');
 
 	useEffect(() => {
