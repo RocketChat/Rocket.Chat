@@ -77,7 +77,7 @@ After initialized, you can access the server at http://localhost:4000
 
 > ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
 
-# 💻 Installation
+# 💻 Installation Guide
 
 Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
@@ -97,6 +97,8 @@ You can develop your own app that can be integrated with Rocket.Chat. We provide
 
 # 📚 Learn More
 
+Learn More From Here!👇
+
 - [Product Documentation](https://docs.rocket.chat)
 - [Developer Documentation](https://developer.rocket.chat)
 - [API Documentation](https://developer.rocket.chat/reference/api)
@@ -107,13 +109,13 @@ You can develop your own app that can be integrated with Rocket.Chat. We provide
 
 [Rocket.Chat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request. [Feature Request Forums](https://forums.rocket.chat/c/feature-requests/8) stores the historical archives of old feature requests (up to 2018).
 
-# 🤝 Community
+# 🤝 Join Community
 
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
 
 
-# 👥 Contributions
+# 👥 Contributions Guide
 
 Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
 
@@ -123,6 +125,8 @@ Rocket.Chat is an open source project and we are very happy to accept community 
 We're hiring developers, support people, and product managers all the time. Please check our [jobs page](https://rocket.chat/jobs).
 
 ## 🗞️ Get the Latest News
+
+For Latest News/Updates Follow Us Here!👇
 
 - [Blog](https://rocket.chat/blog)
 - [Twitter](https://twitter.com/RocketChat)
