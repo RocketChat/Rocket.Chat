@@ -61,23 +61,23 @@ const AppsPageContent = (): ReactElement => {
 		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
 		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
 	];
-	
+
 	const requestedFilterItems = [
 		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
 		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
 	];
-	
+
 	const createFilterStructureItems = () => {
 		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
 	};
-	
+
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
 		return {
 			label: t('Sort_By'),
 			items: createFilterStructureItems(),
 		};
 	});
-	
+
 	useEffect(() => {
 		setSortFilterStructure({
 			label: t('Sort_By'),
