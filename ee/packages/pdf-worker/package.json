@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"private": true,
 	"devDependencies": {
 		"@storybook/addon-actions": "~6.5.14",
