@@ -1,6 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -92,16 +91,11 @@ export const useRemoveUserAction = (
 		() =>
 			roomCanRemove && userCanRemove
 				? {
-						// content: (
-						// 	<Box color='status-font-on-danger'>
-						// 		<Icon mie='x4' name='cross' size='x20' />
-						// 		{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
-						// 	</Box>
-						// ),
 						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
 						icon: 'cross' as const,
 						onClick: removeUserOptionAction,
 						type: 'management',
+						color: 'alert',
 				  }
 				: undefined,
 		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],

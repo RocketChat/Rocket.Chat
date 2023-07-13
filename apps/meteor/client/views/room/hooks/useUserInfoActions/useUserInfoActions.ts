@@ -20,6 +20,7 @@ export type UserInfoAction = {
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;
 	type?: string;
+	color?: string;
 };
 
 export const useUserInfoActions = (
@@ -78,6 +79,7 @@ export const useUserInfoActions = (
 			menu !== undefined &&
 			Object.values(menu)
 				.map((item) => ({
+					variant: item.color === 'alert' && ('danger' as const),
 					id: item.content as string,
 					content: item.content,
 					icon: item.icon,
