@@ -7,15 +7,15 @@ import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
-		_paq: [string, ...unknown[]][];
+		_paq?: [string, ...unknown[]][];
 		GoogleAnalyticsObject: unknown;
-		ga: qa;
+		ga?: qa;
 	}
 
 	type qa = {
 		(...args: unknown[]): void;
-		l: number;
-		q: unknown[];
+		l?: number;
+		q?: unknown[];
 	};
 }
 
@@ -60,17 +60,17 @@ export const useAnalytics = (): void => {
 				(i[r] =
 					i[r] ||
 					function () {
-						(i[r].q = i[r].q || []).push(arguments);
+						((i[r] as any).q = (i[r] as any).q || []).push(arguments);
 					}),
-					(i[r].l = new Date().getTime());
+					((i[r] as any).l = new Date().getTime());
 				(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
 				a.async = 1;
 				a.src = g;
 				m.parentNode.insertBefore(a, m);
 			})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-			window.ga('create', googleId, 'auto');
-			window.ga('send', 'pageview');
+			window.ga?.('create', googleId, 'auto');
+			window.ga?.('send', 'pageview');
 		}
 		/* eslint-enable */
 	}, [googleId, uid]);

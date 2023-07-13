@@ -36,15 +36,15 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const federated = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
-		if (federated) {
+		const room = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
+		if (room?.federated) {
 			return;
 		}
 
 		message = await callbacks.run('beforeSaveMessage', message);
 		await onClientMessageReceived(message as IMessage).then(function (message) {
 			ChatMessage.insert(message);
-			return callbacks.run('afterSaveMessage', message);
+			return callbacks.run('afterSaveMessage', message, room);
 		});
 	},
 });

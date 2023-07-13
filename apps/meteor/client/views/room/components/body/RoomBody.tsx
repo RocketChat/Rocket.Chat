@@ -1,10 +1,10 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
-	useCurrentRoute,
 	usePermission,
-	useQueryStringParameter,
 	useRole,
+	useRouter,
+	useSearchParameter,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -258,7 +258,7 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [sendToBottomIfNecessary]);
 
-	const [routeName] = useCurrentRoute();
+	const router = useRouter();
 
 	const roomRef = useRef(room);
 	roomRef.current = room;
@@ -273,16 +273,21 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				const routeName = router.getRouteName();
+				if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
+					return;
+				}
 
-		debouncedReadMessageRead();
-		if (subscribed && (subscription?.alert || subscription?.unread)) {
-			readMessage.refreshUnreadMark(room._id);
-		}
-	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+				debouncedReadMessageRead();
+				if (subscribed && (subscription?.alert || subscription?.unread)) {
+					readMessage.refreshUnreadMark(room._id);
+				}
+			}),
+		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
+	);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -481,7 +486,7 @@ const RoomBody = (): ReactElement => {
 		[chat],
 	);
 
-	const replyMID = useQueryStringParameter('reply');
+	const replyMID = useSearchParameter('reply');
 
 	useEffect(() => {
 		if (!replyMID) {
