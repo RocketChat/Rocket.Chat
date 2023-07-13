@@ -2,7 +2,7 @@ import type { ExtendedFetchOptions, FetchOptions, OriginalFetchOptions } from '.
 
 function isPostOrPutOrDeleteWithBody(options?: ExtendedFetchOptions): boolean {
 	// No method === 'get'
-	if (!options || !options.method) {
+	if (!options?.method) {
 		return false;
 	}
 	const { method, body } = options;
@@ -32,7 +32,9 @@ const jsonParser = (options: ExtendedFetchOptions) => {
 	return options as FetchOptions;
 };
 
-const urlencodedParser = (options: ExtendedFetchOptions) => {
+// Do not parse anything. Just return the options as they are.
+// This will be used for binary data, for example.
+const defaultParser = (options: ExtendedFetchOptions) => {
 	return options as FetchOptions;
 };
 
@@ -40,10 +42,8 @@ const getParser = (contentTypeHeader?: string): ((options: ExtendedFetchOptions)
 	switch (contentTypeHeader) {
 		case 'application/json':
 			return jsonParser;
-		case 'application/x-www-form-urlencoded':
-			return urlencodedParser;
 		default:
-			return jsonParser;
+			return defaultParser;
 	}
 };
 
