@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, SelectInput, TextInput } from '../../components/Form';
-import type { CustomField } from '../../components/Form/CustomFields';
 import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
 import { renderMarkdown } from '../../components/Messages/MessageText/markdown';
 import { ModalManager } from '../../components/Modal';
@@ -34,7 +33,6 @@ type ContextReturn = {
 			offlineTitle?: string;
 			offlineColor?: string;
 		};
-		customFields?: CustomField[];
 	};
 	iframe?: {
 		theme: {
@@ -55,6 +53,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			theme: { offlineTitle: title, offlineColor: color },
 			settings: { displayOfflineForm },
 		},
+		iframe,
 		loading,
 		dispatch,
 		alerts,
@@ -66,6 +65,8 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 		formState: { errors, isDirty, isValid, isSubmitting },
 		control,
 	} = useForm({ mode: 'onChange' });
+
+	const customOfflineTitle = iframe?.theme?.offlineTitle;
 
 	type FormValues = { name: string; email: string; department?: string; message: string };
 
@@ -104,7 +105,13 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 	const defaultUnavailableMessage = ''; // TODO
 
 	return (
-		<Screen color={color} title={title || defaultTitle} className={createClassName(styles, 'leave-message')} {...screenProps}>
+		<Screen
+			{...screenProps}
+			theme={{ color, title }}
+			color={color}
+			title={customOfflineTitle || title || defaultTitle}
+			className={createClassName(styles, 'leave-message')}
+		>
 			<Screen.Content>
 				<div
 					className={createClassName(styles, 'leave-message__main-message')}
