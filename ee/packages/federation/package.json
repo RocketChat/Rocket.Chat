@@ -29,6 +29,7 @@
 		"js-yaml": "^4.1.0",
 		"marked": "^5.1.0",
 		"mongodb": "^4.12.1",
+		"pino": "^8.14.1",
 		"sanitize-html": "^2.11.0",
 		"uuid": "^9.0.0"
 	},
@@ -39,8 +40,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
+	"main": "./dist/ee/packages/federation/src/index.js",
+	"typings": "./dist/ee/packages/federation/src/index.d.ts",
 	"files": [
 		"/dist"
 	]

@@ -1,6 +1,7 @@
-// import { Logger } from '../../../../../lib/logger/Logger';
+import type { BaseLogger } from 'pino';
 
-// const logger = new Logger('Federation_Matrix');
+import { Logger } from '../../../../../../../apps/meteor/server/lib/logger/Logger';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export const federationBridgeLogger = () => {}; // logger.section('matrix_federation_bridge');
+const logger = new Logger('Federation_Matrix');
+
+export const federationBridgeLogger: BaseLogger = logger.section('matrix_federation_bridge');
