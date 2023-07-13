@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
 import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import Navbar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
@@ -48,7 +50,19 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		>
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
-			{!removeSidenav ? <Sidebar /> : null}
+			{!removeSidenav ? (
+				<>
+					<FeaturePreview feature='navigationBar'>
+						<FeaturePreviewOn>
+							<Navbar />
+						</FeaturePreviewOn>
+						<FeaturePreviewOff>
+							<></>
+						</FeaturePreviewOff>
+					</FeaturePreview>
+					<Sidebar />
+				</>
+			) : null}
 			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
 			</div>
