@@ -19,7 +19,7 @@ import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/c
 import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
-import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
+import { CannedResponses } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
 import { ui } from '../../../lib/ui';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
@@ -317,7 +317,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					renderItem: ({ item }) => <ComposerPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
 						const exp = new RegExp(filter, 'i');
-						return CannedResponse.find(
+						return CannedResponses.find(
 							{
 								shortcut: exp,
 							},

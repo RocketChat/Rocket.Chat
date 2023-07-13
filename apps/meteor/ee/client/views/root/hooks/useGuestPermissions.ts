@@ -5,13 +5,13 @@ import { useIsEnterprise } from '../../../../../client/hooks/useIsEnterprise';
 import { guestPermissions } from '../../../../app/authorization/lib/guestPermissions';
 
 export const useGuestPermissions = () => {
-	const enterprise = useIsEnterprise().data?.isEnterprise ?? false;
+	const enabled = useIsEnterprise().data?.isEnterprise ?? false;
 
 	useEffect(() => {
-		if (!enterprise) {
+		if (!enabled) {
 			return;
 		}
 
 		AuthorizationUtils.addRolePermissionWhiteList('guest', guestPermissions);
-	}, [enterprise]);
+	}, [enabled]);
 };

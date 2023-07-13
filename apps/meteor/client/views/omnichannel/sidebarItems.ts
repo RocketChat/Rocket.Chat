@@ -3,7 +3,7 @@ import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
 	registerSidebarItem: registerOmnichannelSidebarItem,
-	unregisterSidebarItem,
+	unregisterSidebarItem: unregisterOmnichannelSidebarItem,
 	getSidebarItems: getOmnichannelSidebarItems,
 	subscribeToSidebarItems: subscribeToOmnichannelSidebarItems,
 } = createSidebarItems([

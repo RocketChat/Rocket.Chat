@@ -13,10 +13,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const useDeviceManagement = () => {
-	const enabled = useHasLicenseModule('device-management') === true;
+	const licensed = useHasLicenseModule('device-management') === true;
 
 	useEffect(() => {
-		if (!enabled) {
+		if (!licensed) {
 			return;
 		}
 
@@ -35,5 +35,5 @@ export const useDeviceManagement = () => {
 			unregisterAccountRoute();
 			unregisterSidebarItem('Manage_Devices');
 		};
-	}, [enabled]);
+	}, [licensed]);
 };

@@ -36,14 +36,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/omnichannel/businessHours/:context?/:type?/:id?';
 			pathname: `/omnichannel/businessHours${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
 		};
-		'omnichannel-units': {
-			pattern: '/omnichannel/units/:context?/:id?';
-			pathname: `/omnichannel/units${`/${string}` | ''}${`/${string}` | ''}`;
-		};
-		'omnichannel-tags': {
-			pattern: '/omnichannel/tags/:context?/:id?';
-			pathname: `/omnichannel/tags${`/${string}` | ''}${`/${string}` | ''}`;
-		};
 		'omnichannel-queue': {
 			pattern: '/omnichannel/queue/:context?/:id?';
 			pathname: `/omnichannel/queue${`/${string}` | ''}${`/${string}` | ''}`;
@@ -114,16 +106,6 @@ registerOmnichannelRoute('/appearance', {
 registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {
 	name: 'omnichannel-businessHours',
 	component: lazy(() => import('./businessHours/BusinessHoursRouter')),
-});
-
-registerOmnichannelRoute('/units/:context?/:id?', {
-	name: 'omnichannel-units',
-	component: lazy(() => import('../../../ee/client/omnichannel/units/UnitsRoute')),
-});
-
-registerOmnichannelRoute('/tags/:context?/:id?', {
-	name: 'omnichannel-tags',
-	component: lazy(() => import('../../../ee/client/omnichannel/tags/TagsRoute')),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {

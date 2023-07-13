@@ -8,6 +8,7 @@ const ReadReceiptsModal = lazy(() => import('../../room/modals/ReadReceiptsModal
 
 export const useReadReceipts = () => {
 	const enabled = useSetting('Message_Read_Receipt_Store_Users');
+
 	const { setModal } = useModal();
 
 	useEffect(() => {

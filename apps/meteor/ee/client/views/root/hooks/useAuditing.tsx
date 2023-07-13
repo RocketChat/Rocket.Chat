@@ -29,11 +29,11 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const useAuditing = () => {
-	const enabled = useHasLicenseModule('auditing');
+	const licensed = useHasLicenseModule('auditing') === true;
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!enabled) {
+		if (!licensed) {
 			return;
 		}
 
@@ -61,5 +61,5 @@ export const useAuditing = () => {
 				),
 			},
 		]);
-	}, [enabled, router]);
+	}, [licensed, router]);
 };

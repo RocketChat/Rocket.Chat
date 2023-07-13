@@ -7,10 +7,10 @@ const GameCenter = lazy(() => import('../../../apps/gameCenter/GameCenter'));
 
 export const useGameCenter = () => {
 	const result = useExternalComponentsQuery();
-	const hasGameCenter = result.isSuccess && result.data.length > 0;
+	const enabled = result.isSuccess && result.data.length > 0;
 
 	useEffect(() => {
-		if (!hasGameCenter) {
+		if (!enabled) {
 			return;
 		}
 
@@ -24,5 +24,5 @@ export const useGameCenter = () => {
 				order: -1,
 			};
 		});
-	}, [hasGameCenter]);
+	}, [enabled]);
 };
