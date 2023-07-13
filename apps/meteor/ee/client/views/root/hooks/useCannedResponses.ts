@@ -5,7 +5,7 @@ import { lazy, useEffect } from 'react';
 import { ui } from '../../../../../client/lib/ui';
 import { registerOmnichannelRoute } from '../../../../../client/views/omnichannel/routes';
 import { registerOmnichannelSidebarItem, unregisterOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
-import { CannedResponses } from '../../../../app/canned-responses/client/collections/CannedResponse';
+import { CannedResponses } from '../../../../app/canned-responses/client/collections/CannedResponses';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const CannedResponse = lazy(() => import('../../../omnichannel/components/contextualBar/CannedResponse'));
@@ -51,20 +51,24 @@ export const useCannedResponses = () => {
 		}
 
 		return subscribeToCannedResponses('canned-responses', (...args) => {
-			const [{ type, ...response }, { agentsId: agentsIds = [] as string[] } = {}] = args;
+			const [, { agentsId: agentsIds = [] as string[] } = {}] = args;
 
 			if (Array.isArray(agentsIds) && !agentsIds.includes(uid)) {
 				return;
 			}
 
-			switch (type) {
-				case 'changed':
+			switch (args[0].type) {
+				case 'changed': {
+					const [{ type, ...response }] = args;
 					CannedResponses.upsert({ _id: response._id }, response);
 					break;
+				}
 
-				case 'removed':
-					CannedResponses.remove({ _id: response._id });
+				case 'removed': {
+					const [{ _id }] = args;
+					CannedResponses.remove({ _id });
 					break;
+				}
 			}
 		});
 	}, [enabled, permittedToView, subscribeToCannedResponses, uid]);
