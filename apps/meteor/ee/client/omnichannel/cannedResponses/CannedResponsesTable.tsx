@@ -1,8 +1,8 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import GenericNoResults from '../../../../client/components/GenericNoResults';
 import {
@@ -66,8 +66,13 @@ const CannedResponsesTable = () => {
 		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
 	);
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query));
+	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query), {
+		refetchOnWindowFocus: false,
+	});
 
 	const getTime = useFormatDateAndTime();
 
@@ -148,13 +153,16 @@ const CannedResponsesTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.cannedResponses.length === 0 && (
+			{isSuccess && data?.cannedResponses.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.cannedResponses.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='baloon-exclamation'
 					title={t('No_Canned_Responses_Yet')}
 					description={t('No_Canned_Responses_Yet-description')}
-					buttonTitle={t('Create_your_First_Canned_Response')}
+					buttonTitle={t('Create_canned_response')}
 					buttonAction={handleClick}
+					linkHref='https://google.com'
+					linkText='Learn more about canned responses'
 				/>
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
