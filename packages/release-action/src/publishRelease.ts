@@ -78,7 +78,7 @@ export async function publishRelease({
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
-	await commitChanges(`Release ${newVersion}`);
+	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 
 	if (mergeFinal) {
 		// get current branch name
