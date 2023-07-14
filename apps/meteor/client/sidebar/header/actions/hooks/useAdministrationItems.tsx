@@ -46,6 +46,12 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to navbar when the feature became part of the core
+ * @memberof navigationBar
+ */
+
 export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const router = useRouter();
 	const t = useTranslation();
@@ -119,8 +125,8 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 
 	return [
 		showUpgradeItem && upgradeItem,
+		shouldShowAdminMenu && workspaceItem,
 		isAdmin && adminItem,
 		omnichannel && omnichannelItem,
-		shouldShowAdminMenu && workspaceItem,
 	].filter(Boolean) as GenericMenuItemProps[];
 };
