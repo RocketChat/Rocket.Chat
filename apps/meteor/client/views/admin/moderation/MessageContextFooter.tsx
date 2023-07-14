@@ -13,8 +13,8 @@ const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 
 	return (
 		<ButtonGroup width={'full'} stretch>
-			<Button onClick={action} title={t('Moderation_Dismiss_reports')} aria-label={t('Moderation_Dismiss_reports')}>
-				{t('Moderation_Dismiss_reports')}
+			<Button onClick={action} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
+				{t('Moderation_Dismiss_all_reports')}
 			</Button>
 			<Button onClick={action} title={t('delete-message')} aria-label={t('Moderation_Delete_all_messages')} secondary danger>
 				{t('Moderation_Delete_all_messages')}

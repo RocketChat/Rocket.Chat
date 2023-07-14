@@ -3,7 +3,7 @@ import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import ReportReasons from './helpers/ReportReasons';
+import ReportReason from './helpers/ReportReason';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
@@ -53,7 +53,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 			{isSuccessReportsByMessage && reportsByMessage?.reports && (
 				<Box display='flex' flexDirection='column' width='full' height='full' overflowX='hidden' overflowY='auto'>
 					{reports.map((report, index) => (
-						<ReportReasons
+						<ReportReason
 							key={report._id}
 							ind={index + 1}
 							uinfo={useRealName ? report.reportedBy?.name : report.reportedBy?.username}

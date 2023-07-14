@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-const ReportReasons = ({ ind, uinfo, msg, ts }: { ind: number; uinfo: string | undefined; msg: string; ts: Date }): JSX.Element => {
+const ReportReason = ({ ind, uinfo, msg, ts }: { ind: number; uinfo: string | undefined; msg: string; ts: Date }): JSX.Element => {
 	const formatDate = useFormatDate();
 	return (
 		<Box display={'flex'} flexDirection={'column'} alignItems={'flex-start'} marginBlock={10}>
@@ -23,4 +23,4 @@ const ReportReasons = ({ ind, uinfo, msg, ts }: { ind: number; uinfo: string | u
 	);
 };
 
-export default ReportReasons;
+export default ReportReason;

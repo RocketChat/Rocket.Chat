@@ -14,6 +14,7 @@ import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
+import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
 import ReportReasonCollapsible from './ReportReasonCollapsible';
 
 const ContextMessage = ({
@@ -32,6 +33,7 @@ const ContextMessage = ({
 	const isEncryptedMessage = isE2EEMessage(message);
 
 	const deleteMessage = useDeleteMessage(message._id, message.rid, onChange);
+	const dismissMsgReport = useDismissMessageAction(message._id);
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
@@ -80,6 +82,11 @@ const ContextMessage = ({
 				</Message.Container>
 				<MessageToolboxWrapper>
 					<Message.Toolbox>
+						<MessageToolboxItem
+							icon={'checkmark-circled'}
+							title={t('Moderation_Dismiss_reports')}
+							onClick={() => dismissMsgReport.action()}
+						/>
 						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
 						<MessageToolboxItem icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</Message.Toolbox>

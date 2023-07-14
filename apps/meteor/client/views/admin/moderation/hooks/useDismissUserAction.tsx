@@ -19,7 +19,7 @@ const useDismissUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed_plural') });
 		},
 	});
 
@@ -33,13 +33,13 @@ const useDismissUserAction = (userId: string) => {
 	const confirmDismissUser = (): void => {
 		setModal(
 			<GenericModal
-				title={t('Moderation_Dismiss_and_delete')}
-				confirmText={t('Moderation_Dismiss_and_delete')}
+				title={t('Moderation_Dismiss_all_reports')}
+				confirmText={t('Moderation_Dismiss_all_reports')}
 				variant='danger'
 				onConfirm={() => onDismissUser()}
 				onCancel={() => setModal()}
 			>
-				{t('Moderation_Are_you_sure_dismiss_and_delete_reports')}
+				{t('Moderation_Dismiss_all_reports_confirm')}
 			</GenericModal>,
 		);
 	};
