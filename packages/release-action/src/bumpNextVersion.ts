@@ -71,7 +71,7 @@ export async function bumpNextVersion({
 
 	await createTag(newVersion);
 
-	await pushNewBranch(newBranch);
+	await pushNewBranch(newBranch, true);
 
 	if (newVersion.includes('rc.0')) {
 		const finalPrTitle = `Release ${finalVersion}`;
