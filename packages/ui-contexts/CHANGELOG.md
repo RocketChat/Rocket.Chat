@@ -1,5 +1,13 @@
 # @rocket.chat/ui-contexts
 
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.1
+- @rocket.chat/rest-typings@6.3.0-rc.1
+- @rocket.chat/ddp-client@0.0.2-rc.1
+
 ## 1.0.0-rc.0
 
 ### Patch Changes
