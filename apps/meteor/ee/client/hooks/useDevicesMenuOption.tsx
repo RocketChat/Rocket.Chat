@@ -3,7 +3,7 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React from 'react';
 
-import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
+import DeviceSettingsModal from '../views/voip/DeviceSettingsModal';
 import { useHasLicenseModule } from './useHasLicenseModule';
 
 type DevicesMenuOption = {

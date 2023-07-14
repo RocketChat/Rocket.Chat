@@ -30,7 +30,7 @@ import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
-import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
+import { WrapUpCallModal } from '../../../ee/client/views/voip/WrapUpCallModal';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';

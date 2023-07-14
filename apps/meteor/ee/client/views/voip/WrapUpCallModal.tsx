@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import Tags from '../../../../../client/components/Omnichannel/Tags';
+import Tags from '../../../../client/components/Omnichannel/Tags';
 
 type WrapUpCallPayload = {
 	comment: string;
