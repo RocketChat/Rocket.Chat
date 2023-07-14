@@ -1,17 +1,28 @@
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
-type useAuditItemsProps = {
-	showAudit: boolean;
-	showAuditLog: boolean;
-};
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to navbar when the feature became part of the core
+ * @memberof navigationBar
+ */
 
-export const useAuditItems = ({ showAudit, showAuditLog }: useAuditItemsProps): GenericMenuItemProps[] => {
+export const useAuditItems = (): GenericMenuItemProps[] => {
+	const hasAuditLicense = useHasLicenseModule('auditing') === true;
+
+	const hasAuditPermission = usePermission('can-audit') && hasAuditLicense;
+	const hasAuditLogPermission = usePermission('can-audit-log') && hasAuditLicense;
+
 	const t = useTranslation();
 
 	const auditHomeRoute = useRoute('audit-home');
 	const auditSettingsRoute = useRoute('audit-log');
+
+	if (!hasAuditPermission && !hasAuditLogPermission) {
+		return [];
+	}
 
 	const auditMessageItem: GenericMenuItemProps = {
 		id: 'messages',
@@ -26,5 +37,5 @@ export const useAuditItems = ({ showAudit, showAuditLog }: useAuditItemsProps): 
 		onClick: () => auditSettingsRoute.push(),
 	};
 
-	return [...(showAudit ? [auditMessageItem] : []), ...(showAuditLog ? [auditLogItem] : [])];
+	return [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem].filter(Boolean) as GenericMenuItemProps[];
 };

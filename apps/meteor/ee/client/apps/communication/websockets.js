@@ -1,7 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
-import { loadButtons } from '../../../../app/ui-message/client/ActionButtonSyncer';
 import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 
@@ -72,5 +71,5 @@ export class AppWebsocketReceiver extends Emitter {
 		delete slashCommands.commands[command];
 	};
 
-	onActionsChanged = () => loadButtons();
+	// onActionsChanged = () => loadButtons();
 }

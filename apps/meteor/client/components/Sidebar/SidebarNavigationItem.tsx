@@ -1,14 +1,12 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { IconProps } from '@rocket.chat/fuselage';
-import { useRoutePath } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
 type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
-	pathGroup: string;
 	pathSection: string;
 	icon?: IconProps['name'];
 	label?: string;
@@ -20,7 +18,6 @@ type SidebarNavigationItemProps = {
 
 const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	permissionGranted,
-	pathGroup,
 	pathSection,
 	icon,
 	label,
@@ -30,9 +27,7 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	badge: Badge,
 }) => {
-	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
-	const routePath = useRoutePath(pathSection, params);
-	const path = externalUrl ? pathSection : routePath;
+	const path = pathSection;
 	const isActive = !!path && currentPath?.includes(path as string);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {

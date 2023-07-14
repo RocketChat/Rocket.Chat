@@ -5,6 +5,7 @@ import './AppsPersistence';
 import './Avatars';
 import './Banners';
 import './BannersDismiss';
+import './CalendarEvent';
 import './CredentialTokens';
 import './CustomSounds';
 import './CustomUserStatus';

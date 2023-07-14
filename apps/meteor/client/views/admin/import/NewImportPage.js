@@ -14,7 +14,7 @@ import {
 	UrlInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo, useEffect } from 'react';
 
@@ -42,27 +42,31 @@ function NewImportPage() {
 
 	const maxFileSize = useSetting('FileUpload_MaxFileSize');
 
-	const importHistoryRoute = useRoute('admin-import');
-	const newImportRoute = useRoute('admin-import-new');
-	const prepareImportRoute = useRoute('admin-import-prepare');
+	const router = useRouter();
 
 	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
 	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
 		if (importerKey && !importer && !isLoadingImporters) {
-			newImportRoute.replace();
+			router.navigate('/admin/import/new', { replace: true });
 		}
-	}, [importer, importerKey, newImportRoute, isLoadingImporters]);
+	}, [importer, importerKey, router, isLoadingImporters]);
 
 	const formatMemorySize = useFormatMemorySize();
 
 	const handleBackToImportsButtonClick = () => {
-		importHistoryRoute.push();
+		router.navigate('/admin/import');
 	};
 
 	const handleImporterKeyChange = (importerKey) => {
-		newImportRoute.replace({ importerKey });
+		router.navigate(
+			router.buildRoutePath({
+				pattern: '/admin/import/new/:importerKey',
+				params: { importerKey },
+			}),
+			{ replace: true },
+		);
 	};
 
 	const handleFileTypeChange = (fileType) => {
@@ -114,7 +118,7 @@ function NewImportPage() {
 						}),
 				),
 			);
-			prepareImportRoute.push();
+			router.navigate('/admin/import/prepare');
 		} finally {
 			setLoading(false);
 		}
@@ -132,7 +136,7 @@ function NewImportPage() {
 		try {
 			await downloadPublicImportFile({ importerKey, fileUrl });
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			prepareImportRoute.push();
+			router.navigate('/admin/import/prepare');
 		} catch (error) {
 			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {
@@ -152,7 +156,7 @@ function NewImportPage() {
 		try {
 			await downloadPublicImportFile({ importerKey, fileUrl: filePath });
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			prepareImportRoute.push();
+			router.navigate('/admin/import/prepare');
 		} catch (error) {
 			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {
