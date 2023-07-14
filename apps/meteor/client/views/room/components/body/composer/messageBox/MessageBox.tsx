@@ -23,6 +23,7 @@ import { formattingButtons } from '../../../../../../../app/ui-message/client/me
 import ComposerBoxPopup from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../../../../../../../app/ui-message/client/popup/components/composerBoxPopupPreview/ComposerBoxPopupPreview';
 import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
+import { useEnablePopupPreview } from '../../../../../../../app/ui-message/client/popup/hooks/useEnablePopupPreview';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -158,6 +159,7 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
+		clearPopup();
 
 		onSend?.({
 			value: text,
@@ -332,17 +334,21 @@ const MessageBox = ({
 		select,
 		commandsRef,
 		callbackRef: c,
+		filter,
+		clearPopup,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
+	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 
-			{popup && !popup.preview && (
+			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}
 			{/*

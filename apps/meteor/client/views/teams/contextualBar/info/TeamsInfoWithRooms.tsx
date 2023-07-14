@@ -4,7 +4,15 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarSkeleton,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
@@ -23,21 +31,21 @@ const TeamsInfoWithRooms = ({ rid }: TeamsInfoWithRoomsProps) => {
 	const { phase, value, error } = useEndpointData('/v1/rooms.info', { params });
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return <VerticalBar.Skeleton />;
+		return <ContextualbarSkeleton />;
 	}
 
 	if (error) {
 		return (
-			<VerticalBar>
-				<VerticalBar.Header>
-					<VerticalBar.Icon name='info-circled' />
-					<VerticalBar.Text>{t('Team_Info')}</VerticalBar.Text>
-					<VerticalBar.Close />
-				</VerticalBar.Header>
-				<VerticalBar.ScrollableContent>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarIcon name='info-circled' />
+					<ContextualbarTitle>{t('Team_Info')}</ContextualbarTitle>
+					<ContextualbarClose />
+				</ContextualbarHeader>
+				<ContextualbarScrollableContent>
 					<Callout type='danger'>{JSON.stringify(error)}</Callout>
-				</VerticalBar.ScrollableContent>
-			</VerticalBar>
+				</ContextualbarScrollableContent>
+			</Contextualbar>
 		);
 	}
 

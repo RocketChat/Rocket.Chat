@@ -1,7 +1,8 @@
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
-import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
+import { HeaderToolbox } from '@rocket.chat/ui-client';
+import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import BurgerMenu from '../../../../components/BurgerMenu';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
@@ -27,7 +28,13 @@ type OmnichannelRoomHeaderProps = {
 };
 
 const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSlot }) => {
-	const [name] = useCurrentRoute();
+	const router = useRouter();
+
+	const currentRouteName = useSyncExternalStore(
+		router.subscribeToRouteChange,
+		useCallback(() => router.getRouteName(), [router]),
+	);
+
 	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
 	const toolbox = useToolboxContext();
@@ -35,16 +42,17 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start: (!!isMobile || name === 'omnichannel-directory' || name === 'omnichannel-current-chats') && (
-				<TemplateHeader.ToolBox>
+			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
+				<HeaderToolbox>
 					{isMobile && <BurgerMenu />}
-					{<BackButton routeName={name} />}
-				</TemplateHeader.ToolBox>
+					{<BackButton routeName={currentRouteName} />}
+				</HeaderToolbox>
 			),
 			posContent: <QuickActions room={room} />,
 		}),
-		[isMobile, name, parentSlot, room],
+		[isMobile, currentRouteName, parentSlot, room],
 	);
+
 	return (
 		<ToolboxContext.Provider
 			value={useMemo(

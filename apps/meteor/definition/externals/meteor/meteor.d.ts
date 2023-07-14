@@ -92,11 +92,12 @@ declare module 'meteor/meteor' {
 				reconnect: () => void;
 			};
 			subscribe(
+				id: string,
 				name: string,
 				...args: [
 					...unknown,
 					callbacks?: {
-						onReady?: () => void;
+						onReady?: (...args: any[]) => void;
 						onStop?: (error?: Error) => void;
 						onError?: (error: Error) => void;
 					},
@@ -120,6 +121,8 @@ declare module 'meteor/meteor' {
 			password: string,
 			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): void;
+
+		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
 
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (

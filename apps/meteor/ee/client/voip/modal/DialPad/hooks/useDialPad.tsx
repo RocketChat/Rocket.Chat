@@ -45,7 +45,7 @@ export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps):
 
 	const { ref, onChange } = register('PhoneInput');
 
-	const value = watch('PhoneInput');
+	const value = watch('PhoneInput', '');
 
 	const [disabled, setDisabled] = useState(true);
 

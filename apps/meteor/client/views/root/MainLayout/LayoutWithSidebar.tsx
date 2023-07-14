@@ -1,18 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal, useRoute } from '@rocket.chat/ui-contexts';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
 import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import Navbar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
 
 	const modal = useCurrentModal();
-	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
+	const currentRoutePath = useCurrentRoutePath();
 	const channelRoute = useRoute('channel');
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
@@ -49,7 +50,19 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		>
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
-			{!removeSidenav ? <Sidebar /> : null}
+			{!removeSidenav ? (
+				<>
+					<FeaturePreview feature='navigationBar'>
+						<FeaturePreviewOn>
+							<Navbar />
+						</FeaturePreviewOn>
+						<FeaturePreviewOff>
+							<></>
+						</FeaturePreviewOff>
+					</FeaturePreview>
+					<Sidebar />
+				</>
+			) : null}
 			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
 			</div>

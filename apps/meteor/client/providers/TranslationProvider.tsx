@@ -11,7 +11,9 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
+import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
+import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
@@ -39,68 +41,75 @@ const useI18next = (lng: string): typeof i18next => {
 
 	const customTranslations = useSetting('Custom_Translations');
 
-	const parse = useMutableCallback((data: string, lngs?: string | string[], namespaces: string | string[] = []): { [key: string]: any } => {
-		const parsedCustomTranslations = typeof customTranslations === 'string' && parseToJSON(customTranslations);
-
-		const source = JSON.parse(data);
-		const result: { [key: string]: any } = {};
-
-		for (const [key, value] of Object.entries(source)) {
-			const [prefix] = key.split('.');
-
-			if (prefix && Array.isArray(namespaces) ? namespaces.includes(prefix) : prefix === namespaces) {
-				result[key.slice(prefix.length + 1)] = value;
-				continue;
-			}
-
-			if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
-				result[key] = value;
-			}
+	const parsedCustomTranslations = useMemo(() => {
+		if (!customTranslations || typeof customTranslations !== 'string') {
+			return;
 		}
 
-		if (lngs && parsedCustomTranslations) {
-			for (const language of Array.isArray(lngs) ? lngs : [lngs]) {
-				if (!parsedCustomTranslations[language]) {
+		return parseToJSON(customTranslations);
+	}, [customTranslations]);
+
+	const extractKeys = useMutableCallback(
+		(source: Record<string, string>, lngs?: string | string[], namespaces: string | string[] = []): { [key: string]: any } => {
+			const result: { [key: string]: any } = {};
+
+			for (const [key, value] of Object.entries(source)) {
+				const [prefix] = key.split('.');
+
+				if (prefix && Array.isArray(namespaces) ? namespaces.includes(prefix) : prefix === namespaces) {
+					result[key.slice(prefix.length + 1)] = value;
 					continue;
 				}
 
-				for (const [key, value] of Object.entries(parsedCustomTranslations[language])) {
-					const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
+				if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+					result[key] = value;
+				}
+			}
 
-					if (prefix) {
-						result[key.slice(prefix.length + 1)] = value;
+			if (lngs && parsedCustomTranslations) {
+				for (const language of Array.isArray(lngs) ? lngs : [lngs]) {
+					if (!parsedCustomTranslations[language]) {
+						continue;
+					}
+
+					for (const [key, value] of Object.entries(parsedCustomTranslations[language])) {
+						const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
+
+						if (prefix) {
+							result[key.slice(prefix.length + 1)] = value;
+						}
 					}
 				}
 			}
-		}
 
-		return result;
-	});
-
-	const instance = useMemo(
-		() =>
-			i18n.init({
-				lng,
-				fallbackLng: 'en',
-				ns: namespacesDefault,
-				nsSeparator: '.',
-				resources: {
-					en: {
-						core: en,
-					},
-				},
-				partialBundledLanguages: true,
-				defaultNS: 'core',
-				backend: {
-					loadPath: `${basePath}/{{lng}}.json`,
-					parse,
-				},
-				react: {
-					useSuspense: true,
-				},
-			}),
-		[lng, basePath, parse],
+			return result;
+		},
 	);
+
+	if (!i18n.isInitialized) {
+		i18n.init({
+			lng,
+			fallbackLng: 'en',
+			ns: namespacesDefault,
+			nsSeparator: '.',
+			resources: {
+				en: extractKeys(en),
+			},
+			partialBundledLanguages: true,
+			defaultNS: 'core',
+			backend: {
+				loadPath: `${basePath}/{{lng}}.json`,
+				parse: (data: string, lngs?: string | string[], namespaces: string | string[] = []) =>
+					extractKeys(JSON.parse(data), lngs, namespaces),
+			},
+			react: {
+				useSuspense: true,
+			},
+			interpolation: {
+				escapeValue: false,
+			},
+		});
+	}
 
 	useEffect(() => {
 		if (i18n.language !== lng) {
@@ -109,12 +118,6 @@ const useI18next = (lng: string): typeof i18next => {
 	}, [lng]);
 
 	useEffect(() => {
-		if (!customTranslations || typeof customTranslations !== 'string') {
-			return;
-		}
-
-		const parsedCustomTranslations = parseToJSON(customTranslations);
-
 		if (!parsedCustomTranslations) {
 			return;
 		}
@@ -141,7 +144,7 @@ const useI18next = (lng: string): typeof i18next => {
 				i18n.addResourceBundle(ln, namespace, translations);
 			}
 		}
-	}, [customTranslations, instance]);
+	}, [parsedCustomTranslations]);
 
 	return i18n;
 };
@@ -216,6 +219,15 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				console.error('Error loading moment locale:', error);
 			});
 	}, [language, loadLocale, availableLanguages]);
+
+	useEffect(() => {
+		const cb = () => {
+			AppClientOrchestratorInstance.getAppClientManager().initialize();
+			AppClientOrchestratorInstance.load();
+		};
+		CachedCollectionManager.onLogin(cb);
+		return () => CachedCollectionManager.off('login', cb);
+	}, []);
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>

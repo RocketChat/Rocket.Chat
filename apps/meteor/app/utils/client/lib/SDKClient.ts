@@ -1,9 +1,11 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK } from '@rocket.chat/ddp-client/src/DDPSDK';
+import type { ClientStream } from '@rocket.chat/ddp-client/src/types/ClientStream';
 import { Emitter } from '@rocket.chat/emitter';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { APIClient } from './RestApiClient';
 
@@ -14,12 +16,8 @@ declare module '@rocket.chat/ddp-client/src/DDPSDK' {
 			streamName: N,
 			args: [key: K, ...args: unknown[]],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): {
-			stop: () => void;
-			ready: () => Promise<void>;
-			isReady: boolean;
-			onReady: (cb: () => void) => void;
-		};
+		): ReturnType<ClientStream['subscribe']>;
+		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
 
@@ -60,11 +58,11 @@ export const createSDK = (rest: RestClientInterface) => {
 		ev.emit(`${msg.collection}/${msg.fields.eventName}`, msg.fields.args);
 	});
 
-	const stream: SDK['stream'] = (
-		name: string,
-		data: [string, ...unknown[]],
-		cb: (...args: unknown[]) => void,
-	): { stop: () => void; ready: () => Promise<void>; isReady: boolean; onReady: (cb: () => void) => void } => {
+	const stream: SDK['stream'] = <N extends StreamNames, K extends StreamKeys<N>>(
+		name: N,
+		data: [key: K, ...args: unknown[]],
+		cb: (...args: StreamerCallbackArgs<N, K>) => void,
+	): ReturnType<ClientStream['subscribe']> => {
 		const [key, ...args] = data;
 		const streamName = `stream-${name}`;
 		const streamKey = `${streamName}/${key}`;
@@ -75,12 +73,44 @@ export const createSDK = (rest: RestClientInterface) => {
 			ready: false,
 		};
 
-		const onReady = (cb: () => void) => {
+		const sub = Meteor.connection.subscribe(
+			streamName,
+			key,
+			{ useCollection: false, args },
+			{
+				onReady: (args: any) => {
+					meta.ready = true;
+					ee.emit('ready', [undefined, args]);
+				},
+				onError: (err: any) => {
+					console.error(err);
+					ee.emit('ready', [err]);
+				},
+			},
+		);
+
+		const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
 			if (meta.ready) {
-				cb();
+				cb({
+					msg: 'ready',
+
+					subs: [],
+				});
 				return;
 			}
-			ee.once('ready', cb);
+			ee.once('ready', ([error, result]) => {
+				if (error) {
+					cb({
+						msg: 'nosub',
+
+						id: '',
+						error,
+					});
+					return;
+				}
+
+				cb(result);
+			});
 		};
 
 		const ready = () => {
@@ -91,18 +121,6 @@ export const createSDK = (rest: RestClientInterface) => {
 				ee.once('ready', r);
 			});
 		};
-
-		const sub = Meteor.connection.subscribe(
-			streamName,
-			key,
-			{ useCollection: false, args },
-			{
-				onReady: () => {
-					meta.ready = true;
-					ee.emit('ready');
-				},
-			},
-		);
 
 		const removeEv = ev.on(`${streamKey}`, (args) => cb(...args));
 
@@ -115,9 +133,12 @@ export const createSDK = (rest: RestClientInterface) => {
 		streams.set(`${streamKey}`, stop);
 
 		return {
+			id: '',
+			name,
+			params: data as any,
 			stop,
 			ready,
-			onReady,
+			onChange,
 			get isReady() {
 				return meta.ready;
 			},
@@ -136,11 +157,16 @@ export const createSDK = (rest: RestClientInterface) => {
 		Meteor.call(`stream-${name}`, ...args);
 	};
 
+	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
+		return Meteor.callAsync(method, ...args);
+	};
+
 	return {
 		rest,
 		stop,
 		stream,
 		publish,
+		call,
 	};
 };
 

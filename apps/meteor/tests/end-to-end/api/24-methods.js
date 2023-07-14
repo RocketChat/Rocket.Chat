@@ -1,7 +1,10 @@
 import { expect } from 'chai';
 
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
+import { createUser, deleteUser } from '../../data/users.helper.js';
+import { createRoom } from '../../data/rooms.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -279,6 +282,127 @@ describe('Meteor.methods', function () {
 					expect(data.result.length).to.equal(2);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[@cleanRoomHistory]', () => {
+		let rid = false;
+
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		before('send another sample message', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
+			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: rid,
+					latest: '2016-12-09T13:42:25.304Z',
+					oldest: '2016-08-30T13:42:25.304Z',
+					excludePinned: false,
+					filesOnly: false,
+					ignoreThreads: false,
+					ignoreDiscussion: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('count', 0);
+				});
+
+			const roomAfter = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+			expect(roomBefore.body.group._updatedAt).to.be.equal(roomAfter.body.group._updatedAt);
+		});
+
+		it('should change the _updatedAt value when room is cleaned', async () => {
+			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: rid,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					excludePinned: false,
+					filesOnly: false,
+					ignoreThreads: false,
+					ignoreDiscussion: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('count', 2);
+				});
+
+			const roomAfter = await request.get(api('groups.info')).set(credentials).query({
+				roomId: rid,
+			});
+			expect(roomBefore.body.group._updatedAt).to.not.be.equal(roomAfter.body.group._updatedAt);
 		});
 	});
 
@@ -2160,6 +2284,115 @@ describe('Meteor.methods', function () {
 					const result = JSON.parse(res.body.message);
 					expect(result.result.ro).to.equal(false);
 					done();
+				});
+		});
+	});
+
+	describe('[@addUsersToRoom]', () => {
+		let guestUser;
+		let user;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+			user = await createUser();
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.channel;
+		});
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(guestUser);
+			user = undefined;
+		});
+
+		it('should fail if not logged in', (done) => {
+			request
+				.post(methodCall('addUsersToRoom'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should add a single user to a room', (done) => {
+			request
+				.post(methodCall('addUsersToRoom'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: room._id, users: [user.username] }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(2);
+						})
+						.end(done);
+				})
+				.catch(done);
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(methodCall('addUsersToRoom'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: room._id, users: [guestUser.username] }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
 				});
 		});
 	});

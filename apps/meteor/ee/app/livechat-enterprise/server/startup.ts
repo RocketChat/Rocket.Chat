@@ -8,6 +8,7 @@ import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
 import { businessHourManager } from '../../../../app/livechat/server/business-hour';
 import { resetDefaultBusinessHourIfNeeded } from './business-hour/Helper';
+import { logger } from './lib/logger';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
 const businessHours = {
@@ -31,12 +32,15 @@ Meteor.startup(async function () {
 		await updatePredictedVisitorAbandonment();
 	});
 	settings.change<string>('Livechat_business_hour_type', async (value) => {
+		logger.debug(`Changing business hour type to ${value}`);
 		if (!Object.keys(businessHours).includes(value)) {
+			logger.error(`Invalid business hour type ${value}`);
 			return;
 		}
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
-			await businessHourManager.startManager();
+			await businessHourManager.restartManager();
+			logger.debug(`Business hour manager started`);
 		}
 	});
 

@@ -4,42 +4,55 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
-import VerticalBar from '../../../../../components/VerticalBar';
+import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 
 type AddUsersProps = {
 	onClickClose?: () => void;
 	onClickBack?: () => void;
 	onClickSave: () => Promise<void>;
 	users: Exclude<IUser['username'], undefined>[];
+	isRoomFederated: boolean;
 	onChange: (value: string | string[]) => void;
 };
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: AddUsersProps): ReactElement => {
+const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederated, onChange }: AddUsersProps): ReactElement => {
 	const t = useTranslation();
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{t('Add_users')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{t('Add_users')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						{<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />}
+						{isRoomFederated ? (
+							<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
+						) : (
+							<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />
+						)}
 					</Field>
 				</FieldGroup>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
 						{t('Add_users')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

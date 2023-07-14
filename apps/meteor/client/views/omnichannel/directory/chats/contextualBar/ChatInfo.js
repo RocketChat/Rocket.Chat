@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
@@ -16,6 +16,7 @@ import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
+import { useTagsLabels } from '../hooks/useTagsLabels';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -33,7 +34,6 @@ function ChatInfo({ id, route }) {
 
 	const {
 		ts,
-		tags,
 		closedAt,
 		departmentId,
 		v,
@@ -49,6 +49,7 @@ function ChatInfo({ id, route }) {
 		queuedAt,
 	} = room || { room: { v: {} } };
 
+	const tags = useTagsLabels(room?.tags);
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
@@ -94,7 +95,7 @@ function ChatInfo({ id, route }) {
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p='x24'>
 				<Margins block='x4'>
 					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
@@ -171,14 +172,14 @@ function ChatInfo({ id, route }) {
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onEditClick}>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 }

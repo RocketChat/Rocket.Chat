@@ -96,6 +96,10 @@ test.describe.serial('message-actions', () => {
 			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
 		});
 
+		test.afterAll(async () => {
+			await adminPage.close();
+		});
+
 		test.afterAll(async ({ browser }) => {
 			adminPage = await browser.newPage({ storageState: Users.admin.state });
 

@@ -30,6 +30,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 	const userReceiveLoginDetectionEmail = useUserPreference('receiveLoginDetectionEmail');
+	const userNotifyCalendarEvents = useUserPreference('notifyCalendarEvents');
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
@@ -42,6 +43,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
+	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
 
 	const { values, handlers, commit } = useForm(
 		{
@@ -50,6 +52,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 			pushNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
 			receiveLoginDetectionEmail: userReceiveLoginDetectionEmail,
+			notifyCalendarEvents: userNotifyCalendarEvents,
 		},
 		onChange,
 	);
@@ -60,12 +63,14 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		pushNotifications,
 		emailNotificationMode,
 		receiveLoginDetectionEmail,
+		notifyCalendarEvents,
 	} = values as {
 		desktopNotificationRequireInteraction: boolean;
-		desktopNotifications: string | number | readonly string[];
-		pushNotifications: string | number | readonly string[];
+		desktopNotifications: string;
+		pushNotifications: string;
 		emailNotificationMode: string;
 		receiveLoginDetectionEmail: boolean;
+		notifyCalendarEvents: boolean;
 	};
 
 	const {
@@ -74,6 +79,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		handlePushNotifications,
 		handleEmailNotificationMode,
 		handleReceiveLoginDetectionEmail,
+		handleNotifyCalendarEvents,
 	} = handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
@@ -184,6 +190,17 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Receive_Login_Detection_Emails_Description')}</Field.Hint>
+					</Field>
+				)}
+
+				{showCalendarPreference && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label>{t('Notify_Calendar_Events')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch checked={notifyCalendarEvents} onChange={handleNotifyCalendarEvents} />
+							</Field.Row>
+						</Box>
 					</Field>
 				)}
 			</FieldGroup>

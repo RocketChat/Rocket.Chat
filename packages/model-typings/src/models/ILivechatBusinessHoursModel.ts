@@ -39,4 +39,6 @@ export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusines
 		type?: LivechatBusinessHourTypes,
 		options?: any,
 	): Promise<ILivechatBusinessHour[]>;
+
+	disableBusinessHour(businessHourId: string): Promise<any>;
 }
