@@ -9,7 +9,7 @@ type GroupName = 'omnichannel' | 'marketplace' | 'account' | 'admin';
 
 type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-index`]['pattern'];
 
-type RouteNamesOf<TGroupName extends GroupName> = Extract<
+export type RouteNamesOf<TGroupName extends GroupName> = Extract<
 	| keyof {
 			[TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}`
 				? TRouteName
@@ -19,7 +19,7 @@ type RouteNamesOf<TGroupName extends GroupName> = Extract<
 	RouteName
 >;
 
-type TrimPrefix<T extends string, P extends string> = T extends `${P}${infer U}` ? U : T;
+export type TrimPrefix<T extends string, P extends string> = T extends `${P}${infer U}` ? U : T;
 
 export const createRouteGroup = <TGroupName extends GroupName>(
 	name: TGroupName,

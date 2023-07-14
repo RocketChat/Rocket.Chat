@@ -1,14 +1,14 @@
 import { useEndpoint, usePermission, useSetting, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { lazy, useEffect } from 'react';
+import React, { lazy, useEffect } from 'react';
 
+import { useOmnichannelRouteDefinition } from '../../../../../client/hooks/router/useOmnichannelRouteDefinition';
 import { ui } from '../../../../../client/lib/ui';
-import { registerOmnichannelRoute } from '../../../../../client/views/omnichannel/routes';
-import { registerOmnichannelSidebarItem, unregisterOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
 import { CannedResponses } from '../../../../app/canned-responses/client/collections/CannedResponses';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const CannedResponse = lazy(() => import('../../../omnichannel/components/contextualBar/CannedResponse'));
+const CannedResponsesRoute = lazy(() => import('../../../omnichannel/cannedResponses/CannedResponsesRoute'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -84,24 +84,14 @@ export const useCannedResponses = () => {
 		},
 	});
 
-	useEffect(() => {
-		if (!licensed || !permittedToManage) {
-			return;
-		}
-
-		registerOmnichannelSidebarItem({
+	useOmnichannelRouteDefinition({
+		enabled: licensed && permittedToManage,
+		id: 'omnichannel-canned-responses',
+		path: '/omnichannel/canned-responses/:context?/:id?',
+		sidebar: {
+			id: 'Canned_Responses',
 			href: '/omnichannel/canned-responses',
-			i18nLabel: 'Canned_Responses',
-		});
-
-		const [, unregisterOmnichannelRoute] = registerOmnichannelRoute('/canned-responses/:context?/:id?', {
-			name: 'omnichannel-canned-responses',
-			component: lazy(() => import('../../../omnichannel/cannedResponses/CannedResponsesRoute')),
-		});
-
-		return () => {
-			unregisterOmnichannelSidebarItem('Canned_Responses');
-			unregisterOmnichannelRoute();
-		};
-	}, [licensed, permittedToManage]);
+		},
+		element: <CannedResponsesRoute />,
+	});
 };

@@ -1,8 +1,7 @@
-import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import React, { lazy, useEffect } from 'react';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import React, { lazy } from 'react';
 
-import { appLayout } from '../../../../../client/lib/appLayout';
-import MainLayout from '../../../../../client/views/root/MainLayout';
+import { useMainRouteDefinition } from '../../../../../client/hooks/router/useMainRouteDefinition';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AuditPage = lazy(() => import('../../audit/AuditPage'));
@@ -25,41 +24,18 @@ export const useAuditing = () => {
 	const licensed = useHasLicenseModule('auditing') === true;
 	const permittedToAudit = usePermission('can-audit');
 	const permittedToAuditLog = usePermission('can-audit-log');
-	const router = useRouter();
 
-	useEffect(() => {
-		if (!licensed || !permittedToAudit) {
-			return;
-		}
+	useMainRouteDefinition({
+		enabled: licensed && permittedToAudit,
+		path: '/audit/:tab?',
+		id: 'audit-home',
+		element: <AuditPage />,
+	});
 
-		return router.defineRoutes([
-			{
-				path: '/audit/:tab?',
-				id: 'audit-home',
-				element: appLayout.wrap(
-					<MainLayout>
-						<AuditPage />
-					</MainLayout>,
-				),
-			},
-		]);
-	}, [licensed, permittedToAudit, router]);
-
-	useEffect(() => {
-		if (!licensed || !permittedToAuditLog) {
-			return;
-		}
-
-		return router.defineRoutes([
-			{
-				path: '/audit-log',
-				id: 'audit-log',
-				element: appLayout.wrap(
-					<MainLayout>
-						<AuditLogPage />
-					</MainLayout>,
-				),
-			},
-		]);
-	}, [licensed, permittedToAuditLog, router]);
+	useMainRouteDefinition({
+		enabled: licensed && permittedToAuditLog,
+		path: '/audit-log',
+		id: 'audit-log',
+		element: <AuditLogPage />,
+	});
 };

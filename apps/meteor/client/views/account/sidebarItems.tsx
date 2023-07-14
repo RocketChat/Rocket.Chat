@@ -8,7 +8,7 @@ import AccountFeaturePreviewBadge from './featurePreview/AccountFeaturePreviewBa
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,
-	unregisterSidebarItem,
+	unregisterSidebarItem: unregisterAccountSidebarItem,
 	getSidebarItems: getAccountSidebarItems,
 	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
