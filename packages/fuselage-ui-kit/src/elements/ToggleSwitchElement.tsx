@@ -1,6 +1,6 @@
 import { Box, ToggleSwitch } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -16,7 +16,7 @@ const ToggleSwitchElement = ({
   const { options, initialOptions } = block;
 
   return (
-    <>
+    <Box>
       {options.map((option: UiKit.Option) => {
         const isChecked = initialOptions?.some(
           (initialOption) => initialOption.value === option.value
@@ -39,7 +39,7 @@ const ToggleSwitchElement = ({
           </Box>
         );
       })}
-    </>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import { CheckBox, Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import { type ReactElement } from 'react';
+import { useCallback, type ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -12,11 +12,18 @@ const CheckboxElement = ({
   context,
   surfaceRenderer,
 }: CheckboxElementProps): ReactElement => {
-  const [{ loading }, action] = useUiKitState(block, context);
+  const [{ loading, value }, action] = useUiKitState(block, context);
   const { options, initialOptions } = block;
 
+  const handleChange = useCallback(
+    (value) => {
+      action({ target: { value } });
+    },
+    [action]
+  );
+
   return (
-    <>
+    <Box>
       {options.map((option: UiKit.Option) => {
         const isChecked = initialOptions?.some(
           (initialOption) => initialOption.value === option.value
@@ -26,9 +33,9 @@ const CheckboxElement = ({
           <Box key={option.value} pb='x4'>
             <CheckBox
               disabled={loading}
-              value={option.value}
+              value={value}
               checked={isChecked}
-              onChange={action}
+              onChange={handleChange}
             />
             <Box is='label' pis='x8'>
               {surfaceRenderer.renderTextObject(
@@ -40,7 +47,7 @@ const CheckboxElement = ({
           </Box>
         );
       })}
-    </>
+    </Box>
   );
 };
 
