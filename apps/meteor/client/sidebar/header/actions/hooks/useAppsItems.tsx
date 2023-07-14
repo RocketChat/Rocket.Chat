@@ -6,6 +6,12 @@ import type { GenericMenuItemProps } from '../../../../components/GenericMenu/Ge
 import { useUserDropdownAppsActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
 
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to navbar when the feature became part of the core
+ * @memberof navigationBar
+ */
+
 export const useAppsItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
