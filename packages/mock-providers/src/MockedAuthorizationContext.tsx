@@ -1,14 +1,25 @@
 import React from 'react';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 
-export const MockedAuthorizationContext = ({ permissions = [], children }: { permissions: string[]; children: React.ReactNode }) => {
+export const MockedAuthorizationContext = ({
+	permissions = [],
+	roles = [],
+	children,
+}: {
+	permissions: string[];
+	roles?: string[];
+	children: React.ReactNode;
+}) => {
 	return (
 		<AuthorizationContext.Provider
 			value={{
 				queryPermission: (id: string) => [() => (): void => undefined, (): boolean => permissions.includes(id)],
-				queryAtLeastOnePermission: () => [() => (): void => undefined, (): boolean => false],
-				queryAllPermissions: () => [() => (): void => undefined, (): boolean => false],
-				queryRole: () => [() => (): void => undefined, (): boolean => false],
+				queryAtLeastOnePermission: (ids: string[]) => [
+					() => (): void => undefined,
+					(): boolean => ids.some((id) => permissions.includes(id)),
+				],
+				queryAllPermissions: (ids: string[]) => [() => (): void => undefined, (): boolean => ids.every((id) => permissions.includes(id))],
+				queryRole: (id: string) => [() => (): void => undefined, (): boolean => roles.includes(id)],
 				roleStore: {
 					roles: {},
 					emit: (): void => undefined,
