@@ -237,8 +237,13 @@ export async function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > MAX_BIO_LENGTH) {
+		if (typeof bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (bio.length > MAX_BIO_LENGTH) {
+			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -252,8 +257,13 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > MAX_NICKNAME_LENGTH) {
+		if (typeof nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
