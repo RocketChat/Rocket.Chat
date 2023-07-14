@@ -3,17 +3,14 @@ import { Match, check } from 'meteor/check';
 import {
 	LivechatInquiry,
 	Users,
-	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
 	LivechatTag,
 	LivechatUnitMonitors,
 	LivechatUnit,
 } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelBusinessUnit,
-	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
 	LivechatDepartmentDTO,
 	InquiryWithAgentInfo,
@@ -27,10 +24,9 @@ import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { logger, queueLogger } from './logger';
-import { callbacks } from '../../../../../lib/callbacks';
-import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
+import { queueLogger } from './logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -139,6 +135,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
+		await callbacks.run('livechat.afterTagRemoved', tag);
 		return LivechatTag.removeById(_id);
 	},
 
@@ -191,33 +188,6 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	async placeRoomOnHold(room: IOmnichannelRoom, comment: string, onHoldBy: { _id: string; username?: string; name?: string }) {
-		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
-		const { _id: roomId, onHold } = room;
-		if (!roomId || onHold) {
-			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
-			return false;
-		}
-		await LivechatRooms.setOnHoldByRoomId(roomId);
-
-		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
-
-		await callbacks.run('livechat:afterOnHold', room);
-
-		logger.debug(`Room ${room._id} set on hold succesfully`);
-		return true;
-	},
-
-	async releaseOnHoldChat(room: IOmnichannelRoom) {
-		const { _id: roomId, onHold } = room;
-		if (!roomId || !onHold) {
-			return;
-		}
-
-		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
-	},
-
 	/**
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -233,7 +203,7 @@ export const LivechatEnterprise = {
 	) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }) : null;
+		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -308,6 +278,11 @@ export const LivechatEnterprise = {
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		// Disable event
+		if (department?.enabled && !departmentDB?.enabled) {
+			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
@@ -410,7 +385,7 @@ function shouldQueueStart() {
 		return;
 	}
 
-	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
+	const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
 	queueLogger.debug(
 		`Routing method ${RoutingManager.methodName} supports auto assignment: ${routingSupportsAutoAssign}. ${
 			routingSupportsAutoAssign ? 'Starting' : 'Stopping'

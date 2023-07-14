@@ -11,11 +11,11 @@ const MarketplaceRequestBadge = () => {
 
 	if (requestStatsResult.isError) return null;
 
-	if (!requestStatsResult.data.data.totalUnseen) {
+	if (!requestStatsResult.data.totalUnseen) {
 		return null;
 	}
 
-	return <Badge variant='primary'>{requestStatsResult.data.data.totalUnseen}</Badge>;
+	return <Badge variant='primary'>{requestStatsResult.data.totalUnseen}</Badge>;
 };
 
 export default MarketplaceRequestBadge;

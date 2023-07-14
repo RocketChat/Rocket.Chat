@@ -71,6 +71,23 @@ const LivechatRoomOnHoldSchema = {
 
 export const isLivechatRoomOnHoldProps = ajv.compile<LivechatRoomOnHold>(LivechatRoomOnHoldSchema);
 
+type LivechatRoomResumeOnHold = {
+	roomId: IRoom['_id'];
+};
+
+const LivechatRoomResumeOnHoldSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isLivechatRoomResumeOnHoldProps = ajv.compile<LivechatRoomResumeOnHold>(LivechatRoomResumeOnHoldSchema);
+
 type LivechatDepartmentId = {
 	onlyMyDepartments?: booleanString;
 	includeAgents?: booleanString;
@@ -446,13 +463,22 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
-type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
+type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+		viewAll: {
+			type: 'string',
+			nullable: true,
+			enum: ['true', 'false'],
 		},
 		count: {
 			type: 'number',
@@ -2969,6 +2995,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.onHold': {
 		POST: (params: LivechatRoomOnHold) => void;
+	};
+	'/v1/livechat/room.resumeOnHold': {
+		POST: (params: LivechatRoomResumeOnHold) => void;
 	};
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => void;

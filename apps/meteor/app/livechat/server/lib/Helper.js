@@ -258,7 +258,7 @@ export const normalizeAgent = async (agentId) => {
 		return { hiddenInfo: true };
 	}
 
-	const agent = await Users.getAgentInfo(agentId);
+	const agent = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_email'));
 	const { customFields: agentCustomFields, ...extraData } = agent;
 	const customFields = parseAgentCustomFields(agentCustomFields);
 
@@ -382,7 +382,6 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
 			await RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
-		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 
 		setImmediate(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
@@ -505,7 +504,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		await LivechatRooms.removeAgentByRoomId(rid);
 		await dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
-		await queueInquiry(room, newInquiry);
+		await queueInquiry(newInquiry);
 
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
