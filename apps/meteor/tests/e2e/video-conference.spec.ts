@@ -91,6 +91,7 @@ test.describe('video conference', () => {
 	test('expect create video conference not available in a "targetReadOnlyChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetReadOnlyChannel);
 
+		await poHomeChannel.content.btnCall.waitFor({ state:'attached' });
 		await expect(poHomeChannel.content.btnCall).hasAttribute('disabled');
 	});
 });

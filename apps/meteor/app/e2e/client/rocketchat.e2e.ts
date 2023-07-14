@@ -31,7 +31,6 @@ import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { settings } from '../../settings/client';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import './events.js';
-import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';

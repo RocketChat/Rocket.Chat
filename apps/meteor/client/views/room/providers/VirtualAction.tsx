@@ -1,5 +1,5 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-import { useLayoutEffect, memo } from 'react';
+import { useLayoutEffect, memo, useRef } from 'react';
 
 import type { Store } from '../lib/Toolbox/generator';
 import type { ToolboxAction } from '../lib/Toolbox/index';
@@ -35,8 +35,10 @@ const VirtualAction = ({
 	action: ToolboxAction;
 	room: IRoom;
 	handleChange: (callback: (list: Store<ToolboxAction>) => void) => void;
-}): null => {
-	const config = typeof action === 'function' ? action({ room }) : action;
+}) => {
+	const { current: initialAction } = useRef(action);
+	const actionConfig = typeof action === 'function' ? undefined : action;
+	const config = typeof initialAction === 'function' ? initialAction?.({ room }) : actionConfig;
 
 	const group = getGroup(room);
 

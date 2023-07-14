@@ -11,7 +11,7 @@ import { generator } from './generator';
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
 
 type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
-	className: ComponentProps<typeof Box>['className'];
+	className?: ComponentProps<typeof Box>['className'];
 	index: number;
 	title: string;
 };

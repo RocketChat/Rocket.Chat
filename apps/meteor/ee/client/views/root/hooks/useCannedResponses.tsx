@@ -3,11 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import React, { lazy, useEffect } from 'react';
 
 import { useOmnichannelRouteDefinition } from '../../../../../client/hooks/router/useOmnichannelRouteDefinition';
-import { ui } from '../../../../../client/lib/ui';
 import { CannedResponses } from '../../../../app/canned-responses/client/collections/CannedResponses';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-const CannedResponse = lazy(() => import('../../../omnichannel/components/contextualBar/CannedResponse'));
 const CannedResponsesRoute = lazy(() => import('../../../omnichannel/cannedResponses/CannedResponsesRoute'));
 
 declare module '@rocket.chat/ui-contexts' {
@@ -25,23 +23,6 @@ export const useCannedResponses = () => {
 	const permittedToView = usePermission('view-canned-responses');
 	const permittedToManage = usePermission('manage-livechat-canned-responses');
 	const uid = useUserId();
-
-	useEffect(() => {
-		if (!licensed || !enabled) {
-			return;
-		}
-
-		return ui.addRoomAction('canned-responses', () => {
-			return {
-				groups: ['live'],
-				id: 'canned-responses',
-				title: 'Canned_Responses',
-				icon: 'canned-response',
-				template: CannedResponse,
-				order: 0,
-			};
-		});
-	}, [enabled, licensed]);
 
 	const subscribeToCannedResponses = useStream('canned-responses');
 

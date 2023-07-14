@@ -15,7 +15,7 @@ import BaseTeamsChannels from './BaseTeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 
 type TeamChannelsProps = {
-	teamId: string;
+	teamId?: string;
 	rid: string;
 };
 
@@ -35,6 +35,10 @@ const useReactModal = (Component: FC<any>, teamId: string, reload: () => void) =
 };
 
 const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
+	if (!teamId) {
+		throw new Error('Invalid teamId');
+	}
+
 	const [state, setState] = useState<{ tab?: string; rid?: string }>({});
 	const onClickClose = useTabBarClose();
 
