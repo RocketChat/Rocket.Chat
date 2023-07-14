@@ -16,8 +16,6 @@ const FilterByRoomName = ({ setFilter }: { setFilter?: Dispatch<SetStateAction<a
 
 	return (
 		<TextInput
-			flexGrow={2}
-			minWidth='x448'
 			alignItems='center'
 			placeholder={t('Search_Rooms')}
 			addon={<Icon name='magnifier' size='x20' />}

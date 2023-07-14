@@ -287,16 +287,18 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	return (
 		<>
 			<Box
-				mb='x16'
 				is='form'
 				onSubmit={useCallback((e) => e.preventDefault(), [])}
+				mb='x8'
 				display='flex'
 				flexWrap='wrap'
 				alignItems='center'
 				justifyContent='center'
 			>
-				<FilterByRoomName setFilter={setRoomFilter} />
-				<Box minWidth='x224' pi='x4'>
+				<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
+					<FilterByRoomName setFilter={setRoomFilter} />
+				</Box>
+				<Box minWidth='x224' m='x4'>
 					<MultiSelectCustom
 						dropdownOptions={roomTypeOptions}
 						defaultTitle={'All_rooms' as any}
@@ -307,7 +309,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					/>
 				</Box>
 
-				<Box minWidth='x224' pi='x4'>
+				<Box minWidth='x224' m='x4'>
 					<MultiSelectCustom
 						dropdownOptions={roomVisibilityOptions}
 						defaultTitle={'All_visible' as any}
