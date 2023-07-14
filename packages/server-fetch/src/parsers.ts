@@ -17,7 +17,7 @@ const jsonParser = (options: ExtendedFetchOptions) => {
 
 	if (isPostOrPutOrDeleteWithBody(options)) {
 		try {
-			if (options && typeof options.body === 'object') {
+			if (options && typeof options.body === 'object' && !Buffer.isBuffer(options.body)) {
 				options.body = JSON.stringify(options.body);
 				options.headers = {
 					'Content-Type': 'application/json',
@@ -32,9 +32,7 @@ const jsonParser = (options: ExtendedFetchOptions) => {
 	return options as FetchOptions;
 };
 
-// Do not parse anything. Just return the options as they are.
-// This will be used for binary data, for example.
-const defaultParser = (options: ExtendedFetchOptions) => {
+const urlencodedParser = (options: ExtendedFetchOptions) => {
 	return options as FetchOptions;
 };
 
@@ -42,8 +40,10 @@ const getParser = (contentTypeHeader?: string): ((options: ExtendedFetchOptions)
 	switch (contentTypeHeader) {
 		case 'application/json':
 			return jsonParser;
+		case 'application/x-www-form-urlencoded':
+			return urlencodedParser;
 		default:
-			return defaultParser;
+			return jsonParser;
 	}
 };
 
