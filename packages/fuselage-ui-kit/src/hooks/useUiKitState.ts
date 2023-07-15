@@ -23,6 +23,11 @@ const hasInitialOption = <TElement extends UiKit.ActionableElement>(
 ): element is TElement & { initialOption: UiKit.Option } =>
   'initialOption' in element;
 
+const hasInitialOptions = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialOptions: UiKit.Option[] } =>
+  'initialOptions' in element;
+
 export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   element: TElement,
   context: UiKit.BlockContext
@@ -46,6 +51,8 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||
     (hasInitialOption(rest) && rest.initialOption.value) ||
+    (hasInitialOptions(rest) &&
+      rest.initialOptions.map((option) => option.value)) ||
     undefined;
 
   const { value: _value, error } = useUiKitStateValue(actionId, initialValue);
@@ -54,10 +61,22 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
 
   const actionFunction = useMutableCallback(async (e) => {
     const {
-      target: { value },
+      target: { value: elValue },
     } = e;
     setLoading(true);
-    setValue(value);
+
+    if (Array.isArray(value)) {
+      const idx = value.findIndex((value) => value === elValue);
+
+      if (idx > -1) {
+        setValue(value.filter((_, i) => i !== idx));
+      } else {
+        setValue([...value, elValue]);
+      }
+    } else {
+      setValue(elValue);
+    }
+
     state && (await state({ blockId, appId, actionId, value, viewId }, e));
     await action(
       {

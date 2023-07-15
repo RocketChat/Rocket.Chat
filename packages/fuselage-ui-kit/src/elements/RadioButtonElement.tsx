@@ -1,6 +1,6 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import { useCallback, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -13,14 +13,7 @@ const RadioButtonElement = ({
   surfaceRenderer,
 }: RadioButtonElementProps): ReactElement => {
   const [{ loading, value }, action] = useUiKitState(block, context);
-  const { options, initialOption } = block;
-
-  const handleChange = useCallback(
-    (selectedValue) => {
-      action({ target: { value: selectedValue } });
-    },
-    [action]
-  );
+  const { options } = block;
 
   return (
     <Box>
@@ -29,9 +22,9 @@ const RadioButtonElement = ({
           <Box key={option.value} pb='x4'>
             <RadioButton
               disabled={loading}
-              checked={option.value === initialOption?.value}
-              value={value}
-              onChange={() => handleChange(option.value)}
+              checked={value === option.value}
+              value={option.value}
+              onChange={action}
             />
             <Box is='label' pis='x8'>
               {surfaceRenderer.renderTextObject(

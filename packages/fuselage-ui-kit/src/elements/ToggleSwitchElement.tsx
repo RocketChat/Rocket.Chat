@@ -12,20 +12,19 @@ const ToggleSwitchElement = ({
   context,
   surfaceRenderer,
 }: ToggleSwitchElementProps): ReactElement => {
-  const [{ loading }, action] = useUiKitState(block, context);
-  const { options, initialOptions } = block;
+  const [{ value, loading }, action] = useUiKitState(block, context);
+  const { options } = block;
 
   return (
     <Box>
       {options.map((option: UiKit.Option) => {
-        const isChecked = initialOptions?.some(
-          (initialOption) => initialOption.value === option.value
-        );
+        const isChecked = value.includes(option.value);
 
         return (
           <Box key={option.value} pb='x4'>
             <ToggleSwitch
               disabled={loading}
+              value={option.value}
               checked={isChecked}
               onChange={action}
             />
