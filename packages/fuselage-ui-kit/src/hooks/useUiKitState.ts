@@ -58,7 +58,11 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
 
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||
-    (hasInitialTime(rest) && rest.initialTime) ||
+    (hasInitialTime(rest) &&
+      new Date(rest.initialTime).toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })) ||
     (hasInitialDate(rest) && rest.initialDate) ||
     (hasInitialOption(rest) && rest.initialOption.value) ||
     (hasInitialOptions(rest) &&
