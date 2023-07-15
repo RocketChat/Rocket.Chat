@@ -1,5 +1,13 @@
 # @rocket.chat/web-ui-registration
 
+## 1.0.0-rc.2
+
+### Patch Changes
+
+- f76d514341: Implemented a visual password verification in the Register User form, My Profile page, and reset password page. With this, the user will know exactly why their password is weak and how to improve it.
+- Updated dependencies [f76d514341]
+  - @rocket.chat/ui-contexts@1.0.0-rc.2
+
 ## 1.0.0-rc.1
 
 ### Patch Changes
