@@ -26,7 +26,6 @@ export const onAdded = (button: IUIActionButton): void =>
 							appId: button.appId,
 							payload: { context: button.context },
 						}),
-					type: 'apps',
 			  }
 			: null,
 	);
