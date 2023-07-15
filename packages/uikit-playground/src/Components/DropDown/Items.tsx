@@ -6,19 +6,22 @@ import { context, updatePayloadAction } from '../../Context';
 import ItemsIcon from './ItemsIcon';
 import { itemStyle, labelStyle } from './itemsStyle';
 import type { ItemProps } from './types';
+import getUniqueId from '../../utils/getUniqueId';
 
 const Items = ({ label, children, layer, payload }: ItemProps) => {
   const [isOpen, toggleItemOpen] = useState<boolean>(layer === 1);
   const [hover, setHover] = useState<boolean>(false);
   const { state, dispatch } = useContext(context);
-  console.log(state);
 
   const itemClickHandler = () => {
     toggleItemOpen(!isOpen);
     payload &&
       dispatch(
         updatePayloadAction({
-          payload: [...state.screens[state.activeScreen].payload, payload[0]],
+          payload: [
+            ...state.screens[state.activeScreen].payload,
+            { actionId: getUniqueId(), ...payload[0] },
+          ],
           changedByEditor: false,
         })
       );

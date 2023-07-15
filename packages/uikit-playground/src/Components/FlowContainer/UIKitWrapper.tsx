@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
-import type { docType } from '../../Context/initialState';
 import RenderPayload from '../Preview/Display/RenderPayload/RenderPayload';
 import SurfaceRender from '../Preview/Display/Surface/SurfaceRender';
+import { ScreenType } from '../../Context/initialState';
 
-const UIKitWrapper = ({ id, data }: { id: string, data: docType }) => (
+const UIKitWrapper = ({ id, data }: { id: string; data: ScreenType }) => (
   <Box
     padding="10px"
     border="var(--default-border)"
@@ -32,7 +32,7 @@ const UIKitWrapper = ({ id, data }: { id: string, data: docType }) => (
             type="source"
             className="react-flow-sourceHandle"
             position={Position.Right}
-            id={`${id}-${index}`}
+            id={payload.actionId}
           />
         </Box>
       ))}

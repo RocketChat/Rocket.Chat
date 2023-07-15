@@ -1,8 +1,8 @@
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import { ILayoutBlock } from '../initialState';
 import { ActionTypes } from '../reducer';
 
 type PayloadType ={
-  payload: readonly LayoutBlock[];
+  payload: ILayoutBlock[];
   changedByEditor?: boolean;
 }
 

@@ -33,11 +33,13 @@ export type actionPreviewType = {
   action?: object;
   response_url?: string;
   state?: object;
-  view?: readonly LayoutBlock[];
+  view?: ILayoutBlock[];
 };
 
+export type ILayoutBlock = {actionId: string} & LayoutBlock;
+
 export type ScreenType = {
-  payload: readonly LayoutBlock[];
+  payload: ILayoutBlock[];
   id: idType;
   name: string;
   surface: SurfaceOptions;

@@ -1,14 +1,14 @@
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import React from 'react';
 import type { OnDragEndResponder } from 'react-beautiful-dnd';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import DraggableListItem from './DraggableListItem';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
+import { ILayoutBlock } from '../../Context/initialState';
 
 export type Block = {
   id: string;
-  payload: LayoutBlock;
+  payload: ILayoutBlock;
 };
 
 export type DraggableListProps = {

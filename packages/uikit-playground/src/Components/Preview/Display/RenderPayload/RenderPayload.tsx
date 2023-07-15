@@ -4,16 +4,16 @@ import {
   UiKitMessage as uiKitMessage,
   UiKitContextualBar as uiKitContextualBar,
 } from '@rocket.chat/fuselage-ui-kit';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
 import { SurfaceOptions } from '../Surface/constant';
+import { ILayoutBlock } from '../../../../Context/initialState';
 
 const RenderPayload = ({
   payload,
   surface = 1,
 }: {
   index?: number;
-  payload: readonly LayoutBlock[];
+  payload: ILayoutBlock[];
   surface?: number;
 }) => (
   <>
