@@ -18,6 +18,14 @@ const hasInitialValue = <TElement extends UiKit.ActionableElement>(
 ): element is TElement & { initialValue: number | string } =>
   'initialValue' in element;
 
+const hasInitialTime = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialTime: number } => 'initialTime' in element;
+
+const hasInitialDate = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialDate: string } => 'initialDate' in element;
+
 const hasInitialOption = <TElement extends UiKit.ActionableElement>(
   element: TElement
 ): element is TElement & { initialOption: UiKit.Option } =>
@@ -50,6 +58,8 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
 
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||
+    (hasInitialTime(rest) && rest.initialTime) ||
+    (hasInitialDate(rest) && rest.initialDate) ||
     (hasInitialOption(rest) && rest.initialOption.value) ||
     (hasInitialOptions(rest) &&
       rest.initialOptions.map((option) => option.value)) ||
