@@ -432,18 +432,18 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     index: number
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
-      return null;
+      return (
+        <CalloutBlock
+          key={index}
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
     }
-    
-    return (
-      <CalloutBlock
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
+
+    return null;
   }
 
   time_picker(
