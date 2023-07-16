@@ -114,7 +114,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 
 	return (
 		<>
-			{featuredActions.map(({ renderAction, id, icon, title, action = defaultAction, disabled, 'data-tooltip': tooltip }, index) => {
+			{featuredActions.map(({ renderAction, id, icon, title, action = defaultAction, disabled, tooltip }, index) => {
 				const props = {
 					id,
 					icon,
@@ -130,7 +130,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 				return renderAction?.(props) ?? <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
-			{visibleActions.map(({ renderAction, id, icon, title, action = defaultAction, disabled, 'data-tooltip': tooltip }, index) => {
+			{visibleActions.map(({ renderAction, id, icon, title, action = defaultAction, disabled, tooltip }, index) => {
 				const props = {
 					id,
 					icon,

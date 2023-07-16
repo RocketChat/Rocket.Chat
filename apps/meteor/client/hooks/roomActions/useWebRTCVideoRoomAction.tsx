@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { ui } from '../../lib/ui';
@@ -13,6 +14,8 @@ export const useWebRTCVideoRoomAction = () => {
 	const callProvider = useSetting<string>('Omnichannel_call_provider', 'default-provider');
 
 	const allowed = enabled && callProvider === 'WebRTC' && room.servedBy;
+
+	const { t } = useTranslation();
 
 	const handleClick = useCallback(async () => {
 		if (!room.callStatus || room.callStatus === 'declined' || room.callStatus === 'ended') {
@@ -32,12 +35,12 @@ export const useWebRTCVideoRoomAction = () => {
 			title: 'WebRTC_Call',
 			icon: 'phone',
 			...(federated && {
-				'data-tooltip': 'Call_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.Call_unavailable_for_federation'),
+				disabled: true,
 			}),
 			action: () => void handleClick(),
 			full: true,
 			order: 4,
 		});
-	}, [allowed, federated, handleClick]);
+	}, [allowed, federated, handleClick, t]);
 };

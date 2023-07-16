@@ -1,7 +1,8 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useUser, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser, usePermission } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../lib/VideoConfManager';
@@ -25,7 +26,7 @@ export const useStartCallRoomAction = () => {
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs', true);
 	const enabledForChannels = useSetting('VideoConf_Enable_Channels', true);
@@ -77,8 +78,8 @@ export const useStartCallRoomAction = () => {
 			icon: 'phone',
 			action: () => void handleOpenVideoConf(),
 			...(disabled && {
-				'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
-				'disabled': true,
+				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
+				disabled: true,
 			}),
 			full: true,
 			order: live ? -1 : 4,

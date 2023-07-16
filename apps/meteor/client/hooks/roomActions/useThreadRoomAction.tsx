@@ -4,6 +4,7 @@ import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-c
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { LazyExoticComponent, FC } from 'react';
 import React, { lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ui } from '../../lib/ui';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
@@ -33,6 +34,7 @@ export const useThreadRoomAction = () => {
 	const tunreadGroup = subscription?.tunreadGroup?.length ?? 0;
 	const unread = tunread > 99 ? '99+' : tunread;
 	const variant = getVariant(tunreadUser, tunreadGroup);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!enabled) {
@@ -47,8 +49,8 @@ export const useThreadRoomAction = () => {
 			icon: 'thread',
 			template: Threads,
 			...(federated && {
-				'data-tooltip': 'Threads_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.Threads_unavailable_for_federation'),
+				disabled: true,
 			}),
 			renderAction: (props) => (
 				<HeaderToolboxAction key={props.id} {...props}>
@@ -57,5 +59,5 @@ export const useThreadRoomAction = () => {
 			),
 			order: 2,
 		});
-	}, [enabled, federated, unread, variant]);
+	}, [enabled, federated, t, unread, variant]);
 };

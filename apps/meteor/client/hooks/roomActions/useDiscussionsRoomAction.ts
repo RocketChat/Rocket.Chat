@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -11,6 +12,7 @@ export const useDiscussionsRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const enabled = useSetting('Discussion_enabled', false);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!enabled || !!room.prid) {
@@ -25,10 +27,10 @@ export const useDiscussionsRoomAction = () => {
 			template: Discussions,
 			full: true,
 			...(federated && {
-				'disabled': true,
-				'data-tooltip': 'Discussions_unavailable_for_federation',
+				disabled: true,
+				tooltip: t('core.Discussions_unavailable_for_federation'),
 			}),
 			order: 3,
 		});
-	}, [enabled, federated, room.prid]);
+	}, [enabled, federated, room.prid, t]);
 };

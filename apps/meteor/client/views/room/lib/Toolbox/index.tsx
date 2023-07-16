@@ -21,26 +21,26 @@ type OptionRendererProps = ComponentProps<typeof Option>;
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
 export type ToolboxAction = {
-	'id': string;
-	'icon'?: IconName;
-	'title': TranslationKey;
-	'anonymous'?: boolean;
-	'data-tooltip'?: string;
-	'disabled'?: boolean;
-	'renderAction'?: ActionRenderer;
-	'full'?: true;
-	'renderOption'?: OptionRenderer;
-	'order'?: number;
-	'groups': Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
-	'hotkey'?: string;
-	'action'?: (e?: MouseEvent<HTMLElement>) => void;
-	'template'?: ComponentType<{
+	id: string;
+	icon?: IconName;
+	title: TranslationKey;
+	anonymous?: boolean;
+	tooltip?: string;
+	disabled?: boolean;
+	renderAction?: ActionRenderer;
+	full?: true;
+	renderOption?: OptionRenderer;
+	order?: number;
+	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
+	hotkey?: string;
+	action?: (e?: MouseEvent<HTMLElement>) => void;
+	template?: ComponentType<{
 		tabBar: ToolboxContextValue;
 		_id: IRoom['_id'];
 		rid: IRoom['_id'];
 		teamId: IRoom['teamId'];
 	}>;
-	'featured'?: boolean;
+	featured?: boolean;
 };
 
 const { listen, add: addAction, remove: deleteAction, store: actions } = generator<ToolboxAction>();

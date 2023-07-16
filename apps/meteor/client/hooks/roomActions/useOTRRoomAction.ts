@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import otr from '../../../app/otr/client/OTR';
 import { ui } from '../../lib/ui';
@@ -13,6 +14,7 @@ export const useOTRRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const capable = !!global.crypto;
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		otr.setEnabled(enabled && capable);
@@ -32,9 +34,9 @@ export const useOTRRoomAction = () => {
 			order: 13,
 			full: true,
 			...(federated && {
-				'data-tooltip': 'OTR_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.OTR_unavailable_for_federation'),
+				disabled: true,
 			}),
 		});
-	}, [capable, enabled, federated]);
+	}, [capable, enabled, federated, t]);
 };

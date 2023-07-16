@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -11,6 +12,7 @@ export const usePinnedMessagesRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const enabled = useSetting('Message_AllowPinning', false);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!enabled) {
@@ -24,10 +26,10 @@ export const usePinnedMessagesRoomAction = () => {
 			icon: 'pin',
 			template: PinnedMessagesTab,
 			...(federated && {
-				'data-tooltip': 'Pinned_messages_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.Pinned_messages_unavailable_for_federation'),
+				disabled: true,
 			}),
 			order: 11,
 		});
-	}, [enabled, federated]);
+	}, [enabled, federated, t]);
 };

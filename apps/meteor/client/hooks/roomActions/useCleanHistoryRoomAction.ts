@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -11,6 +12,7 @@ export const useCleanHistoryRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const permitted = usePermission('clean-channel-history', room._id);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!permitted) {
@@ -24,11 +26,11 @@ export const useCleanHistoryRoomAction = () => {
 			title: 'Prune_Messages',
 			icon: 'eraser',
 			...(federated && {
-				'data-tooltip': 'Clean_History_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.Clean_History_unavailable_for_federation'),
+				disabled: true,
 			}),
 			template: PruneMessages,
 			order: 250,
 		});
-	}, [federated, permitted]);
+	}, [federated, permitted, t]);
 };

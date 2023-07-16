@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { lazy, useContext, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ui } from '../../../../../client/lib/ui';
 import { RoomContext } from '../../../../../client/views/room/contexts/RoomContext';
@@ -12,7 +12,7 @@ export const useCallsRoomAction = () => {
 	const licensed = useHasLicenseModule('videoconference-enterprise') === true;
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!licensed) {
@@ -25,8 +25,8 @@ export const useCallsRoomAction = () => {
 			icon: 'phone',
 			title: 'Calls',
 			...(federated && {
-				'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
-				'disabled': true,
+				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
+				disabled: true,
 			}),
 			template: VideoConfList,
 			order: 999,

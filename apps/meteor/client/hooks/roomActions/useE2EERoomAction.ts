@@ -2,6 +2,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { ui } from '../../lib/ui';
@@ -16,6 +17,7 @@ export const useE2EERoomAction = () => {
 	const permittedToEditRoom = usePermission('edit-room', room._id);
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
 	const federated = isRoomFederated(room);
+	const { t } = useTranslation();
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
@@ -38,9 +40,9 @@ export const useE2EERoomAction = () => {
 			order: 13,
 			action,
 			...(federated && {
-				'data-tooltip': 'E2E_unavailable_for_federation',
-				'disabled': true,
+				tooltip: t('core.E2E_unavailable_for_federation'),
+				disabled: true,
 			}),
 		});
-	}, [action, enabled, enabledOnRoom, federated, permitted]);
+	}, [action, enabled, enabledOnRoom, federated, permitted, t]);
 };
