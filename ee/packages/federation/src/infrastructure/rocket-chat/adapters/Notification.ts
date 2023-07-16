@@ -1,8 +1,9 @@
 // import { Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
+import { i18n } from './i18n';
+
 // import notifications from '../../../../../../app/notifications/server/lib/Notifications';
-// import { i18n } from '../../../../../lib/i18n';
 
 export class RocketChatNotificationAdapter {
 	public async notifyUserTypingOnRoom(_internalRoomId: string, _username: string, _isTyping: boolean): Promise<void> {
@@ -36,12 +37,12 @@ export class RocketChatNotificationAdapter {
 		});
 	}
 
-	public notifyWithEphemeralMessage(_i18nMessageKey: string, _userId: string, _roomId: string, _language = 'en'): void {
-		// void api.broadcast('notify.ephemeralMessage', userId, roomId, {
-		// 	msg: i18n.t(i18nMessageKey, {
-		// 		postProcess: 'sprintf',
-		// 		lng: language,
-		// 	}),
-		// });
+	public notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): void {
+		void api.broadcast('notify.ephemeralMessage', userId, roomId, {
+			msg: i18n.t(i18nMessageKey, {
+				postProcess: 'sprintf',
+				lng: language,
+			}),
+		});
 	}
 }
