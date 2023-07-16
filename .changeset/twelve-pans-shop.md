@@ -1,5 +1,3 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": minor
 ---
-
-regression(Marketplace): Calling inexistent functions AppMenu
