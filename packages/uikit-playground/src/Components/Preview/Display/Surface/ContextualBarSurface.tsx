@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import {
   Avatar,
   Box,
@@ -11,7 +12,7 @@ import {
   Margins,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
   <Contextualbar>
@@ -32,7 +33,6 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
         flexShrink={1}
         flexDirection="column"
         flexGrow={1}
-        overflow="hidden"
       >
         <Scrollbars
           autoHide
@@ -42,7 +42,6 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
             width: '100%',
             height: '100%',
             flexGrow: 1,
-            willChange: 'transform',
             overflowY: 'hidden',
           }}
           renderThumbVertical={({ style, ...props }): JSX.Element => (
@@ -56,7 +55,7 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
             />
           )}
         >
-          <Margins blockEnd="x16">{children}</Margins>
+          <div>{children}</div>
         </Scrollbars>
       </Box>
     </Box>

@@ -11,7 +11,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { context, updateFlowEdgesAction } from '../../Context';
 import ConnectionLine from './ConnectionLine';
-import UIKitWrapper from './UIKitWrapper';
+import UIKitWrapper from './UIKitWrapper/UIKitWrapper';
 import { FlowParams, createNodesAndEdges } from './utils';
 import ControlButton from './ControlButtons';
 
