@@ -11,11 +11,10 @@ import {
   Margins,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
-import { useLayoutSizes } from '@rocket.chat/ui-contexts';
 import { ReactNode } from 'react';
 
 const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
-  <Contextualbar h="100%" width={useLayoutSizes().contextualBar}>
+  <Contextualbar>
     <ContextualbarHeader>
       <Avatar url="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" />
       <ContextualbarTitle>{'Contextual Bar'}</ContextualbarTitle>

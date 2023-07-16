@@ -13,7 +13,7 @@
     "@codemirror/lang-javascript": "^6.1.9",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/tooltip": "^0.19.16",
-    "@lezer/highlight": "^1.1.6",
+    "@lezer/highlight": "^1.0.0",
     "@rocket.chat/css-in-js": "next",
     "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "next",
