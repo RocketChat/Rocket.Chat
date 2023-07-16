@@ -14,15 +14,13 @@ export const useGameCenterRoomAction = () => {
 			return;
 		}
 
-		return ui.addRoomAction('game-center', () => {
-			return {
-				groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-				id: 'game-center',
-				title: 'Apps_Game_Center',
-				icon: 'game',
-				template: GameCenter,
-				order: -1,
-			};
+		return ui.addRoomAction('game-center', {
+			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+			id: 'game-center',
+			title: 'Apps_Game_Center',
+			icon: 'game',
+			template: GameCenter,
+			order: -1,
 		});
 	}, [enabled]);
 };

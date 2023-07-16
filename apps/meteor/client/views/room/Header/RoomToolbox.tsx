@@ -35,7 +35,7 @@ import { useUserInfoGroupRoomAction } from '../../../hooks/roomActions/useUserIn
 import { useUserInfoRoomAction } from '../../../hooks/roomActions/useUserInfoRoomAction';
 import { useVoIPRoomInfoRoomAction } from '../../../hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useToolboxContext, useTab, useTabBarOpen } from '../contexts/ToolboxContext';
-import type { ToolboxActionConfig, OptionRenderer } from '../lib/Toolbox';
+import type { ToolboxAction, OptionRenderer } from '../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
@@ -54,12 +54,12 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 
 	const { actions: mapActions } = useToolboxContext();
 
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+	const actions = Array.from(mapActions.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 	const featuredActions = actions.filter((action) => action.featured);
 	const filteredActions = actions.filter((action) => !action.featured);
 	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
 
-	const hiddenActions: Record<string, ToolboxActionConfig> = Object.fromEntries(
+	const hiddenActions: Record<string, ToolboxAction> = Object.fromEntries(
 		(isMobile ? actions : filteredActions.slice(6))
 			.filter((item) => !item.disabled)
 			.map((item) => {

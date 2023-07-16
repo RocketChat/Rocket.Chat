@@ -8,7 +8,7 @@ import { VideoConfManager } from '../../lib/VideoConfManager';
 import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 export const useStartCallRoomAction = () => {
 	const room = useRoom();
@@ -41,7 +41,7 @@ export const useStartCallRoomAction = () => {
 			enabledForLiveChat && 'live',
 			enabledForTeams && 'team',
 			enabledForChannels && 'channel',
-		].filter((group): group is ToolboxActionConfig['groups'][number] => !!group),
+		].filter((group): group is ToolboxAction['groups'][number] => !!group),
 	);
 
 	const enabled = groups.length > 0;

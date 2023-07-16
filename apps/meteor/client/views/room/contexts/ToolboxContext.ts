@@ -1,20 +1,20 @@
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { createContext, useContext } from 'react';
 
-import type { ToolboxActionConfig, ToolboxAction, Events } from '../lib/Toolbox';
+import type { ToolboxAction, Events } from '../lib/Toolbox';
 import { actions, listen } from '../lib/Toolbox';
 
 export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => () => void;
 
 export type ToolboxContextValue = {
-	actions: Map<ToolboxActionConfig['id'], ToolboxAction>;
+	actions: Map<ToolboxAction['id'], ToolboxAction>;
 	listen: ToolboxEventHandler;
 	tabBar?: any;
 	context?: any;
 	open: (actionId: string, context?: string) => void;
 	openRoomInfo: (username?: string) => void;
 	close: () => void;
-	activeTabBar?: ToolboxActionConfig;
+	activeTabBar?: ToolboxAction;
 	setData?: (data: Record<string, unknown>) => void;
 };
 
@@ -29,7 +29,7 @@ export const ToolboxContext = createContext<ToolboxContextValue>({
 export const useToolboxContext = (): ToolboxContextValue => useContext(ToolboxContext);
 
 export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
-export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
+export const useTab = (): ToolboxAction | undefined => useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): ((actionId: string, context?: string) => void) => useContext(ToolboxContext).open;
 export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): ((username: string) => void) => useContext(ToolboxContext).openRoomInfo;

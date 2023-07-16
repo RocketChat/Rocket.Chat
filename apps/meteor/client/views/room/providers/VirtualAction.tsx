@@ -1,18 +1,18 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-import { useLayoutEffect, memo, useRef } from 'react';
+import { useLayoutEffect, memo } from 'react';
 
 import type { Store } from '../lib/Toolbox/generator';
 import type { ToolboxAction } from '../lib/Toolbox/index';
 
-const groupsDict: Record<RoomType, string> = {
+const groupsDict = {
 	l: 'live',
 	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
-};
+} as const satisfies Record<RoomType, string>;
 
-const getGroup = (room: IRoom): string => {
+const getGroup = (room: IRoom) => {
 	const group = groupsDict[room.t];
 	if (room.teamMain) {
 		return 'team';
@@ -36,22 +36,18 @@ const VirtualAction = ({
 	room: IRoom;
 	handleChange: (callback: (list: Store<ToolboxAction>) => void) => void;
 }) => {
-	const { current: initialAction } = useRef(action);
-	const actionConfig = typeof action === 'function' ? undefined : action;
-	const config = typeof initialAction === 'function' ? initialAction?.({ room }) : actionConfig;
-
 	const group = getGroup(room);
 
-	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
+	const visible = action && (!action.groups || (groupsDict[room.t] && action.groups.includes(group)));
 
 	useLayoutEffect(() => {
-		handleChange((list: Store<ToolboxAction>) => {
-			visible && config ? list.get(id) !== config && list.set(id, config) : list.delete(id);
+		handleChange((list) => {
+			visible && action ? list.get(id) !== action && list.set(id, action) : list.delete(id);
 		});
-		return (): void => {
-			handleChange((list: Store<ToolboxAction>) => list.delete(id));
+		return () => {
+			handleChange((list) => list.delete(id));
 		};
-	}, [config, visible, handleChange, id]);
+	}, [action, visible, handleChange, id]);
 
 	return null;
 };

@@ -45,12 +45,6 @@ const addRoomAction = (id: string, action: ToolboxAction) => {
 	};
 };
 
-const removeRoomAction = (id: string) => {
-	import('../views/room/lib/Toolbox').then(({ deleteAction }) => {
-		deleteAction(id);
-	});
-};
-
 const addSlashCommand = <T extends string>(params: ISlashCommandAddParams<T>) => {
 	import('../../app/utils/lib/slashCommand').then(({ slashCommands }) => {
 		slashCommands.add(params);
@@ -103,7 +97,6 @@ export const ui = {
 	getMessageActions,
 	getMessageLinkById,
 	addRoomAction,
-	removeRoomAction,
 	addSlashCommand,
 	removeSlashCommand,
 	runSlashCommand,

@@ -15,15 +15,13 @@ export const useCannedResponsesRoomAction = () => {
 			return;
 		}
 
-		return ui.addRoomAction('canned-responses', () => {
-			return {
-				groups: ['live'],
-				id: 'canned-responses',
-				title: 'Canned_Responses',
-				icon: 'canned-response',
-				template: CannedResponse,
-				order: 0,
-			};
+		return ui.addRoomAction('canned-responses', {
+			groups: ['live'],
+			id: 'canned-responses',
+			title: 'Canned_Responses',
+			icon: 'canned-response',
+			template: CannedResponse,
+			order: 0,
 		});
 	}, [enabled, licensed]);
 };

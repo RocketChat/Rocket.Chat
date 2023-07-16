@@ -8,14 +8,14 @@ import { useRoomActionAppsActionButtons } from '../../../hooks/useAppActionButto
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
 import type { Store } from '../lib/Toolbox/generator';
-import type { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
+import type { ToolboxAction } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
 import { useToolboxActions } from './hooks/useToolboxActions';
 
 const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
-	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map<string, ToolboxActionConfig>(), 5));
+	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map<string, ToolboxAction>(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
 		setList((list) => new Map(list));
@@ -28,7 +28,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	const context = useRouteParameter('context');
 
 	const activeTabBar = useMemo(
-		(): [ToolboxActionConfig | undefined, string?] => [tab ? (list.get(tab) as ToolboxActionConfig) : undefined, context],
+		(): [ToolboxAction | undefined, string?] => [tab ? list.get(tab) : undefined, context],
 		[tab, list, context],
 	);
 
@@ -109,9 +109,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	return (
 		<ToolboxContext.Provider value={contextValue}>
 			{[...actions, ...(appActions.data ?? [])]
-				.filter(
-					([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous),
-				)
+				.filter(([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && action.anonymous))
 				.map(([id, item]) => (
 					<VirtualAction action={item} room={room} id={id} key={id + room._id} handleChange={handleChange} />
 				))}

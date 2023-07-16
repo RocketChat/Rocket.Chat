@@ -14,16 +14,14 @@ export const useAutotranslateRoomAction = () => {
 			return;
 		}
 
-		return ui.addRoomAction('autotranslate', () => {
-			return {
-				groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-				id: 'autotranslate',
-				title: 'Auto_Translate',
-				icon: 'language',
-				template: AutoTranslate,
-				order: 20,
-				full: true,
-			};
+		return ui.addRoomAction('autotranslate', {
+			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+			id: 'autotranslate',
+			title: 'Auto_Translate',
+			icon: 'language',
+			template: AutoTranslate,
+			order: 20,
+			full: true,
 		});
 	}, [enabled, permitted]);
 };

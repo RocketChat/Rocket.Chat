@@ -7,7 +7,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import BurgerMenu from '../../../../components/BurgerMenu';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { ToolboxContext, useToolboxContext } from '../../contexts/ToolboxContext';
-import type { ToolboxActionConfig } from '../../lib/Toolbox';
+import type { ToolboxAction } from '../../lib/Toolbox';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 import QuickActions from './QuickActions';
@@ -58,7 +58,7 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 			value={useMemo(
 				() => ({
 					...toolbox,
-					actions: new Map([...(Array.from(toolbox.actions.entries()) as [string, ToolboxActionConfig][])]),
+					actions: new Map([...(Array.from(toolbox.actions.entries()) as [string, ToolboxAction][])]),
 				}),
 				[toolbox],
 			)}

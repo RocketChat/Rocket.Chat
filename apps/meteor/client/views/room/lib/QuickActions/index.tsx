@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import type { ToolboxActionConfig } from '../Toolbox';
+import type { ToolboxAction } from '../Toolbox';
 import type { Events as GeneratorEvents } from '../Toolbox/generator';
 import { generator } from '../Toolbox/generator';
 
@@ -14,7 +14,7 @@ export type QuickActionsActionOptions = Array<{
 	validate?: (room: IRoom) => { value: boolean; tooltip: TranslationKey };
 }>;
 
-export type QuickActionsActionConfig = ToolboxActionConfig & {
+export type QuickActionsActionConfig = ToolboxAction & {
 	action?: (id?: QuickActionsActionConfig['id']) => void;
 	groups: Array<'live'>;
 	color?: string;

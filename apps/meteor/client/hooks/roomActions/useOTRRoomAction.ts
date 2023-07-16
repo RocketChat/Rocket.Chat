@@ -23,20 +23,18 @@ export const useOTRRoomAction = () => {
 			return;
 		}
 
-		return ui.addRoomAction('otr', () => {
-			return {
-				groups: ['direct'],
-				id: 'otr',
-				title: 'OTR',
-				icon: 'stopwatch',
-				template: OTR,
-				order: 13,
-				full: true,
-				...(federated && {
-					'data-tooltip': 'OTR_unavailable_for_federation',
-					'disabled': true,
-				}),
-			};
+		return ui.addRoomAction('otr', {
+			groups: ['direct'],
+			id: 'otr',
+			title: 'OTR',
+			icon: 'stopwatch',
+			template: OTR,
+			order: 13,
+			full: true,
+			...(federated && {
+				'data-tooltip': 'OTR_unavailable_for_federation',
+				'disabled': true,
+			}),
 		});
 	}, [capable, enabled, federated]);
 };
