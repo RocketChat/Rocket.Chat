@@ -35,7 +35,7 @@ export class AppWebsocketReceiver extends Emitter {
 		sdk.stream('apps', [AppEvents.COMMAND_UPDATED], this.onCommandAddedOrUpdated);
 		sdk.stream('apps', [AppEvents.COMMAND_REMOVED], this.onCommandRemovedOrDisabled);
 		sdk.stream('apps', [AppEvents.COMMAND_DISABLED], this.onCommandRemovedOrDisabled);
-		sdk.stream('apps', [AppEvents.ACTIONS_CHANGED], this.onActionsChanged);
+		sdk.stream('apps', [AppEvents.ACTIONS_CHANGED], () => {});
 	}
 
 	registerListener(event, listener) {
@@ -70,6 +70,4 @@ export class AppWebsocketReceiver extends Emitter {
 	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
 	};
-
-	// onActionsChanged = () => loadButtons();
 }
