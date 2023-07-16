@@ -276,13 +276,6 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
-		if (
-			user._id === room.v._id &&
-			isOmnichannelRoom(room) &&
-			(room.verificationStatus === 'isListeningToEmail' || room.verificationStatus === 'isListeningToOTP')
-		) {
-			await callbacks.run('verificationCheck', room, message.msg);
-		}
 		return message;
 	}
 };

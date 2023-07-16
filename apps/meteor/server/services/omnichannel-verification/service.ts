@@ -60,7 +60,11 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		if (!visitorId) {
 			throw new Error('error-invalid-user');
 		}
-		const visitor = await LivechatVisitors.findOneById(visitorId, {});
+		const visitor = await LivechatVisitors.findOneById(visitorId, {
+			projection: {
+				visitorEmails: 1,
+			},
+		});
 
 		if (!visitor) {
 			throw new Error('error-invalid-user');

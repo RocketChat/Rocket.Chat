@@ -96,7 +96,6 @@ export const useQuickActions = (
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
-	// const verifyUser = useMethod('livechat:verifyUser');
 	const verifyUser = useEndpoint('POST', '/v1/livechat/visitor.verify');
 
 	const handleVerifyUser = useCallback(async () => {
