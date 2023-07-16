@@ -104,6 +104,8 @@ export type EventSignatures = {
 	}): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'federated-user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'federated-room.listen-typing-events'(roomId: string): void;
 	'user.video-conference'(data: {
 		userId: IUser['_id'];
 		action: string;

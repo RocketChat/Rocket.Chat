@@ -1,32 +1,21 @@
-// import { Rooms } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { i18n } from './i18n';
 
-// import notifications from '../../../../../../app/notifications/server/lib/Notifications';
-
 export class RocketChatNotificationAdapter {
-	public async notifyUserTypingOnRoom(_internalRoomId: string, _username: string, _isTyping: boolean): Promise<void> {
-		// notifications.notifyRoom(internalRoomId, 'user-activity', username, isTyping ? ['user-typing'] : []);
+	public async notifyUserTypingOnRoom(internalRoomId: string, username: string, isTyping: boolean): Promise<void> {
+		await api.broadcast('federated-user.typing', { user: { username }, isTyping, roomId: internalRoomId });
 	}
 
-	public async subscribeToUserTypingEventsOnFederatedRooms(
-		_callback: (username: string, activity: string[], roomId: string) => void,
-	): Promise<void> {
-		// await Rooms.findFederatedRooms({ projection: { _id: 1 } }).forEach((room) =>
-		// 	this.subscribeToUserTypingEventsOnFederatedRoomId(room._id, callback),
-		// );
+	public async subscribeToUserTypingEventsOnFederatedRooms(): Promise<void> {
+		await Rooms.findFederatedRooms({ projection: { _id: 1 } }).forEach((room) =>
+			this.subscribeToUserTypingEventsOnFederatedRoomId(room._id),
+		);
 	}
 
-	public subscribeToUserTypingEventsOnFederatedRoomId(
-		_roomId: string,
-		_callback: (username: string, activity: string[], roomId: string) => void,
-	): void {
-		// notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
-		// 	if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
-		// 		callback(username, activity, roomId);
-		// 	}
-		// });
+	public subscribeToUserTypingEventsOnFederatedRoomId(roomId: string): void {
+		void api.broadcast('federated-room.listen-typing-events', roomId);
 	}
 
 	public async broadcastUserTypingOnRoom(username: string, activity: string[], roomId: string): Promise<void> {

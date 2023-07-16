@@ -155,10 +155,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 					normalizedRoomId,
 				});
 			}
-			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-				createdInternalRoomId,
-				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-			);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 			const roomHistoricalJoinEvents = await this.bridge.getRoomHistoricalJoinEvents(externalRoomId, externalInviteeId, [
 				externalInviterId,
 				externalInviteeId,
@@ -198,10 +195,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			);
 			await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
-			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-				createdInternalRoomId,
-				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-			);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 			return;
 		}
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
@@ -218,10 +212,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 	): Promise<void> {
 		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (room) {
-			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-				room.getInternalId(),
-				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-			);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(room.getInternalId());
 			const inviteeAlreadyJoinedTheInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
 				room.getInternalId(),
 				federatedInviteeUser.getInternalId(),
@@ -284,10 +275,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			externalRoomData.creator.id,
 			federatedInviteeUser.getExternalId(),
 		);
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			createdInternalRoomId,
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
 	}
 
@@ -362,10 +350,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			...allInvitees,
 		]);
 		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			createdInternalRoomId,
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 		await Promise.all(
 			allInvitees
 				.filter((invitee) =>
@@ -390,10 +375,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			this.bridge.extractHomeserverOrigin(federatedInviteeUser.getExternalId()),
 			this.internalHomeServerDomain,
 		);
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			createdInternalRoomId,
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.joinRoom(externalRoomId, federatedInviteeUser.getExternalId());
 		}

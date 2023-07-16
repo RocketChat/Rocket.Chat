@@ -233,9 +233,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	}
 
 	protected async setupInternalEphemeralListeners(): Promise<void> {
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms();
 	}
 
 	protected async setupInternalValidators(): Promise<void> {

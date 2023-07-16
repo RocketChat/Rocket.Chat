@@ -4,7 +4,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { EnterpriseSettings, api } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
@@ -443,6 +443,28 @@ export class ListenersModule {
 
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
+		});
+		this.federationEvents(service, notifications);
+	}
+
+	private federationEvents(service: IServiceClass, notifications: NotificationsModule): void {
+		service.onEvent('federated-user.typing', async ({ isTyping, roomId, user: { username } }) => {
+			if (!username) {
+				return;
+			}
+			notifications.notifyRoom(roomId, 'user-activity', username, isTyping ? ['user-typing'] : []);
+		});
+
+		service.onEvent('federated-room.listen-typing-events', async (roomId: string): Promise<void> => {
+			notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
+				if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
+					void api.broadcast('user.typing', {
+						user: { username },
+						isTyping: activity.includes('user-typing'),
+						roomId,
+					});
+				}
+			});
 		});
 	}
 }
