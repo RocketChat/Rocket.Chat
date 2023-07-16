@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../app/settings/client';
-import { AccountBox } from '../../app/ui-utils/client';
+import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { callbacks } from '../../lib/callbacks';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
