@@ -95,9 +95,9 @@ export const useUserDropdownAppsActionButtons = () => {
 				?.filter((action) => {
 					return applyButtonFilters(action);
 				})
-				.map((action, key) => {
+				.map((action) => {
 					return {
-						id: action.actionId + key,
+						id: `${action.appId}_${action.actionId}`,
 						// icon: action.icon as GenericMenuItemProps['icon'],
 						content: action.labelI18n,
 						onClick: () => {
