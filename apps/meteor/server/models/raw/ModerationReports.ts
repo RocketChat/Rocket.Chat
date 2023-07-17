@@ -1,4 +1,4 @@
-import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted, MessageReport } from '@rocket.chat/core-typings';
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
@@ -123,7 +123,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
 		options: FindOptions<IModerationReport> = {},
-	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>> {
+	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
 				$ne: true,

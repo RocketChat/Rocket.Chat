@@ -1,4 +1,4 @@
-import type { IModerationReport, IMessage, IModerationAudit } from '@rocket.chat/core-typings';
+import type { IModerationReport, IMessage, IModerationAudit, MessageReport } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -44,7 +44,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
 		options?: FindOptions<IModerationReport>,
-	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>>;
+	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
 	hideReportsByMessageId(messageId: IMessage['_id'], userId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 

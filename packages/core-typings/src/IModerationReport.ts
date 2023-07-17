@@ -26,6 +26,15 @@ export interface IModerationReport extends IRocketChatRecord {
 	_hidden?: boolean;
 }
 
+export type MessageReport = Omit<IModerationReport, 'reportedUser'> & {
+	room: Exclude<IModerationReport['room'], undefined>;
+	message: Exclude<IModerationReport['message'], undefined>;
+};
+
+export type UserReport = Omit<IModerationReport, 'message' | 'room'> & {
+	reportedUser: Exclude<IModerationReport['reportedUser'], undefined>;
+};
+
 export interface IModerationAudit {
 	userId: IUser['_id'];
 	username: IUser['username'];
@@ -34,6 +43,6 @@ export interface IModerationAudit {
 	msgId: IMessage['_id'];
 	roomIds: IRoom['_id'][];
 	ts: IModerationReport['ts'];
-	rooms: IModerationReport['room'][];
+	rooms: MessageReport['room'][];
 	count: number;
 }
