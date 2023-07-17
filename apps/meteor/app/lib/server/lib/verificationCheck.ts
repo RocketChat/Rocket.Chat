@@ -18,13 +18,13 @@ callbacks.add(
 		if (room.verificationStatus === 'isListeningToEmail') {
 			const result = await OmnichannelVerification.setVisitorEmail(room, message.msg);
 			if (result.success) {
-				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.off);
+				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.unVerified);
 				await OmnichannelVerification.initiateVerificationProcess(room._id);
 			}
 		} else if (room.verificationStatus === 'isListeningToOTP') {
 			const result = await OmnichannelVerification.verifyVisitorCode(room, message.msg);
 			if (result) {
-				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.off);
+				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verified);
 			}
 		}
 	},

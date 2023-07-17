@@ -86,7 +86,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 				alias: 'unknown',
 			},
 			queuedAt: newRoomAt,
-			verificationStatus: RoomVerificationState.off,
+			verificationStatus: RoomVerificationState.unVerified,
 
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,

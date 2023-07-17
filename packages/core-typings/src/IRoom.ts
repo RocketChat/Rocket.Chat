@@ -150,9 +150,11 @@ export enum OmnichannelSourceType {
 }
 
 export enum RoomVerificationState {
-	off = 'off',
 	isListeningToEmail = 'isListeningToEmail',
 	isListeningToOTP = 'isListeningToOTP',
+	unVerified = 'unVerified',
+	verified = 'verified',
+	verifiedFalse = 'verifiedFalse',
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {

@@ -132,7 +132,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			await Promise.all([
 				LivechatVisitors.updateVerificationStatus(visitor._id, VerificationStatusEnum.Off);
 				LivechatVisitors.updateWrongMessageCount(visitorId, 0);
-				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.off);
+				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse);
 			]);
 			return false;
 		} else {
@@ -151,7 +151,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 	async initiateVerificationProcess(rid: IRoom['_id']) {
 		check(rid, String);
 		const room = await LivechatRooms.findOneById(rid);
-		if (room?.verificationStatus !== 'off') {
+		if (room?.verificationStatus !== 'unVerified') {
 			return;
 		}
 		const visitorRoomId = room?.v._id;
