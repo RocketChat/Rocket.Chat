@@ -28,7 +28,7 @@ import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
-import type { IOmnichannelVerification } from './types/IOmnichannelVerification';
+import type { IOmnichannelVerification, ISetVisitorEmailResult } from './types/IOmnichannelVerification';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
@@ -74,6 +74,7 @@ export {
 	ILicense,
 	IListRoomsFilter,
 	ILoginResult,
+	ISetVisitorEmailResult,
 	IMediaService,
 	IMeteor,
 	INPSService,

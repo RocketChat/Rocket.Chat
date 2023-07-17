@@ -1,7 +1,7 @@
 import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 import { VerificationStatusEnum, RoomVerificationState } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
-import type { IOmnichannelVerification } from '@rocket.chat/core-services';
+import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -13,7 +13,15 @@ import { i18n } from '../../lib/i18n';
 import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
 import * as Mailer from '../../../app/mailer/server/api';
+import { validateEmailDomain } from '../../../app/lib/server/lib';
+import { checkEmailAvailability } from '../../../app/lib/server/functions';
 
+
+interface RandomOTP {
+	random: string;
+	encryptedRandom: string;
+	expire: Date;
+}
 export class OmnichannelVerification extends ServiceClassInternal implements IOmnichannelVerification {
 	protected name = 'omnichannel-verification';
 
@@ -56,6 +64,15 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		});
 	}
 
+	private async generateRandomOTP(): Promise<RandomOTP> {
+		const random = Random._randomString(6, '0123456789');
+		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
+		const expire = new Date();
+		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
+		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
+		return { random, encryptedRandom, expire };
+	}
+
 	private async sendVerificationCodeToVisitor(visitorId: string): Promise<void> {
 		if (!visitorId) {
 			throw new Error('error-invalid-user');
@@ -74,15 +91,9 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			throw new Error('error-email-required');
 		}
 		const visitorEmail = visitor.visitorEmails[0].address;
-		const random = Random._randomString(6, '0123456789');
-		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
-		const expire = new Date();
-		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
-		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
-
+		const { random, encryptedRandom, expire } = await this.generateRandomOTP();
 		await LivechatVisitors.addEmailCodeByVisitorId(visitorId, encryptedRandom, expire);
 		await this.send2FAEmail(visitorEmail, random);
-		this.logger.info(random);
 	}
 
 	async verifyVisitorCode(room: IOmnichannelGenericRoom, _codeFromVisitor: string): Promise<boolean> {
@@ -118,9 +129,11 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		if (!visitor?.wrongMessageCount) {
 			await LivechatVisitors.updateWrongMessageCount(visitorId, 1);
 		} else if (visitor.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
-			await LivechatVisitors.updateVerificationStatus(visitor._id, VerificationStatusEnum.Off);
-			await LivechatVisitors.updateWrongMessageCount(visitorId, 0);
-			await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.off);
+			await Promise.all([
+				LivechatVisitors.updateVerificationStatus(visitor._id, VerificationStatusEnum.Off);
+				LivechatVisitors.updateWrongMessageCount(visitorId, 0);
+				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.off);
+			]);
 			return false;
 		} else {
 			await LivechatVisitors.updateWrongMessageCount(visitorId, visitor.wrongMessageCount + 1);
@@ -165,6 +178,66 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			};
 			await sendMessage(user, message, room);
 			await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToEmail);
+		}
+	}
+
+	async setVisitorEmail(room: IOmnichannelGenericRoom, email: string): Promise<ISetVisitorEmailResult>{
+		try {
+			const userId = room.v._id;
+			const bot = await Users.findOneById('rocket.cat');
+			email = email.trim();
+			if (!userId) {
+				throw new Error('error-invalid-user');
+			}
+	
+			if (!email) {
+				throw new Error('error-email-required');
+			}
+	
+			try {
+				await validateEmailDomain(email);
+			} catch (error) {
+				const message = {
+					msg: i18n.t('Sorry, this is not a valid email, kindly provide another input'),
+					groupable: false,
+				};
+				await sendMessage(bot, message, room);
+				return { success: false, error: error as Error };
+			}
+	
+			const visitor = await LivechatVisitors.findOneById(userId, {});
+			if (!visitor) {
+				throw new Error('error-invalid-user');
+			}
+	
+			// User already has desired email, return
+			if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address === email) {
+				return { success: true };
+			}
+	
+			// Check email availability
+			if (!(await checkEmailAvailability(email))) {
+				throw new Error('error-email-unavailable');
+			}
+	
+			// Set new email
+			const updateVisitor = {
+				$set: {
+					visitorEmails: [
+						{
+							address: email,
+						},
+					],
+				},
+			};
+			await LivechatVisitors.updateById(userId, updateVisitor);
+			const result = {
+				success: true,
+			};
+			return result;
+		} catch (error) {
+			this.logger.error({ msg: 'Failed to update email :', error });
+			return { success: false, error: error as Error };
 		}
 	}
 }
