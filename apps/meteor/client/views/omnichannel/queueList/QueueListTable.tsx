@@ -88,6 +88,25 @@ const QueueListTable = (): ReactElement => {
 		return query;
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
+	const getUserStatus = (status?: string) => {
+		if (!status) {
+			return t('Offline');
+		}
+
+		switch (status) {
+			case 'online':
+				return t('Online');
+			case 'away':
+				return t('Away');
+			case 'busy':
+				return t('Busy');
+			case 'offline':
+				return t('Offline');
+			default:
+				return status;
+		}
+	};
+
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
 	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query), {
 		refetchOnWindowFocus: false,
@@ -122,7 +141,7 @@ const QueueListTable = (): ReactElement => {
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{chats}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{user.status === 'online' ? t('Online') : t('Offline')}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{getUserStatus(user?.status)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>
