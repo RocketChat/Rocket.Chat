@@ -58,6 +58,23 @@ function ChatInfo({ id, route }) {
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
 
+	const queueTime = () => {
+		// Room closed and served
+		if (!room.open && servedBy) {
+			return moment(room.closedAt).from(moment(queueStartedAt), true);
+		}
+		// Room open and served
+		if (room.open && servedBy) {
+			return moment(room.closedAt).from(moment(queueStartedAt), true);
+		}
+		// Room open and not served
+		if (room.open && !servedBy) {
+			return moment(queueStartedAt).fromNow(true);
+		}
+		// Room closed and not served
+		return moment(room.closedAt).from(moment(queueStartedAt), true);
+	};
+
 	useEffect(() => {
 		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
@@ -125,11 +142,7 @@ function ChatInfo({ id, route }) {
 					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
-							{servedBy ? (
-								<Info>{moment(servedBy.ts).from(moment(queueStartedAt), true)}</Info>
-							) : (
-								<Info>{moment(queueStartedAt).fromNow(true)}</Info>
-							)}
+							<Info>{queueTime()}</Info>
 						</Field>
 					)}
 					{closedAt && (
