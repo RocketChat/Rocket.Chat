@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 type ValidateMatrixIdModalProps = {
-	_matrixIdVerifiedStatus: Map<string, string>;
+	matrixIdVerifiedStatus: Map<string, string>;
 	onClose: () => void;
 	onConfirm?: () => void;
 };
@@ -23,11 +23,11 @@ const verificationStatusAsIcon = (verificationStatus: string) => {
 	}
 };
 
-const ValidateMatrixIdModal = ({ onClose, onConfirm, _matrixIdVerifiedStatus }: ValidateMatrixIdModalProps): ReactElement => {
+const ValidateMatrixIdModal = ({ onClose, onConfirm, matrixIdVerifiedStatus }: ValidateMatrixIdModalProps): ReactElement => {
 	const t = useTranslation();
 
 	const matrixIdsAfterValidationList = () =>
-		Array.from(_matrixIdVerifiedStatus.entries()).map(([_matrixId, _verificationStatus]) => (
+		Array.from(matrixIdVerifiedStatus.entries()).map(([_matrixId, _verificationStatus]) => (
 			<li key={_matrixId}>
 				{_matrixId}: <Icon name={verificationStatusAsIcon(_verificationStatus) as ComponentProps<typeof Icon>['name']} size='x20' />
 			</li>

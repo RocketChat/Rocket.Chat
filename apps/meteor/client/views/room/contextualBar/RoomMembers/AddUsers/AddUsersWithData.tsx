@@ -45,9 +45,23 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 	});
 
 	return isRoomFederated(room) ? (
-		<AddUsersForFederatedRooms onClickClose={onClickClose} onClickBack={onClickBack} onChange={handleUsers} users={users} />
+		<AddUsersForFederatedRooms
+			rid={rid}
+			reload={reload}
+			onClickClose={onClickClose}
+			onClickBack={onClickBack}
+			handleUsers={handleUsers}
+			users={users}
+		/>
 	) : (
-		<AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={handleUsers} />
+		<AddUsers
+			onClickClose={onClickClose}
+			onClickBack={onClickBack}
+			onClickSave={handleSave}
+			users={users}
+			isRoomFederated={isRoomFederated(room)}
+			onChange={handleUsers}
+		/>
 	);
 };
 
