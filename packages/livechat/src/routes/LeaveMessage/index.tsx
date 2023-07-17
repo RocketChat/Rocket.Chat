@@ -87,12 +87,10 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			});
 			parentCall('callback', ['offline-form-submit', fields]);
 			return true;
-		} catch (error) {
-			const {
-				data: { message },
-			} = error as { data: { message: string } };
-			console.error(message);
-			const alert = { id: createToken(), children: message, error: true, timeout: 5000 };
+		} catch (error: unknown) {
+			const errorMessage = (error as { error: string })?.error;
+			console.error(errorMessage);
+			const alert = { id: createToken(), children: errorMessage, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 			return false;
 		} finally {
