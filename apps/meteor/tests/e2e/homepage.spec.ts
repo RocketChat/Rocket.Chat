@@ -40,7 +40,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with empty custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 
 			test('expect default value in custom body', async () => {
@@ -61,7 +61,13 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+			});
+
+			test.afterAll(async ({ api }) => {
+				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -78,9 +84,9 @@ test.describe.serial('homepage', () => {
 
 				test.describe('display custom content only', () => {
 					test.beforeAll(async ({ api }) => {
-						await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
-						await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
-						await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+						expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+						expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
 					test('expect default layout to not be visible (show only custom content card)', async () => {
@@ -100,15 +106,15 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
-			await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
 			await adminPage.close();
 		});
 	});
 
 	test.describe('layout for regular users', () => {
 		test.beforeAll(async ({ api }) => {
-			await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 		});
 
 		test.beforeAll(async ({ browser }) => {
@@ -149,8 +155,8 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom values', () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
-				await expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+				expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 			});
 
 			test.beforeAll(async ({ browser }) => {
@@ -168,8 +174,8 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
-				await expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
+				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
 			});
 		});
 
@@ -181,8 +187,8 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with content', () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
-				await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 			});
 
 			test.beforeAll(async ({ browser }) => {
@@ -199,7 +205,7 @@ test.describe.serial('homepage', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
 				test.beforeAll(async ({ api }) => {
-					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 				});
 
 				test('expect default layout to not be visible', async () => {
@@ -211,13 +217,13 @@ test.describe.serial('homepage', () => {
 				});
 
 				test.afterAll(async ({ api }) => {
-					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
 				});
 			});
 
 			test.afterAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
-				await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
 			});
 		});
 	});
