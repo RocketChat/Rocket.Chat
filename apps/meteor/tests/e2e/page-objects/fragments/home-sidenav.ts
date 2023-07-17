@@ -39,6 +39,13 @@ export class HomeSidenav {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
 
+	async selectPriority(name: string, priority: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.hover();
+		await sidebarItem.locator(`[data-testid="menu"]`).click();
+		await this.page.locator(`li[value="${priority}"]`).click();
+	}
+
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
