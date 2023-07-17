@@ -34,6 +34,7 @@ export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
+	size = 2,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
@@ -78,8 +79,8 @@ export const useUserInfoActions = (
 	const actionSpread = useMemo(() => {
 		const entries = Object.entries(userinfoActions);
 
-		const options = entries.slice(0, 2);
-		const slicedOptions = entries.slice(2, entries.length);
+		const options = entries.slice(0, size);
+		const slicedOptions = entries.slice(size, entries.length);
 		const menu = slicedOptions.length ? Object.fromEntries(slicedOptions) : undefined;
 
 		const menuActions =

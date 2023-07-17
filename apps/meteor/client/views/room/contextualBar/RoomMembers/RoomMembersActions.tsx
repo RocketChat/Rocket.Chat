@@ -15,7 +15,7 @@ type RoomMembersActionsProps = {
 
 const RoomMembersActions = ({ username, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
 	const t = useTranslation();
-	const { menuActions: menuOptions } = useUserInfoActions({ _id, username }, rid, reload);
+	const { menuActions: menuOptions } = useUserInfoActions({ _id, username }, rid, reload, 0);
 	if (!menuOptions) {
 		return null;
 	}
