@@ -196,7 +196,7 @@ import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/depart
 			const actualTags = response.body.tags.map((tag: ILivechatTag) => tag._id).sort();
 			expect(actualTags).to.deep.equal(expectedTags);
 		});
-		it('[Monitor role] should return public tags when "departmentId" param is not provided', async () => {
+		it('[Monitor role] should return public tags and department tags which they are part of, when "departmentId" param is not provided', async () => {
 			const response = await request
 				.get(api('livechat/tags'))
 				.set(monitor.credentials)
@@ -204,8 +204,10 @@ import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/depart
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			expect(response.body.tags).to.be.an('array').with.lengthOf(1);
-			expect(response.body.tags[0]).to.have.property('_id', tagsData.casePublic.tag._id);
+			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
+			const expectedTags = [tagsData.caseA.tag, tagsData.casePublic.tag].map((tag) => tag._id).sort();
+			const actualTags = response.body.tags.map((tag: ILivechatTag) => tag._id).sort();
+			expect(actualTags).to.deep.equal(expectedTags);
 		});
 		it('[Agent role] should return public tags when "departmentId" param is not provided', async () => {
 			const response = await request
@@ -215,8 +217,10 @@ import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/depart
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			expect(response.body.tags).to.be.an('array').with.lengthOf(1);
-			expect(response.body.tags[0]).to.have.property('_id', tagsData.casePublic.tag._id);
+			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
+			const expectedTags = [tagsData.caseA.tag, tagsData.casePublic.tag].map((tag) => tag._id).sort();
+			const actualTags = response.body.tags.map((tag: ILivechatTag) => tag._id).sort();
+			expect(actualTags).to.deep.equal(expectedTags);
 		});
 	});
 
