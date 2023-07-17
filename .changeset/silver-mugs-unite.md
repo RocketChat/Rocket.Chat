@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": minor
+"@rocket.chat/meteor": patch
 ---
 
 fix: show requested filters only on requested apps view
