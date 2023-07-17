@@ -1,10 +1,8 @@
-import {
-	MockedModalContext,
-	MockedAuthorizationContext,
-	MockedServerContext,
-	MockedSettingsContext,
-	MockedUserContext,
-} from '@rocket.chat/mock-providers';
+import { MockedAuthorizationContext } from '@rocket.chat/mock-providers/src/MockedAuthorizationContext';
+import { MockedModalContext } from '@rocket.chat/mock-providers/src/MockedModalContext';
+import { MockedServerContext } from '@rocket.chat/mock-providers/src/MockedServerContext';
+import { MockedSettingsContext } from '@rocket.chat/mock-providers/src/MockedSettingsContext';
+import { MockedUserContext } from '@rocket.chat/mock-providers/src/MockedUserContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
@@ -18,6 +16,10 @@ const queryClient = new QueryClient({
 			retry: false,
 		},
 	},
+});
+
+beforeEach(() => {
+	queryClient.clear();
 });
 
 it('should not show upgrade item if has license and not have trial', async () => {
@@ -99,7 +101,10 @@ it('should return an upgrade item if not have license or if have a trial', async
 		),
 	});
 
-	await waitFor(() => Boolean(result.current.length));
+	await waitFor(() => {
+		return !queryClient.isFetching();
+	});
+
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
 			id: 'showUpgradeItem',
