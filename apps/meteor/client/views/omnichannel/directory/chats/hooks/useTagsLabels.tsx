@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 // to return labels instead of tag id's
 export const useTagsLabels = (enabled = true) => {
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsData, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
+	const { data: tagsData, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '', viewAll: 'true' }), {
 		enabled,
 	});
 
