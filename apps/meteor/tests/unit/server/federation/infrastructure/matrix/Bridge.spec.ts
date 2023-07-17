@@ -3,13 +3,13 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
 const fetchStub = {
-	fetch: () => Promise.resolve({}),
+	serverFetch: () => Promise.resolve({}),
 };
 
 import { VerificationStatus } from '../../../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
 
 const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../server/services/federation/infrastructure/matrix/Bridge', {
-	'../../../../lib/http/fetch': fetchStub,
+	'@rocket.chat/server-fetch': fetchStub,
 });
 
 describe('Federation - Infrastructure - Matrix - Bridge', () => {
@@ -57,7 +57,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 
 	describe('#verifyInviteeId()', () => {
 		it('should return `VERIFIED` when the matrixId exists', async () => {
-			fetchStub.fetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) });
+			fetchStub.serverFetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -65,7 +65,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `UNVERIFIED` when the matrixId does not exists', async () => {
-			fetchStub.fetch = () => Promise.resolve({ status: 200, json: () => Promise.resolve({}) });
+			fetchStub.serverFetch = () => Promise.resolve({ status: 200, json: () => Promise.resolve({}) });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -73,7 +73,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `UNABLE_TO_VERIFY` when the fetch() call fails', async () => {
-			fetchStub.fetch = () => Promise.reject(new Error('Error'));
+			fetchStub.serverFetch = () => Promise.reject(new Error('Error'));
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -81,7 +81,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `UNABLE_TO_VERIFY` when an unexepected status comes', async () => {
-			fetchStub.fetch = () => Promise.resolve({ status: 500 });
+			fetchStub.serverFetch = () => Promise.resolve({ status: 500 });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
