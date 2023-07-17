@@ -37,7 +37,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 				is={CustomMenuButton}
 				title={t('More')}
 				key='UserUserInfo-menu'
-				data-qa-id='UserUserInfo-menu'
+				data-qa='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
 			/>
