@@ -16,6 +16,7 @@ import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles'
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
