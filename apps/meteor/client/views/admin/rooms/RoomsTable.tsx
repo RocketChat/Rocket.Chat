@@ -90,7 +90,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
 		},
 		{
-			refetchOnWindowFocus: false,
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			},

@@ -50,9 +50,7 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, refetch, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, refetch, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query));
 
 	useEffect(() => {
 		reload.current = refetch;
