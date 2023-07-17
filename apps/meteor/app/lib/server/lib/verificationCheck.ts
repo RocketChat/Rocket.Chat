@@ -4,7 +4,6 @@ import { RoomVerificationState, isOmnichannelRoom } from '@rocket.chat/core-typi
 import { OmnichannelVerification } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
-// import { setVisitorEmail } from '../functions/setVisitorsEmail';
 
 callbacks.add(
 	'afterSaveMessage',

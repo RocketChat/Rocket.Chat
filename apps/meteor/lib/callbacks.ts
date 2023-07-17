@@ -19,7 +19,7 @@ import type {
 	ILivechatTag,
 	SelectedAgent,
 	InquiryWithAgentInfo,
-	IOmnichannelGenericRoom,
+	ILivechatTagRecord,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -93,8 +93,10 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
-	// 'verificationCheck': (room: IOmnichannelGenericRoom, msg: string) => void;
+	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
+	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
+	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
 }
 
 /**
@@ -206,6 +208,13 @@ type ChainedCallbackSignatures = {
 		room: IOmnichannelRoom;
 		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
 	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
+	'roomNameChanged': (room: IRoom) => void;
+	'roomTopicChanged': (room: IRoom) => void;
+	'roomAnnouncementChanged': (room: IRoom) => void;
+	'roomTypeChanged': (room: IRoom) => void;
+	'archiveRoom': (room: IRoom) => void;
+	'unarchiveRoom': (room: IRoom) => void;
+	'roomAvatarChanged': (room: IRoom) => void;
 };
 
 export type Hook =
@@ -219,7 +228,6 @@ export type Hook =
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
-	| 'archiveRoom'
 	| 'beforeActivateUser'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
@@ -244,15 +252,9 @@ export type Hook =
 	| 'onValidateLogin'
 	| 'openBroadcast'
 	| 'renderNotification'
-	| 'roomAnnouncementChanged'
-	| 'roomAvatarChanged'
-	| 'roomNameChanged'
-	| 'roomTopicChanged'
-	| 'roomTypeChanged'
 	| 'setReaction'
 	| 'streamMessage'
 	| 'streamNewMessage'
-	| 'unarchiveRoom'
 	| 'unsetReaction'
 	| 'userAvatarSet'
 	| 'userConfirmationEmailRequested'
@@ -261,7 +263,6 @@ export type Hook =
 	| 'userPasswordReset'
 	| 'userRegistered'
 	| 'userStatusManuallySet'
-	// | 'verificationCheck'
 	| 'test';
 
 type Callback = {
