@@ -15,36 +15,18 @@ export interface ILivechatVisitorConnectionData {
 	};
 	clientAddress: string;
 }
-
-export enum VerificationStatusEnum {
-	InProgress = 'InProgress',
-	Off = 'Off',
-	UnVerified = 'UnVerified',
-	Verified = 'Verified',
-}
 export interface IVisitorEmail {
 	address: string;
-	verified?: VerificationStatusEnum;
 }
 
 interface ILivechatData {
 	[k: string]: unknown;
 }
-
-export interface IVisitorEmailCode {
-	code: string;
-	expire: Date;
-}
-export interface IVisitorServices {
-	emailCode: IVisitorEmailCode[];
-}
-
 export interface ILivechatVisitor extends IRocketChatRecord {
 	username: string;
 	ts: Date;
 	token: string;
 	department?: string;
-	services?: IVisitorServices;
 	name?: string;
 	phone?: IVisitorPhone[] | null;
 	lastChat?: IVisitorLastChat;
@@ -62,7 +44,6 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	contactManager?: {
 		username: string;
 	};
-	wrongMessageCount?: number;
 }
 
 export interface ILivechatVisitorDTO {

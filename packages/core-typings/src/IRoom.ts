@@ -148,6 +148,13 @@ export enum OmnichannelSourceType {
 	API = 'api',
 	OTHER = 'other', // catch-all source type
 }
+export interface IVisitorEmailCode {
+	code: string;
+	expire: Date;
+}
+export interface IVisitorServices {
+	emailCode: IVisitorEmailCode[];
+}
 
 export enum RoomVerificationState {
 	isListeningToEmail = 'isListeningToEmail',
@@ -224,6 +231,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
+	wrongMessageCount?: number;
+	services?: IVisitorServices;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {

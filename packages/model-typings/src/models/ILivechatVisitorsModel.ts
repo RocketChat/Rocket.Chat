@@ -48,14 +48,4 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult>;
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
-
-	addEmailCodeByVisitorId(visitorId: string, code: string, expire: Date): Promise<UpdateResult>;
-
-	removeExpiredEmailCodesOfVisitorId(visitorId: string): Promise<UpdateResult>;
-
-	removeEmailCodeByVisitorIdAndCode(visitorId: string, code: string): Promise<UpdateResult>;
-
-	updateVerificationStatus(visitorId: string, value: boolean): Promise<UpdateResult>;
-
-	updateWrongMessageCount(visitorId: string, value: number): Promise<UpdateResult>;
 }

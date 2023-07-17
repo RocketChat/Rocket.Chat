@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted, VerificationStatusEnum } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
@@ -33,73 +33,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
 		];
-	}
-
-	addEmailCodeByVisitorId(visitorId: string, code: string, expire: Date): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: visitorId },
-			{
-				$push: {
-					'services.emailCode': {
-						$each: [
-							{
-								code,
-								expire,
-							},
-						],
-						$slice: -5,
-					},
-				},
-			},
-		);
-	}
-
-	removeExpiredEmailCodesOfVisitorId(visitorId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: visitorId },
-			{
-				$pull: {
-					'services.emailCode': {
-						expire: { $lt: new Date() },
-					},
-				},
-			},
-		);
-	}
-
-	removeEmailCodeByVisitorIdAndCode(visitorId: string, code: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: visitorId },
-			{
-				$pull: {
-					'services.emailCode': {
-						code,
-					},
-				},
-			},
-		);
-	}
-
-	updateVerificationStatus(visitorId: string, value: VerificationStatusEnum): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: visitorId },
-			{
-				$set: {
-					'visitorEmails.0.verified': value,
-				},
-			},
-		);
-	}
-
-	updateWrongMessageCount(visitorId: string, value: number): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: visitorId },
-			{
-				$set: {
-					wrongMessageCount: value,
-				},
-			},
-		);
 	}
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null> {

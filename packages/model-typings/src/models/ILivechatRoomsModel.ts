@@ -134,6 +134,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
 	updateVerificationStatusById(_id: string, verificationStatus: RoomVerificationState): Promise<UpdateResult>;
+	updateWrongMessageCount(_id: string, value: number): Promise<UpdateResult>;
+	addEmailCodeByRoomId(_id: string, code: string, expire: Date): Promise<UpdateResult>;
+	removeExpiredEmailCodesOfRoomId(_id: string): Promise<UpdateResult>;
+	removeEmailCodeByRoomIdAndCode(_id: string, code: string): Promise<UpdateResult>;
 	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
 	saveRoomById(
 		data: { _id: string; topic: string; tags: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
