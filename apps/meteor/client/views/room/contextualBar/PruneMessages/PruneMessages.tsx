@@ -3,6 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import {
 	ContextualbarHeader,
@@ -14,36 +15,18 @@ import {
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
-import type { initialValues } from './PruneMessagesWithData';
 
 type PruneMessagesProps = {
 	callOutText?: string;
 	validateText?: string;
 	users: string[];
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: unknown) => void>;
 	onClickClose: () => void;
 	onClickPrune: () => void;
 };
 
-const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
+const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
 	const t = useTranslation();
-
-	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
-		values as typeof initialValues;
-
-	const {
-		handleNewerDate,
-		handleNewerTime,
-		handleOlderDate,
-		handleOlderTime,
-		handleInclusive,
-		handlePinned,
-		handleDiscussion,
-		handleThreads,
-		handleAttached,
-		handleUsers,
-	} = handlers;
+	const { control, register } = useFormContext();
 
 	const inclusiveCheckboxId = useUniqueId();
 	const pinnedCheckboxId = useUniqueId();
@@ -59,47 +42,45 @@ const PruneMessages = ({ callOutText, validateText, values, handlers, onClickClo
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				<PruneMessagesDateTimeRow
-					label={t('Newer_than')}
-					dateTime={{ date: newerDate, time: newerTime }}
-					handleDateTime={{ date: handleNewerDate, time: handleNewerTime }}
-				/>
-				<PruneMessagesDateTimeRow
-					label={t('Older_than')}
-					dateTime={{ date: olderDate, time: olderTime }}
-					handleDateTime={{ date: handleOlderDate, time: handleOlderTime }}
-				/>
+				<PruneMessagesDateTimeRow label={t('Newer_than')} field='newer' />
+				<PruneMessagesDateTimeRow label={t('Older_than')} field='older' />
 				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
-					<UserAutoCompleteMultiple value={users} onChange={handleUsers} placeholder={t('Please_enter_usernames')} />
+					<Controller
+						control={control}
+						name='users'
+						render={({ field: { onChange, value } }) => (
+							<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Please_enter_usernames')} />
+						)}
+					/>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={inclusiveCheckboxId} checked={inclusive} onChange={handleInclusive} />
+						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
 						<Field.Label htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={pinnedCheckboxId} checked={pinned} onChange={handlePinned} />
+						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
 						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={discussionCheckboxId} checked={discussion} onChange={handleDiscussion} />
+						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
 						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={threadsCheckboxId} checked={threads} onChange={handleThreads} />
+						<CheckBox id={threadsCheckboxId} {...register('threads')} />
 						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
 					</Field.Row>
 				</Field>
 				<Field>
 					<Field.Row>
-						<CheckBox id={attachedCheckboxId} checked={attached} onChange={handleAttached} />
+						<CheckBox id={attachedCheckboxId} {...register('attached')} />
 						<Field.Label htmlFor={attachedCheckboxId}>{t('Files_only')}</Field.Label>
 					</Field.Row>
 				</Field>
