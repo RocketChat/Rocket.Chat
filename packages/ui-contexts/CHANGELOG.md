@@ -1,5 +1,23 @@
 # @rocket.chat/ui-contexts
 
+## 1.0.0-rc.2
+
+### Patch Changes
+
+- f76d514341: Implemented a visual password verification in the Register User form, My Profile page, and reset password page. With this, the user will know exactly why their password is weak and how to improve it.
+- Updated dependencies [f76d514341]
+  - @rocket.chat/rest-typings@6.3.0-rc.2
+  - @rocket.chat/ddp-client@0.0.2-rc.2
+  - @rocket.chat/core-typings@6.3.0-rc.2
+
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.1
+- @rocket.chat/rest-typings@6.3.0-rc.1
+- @rocket.chat/ddp-client@0.0.2-rc.1
+
 ## 1.0.0-rc.0
 
 ### Patch Changes
@@ -17,6 +35,13 @@
   - @rocket.chat/core-typings@6.3.0-rc.0
   - @rocket.chat/rest-typings@6.3.0-rc.0
   - @rocket.chat/ddp-client@0.0.2-rc.0
+
+## 0.0.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.2.10
+- @rocket.chat/rest-typings@6.2.10
 
 ## 0.0.4
 

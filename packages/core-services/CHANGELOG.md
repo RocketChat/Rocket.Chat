@@ -1,10 +1,37 @@
 # @rocket.chat/core-services
 
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- Updated dependencies [f76d514341]
+  - @rocket.chat/rest-typings@6.3.0-rc.2
+  - @rocket.chat/core-typings@6.3.0-rc.2
+  - @rocket.chat/models@0.0.6-rc.2
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.1
+- @rocket.chat/rest-typings@6.3.0-rc.1
+- @rocket.chat/models@0.0.6-rc.1
+
 ## 0.1.0-rc.0
 
 ### Minor Changes
 
 - 5e429d9c78: feat: Add setting to synchronize LDAP info on OAuth logins
+
+## 0.0.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.2.10
+- @rocket.chat/rest-typings@6.2.10
+- @rocket.chat/models@0.0.5
+
+## 0.0.4
 
 ### Patch Changes
 

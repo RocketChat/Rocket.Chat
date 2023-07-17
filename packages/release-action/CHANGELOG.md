@@ -1,5 +1,11 @@
 # @rocket.chat/release-action
 
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- a430336869: Create patch changeset file on every publish
+
 ## 2.0.0-rc.0
 
 ### Major Changes
@@ -14,6 +20,12 @@
 
 - 677919a23e: Use CI user PAT token
 - 677919a23e: Update versions in configured files
+
+## 1.1.0
+
+### Minor Changes
+
+- 63c91f24a9: Use `release-automation` branch to perform the release
 
 ## 1.0.1
 

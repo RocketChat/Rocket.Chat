@@ -1,5 +1,20 @@
 # @rocket.chat/ddp-client
 
+## 0.0.2-rc.2
+
+### Patch Changes
+
+- Updated dependencies [f76d514341]
+  - @rocket.chat/rest-typings@6.3.0-rc.2
+  - @rocket.chat/api-client@0.1.0-rc.2
+
+## 0.0.2-rc.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.3.0-rc.1
+- @rocket.chat/api-client@0.1.0-rc.1
+
 ## 0.0.2-rc.0
 
 ### Patch Changes
