@@ -1,10 +1,11 @@
 import { Box, Button } from '@rocket.chat/fuselage';
+import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import React from 'react';
 import type { ReactNode } from 'react';
 
 const ReportReasonCollapsible = ({ children }: { children: ReactNode }) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useToggle(false);
 	const t = useTranslation();
 
 	const toggle = () => setIsOpen((prev) => !prev);

@@ -12,7 +12,7 @@ const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 	const { action } = useDeleteMessagesAction(userId);
 
 	return (
-		<ButtonGroup width={'full'} stretch>
+		<ButtonGroup width='full' stretch>
 			<Button onClick={action} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
 				{t('Moderation_Dismiss_all_reports')}
 			</Button>
