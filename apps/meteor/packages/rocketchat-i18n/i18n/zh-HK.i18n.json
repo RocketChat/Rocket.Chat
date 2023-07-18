@@ -1901,6 +1901,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR仅在两个用户在线时才可用",
   "Outgoing_WebHook": "即将离任的WebHook",
   "Outgoing_WebHook_Description": "实时获取Rocket.Chat数据。",
+  "Outlook_Calendar_Enabled": "已啟用",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "覆盖文件上传到的URL。此网址也用于下载，除非提供CDN",
   "Page_title": "页面标题",
   "Page_URL": "页面URL",

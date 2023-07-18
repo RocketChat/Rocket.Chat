@@ -1946,6 +1946,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR è disponibile solo se entrambi gli utenti sono on-line",
   "Outgoing_WebHook": "WebHook in uscita",
   "Outgoing_WebHook_Description": "Ottieni i dati da Rocket.Chat in tempo reale.",
+  "Outlook_Calendar_Enabled": "Abilitato",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL sostitutiva in cui vengono caricati i file. Questo URL è utilizzato anche per i download a meno che una CDN sia impostata",
   "Page_title": "Titolo pagina",
   "Page_URL": "URL pagina",
