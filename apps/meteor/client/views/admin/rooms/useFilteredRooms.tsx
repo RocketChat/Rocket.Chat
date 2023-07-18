@@ -24,11 +24,14 @@ const RoomVisibilityfilters: Record<string, (room: Partial<IRoom>) => boolean> =
 	public: filterRoomsByPublic,
 };
 
-const intersect = (array1: IRoom[], array2: IRoom[]): IRoom[] => {
+function intersect(array1: IRoom[], array2: IRoom[]) {
+	if (array1.length === 0) return array2;
+	if (array2.length === 0) return array1;
+
 	const set2 = new Set(array2);
 
 	return [...new Set(array1)].filter((x) => set2.has(x));
-};
+}
 
 export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boolean, rooms?: IRoom[]) => {
 	if (isLoading || !rooms) return [];
@@ -38,10 +41,16 @@ export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boole
 	let filteredVisibilities: IRoom[] = [];
 
 	selectedOptions.forEach((option) => {
-		filteredTypes = [...new Set([...filteredTypes, ...rooms.filter(RoomTypefilters[option.id])])];
-
-		filteredVisibilities = [...new Set([...filteredVisibilities, ...rooms.filter(RoomVisibilityfilters[option.id])])];
+		if (option.id === 'public' || option.id === 'private') {
+			filteredVisibilities = [...new Set([...filteredVisibilities, ...rooms.filter(RoomVisibilityfilters[option.id])])];
+		} else {
+			filteredTypes = [...new Set([...filteredTypes, ...rooms.filter(RoomTypefilters[option.id])])];
+		}
 	});
 
-	return intersect(filteredVisibilities, filteredTypes);
+	const result = intersect(filteredVisibilities, filteredTypes);
+
+	console.log(`intersect: ${result}`);
+
+	return result;
 };
