@@ -3759,6 +3759,7 @@
   "Outgoing": "Utgående",
   "Outgoing_WebHook": "Utgående WebHook",
   "Outgoing_WebHook_Description": "Hämta data från Rocket.Chat i realtid.",
+  "Outlook_Calendar_Enabled": "Aktiverad",
   "Output_format": "Utdataformat",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Åsidosätt URL till vilken filer som laddas upp. Denna url används också för nedladdning såvida inte en CDN anges",
   "Owner": "Ägare",

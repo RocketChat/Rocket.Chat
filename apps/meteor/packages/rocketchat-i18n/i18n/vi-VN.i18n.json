@@ -1977,6 +1977,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR chỉ khả dụng khi cả người dùng trực tuyến",
   "Outgoing_WebHook": "WebHook gửi đi",
   "Outgoing_WebHook_Description": "Lấy dữ liệu ra khỏi Rocket.Chat theo thời gian thực.",
+  "Outlook_Calendar_Enabled": "Đã bật",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Ghi đè URL mà tệp được tải lên. Url này cũng được sử dụng cho việc tải xuống trừ khi có CDN",
   "Page_title": "Tiêu đề trang",
   "Page_URL": "URL Trang",
