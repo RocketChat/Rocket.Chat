@@ -1,3 +1,0 @@
----
-"@rocket.chat/meteor": minor
----
