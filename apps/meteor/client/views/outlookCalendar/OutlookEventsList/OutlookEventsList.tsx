@@ -117,8 +117,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 							{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 							{outlookUrl && (
 								<Button onClick={() => window.open(outlookUrl, '_blank')}>
-									<Icon mie='x4' name='new-window' />
-									<Box is='span'>{t('Open_Outlook')}</Box>
+									<Icon size='x16' mie='x4' name='new-window' />
+									{t('Open_Outlook')}
 								</Button>
 							)}
 						</ButtonGroup>

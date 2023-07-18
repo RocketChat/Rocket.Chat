@@ -17,7 +17,7 @@ const HomepageHeader = (): ReactElement => {
 		<PageHeader title={title} data-qa-id='home-header' role='heading'>
 			{canEditLayout && (
 				<Button onClick={() => settingsRoute.push({ group: 'Layout' })}>
-					<Icon name='pencil' size='x16' /> {t('Customize')}
+					<Icon name='pencil' size='x16' mie='x4' /> {t('Customize')}
 				</Button>
 			)}
 		</PageHeader>

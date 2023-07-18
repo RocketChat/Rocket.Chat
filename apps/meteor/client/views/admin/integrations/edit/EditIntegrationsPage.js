@@ -27,7 +27,7 @@ function EditIntegrationsPage({ ...props }) {
 			<Page.Header title={type === 'incoming' ? t('Integration_Incoming_WebHook') : t('Integration_Outgoing_WebHook')}>
 				<ButtonGroup>
 					<Button onClick={handleClickReturn}>
-						<Icon name='back' size='x16' /> {t('Back')}
+						<Icon name='back' size='x16' mie='x4' /> {t('Back')}
 					</Button>
 					{type === 'outgoing' && <Button onClick={handleClickHistory}>{t('History')}</Button>}
 				</ButtonGroup>

@@ -22,7 +22,7 @@ const BusinessHoursPage = () => {
 			<Page.Header title={t('Business_Hours')}>
 				<ButtonGroup>
 					<Button onClick={handleNew}>
-						<Icon name='plus' /> {t('New')}
+						<Icon size='x16' name='plus' mie='x4' /> {t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

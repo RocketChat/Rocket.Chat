@@ -15,7 +15,7 @@ const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 	return (
 		<ButtonGroup flexGrow={1}>
 			<Button flexGrow={1} onClick={action} title={t('delete-message')} aria-label={t('Moderation_Delete_all_messages')} danger>
-				<Icon name='trash' /> {t('Moderation_Delete_all_messages')}
+				<Icon size='x16' mie='x4' name='trash' /> {t('Moderation_Delete_all_messages')}
 			</Button>
 
 			<Menu

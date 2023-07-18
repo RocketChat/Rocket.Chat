@@ -501,7 +501,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				</ButtonGroup>
 				<ButtonGroup stretch mbs='x8'>
 					<Button danger disabled={!canDelete || isFederated} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+						<Icon name='trash' size='x16' mie='x4' />
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

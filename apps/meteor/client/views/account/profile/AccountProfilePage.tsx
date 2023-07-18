@@ -265,7 +265,7 @@ const AccountProfilePage = (): ReactElement => {
 						</Button>
 						{allowDeleteOwnAccount && (
 							<Button danger onClick={handleDeleteOwnAccount}>
-								<Icon name='trash' size='x20' mie='x4' />
+								<Icon name='trash' size='x16' mie='x4' />
 								{t('Delete_my_account')}
 							</Button>
 						)}

@@ -169,7 +169,7 @@ function NewImportPage() {
 			<Page.Header title={t('Import_New_File')}>
 				<ButtonGroup>
 					<Button secondary onClick={handleBackToImportsButtonClick}>
-						<Icon name='back' /> {t('Back_to_imports')}
+						<Icon size='x16' mie='x4' name='back' /> {t('Back_to_imports')}
 					</Button>
 					{importer && (
 						<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>

@@ -29,7 +29,7 @@ export default function NewIntegrationsPage({ ...props }) {
 			<Page.Header title={t('Integrations')}>
 				<ButtonGroup>
 					<Button onClick={handleClickReturn}>
-						<Icon name='back' size='x16' /> {t('Back')}
+						<Icon name='back' size='x16' mie='x4' /> {t('Back')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

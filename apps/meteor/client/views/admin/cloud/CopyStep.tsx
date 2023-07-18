@@ -58,7 +58,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 						</Box>
 					</Scrollable>
 					<Button ref={copyRef} primary data-clipboard-text={clientKey}>
-						<Icon name='copy' /> {t('Copy')}
+						<Icon name='copy' size='x16' /> {t('Copy')}
 					</Button>
 				</Box>
 				<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { CLOUD_CONSOLE_URL })} />

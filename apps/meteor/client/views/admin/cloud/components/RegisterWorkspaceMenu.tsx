@@ -36,11 +36,11 @@ const RegisterWorkspaceMenu = ({
 			{isWorkspaceRegistered && isConnectedToCloud && (
 				<>
 					<Button role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
-						<Icon name='new-window' size='x20' pie={4} />
+						<Icon name='new-window' size='x16' pie={4} />
 						{t('Cloud')}
 					</Button>
 					<Button onClick={handleManageButton}>
-						<Icon name='customize' size='x20' pie={4} />
+						<Icon name='customize' size='x16' pie={4} />
 						{t('Manage')}
 					</Button>
 				</>

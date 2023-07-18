@@ -22,7 +22,7 @@ const OAuthAppsPage = (): ReactElement => {
 				<Page.Header title={t('OAuth_Applications')}>
 					{context && (
 						<Button alignSelf='flex-end' onClick={(): void => router.push({})}>
-							<Icon name='back' />
+							<Icon size='x16' mie='x4' name='back' />
 							{t('Back')}
 						</Button>
 					)}

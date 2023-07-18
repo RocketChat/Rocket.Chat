@@ -217,7 +217,7 @@ function AppInstallPage() {
 								value={file.name || ''}
 								addon={
 									<Button small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
-										<Icon name='upload' size='x12' />
+										<Icon name='upload' size='x16' mie='x4' />
 										{t('Browse_Files')}
 									</Button>
 								}

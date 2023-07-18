@@ -67,7 +67,7 @@ const NewCustomFieldsPage = ({ reload }) => {
 			<Page.Header title={t('New_Custom_Field')}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>
-						<Icon size='x16' name='back' />
+						<Icon size='x16' name='back' mie='x4' />
 						{t('Back')}
 					</Button>
 					<Button data-qa-id='NewCustomFieldsPageButtonSave' primary onClick={handleSave} disabled={!canSave}>

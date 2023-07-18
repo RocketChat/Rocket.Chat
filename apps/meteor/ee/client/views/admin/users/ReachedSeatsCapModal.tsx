@@ -35,7 +35,7 @@ const ReachedSeatsCapModal = ({ members, limit, onClose, requestSeatsLink }: Rea
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<ExternalLink to={requestSeatsLink}>
 						<Button onClick={onClose} primary>
-							<Icon name='new-window' size='x20' mie='x4' />
+							<Icon name='new-window' size='x16' mie='x4' />
 							{t('Request')}
 						</Button>
 					</ExternalLink>

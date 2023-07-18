@@ -100,7 +100,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 						</Scrollable>
 						<ButtonGroup align='start'>
 							<Button primary small disabled={isUpdating} onClick={handlePaste}>
-								<Icon name='clipboard' />
+								<Icon size='x16' mie='x4' name='clipboard' />
 								{t('Paste')}
 							</Button>
 						</ButtonGroup>

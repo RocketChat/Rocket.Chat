@@ -68,7 +68,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 			<Page.Header title={t('Edit_Custom_Field')}>
 				<ButtonGroup align='end'>
 					<Button onClick={handleReturn}>
-						<Icon size='x16' name='back' />
+						<Icon size='x16' name='back' mie='x4' />
 						{t('Back')}
 					</Button>
 					<Button data-qa-id='BtnSaveEditCustomFieldsPage' primary onClick={handleSave} disabled={!canSave}>

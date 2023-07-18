@@ -83,7 +83,7 @@ const CustomContentCard = (): ReactElement | null => {
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
-							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+							<Icon name='lightning' size='x16' mie='x4' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>

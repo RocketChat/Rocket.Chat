@@ -100,14 +100,14 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 			</Margins>
 			<ButtonGroup>
 				<Button onClick={handleNewButtonClick}>
-					<Icon size='x20' name='user-plus' /> {t('New')}
+					<Icon size='x16' name='user-plus' mie='x4' /> {t('New')}
 				</Button>
 				<Button onClick={handleInviteButtonClick}>
-					<Icon size='x20' name='mail' /> {t('Invite')}
+					<Icon size='x16' name='mail' mie='x4' /> {t('Invite')}
 				</Button>
 				<ExternalLink to={seatsLinkUrl || ''}>
 					<Button>
-						<Icon size='x20' name='new-window' /> {t('Request_seats')}
+						<Icon size='x16' name='new-window' mie='x4' /> {t('Request_seats')}
 					</Button>
 				</ExternalLink>
 			</ButtonGroup>

@@ -63,7 +63,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 			>
 				<ButtonGroup>
 					<Button disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
-						<Icon name='upload' size='x16' />
+						<Icon name='upload' size='x16' mie='x4' />
 						{t('Upload')}
 					</Button>
 

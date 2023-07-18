@@ -43,7 +43,7 @@ const LoginServicesButton = <T extends LoginService>({
 			display='flex'
 			justifyContent='center'
 		>
-			{icon && <Icon size='x20' mie='x4' name={icon as ComponentProps<typeof Icon>['name']} />}
+			{icon && <Icon size='x16' mie='x4' name={icon as ComponentProps<typeof Icon>['name']} />}
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>
 	);

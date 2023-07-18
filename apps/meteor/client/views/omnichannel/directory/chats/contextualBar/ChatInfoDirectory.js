@@ -175,7 +175,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onEditClick}>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+						<Icon name='pencil' size='x16' mie='x4' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

@@ -14,6 +14,7 @@ type TextCopyProps = {
 	wrapper?: (text: string) => ReactElement;
 } & ComponentProps<typeof Box>;
 
+// TODO: useClipboard instead of navigator API.
 const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopyProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -41,7 +42,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 		>
 			<Scrollable vertical>{wrapper(text)}</Scrollable>
 			<Button secondary square small flexShrink={0} onClick={onClick} title={t('Copy')}>
-				<Icon name='copy' size='x20' />
+				<Icon name='copy' size='x16' />
 			</Button>
 		</Box>
 	);

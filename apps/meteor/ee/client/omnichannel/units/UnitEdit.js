@@ -137,7 +137,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 				<Page.Header title={title}>
 					<ButtonGroup>
 						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
+							<Icon name='back' mie='x4' size='x16' /> {t('Back')}
 						</Button>
 						<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>
 							{t('Save')}

@@ -74,7 +74,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 						{t('Disconnect')}
 					</Button>
 					<Button onClick={handleSyncAction} disabled={isSyncing}>
-						<Icon pie={4} name='reload' size='x20' />
+						<Icon pie={4} name='reload' size='x16' />
 						{t('Sync')}
 					</Button>
 				</ButtonGroup>

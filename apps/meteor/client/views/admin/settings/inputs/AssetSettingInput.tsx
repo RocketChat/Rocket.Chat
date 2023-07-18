@@ -72,13 +72,13 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 						/>
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
-							<Icon name='upload' />
+							<Icon size='x16' name='upload' />
 						</div>
 					)}
 					<div className='action'>
 						{value?.url ? (
 							<Button onClick={handleDeleteButtonClick}>
-								<Icon name='trash' />
+								<Icon size='x16' mie='x4' name='trash' />
 								{t('Delete')}
 							</Button>
 						) : (

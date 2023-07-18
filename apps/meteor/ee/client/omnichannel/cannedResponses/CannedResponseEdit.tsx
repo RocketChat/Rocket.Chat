@@ -134,7 +134,7 @@ const CannedResponseEdit: FC<{
 			<Page.Header title={isNew ? t('New_CannedResponse') : t('Edit_CannedResponse')}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>
-						<Icon name='back' /> {t('Back')}
+						<Icon size='x16' name='back' mie='x4' /> {t('Back')}
 					</Button>
 					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}

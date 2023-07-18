@@ -14,7 +14,7 @@ const InfoPanelAction = ({ label, icon, ...props }: InfoPanelActionProps): React
 		{...props}
 		mi='x4'
 	>
-		{icon && <Icon name={icon} size='x20' mie='x4' />}
+		{icon && <Icon name={icon} size='x16' mie='x4' />}
 		{label}
 	</Button>
 );

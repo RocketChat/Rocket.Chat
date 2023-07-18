@@ -61,12 +61,12 @@ const UsersPage = (): ReactElement => {
 						<ButtonGroup>
 							{canCreateUser && (
 								<Button onClick={handleNewUser}>
-									<Icon size='x20' name='user-plus' /> {t('New')}
+									<Icon size='x16' name='user-plus' mie='x4' /> {t('New')}
 								</Button>
 							)}
 							{canBulkCreateUser && (
 								<Button onClick={handleInviteUser}>
-									<Icon size='x20' name='mail' /> {t('Invite')}
+									<Icon size='x16' name='mail' mie='x4' /> {t('Invite')}
 								</Button>
 							)}
 						</ButtonGroup>

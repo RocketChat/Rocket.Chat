@@ -12,7 +12,7 @@ type VideoConfButtonProps = {
 
 const VideoConfButton = ({ primary, secondary, danger, disabled, icon, children, ...props }: VideoConfButtonProps): ReactElement => (
 	<Button width='100%' primary={primary} danger={danger} secondary={secondary} disabled={disabled} {...props}>
-		{icon && <Icon mie='x4' size='x20' name={icon} />}
+		{icon && <Icon mie='x4' size='x16' name={icon} />}
 		{children}
 	</Button>
 );

@@ -20,7 +20,7 @@ const EmailInboxPage = (): ReactElement => {
 				<Page.Header title={t('Email_Inboxes')}>
 					{context && (
 						<Button onClick={(): void => emailInboxRoute.push({})}>
-							<Icon name='back' />
+							<Icon size='x16' name='back' mie='x4' />
 							{t('Back')}
 						</Button>
 					)}

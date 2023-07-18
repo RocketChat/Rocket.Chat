@@ -30,7 +30,7 @@ export const VoipInfoCallButton = ({ phoneNumber, ...props }: VoipInfoCallButton
 			justifyContent='center'
 			fontSize='p2'
 		>
-			<Icon name='phone' size='x20' mie='4px' />
+			<Icon name='phone' size='x16' mie='4px' />
 			{t('Call')}
 		</Button>
 	);

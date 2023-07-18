@@ -86,7 +86,7 @@ const InformationRoute = (): ReactElement => {
 				<Page.Header title={t('Info')}>
 					<ButtonGroup>
 						<Button primary type='button' onClick={handleClickRefreshButton}>
-							<Icon name='reload' /> {t('Refresh')}
+							<Icon size='x16' mie='x4' name='reload' /> {t('Refresh')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>

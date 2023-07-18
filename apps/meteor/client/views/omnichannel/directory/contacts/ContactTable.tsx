@@ -156,7 +156,7 @@ function ContactTable(): ReactElement {
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesActions>
 							<StatesAction onClick={() => refetch()}>
-								<Icon mie='x4' size='x20' name='reload' />
+								<Icon mie='x4' size='x16' name='reload' />
 								{t('Reload_page')}
 							</StatesAction>
 						</StatesActions>

@@ -148,7 +148,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				</ButtonGroup>
 				<ButtonGroup mbs='x8' stretch>
 					<Button danger onClick={handleDeleteButtonClick}>
-						<Icon name='trash' mie='x4' />
+						<Icon size='x16' name='trash' mie='x4' />
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

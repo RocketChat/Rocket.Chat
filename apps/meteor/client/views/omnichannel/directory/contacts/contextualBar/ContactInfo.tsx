@@ -181,11 +181,11 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 
 					{showContactHistory && (
 						<Button onClick={onChatHistory} mis={0} flexBasis='0'>
-							<Icon name='history' size='x20' /> {t('Chat_History')}
+							<Icon name='history' size='x16' mie='x4' /> {t('Chat_History')}
 						</Button>
 					)}
 					<Button onClick={onEditButtonClick} flexBasis='0'>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+						<Icon name='pencil' size='x16' mie='x4' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

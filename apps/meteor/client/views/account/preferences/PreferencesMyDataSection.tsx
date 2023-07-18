@@ -85,11 +85,11 @@ const PreferencesMyDataSection = ({ ...props }): ReactElement => {
 					<Field.Row>
 						<ButtonGroup stretch flexGrow={1}>
 							<Button onClick={handleClickDownload}>
-								<Icon name='download' size={20} />
+								<Icon name='download' size='x16' />
 								{t('Download_My_Data')}
 							</Button>
 							<Button onClick={handleClickExport}>
-								<Icon name='download' size={20} />
+								<Icon name='download' size='x16' />
 								{t('Export_My_Data')}
 							</Button>
 						</ButtonGroup>

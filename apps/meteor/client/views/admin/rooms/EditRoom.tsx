@@ -348,7 +348,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				</ButtonGroup>
 				<ButtonGroup mbs='x8' stretch>
 					<Button danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+						<Icon name='trash' size='x16' mie='x4' />
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

@@ -115,10 +115,10 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 			<Page.Header title={t('Integration_Outgoing_WebHook_History')}>
 				<ButtonGroup>
 					<Button onClick={handleClickReturn}>
-						<Icon name='back' size='x16' /> {t('Back')}
+						<Icon name='back' size='x16' mie='x4' /> {t('Back')}
 					</Button>
 					<Button danger onClick={handleClearHistory} disabled={total === 0}>
-						<Icon name='trash' /> {t('clear_history')}
+						<Icon name='trash' size='x16' mie='x4' /> {t('clear_history')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
