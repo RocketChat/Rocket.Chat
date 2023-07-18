@@ -1,17 +1,17 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UpsellModal from '../../components/UpsellModal';
+import UpsellModal from '../../../components/UpsellModal';
 
-const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
+const ThemesUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 
 	return (
 		<UpsellModal
-			title={t('Theme_high_contrast')}
+			title={t('Themes')}
 			img='images/unlimited-apps-modal.svg'
-			subtitle='High contrast upsell modal in progress'
-			description='(description) High contrast upsell modal in progress'
+			subtitle='Themes upsell modal in progress'
+			description='(description) Themes upsell modal in progress'
 			confirmText={t('Start_free_trial')}
 			cancelText={t('Talk_to_sales')}
 			onConfirm={() => console.log('TO DO')}
@@ -20,4 +20,4 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 		/>
 	);
 };
-export default HighContrastUpsellModal;
+export default ThemesUpsellModal;

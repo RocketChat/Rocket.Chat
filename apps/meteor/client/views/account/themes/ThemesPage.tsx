@@ -1,15 +1,17 @@
 import { Accordion, Box, Button, ButtonGroup, Field, RadioButton, Tag } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { themeItems as themes } from './themeItems';
+import ThemesUpsellModal from './ThemesUpsellModal';
 
 const ThemesPage = () => {
 	const t = useTranslation();
+	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: license } = useIsEnterprise();
 
@@ -55,26 +57,30 @@ const ThemesPage = () => {
 						<Accordion.Item defaultExpanded={true} title={t('Themes')}>
 							{themes.map(({ id, title, description, ...item }, index) => {
 								const externalLink = 'externalLink' in item && item.externalLink;
-								const comunityDisabled = 'isEEOnly' in item && item.isEEOnly && !license?.isEnterprise;
+								const communityDisabled = 'isEEOnly' in item && item.isEEOnly && !license?.isEnterprise;
 
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<Field.Label display='flex' alignItems='center'>
+											<Field.Label display='flex' alignItems='center' htmlFor={id}>
 												{t.has(title) ? t(title) : title}
-												{comunityDisabled && (
+												{communityDisabled && (
 													<Box is='span' mis='x8'>
 														<Tag variant='featured'>{t('Enterprise')}</Tag>
 													</Box>
 												)}
 											</Field.Label>
 											<Field.Row>
-												<RadioButton {...register('themeAppearence')} value={id} disabled={comunityDisabled} />
+												{communityDisabled ? (
+													<RadioButton onClick={() => setModal(<ThemesUpsellModal onClose={() => setModal(null)} />)} checked={false} />
+												) : (
+													<RadioButton id={id} {...register('themeAppearence')} value={id} />
+												)}
 											</Field.Row>
 										</Box>
 										<Field.Hint mbs='x12' style={{ whiteSpace: 'break-spaces' }}>
 											{t.has(description) ? t(description) : description}
-											{externalLink && comunityDisabled && (
+											{externalLink && communityDisabled && (
 												<Box mbs='x12'>
 													<ExternalLink to={externalLink}>{t('Talk_to_an_expert')}</ExternalLink>
 												</Box>

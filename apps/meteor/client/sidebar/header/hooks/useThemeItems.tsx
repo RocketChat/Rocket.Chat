@@ -5,7 +5,7 @@ import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import HighContrastUpsellModal from '../HighContrastUpsellModal';
+import ThemesUpsellModal from '../../../views/account/themes/ThemesUpsellModal';
 
 export const useThemeItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
@@ -42,8 +42,8 @@ export const useThemeItems = (): GenericMenuItemProps[] => {
 						addon: <RadioButton checked={selectedTheme === 'high-contrast'} onChange={setTheme('high-contrast')} m='x4' />,
 				  }
 				: {
-						onClick: () => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />),
-						addon: <RadioButton disabled m='x4' />,
+						onClick: () => setModal(<ThemesUpsellModal onClose={() => setModal(null)} />),
+						addon: <RadioButton checked={false} m='x4' />,
 				  }),
 		},
 	];
