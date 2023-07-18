@@ -4640,6 +4640,7 @@
   "Show_video": "Show video",
   "Showing": "Showing",
   "Showing_archived_results": "<p>Showing <b>%s</b> archived results</p>",
+  "Showing_current_of_total":"Showing {{current}} of {{total}}",
   "Showing_online_users": "Showing: <b>{{total_showing}}</b>, Online: {{online}}, Total: {{total}} users",
   "Showing_results": "<p>Showing <b>%s</b> results</p>",
   "Showing_results_of": "Showing results %s - %s of %s",
