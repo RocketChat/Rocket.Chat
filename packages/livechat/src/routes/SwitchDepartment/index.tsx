@@ -96,7 +96,6 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
-			console.log(result);
 			const { success } = result;
 			if (!success) {
 				throw t('no_available_agents_to_transfer');
@@ -128,7 +127,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 	const defaultMessage = t('choose_a_department_1');
 
 	return (
-		<Screen color={color} title={defaultTitle} className={createClassName(styles, 'switch-department')} {...screenProps}>
+		<Screen {...screenProps} color={color} theme={{ color }} title={defaultTitle} className={createClassName(styles, 'switch-department')}>
 			<Screen.Content>
 				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
 
@@ -150,7 +149,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 				</Form>
 			</Screen.Content>
 			<Screen.Footer>
-				<ButtonGroup>
+				<ButtonGroup full>
 					<Button loading={loading} form='switchDepartment' submit stack full disabled={!isDirty || !isValid || loading || isSubmitting}>
 						{t('start_chat')}
 					</Button>

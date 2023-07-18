@@ -240,7 +240,7 @@ export class App extends Component {
 				{/* TODO: Find a better way to avoid prop drilling with that amout of props (perhaps create a screen context/provider) */}
 				<LeaveMessage path='/leave-message' screenProps={screenProps} />
 				<Register path='/register' screenProps={screenProps} />
-				<SwitchDepartment path='/switch-department' {...screenProps} />
+				<SwitchDepartment path='/switch-department' screenProps={screenProps} />
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>
 		);
