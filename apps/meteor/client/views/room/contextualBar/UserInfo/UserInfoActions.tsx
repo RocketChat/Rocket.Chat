@@ -2,8 +2,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Ref } from 'react';
-import React, { forwardRef, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import UserInfo from '../../../../components/UserInfo';
@@ -14,10 +14,6 @@ type UserInfoActionsProps = {
 	rid: IRoom['_id'];
 	backToList: () => void;
 };
-
-const CustomMenuButton = forwardRef((props, ref: Ref<HTMLElement>) => (
-	<IconButton ref={ref} {...props} icon='kebab' secondary small={false} />
-));
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
@@ -34,7 +30,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 
 		return (
 			<GenericMenu
-				is={CustomMenuButton}
+				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
 				key='UserUserInfo-menu'
 				data-qa='UserUserInfo-menu'
