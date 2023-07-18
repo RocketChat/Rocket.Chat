@@ -1,13 +1,17 @@
 import { RadioButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import HighContrastUpsellModal from '../HighContrastUpsellModal';
 
 export const useThemeItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 
+	const setModal = useSetModal();
+	const { data: license } = useIsEnterprise();
 	const [selectedTheme, setTheme] = useThemeMode();
 
 	return [
@@ -33,7 +37,14 @@ export const useThemeItems = (): GenericMenuItemProps[] => {
 			id: 'high-contrast',
 			icon: 'circle-half',
 			content: t('Theme_high_contrast'),
-			addon: <RadioButton checked={selectedTheme === 'high-contrast'} onChange={setTheme('high-contrast')} m='x4' />,
+			...(license?.isEnterprise
+				? {
+						addon: <RadioButton checked={selectedTheme === 'high-contrast'} onChange={setTheme('high-contrast')} m='x4' />,
+				  }
+				: {
+						onClick: () => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />),
+						addon: <RadioButton disabled m='x4' />,
+				  }),
 		},
 	];
 };
