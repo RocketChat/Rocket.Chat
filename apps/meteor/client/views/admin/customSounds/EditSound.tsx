@@ -3,7 +3,7 @@ import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from 
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
@@ -117,49 +117,43 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
-		<ContextualbarScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
-				</Field.Row>
-			</Field>
-
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<IconButton icon='upload' secondary onClick={clickUpload} />
-						{sound?.name || 'none'}
-					</Margins>
-				</Box>
-			</Field>
-
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button danger onClick={handleDeleteButtonClick}>
-							<Icon name='trash' mie='x4' />
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							value={name}
+							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							placeholder={t('Name')}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<Box display='flex' flexDirection='row' mbs='none'>
+						<Margins inline='x4'>
+							<IconButton icon='upload' secondary onClick={clickUpload} />
+							{sound?.name || 'none'}
+						</Margins>
+					</Box>
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup mbs='x8' stretch>
+					<Button danger onClick={handleDeleteButtonClick}>
+						<Icon name='trash' mie='x4' />
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 }
 
