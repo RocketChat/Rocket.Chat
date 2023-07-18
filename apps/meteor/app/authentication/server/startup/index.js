@@ -249,11 +249,6 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await callbacks.run('onCreateUser', options, user);
 	}
 
-	if (!options.skipAppsEngineEvent) {
-		// App IPostUserCreated event hook
-		await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
-	}
-
 	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
 		throw new Meteor.Error(403, 'User validation failed');
 	}
@@ -347,6 +342,11 @@ const insertUserDocAsync = async function (options, user) {
 			}
 		}
 	}
+
+	// `post` triggered events don't need to wait for the promise to resolve
+	Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+		Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+	});
 
 	return _id;
 };
