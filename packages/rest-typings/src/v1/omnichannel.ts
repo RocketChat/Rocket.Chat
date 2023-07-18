@@ -2982,6 +2982,29 @@ const POSTomnichannelIntegrationsSchema = {
 
 export const isPOSTomnichannelIntegrations = ajv.compile<POSTomnichannelIntegrations>(POSTomnichannelIntegrationsSchema);
 
+type POSTLivechatTranscriptRequestParams = {
+	email: string;
+	subject: string;
+};
+
+const POSTLivechatTranscriptRequestParamsSchema = {
+	type: 'object',
+	properties: {
+		email: {
+			type: 'string',
+		},
+		subject: {
+			type: 'string',
+		},
+	},
+	required: ['email', 'subject'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatTranscriptRequestParams = ajv.compile<POSTLivechatTranscriptRequestParams>(
+	POSTLivechatTranscriptRequestParamsSchema,
+);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3286,6 +3309,10 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/transcript': {
 		POST: (params: POSTLivechatTranscriptParams) => { message: string };
+	};
+	'/v1/livechat/transcript/:rid': {
+		DELETE: () => void;
+		POST: (params: POSTLivechatTranscriptRequestParams) => void;
 	};
 	'/v1/livechat/offline.message': {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };

@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 
 import { Livechat } from '../lib/Livechat';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:requestTranscript'(rid, email, subject) {
+		methodDeprecationLogger.method('livechat:requestTranscript', '7.0.0');
 		check(rid, String);
 		check(email, String);
 
