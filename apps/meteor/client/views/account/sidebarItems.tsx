@@ -54,4 +54,9 @@ export const {
 		badge: () => <AccountFeaturePreviewBadge />,
 		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
+	{
+		href: '/account/themes',
+		i18nLabel: 'Themes',
+		icon: 'circle-half',
+	},
 ]);

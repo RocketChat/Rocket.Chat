@@ -36,6 +36,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/feature-preview';
 			pattern: '/account/feature-preview';
 		};
+		'themes': {
+			pathname: '/account/themes';
+			pattern: '/account/themes';
+		};
 	}
 }
 
@@ -78,4 +82,8 @@ registerAccountRoute('/omnichannel', {
 registerAccountRoute('/feature-preview', {
 	name: 'feature-preview',
 	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+});
+registerAccountRoute('/themes', {
+	name: 'themes',
+	component: lazy(() => import('./themes/ThemesPage')),
 });
