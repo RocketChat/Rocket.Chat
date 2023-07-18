@@ -1,5 +1,30 @@
 # @rocket.chat/meteor
 
+## 6.3.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- cea3697828: Fix leader direct message opening
+  - @rocket.chat/core-typings@6.3.0-rc.3
+  - @rocket.chat/rest-typings@6.3.0-rc.3
+  - @rocket.chat/api-client@0.1.0-rc.3
+  - @rocket.chat/omnichannel-services@0.0.6-rc.3
+  - @rocket.chat/pdf-worker@0.0.6-rc.3
+  - @rocket.chat/presence@0.0.6-rc.3
+  - @rocket.chat/core-services@0.1.0-rc.3
+  - @rocket.chat/cron@0.0.2-rc.3
+  - @rocket.chat/gazzodown@1.0.0-rc.3
+  - @rocket.chat/model-typings@0.0.6-rc.3
+  - @rocket.chat/ui-contexts@1.0.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@1.0.0-rc.3
+  - @rocket.chat/models@0.0.6-rc.3
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.0-rc.3
+  - @rocket.chat/ui-video-conf@1.0.0-rc.3
+  - @rocket.chat/web-ui-registration@1.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.6-rc.3
+
 ## 6.3.0-rc.2
 
 ### Patch Changes
