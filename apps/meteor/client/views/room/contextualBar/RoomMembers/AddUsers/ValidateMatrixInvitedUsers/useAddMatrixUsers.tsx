@@ -46,13 +46,13 @@ export const useAddMatrixUsers = ({ rid, reload, onClickBack, handleUsers, users
 				(res) => res.status === 'fulfilled',
 			) as PromiseFulfilledResult<{ result: string }>[];
 
-			for (let i = 0; i < matrixIds.length; i++) {
+			matrixIds.forEach((matrixId, idx) => {
 				const {
 					value: { result },
-				} = matrixIdsVerificationFulfilledResults[i];
+				} = matrixIdsVerificationFulfilledResults[idx];
 
-				matrixIdVerificationMap.set(matrixIds[i], result);
-			}
+				matrixIdVerificationMap.set(matrixId, result);
+			});
 
 			handleUsers(users.filter((user) => !(matrixIdVerificationMap.has(user) && matrixIdVerificationMap.get(user) === 'UNVERIFIED')));
 
