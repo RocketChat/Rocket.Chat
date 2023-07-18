@@ -37,8 +37,8 @@ const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
 	c: 'Channel',
-	d: 'Direct',
-	p: 'Group',
+	d: 'Direct_Message',
+	p: 'Private_Channel',
 } as const;
 
 const getRoomType = (
@@ -244,11 +244,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		{
 			id: 'omnichannel',
 			text: 'Omnichannel',
-			checked: false,
-		},
-		{
-			id: 'group',
-			text: 'Group',
 			checked: false,
 		},
 		{

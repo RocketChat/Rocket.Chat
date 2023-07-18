@@ -17,7 +17,7 @@ const FilterByRoomName = ({ setFilter }: { setFilter?: Dispatch<SetStateAction<a
 	return (
 		<TextInput
 			alignItems='center'
-			placeholder={t('Search_Rooms')}
+			placeholder={t('Search_rooms')}
 			addon={<Icon name='magnifier' size='x20' />}
 			onChange={handleChange}
 			value={text}
