@@ -34,6 +34,7 @@ function ChatInfo({ id, route }) {
 
 	const {
 		ts,
+		tags,
 		closedAt,
 		departmentId,
 		v,
@@ -49,7 +50,7 @@ function ChatInfo({ id, route }) {
 		queuedAt,
 	} = room || { room: { v: {} } };
 
-	const tags = useTagsLabels(room?.tags);
+	const getTagLabel = useTagsLabels(!!tags?.length);
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
@@ -109,7 +110,7 @@ function ChatInfo({ id, route }) {
 								{tags.map((tag) => (
 									<Box key={tag} mie='x4' display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
+											{getTagLabel(tag)}
 										</Tag>
 									</Box>
 								))}

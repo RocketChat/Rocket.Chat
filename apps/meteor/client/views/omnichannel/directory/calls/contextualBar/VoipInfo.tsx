@@ -19,6 +19,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
+import { useTagsLabels } from '../../chats/hooks/useTagsLabels';
 import AgentField from '../../components/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
@@ -42,6 +43,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
 	const _name = fname || name;
+	const getTagLabel = useTagsLabels();
 
 	return (
 		<>
@@ -83,7 +85,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 								<Box display='flex' flexDirection='row' alignItems='center'>
 									{tags?.map((tag: string) => (
 										<Chip mie='x4' key={tag} value={tag}>
-											{tag}
+											{getTagLabel(tag)}
 										</Chip>
 									))}
 								</Box>
