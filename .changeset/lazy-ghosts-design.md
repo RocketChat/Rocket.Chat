@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
-fix: misleading of 'total' in team members & members fixed
+Fixed misleading of 'total' in team members list inside Channel
