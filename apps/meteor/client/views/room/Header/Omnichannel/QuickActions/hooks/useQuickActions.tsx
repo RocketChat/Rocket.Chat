@@ -91,7 +91,7 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
+		[closeModal, dispatchToastMessage, requestTranscript, t],
 	);
 
 	const sendTranscriptPDF = useEndpoint('POST', '/v1/omnichannel/:rid/request-transcript', { rid });
