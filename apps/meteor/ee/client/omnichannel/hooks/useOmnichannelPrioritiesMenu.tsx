@@ -21,6 +21,7 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 		try {
 			priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
 			queryClient.invalidateQueries(['current-chats']);
+			queryClient.invalidateQueries(['/v1/rooms.info', rid]);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
