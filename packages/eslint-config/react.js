@@ -5,7 +5,7 @@ const config = {
 		'react-hooks/exhaustive-deps': 'error',
 		'react-hooks/rules-of-hooks': 'error',
 		'react/display-name': 'error',
-		// 'react/jsx-curly-brace-presence': 'error',
+		'react/jsx-curly-brace-presence': 'error',
 		'react/jsx-fragments': ['error', 'syntax'],
 		'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
 		'react/jsx-no-undef': 'error',
@@ -20,7 +20,7 @@ const config = {
 	},
 	overrides: [
 		{
-			files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx'],
+			files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
 			rules: {
 				'react/display-name': 'off',
 				'react/no-multi-comp': 'off',
