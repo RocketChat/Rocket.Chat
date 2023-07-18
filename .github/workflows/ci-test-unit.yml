@@ -35,5 +35,5 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           directory: ./apps/meteor
-          flags: e2e
+          flags: unit
           verbose: true
