@@ -3849,7 +3849,6 @@
   "Outgoing_WebHook_Description": "Get data out of Rocket.Chat in real-time.",
   "Outlook_authentication": "Outlook authentication",
   "Outlook_authentication_disabled": "Outlook authentication disabled",
-
   "Outlook_authentication_description": "Disable this to clear any outlook credentials stored in this machine.",
   "Outlook_calendar": "Outlook calendar",
   "Outlook_calendar_event": "Outlook calendar event",
@@ -4640,6 +4639,7 @@
   "Show_video": "Show video",
   "Showing": "Showing",
   "Showing_archived_results": "<p>Showing <b>%s</b> archived results</p>",
+  "Showing_current_of_total":"Showing {{current}} of {{total}}",
   "Showing_online_users": "Showing: <b>{{total_showing}}</b>, Online: {{online}}, Total: {{total}} users",
   "Showing_results": "<p>Showing <b>%s</b> results</p>",
   "Showing_results_of": "Showing results %s - %s of %s",

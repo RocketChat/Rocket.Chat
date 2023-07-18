@@ -38,5 +38,9 @@ module.exports = {
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
 	],
-	exclude: ['client/hooks/*.spec.{ts,tsx}', 'client/sidebar/header/actions/hooks/*.spec.{ts,tsx}'],
+	exclude: [
+		'client/hooks/*.spec.{ts,tsx}',
+		'client/sidebar/header/actions/hooks/*.spec.{ts,tsx}',
+		'client/components/message/content/reactions/**.spec.{ts,tsx}',
+	],
 };
