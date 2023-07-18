@@ -172,7 +172,7 @@ export class MatrixBridge implements IFederationBridge {
 	public async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
 		const [userId, homeserverUrl] = extractUserIdAndHomeserverFromMatrixId(externalInviteeId);
 		try {
-			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available?username=${userId}`);
+			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available`, { params: { username: userId } });
 
 			if (response.status === HttpStatusCodes.BAD_REQUEST) {
 				const responseBody = await response.json();

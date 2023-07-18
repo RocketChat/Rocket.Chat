@@ -5,7 +5,7 @@ import { isEnterprise } from '../../../../ee/app/license/server';
 import { API } from '../api';
 
 API.v1.addRoute(
-	'federation/verifyMatrixId',
+	'federation/matrixId.verify',
 	{
 		authRequired: true,
 		validateParams: isFederationVerifyMatrixIdProps,

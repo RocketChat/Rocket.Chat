@@ -19,7 +19,7 @@ export const useAddMatrixUsers = ({ rid, reload, onClickBack, handleUsers, users
 	const saveAction = useMethod('addUsersToRoom');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleClose = useMutableCallback(() => setModal(null));
-	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/verifyMatrixId', undefined);
+	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/matrixId.verify', undefined);
 
 	const handleSave = useMutableCallback(async () => {
 		try {
