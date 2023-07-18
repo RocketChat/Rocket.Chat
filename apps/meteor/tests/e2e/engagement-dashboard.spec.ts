@@ -1,21 +1,22 @@
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects/home-channel';
+import { HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.skip(!IS_EE, 'Engagement Dashboard > Enterprise Only');
-
 test.use({ storageState: Users.admin.state });
-let poHomeChannel: HomeChannel;
 
-test.describe('engagement-dashboard', () => {
+test.describe.serial('engagement-dashboard', () => {
+	let poHomeChannel: HomeChannel;
+
 	test.beforeEach(async ({ page }) => {
-		poHomeChannel = await new HomeChannel(page);
-
+		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace')
-		await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort());
-		await page.locator('a[href="/admin/engagement/users"]').click();
+		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+		await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort('failed'));
+		await page.locator('a[href="/admin/engagement-dashboard"]').click();
+		await expect(page).toHaveURL('admin/engagement-dashboard');
+
 	});
 	test('expect to trigger fallback error component', async ({ page }) => {
 		await test.step('expect to show 4 fallback errors components inside widget at Users Tab', async () => {
