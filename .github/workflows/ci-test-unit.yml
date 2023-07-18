@@ -31,3 +31,9 @@ jobs:
 
       - name: Unit Test
         run: yarn testunit
+
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: ./apps/meteor
+          flags: e2e
+          verbose: true
