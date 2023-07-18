@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "1.0.5-rc.0",
+	"version": "1.0.5-rc.3",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
