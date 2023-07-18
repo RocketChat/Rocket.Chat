@@ -120,15 +120,11 @@ const RoomMembers = ({
 
 				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members && members.length > 0 && (
+				{!loading && members.length > 0 && (
 					<>
 						<Box pi='x18' pb='x12'>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {members.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' mis='x8'>
-								{t('Total')}: {total}
+								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
 						</Box>
 
