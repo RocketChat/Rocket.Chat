@@ -64,7 +64,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
 
-	if (permission && !hasAtLeastOnePermission(permission)) {
+	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
 		return false;
 	}
 
