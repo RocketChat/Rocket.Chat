@@ -13,7 +13,7 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
 	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const hasValidLicense = licensesData?.licenses.some((licence) => licence.modules.length > 0) ?? false;
+	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
 	const trialLicense = licensesData?.licenses?.find(({ meta }) => meta?.trial);
