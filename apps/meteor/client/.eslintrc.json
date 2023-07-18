@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["@rocket.chat/eslint-config/original", "prettier", "plugin:you-dont-need-lodash-underscore/compatible"],
+  "extends": ["@rocket.chat/eslint-config/original", "@rocket.chat/eslint-config/react", "prettier", "plugin:you-dont-need-lodash-underscore/compatible"],
   "parser": "@babel/eslint-parser",
   "plugins": ["react", "react-hooks", "prettier", "testing-library", "anti-trojan-source"],
   "rules": {
@@ -29,14 +29,6 @@
       }
     ],
     "prettier/prettier": 2,
-    "react/display-name": "error",
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
-    "react/jsx-no-undef": "error",
-    "react/jsx-fragments": ["error", "syntax"],
-		"react/jsx-key": ["error", { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }],
-    "react/no-multi-comp": "error",
-    "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": [
       "warn",
       {
@@ -50,9 +42,6 @@
       "node": {
         "extensions": [".js", ".ts", ".tsx"]
       }
-    },
-    "react": {
-      "version": "detect"
     }
   },
   "env": {
@@ -63,7 +52,6 @@
     {
       "files": ["**/*.ts", "**/*.tsx"],
       "extends": ["@rocket.chat/eslint-config"],
-      "plugins": ["react", "react-hooks"],
       "rules": {
         "@typescript-eslint/naming-convention": [
           "error",
@@ -136,14 +124,6 @@
           }
         ],
         "prettier/prettier": 2,
-        "react/display-name": "error",
-        "react/jsx-uses-react": "error",
-        "react/jsx-uses-vars": "error",
-        "react/jsx-no-undef": "error",
-        "react/jsx-fragments": ["error", "syntax"],
-        "react/jsx-key": ["error", { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }],
-        "react/no-multi-comp": "error",
-        "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": [
           "warn",
           {
@@ -160,9 +140,6 @@
           "node": {
             "extensions": [".js", ".ts", ".tsx"]
           }
-        },
-        "react": {
-          "version": "detect"
         }
       }
     },
