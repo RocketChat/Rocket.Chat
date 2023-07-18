@@ -34,6 +34,5 @@ jobs:
 
       - uses: codecov/codecov-action@v3
         with:
-          directory: ./apps/meteor
           flags: unit
           verbose: true
