@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { HeaderTag, HeaderTagIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -18,7 +19,9 @@ const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 	return (
 		<HeaderTag onClick={handleClick}>
 			<HeaderTagIcon icon={icon} />
-			{roomCoordinator.getRoomName(room.t, room)}
+			<Box display='inline-block' mis='x6'>
+				{roomCoordinator.getRoomName(room.t, room)}
+			</Box>
 		</HeaderTag>
 	);
 };
