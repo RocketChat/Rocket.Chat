@@ -3096,11 +3096,37 @@ const POSTLivechatTriggersParamsSchema = {
 
 export const isPOSTLivechatTriggersParams = ajv.compile<POSTLivechatTriggersParams>(POSTLivechatTriggersParamsSchema);
 
+type POSTLivechatAppearanceParams = {
+	_id: string;
+	value: string | boolean | number;
+}[];
+
+const POSTLivechatAppearanceParamsSchema = {
+	type: 'array',
+	items: {
+		type: 'object',
+		properties: {
+			_id: {
+				type: 'string',
+			},
+			value: {
+				type: ['string', 'boolean', 'number'],
+			},
+		},
+		required: ['_id', 'value'],
+		additionalProperties: false,
+	},
+	minItems: 1,
+};
+
+export const isPOSTLivechatAppearanceParams = ajv.compile<POSTLivechatAppearanceParams>(POSTLivechatAppearanceParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];
 		};
+		POST: (params: POSTLivechatAppearanceParams) => void;
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {

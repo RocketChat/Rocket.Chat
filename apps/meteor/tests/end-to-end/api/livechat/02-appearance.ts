@@ -33,4 +33,53 @@ describe('LIVECHAT - appearance', function () {
 				});
 		});
 	});
+
+	describe('POST livechat/appearance', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('livechat/appearance')).send({}).expect(401);
+		});
+		it('should fail if body is not an array', async () => {
+			await request.post(api('livechat/appearance')).set(credentials).send({}).expect(400);
+		});
+		it('should fail if body is an empty array', async () => {
+			await request.post(api('livechat/appearance')).set(credentials).send([]).expect(400);
+		});
+		it('should fail if body does not contain value', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ name: 'Livechat_title' }])
+				.expect(400);
+		});
+		it('should fail if body does not contain name', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ value: 'test' }])
+				.expect(400);
+		});
+		it('should fail if user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-manager', []);
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'invalid', value: 'test' }])
+				.expect(403);
+		});
+		it('should fail if body contains invalid _id', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'invalid', value: 'test' }])
+				.expect(400);
+		});
+		it('should update the settings', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_title', value: 'test' }])
+				.expect(200);
+		});
+	});
 });
