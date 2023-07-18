@@ -21,6 +21,8 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ILivechatPriority,
 	LivechatDepartmentDTO,
+	ILivechatTriggerCondition,
+	ILivechatTriggerAction,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3005,6 +3007,95 @@ export const isPOSTLivechatTranscriptRequestParams = ajv.compile<POSTLivechatTra
 	POSTLivechatTranscriptRequestParamsSchema,
 );
 
+type POSTLivechatTriggersParams = {
+	name: string;
+	description: string;
+	enabled: boolean;
+	runOnce: boolean;
+	conditions: ILivechatTriggerCondition[];
+	actions: ILivechatTriggerAction[];
+	_id?: string;
+};
+
+const POSTLivechatTriggersParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+		},
+		enabled: {
+			type: 'boolean',
+		},
+		runOnce: {
+			type: 'boolean',
+		},
+		conditions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					name: {
+						type: 'string',
+						enum: ['time-on-site', 'page-url', 'chat-opened-by-visitor'],
+					},
+					value: {
+						type: 'string',
+						nullable: true,
+					},
+				},
+				required: ['name', 'value'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+		actions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					name: {
+						type: 'string',
+						enum: ['send-message'],
+					},
+					params: {
+						type: 'object',
+						nullable: true,
+						properties: {
+							sender: {
+								type: 'string',
+								enum: ['queue', 'custom'],
+							},
+							msg: {
+								type: 'string',
+							},
+							name: {
+								type: 'string',
+								nullable: true,
+							},
+						},
+						required: ['sender', 'msg'],
+						additionalProperties: false,
+					},
+				},
+				required: ['name'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['name', 'description', 'enabled', 'runOnce', 'conditions', 'actions'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatTriggersParams = ajv.compile<POSTLivechatTriggersParams>(POSTLivechatTriggersParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3378,6 +3469,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/triggers': {
 		GET: (params: GETLivechatTriggersParams) => PaginatedResult<{ triggers: WithId<ILivechatTrigger>[] }>;
+		POST: (params: POSTLivechatTriggersParams) => void;
 	};
 	'/v1/livechat/triggers/:_id': {
 		GET: () => { trigger: ILivechatTrigger | null };
