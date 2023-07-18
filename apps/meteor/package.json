@@ -39,7 +39,7 @@
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
-		".testunit:client": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
+		".testunit:client": "jest && TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
 		".testunit:definition": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
@@ -49,7 +49,7 @@
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006 --no-version-updates",
 		"docker:start": "docker-compose up"
 	},
 	"license": "MIT",
