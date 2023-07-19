@@ -11,7 +11,7 @@ import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 type RemoveAgentButtonProps = {
 	_id: string;
 	reload: () => void;
-	onAgentRemoved: () => void;
+	onAgentRemoved?: () => void;
 };
 
 const RemoveAgentButton = ({ _id, reload, onAgentRemoved }: RemoveAgentButtonProps): ReactElement => {
@@ -24,7 +24,7 @@ const RemoveAgentButton = ({ _id, reload, onAgentRemoved }: RemoveAgentButtonPro
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
-			onAgentRemoved();
+			onAgentRemoved?.();
 		}
 	});
 

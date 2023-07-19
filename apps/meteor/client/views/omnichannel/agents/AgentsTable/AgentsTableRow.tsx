@@ -38,8 +38,7 @@ const AgentsTableRow = ({
 
 	const onAgentRemoved = useCallback(() => {
 		departments.forEach((departmentId) => {
-			console.log('invalidating query', ['/v1/livechat/department/:_id', departmentId]);
-			queryClient.invalidateQueries(['/v1/livechat/department/:_id', departmentId]);
+			queryClient.removeQueries(['/v1/livechat/department/:_id', departmentId]);
 		});
 	}, [queryClient, departments]);
 
