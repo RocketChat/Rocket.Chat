@@ -13,15 +13,20 @@ export const {
 	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/account/preferences',
-		i18nLabel: 'Preferences',
-		icon: 'customize',
-	},
-	{
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
+	},
+	{
+		href: '/account/themes',
+		i18nLabel: 'Themes',
+		icon: 'palette',
+	},
+	{
+		href: '/account/preferences',
+		i18nLabel: 'Preferences',
+		icon: 'customize',
 	},
 	{
 		href: '/account/security',
@@ -53,10 +58,5 @@ export const {
 		icon: 'flask',
 		badge: () => <AccountFeaturePreviewBadge />,
 		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
-	},
-	{
-		href: '/account/themes',
-		i18nLabel: 'Themes',
-		icon: 'circle-half',
 	},
 ]);

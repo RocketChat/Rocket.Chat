@@ -1,18 +1,22 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
-import { useThemeItems } from './useThemeItems';
 
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 
 	const statusItems = useStatusItems(user);
-	const themeItems = useThemeItems();
 	const accountItems = useAccountItems();
+
+	const logout = useLogout();
+	const handleLogout = useMutableCallback(() => {
+		logout();
+	});
 
 	return [
 		{
@@ -24,11 +28,18 @@ export const useUserMenu = (user: IUser) => {
 			items: statusItems,
 		},
 		{
-			title: t('Theme'),
-			items: themeItems,
+			title: t('Account'),
+			items: accountItems,
 		},
 		{
-			items: accountItems,
+			items: [
+				{
+					id: 'logout',
+					icon: 'sign-out',
+					content: t('Logout'),
+					onClick: handleLogout,
+				},
+			],
 		},
 	];
 };

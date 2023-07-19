@@ -1,7 +1,7 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
-import { useLogout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
@@ -9,21 +9,22 @@ import type { GenericMenuItemProps } from '../../../components/GenericMenu/Gener
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account-index');
+	const themesRoute = useRoute('themes');
+	const preferencesRoute = useRoute('preferences');
 	const featurePreviewRoute = useRoute('feature-preview');
 	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
-
-	const logout = useLogout();
 
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
 	});
-
+	const handleThemes = useMutableCallback(() => {
+		themesRoute.push({});
+	});
+	const handlePreferences = useMutableCallback(() => {
+		preferencesRoute.push({});
+	});
 	const handleFeaturePreview = useMutableCallback(() => {
 		featurePreviewRoute.push();
-	});
-
-	const handleLogout = useMutableCallback(() => {
-		logout();
 	});
 
 	const featurePreviewItem = {
@@ -42,17 +43,23 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 
 	return [
 		{
-			id: 'my-account',
+			id: 'profile',
 			icon: 'user',
-			content: t('My_Account'),
+			content: t('Profile'),
 			onClick: handleMyAccount,
 		},
-		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 		{
-			id: 'logout',
-			icon: 'sign-out',
-			content: t('Logout'),
-			onClick: handleLogout,
+			id: 'themes',
+			icon: 'palette',
+			content: t('Themes'),
+			onClick: handleThemes,
 		},
+		{
+			id: 'preferences',
+			icon: 'customize',
+			content: t('Preferences'),
+			onClick: handlePreferences,
+		},
+		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];
 };
