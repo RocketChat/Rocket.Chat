@@ -15,11 +15,11 @@ export interface IPersistentQueue {
 }
 
 /**
- * QueueWrapper
+ * Queue
  *
  * Handles the interaction with the `mongo-message-queue` lib
  */
-export class QueueWrapper implements IPersistentQueue {
+export class Queue implements IPersistentQueue {
 	protected queue: MessageQueue;
 
 	protected retryCount = 5;

@@ -256,7 +256,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/poplib": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
-		"@rocket.chat/queue-wrapper": "workspace:^",
+		"@rocket.chat/queue": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/server-fetch": "workspace:^",

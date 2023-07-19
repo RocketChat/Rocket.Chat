@@ -1,5 +1,5 @@
-import type { IPersistentQueue } from '@rocket.chat/queue-wrapper';
-import { QueueWrapper } from '@rocket.chat/queue-wrapper';
+import type { IPersistentQueue } from '@rocket.chat/queue';
+import { Queue as QueuePackage } from '@rocket.chat/queue';
 
 /**
  * Queue interactor for Fedartion
@@ -11,7 +11,7 @@ export class Queue {
 	private queue: IPersistentQueue;
 
 	constructor(workType: string, maxWorkers = 1) {
-		this.queue = new QueueWrapper(maxWorkers);
+		this.queue = new QueuePackage(maxWorkers);
 		this.workType = workType;
 	}
 

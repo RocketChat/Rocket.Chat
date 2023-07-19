@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/queue-wrapper",
+	"name": "@rocket.chat/queue",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
