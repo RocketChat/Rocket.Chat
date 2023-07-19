@@ -1,7 +1,6 @@
 import type { MatchKeysAndValues } from 'mongodb';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import type { IImport, IImportRecordType, IImportData, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 
 import { Progress } from './ImporterProgress';
@@ -331,7 +330,8 @@ export class Importer {
 		}
 
 		await Imports.update({ _id: this.importRecord._id }, { $set: fields });
-		this.importRecord = await Imports.findOne(this.importRecord._id);
+		// #TODO: Remove need for the typecast
+		this.importRecord = (await Imports.findOne(this.importRecord._id)) as IImport;
 
 		return this.importRecord;
 	}

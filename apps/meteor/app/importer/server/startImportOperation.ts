@@ -16,5 +16,10 @@ export const startImportOperation = async (info: ImporterInfo, userId: IUser['_i
 		})
 	).insertedId;
 
-	return Imports.findOne(importId);
+	const operation = await Imports.findOne(importId);
+	if (!operation) {
+		throw new Error('Failed to start import operation');
+	}
+
+	return operation;
 };

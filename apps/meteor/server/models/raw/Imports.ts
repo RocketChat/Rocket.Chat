@@ -13,14 +13,10 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 		return [{ key: { ts: -1 } }, { key: { valid: 1 } }];
 	}
 
-	async findLastImport(): Promise<IImport | undefined> {
+	async findLastImport(): Promise<IImport | null> {
 		const imports = await this.find({}, { sort: { ts: -1 }, limit: 1 }).toArray();
 
-		if (imports?.length) {
-			return imports.shift();
-		}
-
-		return undefined;
+		return imports.shift() || null;
 	}
 
 	async hasValidOperationInStatus(allowedStatus: IImport['status'][]): Promise<boolean> {
