@@ -3159,6 +3159,7 @@
   "Outgoing": "傳出",
   "Outgoing_WebHook": "外部的 WebHook",
   "Outgoing_WebHook_Description": "即時獲取 Rocket.Chat 資料。",
+  "Outlook_Calendar_Enabled": "啟用",
   "Output_format": "輸出格式",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "哪些檔案被上傳覆蓋網址。該網址也可用於下載，除非CDN放出",
   "Page_title": "頁面標題",

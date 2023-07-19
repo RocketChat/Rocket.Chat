@@ -1870,6 +1870,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR จะใช้ได้เฉพาะเมื่อผู้ใช้ทั้งสองออนไลน์เท่านั้น",
   "Outgoing_WebHook": "WebHook ขาออก",
   "Outgoing_WebHook_Description": "รับข้อมูลจาก Rocket.Chat แบบเรียลไทม์",
+  "Outlook_Calendar_Enabled": "เปิดใช้งานแล้ว",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "แทนที่ URL ที่อัปโหลดไฟล์ URL นี้ใช้สำหรับการดาวน์โหลดเว้นแต่จะได้รับ CDN",
   "Page_title": "ชื่อหน้า",
   "Page_URL": "URL ของหน้าเว็บ",

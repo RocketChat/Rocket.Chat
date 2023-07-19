@@ -1914,6 +1914,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR ແມ່ນມີພຽງແຕ່ໃນເວລາທີ່ຜູ້ໃຊ້ທັງສອງອອນໄລນ໌",
   "Outgoing_WebHook": "Outgoing WebHook",
   "Outgoing_WebHook_Description": "ໄດ້ຮັບຂໍ້ມູນອອກຈາກ RocketChat ໃນເວລາທີ່ແທ້ຈິງ.",
+  "Outlook_Calendar_Enabled": "ເປີດການໃຊ້ງານ",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL ແທນທີ່ໄຟລ໌ໄດ້ຖືກອັບໂຫລດ. url ນີ້ຍັງສາມາດໃຊ້ສໍາລັບການດາວໂຫລດເວັ້ນເສຍແຕ່ວ່າແຄນາດາຈະໄດ້ຮັບ",
   "Page_title": "Page title",
   "Page_URL": "ຫນ້າ URL",

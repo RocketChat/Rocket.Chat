@@ -3433,6 +3433,7 @@
   "Outgoing": "Исходящие",
   "Outgoing_WebHook": "Исходящий WebHook",
   "Outgoing_WebHook_Description": "Получать данные из Rocket.Chat в режиме реального времени",
+  "Outlook_Calendar_Enabled": "Включено",
   "Output_format": "Формат вывода",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Переопределить URL-адрес, на который загружены файлы. Этот URL-адрес также используется для загрузок до тех пор, пока не указан CDN.",
   "Page_title": "Заголовок страницы",

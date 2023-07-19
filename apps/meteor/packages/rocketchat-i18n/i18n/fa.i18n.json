@@ -2181,6 +2181,7 @@
   "OTR_is_only_available_when_both_users_are_online": "تنها زمانی در دسترس است که دو طرف آنلاین باشند.",
   "Outgoing_WebHook": "خروجی WebHook",
   "Outgoing_WebHook_Description": "دریافت اطلاعات از Rocket.Chat در زمان واقعی.",
+  "Outlook_Calendar_Enabled": "فعال",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL نادیده گرفتن که فایل های آپلود شده است. این URL نیز برای دریافت مگر اینکه یک CDN استفاده شده است",
   "Page_title": "عنوان صفحه",
   "Page_URL": "آدرس صفحه",

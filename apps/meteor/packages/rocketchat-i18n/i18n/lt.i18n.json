@@ -1932,6 +1932,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR galima tik tada, kai abu vartotojai yra prisijungę",
   "Outgoing_WebHook": "Išeinantis WebHook",
   "Outgoing_WebHook_Description": "Gauti duomenis iš \"Rocket.Chat\" realiuoju laiku.",
+  "Outlook_Calendar_Enabled": "Įjungtas",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Nepaisyti URL, į kurį įkelti failai. Šis URL taip pat naudojamas atsisiuntimui, jei nėra CDN",
   "Page_title": "Puslapio pavadinimas",
   "Page_URL": "Puslapio URL",

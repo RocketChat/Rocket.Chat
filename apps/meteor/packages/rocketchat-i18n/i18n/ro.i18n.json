@@ -1876,6 +1876,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR este disponibilă numai atunci când ambii utilizatori sunt online",
   "Outgoing_WebHook": "WebHook de ieșire",
   "Outgoing_WebHook_Description": "Obțineți date din Rocket.Chat în timp real.",
+  "Outlook_Calendar_Enabled": "Activat",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL-ul supracontrol la care sunt încărcate fișiere. Această adresă URL, de asemenea, utilizat pentru download-uri decât dacă o CDN este dată",
   "Page_title": "Titlul paginii",
   "Page_URL": "Adresa URL a paginii",

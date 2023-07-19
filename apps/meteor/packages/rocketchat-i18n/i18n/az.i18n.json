@@ -1877,6 +1877,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR yalnız hər iki istifadəçi online olduğunda istifadə edilə bilər",
   "Outgoing_WebHook": "Giden WebHook",
   "Outgoing_WebHook_Description": "Real-time Rocket.Chat-dən məlumat əldə edin.",
+  "Outlook_Calendar_Enabled": "Etkin",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Dosyaların yükləndiyi URL'yi silin. Bu url də bir CDN verilmədiyi təqdirdə yükləmələr üçün də istifadə olunur",
   "Page_title": "Səhifə başlığı",
   "Page_URL": "Səhifə URL",

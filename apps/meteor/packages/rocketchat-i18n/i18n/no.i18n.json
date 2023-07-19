@@ -1964,6 +1964,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR er bare tilgjengelig når begge brukerne er online",
   "Outgoing_WebHook": "Utgående WebHook",
   "Outgoing_WebHook_Description": "Få data ut av Rocket.Chat i sanntid.",
+  "Outlook_Calendar_Enabled": "aktivert",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Overstyr URL-adressen til hvilke filer som lastes opp. Denne nettadressen brukes også til nedlastinger med mindre en CDN er gitt",
   "Page_title": "Side tittel",
   "Page_URL": "Side URL",

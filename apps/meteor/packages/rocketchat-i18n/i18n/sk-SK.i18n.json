@@ -1886,6 +1886,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR je k dispozícii iba vtedy, ak sú obaja používatelia online",
   "Outgoing_WebHook": "Odchádzajúci WebHook",
   "Outgoing_WebHook_Description": "Získajte dáta z Rocket.Chat v reálnom čase.",
+  "Outlook_Calendar_Enabled": "Povolené",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Prepísať adresu URL, do ktorej sú nahrané súbory. Táto adresa URL sa tiež používa na sťahovanie, ak nie je zadaná žiadosť o CDN",
   "Page_title": "Názov stránky",
   "Page_URL": "Adresa URL stránky",

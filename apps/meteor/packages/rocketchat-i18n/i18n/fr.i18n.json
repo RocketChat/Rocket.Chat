@@ -3280,6 +3280,7 @@
   "Outgoing": "Sortant",
   "Outgoing_WebHook": "Webhook sortant",
   "Outgoing_WebHook_Description": "Obtenez des données de Rocket.Chat en temps réel.",
+  "Outlook_Calendar_Enabled": "Activé",
   "Output_format": "Format de sortie",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Modifier l'URL vers laquelle les fichiers sont chargés. Cette URL est également utilisée pour les téléchargements sauf si un CDN est indiqué",
   "Page_title": "Titre de la page",

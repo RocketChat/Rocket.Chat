@@ -1872,6 +1872,7 @@
   "OTR_is_only_available_when_both_users_are_online": "Dim ond pan fydd y ddau ddefnyddiwr ar-lein mae OTR ar gael",
   "Outgoing_WebHook": "WebHook Allanol",
   "Outgoing_WebHook_Description": "Cael data allan o Rocket.Chat mewn amser real.",
+  "Outlook_Calendar_Enabled": "Wedi'i alluogi",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Anwybyddu'r URL y mae ffeiliau wedi'u llwytho i fyny. Defnyddiwyd yr url hwn hefyd i'w lawrlwytho oni bai bod CDN yn cael ei roi",
   "Page_title": "Teitl y dudalen",
   "Page_URL": "Tudalen URL",

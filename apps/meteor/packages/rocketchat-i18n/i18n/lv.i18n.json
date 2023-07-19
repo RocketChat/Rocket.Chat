@@ -1890,6 +1890,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR ir pieejams tikai tad, ja abi lietotāji ir tiešsaistē",
   "Outgoing_WebHook": "Izejošais WebHook",
   "Outgoing_WebHook_Description": "Reāllaikā iegūt datus no Rocket.Chat.",
+  "Outlook_Calendar_Enabled": "Iespējots",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Pārrakstīt URL, uz kuru faili tika augšupielādēti. Šis URL tiek izmantots arī lejupielādei, ja nav norādīts CDN",
   "Page_title": "Lapas nosaukums",
   "Page_URL": "Lapas URL",

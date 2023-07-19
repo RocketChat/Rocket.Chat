@@ -113,7 +113,7 @@ const CannedResponsesTable = () => {
 				{t('Created_by')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key={'createdAt'}
+				key='createdAt'
 				direction={sortDirection}
 				active={sortBy === '_createdAt'}
 				onClick={setSort}
