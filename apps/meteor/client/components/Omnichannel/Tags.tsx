@@ -79,7 +79,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 					<EETagsComponent
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
-							handler(tags.map((tag) => tag.value));
+							handler(tags.map((tag) => tag.label));
 						}}
 						department={department}
 					/>
