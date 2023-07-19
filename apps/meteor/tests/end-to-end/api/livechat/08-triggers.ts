@@ -5,7 +5,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - triggers', function () {
 	this.retries(0);
@@ -18,12 +18,12 @@ describe('LIVECHAT - triggers', function () {
 
 	describe('livechat/triggers', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request.get(api('livechat/triggers')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
 		it('should return an array of triggers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await createTrigger(`test${Date.now()}`);
 			await request
 				.get(api('livechat/triggers'))
@@ -177,7 +177,7 @@ describe('LIVECHAT - triggers', function () {
 				.expect(400);
 		});
 		it('should fail if user doesnt have view-livechat-manager permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)
@@ -192,7 +192,7 @@ describe('LIVECHAT - triggers', function () {
 				.expect(403);
 		});
 		it('should save a new trigger', async () => {
-			await updatePermission('view-livechat-manager', ['admin', 'livechat-manager']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)

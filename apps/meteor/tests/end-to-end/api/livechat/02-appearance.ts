@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - appearance', function () {
 	this.retries(0);
@@ -59,7 +59,7 @@ describe('LIVECHAT - appearance', function () {
 				.expect(400);
 		});
 		it('should fail if user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.post(api('livechat/appearance'))
 				.set(credentials)
@@ -67,7 +67,7 @@ describe('LIVECHAT - appearance', function () {
 				.expect(403);
 		});
 		it('should fail if body contains invalid _id', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.post(api('livechat/appearance'))
 				.set(credentials)

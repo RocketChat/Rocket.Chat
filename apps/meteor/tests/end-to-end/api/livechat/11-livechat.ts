@@ -7,7 +7,7 @@ import { createCustomField, deleteCustomField } from '../../../data/livechat/cus
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom } from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', function () {
@@ -284,7 +284,7 @@ describe('LIVECHAT - Utils', function () {
 		it('should fail if user doesnt have "send-omnichannel-chat-transcript" permission', async () => {
 			const user = await createVisitor();
 			const room = await createLivechatRoom(user.token);
-			await updatePermission('send-omnichannel-chat-transcript', []);
+			await removePermissionFromAllRoles('send-omnichannel-chat-transcript');
 
 			await request
 				.delete(api(`livechat/transcript/${room._id}`))
@@ -293,7 +293,7 @@ describe('LIVECHAT - Utils', function () {
 				.expect(403);
 		});
 		it('should fail if rid is not a valid room id', async () => {
-			await updatePermission('send-omnichannel-chat-transcript', ['livechat-manager', 'admin']);
+			await restorePermissionToRoles('send-omnichannel-chat-transcript');
 			await request.delete(api('livechat/transcript/rid')).set(credentials).send({}).expect(400);
 		});
 		it('should fail if room is not open', async () => {
