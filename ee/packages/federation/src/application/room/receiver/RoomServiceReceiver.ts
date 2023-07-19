@@ -93,14 +93,14 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (wasGeneratedOnTheProxyServer && !isUserJoiningByHimself && !affectedFederatedRoom) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isInviterFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalInviterId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalInviterId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalInviteeId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalInviteeId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const inviterUsername = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
 		const inviteeUsername = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
@@ -243,9 +243,10 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!federatedCreatorUser) {
 			return;
 		}
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isRoomFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalRoomId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalRoomId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const newFederatedRoom = FederatedRoom.createInstance(
 			externalRoomId,
@@ -284,9 +285,10 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (user) {
 			return user;
 		}
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeserver = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalUserId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalUserId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const existsOnlyOnProxyServer = isUserFromTheSameHomeserver;
 		const localUsername = externalUsername || removeExternalSpecificCharsFromExternalIdentifier(externalUserId);
@@ -324,13 +326,14 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		externalRoomId: string,
 		federatedInviterUser: FederatedUser,
 	): Promise<void> {
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const allInvitees = await Promise.all(
 			allInviteesExternalIds.map(async (dmExternalInviteeId) => {
 				const invitee = await this.internalUserAdapter.getFederatedUserByExternalId(dmExternalInviteeId.externalInviteeId);
 				if (!invitee) {
 					const isDMInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-						this.bridge.extractHomeserverOrigin(dmExternalInviteeId.externalInviteeId),
-						this.internalHomeServerDomain,
+						this.bridge.extractHomeserverOrigin(dmExternalInviteeId.externalInviteeId, internalHomeServerDomain),
+						internalHomeServerDomain,
 					);
 					const dmInviteeUsername = isDMInviteeFromTheSameHomeServer
 						? dmExternalInviteeId.inviteeUsernameOnly
@@ -355,8 +358,8 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			allInvitees
 				.filter((invitee) =>
 					FederatedUser.isOriginalFromTheProxyServer(
-						this.bridge.extractHomeserverOrigin(invitee.getExternalId()),
-						this.internalHomeServerDomain,
+						this.bridge.extractHomeserverOrigin(invitee.getExternalId(), internalHomeServerDomain),
+						internalHomeServerDomain,
 					),
 				)
 				.map((invitee) => this.bridge.joinRoom(externalRoomId, invitee.getExternalId())),
@@ -371,9 +374,10 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		const members = [federatedInviterUser, federatedInviteeUser];
 		const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
 		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedInviteeUser.getExternalId()),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(federatedInviteeUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 		if (isInviteeFromTheSameHomeServer) {
@@ -397,7 +401,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (message) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		if (replyToEventId) {
 			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
 			if (!messageToReplyTo) {
@@ -410,7 +414,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 				rawMessage,
 				externalEventId,
 				messageToReplyTo,
-				this.internalHomeServerDomain,
+				internalHomeServerDomain,
 			);
 			return;
 		}
@@ -421,7 +425,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			rawMessage,
 			externalFormattedText,
 			externalEventId,
-			this.internalHomeServerDomain,
+			internalHomeServerDomain,
 		);
 	}
 
@@ -443,12 +447,13 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			return;
 		}
 
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		// TODO: leaked business logic, move this to its proper place
 		const isAQuotedMessage = message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link));
 		if (isAQuotedMessage) {
 			const wasGeneratedLocally = FederatedUser.isOriginalFromTheProxyServer(
-				this.bridge.extractHomeserverOrigin(externalSenderId),
-				this.internalHomeServerDomain,
+				this.bridge.extractHomeserverOrigin(externalSenderId, internalHomeServerDomain),
+				internalHomeServerDomain,
 			);
 			if (wasGeneratedLocally) {
 				return;
@@ -457,7 +462,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 				message,
 				newExternalFormattedText,
 				newRawMessage,
-				this.internalHomeServerDomain,
+				internalHomeServerDomain,
 				senderUser,
 			);
 			// TODO: create an entity to abstract all the message logic
@@ -469,20 +474,14 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 				newRawMessage,
 				newExternalFormattedText,
 				message,
-				this.internalHomeServerDomain,
+				internalHomeServerDomain,
 			);
 			return;
 		}
 		if (!FederatedRoom.shouldUpdateMessage(newRawMessage, message)) {
 			return;
 		}
-		await this.internalMessageAdapter.editMessage(
-			senderUser,
-			newRawMessage,
-			newExternalFormattedText,
-			message,
-			this.internalHomeServerDomain,
-		);
+		await this.internalMessageAdapter.editMessage(senderUser, newRawMessage, newExternalFormattedText, message, internalHomeServerDomain);
 	}
 
 	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {
@@ -515,7 +514,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			senderUser.getInternalReference(),
 			fileDetails,
 		);
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		if (replyToEventId) {
 			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
 			if (!messageToReplyTo) {
@@ -528,7 +527,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 				attachments,
 				externalEventId,
 				messageToReplyTo,
-				this.internalHomeServerDomain,
+				internalHomeServerDomain,
 			);
 			return;
 		}
@@ -564,9 +563,10 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!federatedUser) {
 			return;
 		}
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const shouldUseExternalRoomIdAsRoomName = !FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalRoomId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalRoomId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (shouldUseExternalRoomIdAsRoomName && federatedRoom.shouldUpdateRoomName(externalRoomId)) {
 			federatedRoom.changeRoomName(externalRoomId);

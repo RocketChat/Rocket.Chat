@@ -72,9 +72,9 @@ export interface IFederationBridge {
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
 	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string>;
 	createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string>;
-	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
-	extractHomeserverOrigin(externalUserId: string): string;
-	isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean;
+	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string, homeserverDomain: string): boolean;
+	extractHomeserverOrigin(externalUserId: string, homeserverDomain: string): string;
+	isRoomFromTheSameHomeserver(externalRoomId: string, domain: string, homeserverDomain: string): boolean;
 	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void>;
 	logFederationStartupInfo(info?: string): void;

@@ -8,16 +8,12 @@ import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapte
 import type { IFederationInviteeDto } from './room/input/RoomSenderDto';
 
 export abstract class AbstractFederationApplicationService {
-	protected internalHomeServerDomain: string;
-
 	constructor(
 		protected bridge: IFederationBridge,
 		protected internalUserAdapter: RocketChatUserAdapter,
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
-	) {
-		this.internalHomeServerDomain = this.internalSettingsAdapter.getHomeServerDomain();
-	}
+	) {}
 
 	protected async createFederatedUserInternallyOnly(
 		externalUserId: string,
@@ -78,7 +74,8 @@ export abstract class AbstractFederationApplicationService {
 			throw new Error(`Could not find user id for ${internalInviterId}`);
 		}
 		const name = internalUser.name || internalUser.username;
-		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
+		const externalInviterId = await this.bridge.createUser(internalUser.username, name, internalHomeServerDomain);
 		const existsOnlyOnProxyServer = true;
 		await this.createFederatedUserInternallyOnly(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
 		await this.updateUserAvatarExternally(
@@ -113,11 +110,12 @@ export abstract class AbstractFederationApplicationService {
 	}
 
 	protected async createUsersLocallyOnly(invitees: IFederationInviteeDto[]): Promise<void> {
+		const internalHomeserverDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const externalUsersToBeCreatedLocally = invitees.filter(
 			(invitee) =>
 				!FederatedUser.isOriginalFromTheProxyServer(
-					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
-					this.internalHomeServerDomain,
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId, internalHomeserverDomain),
+					internalHomeserverDomain,
 				),
 		);
 

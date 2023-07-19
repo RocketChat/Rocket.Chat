@@ -1,75 +1,63 @@
-// import crypto from 'crypto';
 import fs from 'fs';
 import { resolve } from 'path';
 
 import yaml from 'js-yaml';
-// import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
-// import { settings, settingsRegistry } from '../../../../../../app/settings/server';
-
-const settings = {
-	get: (key: string) => key,
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	watchMultiple: (_key: string[], _cb: (...args: any) => Promise<void>) => () => {},
-};
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
 
 export class RocketChatSettingsAdapter {
 	public async initialize() {
-		await this.addFederationSettings();
-		this.watchChangesAndUpdateRegistrationFile();
 		await this.updateSettingsWithProvidedConfigFileIfNecessary();
 	}
 
-	public getApplicationServiceId(): string {
-		return settings.get('Federation_Matrix_id');
+	public async getApplicationServiceId(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_id'))?.value || '');
 	}
 
-	public getApplicationHomeServerToken(): string {
-		return settings.get('Federation_Matrix_hs_token');
+	public async getApplicationHomeServerToken(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_hs_token'))?.value || '');
 	}
 
-	public getApplicationApplicationServiceToken(): string {
-		return settings.get('Federation_Matrix_as_token');
+	public async getApplicationApplicationServiceToken(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_as_token'))?.value || '');
 	}
 
-	public getBridgeUrl(): string {
-		return settings.get('Federation_Matrix_bridge_url');
+	public async getBridgeUrl(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_bridge_url'))?.value || '');
 	}
 
-	public getBridgePort(): number {
-		const [, , port = '3300'] = this.getBridgeUrl().split(':');
+	public async getBridgePort(): Promise<number> {
+		const [, , port = '3300'] = (await this.getBridgeUrl()).split(':');
 
 		return parseInt(port);
 	}
 
-	public getHomeServerUrl(): string {
-		return settings.get('Federation_Matrix_homeserver_url');
+	public async getHomeServerUrl(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_homeserver_url'))?.value || '');
 	}
 
-	public getHomeServerDomain(): string {
-		return settings.get('Federation_Matrix_homeserver_domain');
+	public async getHomeServerDomain(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_homeserver_domain'))?.value || '');
 	}
 
-	public getBridgeBotUsername(): string {
-		return settings.get('Federation_Matrix_bridge_localpart');
+	public async getBridgeBotUsername(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_bridge_localpart'))?.value || '');
 	}
 
-	public getMaximumSizeOfUsersWhenJoiningPublicRooms(): string {
-		return settings.get('Federation_Matrix_max_size_of_public_rooms_users');
+	public async getMaximumSizeOfUsersWhenJoiningPublicRooms(): Promise<string> {
+		return String((await Settings.findOneById('Federation_Matrix_max_size_of_public_rooms_users'))?.value || '');
 	}
 
 	public async disableFederation(): Promise<void> {
 		await Settings.updateValueById('Federation_Matrix_enabled', false);
 	}
 
-	public isFederationEnabled(): boolean {
-		// return settings.get('Federation_Matrix_enabled') === true;
-		return settings.get('Federation_Matrix_enabled') === 'true';
+	public async isFederationEnabled(): Promise<boolean> {
+		return (await Settings.findOneById('Federation_Matrix_enabled'))?.value === true;
 	}
 
 	public areEphemeralEventsEnabled(): boolean {
@@ -80,70 +68,13 @@ export class RocketChatSettingsAdapter {
 		return this.getRegistrationFileFromHomeserver()?.enableEphemeralEvents === true;
 	}
 
-	public onFederationEnabledStatusChanged(
-		callback: (
-			enabled: boolean,
-			appServiceId: string,
-			homeServerUrl: string,
-			homeServerDomain: string,
-			bridgeUrl: string,
-			bridgePort: number,
-			homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-		) => Promise<void>,
-	): () => void {
-		return settings.watchMultiple(
-			[
-				'Federation_Matrix_enabled',
-				'Federation_Matrix_id',
-				'Federation_Matrix_hs_token',
-				'Federation_Matrix_as_token',
-				'Federation_Matrix_homeserver_url',
-				'Federation_Matrix_homeserver_domain',
-				'Federation_Matrix_bridge_url',
-				'Federation_Matrix_bridge_localpart',
-			],
-			([enabled]) =>
-				callback(
-					enabled === true,
-					this.getApplicationServiceId(),
-					this.getHomeServerUrl(),
-					this.getHomeServerDomain(),
-					this.getBridgeUrl(),
-					this.getBridgePort(),
-					this.generateRegistrationFileObject(),
-				),
-		);
-		// return settings.watchMultiple<boolean>(
-		// 	[
-		// 		'Federation_Matrix_enabled',
-		// 		'Federation_Matrix_id',
-		// 		'Federation_Matrix_hs_token',
-		// 		'Federation_Matrix_as_token',
-		// 		'Federation_Matrix_homeserver_url',
-		// 		'Federation_Matrix_homeserver_domain',
-		// 		'Federation_Matrix_bridge_url',
-		// 		'Federation_Matrix_bridge_localpart',
-		// 	],
-		// 	([enabled]) =>
-		// 		callback(
-		// 			enabled === true,
-		// 			this.getApplicationServiceId(),
-		// 			this.getHomeServerUrl(),
-		// 			this.getHomeServerDomain(),
-		// 			this.getBridgeUrl(),
-		// 			this.getBridgePort(),
-		// 			this.generateRegistrationFileObject(),
-		// 		),
-		// );
-	}
-
-	public generateRegistrationFileObject(): IFederationBridgeRegistrationFile {
+	public async generateRegistrationFileObject(): Promise<IFederationBridgeRegistrationFile> {
 		return {
-			id: this.getApplicationServiceId(),
-			homeserverToken: this.getApplicationHomeServerToken(),
-			applicationServiceToken: this.getApplicationApplicationServiceToken(),
-			bridgeUrl: this.getBridgeUrl(),
-			botName: this.getBridgeBotUsername(),
+			id: await this.getApplicationServiceId(),
+			homeserverToken: await this.getApplicationHomeServerToken(),
+			applicationServiceToken: await this.getApplicationApplicationServiceToken(),
+			bridgeUrl: await this.getBridgeUrl(),
+			botName: await this.getBridgeBotUsername(),
 			enableEphemeralEvents: this.areEphemeralEventsEnabled(),
 			listenTo: {
 				users: [
@@ -168,8 +99,8 @@ export class RocketChatSettingsAdapter {
 		};
 	}
 
-	private async updateRegistrationFile(): Promise<void> {
-		const registrationFile = this.generateRegistrationFileObject();
+	public async updateRegistrationFile(): Promise<void> {
+		const registrationFile = await this.generateRegistrationFileObject();
 
 		await Settings.updateValueById(
 			'Federation_Matrix_registration_file',
@@ -183,100 +114,6 @@ export class RocketChatSettingsAdapter {
 				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 			}),
 		);
-	}
-
-	private watchChangesAndUpdateRegistrationFile(): void {
-		settings.watchMultiple(
-			[
-				'Federation_Matrix_id',
-				'Federation_Matrix_hs_token',
-				'Federation_Matrix_as_token',
-				'Federation_Matrix_homeserver_url',
-				'Federation_Matrix_homeserver_domain',
-				'Federation_Matrix_bridge_url',
-				'Federation_Matrix_bridge_localpart',
-			],
-			this.updateRegistrationFile.bind(this),
-		);
-	}
-
-	private async addFederationSettings(): Promise<void> {
-		// const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
-		// await settingsRegistry.addGroup('Federation', async function () {
-		// 	await this.section('Matrix Bridge', async function () {
-		// 		await this.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
-		// 			readonly: false,
-		// 			type: 'boolean',
-		// 			i18nLabel: 'Federation_Matrix_enabled',
-		// 			i18nDescription: 'Federation_Matrix_enabled_desc',
-		// 			alert: 'Federation_Matrix_Enabled_Alert',
-		// 			public: true,
-		// 		});
-		// 		const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
-		// 		const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
-		// 		const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
-		// 		await this.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
-		// 			readonly: true,
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_id',
-		// 			i18nDescription: 'Federation_Matrix_id_desc',
-		// 		});
-		// 		await this.add('Federation_Matrix_hs_token', preExistingConfiguration?.homeserverToken || homeserverToken, {
-		// 			readonly: true,
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_hs_token',
-		// 			i18nDescription: 'Federation_Matrix_hs_token_desc',
-		// 		});
-		// 		await this.add('Federation_Matrix_as_token', preExistingConfiguration?.applicationServiceToken || applicationServiceToken, {
-		// 			readonly: true,
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_as_token',
-		// 			i18nDescription: 'Federation_Matrix_as_token_desc',
-		// 		});
-		// 		await this.add('Federation_Matrix_homeserver_url', preExistingConfiguration?.rocketchat?.homeServerUrl || 'http://localhost:8008', {
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_homeserver_url',
-		// 			i18nDescription: 'Federation_Matrix_homeserver_url_desc',
-		// 			alert: 'Federation_Matrix_homeserver_url_alert',
-		// 		});
-		// 		await this.add('Federation_Matrix_homeserver_domain', preExistingConfiguration?.rocketchat?.domainName || 'local.rocket.chat', {
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_homeserver_domain',
-		// 			i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
-		// 			alert: 'Federation_Matrix_homeserver_domain_alert',
-		// 		});
-		// 		await this.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://host.docker.internal:3300', {
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_bridge_url',
-		// 			i18nDescription: 'Federation_Matrix_bridge_url_desc',
-		// 		});
-		// 		await this.add('Federation_Matrix_bridge_localpart', preExistingConfiguration?.botName || 'rocket.cat', {
-		// 			type: 'string',
-		// 			i18nLabel: 'Federation_Matrix_bridge_localpart',
-		// 			i18nDescription: 'Federation_Matrix_bridge_localpart_desc',
-		// 		});
-		// 		await this.add('Federation_Matrix_registration_file', '', {
-		// 			readonly: true,
-		// 			hidden: Boolean(preExistingConfiguration),
-		// 			type: 'code',
-		// 			i18nLabel: 'Federation_Matrix_registration_file',
-		// 			i18nDescription: 'Federation_Matrix_registration_file_desc',
-		// 			alert: 'Federation_Matrix_registration_file_Alert',
-		// 		});
-		// 	});
-		// });
-		// void settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
-		// 	readonly: false,
-		// 	type: 'int',
-		// 	i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
-		// 	i18nDescription: 'Federation_Matrix_max_size_of_public_rooms_users_desc',
-		// 	alert: 'Federation_Matrix_max_size_of_public_rooms_users_Alert',
-		// 	public: true,
-		// 	enterprise: true,
-		// 	invalidValue: false,
-		// 	group: 'Federation',
-		// 	section: 'Matrix Bridge',
-		// });
 	}
 
 	private getRegistrationFileFromHomeserver(): Record<string, any> | undefined {

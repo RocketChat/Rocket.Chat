@@ -36,6 +36,7 @@ import { createVConfSettings } from './video-conference';
 import { createUserDataSettings } from './userDataDownload';
 import { createWebDavSettings } from './webdav';
 import { createWebRTCSettings } from './webrtc';
+import { createMatrixFederationSettings } from './matrix-federation';
 
 async function createSettings() {
 	await Promise.all([
@@ -77,6 +78,7 @@ async function createSettings() {
 		createUserDataSettings(),
 		createWebDavSettings(),
 		createWebRTCSettings(),
+		createMatrixFederationSettings(),
 	]);
 }
 

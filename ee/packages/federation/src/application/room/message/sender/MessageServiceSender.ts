@@ -36,9 +36,10 @@ export class FederationMessageServiceSender {
 			return;
 		}
 
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -76,10 +77,10 @@ export class FederationMessageServiceSender {
 		if (!isMessageFromMatrixFederation(internalMessage)) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;

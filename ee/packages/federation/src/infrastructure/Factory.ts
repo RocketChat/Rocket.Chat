@@ -284,12 +284,12 @@ export class FederationFactory {
 		);
 	}
 
-	public static setupListenersForLocalActionsWhenValidLicense(
+	public static async setupListenersForLocalActionsWhenValidLicense(
 		roomServiceSender: FederationRoomServiceSender,
 		dmRoomServiceSender: FederationDirectMessageRoomServiceSender,
 		settingsAdapter: RocketChatSettingsAdapter,
-	): void {
-		const homeServerDomain = settingsAdapter.getHomeServerDomain();
+	): Promise<void> {
+		const homeServerDomain = await settingsAdapter.getHomeServerDomain();
 		FederationHooks.onFederatedRoomCreated(async (room: IRoom, owner: IUser, originalMemberList: string[]) =>
 			roomServiceSender.onRoomCreated(
 				FederationRoomSenderConverter.toOnRoomCreationDto(owner._id, owner.username || '', room._id, originalMemberList, homeServerDomain),

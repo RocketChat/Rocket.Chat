@@ -22,8 +22,6 @@ import type { FederationUserService } from './application/user/UserService';
 export class FederationService extends ServiceClassInternal implements IFederationService {
 	protected name = 'federation';
 
-	private cancelSettingsObserver: () => void;
-
 	private internalQueueInstance: InMemoryQueue;
 
 	private internalSettingsAdapter: RocketChatSettingsAdapter;
@@ -101,7 +99,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 
 	private setEventListeners(): void {
 		this.onEvent('user.avatarUpdate', async ({ username }): Promise<void> => {
-			if (!this.isFederationEnabled()) {
+			if (!(await this.isFederationEnabled())) {
 				return;
 			}
 			if (!username) {
@@ -117,7 +115,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			await this.internalUserServiceSender.onUserTyping(username, roomId, isTyping);
 		});
 		this.onEvent('user.realNameChanged', async ({ _id, name }): Promise<void> => {
-			if (!this.isFederationEnabled()) {
+			if (!(await this.isFederationEnabled())) {
 				return;
 			}
 			if (!name || !_id) {
@@ -138,9 +136,27 @@ export class FederationService extends ServiceClassInternal implements IFederati
 				await this.onValidEnterpriseLicenseAdded();
 			}
 		});
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			const interestedInSettings = [
+				'Federation_Matrix_enabled',
+				'Federation_Matrix_id',
+				'Federation_Matrix_hs_token',
+				'Federation_Matrix_as_token',
+				'Federation_Matrix_homeserver_url',
+				'Federation_Matrix_homeserver_domain',
+				'Federation_Matrix_bridge_url',
+				'Federation_Matrix_bridge_localpart',
+			];
+			if (!interestedInSettings.includes(setting._id) || clientAction === 'removed') {
+				return;
+			}
+			await this.onFederationEnabledSettingChange(await this.isFederationEnabled());
+			await this.internalSettingsAdapter.updateRegistrationFile();
+		});
 	}
 
-	protected isFederationEnabled(): boolean {
+	protected async isFederationEnabled(): Promise<boolean> {
 		return this.internalSettingsAdapter.isFederationEnabled();
 	}
 
@@ -158,9 +174,6 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	public async initialize() {
 		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
 		await this.internalSettingsAdapter.initialize();
-		this.cancelSettingsObserver = this.internalSettingsAdapter.onFederationEnabledStatusChanged(
-			this.onFederationEnabledSettingChange.bind(this),
-		);
 	}
 
 	private async noop(): Promise<void> {
@@ -214,7 +227,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	}
 
 	protected async setupFederation(): Promise<void> {
-		if (this.isFederationEnabled()) {
+		if (await this.isFederationEnabled()) {
 			await this.setupEventHandlersForExternalEvents();
 			await this.setupInternalValidators();
 			await this.setupInternalActionListeners();
@@ -223,8 +236,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 		this.isRunning = true;
 	}
 
-	protected async cleanUpSettingObserver(): Promise<void> {
-		this.cancelSettingsObserver();
+	protected async shutDownService(): Promise<void> {
 		this.isRunning = false;
 	}
 
@@ -268,11 +280,11 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	}
 
 	private async startFederation(): Promise<void> {
-		if (!this.isFederationEnabled()) {
+		if (!(await this.isFederationEnabled())) {
 			return;
 		}
 		await this.bridge.start();
-		this.bridge.logFederationStartupInfo('Running Federation V2');
+		void this.bridge.logFederationStartupInfo('Running Federation V2');
 		const { addDefaultFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
 		addDefaultFederationSlashCommand();
 	}
@@ -285,7 +297,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		await this.cleanUpSettingObserver();
+		await this.shutDownService();
 	}
 
 	public async created(): Promise<void> {
@@ -310,7 +322,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	}
 
 	private async onValidEnterpriseLicenseAdded(): Promise<void> {
-		FederationFactory.setupListenersForLocalActionsWhenValidLicense(
+		await FederationFactory.setupListenersForLocalActionsWhenValidLicense(
 			this.internalRoomServiceSender,
 			this.directMessageRoomServiceSender,
 			this.internalSettingsAdapter,

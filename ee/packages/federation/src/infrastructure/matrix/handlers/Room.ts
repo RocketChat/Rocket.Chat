@@ -34,7 +34,7 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 
 	public async handle(externalEvent: MatrixEventRoomMembershipChanged): Promise<void> {
 		await this.roomService.onChangeRoomMembership(
-			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent, await this.rocketSettingsAdapter.getHomeServerDomain()),
 		);
 	}
 }
