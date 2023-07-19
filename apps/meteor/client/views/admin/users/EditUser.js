@@ -1,8 +1,9 @@
-import { Box, Field, Margins, Button } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback } from 'react';
 
+import { ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
@@ -127,20 +128,16 @@ function EditUser({ data, roles, onReload, ...props }) {
 
 	const append = useMemo(
 		() => (
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>
-								{t('Reset')}
-							</Button>
-							<Button primary mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>
-								{t('Save')}
-							</Button>
-						</Margins>
-					</Box>
-				</Field.Row>
-			</Field>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!canSaveOrReset} onClick={reset}>
+						{t('Reset')}
+					</Button>
+					<Button primary disabled={!canSaveOrReset} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		),
 		[handleSave, canSaveOrReset, reset, t],
 	);

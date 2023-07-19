@@ -1,5 +1,4 @@
 import type { AtLeast, ISubscription, IUser, ICalendarNotification } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
@@ -14,6 +13,7 @@ import { RoomManager } from '../../lib/RoomManager';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
+import { router } from '../../providers/RouterProvider';
 
 const OutlookCalendarEventModal = lazy(() => import('../../views/outlookCalendar/OutlookCalendarEventModal'));
 
@@ -23,7 +23,7 @@ const notifyNewRoom = async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> 
 		return;
 	}
 
-	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
+	if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
 		KonchatNotification.newRoom(sub.rid);
 	}
 };
@@ -83,7 +83,7 @@ Meteor.startup(() => {
 			return;
 		}
 		Notifications.onUser('notification', (notification) => {
-			const openedRoomId = ['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) ? RoomManager.opened : undefined;
+			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName()!) ? RoomManager.opened : undefined;
 
 			// This logic is duplicated in /client/startup/unread.coffee.
 			const hasFocus = readMessage.isEnable();

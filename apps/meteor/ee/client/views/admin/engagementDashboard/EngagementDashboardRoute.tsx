@@ -1,4 +1,4 @@
-import { useCurrentRoute, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -11,19 +11,30 @@ const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'cha
 
 const EngagementDashboardRoute = (): ReactElement | null => {
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
-	const engagementDashboardRoute = useRoute('engagement-dashboard');
-	const [routeName, routeParams] = useCurrentRoute();
-	const { tab } = routeParams ?? {};
+	const router = useRouter();
+	const tab = useRouteParameter('tab');
 
-	useEffect(() => {
-		if (routeName !== 'engagement-dashboard') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'engagement-dashboard') {
+					return;
+				}
 
-		if (!isValidTab(tab)) {
-			engagementDashboardRoute.replace({ tab: 'users' });
-		}
-	}, [routeName, engagementDashboardRoute, tab]);
+				const { tab } = router.getRouteParameters();
+
+				if (!isValidTab(tab)) {
+					router.navigate(
+						{
+							pattern: '/admin/engagement-dashboard/:tab?',
+							params: { tab: 'users' },
+						},
+						{ replace: true },
+					);
+				}
+			}),
+		[router],
+	);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
@@ -38,7 +49,17 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	eventStats({
 		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
-	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
+	return (
+		<EngagementDashboardPage
+			tab={tab}
+			onSelectTab={(tab) =>
+				router.navigate({
+					pattern: '/admin/engagement-dashboard/:tab?',
+					params: { tab },
+				})
+			}
+		/>
+	);
 };
 
 export default EngagementDashboardRoute;

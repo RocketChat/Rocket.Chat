@@ -39,6 +39,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
+		featuresPreview?: { name: string; value: boolean }[];
 		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
 		notifyCalendarEvents?: boolean;
@@ -193,6 +194,17 @@ const UsersSetPreferencesParamsPostSchema = {
 						properties: {
 							action: { type: 'string' },
 							label: { type: 'string' },
+						},
+					},
+					nullable: true,
+				},
+				featuresPreview: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							name: { type: 'string' },
+							value: { type: 'boolean' },
 						},
 					},
 					nullable: true,

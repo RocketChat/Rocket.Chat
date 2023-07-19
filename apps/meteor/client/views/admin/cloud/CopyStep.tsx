@@ -5,7 +5,7 @@ import type { FC } from 'react';
 import React, { useEffect, useState, useRef } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { cloudConsoleUrl } from './constants';
+import { CLOUD_CONSOLE_URL } from '../../../lib/constants';
 
 type CopyStepProps = {
 	onNextButtonClick: () => void;
@@ -61,7 +61,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 						<Icon name='copy' /> {t('Copy')}
 					</Button>
 				</Box>
-				<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { cloudConsoleUrl })} />
+				<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { CLOUD_CONSOLE_URL })} />
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

@@ -45,7 +45,7 @@ addAction('thread', (options) => {
 							const unread = tunread > 99 ? '99+' : tunread;
 							const variant = getVariant(tunreadUser, tunreadGroup);
 							return (
-								<HeaderToolboxAction {...props}>
+								<HeaderToolboxAction key={props.id} {...props}>
 									{!!unread && <HeaderToolboxActionBadge variant={variant}>{unread}</HeaderToolboxActionBadge>}
 								</HeaderToolboxAction>
 							);

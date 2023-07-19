@@ -2,12 +2,13 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { CannedResponse } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { getTagsInformation } from './tags';
 import { getDepartmentsWhichUserCanAccess } from '../../../livechat-enterprise/server/api/lib/departments';
 
 export async function findAllCannedResponses({ userId }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
-		return CannedResponse.find({
+		const cannedResponses = await CannedResponse.find({
 			$or: [
 				{
 					scope: 'user',
@@ -21,20 +22,22 @@ export async function findAllCannedResponses({ userId }) {
 				},
 			],
 		}).toArray();
+		return getTagsInformation(cannedResponses);
 	}
 
 	// If the user it not any of the previous roles nor an agent, then get only his own responses
 	if (!(await hasPermissionAsync(userId, 'view-agent-canned-responses'))) {
-		return CannedResponse.find({
+		const cannedResponses = await CannedResponse.find({
 			scope: 'user',
 			userId,
 		}).toArray();
+		return getTagsInformation(cannedResponses);
 	}
 
 	// Last scenario: user is an agent, so get his own responses and those from the departments he is in
 	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
 
-	return CannedResponse.find({
+	const cannedResponses = await CannedResponse.find({
 		$or: [
 			{
 				scope: 'user',
@@ -51,6 +54,8 @@ export async function findAllCannedResponses({ userId }) {
 			},
 		],
 	}).toArray();
+
+	return getTagsInformation(cannedResponses);
 }
 
 export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
@@ -124,7 +129,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	});
 	const [cannedResponses, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
-		cannedResponses,
+		cannedResponses: await getTagsInformation(cannedResponses),
 		total,
 	};
 }
