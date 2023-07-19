@@ -3,6 +3,7 @@ import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUpload, IIntegratio
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { GroupsArchiveProps } from './GroupsArchiveProps';
 import type { GroupsMembersProps } from './GroupsMembersProps';
+import type { GroupsMembersByRoleProps } from './GroupsMembersByRoleProps';
 import type { GroupsFilesProps } from './GroupsFilesProps';
 import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
 import type { GroupsCreateProps } from './GroupsCreateProps';
@@ -47,6 +48,14 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.members': {
 		GET: (params: GroupsMembersProps) => {
+			count: number;
+			offset: number;
+			members: IUser[];
+			total: number;
+		};
+	};
+	'/v1/groups.membersByRole': {
+		GET: (params: GroupsMembersByRoleProps) => {
 			count: number;
 			offset: number;
 			members: IUser[];

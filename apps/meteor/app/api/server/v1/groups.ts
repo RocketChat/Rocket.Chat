@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { findUsersOfRoomByRole } from '../../../../server/lib/findUsersOfRoomByRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
 	hasAllPermissionAsync,
@@ -719,6 +720,56 @@ API.v1.addRoute(
 
 			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult.rid,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+			});
+
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'groups.membersByRole',
+	{ authRequired: true },
+	{
+		async get() {
+			const findResult = await findPrivateGroupByIdOrName({
+				params: this.queryParams,
+				userId: this.userId,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					role: Match.Maybe(String),
+					status: Match.Maybe([String]),
+					filter: Match.Maybe(String),
+				}),
+			);
+
+			const { status, filter, role } = this.queryParams;
+
+			const { cursor, totalCount } = await findUsersOfRoomByRole({
+				rid: findResult.rid,
+				role,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
