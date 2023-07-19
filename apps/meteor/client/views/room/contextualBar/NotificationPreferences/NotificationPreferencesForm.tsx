@@ -111,7 +111,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 						)}
 					/>
 				</NotificationByDevice>
-				<NotificationByDevice device={t('Email')} icon={'mail'}>
+				<NotificationByDevice device={t('Email')} icon='mail'>
 					<Controller
 						control={control}
 						name='emailAlert'
