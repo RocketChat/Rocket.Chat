@@ -43,7 +43,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
 	const { data } = useIsEnterprise();
 
-	const isEnterpriseLicense = data?.isEnterprise ?? false;
+	const isEnterpriseLicense = !!data?.isEnterprise;
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
