@@ -557,7 +557,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.get': {
-		GET: (params: { updatedSince: string }) => {
+		GET: (params?: { updatedSince?: string }) => {
 			update: IRoom[];
 			remove: IRoom[];
 		};

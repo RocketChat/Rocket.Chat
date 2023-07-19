@@ -35,29 +35,30 @@ export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
 	...overrides,
 });
 
-export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISubscription => ({
-	_id: faker.database.mongodbObjectId(),
-	_updatedAt: faker.date.recent(),
-	u: {
+export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISubscription =>
+	({
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		_updatedAt: faker.date.recent(),
+		u: {
+			_id: faker.database.mongodbObjectId(),
+			username: faker.internet.userName(),
+			name: faker.person.fullName(),
+			...overrides?.u,
+		},
+		rid: faker.database.mongodbObjectId(),
+		open: faker.datatype.boolean(),
+		ts: faker.date.recent(),
 		name: faker.person.fullName(),
-		...overrides?.u,
-	},
-	rid: faker.database.mongodbObjectId(),
-	open: faker.datatype.boolean(),
-	ts: faker.date.recent(),
-	name: faker.person.fullName(),
-	unread: faker.number.int({ min: 0 }),
-	t: faker.helpers.arrayElement(['c', 'p', 'd']),
-	ls: faker.date.recent(),
-	lr: faker.date.recent(),
-	userMentions: faker.number.int({ min: 0 }),
-	groupMentions: faker.number.int({ min: 0 }),
-	lowerCaseName: faker.person.fullName().toLowerCase(),
-	lowerCaseFName: faker.person.fullName().toLowerCase(),
-	...overrides,
-});
+		unread: faker.number.int({ min: 0 }),
+		t: faker.helpers.arrayElement(['c', 'p', 'd']),
+		ls: faker.date.recent(),
+		lr: faker.date.recent(),
+		userMentions: faker.number.int({ min: 0 }),
+		groupMentions: faker.number.int({ min: 0 }),
+		lowerCaseName: faker.person.fullName().toLowerCase(),
+		lowerCaseFName: faker.person.fullName().toLowerCase(),
+		...overrides,
+	} as ISubscription);
 
 export function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<IMessage> & Omit<TMessage, keyof IMessage>): TMessage;
 export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {

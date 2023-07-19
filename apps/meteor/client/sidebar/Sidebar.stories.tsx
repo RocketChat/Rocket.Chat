@@ -75,7 +75,7 @@ const subscriptions: SubscriptionWithRoom[] = [
 		responseBy: undefined,
 		usersCount: 0,
 		waitingResponse: undefined,
-	},
+	} as SubscriptionWithRoom,
 ];
 
 const userContextValue: ContextType<typeof UserContext> = {
