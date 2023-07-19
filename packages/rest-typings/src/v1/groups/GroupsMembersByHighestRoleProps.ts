@@ -8,9 +8,9 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsMembersByRoleProps = PaginatedRequest<GroupsBaseProps & { role?: string; filter?: string; status?: string[] }>;
+export type GroupsMembersByHighestRoleProps = PaginatedRequest<GroupsBaseProps & { role?: string; filter?: string; status?: string[] }>;
 
-const GroupsMembersByRolePropsSchema = withGroupBaseProperties({
+const GroupsMembersByHighestRolePropsSchema = withGroupBaseProperties({
 	offset: {
 		type: 'number',
 		nullable: true,
@@ -34,4 +34,4 @@ const GroupsMembersByRolePropsSchema = withGroupBaseProperties({
 	},
 });
 
-export const isGroupsMembersByRoleProps = ajv.compile<GroupsMembersByRoleProps>(GroupsMembersByRolePropsSchema);
+export const isGroupsMembersByRoleProps = ajv.compile<GroupsMembersByHighestRoleProps>(GroupsMembersByHighestRolePropsSchema);

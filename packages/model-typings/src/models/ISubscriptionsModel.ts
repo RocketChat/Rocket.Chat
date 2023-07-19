@@ -50,7 +50,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: FindOptions<P extends IUser ? IUser : P>,
 	): Promise<FindCursor<P>>;
 
-	findUsersInRole(rid: IRoom['_id'], role?: IRole['_id']): FindCursor<ISubscription>;
+	findUsersByHighestRole(rid: IRoom['_id'], role?: IRole['_id']): FindCursor<ISubscription>;
 
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult>;
 

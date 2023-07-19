@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-import { findUsersOfRoomByRole } from '../../../../server/lib/findUsersOfRoomByRole';
+import { findUsersOfRoomByHighestRole } from '../../../../server/lib/findUsersOfRoomByHighestRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
 	hasAllPermissionAsync,
@@ -740,7 +740,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'groups.membersByRole',
+	'groups.membersByHighestRole',
 	{ authRequired: true },
 	{
 		async get() {
@@ -767,7 +767,7 @@ API.v1.addRoute(
 
 			const { status, filter, role } = this.queryParams;
 
-			const { cursor, totalCount } = await findUsersOfRoomByRole({
+			const { cursor, totalCount } = await findUsersOfRoomByHighestRole({
 				rid: findResult.rid,
 				role,
 				...(status && { status: { $in: status } }),

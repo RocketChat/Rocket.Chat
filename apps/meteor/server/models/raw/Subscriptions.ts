@@ -250,9 +250,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
-	findUsersInRole(rid: IRoom['_id'], role?: IRole['_id']): FindCursor<ISubscription> {
-		const mainRoles = ['owner', 'leader', 'moderator'];
-		const rolesToExclude = mainRoles.filter((item) => item !== role);
+	findUsersByHighestRole(rid: IRoom['_id'], role?: IRole['_id']): FindCursor<ISubscription> {
+		// roles ordered from lowest to highest
+		const mainRoles = ['leader', 'moderator', 'owner'];
+
+		const roleIndex = mainRoles.indexOf(role || '');
+		const rolesToExclude = mainRoles.slice(roleIndex + 1);
 		const query = {
 			rid,
 			roles: {

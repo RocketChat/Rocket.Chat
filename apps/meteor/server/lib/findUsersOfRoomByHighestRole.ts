@@ -16,7 +16,7 @@ type FindUsersParam = {
 	sort?: Record<string, any>;
 };
 
-export async function findUsersOfRoomByRole({
+export async function findUsersOfRoomByHighestRole({
 	rid,
 	role = '',
 	status,
@@ -25,7 +25,7 @@ export async function findUsersOfRoomByRole({
 	filter = '',
 	sort,
 }: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
-	const subscriptions = await Subscriptions.findUsersInRole(rid, role).toArray();
+	const subscriptions = await Subscriptions.findUsersByHighestRole(rid, role).toArray();
 	const uids = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
 	const options = {
