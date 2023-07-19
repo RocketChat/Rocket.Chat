@@ -3849,7 +3849,6 @@
   "Outgoing_WebHook_Description": "Get data out of Rocket.Chat in real-time.",
   "Outlook_authentication": "Outlook authentication",
   "Outlook_authentication_disabled": "Outlook authentication disabled",
-
   "Outlook_authentication_description": "Disable this to clear any outlook credentials stored in this machine.",
   "Outlook_calendar": "Outlook calendar",
   "Outlook_calendar_event": "Outlook calendar event",

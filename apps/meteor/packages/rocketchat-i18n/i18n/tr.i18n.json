@@ -2245,6 +2245,7 @@
   "OTR_is_only_available_when_both_users_are_online": "Kayıt Dışı, yalnızca her iki kullanıcı da çevrimiçi ise kullanılabilir.",
   "Outgoing_WebHook": "Giden WebHook",
   "Outgoing_WebHook_Description": "Gerçek zamanlı olarak Rocket.Chat'ten veri alın.",
+  "Outlook_Calendar_Enabled": "Etkin",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "dosyaların yüklendiği hangi geçersiz kıl URL. Ayrıca CDN sürece indirme için kullanılan bu url verilir",
   "Page_title": "Sayfa başlığı",
   "Page_URL": "Sayfa URL'si",
