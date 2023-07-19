@@ -2,10 +2,9 @@ import type { IUser, ValueOf } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { AccountBox } from '../../../../app/ui-utils/client';
 import { userStatus } from '../../../../app/user-status/client';
 import { callbacks } from '../../../../lib/callbacks';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
@@ -27,9 +26,10 @@ const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (type
 export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
 
-	const setStatus = (status: (typeof userStatus.list)['']): void => {
-		AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
+	const setStatusAction = (status: (typeof userStatus.list)['']): void => {
+		setStatus({ status: status.statusType, message: !isDefaultStatus(status.id) ? status.name : '' });
 		void callbacks.run('userStatusManuallySet', status);
 	};
 
@@ -64,7 +64,7 @@ export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 				id: status.id,
 				status: <UserStatus status={modifier} />,
 				content: <MarkdownText content={name} parseEmoji={true} variant='inline' />,
-				onClick: () => setStatus(status),
+				onClick: () => setStatusAction(status),
 				disabled: presenceDisabled,
 			};
 		});

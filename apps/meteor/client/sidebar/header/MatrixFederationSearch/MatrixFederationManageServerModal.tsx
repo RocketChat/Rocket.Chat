@@ -56,7 +56,7 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 	const { data, isLoading: isLoadingServerList } = useMatrixServerList();
 
 	return (
-		<Modal maxHeight={'x600'}>
+		<Modal maxHeight='x600'>
 			<Modal.Header>
 				<Modal.Title>{t('Manage_servers')}</Modal.Title>
 				<Modal.Close onClick={onClickClose} />
