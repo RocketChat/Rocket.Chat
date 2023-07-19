@@ -1,4 +1,4 @@
-import { type IRoom, isDiscussion } from '@rocket.chat/core-typings';
+import { type IRoom, isDiscussion, isPublicRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -65,7 +65,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const [roomFilter, setRoomFilter] = useState<RoomFilters>({ text: '', types: DEFAULT_TYPES });
 	const prevRoomFilterText = useRef<RoomFilters>(roomFilter);
 
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'visibility' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const params = useDebouncedValue(roomFilter, 500);
 
@@ -134,6 +134,16 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					{t('Type')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
+					key={'visibility'}
+					direction={sortDirection}
+					active={sortBy === 'visibility'}
+					onClick={setSort}
+					sort='visibility'
+					w='x100'
+				>
+					{t('Visibility')}
+				</GenericTableHeaderCell>,
+				<GenericTableHeaderCell
 					key={'users'}
 					direction={sortDirection}
 					active={sortBy === 'usersCount'}
@@ -186,6 +196,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const renderRow = useCallback(
 		(room: IRoom) => {
 			const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
+			const visibility = isPublicRoom(room) ? 'Public' : 'Private';
 			const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
 			const roomName = getRoomDisplayName(room);
 
@@ -207,6 +218,12 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					<GenericTableCell>
 						<Box color='hint' fontScale='p2m' style={style}>
 							{t(getRoomType(room))}
+						</Box>
+						<Box mi='x4' />
+					</GenericTableCell>
+					<GenericTableCell>
+						<Box color='hint' fontScale='p2m' style={style}>
+							{t(visibility)}
 						</Box>
 						<Box mi='x4' />
 					</GenericTableCell>

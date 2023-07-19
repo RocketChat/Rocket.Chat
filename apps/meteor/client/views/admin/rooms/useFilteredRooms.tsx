@@ -48,6 +48,9 @@ export const useFilteredRooms = (selectedOptions: OptionProp[], isLoading: boole
 		}
 	});
 
+	console.log(`types: ${filteredTypes}`);
+	console.log(`visibilites: ${filteredVisibilities}`);
+
 	const result = intersect(filteredVisibilities, filteredTypes);
 
 	console.log(`intersect: ${result}`);
