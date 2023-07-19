@@ -68,7 +68,7 @@ const CloseChatModal = ({
 			};
 			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
-			if (!comment && commentRequired) {
+			if (!comment?.trim() && commentRequired) {
 				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
 			}
 

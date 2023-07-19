@@ -155,6 +155,11 @@ class LivechatClass {
 			return;
 		}
 
+		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
+		if (commentRequired && !comment?.trim()) {
+			throw new Error('error-comment-is-required');
+		}
+
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
 		this.logger.debug(`Resolved chat tags for room ${room._id}`);
 
