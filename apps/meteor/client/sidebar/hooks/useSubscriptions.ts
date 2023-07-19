@@ -7,7 +7,7 @@ import {
 	DEFAULT_SLA_CONFIG,
 } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useStream, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import { useStream, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -85,6 +85,11 @@ const findRoomAndRemove = (array: IRoom[], rid: string): IRoom | undefined => {
 const executeFunctions = (...functions: Array<() => void>): (() => void) => {
 	return () => functions.forEach((func) => func());
 };
+/**
+ * This hook is responsible for fetching the subscriptions and rooms from the server
+ * merging them and keeping them up to date with the server
+ * also subscribing to the notify-user stream listening for changes in the subscriptions and rooms
+ */
 
 export const useSubscriptions = ({
 	handleSubscription,
@@ -101,8 +106,8 @@ export const useSubscriptions = ({
 	const [, sorter] = useQueryOptions();
 
 	const listener = useStream('notify-user');
-	const getSubscription = useMethod('subscriptions/get');
-	const getRooms = useMethod('rooms/get');
+	const getSubscription = useEndpoint('GET', '/v1/subscriptions.get');
+	const getRooms = useEndpoint('GET', '/v1/rooms.get');
 	const uid = useUserId();
 
 	useEffect(() => () => ref.current?.(), [uid]);
@@ -132,6 +137,15 @@ export const useSubscriptions = ({
 									store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
 									break;
 								}
+
+								const { subscription } = temp.get(record._id) || {};
+
+								if (subscription) {
+									store.set(record._id, mergeSubscriptionWithRoom(subscription, record));
+									temp.delete(record._id);
+									break;
+								}
+
 								temp.set(record._id, { room: record });
 								return store;
 							case 'updated':
@@ -159,7 +173,7 @@ export const useSubscriptions = ({
 						if (!store) return store;
 
 						if (!record.rid) {
-							console.warn('subscription not found in store', record);
+							console.warn('wrong subscription', record);
 							return store;
 						}
 
@@ -169,6 +183,13 @@ export const useSubscriptions = ({
 								if (oldRecord) {
 									temp.delete(record.rid);
 									store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
+									break;
+								}
+
+								const { room } = temp.get(record.rid) || {};
+								if (room) {
+									store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, room));
+									temp.delete(record.rid);
 									break;
 								}
 
@@ -194,7 +215,7 @@ export const useSubscriptions = ({
 				}),
 			);
 
-			const [subscriptions, rooms] = await Promise.all([getSubscription(), getRooms()]);
+			const [subscriptions, rooms] = await Promise.all([getSubscription({}), getRooms({})]);
 
 			if (!Array.isArray(subscriptions) || !Array.isArray(rooms)) {
 				throw new Error('subscriptions-not-found');
