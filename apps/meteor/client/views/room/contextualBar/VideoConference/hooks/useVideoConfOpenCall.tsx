@@ -21,8 +21,7 @@ export const useVideoConfOpenCall = () => {
 				setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
 				return;
 			}
-
-			desktopApp.openInternalVideoChatWindow(callUrl, providerName, undefined);
+			desktopApp.openInternalVideoChatWindow(callUrl, { providerName });
 		},
 		[setModal],
 	);
