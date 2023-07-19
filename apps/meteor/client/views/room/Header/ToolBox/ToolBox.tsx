@@ -120,7 +120,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 				return <HeaderToolboxAction {...props} key={id} />;
 			})}
 			{(filteredActions.length > 6 || isMobile) && (
-				<GenericMenu title={t('Options')} data-qa='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
+				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>
 	);

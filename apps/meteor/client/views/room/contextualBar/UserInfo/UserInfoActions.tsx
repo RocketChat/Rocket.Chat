@@ -32,8 +32,8 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 			<GenericMenu
 				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
-				key='UserUserInfo-menu'
-				data-qa='UserUserInfo-menu'
+				key='menu'
+				data-qa-id='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
 			/>
