@@ -17,15 +17,16 @@ export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, 'l
 
 	const [updaters] = useState(
 		(): Record<ThemeMode, () => void> => ({
-			light: () => saveUserPreferences({ data: { themeAppearence: 'light' } }),
-			dark: () => saveUserPreferences({ data: { themeAppearence: 'dark' } }),
-			auto: () => saveUserPreferences({ data: { themeAppearence: 'auto' } }),
+			'light': () => saveUserPreferences({ data: { themeAppearence: 'light' } }),
+			'dark': () => saveUserPreferences({ data: { themeAppearence: 'dark' } }),
+			'auto': () => saveUserPreferences({ data: { themeAppearence: 'auto' } }),
+			'high-contrast': () => saveUserPreferences({ data: { themeAppearence: 'high-contrast' } }),
 		}),
 	);
 
 	const setTheme = useCallback((value: ThemeMode): (() => void) => updaters[value], [updaters]);
 
-	const getTheme = () => {
+	const useTheme = () => {
 		if (useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark')) {
 			return 'dark';
 		}
@@ -34,5 +35,5 @@ export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, 'l
 		}
 		return 'light';
 	};
-	return [themeMode, setTheme, getTheme()];
+	return [themeMode, setTheme, useTheme()];
 };

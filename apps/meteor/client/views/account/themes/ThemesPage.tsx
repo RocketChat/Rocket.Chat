@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { themeItems as themes } from './themeItems';
 import ThemesUpsellModal from './ThemesUpsellModal';
+import { themeItems as themes } from './themeItems';
 
 const ThemesPage = () => {
 	const t = useTranslation();
