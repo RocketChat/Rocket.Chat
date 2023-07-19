@@ -110,49 +110,87 @@ export const useSubscriptions = () => {
 	return useQuery(
 		['subscriptions', query, uid],
 		async () => {
+			const temp = new Map<
+				string,
+				{
+					room?: IRoom;
+					subscription?: ISubscription;
+				}
+			>();
+
 			ref.current = executeFunctions(
 				listener(`${uid}/rooms-changed`, (action, record) => {
 					CachedChatRoom.handleEvent(action === 'removed' ? action : 'changed', record);
 
-					switch (action) {
-						case 'inserted':
-						case 'updated':
-							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
-								if (!old) return old;
-								return old.map((subscription) => {
-									if (subscription.rid === record._id) {
-										return mergeSubscriptionWithRoom(subscription, record);
-									}
-									return subscription;
-								});
-							});
-						case 'removed':
-							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
-								if (!old) return old;
-								return old.filter((subscription) => subscription.rid !== record._id);
-							});
-					}
+					return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(['subscriptions', query, uid], (store) => {
+						if (!store) return store;
+						const oldRecord = store.get(record._id);
+						switch (action) {
+							case 'inserted':
+								if (oldRecord) {
+									temp.delete(record._id);
+									store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
+									break;
+								}
+								temp.set(record._id, { room: record });
+								return store;
+							case 'updated':
+								if (!oldRecord) {
+									console.warn('room not found in store', record);
+									return store;
+								}
+
+								store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
+								break;
+							case 'removed':
+								if (!record._id) {
+									console.warn('subscription not found in store', record);
+									return store;
+								}
+								store.delete(record._id);
+								break;
+						}
+						return new Map(store);
+					});
 				}),
 				listener(`${uid}/subscriptions-changed`, (action, record) => {
 					CachedChatSubscription.handleEvent(action === 'removed' ? action : 'changed', record as ISubscription);
-					switch (action) {
-						case 'inserted':
-						case 'updated':
-							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
-								if (!old) return old;
-								return old.map((subscription) => {
-									if (subscription.rid === record.rid) {
-										return mergeSubscriptionWithRoom(subscription, record as unknown as IRoom);
-									}
-									return subscription;
-								});
-							});
-						case 'removed':
-							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
-								if (!old) return old;
-								return old.filter((subscription) => subscription.rid !== record.rid);
-							});
-					}
+					return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(['subscriptions', query, uid], (store) => {
+						if (!store) return store;
+
+						if (!record.rid) {
+							console.warn('subscription not found in store', record);
+							return store;
+						}
+
+						const oldRecord = store.get(record.rid);
+						switch (action) {
+							case 'inserted':
+								if (oldRecord) {
+									temp.delete(record.rid);
+									store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
+									break;
+								}
+
+								temp.set(record.rid, { subscription: record as ISubscription });
+
+								return store;
+							case 'updated':
+								if (!oldRecord) {
+									console.warn('subscription not found in store', record);
+									return store;
+								}
+								store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
+								break;
+							case 'removed':
+								if (!record.rid) {
+									console.warn('subscription not found in store', record);
+									return store;
+								}
+								store.delete(record.rid);
+						}
+						return new Map(store);
+					});
 				}),
 			);
 
@@ -165,16 +203,18 @@ export const useSubscriptions = () => {
 			Array.isArray(subscriptions) && CachedChatSubscription.applyFromServer(subscriptions);
 			Array.isArray(rooms) && CachedChatRoom.applyFromServer(rooms);
 
-			return subscriptions
-				.map((subscription) => {
-					const room = findRoomAndRemove(rooms, subscription.rid);
-					return mergeSubscriptionWithRoom(subscription, room);
-				})
-				.filter((subscription) => subscription.archived || subscription.open !== false);
+			return new Map<string, SubscriptionWithRoom>(
+				subscriptions
+					.map((subscription) => {
+						const room = findRoomAndRemove(rooms, subscription.rid);
+						return [subscription.rid, mergeSubscriptionWithRoom(subscription, room)] as [string, SubscriptionWithRoom];
+					})
+					.filter(([, subscription]) => subscription.archived || subscription.open !== false),
+			);
 		},
 		{
 			select: (data) => {
-				return Array.isArray(data) ? sorter(data.filter((subscription) => subscription.open !== false)) : data;
+				return sorter([...data.values()]);
 			},
 			suspense: true,
 		},

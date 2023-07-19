@@ -6,7 +6,7 @@ import { CachedCollection } from '../../../ui-cached-collection/client';
 
 class CachedChatRoom extends CachedCollection<IRoom> {
 	constructor() {
-		super({ name: 'rooms' });
+		super({ name: 'rooms', noInit: true });
 	}
 
 	protected handleLoadFromServer(record: IRoom) {
