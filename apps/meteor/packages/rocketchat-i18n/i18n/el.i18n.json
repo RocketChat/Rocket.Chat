@@ -1885,6 +1885,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR είναι διαθέσιμη μόνο όταν και οι δύο χρήστες είναι online",
   "Outgoing_WebHook": "Έξοδος WebHook",
   "Outgoing_WebHook_Description": "Αποκτήστε δεδομένα από το Rocket.Chat σε πραγματικό χρόνο.",
+  "Outlook_Calendar_Enabled": "Ενεργοποιήθηκε",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Παράκαμψη URL στο οποίο φορτώνονται τα αρχεία. Αυτή η διεύθυνση URL που χρησιμοποιείται επίσης για λήψεις εκτός εάν ένα CDN δίνεται",
   "Page_title": "Τίτλος σελίδας",
   "Page_URL": "Διεύθυνση Ιστοσελίδας",
