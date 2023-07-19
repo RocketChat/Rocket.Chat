@@ -14,7 +14,7 @@ declare module '@rocket.chat/core-typings' {
 
 class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
-		super({ name: 'subscriptions' });
+		super({ name: 'subscriptions', noInit: true });
 	}
 
 	protected handleLoadFromServer(record: ISubscription) {

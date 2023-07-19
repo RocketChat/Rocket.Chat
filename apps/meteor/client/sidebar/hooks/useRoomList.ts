@@ -1,8 +1,19 @@
-import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import {
+	isOmnichannelRoom,
+	type ILivechatInquiryRecord,
+	type IRoom,
+	type IRoomWithRetentionPolicy,
+	type ISubscription,
+	LivechatPriorityWeight,
+	DEFAULT_SLA_CONFIG,
+} from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useStream, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 
+import { CachedChatRoom, CachedChatSubscription } from '../../../app/models/client';
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
@@ -11,6 +22,164 @@ import { useQueryOptions } from './useQueryOptions';
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
+
+const isIRoomWithRetentionPolicy = (room: IRoom): room is IRoomWithRetentionPolicy => 'retentionPolicy' in room;
+
+const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | undefined): SubscriptionWithRoom => {
+	const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
+
+	return {
+		...subscription,
+		...(() => {
+			const { name } = subscription;
+			const fname = subscription.fname || name;
+			return {
+				lowerCaseName: String(!subscription.prid ? name : fname).toLowerCase(),
+				lowerCaseFName: String(fname).toLowerCase(),
+			};
+		})(),
+		encrypted: room?.encrypted,
+		description: room?.description,
+		cl: room?.cl,
+		topic: room?.topic,
+		announcement: room?.announcement,
+		broadcast: room?.broadcast,
+		archived: room?.archived,
+		avatarETag: room?.avatarETag,
+		lastMessage: room?.lastMessage,
+		streamingOptions: room?.streamingOptions,
+		teamId: room?.teamId,
+		teamMain: room?.teamMain,
+		uids: room?.uids,
+		usernames: room?.usernames,
+		usersCount: room?.usersCount ?? 0,
+		lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
+
+		...(room && isIRoomWithRetentionPolicy(room) && { retention: room.retention }),
+
+		...(room &&
+			isOmnichannelRoom(room) && {
+				v: room?.v,
+				transcriptRequest: room?.transcriptRequest,
+				servedBy: room?.servedBy,
+				onHold: room?.onHold,
+				tags: room?.tags,
+				closedAt: room?.closedAt,
+				metrics: room?.metrics,
+				muted: room?.muted,
+				waitingResponse: room?.waitingResponse,
+				responseBy: room?.responseBy,
+				priorityId: room?.priorityId,
+				slaId: room?.slaId,
+				priorityWeight: room?.priorityWeight || LivechatPriorityWeight.NOT_SPECIFIED,
+				estimatedWaitingTimeQueue: room?.estimatedWaitingTimeQueue || DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				livechatData: room?.livechatData,
+				departmentId: room?.departmentId,
+				ts: room?.ts ?? subscription.ts,
+				source: room?.source,
+				queuedAt: room?.queuedAt,
+				federated: room?.federated,
+			}),
+	} as SubscriptionWithRoom;
+};
+
+const findRoomAndRemove = (array: IRoom[], rid: string): IRoom | undefined => {
+	const index = array.findIndex((room) => room._id === rid);
+	const room = index !== -1 ? array.splice(index, 1)[0] : undefined;
+	return room;
+};
+
+// receive an array of functions and execute them in sequence
+const executeFunctions = (...functions: Array<() => void>): (() => void) => {
+	return () => functions.forEach((func) => func());
+};
+
+export const useSubscriptions = () => {
+	const queryClient = useQueryClient();
+	const ref = useRef<() => void>();
+
+	const [, sorter] = useQueryOptions();
+
+	const listener = useStream('notify-user');
+	const getSubscription = useMethod('subscriptions/get');
+	const getRooms = useMethod('rooms/get');
+	const uid = useUserId();
+
+	useEffect(() => () => ref.current?.(), [uid]);
+
+	return useQuery(
+		['subscriptions', query, uid],
+		async () => {
+			ref.current = executeFunctions(
+				listener(`${uid}/rooms-changed`, (action, record) => {
+					CachedChatRoom.handleEvent(action === 'removed' ? action : 'changed', record);
+
+					switch (action) {
+						case 'inserted':
+						case 'updated':
+							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
+								if (!old) return old;
+								return old.map((subscription) => {
+									if (subscription.rid === record._id) {
+										return mergeSubscriptionWithRoom(subscription, record);
+									}
+									return subscription;
+								});
+							});
+						case 'removed':
+							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
+								if (!old) return old;
+								return old.filter((subscription) => subscription.rid !== record._id);
+							});
+					}
+				}),
+				listener(`${uid}/subscriptions-changed`, (action, record) => {
+					CachedChatSubscription.handleEvent(action === 'removed' ? action : 'changed', record as ISubscription);
+					switch (action) {
+						case 'inserted':
+						case 'updated':
+							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
+								if (!old) return old;
+								return old.map((subscription) => {
+									if (subscription.rid === record.rid) {
+										return mergeSubscriptionWithRoom(subscription, record as unknown as IRoom);
+									}
+									return subscription;
+								});
+							});
+						case 'removed':
+							return queryClient.setQueryData<ISubscription[]>(['subscriptions', query, uid], (old) => {
+								if (!old) return old;
+								return old.filter((subscription) => subscription.rid !== record.rid);
+							});
+					}
+				}),
+			);
+
+			const [subscriptions, rooms] = await Promise.all([getSubscription(), getRooms()]);
+
+			if (!Array.isArray(subscriptions) || !Array.isArray(rooms)) {
+				throw new Error('subscriptions-not-found');
+			}
+
+			Array.isArray(subscriptions) && CachedChatSubscription.applyFromServer(subscriptions);
+			Array.isArray(rooms) && CachedChatRoom.applyFromServer(rooms);
+
+			return subscriptions
+				.map((subscription) => {
+					const room = findRoomAndRemove(rooms, subscription.rid);
+					return mergeSubscriptionWithRoom(subscription, room);
+				})
+				.filter((subscription) => subscription.archived || subscription.open !== false);
+		},
+		{
+			select: (data) => {
+				return Array.isArray(data) ? sorter(data.filter((subscription) => subscription.open !== false)) : data;
+			},
+			suspense: true,
+		},
+	);
+};
 
 export const useRoomList = (): Array<ISubscription & IRoom> => {
 	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
@@ -21,9 +190,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const options = useQueryOptions();
-
-	const rooms = useUserSubscriptions(query, options);
+	const result = useSubscriptions();
 
 	const inquiries = useQueuedInquiries();
 
@@ -35,6 +202,11 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 	}
 
 	useEffect(() => {
+		if (!result.data) {
+			return;
+		}
+
+		const rooms = result.data;
 		setRoomList(() => {
 			const incomingCall = new Set();
 			const favorite = new Set();
@@ -107,7 +279,6 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
 	}, [
-		rooms,
 		showOmnichannel,
 		incomingCalls,
 		inquiries.enabled,
@@ -117,6 +288,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 		sidebarGroupByType,
 		setRoomList,
 		isDiscussionEnabled,
+		result.data,
 	]);
 
 	return roomList;

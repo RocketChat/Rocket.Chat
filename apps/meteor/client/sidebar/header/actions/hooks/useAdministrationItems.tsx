@@ -7,15 +7,16 @@ import {
 	useAtLeastOnePermission,
 	usePermission,
 } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { lazy } from 'react';
 
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
-import Emoji from '../../../../components/Emoji';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
-import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
+
+const Emoji = lazy(() => import('../../../../components/Emoji'));
+const RegisterWorkspaceModal = lazy(() => import('../../../../views/admin/cloud/modals/RegisterWorkspaceModal'));
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',

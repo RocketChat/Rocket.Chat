@@ -55,7 +55,17 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	public timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType = 'onUser', userRelated = true }: { name: Name; eventType?: EventType; userRelated?: boolean }) {
+	constructor({
+		name,
+		eventType = 'onUser',
+		userRelated = true,
+		noInit,
+	}: {
+		name: Name;
+		eventType?: EventType;
+		userRelated?: boolean;
+		noInit?: boolean;
+	}) {
 		super();
 
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
@@ -69,6 +79,11 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 			: () => undefined;
 
 		CachedCollectionManager.register(this);
+
+		if (noInit) {
+			this.ready.set(true);
+			return;
+		}
 
 		if (!userRelated) {
 			void this.init();
@@ -163,9 +178,15 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	private async loadFromServer() {
+		const data = await this.callLoad();
+		this.log(`${data.length} records loaded from server`);
+
+		return this.applyFromServer(data);
+	}
+
+	applyFromServer(data: U[]) {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
 		data.forEach((record) => {
@@ -227,25 +248,29 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	async setupListener() {
-		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
-			this.log('record received', action, record);
-			const newRecord = this.handleReceived(record, action);
+		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) =>
+			this.handleEvent(action, record),
+		);
+	}
 
-			if (!hasId(newRecord)) {
+	async handleEvent(action: 'removed' | 'changed', record: U) {
+		this.log('record received', action, record);
+		const newRecord = this.handleReceived(record, action);
+
+		if (!hasId(newRecord)) {
+			return;
+		}
+
+		if (action === 'removed') {
+			this.collection.remove(newRecord._id);
+		} else {
+			const { _id } = newRecord;
+			if (!_id) {
 				return;
 			}
-
-			if (action === 'removed') {
-				this.collection.remove(newRecord._id);
-			} else {
-				const { _id } = newRecord;
-				if (!_id) {
-					return;
-				}
-				this.collection.upsert({ _id } as any, newRecord);
-			}
-			await this.save();
-		});
+			this.collection.upsert({ _id } as any, newRecord);
+		}
+		await this.save();
 	}
 
 	trySync(delay = 10) {
