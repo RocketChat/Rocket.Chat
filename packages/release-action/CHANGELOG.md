@@ -1,5 +1,11 @@
 # @rocket.chat/release-action
 
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- a430336869: Create patch changeset file on every publish
+
 ## 2.0.0-rc.0
 
 ### Major Changes

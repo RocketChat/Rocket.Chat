@@ -1,5 +1,45 @@
 # @rocket.chat/queue-worker
 
+## 0.1.5-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.4
+- @rocket.chat/omnichannel-services@0.0.6-rc.4
+- @rocket.chat/core-services@0.1.0-rc.4
+- @rocket.chat/model-typings@0.0.6-rc.4
+- @rocket.chat/models@0.0.6-rc.4
+
+## 0.1.5-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.3
+- @rocket.chat/omnichannel-services@0.0.6-rc.3
+- @rocket.chat/core-services@0.1.0-rc.3
+- @rocket.chat/model-typings@0.0.6-rc.3
+- @rocket.chat/models@0.0.6-rc.3
+
+## 0.1.5-rc.2
+
+### Patch Changes
+
+- @rocket.chat/omnichannel-services@0.0.6-rc.2
+- @rocket.chat/core-services@0.1.0-rc.2
+- @rocket.chat/core-typings@6.3.0-rc.2
+- @rocket.chat/model-typings@0.0.6-rc.2
+- @rocket.chat/models@0.0.6-rc.2
+
+## 0.1.5-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.1
+- @rocket.chat/omnichannel-services@0.0.6-rc.1
+- @rocket.chat/core-services@0.1.0-rc.1
+- @rocket.chat/model-typings@0.0.6-rc.1
+- @rocket.chat/models@0.0.6-rc.1
+
 ## 0.1.4
 
 ### Patch Changes

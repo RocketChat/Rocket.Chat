@@ -1,5 +1,30 @@
 # @rocket.chat/rest-typings
 
+## 6.3.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.4
+
+## 6.3.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.3
+
+## 6.3.0-rc.2
+
+### Patch Changes
+
+- f76d514341: Implemented a visual password verification in the Register User form, My Profile page, and reset password page. With this, the user will know exactly why their password is weak and how to improve it.
+  - @rocket.chat/core-typings@6.3.0-rc.2
+
+## 6.3.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.1
+
 ## 6.3.0-rc.0
 
 ### Minor Changes
