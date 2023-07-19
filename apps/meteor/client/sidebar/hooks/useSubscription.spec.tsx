@@ -32,9 +32,13 @@ it('should return an empty list of subscriptions', async () => {
 					handleRequest={(request) => {
 						switch (true) {
 							case request.method === 'GET' && request.pathPattern === '/v1/subscriptions.get':
-								return [] as any;
+								return {
+									update: [],
+								} as any;
 							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
-								return [] as any;
+								return {
+									update: [],
+								} as any;
 						}
 						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
 					}}
@@ -79,7 +83,7 @@ it('should return a list of subscriptions merged with rooms', async () => {
 									userMentions: 0,
 									groupMentions: 0,
 								};
-								return [subscription] as any;
+								return { update: [subscription] } as any;
 							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
 								const room: IRoom = {
 									_id: 'GENERAL',
@@ -94,7 +98,7 @@ it('should return a list of subscriptions merged with rooms', async () => {
 									_updatedAt: new Date(),
 									usersCount: 1,
 								};
-								return [room] as any;
+								return { update: [room] } as any;
 						}
 						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
 					}}
@@ -130,9 +134,13 @@ it('should contain one subscription received through subscription event', async 
 					handleRequest={async (request) => {
 						switch (true) {
 							case request.method === 'GET' && request.pathPattern === '/v1/subscriptions.get':
-								return [] as any;
+								return {
+									update: [],
+								} as any;
 							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
-								return [] as any;
+								return {
+									update: [],
+								} as any;
 						}
 						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
 					}}
@@ -239,9 +247,13 @@ it('should update subscription when subscription event is received', async () =>
 					handleRequest={async (request) => {
 						switch (true) {
 							case request.method === 'GET' && request.pathPattern === '/v1/subscriptions.get':
-								return [subscription] as any;
+								return {
+									update: [subscription],
+								} as any;
 							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
-								return [room] as any;
+								return {
+									update: [room],
+								} as any;
 						}
 						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
 					}}
@@ -318,9 +330,9 @@ it('should remove subscription when subscription event is received', async () =>
 					handleRequest={async (request) => {
 						switch (true) {
 							case request.method === 'GET' && request.pathPattern === '/v1/subscriptions.get':
-								return [subscription] as any;
+								return { update: [subscription] } as any;
 							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
-								return [room] as any;
+								return { update: [room] } as any;
 						}
 						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
 					}}
