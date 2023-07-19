@@ -63,6 +63,32 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		});
 	}
 
+	private async wrongInput(room: IOmnichannelGenericRoom, _isWrongOTP: boolean): Promise<boolean> {
+		if (!room?.wrongMessageCount) {
+			await LivechatRooms.updateWrongMessageCount(room._id, 1);
+		} else if (room.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
+			await Promise.all([
+				LivechatRooms.updateWrongMessageCount(room._id, 0),
+				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse),
+			]);
+			const bot = await Users.findOneById('rocket.cat');
+			const message = {
+				msg: i18n.t('Visitor_Verification_Process_failed'),
+				groupable: false,
+			};
+			await sendMessage(bot, message, room);
+			if (_isWrongOTP) {
+				for await (const { code } of room.services.emailCode) {
+					await LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code);
+				}
+			}
+			return false;
+		} else {
+			await LivechatRooms.updateWrongMessageCount(room._id, room.wrongMessageCount + 1);
+		}
+		return true;
+	}
+
 	private async generateRandomOTP(): Promise<IRandomOTP> {
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
@@ -91,7 +117,6 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 		const visitorEmail = visitor.visitorEmails[0].address;
 		const { random, encryptedRandom, expire } = await this.generateRandomOTP();
-		this.logger.info(random);
 		await LivechatRooms.addEmailCodeByRoomId(room._id, encryptedRandom, expire);
 		await this.send2FAEmail(visitorEmail, random);
 	}
@@ -113,30 +138,21 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 
 			if (await bcrypt.compare(_codeFromVisitor, code)) {
 				await Promise.all([
-					LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code);
-					LivechatRooms.updateWrongMessageCount(room._id, 0);
+					LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code),
+					LivechatRooms.updateWrongMessageCount(room._id, 0),
 				]);
 				return true;
 			}
 		}
-		if (!room?.wrongMessageCount) {
-			await LivechatRooms.updateWrongMessageCount(room._id, 1);
-		} else if (room.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
-			await Promise.all([
-				LivechatRooms.updateWrongMessageCount(room._id, 0),
-				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse),
-			]);
-			return false;
-		} else {
-			await LivechatRooms.updateWrongMessageCount(room._id, room.wrongMessageCount + 1);
+		const result = await this.wrongInput(room, true);
+		if (result) {
+			const bot = await Users.findOneById('rocket.cat');
+			const message = {
+				msg: i18n.t('Wrong_OTP_Input_Message'),
+				groupable: false,
+			};
+			await sendMessage(bot, message, room);
 		}
-		const bot = await Users.findOneById('rocket.cat');
-		const message = {
-			msg: i18n.t('Sorry, this is not a valid OTP, kindly provide another input'),
-			groupable: false,
-		};
-		await sendMessage(bot, message, room);
-
 		return false;
 	}
 
@@ -186,11 +202,14 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			try {
 				await validateEmailDomain(email);
 			} catch (error) {
-				const message = {
-					msg: i18n.t('Sorry, this is not a valid email, kindly provide another input'),
-					groupable: false,
-				};
-				await sendMessage(bot, message, room);
+				const result = await this.wrongInput(room, false);
+				if (result) {
+					const message = {
+						msg: i18n.t('Wrong_Email_Input_Message'),
+						groupable: false,
+					};
+					await sendMessage(bot, message, room);
+				}
 				return { success: false, error: error as Error };
 			}
 
@@ -227,6 +246,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			const result = {
 				success: true,
 			};
+			await LivechatRooms.updateWrongMessageCount(room._id, 0);
 			return result;
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to update email :', error });
