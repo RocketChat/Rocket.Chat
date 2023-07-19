@@ -25,7 +25,7 @@ const CustomRoleUpsellModal: VFC<CustomRoleUpsellModalProps> = ({ onClose }) => 
 			variant='warning'
 			icon={null}
 		>
-			<Modal.HeroImage maxHeight='initial' src={'images/custom-role-upsell-modal.png'} />
+			<Modal.HeroImage maxHeight='initial' src='images/custom-role-upsell-modal.png' />
 			<Box is='h3' fontScale='h3'>
 				{t('Custom_roles_upsell_add_custom_roles_workspace')}
 			</Box>

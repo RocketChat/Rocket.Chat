@@ -46,7 +46,11 @@ const Medium: VFC<MediumProps> = ({ icon, title = '', avatar, actions, href, bad
 					</Sidebar.Item.Menu>
 				)}
 			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			{actions && (
+				<Sidebar.Item.Container>
+					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
+				</Sidebar.Item.Container>
+			)}
 		</Sidebar.Item>
 	);
 };
