@@ -64,9 +64,10 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 	}
 
 	private async wrongInput(room: IOmnichannelGenericRoom, _isWrongOTP: boolean): Promise<boolean> {
+		const limitWrongAttempts = settings?.get('Livechat_LimitWrongAttempts') ?? 3;
 		if (!room?.wrongMessageCount) {
 			await LivechatRooms.updateWrongMessageCount(room._id, 1);
-		} else if (room.wrongMessageCount + 1 >= settings.get('Livechat_LimitWrongAttempts')) {
+		} else if (room.wrongMessageCount + 1 >= limitWrongAttempts) {
 			await Promise.all([
 				LivechatRooms.updateWrongMessageCount(room._id, 0),
 				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse),
@@ -77,7 +78,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				groupable: false,
 			};
 			await sendMessage(bot, message, room);
-			if (_isWrongOTP) {
+			if (_isWrongOTP && room?.services?.emailCode) {
 				for await (const { code } of room.services.emailCode) {
 					await LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code);
 				}

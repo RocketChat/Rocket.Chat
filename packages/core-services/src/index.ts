@@ -155,7 +155,7 @@ export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationSer
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
-export const OmnichannelVerification = proxifyWithWait<IOmnichannelEEService>('omnichannel-verification');
+export const OmnichannelVerification = proxifyWithWait<IOmnichannelVerification>('omnichannel-verification');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
