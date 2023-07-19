@@ -5,6 +5,7 @@ import {
 	type ISubscription,
 	LivechatPriorityWeight,
 	DEFAULT_SLA_CONFIG,
+	type Serialized,
 } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useStream, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -16,6 +17,31 @@ import { useQueryOptions } from './useQueryOptions';
 const query = { open: { $ne: false } };
 
 const isIRoomWithRetentionPolicy = (room: IRoom): room is IRoomWithRetentionPolicy => 'retentionPolicy' in room;
+
+const convertSerializedSubscription = (subscription: Serialized<ISubscription>): ISubscription => ({
+	...subscription,
+	ls: new Date(subscription.ls),
+	lr: new Date(subscription.lr),
+	ts: new Date(subscription.ts),
+	_updatedAt: new Date(subscription._updatedAt),
+});
+
+const convertSerializedRoom = (room: Serialized<IRoom>): IRoom => ({
+	...room,
+	_updatedAt: new Date(room._updatedAt),
+	lm: room.lm && room.lm.length > 0 ? new Date(room.lm) : undefined,
+	ts: room.ts && room.ts.length > 0 ? new Date(room.ts) : undefined,
+	webRtcCallStartTime: room.webRtcCallStartTime && room.webRtcCallStartTime.length > 0 ? new Date(room.webRtcCallStartTime) : undefined,
+
+	lastMessage:
+		room.lastMessage &&
+		({
+			...room.lastMessage,
+			pinnedAt: room.lastMessage.pinnedAt && room.lastMessage.pinnedAt.length > 0 ? new Date(room.lastMessage.pinnedAt) : undefined,
+			tlm: room.lastMessage.tlm && room.lastMessage.tlm.length > 0 ? new Date(room.lastMessage.tlm) : undefined,
+			ts: new Date(room.lastMessage.ts),
+		} as any),
+});
 
 const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | undefined): SubscriptionWithRoom => {
 	const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
@@ -67,7 +93,7 @@ const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | un
 				estimatedWaitingTimeQueue: room?.estimatedWaitingTimeQueue || DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 				livechatData: room?.livechatData,
 				departmentId: room?.departmentId,
-				ts: room?.ts ?? subscription.ts,
+				ts: new Date(room?.ts ?? subscription.ts),
 				source: room?.source,
 				queuedAt: room?.queuedAt,
 				federated: room?.federated,
@@ -75,7 +101,7 @@ const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | un
 	} as SubscriptionWithRoom;
 };
 
-const findRoomAndRemove = (array: IRoom[], rid: string): IRoom | undefined => {
+const findRoomAndRemove = (array: Serialized<IRoom>[], rid: string): Serialized<IRoom> | undefined => {
 	const index = array.findIndex((room) => room._id === rid);
 	const room = index !== -1 ? array.splice(index, 1)[0] : undefined;
 	return room;
@@ -215,18 +241,21 @@ export const useSubscriptions = ({
 				}),
 			);
 
-			const [subscriptions, rooms] = await Promise.all([getSubscription({}), getRooms({})]);
+			const [{ update: subscriptions }, { update: rooms }] = await Promise.all([getSubscription({}), getRooms({})]);
 
 			if (!Array.isArray(subscriptions) || !Array.isArray(rooms)) {
 				throw new Error('subscriptions-not-found');
 			}
 
-			applyFromServer?.(subscriptions, rooms);
+			applyFromServer?.(subscriptions.map(convertSerializedSubscription), rooms.map(convertSerializedRoom));
 
 			return new Map<string, SubscriptionWithRoom>(
 				subscriptions.map((subscription) => {
 					const room = findRoomAndRemove(rooms, subscription.rid);
-					return [subscription.rid, mergeSubscriptionWithRoom(subscription, room)] as [string, SubscriptionWithRoom];
+					return [
+						subscription.rid,
+						mergeSubscriptionWithRoom(convertSerializedSubscription(subscription), room && convertSerializedRoom(room)),
+					] as [string, SubscriptionWithRoom];
 				}),
 			);
 		},
