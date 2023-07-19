@@ -52,6 +52,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[]): Promise<void>;
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
+	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
 	findEnabledWithAgentsAndBusinessUnit(
 		_: any,

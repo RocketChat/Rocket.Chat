@@ -312,6 +312,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { numAgents } });
 	}
 
+	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id: { $in: _ids } }, { $inc: { numAgents: -1 } });
+	}
+
 	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection'] = {}): FindCursor<ILivechatDepartment> {
 		const query = {
 			numAgents: { $gt: 0 },

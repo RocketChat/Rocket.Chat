@@ -574,11 +574,7 @@ export const Livechat = {
 		const { _id } = user;
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			await Promise.all([
-				Users.removeAgent(_id),
-				LivechatDepartmentAgents.removeByAgentId(_id),
-				LivechatVisitors.removeContactManagerByUsername(username),
-			]);
+			await callbacks.run('livechat.afterAgentRemoved', { agent: user });
 			return true;
 		}
 
