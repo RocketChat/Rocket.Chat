@@ -1,27 +1,27 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const PruneMessages = lazy(() => import('../../views/room/contextualBar/PruneMessages'));
 
-export const useCleanHistoryRoomAction = () => {
+export const useCleanHistoryRoomAction = (): ToolboxAction | undefined => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const permitted = usePermission('clean-channel-history', room._id);
 	const { t } = useTranslation();
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!permitted) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('clean-history', {
-			groups: ['channel', 'group', 'team', 'direct_multiple', 'direct'],
+		return {
 			id: 'clean-history',
+			groups: ['channel', 'group', 'team', 'direct_multiple', 'direct'],
 			full: true,
 			title: 'Prune_Messages',
 			icon: 'eraser',
@@ -31,6 +31,6 @@ export const useCleanHistoryRoomAction = () => {
 			}),
 			template: PruneMessages,
 			order: 250,
-		});
+		};
 	}, [federated, permitted, t]);
 };

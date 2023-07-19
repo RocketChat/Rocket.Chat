@@ -1,17 +1,16 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUser, usePermission } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../lib/VideoConfManager';
-import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
-export const useStartCallRoomAction = () => {
+export const useStartCallRoomAction = (): ToolboxAction | undefined => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 
@@ -66,14 +65,14 @@ export const useStartCallRoomAction = () => {
 
 	const disabled = federated || (!!room.ro && !permittedToPostReadonly);
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!allowed) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('start-call', {
-			groups,
+		return {
 			id: 'start-call',
+			groups,
 			title: 'Call',
 			icon: 'phone',
 			action: () => void handleOpenVideoConf(),
@@ -84,6 +83,6 @@ export const useStartCallRoomAction = () => {
 			full: true,
 			order: live ? -1 : 4,
 			featured: true,
-		});
+		};
 	}, [allowed, disabled, groups, handleOpenVideoConf, live, t]);
 };

@@ -1,15 +1,15 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { lazy, useEffect } from 'react';
+import { lazy, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import otr from '../../../app/otr/client/OTR';
-import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const OTR = lazy(() => import('../../views/room/contextualBar/OTR'));
 
-export const useOTRRoomAction = () => {
+export const useOTRRoomAction = (): ToolboxAction | undefined => {
 	const enabled = useSetting('OTR_Enable', false);
 	const room = useRoom();
 	const federated = isRoomFederated(room);
@@ -20,14 +20,14 @@ export const useOTRRoomAction = () => {
 		otr.setEnabled(enabled && capable);
 	}, [enabled, capable]);
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!enabled || !capable) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('otr', {
-			groups: ['direct'],
+		return {
 			id: 'otr',
+			groups: ['direct'],
 			title: 'OTR',
 			icon: 'stopwatch',
 			template: OTR,
@@ -37,6 +37,6 @@ export const useOTRRoomAction = () => {
 				tooltip: t('core.OTR_unavailable_for_federation'),
 				disabled: true,
 			}),
-		});
-	}, [capable, enabled, federated, t]);
+		};
+	}, [enabled, capable, federated, t]);
 };

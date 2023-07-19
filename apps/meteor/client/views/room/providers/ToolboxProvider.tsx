@@ -5,22 +5,27 @@ import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import { useRoomActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { roomActions as roomActionsHooks } from '../../../ui';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
-import type { Store } from '../lib/Toolbox/generator';
 import type { ToolboxAction } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
-import { useToolboxActions } from './hooks/useToolboxActions';
 
-const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
+type ToolboxProviderProps = { children: ReactNode; room: IRoom };
+
+const ToolboxProvider = ({ children, room }: ToolboxProviderProps) => {
+	const actions = roomActionsHooks
+		.map((roomActionHook) => roomActionHook())
+		.filter((roomAction): roomAction is ToolboxAction => !!roomAction)
+		.map((roomAction) => [roomAction.id, roomAction] as const);
+
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 	const uid = useUserId();
-	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map<string, ToolboxAction>(), 5));
+	const [list, setList] = useSafely(useDebouncedState(new Map<string, ToolboxAction>(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
 		setList((list) => new Map(list));
 	});
-	const { listen, actions } = useToolboxActions(room);
 
 	const router = useRouter();
 
@@ -93,7 +98,6 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 
 	const contextValue = useMemo(
 		(): ToolboxContextValue => ({
-			listen,
 			actions: new Map(list),
 			activeTabBar: activeTabBar[0],
 			context: activeTabBar[1],
@@ -101,7 +105,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			close,
 			openRoomInfo,
 		}),
-		[listen, list, activeTabBar, open, close, openRoomInfo],
+		[list, activeTabBar, open, close, openRoomInfo],
 	);
 
 	const appActions = useRoomActionAppsActionButtons();

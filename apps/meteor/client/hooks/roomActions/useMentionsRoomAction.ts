@@ -1,18 +1,18 @@
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const MentionsTab = lazy(() => import('../../views/room/contextualBar/MentionsTab'));
 
-export const useMentionsRoomAction = () => {
-	useEffect(() => {
-		return ui.addRoomAction('mentions', {
-			groups: ['channel', 'group', 'team'],
+export const useMentionsRoomAction = (): ToolboxAction => {
+	return useMemo(() => {
+		return {
 			id: 'mentions',
+			groups: ['channel', 'group', 'team'],
 			title: 'Mentions',
 			icon: 'at',
 			template: MentionsTab,
 			order: 9,
-		});
+		};
 	}, []);
 };

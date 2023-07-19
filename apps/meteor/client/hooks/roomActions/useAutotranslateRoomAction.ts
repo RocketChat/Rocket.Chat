@@ -1,27 +1,27 @@
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const AutoTranslate = lazy(() => import('../../views/room/contextualBar/AutoTranslate'));
 
-export const useAutotranslateRoomAction = () => {
+export const useAutotranslateRoomAction = (): ToolboxAction | undefined => {
 	const permitted = usePermission('auto-translate');
 	const enabled = useSetting('AutoTranslate_Enabled', false);
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!permitted || !enabled) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('autotranslate', {
-			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+		return {
 			id: 'autotranslate',
+			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 			title: 'Auto_Translate',
 			icon: 'language',
 			template: AutoTranslate,
 			order: 20,
 			full: true,
-		});
+		};
 	}, [enabled, permitted]);
 };

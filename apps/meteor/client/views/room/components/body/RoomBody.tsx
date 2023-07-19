@@ -11,7 +11,7 @@ import {
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage, RoomRoles } from '../../../../../app/models/client';
@@ -32,7 +32,7 @@ import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
-import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { ToolboxContext } from '../../contexts/ToolboxContext';
 import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -55,7 +55,7 @@ const RoomBody = (): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
-	const toolbox = useToolboxContext();
+	const toolbox = useContext(ToolboxContext);
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 

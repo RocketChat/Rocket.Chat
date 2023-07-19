@@ -1,18 +1,18 @@
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const ContactHistory = lazy(() => import('../../views/omnichannel/contactHistory/ContactHistory'));
 
-export const useContactChatHistoryRoomAction = () => {
-	useEffect(() => {
-		return ui.addRoomAction('contact-chat-history', {
-			groups: ['live'],
+export const useContactChatHistoryRoomAction = (): ToolboxAction => {
+	return useMemo(() => {
+		return {
 			id: 'contact-chat-history',
+			groups: ['live'],
 			title: 'Contact_Chat_History',
 			icon: 'clock',
 			template: ContactHistory,
 			order: 11,
-		});
+		};
 	}, []);
 };

@@ -3,41 +3,17 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement } from 'react';
-import React, { memo, useRef } from 'react';
+import type { ReactNode, ReactElement, ComponentProps } from 'react';
+import React, { memo, useContext, useRef } from 'react';
 
-// used to open the menu option by keyboard
-import { useAutotranslateRoomAction } from '../../../hooks/roomActions/useAutotranslateRoomAction';
-import { useChannelSettingsRoomAction } from '../../../hooks/roomActions/useChannelSettingsRoomAction';
-import { useCleanHistoryRoomAction } from '../../../hooks/roomActions/useCleanHistoryRoomAction';
-import { useContactChatHistoryRoomAction } from '../../../hooks/roomActions/useContactChatHistoryRoomAction';
-import { useContactProfileRoomAction } from '../../../hooks/roomActions/useContactProfileRoomAction';
-import { useDiscussionsRoomAction } from '../../../hooks/roomActions/useDiscussionsRoomAction';
-import { useE2EERoomAction } from '../../../hooks/roomActions/useE2EERoomAction';
-import { useExportMessagesRoomAction } from '../../../hooks/roomActions/useExportMessagesRoomAction';
-import { useKeyboardShortcutListRoomAction } from '../../../hooks/roomActions/useKeyboardShortcutListRoomAction';
-import { useMembersListRoomAction } from '../../../hooks/roomActions/useMembersListRoomAction';
-import { useMentionsRoomAction } from '../../../hooks/roomActions/useMentionsRoomAction';
-import { useOTRRoomAction } from '../../../hooks/roomActions/useOTRRoomAction';
-import { useOmniChannelExternalFrameRoomAction } from '../../../hooks/roomActions/useOmniChannelExternalFrameRoomAction';
-import { useOutlookCalenderRoomAction } from '../../../hooks/roomActions/useOutlookCalenderRoomAction';
-import { usePinnedMessagesRoomAction } from '../../../hooks/roomActions/usePinnedMessagesRoomAction';
-import { usePushNotificationsRoomAction } from '../../../hooks/roomActions/usePushNotificationsRoomAction';
-import { useRocketSearchRoomAction } from '../../../hooks/roomActions/useRocketSearchRoomAction';
-import { useRoomInfoRoomAction } from '../../../hooks/roomActions/useRoomInfoRoomAction';
-import { useStarredMessagesRoomAction } from '../../../hooks/roomActions/useStarredMessagesRoomAction';
-import { useStartCallRoomAction } from '../../../hooks/roomActions/useStartCallRoomAction';
-import { useTeamChannelsRoomAction } from '../../../hooks/roomActions/useTeamChannelsRoomAction';
-import { useTeamInfoRoomAction } from '../../../hooks/roomActions/useTeamInfoRoomAction';
-import { useThreadRoomAction } from '../../../hooks/roomActions/useThreadRoomAction';
-import { useUploadedFilesListRoomAction } from '../../../hooks/roomActions/useUploadedFilesListRoomAction';
-import { useUserInfoGroupRoomAction } from '../../../hooks/roomActions/useUserInfoGroupRoomAction';
-import { useUserInfoRoomAction } from '../../../hooks/roomActions/useUserInfoRoomAction';
-import { useVoIPRoomInfoRoomAction } from '../../../hooks/roomActions/useVoIPRoomInfoRoomAction';
-import { useToolboxContext, useTab, useTabBarOpen } from '../contexts/ToolboxContext';
-import type { ToolboxAction, OptionRenderer } from '../lib/Toolbox';
+import { ToolboxContext, useTab, useTabBarOpen } from '../contexts/ToolboxContext';
+import type { ToolboxAction } from '../lib/Toolbox';
 
-const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
+type OptionRendererProps = ComponentProps<typeof Option>;
+
+export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
+
+const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any) => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
@@ -52,9 +28,9 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 	const { isMobile } = useLayout();
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
-	const { actions: mapActions } = useToolboxContext();
-
+	const { actions: mapActions } = useContext(ToolboxContext);
 	const actions = Array.from(mapActions.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
 	const featuredActions = actions.filter((action) => action.featured);
 	const filteredActions = actions.filter((action) => !action.featured);
 	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
@@ -65,7 +41,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 			.map((item) => {
 				hiddenActionRenderers.current = {
 					...hiddenActionRenderers.current,
-					[item.id]: item.renderOption || renderMenuOption,
+					[item.id]: renderMenuOption,
 				};
 				return [
 					item.id,
@@ -83,34 +59,6 @@ const RoomToolbox = ({ className }: RoomToolboxProps): ReactElement => {
 	const defaultAction = useMutableCallback((actionId) => {
 		openTabBar(actionId);
 	});
-
-	useAutotranslateRoomAction();
-	useChannelSettingsRoomAction();
-	useCleanHistoryRoomAction();
-	useContactChatHistoryRoomAction();
-	useContactProfileRoomAction();
-	useDiscussionsRoomAction();
-	useE2EERoomAction();
-	useExportMessagesRoomAction();
-	useKeyboardShortcutListRoomAction();
-	useMembersListRoomAction();
-	useMentionsRoomAction();
-	useOmniChannelExternalFrameRoomAction();
-	useOTRRoomAction();
-	useOutlookCalenderRoomAction();
-	usePinnedMessagesRoomAction();
-	usePushNotificationsRoomAction();
-	useRocketSearchRoomAction();
-	useRoomInfoRoomAction();
-	useStarredMessagesRoomAction();
-	useStartCallRoomAction();
-	useThreadRoomAction();
-	useUploadedFilesListRoomAction();
-	useUserInfoGroupRoomAction();
-	useUserInfoRoomAction();
-	useVoIPRoomInfoRoomAction();
-	useTeamChannelsRoomAction();
-	useTeamInfoRoomAction();
 
 	return (
 		<>

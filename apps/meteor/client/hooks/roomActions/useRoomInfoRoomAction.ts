@@ -1,18 +1,18 @@
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const ChatsContextualBar = lazy(() => import('../../views/omnichannel/directory/chats/contextualBar/ChatsContextualBar'));
 
-export const useRoomInfoRoomAction = () => {
-	useEffect(() => {
-		return ui.addRoomAction('room-info', {
-			groups: ['live'],
+export const useRoomInfoRoomAction = (): ToolboxAction => {
+	return useMemo(() => {
+		return {
 			id: 'room-info',
+			groups: ['live'],
 			title: 'Room_Info',
 			icon: 'info-circled',
 			template: ChatsContextualBar,
 			order: 0,
-		});
+		};
 	}, []);
 };

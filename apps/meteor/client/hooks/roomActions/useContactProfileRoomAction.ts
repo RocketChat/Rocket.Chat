@@ -1,18 +1,18 @@
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const ContactsContextualBar = lazy(() => import('../../views/omnichannel/directory/contacts/contextualBar/ContactsContextualBar'));
 
-export const useContactProfileRoomAction = () => {
-	useEffect(() => {
-		return ui.addRoomAction('contact-profile', {
-			groups: ['live' /* , 'voip'*/],
+export const useContactProfileRoomAction = (): ToolboxAction => {
+	return useMemo(() => {
+		return {
 			id: 'contact-profile',
+			groups: ['live' /* , 'voip'*/],
 			title: 'Contact_Info',
 			icon: 'user',
 			template: ContactsContextualBar,
 			order: 1,
-		});
+		};
 	}, []);
 };

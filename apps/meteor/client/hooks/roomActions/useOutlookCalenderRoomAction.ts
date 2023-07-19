@@ -1,25 +1,25 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { lazy, useEffect } from 'react';
+import { lazy, useMemo } from 'react';
 
-import { ui } from '../../lib/ui';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 
 const OutlookEventsRoute = lazy(() => import('../../views/outlookCalendar/OutlookEventsRoute'));
 
-export const useOutlookCalenderRoomAction = () => {
+export const useOutlookCalenderRoomAction = (): ToolboxAction | undefined => {
 	const enabled = useSetting('Outlook_Calendar_Enabled', false);
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!enabled) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('outlookCalendar', {
-			groups: ['channel', 'group', 'team'],
+		return {
 			id: 'outlookCalendar',
+			groups: ['channel', 'group', 'team'],
 			icon: 'calendar',
 			title: 'Outlook_calendar',
 			template: OutlookEventsRoute,
 			order: 999,
-		});
+		};
 	}, [enabled]);
 };

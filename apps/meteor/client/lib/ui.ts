@@ -2,7 +2,6 @@ import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
 
 import type { MessageActionConditionProps, MessageActionContext, MessageActionConfig } from '../../app/ui-utils/client/lib/MessageAction';
 import type { ISlashCommandAddParams } from '../../app/utils/lib/slashCommand';
-import type { ToolboxAction } from '../views/room/lib/Toolbox';
 
 const addMessageAction = (config: MessageActionConfig) => {
 	import('../../app/ui-utils/client/lib/MessageAction').then(({ MessageAction }) => {
@@ -31,18 +30,6 @@ const getMessageActions = async (props: MessageActionConditionProps, context: Me
 const getMessageLinkById = async (mid: IMessage['_id']) => {
 	const { MessageAction } = await import('../../app/ui-utils/client/lib/MessageAction');
 	return MessageAction.getPermaLink(mid);
-};
-
-const addRoomAction = (id: string, action: ToolboxAction) => {
-	import('../views/room/lib/Toolbox').then(({ addAction }) => {
-		addAction(id, action);
-	});
-
-	return () => {
-		import('../views/room/lib/Toolbox').then(({ deleteAction }) => {
-			deleteAction(id);
-		});
-	};
 };
 
 const addSlashCommand = <T extends string>(params: ISlashCommandAddParams<T>) => {
@@ -96,7 +83,6 @@ export const ui = {
 	removeMessageAction,
 	getMessageActions,
 	getMessageLinkById,
-	addRoomAction,
 	addSlashCommand,
 	removeSlashCommand,
 	runSlashCommand,

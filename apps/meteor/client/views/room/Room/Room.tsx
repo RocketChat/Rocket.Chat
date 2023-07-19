@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { createElement, memo, Suspense } from 'react';
+import React, { createElement, memo, Suspense, useContext } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ContextualbarSkeleton } from '../../../components/Contextualbar';
@@ -8,7 +8,7 @@ import Header from '../Header';
 import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
-import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
+import { ToolboxContext, useTab } from '../contexts/ToolboxContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
@@ -20,7 +20,7 @@ const Room = (): ReactElement => {
 
 	const room = useRoom();
 
-	const toolbox = useToolboxContext();
+	const toolbox = useContext(ToolboxContext);
 
 	const tab = useTab();
 	const appsContextualBarContext = useAppsContextualBar();

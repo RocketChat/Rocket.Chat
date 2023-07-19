@@ -5,7 +5,7 @@ import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useContext, useMemo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
@@ -15,7 +15,7 @@ import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
+import { ToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
@@ -78,7 +78,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return { message: messageActions, menu: menuActions };
 	});
 
-	const toolbox = useToolboxContext();
+	const toolbox = useContext(ToolboxContext);
 
 	const selecting = useIsSelecting();
 

@@ -1,15 +1,15 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
-import { ui } from '../../lib/ui';
 import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { ToolboxAction } from '../../views/room/lib/Toolbox';
 import { useReactiveValue } from '../useReactiveValue';
 
-export const useE2EERoomAction = () => {
+export const useE2EERoomAction = (): ToolboxAction | undefined => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
 	const readyToEncrypt = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
@@ -27,14 +27,14 @@ export const useE2EERoomAction = () => {
 
 	const enabledOnRoom = !!room.encrypted;
 
-	useEffect(() => {
+	return useMemo(() => {
 		if (!enabled || !permitted) {
-			return;
+			return undefined;
 		}
 
-		return ui.addRoomAction('e2e', {
-			groups: ['direct', 'direct_multiple', 'group', 'team'],
+		return {
 			id: 'e2e',
+			groups: ['direct', 'direct_multiple', 'group', 'team'],
 			title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
 			icon: 'key',
 			order: 13,
@@ -43,6 +43,6 @@ export const useE2EERoomAction = () => {
 				tooltip: t('core.E2E_unavailable_for_federation'),
 				disabled: true,
 			}),
-		});
-	}, [action, enabled, enabledOnRoom, federated, permitted, t]);
+		};
+	}, [enabled, permitted, federated, t, enabledOnRoom, action]);
 };
