@@ -118,7 +118,7 @@ const MeetPage = () => {
 							className='rcx-message__avatar'
 							size='x124'
 						/>
-						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>{'Call Ended!'}</p>
+						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>Call Ended!</p>
 						<p
 							style={{
 								color: 'white',

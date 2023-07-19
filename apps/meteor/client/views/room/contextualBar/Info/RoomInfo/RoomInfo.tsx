@@ -77,7 +77,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 			<ContextualbarScrollableContent p='x24'>
 				<InfoPanel>
 					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={room} />
+						<RoomAvatar size='x332' room={room} />
 					</InfoPanel.Avatar>
 
 					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
