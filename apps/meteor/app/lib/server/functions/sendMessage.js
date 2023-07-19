@@ -1,6 +1,5 @@
 import { Match, check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';

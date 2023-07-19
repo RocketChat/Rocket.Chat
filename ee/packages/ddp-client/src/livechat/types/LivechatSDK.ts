@@ -60,7 +60,7 @@ export interface LivechatEndpoints {
 	grantVisitor(
 		guest: OperationParams<'POST', '/v1/livechat/visitor'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>>;
-	// login(guest: OperationParams<'POST', '/v1/livechat/visitor'>): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>>;
+	login(guest: OperationParams<'POST', '/v1/livechat/visitor'>): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>>;
 	closeChat(args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.close'>>>;
 	// shareScreen(args: OperationParams<'POST', '/v1/livechat/room.shareScreen'>): Promise<void>;
 	chatSurvey(

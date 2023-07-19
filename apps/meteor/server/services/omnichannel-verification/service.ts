@@ -28,7 +28,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 
 	constructor() {
 		super();
-		this.logger = new Logger('GetVerficationCode');
+		this.logger = new Logger('Omni-Verfication');
 	}
 
 	private async send2FAEmail(address: string, random: string): Promise<void> {

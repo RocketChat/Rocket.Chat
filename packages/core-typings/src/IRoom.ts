@@ -214,8 +214,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	livechatData: any;
 	queuedAt?: Date;
 
-	verificationStatus: RoomVerificationState;
-
 	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 
 	ts: Date;
@@ -231,7 +229,13 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
+
+	// keys for verification process
+	// Maintaining awareness of the current state of the verification process.
+	verificationStatus: RoomVerificationState;
+	// For OTP and Email Input
 	wrongMessageCount?: number;
+	// Authentication code
 	services?: IVisitorServices;
 }
 

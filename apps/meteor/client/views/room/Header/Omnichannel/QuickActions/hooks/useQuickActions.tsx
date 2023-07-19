@@ -46,7 +46,6 @@ export const useQuickActions = (
 	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
-	const [visitorsVerificationStatus, setVisitorsVerificationStatus] = useState(false);
 
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
@@ -69,29 +68,11 @@ export const useQuickActions = (
 		}
 	});
 
-	const getVisitorsVerificationStatus = useCallback(async (): Promise<boolean> => {
-		if (!visitorRoomId) {
-			return false;
-		}
-
-		const {
-			visitor: { visitorEmails },
-		} = await getVisitorInfo({ visitorId: visitorRoomId });
-
-		if (visitorEmails?.length && visitorEmails[0]?.verified === 'Verified') {
-			setVisitorsVerificationStatus(true);
-			return true;
-		}
-		setVisitorsVerificationStatus(false);
-		return false;
-	}, [getVisitorInfo, visitorRoomId]);
-
 	useEffect(() => {
 		if (onHoldModalActive && roomLastMessage?.token) {
 			setModal(null);
 		}
-		getVisitorsVerificationStatus();
-	}, [roomLastMessage, onHoldModalActive, setModal, getVisitorsVerificationStatus]);
+	}, [roomLastMessage, onHoldModalActive, setModal]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
@@ -364,7 +345,7 @@ export const useQuickActions = (
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			case QuickActionsEnum.VerifyUser:
-				return !!roomOpen && canVerifyUser && !visitorsVerificationStatus;
+				return !!roomOpen && canVerifyUser;
 			default:
 				break;
 		}

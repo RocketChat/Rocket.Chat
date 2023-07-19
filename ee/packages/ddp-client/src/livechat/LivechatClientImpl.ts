@@ -219,6 +219,10 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return result;
 	}
 
+	login(guest: OperationParams<'POST', '/v1/livechat/visitor'>) {
+		return this.grantVisitor(guest);
+	}
+
 	async verifyUser(rid: IRoom['_id']): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.verify'>>> {
 		const result = await this.rest.post('/v1/livechat/visitor.verify', { rid });
 		return result;
