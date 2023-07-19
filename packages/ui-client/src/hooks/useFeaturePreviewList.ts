@@ -26,7 +26,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Navigation_bar',
 		description: 'Navigation_bar_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
 	},
 ];
