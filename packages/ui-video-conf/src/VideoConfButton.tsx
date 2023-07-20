@@ -1,4 +1,4 @@
-import { Button, Icon, IconProps } from '@rocket.chat/fuselage';
+import { Button, IconProps } from '@rocket.chat/fuselage';
 import type { ReactNode, ReactElement, ButtonHTMLAttributes } from 'react';
 
 type VideoConfButtonProps = {
@@ -11,8 +11,7 @@ type VideoConfButtonProps = {
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
 const VideoConfButton = ({ primary, secondary, danger, disabled, icon, children, ...props }: VideoConfButtonProps): ReactElement => (
-	<Button width='100%' primary={primary} danger={danger} secondary={secondary} disabled={disabled} {...props}>
-		{icon && <Icon mie='x4' size='x16' name={icon} />}
+	<Button icon={icon} width='100%' primary={primary} danger={danger} secondary={secondary} disabled={disabled} {...props}>
 		{children}
 	</Button>
 );

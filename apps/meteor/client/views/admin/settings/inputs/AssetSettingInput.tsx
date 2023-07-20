@@ -77,8 +77,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 					)}
 					<div className='action'>
 						{value?.url ? (
-							<Button onClick={handleDeleteButtonClick}>
-								<Icon size='x16' mie='x4' name='trash' />
+							<Button icon='trash' onClick={handleDeleteButtonClick}>
 								{t('Delete')}
 							</Button>
 						) : (

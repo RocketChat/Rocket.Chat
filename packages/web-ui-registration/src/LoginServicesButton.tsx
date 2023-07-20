@@ -1,4 +1,5 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps, SetStateAction, Dispatch } from 'react';
@@ -35,6 +36,7 @@ const LoginServicesButton = <T extends LoginService>({
 
 	return (
 		<Button
+			icon={icon as ComponentProps<typeof Icon>['name']}
 			className={className}
 			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
@@ -43,7 +45,6 @@ const LoginServicesButton = <T extends LoginService>({
 			display='flex'
 			justifyContent='center'
 		>
-			{icon && <Icon size='x16' mie='x4' name={icon as ComponentProps<typeof Icon>['name']} />}
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>
 	);

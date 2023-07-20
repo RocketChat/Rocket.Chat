@@ -1,5 +1,5 @@
 import type { IconProps } from '@rocket.chat/fuselage';
-import { Icon, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -28,8 +28,7 @@ const MessageAction = ({ icon, methodId, i18nLabel, label, runAction, danger }: 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button data-method-id={methodId} onClick={runAction(methodId)} marginInline='x4' small danger={danger}>
-			{icon && <Icon name={resolvedIcon} />}
+		<Button icon={resolvedIcon} data-method-id={methodId} onClick={runAction(methodId)} marginInline='x4' small danger={danger}>
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>
 	);

@@ -1,4 +1,5 @@
-import { Icon, Button } from '@rocket.chat/fuselage';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -13,8 +14,8 @@ const InfoPanelAction = ({ label, icon, ...props }: InfoPanelActionProps): React
 		aria-label={typeof label === 'string' ? label : undefined}
 		{...props}
 		mi='x4'
+		icon={icon}
 	>
-		{icon && <Icon name={icon} size='x16' mie='x4' />}
 		{label}
 	</Button>
 );

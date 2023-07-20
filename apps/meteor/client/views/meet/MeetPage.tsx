@@ -1,4 +1,4 @@
-import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
+import { Button, Box, Flex } from '@rocket.chat/fuselage';
 import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -129,9 +129,14 @@ const MeetPage = () => {
 						</p>
 					</Box>
 					<Box position='absolute' alignItems='center' style={{ bottom: '20%' }}>
-						<Button square title='Close Window' onClick={closeCallTab} backgroundColor='dark' borderColor='extra-dark'>
-							<Icon name='cross' size='x16' color='white' />
-						</Button>
+						<Button
+							icon='cross'
+							square
+							title='Close Window'
+							onClick={closeCallTab}
+							backgroundColor='dark'
+							borderColor='extra-dark'
+						></Button>
 					</Box>
 				</Box>
 			</Flex.Container>

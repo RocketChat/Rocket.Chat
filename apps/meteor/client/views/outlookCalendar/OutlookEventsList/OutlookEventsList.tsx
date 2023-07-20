@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -116,8 +116,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						<ButtonGroup stretch>
 							{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 							{outlookUrl && (
-								<Button onClick={() => window.open(outlookUrl, '_blank')}>
-									<Icon size='x16' mie='x4' name='new-window' />
+								<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
 									{t('Open_Outlook')}
 								</Button>
 							)}
