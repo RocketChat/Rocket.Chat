@@ -19,6 +19,8 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	Livechat.unsubscribeAll();
+
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
