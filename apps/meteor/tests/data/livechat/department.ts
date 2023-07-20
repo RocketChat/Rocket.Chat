@@ -64,11 +64,13 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 	// TODO moving here for tests
 	const username = `user.test.${Date.now()}`;
 	const email = `${username}@rocket.chat`;
-	const { body: { user: agent }} = await request
+	const { body } = await request
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password });
 	console.log('-----------------------------------------------');
+	const agent = body.user;
+	console.log(body);
 	console.log(agent);
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
