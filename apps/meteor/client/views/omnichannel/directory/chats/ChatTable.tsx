@@ -18,6 +18,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
+import { useTagsLabels } from './hooks/useTagsLabels';
 
 const ChatTable = () => {
 	const t = useTranslation();
@@ -27,6 +28,8 @@ const ChatTable = () => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'department' | 'ts' | 'chatDuration' | 'closedAt'>('fname');
+
+	const getTagLabel = useTagsLabels();
 
 	const query = useMemo(
 		() => ({
@@ -111,7 +114,7 @@ const ChatTable = () => {
 										mie='x4'
 									>
 										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
+											{getTagLabel(tag)}
 										</Tag>
 									</Box>
 								))}
@@ -125,7 +128,7 @@ const ChatTable = () => {
 				<GenericTableCell withTruncatedText>{moment(closedAt).format('L LTS')}</GenericTableCell>
 			</GenericTableRow>
 		),
-		[onRowClick],
+		[getTagLabel, onRowClick],
 	);
 
 	return (
