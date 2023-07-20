@@ -46,7 +46,7 @@ const convertSerializedRoom = (room: Serialized<IRoom>): IRoom => ({
 const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | undefined): SubscriptionWithRoom => {
 	const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
-	return {
+	return Object.freeze({
 		...subscription,
 		...(() => {
 			const { name } = subscription;
@@ -98,7 +98,7 @@ const mergeSubscriptionWithRoom = (subscription: ISubscription, room: IRoom | un
 				queuedAt: room?.queuedAt,
 				federated: room?.federated,
 			}),
-	} as SubscriptionWithRoom;
+	}) as SubscriptionWithRoom;
 };
 
 const findRoomAndRemove = (array: Serialized<IRoom>[], rid: string): Serialized<IRoom> | undefined => {
@@ -148,6 +148,17 @@ export const useSubscriptions = ({
 					subscription?: ISubscription;
 				}
 			>();
+
+			// anonymous user
+			if (!uid) {
+				const { update: rooms } = await getRooms({});
+				return new Map<string, SubscriptionWithRoom>(
+					rooms.map(
+						(room) =>
+							[room._id, Object.freeze({ rid: room._id, ...convertSerializedRoom(room) })] as unknown as [string, SubscriptionWithRoom],
+					),
+				);
+			}
 
 			ref.current = executeFunctions(
 				listener(`${uid}/rooms-changed`, (action, record) => {

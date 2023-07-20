@@ -103,38 +103,34 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.get',
-	{ authRequired: true },
-	{
-		async get() {
-			const { updatedSince } = this.queryParams;
+API.v1.addRoute('rooms.get', {
+	async get() {
+		const { updatedSince } = this.queryParams;
 
-			let updatedSinceDate;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-				} else {
-					updatedSinceDate = new Date(updatedSince);
-				}
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
 			}
+		}
 
-			let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.callAsync('rooms/get', updatedSinceDate);
+		let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.callAsync('rooms/get', updatedSinceDate);
 
-			if (Array.isArray(result)) {
-				result = {
-					update: result,
-					remove: [],
-				};
-			}
+		if (Array.isArray(result)) {
+			result = {
+				update: result,
+				remove: [],
+			};
+		}
 
-			return API.v1.success({
-				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
-			});
-		},
+		return API.v1.success({
+			update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
+		});
 	},
-);
+});
 
 API.v1.addRoute(
 	'rooms.upload/:rid',

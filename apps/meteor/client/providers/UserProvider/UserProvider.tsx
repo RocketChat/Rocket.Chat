@@ -87,7 +87,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 					return Subscriptions.find(query, options).fetch();
 				}
 
-				return ChatRoom.find(query, options).fetch();
+				const results = ChatRoom.find(query, options).fetch();
+				return results;
 			}),
 			loginWithToken: (token: string): Promise<void> =>
 				new Promise((resolve, reject) =>

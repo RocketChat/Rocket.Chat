@@ -79,7 +79,7 @@ export abstract class RoomCoordinator {
 		return path;
 	}
 
-	protected getRouteData(roomType: string, subData: RoomIdentification): Record<string, string> | false {
+	protected getRouteData(roomType: string, { ...subData }: RoomIdentification): Record<string, string> | false {
 		if (!subData.rid && (subData as Record<string, string>)._id) {
 			console.warn('Deprecated: RoomCoordinator.getRouteData received a room object');
 			subData.rid = (subData as Record<string, string>)._id;

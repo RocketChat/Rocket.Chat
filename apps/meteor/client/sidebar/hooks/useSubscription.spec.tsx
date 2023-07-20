@@ -360,3 +360,48 @@ it('should remove subscription when subscription event is received', async () =>
 
 	expect(result.current.data?.length).toEqual(0);
 });
+
+it('should return rooms if the user is anonymous', async () => {
+	const { result, waitFor } = renderHook(() => useSubscriptions(), {
+		wrapper: ({ children }) => (
+			<QueryClientProvider client={queryClient}>
+				<MockedServerContext
+					handleRequest={async (request) => {
+						switch (true) {
+							case request.method === 'GET' && request.pathPattern === '/v1/subscriptions.get':
+								throw new Error('unauthorized');
+							case request.method === 'GET' && request.pathPattern === '/v1/rooms.get':
+								const room: IRoom = {
+									_id: 'GENERAL',
+									name: 'general',
+									t: 'c',
+									msgs: 0,
+									u: {
+										_id: 'rocket.cat',
+										username: 'rocket.cat',
+									},
+									ts: new Date(),
+									_updatedAt: new Date(),
+									usersCount: 1,
+								};
+								return { update: [room] } as any;
+						}
+						throw new Error(`unhandled request ${request.method} ${request.pathPattern}`);
+					}}
+				>
+					<MockedSettingsContext settings={{}}>{children}</MockedSettingsContext>
+				</MockedServerContext>
+			</QueryClientProvider>
+		),
+	});
+
+	await waitFor(() => Boolean(result.current.data));
+	expect(result.current.data?.length).toEqual(1);
+	expect(result.current.data?.[0]).toEqual(
+		expect.objectContaining({
+			_id: 'GENERAL',
+			rid: 'GENERAL',
+			usersCount: 1,
+		}),
+	);
+});
