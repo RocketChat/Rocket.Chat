@@ -37,6 +37,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarFooter,
 } from '../../../../../components/Contextualbar';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
@@ -304,7 +305,6 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-
 			<ContextualbarScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
@@ -489,29 +489,23 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Accordion.Item>
 					</Accordion>
 				)}
-				<Field>
-					<Field.Row>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-							<ButtonGroup stretch flexGrow={1}>
-								<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
-									{t('Reset')}
-								</Button>
-								<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
-									{t('Save')}
-								</Button>
-							</ButtonGroup>
-						</Box>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<Button flexGrow={1} danger disabled={!canDelete || isFederated} onClick={handleDelete}>
-							<Icon name='trash' size='x16' />
-							{t('Delete')}
-						</Button>
-					</Field.Row>
-				</Field>
 			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
+					<Button disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch mbs='x8'>
+					<Button danger disabled={!canDelete || isFederated} onClick={handleDelete}>
+						<Icon name='trash' size='x16' />
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</>
 	);
 }

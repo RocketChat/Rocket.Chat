@@ -9,3 +9,4 @@ export * as UserStatus from './UserStatus';
 export { default as Card } from './Card';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
+export * from './FeaturePreview/FeaturePreview';

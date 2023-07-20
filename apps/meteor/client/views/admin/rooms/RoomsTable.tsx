@@ -128,17 +128,17 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const headers = useMemo(
 		() =>
 			[
-				<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'type'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+				<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Type')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell key={'visibility'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Visibility')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
-					key={'users'}
+					key='users'
 					direction={sortDirection}
 					active={sortBy === 'usersCount'}
 					onClick={setSort}
@@ -148,20 +148,13 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					{t('Users')}
 				</GenericTableHeaderCell>,
 				mediaQuery && (
-					<GenericTableHeaderCell
-						key={'messages'}
-						direction={sortDirection}
-						active={sortBy === 'msgs'}
-						onClick={setSort}
-						sort='msgs'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs' w='x80'>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
 				),
 				mediaQuery && (
 					<GenericTableHeaderCell
-						key={'default'}
+						key='default'
 						direction={sortDirection}
 						active={sortBy === 'default'}
 						onClick={setSort}
@@ -173,7 +166,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				),
 				mediaQuery && (
 					<GenericTableHeaderCell
-						key={'featured'}
+						key='featured'
 						direction={sortDirection}
 						active={sortBy === 'featured'}
 						onClick={setSort}

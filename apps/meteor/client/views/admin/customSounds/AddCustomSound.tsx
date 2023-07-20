@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
@@ -81,41 +81,41 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
 	return (
-		<ContextualbarScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<Button square onClick={clickUpload}>
-							<Icon name='upload' size='x20' />
-						</Button>
-						{sound?.name || t('None')}
-					</Margins>
-				</Box>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button mie='x4' onClick={close}>
-							{t('Cancel')}
-						</Button>
-						<Button primary onClick={handleSave} disabled={name === ''}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							value={name}
+							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							placeholder={t('Name')}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<Box display='flex' flexDirection='row' mbs='none'>
+						<Margins inline='x4'>
+							<Button square onClick={clickUpload}>
+								<Icon name='upload' size='x20' />
+							</Button>
+							{sound?.name || t('None')}
+						</Margins>
+					</Box>
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button mie='x4' onClick={close}>
+						{t('Cancel')}
+					</Button>
+					<Button primary onClick={handleSave} disabled={name === ''}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

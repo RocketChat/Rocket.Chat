@@ -24,7 +24,7 @@ export const Default: ComponentStory<typeof InfoPanel> = () => (
 	<InfoPanel>
 		<InfoPanel.Avatar />
 		<InfoPanel.Section>
-			<InfoPanel.Title title='rocketchat-frontend-team' icon={'hashtag'} />
+			<InfoPanel.Title title='rocketchat-frontend-team' icon='hashtag' />
 		</InfoPanel.Section>
 
 		<InfoPanel.Section>

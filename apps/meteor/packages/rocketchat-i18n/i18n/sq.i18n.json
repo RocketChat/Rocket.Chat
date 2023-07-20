@@ -1876,6 +1876,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR është në dispozicion vetëm kur të dy përdoruesit janë në internet",
   "Outgoing_WebHook": "WebHook që po largohet",
   "Outgoing_WebHook_Description": "Merrni të dhëna nga Rocket.Chat në kohë reale.",
+  "Outlook_Calendar_Enabled": "enabled",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Override URL të cilat fotografi janë ngarkuar. Kjo url përdorur edhe për shkarkime, përveç nëse një CDN është dhënë",
   "Page_title": "Titulli i faqes",
   "Page_URL": "URL e faqes",
