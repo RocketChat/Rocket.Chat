@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { IUserCredentialsHeader, password } from '../user';
-import { createUser, login } from '../users.helper';
+import { login } from '../users.helper';
 import { createAgent, makeAgentAvailable } from './rooms';
 
 export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
