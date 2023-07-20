@@ -62,7 +62,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 					<>
 						<ContextualbarIcon name='info-circled' />
 						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
-						<ContextualbarAction title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
+						<ContextualbarAction title={t('View_full_conversation')} name='new-window' onClick={openInRoom} />
 					</>
 				)}
 				{bar === 'edit' && (

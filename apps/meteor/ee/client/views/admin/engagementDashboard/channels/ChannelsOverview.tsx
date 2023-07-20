@@ -69,7 +69,7 @@ const ChannelsOverview = (): ReactElement => {
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell>{'#'}</TableCell>
+								<TableCell>#</TableCell>
 								<TableCell>{t('Channel')}</TableCell>
 								<TableCell>{t('Created')}</TableCell>
 								<TableCell>{t('Last_active')}</TableCell>
