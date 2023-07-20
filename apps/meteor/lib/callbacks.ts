@@ -221,7 +221,6 @@ export type Hook =
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
 	| 'beforeActivateUser'
-	| 'beforeCreateUser'
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
