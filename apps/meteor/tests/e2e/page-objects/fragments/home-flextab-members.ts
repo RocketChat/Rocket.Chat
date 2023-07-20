@@ -21,7 +21,7 @@ export class HomeFlextabMembers {
 	async muteUser(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator('[value="muteUser"]').click();
+		await this.page.locator('role=menuitem[value="muteUser"]').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.page.locator('(//main//aside/h3//button)[1]').click();
 	}
@@ -29,7 +29,7 @@ export class HomeFlextabMembers {
 	async setUserAsModerator(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator('[value="changeModerator"]').click();
+		await this.page.locator('role=menuitem[value="changeModerator"]').click();
 	}
 
 	async setUserAsOwner(username: string) {
