@@ -1,1 +1,0 @@
-{"version":3,"file":"onMouseEventPreventSideEffects.js","sourceRoot":"","sources":["onMouseEventPreventSideEffects.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,8BAA8B,GAAG,CAAC,CAAa,EAAQ,EAAE;IACrE,CAAC,CAAC,cAAc,EAAE,CAAC;IACnB,CAAC,CAAC,eAAe,EAAE,CAAC;IACpB,CAAC,CAAC,wBAAwB,EAAE,CAAC;AAC9B,CAAC,CAAC"}
