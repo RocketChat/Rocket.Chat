@@ -1,4 +1,5 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import emojione from 'emojione';
+
 import type { EmojiPackages } from '../lib/rocketchat';
 
 export const emoji: EmojiPackages = {
@@ -10,7 +11,7 @@ export const emoji: EmojiPackages = {
 				recent: [],
 			},
 			toneList: {},
-			render: emojioneRender,
+			render: emojione.toImage,
 			renderPicker(emojiToRender) {
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
 				if (!correctPackage) {

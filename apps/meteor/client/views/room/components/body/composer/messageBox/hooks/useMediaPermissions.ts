@@ -37,7 +37,6 @@ export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: bo
 		try {
 			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === getDeviceKind(name))) {
 				setIsPermissionDenied(true);
-				return;
 			}
 		} catch (error) {
 			console.warn(error);

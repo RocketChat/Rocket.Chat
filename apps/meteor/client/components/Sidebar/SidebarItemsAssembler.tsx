@@ -22,7 +22,6 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 					{isSidebarItem(props) ? (
 						<SidebarNavigationItem
 							permissionGranted={props.permissionGranted}
-							pathGroup={props.pathGroup || ''}
 							pathSection={props.href ?? props.pathSection ?? ''}
 							icon={props.icon}
 							label={t((props.i18nLabel || props.name) as Parameters<typeof t>[0])}

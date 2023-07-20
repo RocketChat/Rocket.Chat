@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useQueryStringParameter } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -52,7 +52,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
 	const hasSubscription = Boolean(subscription);
-	const msgParameter = useQueryStringParameter('msg');
+	const msgParameter = useSearchParameter('msg');
 
 	useLoadSurroundingMessages(msgParameter);
 
