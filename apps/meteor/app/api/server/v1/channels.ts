@@ -28,6 +28,7 @@ import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { findUsersOfRoomByHighestRole } from '../../../../server/lib/findUsersOfRoomByHighestRole';
 import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -1025,6 +1026,54 @@ API.v1.addRoute(
 
 			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult._id,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+			});
+
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'channels.membersByHighestRole',
+	{ authRequired: true },
+	{
+		async get() {
+			const findResult = await findChannelByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					status: Match.Maybe([String]),
+					filter: Match.Maybe(String),
+				}),
+			);
+			const { status, filter, role } = this.queryParams;
+
+			const { cursor, totalCount } = await findUsersOfRoomByHighestRole({
+				rid: findResult._id,
+				role,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
