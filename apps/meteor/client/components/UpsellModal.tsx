@@ -1,5 +1,5 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import React from 'react';
@@ -12,7 +12,7 @@ type UpsellModalProps = {
 	title: string | ReactElement;
 	subtitle?: string | ReactElement;
 	description?: string | ReactElement;
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconName;
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
 	onClose?: () => void;

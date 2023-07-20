@@ -1,9 +1,10 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
 
 type UserInfoActionProps = {
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconName;
 } & ComponentProps<typeof Button>;
 
 const UserInfoAction = ({ icon, label, ...props }: UserInfoActionProps): ReactElement => (

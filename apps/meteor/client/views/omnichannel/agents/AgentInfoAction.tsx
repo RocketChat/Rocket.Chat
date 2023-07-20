@@ -1,10 +1,10 @@
-import type { IconProps } from '@rocket.chat/fuselage';
 import { Button, Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { FC, HtmlHTMLAttributes } from 'react';
 import React from 'react';
 
 type AgentInfoActionProps = {
-	icon: IconProps['name'];
+	icon: IconName;
 	label?: string;
 	title?: string;
 } & Omit<HtmlHTMLAttributes<HTMLElement>, 'is'>;
