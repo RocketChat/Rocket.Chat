@@ -37,7 +37,7 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('[data-qa-id=ToolBox-Menu]');
+		return this.page.locator('[role=button[name="More"]]');
 	}
 
 	get btnNotificationPreferences(): Locator {
