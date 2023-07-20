@@ -2,8 +2,7 @@ import { type IRoom, isDiscussion, isPublicRoom } from '@rocket.chat/core-typing
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
-import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
@@ -22,18 +21,17 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import FilterByRoomName from './FilterByRoomName';
+import RoomsTableFilters from './RoomsTableFilters';
 import { useFilteredTypeRooms } from './useFilteredTypeRooms';
 import { useFilteredVisibilityRooms } from './useFilteredVisibilityRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 type RoomFilters = {
-	types: string[];
-	text: string;
+	searchText: string;
+	types: OptionProp[];
+	visibility: OptionProp[];
 };
-
-const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -59,31 +57,29 @@ const getRoomDisplayName = (room: IRoom): string | undefined =>
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const routeName = 'admin-rooms';
 
 	const t = useTranslation();
 
-	const [roomFilter, setRoomFilter] = useState<RoomFilters>({ text: '', types: DEFAULT_TYPES });
-	const prevRoomFilterText = useRef<RoomFilters>(roomFilter);
+	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [], visibility: [] });
+
+	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const params = useDebouncedValue(roomFilter, 500);
+	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
 	const query = useDebouncedValue(
 		useMemo(() => {
-			// This section checks if the user has filtered the table, and returns to the first page
-			if (params.text !== prevRoomFilterText.current.text || params.types !== prevRoomFilterText.current.types) {
+			if (searchText !== prevRoomFilterText.current) {
 				setCurrent(0);
 			}
 			return {
-				filter: params.text || '',
+				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: params.text === prevRoomFilterText.current.text && params.types === prevRoomFilterText.current.types ? current : 0,
-				types: params.types || DEFAULT_TYPES,
+				offset: searchText === prevRoomFilterText.current ? current : 0,
 			};
-		}, [params.text, params.types, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
+		}, [searchText, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
 		500,
 	);
 
@@ -111,16 +107,19 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilterText.current = { text: params.text, types: params.types };
-	}, [params.text, params.types]);
+		prevRoomFilterText.current = searchText;
+	}, [searchText]);
 
-	const router = useRoute(routeName);
+	const router = useRouter();
 
 	const onClick = useCallback(
 		(rid) => (): void =>
-			router.push({
-				context: 'edit',
-				id: rid,
+			router.navigate({
+				name: 'admin-rooms',
+				params: {
+					context: 'edit',
+					id: rid,
+				},
 			}),
 		[router],
 	);
@@ -134,7 +133,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Type')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'visibility'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+				<GenericTableHeaderCell key='visibility' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Visibility')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
@@ -224,111 +223,20 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
-	const roomTypeFilterStructure = [
-		{
-			id: 'filter_by_room',
-			text: 'Filter_by_room',
-			isGroupTitle: true,
-		},
-		{
-			id: 'channels',
-			text: 'Channels',
-			checked: false,
-		},
-		{
-			id: 'directMessages',
-			text: 'Direct_Message',
-			checked: false,
-		},
-		{
-			id: 'discussions',
-			text: 'Discussions',
-			checked: false,
-		},
-		{
-			id: 'omnichannel',
-			text: 'Omnichannel',
-			checked: false,
-		},
-		{
-			id: 'teams',
-			text: 'Teams',
-			checked: false,
-		},
-	] as OptionProp[];
-
-	const [roomTypeOptions, setRoomTypeOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
-
-	const roomVisibilityFilterStructure = [
-		{
-			id: 'filter_by_visibility',
-			text: 'Filter_by_visibility',
-			isGroupTitle: true,
-		},
-		{
-			id: 'private',
-			text: 'Private',
-			checked: false,
-		},
-		{
-			id: 'public',
-			text: 'Public',
-			checked: false,
-		},
-	] as OptionProp[];
-
-	const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
-
-	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
-	const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
-
 	function intersect(array1: IRoom[], array2: IRoom[]) {
 		const set2 = new Set(array2);
 
 		return [...new Set(array1)].filter((x) => set2.has(x));
 	}
 
-	const roomsTypeList = useFilteredTypeRooms(roomTypeSelectedOptions, isLoading, data?.rooms);
-	const roomsVisibilityList = useFilteredVisibilityRooms(roomVisibilitySelectedOptions, isLoading, data?.rooms);
+	const roomsTypeList = useFilteredTypeRooms(roomFilters.types, isLoading, data?.rooms);
+	const roomsVisibilityList = useFilteredVisibilityRooms(roomFilters.visibility, isLoading, data?.rooms);
 
 	const roomsList = intersect(roomsTypeList, roomsVisibilityList);
 
 	return (
 		<>
-			<Box
-				is='form'
-				onSubmit={useCallback((e) => e.preventDefault(), [])}
-				mb='x8'
-				display='flex'
-				flexWrap='wrap'
-				alignItems='center'
-				justifyContent='center'
-			>
-				<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
-					<FilterByRoomName setFilter={setRoomFilter} />
-				</Box>
-				<Box minWidth='x224' m='x4'>
-					<MultiSelectCustom
-						dropdownOptions={roomTypeOptions}
-						defaultTitle={'All_rooms' as any}
-						selectedOptionsTitle='Rooms'
-						setSelectedOptions={setRoomTypeSelectedOptions}
-						selectedOptions={roomTypeSelectedOptions}
-						customSetSelected={setRoomTypeOptions}
-					/>
-				</Box>
-
-				<Box minWidth='x224' m='x4'>
-					<MultiSelectCustom
-						dropdownOptions={roomVisibilityOptions}
-						defaultTitle={'All_visible' as any}
-						selectedOptionsTitle='Visible'
-						setSelectedOptions={setRoomVisibilitySelectedOptions}
-						selectedOptions={roomVisibilitySelectedOptions}
-						customSetSelected={setRoomVisibilityOptions}
-					/>
-				</Box>
-			</Box>
+			<RoomsTableFilters setFilters={setRoomFilters} />
 
 			{isLoading && (
 				<GenericTable>
