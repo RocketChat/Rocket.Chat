@@ -1,6 +1,5 @@
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
-import MarkdownIt from 'markdown-it';
 import { Component } from 'preact';
 import { Trans, withTranslation } from 'react-i18next';
 
