@@ -213,7 +213,6 @@ export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
 	| 'afterProcessOAuthUser'
-	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
