@@ -23,7 +23,8 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByRoomName from './FilterByRoomName';
-import { useFilteredRooms } from './useFilteredRooms';
+import { useFilteredTypeRooms } from './useFilteredTypeRooms';
+import { useFilteredVisibilityRooms } from './useFilteredVisibilityRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -292,9 +293,22 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
 
-	const [selectedOptions, setSelectedOptions] = useState<OptionProp[]>([]);
+	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
+	const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
 
-	const roomsList = useFilteredRooms(selectedOptions, isLoading, data?.rooms);
+	function intersect(array1: IRoom[], array2: IRoom[]) {
+		// if (array1.length === 0) return array2;
+		// if (array2.length === 0) return array1;
+
+		const set2 = new Set(array2);
+
+		return [...new Set(array1)].filter((x) => set2.has(x));
+	}
+
+	const roomsTypeList = useFilteredTypeRooms(roomTypeSelectedOptions, isLoading, data?.rooms);
+	const roomsVisibilityList = useFilteredVisibilityRooms(roomVisibilitySelectedOptions, isLoading, data?.rooms);
+
+	const roomsList = intersect(roomsTypeList, roomsVisibilityList);
 
 	return (
 		<>
@@ -315,8 +329,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						dropdownOptions={roomTypeOptions}
 						defaultTitle={'All_rooms' as any}
 						selectedOptionsTitle='Rooms'
-						setSelectedOptions={setSelectedOptions}
-						selectedOptions={selectedOptions}
+						setSelectedOptions={setRoomTypeSelectedOptions}
+						selectedOptions={roomTypeSelectedOptions}
 						customSetSelected={setRoomTypeOptions}
 					/>
 				</Box>
@@ -326,8 +340,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						dropdownOptions={roomVisibilityOptions}
 						defaultTitle={'All_visible' as any}
 						selectedOptionsTitle='Visible'
-						setSelectedOptions={setSelectedOptions}
-						selectedOptions={selectedOptions}
+						setSelectedOptions={setRoomVisibilitySelectedOptions}
+						selectedOptions={roomVisibilitySelectedOptions}
 						customSetSelected={setRoomVisibilityOptions}
 					/>
 				</Box>
