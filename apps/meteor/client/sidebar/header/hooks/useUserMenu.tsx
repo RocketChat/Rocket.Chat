@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
@@ -18,6 +19,13 @@ export const useUserMenu = (user: IUser) => {
 		logout();
 	});
 
+	const logoutItem: GenericMenuItemProps = {
+		id: 'logout',
+		icon: 'sign-out',
+		content: t('Logout'),
+		onClick: handleLogout,
+	};
+
 	return [
 		{
 			title: <UserMenuHeader user={user} />,
@@ -32,14 +40,7 @@ export const useUserMenu = (user: IUser) => {
 			items: accountItems,
 		},
 		{
-			items: [
-				{
-					id: 'logout',
-					icon: 'sign-out',
-					content: t('Logout'),
-					onClick: handleLogout,
-				},
-			],
+			items: [logoutItem],
 		},
 	];
 };
