@@ -136,7 +136,12 @@ export const useSubscriptions = ({
 	const getRooms = useEndpoint('GET', '/v1/rooms.get');
 	const uid = useUserId();
 
-	useEffect(() => () => ref.current?.(), [uid]);
+	useEffect(() => {
+		return () => {
+			ref.current?.();
+			ref.current = undefined;
+		};
+	}, [uid, ref]);
 
 	return useQuery(
 		['subscriptions', query, uid],
@@ -160,97 +165,99 @@ export const useSubscriptions = ({
 				);
 			}
 
-			ref.current = executeFunctions(
-				listener(`${uid}/rooms-changed`, (action, record) => {
-					handleRoom?.(action, record);
+			ref.current =
+				ref.current ??
+				executeFunctions(
+					listener(`${uid}/rooms-changed`, (action, record) => {
+						handleRoom?.(action, record);
 
-					return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(queryKey, (store) => {
-						if (!store) return store;
-						const oldRecord = store.get(record._id);
-						switch (action) {
-							case 'inserted':
-								if (oldRecord) {
-									temp.delete(record._id);
+						return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(queryKey, (store) => {
+							if (!store) return store;
+							const oldRecord = store.get(record._id);
+							switch (action) {
+								case 'inserted':
+									if (oldRecord) {
+										temp.delete(record._id);
+										store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
+										break;
+									}
+
+									const { subscription } = temp.get(record._id) || {};
+
+									if (subscription) {
+										store.set(record._id, mergeSubscriptionWithRoom(subscription, record));
+										temp.delete(record._id);
+										break;
+									}
+
+									temp.set(record._id, { room: record });
+									return store;
+								case 'updated':
+									if (!oldRecord) {
+										console.warn('room not found in store', record);
+										return store;
+									}
+
 									store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
 									break;
-								}
-
-								const { subscription } = temp.get(record._id) || {};
-
-								if (subscription) {
-									store.set(record._id, mergeSubscriptionWithRoom(subscription, record));
-									temp.delete(record._id);
+								case 'removed':
+									if (!record._id) {
+										console.warn('subscription not found in store', record);
+										return store;
+									}
+									store.delete(record._id);
 									break;
-								}
+							}
+							return new Map(store);
+						});
+					}),
+					listener(`${uid}/subscriptions-changed`, (action, record) => {
+						handleSubscription?.(action, record as ISubscription);
+						return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(queryKey, (store) => {
+							if (!store) return store;
 
-								temp.set(record._id, { room: record });
+							if (!record.rid) {
+								console.warn('wrong subscription', record);
 								return store;
-							case 'updated':
-								if (!oldRecord) {
-									console.warn('room not found in store', record);
+							}
+
+							const oldRecord = store.get(record.rid);
+							switch (action) {
+								case 'inserted':
+									if (oldRecord) {
+										temp.delete(record.rid);
+										store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
+										break;
+									}
+
+									const { room } = temp.get(record.rid) || {};
+									if (room) {
+										store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, room));
+										temp.delete(record.rid);
+										break;
+									}
+
+									temp.set(record.rid, { subscription: record as ISubscription });
+
 									return store;
-								}
-
-								store.set(record._id, mergeSubscriptionWithRoom(oldRecord, record));
-								break;
-							case 'removed':
-								if (!record._id) {
-									console.warn('subscription not found in store', record);
-									return store;
-								}
-								store.delete(record._id);
-								break;
-						}
-						return new Map(store);
-					});
-				}),
-				listener(`${uid}/subscriptions-changed`, (action, record) => {
-					handleSubscription?.(action, record as ISubscription);
-					return queryClient.setQueryData<Map<string, SubscriptionWithRoom>>(queryKey, (store) => {
-						if (!store) return store;
-
-						if (!record.rid) {
-							console.warn('wrong subscription', record);
-							return store;
-						}
-
-						const oldRecord = store.get(record.rid);
-						switch (action) {
-							case 'inserted':
-								if (oldRecord) {
-									temp.delete(record.rid);
+								case 'updated':
+									if (!oldRecord) {
+										console.warn('subscription not found in store', record);
+										return store;
+									}
 									store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
 									break;
-								}
-
-								const { room } = temp.get(record.rid) || {};
-								if (room) {
-									store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, room));
-									temp.delete(record.rid);
-									break;
-								}
-
-								temp.set(record.rid, { subscription: record as ISubscription });
-
-								return store;
-							case 'updated':
-								if (!oldRecord) {
-									console.warn('subscription not found in store', record);
-									return store;
-								}
-								store.set(record.rid, mergeSubscriptionWithRoom(record as ISubscription, oldRecord as unknown as IRoom));
-								break;
-							case 'removed':
-								if (!record.rid) {
-									console.warn('subscription not found in store', record);
-									return store;
-								}
-								store.delete(record.rid);
-						}
-						return new Map(store);
-					});
-				}),
-			);
+								case 'removed':
+									if (!record.rid) {
+										console.warn('subscription not found in store', record);
+										return store;
+									}
+									store.delete(record.rid);
+							}
+							return new Map(store);
+						});
+					}),
+				);
 
 			const [{ update: subscriptions }, { update: rooms }] = await Promise.all([getSubscription({}), getRooms({})]);
 
@@ -274,7 +281,7 @@ export const useSubscriptions = ({
 			select: (data) => {
 				return sorter([...data.values()].filter((subscription) => subscription.archived || subscription.open !== false));
 			},
-			suspense: true,
+			refetchOnWindowFocus: false,
 		},
 	);
 };

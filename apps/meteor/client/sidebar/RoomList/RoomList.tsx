@@ -2,41 +2,27 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { CachedChatRoom } from '../../../app/models/client/models/CachedChatRoom';
-import { CachedChatSubscription } from '../../../app/models/client/models/CachedChatSubscription';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import RoomListRow from './RoomListRow';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
-const cachedCollectionFunctions = {
-	handleSubscription: (action: 'inserted' | 'updated' | 'removed', record: ISubscription) =>
-		CachedChatSubscription.handleEvent(action === 'removed' ? action : 'changed', record),
-	handleRoom: (action: 'inserted' | 'updated' | 'removed', record: IRoom) =>
-		CachedChatRoom.handleEvent(action === 'removed' ? action : 'changed', record),
-	applyFromServer: (subscriptions: ISubscription[], rooms: IRoom[]) => {
-		CachedChatSubscription.applyFromServer(subscriptions);
-		CachedChatRoom.applyFromServer(rooms);
-	},
-};
-
-const RoomList = (): ReactElement => {
+const RoomList = ({ subscriptions }: { subscriptions: SubscriptionWithRoom[] }): ReactElement => {
 	const t = useTranslation();
 	const isAnonymous = !useUserId();
-	const userSubscriptions = useSubscriptions(cachedCollectionFunctions);
-	const roomsList = useRoomList(userSubscriptions.data ?? []);
+	const roomsList = useRoomList(subscriptions);
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver({ debounceDelay: 100 });

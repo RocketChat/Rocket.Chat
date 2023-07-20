@@ -83,7 +83,7 @@ export const createSDK = (rest: RestClientInterface) => {
 					ee.emit('ready', [undefined, args]);
 				},
 				onError: (err: any) => {
-					console.error(err);
+					console.error(streamKey, err);
 					ee.emit('ready', [err]);
 				},
 			},

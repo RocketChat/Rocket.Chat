@@ -24,17 +24,23 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 
 	useEffect(() => () => stream.current?.(), []);
 
-	useQuery(['apps', 'stream', 'actionButtons', uid], () => {
-		if (!uid) {
-			return [];
-		}
-		stream.current?.();
-		stream.current = apps('actions/changed', () => {
-			queryClient.invalidateQueries(['apps', 'actionButtons']);
-		});
+	useQuery(
+		['apps', 'stream', 'actionButtons', uid],
+		() => {
+			if (!uid) {
+				return [];
+			}
+			stream.current?.();
+			stream.current = apps('actions/changed', () => {
+				queryClient.invalidateQueries(['apps', 'actionButtons']);
+			});
 
-		return [];
-	});
+			return [];
+		},
+		{
+			refetchOnWindowFocus: false,
+		},
+	);
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
 

@@ -1,10 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
 import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import SidebarRoomList from './RoomList';
+import RoomListPreview from './RoomList/RoomListPreview';
+import RoomListStable from './RoomList/RoomListStable';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
 import StatusDisabledSection from './sections/StatusDisabledSection';
@@ -38,7 +40,16 @@ const Sidebar = () => {
 			>
 				<SidebarHeader />
 				{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
-				<SidebarRoomList />
+
+				<FeaturePreview feature='navigationBar'>
+					<FeaturePreviewOn>
+						<RoomListPreview />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<RoomListStable />
+					</FeaturePreviewOff>
+				</FeaturePreview>
+
 				<SidebarFooter />
 			</Box>
 		</>

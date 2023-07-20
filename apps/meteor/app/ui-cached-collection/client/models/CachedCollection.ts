@@ -359,8 +359,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	async init() {
-		this.ready.set(false);
-
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
