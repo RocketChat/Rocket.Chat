@@ -9,6 +9,7 @@ import * as servers from '../servers';
 import { Logger } from '../../../logger/server';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
@@ -214,7 +215,7 @@ class Bridge {
 			'irc-on-save-message',
 		);
 		// Leaving
-		callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
+		afterLogoutCleanUpCallback.add(this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}
 
 	removeLocalHandlers() {
@@ -225,7 +226,7 @@ class Bridge {
 		callbacks.remove('afterJoinRoom', 'irc-on-join-room');
 		afterLeaveRoomCallback.remove('irc-on-leave-room');
 		callbacks.remove('afterSaveMessage', 'irc-on-save-message');
-		callbacks.remove('afterLogoutCleanUp', 'irc-on-logout');
+		afterLogoutCleanUpCallback.remove('irc-on-logout');
 	}
 
 	sendCommand(command, parameters) {
