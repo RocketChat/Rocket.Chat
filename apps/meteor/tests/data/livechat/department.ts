@@ -62,6 +62,8 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 	user: IUser;
 }}> => {
 	const agent: IUser = await createUser();
+	console.log('-----------------------------------------------');
+	console.log(agent);
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
 	await makeAgentAvailable(createdUserCredentials);
