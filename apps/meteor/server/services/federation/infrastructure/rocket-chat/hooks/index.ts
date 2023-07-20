@@ -4,12 +4,12 @@ import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from 
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { settings } from '../../../../../../app/settings/server';
 import { callbacks } from '../../../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
-		callbacks.add(
-			'afterLeaveRoom',
-			async (user: IUser, room: IRoom | undefined): Promise<void> => {
+		afterLeaveRoomCallback.add(
+			async (user: IUser, room?: IRoom): Promise<void> => {
 				if (!room || !isRoomFederated(room) || !user || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
@@ -255,7 +255,7 @@ export class FederationHooks {
 	}
 
 	public static removeAllListeners(): void {
-		callbacks.remove('afterLeaveRoom', 'federation-v2-after-leave-room');
+		afterLeaveRoomCallback.remove('federation-v2-after-leave-room');
 		callbacks.remove('afterRemoveFromRoom', 'federation-v2-after-remove-from-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');

@@ -8,6 +8,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import * as servers from '../servers';
 import { Logger } from '../../../logger/server';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
@@ -204,7 +205,7 @@ class Bridge {
 		);
 		callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), callbacks.priority.LOW, 'irc-on-join-room');
 		// Leaving rooms or channels
-		callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
+		afterLeaveRoomCallback.add(this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
@@ -222,7 +223,7 @@ class Bridge {
 		callbacks.remove('afterCreateChannel', 'irc-on-create-channel');
 		callbacks.remove('afterCreateRoom', 'irc-on-create-room');
 		callbacks.remove('afterJoinRoom', 'irc-on-join-room');
-		callbacks.remove('afterLeaveRoom', 'irc-on-leave-room');
+		afterLeaveRoomCallback.remove('irc-on-leave-room');
 		callbacks.remove('afterSaveMessage', 'irc-on-save-message');
 		callbacks.remove('afterLogoutCleanUp', 'irc-on-logout');
 	}

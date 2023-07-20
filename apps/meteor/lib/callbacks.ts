@@ -212,7 +212,6 @@ type ChainedCallbackSignatures = {
 export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
 	| 'afterRemoveFromRoom'

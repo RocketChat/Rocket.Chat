@@ -7,6 +7,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -65,7 +66,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	// TODO: CACHE: maybe a queue?
-	await callbacks.run('afterLeaveRoom', user, room);
+	await afterLeaveRoomCallback.run(user, room);
 
 	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };
