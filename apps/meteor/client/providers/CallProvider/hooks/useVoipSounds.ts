@@ -1,18 +1,15 @@
-import { useCustomSound, useUser } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
-
-import { getUserPreference } from '../../../../app/utils/client';
 
 type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
 
 export const useVoipSounds = () => {
 	const { play, pause } = useCustomSound();
-	const user = useUser();
+	const audioVolume = useUserPreference<number>('notificationsSoundVolume', 100) || 100;
 
 	return useMemo(
 		() => ({
 			play: (soundId: VoipSound, loop = true) => {
-				const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
 				play(soundId, {
 					volume: Number((audioVolume / 100).toPrecision(2)),
 					loop,
@@ -24,6 +21,6 @@ export const useVoipSounds = () => {
 				pause('outbound-call-ringing');
 			},
 		}),
-		[play, pause, user],
+		[play, pause, audioVolume],
 	);
 };
