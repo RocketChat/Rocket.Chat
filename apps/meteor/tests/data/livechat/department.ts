@@ -61,7 +61,13 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 	credentials: IUserCredentialsHeader;
 	user: IUser;
 }}> => {
-	const agent: IUser = await createUser();
+	// TODO moving here for tests
+	const username = `user.test.${Date.now()}`;
+	const email = `${username}@rocket.chat`;
+	const { body: { user: agent }} = await request
+			.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password });
 	console.log('-----------------------------------------------');
 	console.log(agent);
 	const createdUserCredentials = await login(agent.username, password);
