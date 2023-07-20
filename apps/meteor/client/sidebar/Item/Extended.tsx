@@ -78,7 +78,11 @@ const Extended: VFC<ExtendedProps> = ({
 					</Sidebar.Item.Wrapper>
 				</Sidebar.Item.Content>
 			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			{actions && (
+				<Sidebar.Item.Container>
+					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
+				</Sidebar.Item.Container>
+			)}
 		</Sidebar.Item>
 	);
 };

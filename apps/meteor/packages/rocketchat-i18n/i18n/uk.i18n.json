@@ -2406,6 +2406,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR доступний тільки тоді, коли обидва користувачі знаходяться в мережі",
   "Outgoing_WebHook": "Вихідний WebHook",
   "Outgoing_WebHook_Description": "Отримайте дані поза Rocket.Chat в режимі реального часу.",
+  "Outlook_Calendar_Enabled": "Включено",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Override URL, до якого файли завантажуються. Цей URL-адресу також використовується для завантаження, якщо тільки в CDN дається",
   "Page_title": "Назва сторінки",
   "Page_URL": "URL-адреса сторінки",

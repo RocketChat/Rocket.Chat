@@ -19,7 +19,7 @@ const ComposerBoxPopupPreview = forwardRef<
 		tmid?: string;
 		suspended?: boolean;
 	}
->(({ focused, items, rid, tmid, select, suspended }, ref) => {
+>(function ComposerBoxPopupPreview({ focused, items, rid, tmid, select, suspended }, ref) {
 	const id = useUniqueId();
 	const chat = useChat();
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
