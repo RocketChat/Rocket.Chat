@@ -88,11 +88,7 @@ import { password } from '../../../data/user';
 
 			// create canned response
 			const shortcut = faker.string.uuid();
-			await request
-				.post(api('canned-responses'))
-				.set(credentials)
-				.send({ shortcut, scope: 'global', tags: ['tag'], text: 'text' })
-				.expect(200);
+			await request.post(api('canned-responses')).set(credentials).send({ shortcut, scope: 'global', text: 'text' }).expect(200);
 
 			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
 
@@ -111,7 +107,7 @@ import { password } from '../../../data/user';
 			await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut, scope: 'department', tags: ['tag'], text: 'text', departmentId: department._id })
+				.send({ shortcut, scope: 'department', text: 'text', departmentId: department._id })
 				.expect(200);
 
 			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
@@ -130,7 +126,7 @@ import { password } from '../../../data/user';
 		it('should return an array of canned responses when available', async () => {
 			await updatePermission('view-canned-responses', ['livechat-agent', 'livechat-monitor', 'livechat-manager', 'admin']);
 			await createCannedResponse();
-			const { body } = await request.get(api('canned-responses')).set(credentials).expect(200);
+			const { body } = await request.get(api('canned-responses')).query({ sort: '{ "_createdAt": -1 }' }).set(credentials).expect(200);
 			expect(body).to.have.property('success', true);
 			expect(body.cannedResponses).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.cannedResponses[0]).to.have.property('_id');
