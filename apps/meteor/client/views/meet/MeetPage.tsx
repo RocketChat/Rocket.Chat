@@ -1,5 +1,5 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
-import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
@@ -11,6 +11,7 @@ import CallPage from './CallPage';
 import './styles.css';
 
 const MeetPage = () => {
+	const t = useTranslation();
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
@@ -132,7 +133,7 @@ const MeetPage = () => {
 						<Button
 							icon='cross'
 							square
-							title='Close Window'
+							title={t('Close_Window')}
 							onClick={closeCallTab}
 							backgroundColor='dark'
 							borderColor='extra-dark'

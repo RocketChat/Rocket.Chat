@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Callout,
-	Icon,
 	Margins,
 	ProgressBar,
 	Skeleton,
@@ -44,8 +43,8 @@ const CustomUserStatusService = () => {
 			<Box display='flex' flexDirection='column' alignItems='center' pb='x20' color='default'>
 				<StatesIcon name='circle-exclamation' />
 				<StatesSubtitle>{t('Unable_to_load_active_connections')}</StatesSubtitle>
-				<StatesAction onClick={() => result.refetch()}>
-					<Icon name='reload' /> {t('Retry')}
+				<StatesAction icon='reload' onClick={() => result.refetch()}>
+					{t('Retry')}
 				</StatesAction>
 			</Box>
 		);
