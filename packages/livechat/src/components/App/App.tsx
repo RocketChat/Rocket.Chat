@@ -90,6 +90,7 @@ export class App extends Component<AppProps, AppState> {
 						emailFieldRegistrationForm,
 						forceAcceptDataProcessingConsent: gdprRequired,
 					},
+					triggers,
 					online,
 					departments = [],
 				},
@@ -110,9 +111,16 @@ export class App extends Component<AppProps, AppState> {
 			}
 
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			const pendingTriggers = triggers.some((trigger) =>
+				trigger.conditions.some((condition) => condition.name === 'chat-opened-by-visitor'),
+			);
 
 			const showRegistrationForm =
-				registrationForm && (nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) && !triggered && !user?.token;
+				registrationForm &&
+				(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) &&
+				!triggered &&
+				!pendingTriggers &&
+				!user?.token;
 			if (showRegistrationForm) {
 				return route('/register');
 			}

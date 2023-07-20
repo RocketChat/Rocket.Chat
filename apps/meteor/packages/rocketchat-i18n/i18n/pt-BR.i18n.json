@@ -318,7 +318,7 @@
   "Adult_images_are_not_allowed": "Imagens com conteúdo adulto não são permitidas",
   "Aerospace_and_Defense": "Aeroespacial e Defesa",
   "After_OAuth2_authentication_users_will_be_redirected_to_this_URL": "Após a autenticação OAuth2, os usuários serão redirecionados para este URL. Você poderá adicionar um URL por linha.",
-  "After_starting_chat": "Após iniciar o chat",
+  "After_guest_registration": "Após registro do convidado",
   "Agent": "Agente",
   "Agent_added": "Agente adicionado",
   "Agent_Info": "Informações do agente",

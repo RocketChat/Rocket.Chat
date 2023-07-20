@@ -62,7 +62,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			['page-url', t('Visitor_page_URL')],
 			['time-on-site', t('Visitor_time_on_site')],
 			['chat-opened-by-visitor', t('Chat_opened_by_visitor')],
-			['after-starting-chat', t('After_starting_chat')],
+			['after-guest-registration', t('After_guest_registration')],
 		],
 		[t],
 	);
@@ -168,11 +168,16 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			<Field className={className}>
 				<Field.Label>{t('Condition')}</Field.Label>
 				<Field.Row>
-					<Select options={conditionOptions} value={conditionName} onChange={handleConditionName} />
+					<Select name='condition' options={conditionOptions} value={conditionName} onChange={handleConditionName} />
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
-						<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder} />
+						<TextInput
+							name='conditionValue'
+							value={conditionValue}
+							onChange={handleConditionValue}
+							placeholder={conditionValuePlaceholder}
+						/>
 					</Field.Row>
 				)}
 			</Field>
@@ -182,15 +187,21 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 					<TextInput value={t('Send_a_message')} disabled />
 				</Field.Row>
 				<Field.Row>
-					<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
+					<Select
+						name='sender'
+						options={senderOptions}
+						value={actionSender}
+						onChange={handleActionSender}
+						placeholder={t('Select_an_option')}
+					/>
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>
-						<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')} />
+						<TextInput name='agentName' value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')} />
 					</Field.Row>
 				)}
 				<Field.Row>
-					<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${t('Message')}*`} />
+					<TextAreaInput name='triggerMessage' rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${t('Message')}*`} />
 				</Field.Row>
 				<Field.Error>{msgError}</Field.Error>
 			</Field>
