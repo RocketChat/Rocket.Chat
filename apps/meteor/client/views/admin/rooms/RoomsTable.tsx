@@ -66,7 +66,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const [roomFilter, setRoomFilter] = useState<RoomFilters>({ text: '', types: DEFAULT_TYPES });
 	const prevRoomFilterText = useRef<RoomFilters>(roomFilter);
 
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'visibility' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const params = useDebouncedValue(roomFilter, 500);
 
@@ -134,14 +134,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTableHeaderCell key={'type'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Type')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell
-					key={'visibility'}
-					direction={sortDirection}
-					active={sortBy === 'visibility'}
-					onClick={setSort}
-					sort='visibility'
-					w='x100'
-				>
+				<GenericTableHeaderCell key={'visibility'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Visibility')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
