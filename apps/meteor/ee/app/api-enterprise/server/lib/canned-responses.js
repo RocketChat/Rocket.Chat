@@ -62,8 +62,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!(await hasPermissionAsync(userId, 'view-all-canned-responses'))) {
-		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
-
+		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 		const isDepartmentInScope = (departmentId) => !!accessibleDepartments.includes(departmentId);
 
 		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : accessibleDepartments;
