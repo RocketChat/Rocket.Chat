@@ -6,7 +6,8 @@ import { Messages } from '@rocket.chat/models';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { deleteMessage, updateMessage } from '../../../app/lib/server';
+import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
