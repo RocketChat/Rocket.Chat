@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useLayout, useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import React, { useCallback, memo, useMemo } from 'react';
 
@@ -47,6 +47,8 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = Boolean(useUserPreference('useEmojis'));
+	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const ownUserId = useUserId();
 
 	const chat = useChat();
 
@@ -80,7 +82,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const goToRoom = useGoToRoom();
 
-	const { isEmbedded } = useLayout();
+	const { isEmbedded, isMobile } = useLayout();
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
 
@@ -117,6 +119,9 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				onChannelMentionClick,
 				convertAsciiToEmoji,
 				useEmoji,
+				useRealName,
+				isMobile,
+				ownUserId,
 			}}
 		>
 			{children}

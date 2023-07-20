@@ -48,7 +48,11 @@ const Condensed: FC<CondensedProps> = ({ icon, title = '', avatar, actions, href
 					</Sidebar.Item.Menu>
 				)}
 			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			{actions && (
+				<Sidebar.Item.Container>
+					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
+				</Sidebar.Item.Container>
+			)}
 		</Sidebar.Item>
 	);
 };

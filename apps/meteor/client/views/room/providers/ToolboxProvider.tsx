@@ -4,6 +4,7 @@ import { useUserId, useSetting, useRouter, useRouteParameter } from '@rocket.cha
 import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
+import { useRoomActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
 import type { Store } from '../lib/Toolbox/generator';
@@ -103,9 +104,11 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		[listen, list, activeTabBar, open, close, openRoomInfo],
 	);
 
+	const appActions = useRoomActionAppsActionButtons();
+
 	return (
 		<ToolboxContext.Provider value={contextValue}>
-			{actions
+			{[...actions, ...(appActions.data ?? [])]
 				.filter(
 					([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous),
 				)
