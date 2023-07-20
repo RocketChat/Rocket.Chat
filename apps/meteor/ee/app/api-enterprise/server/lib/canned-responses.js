@@ -25,17 +25,8 @@ export async function findAllCannedResponses({ userId }) {
 		return getTagsInformation(cannedResponses);
 	}
 
-	// If the user it not any of the previous roles nor an agent, then get only his own responses
-	if (!(await hasPermissionAsync(userId, 'view-agent-canned-responses'))) {
-		const cannedResponses = await CannedResponse.find({
-			scope: 'user',
-			userId,
-		}).toArray();
-		return getTagsInformation(cannedResponses);
-	}
-
 	// Last scenario: user is an agent, so get his own responses and those from the departments he is in
-	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 
 	const cannedResponses = await CannedResponse.find({
 		$or: [
