@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useMutation } from '@tanstack/react-query';
+import React, { lazy } from 'react';
 
-import ValidateMatrixIdModal from './ValidateMatrixIdModal';
+const ValidateMatrixIdModal = lazy(() => import('./ValidateMatrixIdModal'));
 
 export type useAddMatrixUsersProps = {
 	rid: IRoom['_id'];
@@ -13,28 +14,27 @@ export type useAddMatrixUsersProps = {
 	users: string[];
 };
 
-export const useAddMatrixUsers = ({ rid, reload, onClickBack, handleUsers, users }: useAddMatrixUsersProps) => {
+export const useAddMatrixUsers = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const saveAction = useMethod('addUsersToRoom');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleClose = useMutableCallback(() => setModal(null));
-	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/matrixId.verify', undefined);
+	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/matrixId.verify');
 
-	const handleSave = useMutableCallback(async () => {
-		try {
-			await saveAction({ rid, users });
-			dispatchToastMessage({ type: 'success', message: t('Users_added') });
-			handleClose();
-			onClickBack();
-			reload();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
-			handleClose();
-		}
-	});
-
-	const handleMatrixValidation = useMutableCallback(async () => {
+	return useMutation(async ({ rid, reload, onClickBack, handleUsers, users }: useAddMatrixUsersProps) => {
+		const handleSave = async () => {
+			try {
+				await saveAction({ rid, users });
+				dispatchToastMessage({ type: 'success', message: t('Users_added') });
+				handleClose();
+				onClickBack();
+				reload();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error as Error });
+				handleClose();
+			}
+		};
 		try {
 			const matrixIdVerificationMap = new Map();
 			const matrixIds = users.filter((user) => user.startsWith('@'));
@@ -43,16 +43,10 @@ export const useAddMatrixUsers = ({ rid, reload, onClickBack, handleUsers, users
 
 			const matrixIdsVerificationPromiseResponse = await Promise.allSettled(matrixIdsVerificationPromises);
 			const matrixIdsVerificationFulfilledResults = matrixIdsVerificationPromiseResponse.filter(
-				(res) => res.status === 'fulfilled',
+				({ status }) => status === 'fulfilled',
 			) as PromiseFulfilledResult<{ result: string }>[];
 
-			matrixIds.forEach((matrixId, idx) => {
-				const {
-					value: { result },
-				} = matrixIdsVerificationFulfilledResults[idx];
-
-				matrixIdVerificationMap.set(matrixId, result);
-			});
+			matrixIds.forEach((matrixId, idx) => matrixIdVerificationMap.set(matrixId, matrixIdsVerificationFulfilledResults[idx].value));
 
 			handleUsers(users.filter((user) => !(matrixIdVerificationMap.has(user) && matrixIdVerificationMap.get(user) === 'UNVERIFIED')));
 
@@ -61,6 +55,4 @@ export const useAddMatrixUsers = ({ rid, reload, onClickBack, handleUsers, users
 			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	});
-
-	return handleMatrixValidation;
 };

@@ -14,7 +14,6 @@ import {
 } from '../../../../../components/Contextualbar';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useAddMatrixUsers } from './ValidateMatrixInvitedUsers/useAddMatrixUsers';
-import type { useAddMatrixUsersProps } from './ValidateMatrixInvitedUsers/useAddMatrixUsers';
 
 type AddUsersForFederatedRoomsProps = {
 	rid: IRoom['_id'];
@@ -35,6 +34,8 @@ const AddUsersForFederatedRooms = ({
 }: AddUsersForFederatedRoomsProps): ReactElement => {
 	const t = useTranslation();
 
+	const addClickHandler = useAddMatrixUsers();
+
 	return (
 		<>
 			<ContextualbarHeader>
@@ -54,14 +55,16 @@ const AddUsersForFederatedRooms = ({
 				<ButtonGroup stretch>
 					<Button
 						primary
-						disabled={!users || users.length === 0}
-						onClick={useAddMatrixUsers({
-							rid,
-							reload,
-							onClickBack,
-							handleUsers,
-							users: users.filter((user) => user.startsWith('@')),
-						} as useAddMatrixUsersProps)}
+						disabled={!users || users.length === 0 || addClickHandler.isLoading}
+						onClick={() =>
+							addClickHandler.mutate({
+								rid,
+								reload,
+								onClickBack,
+								handleUsers,
+								users: users.filter((user) => user.startsWith('@')),
+							})
+						}
 					>
 						{t('Add_users')}
 					</Button>
