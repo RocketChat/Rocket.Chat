@@ -3273,6 +3273,7 @@
   "Outgoing": "Uitgaande",
   "Outgoing_WebHook": "Uitgaande WebHook",
   "Outgoing_WebHook_Description": "Haal uit Rocket.Chat in realtime.",
+  "Outlook_Calendar_Enabled": "Ingeschakeld",
   "Output_format": "Uitvoerformaat",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Overschrijf de URL waarnaar bestanden worden geüpload. Deze url wordt ook gebruikt voor downloads, tenzij een CDN is opgegeven",
   "Page_title": "Pagina titel",

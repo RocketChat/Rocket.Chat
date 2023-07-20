@@ -40,6 +40,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated this method is deprecated and will be removed soon.
+	 * Prefer using cloud.registrationStatus rest api.
+	 */
 	async 'cloud:checkRegisterStatus'() {
 		const uid = Meteor.userId();
 
