@@ -47,7 +47,6 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 	);
 
 	const { data, isSuccess, isLoading } = useQuery(['livechat-departments', query, archived], async () => getDepartments(query), {
-		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 	});
 

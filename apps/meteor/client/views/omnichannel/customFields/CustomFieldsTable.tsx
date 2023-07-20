@@ -39,9 +39,7 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 	);
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['livechat-customFields', query], async () => getCustomFields(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading, refetch } = useQuery(['livechat-customFields', query], async () => getCustomFields(query));
 
 	useEffect(() => {
 		reload.current = refetch;
