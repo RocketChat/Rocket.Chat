@@ -1,6 +1,7 @@
+import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { createClassName, memo } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 

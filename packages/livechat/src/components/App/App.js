@@ -4,6 +4,9 @@ import { Router, route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
+import { setInitCookies } from '../../helpers/cookies';
+import { isActiveSession } from '../../helpers/isActiveSession';
+import { visibility } from '../../helpers/visibility';
 import history from '../../history';
 import Connection from '../../lib/connection';
 import CustomFields from '../../lib/customFields';
@@ -19,7 +22,6 @@ import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
 import { store } from '../../store';
-import { visibility, isActiveSession, setInitCookies } from '../helpers';
 
 function isRTL(s) {
 	const rtlChars = '\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC';

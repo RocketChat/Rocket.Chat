@@ -1,8 +1,9 @@
 import { parseISO } from 'date-fns/fp';
 import isToday from 'date-fns/isToday';
+import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { createClassName, memo } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 const parseDate = (ts, t) => {

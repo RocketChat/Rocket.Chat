@@ -1,9 +1,12 @@
 import { formatDistance } from 'date-fns';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
+import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { getAttachmentUrl, memo, normalizeTransferHistoryMessage, resolveDate } from '../../helpers';
+import { getAttachmentUrl } from '../../../helpers/baseUrl';
+import { normalizeTransferHistoryMessage } from '../../../helpers/normalizeTransferHistoryMessage';
+import { resolveDate } from '../../../helpers/resolveDate';
 import { default as AudioAttachment } from '../AudioAttachment';
 import { FileAttachment } from '../FileAttachment';
 import { ImageAttachment } from '../ImageAttachment';

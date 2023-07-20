@@ -2,13 +2,15 @@ import { useState } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
+import { getAvatarUrl, getConnectionBaseUrl } from '../../helpers/baseUrl';
+import { createClassName } from '../../helpers/createClassName';
+import { isMobileDevice } from '../../helpers/isMobileDevice';
 import PhoneAccept from '../../icons/phone.svg';
 import PhoneDecline from '../../icons/phoneOff.svg';
 import constants from '../../lib/constants';
 import store from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
-import { createClassName, getAvatarUrl, getConnectionBaseUrl, isMobileDevice } from '../helpers';
 import { CallStatus } from './CallStatus';
 import styles from './styles.scss';
 

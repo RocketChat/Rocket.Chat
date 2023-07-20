@@ -1,8 +1,8 @@
 import { RocketChatLogo } from '@rocket.chat/logo';
 import { withTranslation } from 'react-i18next';
 
+import { createClassName } from '../../helpers/createClassName';
 import { PopoverMenu } from '../Menu';
-import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
 export const Footer = ({ children, className, ...props }) => (
