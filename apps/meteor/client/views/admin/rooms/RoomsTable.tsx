@@ -297,9 +297,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
 
 	function intersect(array1: IRoom[], array2: IRoom[]) {
-		// if (array1.length === 0) return array2;
-		// if (array2.length === 0) return array1;
-
 		const set2 = new Set(array2);
 
 		return [...new Set(array1)].filter((x) => set2.has(x));
