@@ -22,7 +22,7 @@ export type ToolboxAction = {
 	renderAction?: (props: ActionRendererProps) => ReactNode;
 	full?: true;
 	order?: number;
-	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
+	groups: ReadonlyArray<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	hotkey?: string;
 	action?: (e?: MouseEvent<HTMLElement>) => void;
 	template?: ComponentType<{

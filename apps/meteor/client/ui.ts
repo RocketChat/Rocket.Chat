@@ -1,6 +1,3 @@
-import { useCallsRoomAction } from '../ee/client/hooks/roomActions/useCallsRoomAction';
-import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/useCannedResponsesRoomAction';
-import { useGameCenterRoomAction } from '../ee/client/hooks/roomActions/useGameCenterRoomAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
@@ -32,7 +29,6 @@ import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoom
 import type { ToolboxAction } from './views/room/lib/Toolbox';
 
 export const roomActions = [
-	// Community
 	useAutotranslateRoomAction,
 	useChannelSettingsRoomAction,
 	useCleanHistoryRoomAction,
@@ -61,9 +57,4 @@ export const roomActions = [
 	useUserInfoRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
-
-	// Enterprise
-	useCallsRoomAction,
-	useCannedResponsesRoomAction,
-	useGameCenterRoomAction,
 ] satisfies (() => ToolboxAction | undefined)[];
