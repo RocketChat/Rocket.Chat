@@ -9457,7 +9457,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.160":
+"@rocket.chat/css-in-js@npm:^0.31.23, @rocket.chat/css-in-js@npm:~0.31.23-dev.160, @rocket.chat/css-in-js@npm:~0.31.23-dev.165":
   version: 0.31.23
   resolution: "@rocket.chat/css-in-js@npm:0.31.23"
   dependencies:
@@ -9483,7 +9483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.160":
+"@rocket.chat/css-supports@npm:^0.31.23, @rocket.chat/css-supports@npm:~0.31.23-dev.160, @rocket.chat/css-supports@npm:~0.31.23-dev.165":
   version: 0.31.23
   resolution: "@rocket.chat/css-supports@npm:0.31.23"
   dependencies:
@@ -9692,10 +9692,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.336":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.336
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.336"
   checksum: 2cf52211b3a3ee9a6111db46bc05918244190be7a6fef482011dccc0cc9a0777362dd91010e9df45c67b2c3bcaf00e35a7fbdddfdb5e7f683a19baa1fa8211d0
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.341":
+  version: 0.32.0-dev.341
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.341"
+  checksum: f8944cbae4ea3a90c4127627e4f90ab1becc916c72ec54e1f16fd8de3e2bb8c0c6ca1dc1aa87ae7d2dc7d105f325dbbe65c262eca5719f6d237e7b2aa35a321e
   languageName: node
   linkType: hard
 
@@ -9755,14 +9762,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.386
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.386"
+  version: 0.32.0-dev.391
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.391"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.160
-    "@rocket.chat/css-supports": ~0.31.23-dev.160
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.336
-    "@rocket.chat/memo": ~0.31.23-dev.160
-    "@rocket.chat/styled": ~0.31.23-dev.160
+    "@rocket.chat/css-in-js": ~0.31.23-dev.165
+    "@rocket.chat/css-supports": ~0.31.23-dev.165
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.341
+    "@rocket.chat/memo": ~0.31.23-dev.165
+    "@rocket.chat/styled": ~0.31.23-dev.165
     invariant: ^2.2.4
     react-aria: ~3.23.1
     react-keyed-flatten-children: ^1.3.0
@@ -9774,7 +9781,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 3753fe5939b7fdead82076b824959bc7ed537349f810c104432d2ab1f7aa166a374642664e82e2cdc9efa3d1b4e1807c5ed12777cf7e875de24fca4f0ed58149
+  checksum: 2d32285d0354bbadb876a01ad04437b28a44ef22ed76468972a99923c976e32859a9ce66f83cbf650db15e8737bbe3f4938ac6975fed8d8462f9329be37d3c0e
   languageName: node
   linkType: hard
 
@@ -9998,7 +10005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.160":
+"@rocket.chat/memo@npm:^0.31.23, @rocket.chat/memo@npm:~0.31.23-dev.160, @rocket.chat/memo@npm:~0.31.23-dev.165":
   version: 0.31.23
   resolution: "@rocket.chat/memo@npm:0.31.23"
   checksum: 070debb940749a2e4463cf767dd65c6967cea664a5bd67c22a812d611f6c3c46d6fe4bb0bf329e43dcd927493413add37c45ae3b05ec08f0b24e9d7385caebdd
@@ -10824,7 +10831,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.160":
+"@rocket.chat/styled@npm:~0.31.23-dev.160, @rocket.chat/styled@npm:~0.31.23-dev.165":
   version: 0.31.23
   resolution: "@rocket.chat/styled@npm:0.31.23"
   dependencies:
