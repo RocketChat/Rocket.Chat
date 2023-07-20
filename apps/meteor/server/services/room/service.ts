@@ -5,9 +5,10 @@ import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services
 
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { createDirectMessage } from '../../methods/createDirectMessage';
-import { addUserToRoom, removeUserFromRoom } from '../../../app/lib/server';
-import { getValidRoomName } from '../../../app/utils/server';
-import { saveRoomTopic } from '../../../app/channel-settings/server';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
+import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
