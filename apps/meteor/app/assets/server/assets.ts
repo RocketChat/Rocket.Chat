@@ -13,7 +13,7 @@ import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from 
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
-import { getURL } from '../../utils/lib/getURL';
+import { getURL } from '../../utils/server/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';
@@ -323,19 +323,11 @@ class RocketChatAssetsClass {
 		const asset = settings.get<IRocketChatAsset>(assetName);
 		const url = asset.url || asset.defaultUrl;
 
-		return getURL(url, options);
+		return getURL(url as string, options);
 	}
 }
 
 export const RocketChatAssets = new RocketChatAssetsClass();
-
-void settingsRegistry.addGroup('Assets', async function () {
-	await this.add('Assets_SvgFavicon_Enable', true, {
-		type: 'boolean',
-		group: 'Assets',
-		i18nLabel: 'Enable_Svg_Favicon',
-	});
-});
 
 async function addAssetToSetting(asset: string, value: IRocketChatAsset): Promise<void> {
 	const key = `Assets_${asset}`;
@@ -442,7 +434,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async refreshClients() {
 		const uid = Meteor.userId();
-		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('refreshClients', '7.0.0');
 
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

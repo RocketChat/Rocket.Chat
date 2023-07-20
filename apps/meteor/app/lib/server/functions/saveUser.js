@@ -108,7 +108,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles) {
-		callbacks.run('validateUserRoles', userData);
+		await callbacks.run('validateUserRoles', userData);
 	}
 
 	let nameValidation;
@@ -266,7 +266,7 @@ const handleNickname = (updateUser, nickname) => {
 };
 
 const saveNewUser = async function (userData, sendPassword) {
-	validateEmailDomain(userData.email);
+	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
 	const isGuest = roles && roles.length === 1 && roles.includes('guest');
@@ -419,10 +419,13 @@ export const saveUser = async function (userId, userData) {
 
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
-	callbacks.run('afterSaveUser', userData);
-
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userId);
+
+	await callbacks.run('afterSaveUser', {
+		user: userUpdated,
+		oldUser: oldUserData,
+	});
 
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,

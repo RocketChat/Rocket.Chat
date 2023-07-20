@@ -2,7 +2,7 @@ import mem from 'mem';
 import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
 const cachedSettings = mem(settings, { maxAge: 1000, cacheKey: JSON.stringify });

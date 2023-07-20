@@ -38,7 +38,7 @@ import {
 } from '@rocket.chat/models';
 import type { EventSignatures } from '@rocket.chat/core-services';
 
-import { subscriptionFields, roomFields } from './publishFields';
+import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
@@ -120,9 +120,62 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, {
-					projection: subscriptionFields,
-				});
+				const subscription =
+					data ||
+					(await Subscriptions.findOneById<
+						Pick<
+							ISubscription,
+							| 't'
+							| 'ts'
+							| 'ls'
+							| 'lr'
+							| 'name'
+							| 'fname'
+							| 'rid'
+							| 'code'
+							| 'f'
+							| 'u'
+							| 'open'
+							| 'alert'
+							| 'roles'
+							| 'unread'
+							| 'prid'
+							| 'userMentions'
+							| 'groupMentions'
+							| 'archived'
+							| 'audioNotificationValue'
+							| 'desktopNotifications'
+							| 'mobilePushNotifications'
+							| 'emailNotifications'
+							| 'desktopPrefOrigin'
+							| 'mobilePrefOrigin'
+							| 'emailPrefOrigin'
+							| 'unreadAlert'
+							| '_updatedAt'
+							| 'blocked'
+							| 'blocker'
+							| 'autoTranslate'
+							| 'autoTranslateLanguage'
+							| 'disableNotifications'
+							| 'hideUnreadStatus'
+							| 'hideMentionStatus'
+							| 'muteGroupMentions'
+							| 'ignored'
+							| 'E2EKey'
+							| 'E2ESuggestedKey'
+							| 'tunread'
+							| 'tunreadGroup'
+							| 'tunreadUser'
+
+							// Omnichannel fields
+							| 'department'
+							| 'v'
+							| 'onHold'
+						>
+					>(id, {
+						projection: subscriptionFields,
+					}));
+
 				if (!subscription) {
 					return;
 				}
@@ -131,9 +184,9 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, {
+				const trash = (await Subscriptions.trashFindOneById(id, {
 					projection: { u: 1, rid: 1 },
-				});
+				})) as Pick<ISubscription, 'u' | 'rid' | '_id'> | undefined;
 				const subscription = trash || { _id: id };
 				void broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
@@ -147,14 +200,25 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			return;
 		}
 
-		const role = clientAction === 'removed' ? { _id: id, name: id } : data || (await Roles.findOneById(id));
+		if (clientAction === 'removed') {
+			void broadcast('watch.roles', {
+				clientAction: 'removed',
+				role: {
+					_id: id,
+					name: id,
+				},
+			});
+			return;
+		}
+
+		const role = data || (await Roles.findOneById(id));
 
 		if (!role) {
 			return;
 		}
 
 		void broadcast('watch.roles', {
-			clientAction: clientAction !== 'removed' ? ('changed' as const) : clientAction,
+			clientAction: 'changed',
 			role,
 		});
 	});
@@ -288,7 +352,16 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			return;
 		}
 
-		void broadcast('watch.users', { clientAction, data, diff, unset, id });
+		if (clientAction === 'removed') {
+			void broadcast('watch.users', { clientAction, id });
+			return;
+		}
+		if (clientAction === 'inserted') {
+			void broadcast('watch.users', { clientAction, id, data: data! });
+			return;
+		}
+
+		void broadcast('watch.users', { clientAction, diff: diff!, unset: unset!, id });
 	});
 
 	watcher.on<ILoginServiceConfiguration>(LoginServiceConfiguration.getCollectionName(), async ({ clientAction, id }) => {
@@ -301,6 +374,11 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	});
 
 	watcher.on<IInstanceStatus>(InstanceStatus.getCollectionName(), ({ clientAction, id, data, diff }) => {
+		if (clientAction === 'removed') {
+			void broadcast('watch.instanceStatus', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
 		void broadcast('watch.instanceStatus', { clientAction, data, diff, id });
 	});
 

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
@@ -14,8 +13,8 @@ import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
-
 import './roomAccessValidator.internalService';
+import { i18n } from '../../../server/lib/i18n';
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
@@ -27,7 +26,7 @@ Meteor.startup(async () => {
 				return user;
 			}
 			throw new Meteor.Error(
-				TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
+				i18n.t('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
 					lng: user.language || settings.get('Language') || 'en',
 				}),
 			);
@@ -53,20 +52,24 @@ Meteor.startup(async () => {
 
 	const monitor = new LivechatAgentActivityMonitor();
 
-	settings.watch<boolean>('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
+	settings.watch<boolean>('Troubleshoot_Disable_Livechat_Activity_Monitor', async (value) => {
 		if (value) {
 			return monitor.stop();
 		}
 
-		monitor.start();
+		await monitor.start();
 	});
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
+		Livechat.logger.debug(`Changing business hour type to ${value}`);
 		if (value) {
-			return businessHourManager.startManager();
+			await businessHourManager.startManager();
+			Livechat.logger.debug(`Business hour manager started`);
+			return;
 		}
-		return businessHourManager.stopManager();
+		await businessHourManager.stopManager();
+		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', function (value) {

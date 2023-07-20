@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
-import $ from 'jquery';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { LegacyRoomManager } from './LegacyRoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
-import { APIClient } from '../../../utils/client';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -64,10 +63,9 @@ class ReadMessage extends Emitter {
 		}
 
 		// Only read messages if user saw the first unread message
-		const unreadMark = $('.message.first-unread, .rcx-message-divider--unread');
-		if (unreadMark.length > 0) {
-			const position = unreadMark.position();
-			const visible = (position ? position.top : 0) >= 0;
+		const unreadMark = document.querySelector<HTMLElement>('.message.first-unread, .rcx-message-divider--unread');
+		if (unreadMark) {
+			const visible = unreadMark.offsetTop >= 0;
 
 			if (!visible) {
 				this.log('readMessage -> readNow canceled, unread mark visible:', visible);
@@ -93,7 +91,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		return APIClient.post('/v1/subscriptions.read', { rid }).then(() => {
+		return sdk.rest.post('/v1/subscriptions.read', { rid }).then(() => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
 		});
@@ -109,7 +107,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = LegacyRoomManager.openedRooms[subscription.t + subscription.name];
+		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
 		if (!room) {
 			return;
 		}
@@ -152,7 +150,7 @@ class ReadMessage extends Emitter {
 					$gt: lastReadRecord.ts,
 				},
 				'u._id': {
-					$ne: Meteor.userId(),
+					$ne: Meteor.userId() ?? undefined,
 				},
 			},
 			{

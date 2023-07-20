@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
@@ -6,22 +5,12 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
-import { CachedCollectionManager } from '../../../app/ui-cached-collection/client';
-import { APIClient } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import type { App } from '../../../client/views/marketplace/types';
-import type {
-	// IAppFromMarketplace,
-	IAppLanguage,
-	IAppExternalURL,
-	ICategory,
-	// IAppSynced,
-	// IAppScreenshots,
-	// IScreenshot,
-} from './@types/IOrchestrator';
+import type { IAppLanguage, IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
@@ -31,27 +20,27 @@ class AppClientOrchestrator {
 
 	private _manager: AppClientManager;
 
-	private isLoaded: boolean;
+	private _isLoaded: boolean;
 
-	private ws: AppWebsocketReceiver;
+	private _ws: AppWebsocketReceiver;
 
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
-		this.isLoaded = false;
+		this._isLoaded = false;
 	}
 
 	public async load(): Promise<void> {
-		if (!this.isLoaded) {
-			this.ws = new AppWebsocketReceiver();
-			this.isLoaded = true;
+		if (!this._isLoaded) {
+			this._ws = new AppWebsocketReceiver();
+			this._isLoaded = true;
 		}
 
 		await handleI18nResources();
 	}
 
 	public getWsListener(): AppWebsocketReceiver {
-		return this.ws;
+		return this._ws;
 	}
 
 	public getAppClientManager(): AppClientManager {
@@ -68,12 +57,12 @@ class AppClientOrchestrator {
 	}
 
 	public async screenshots(appId: string): Promise<AppScreenshot[]> {
-		const { screenshots } = await APIClient.get(`/apps/${appId}/screenshots`);
+		const { screenshots } = await sdk.rest.get(`/apps/${appId}/screenshots`);
 		return screenshots;
 	}
 
 	public async getInstalledApps(): Promise<App[]> {
-		const result = await APIClient.get<'/apps/installed'>('/apps/installed');
+		const result = await sdk.rest.get<'/apps/installed'>('/apps/installed');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -82,8 +71,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(isAdminUser?: string): Promise<App[]> {
-		const result = await APIClient.get('/apps/marketplace', { isAdminUser });
+	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
+		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -107,22 +96,22 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
-		const { apps } = await APIClient.get(`/apps/bundles/${bundleId}/apps`);
+		const { apps } = await sdk.rest.get(`/apps/bundles/${bundleId}/apps`);
 		return apps;
 	}
 
 	public async getAppsLanguages(): Promise<IAppLanguage> {
-		const { apps } = await APIClient.get('/apps/languages');
+		const { apps } = await sdk.rest.get('/apps/languages');
 		return apps;
 	}
 
 	public async getApp(appId: string): Promise<App> {
-		const { app } = await APIClient.get(`/apps/${appId}` as any);
+		const { app } = await sdk.rest.get(`/apps/${appId}` as any);
 		return app;
 	}
 
 	public async getAppFromMarketplace(appId: string, version: string): Promise<{ app: App; success: boolean }> {
-		const result = await APIClient.get(
+		const result = await sdk.rest.get(
 			`/apps/${appId}` as any,
 			{
 				marketplace: 'true',
@@ -133,7 +122,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getLatestAppFromMarketplace(appId: string, version: string): Promise<App> {
-		const { app } = await APIClient.get(
+		const { app } = await sdk.rest.get(
 			`/apps/${appId}` as any,
 			{
 				marketplace: 'true',
@@ -145,21 +134,21 @@ class AppClientOrchestrator {
 	}
 
 	public async setAppSettings(appId: string, settings: ISetting[]): Promise<void> {
-		await APIClient.post(`/apps/${appId}/settings`, { settings });
+		await sdk.rest.post(`/apps/${appId}/settings`, { settings });
 	}
 
 	public async getAppApis(appId: string): Promise<IApiEndpointMetadata[]> {
-		const { apis } = await APIClient.get(`/apps/${appId}/apis`);
+		const { apis } = await sdk.rest.get(`/apps/${appId}/apis`);
 		return apis;
 	}
 
 	public async getAppLanguages(appId: string): Promise<IAppStorageItem['languageContent']> {
-		const { languages } = await APIClient.get(`/apps/${appId}/languages`);
+		const { languages } = await sdk.rest.get(`/apps/${appId}/languages`);
 		return languages;
 	}
 
 	public async installApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
-		const { app } = await APIClient.post<'/apps/'>('/apps/', {
+		const { app } = await sdk.rest.post<'/apps/'>('/apps/', {
 			appId,
 			marketplace: true,
 			version,
@@ -169,7 +158,7 @@ class AppClientOrchestrator {
 	}
 
 	public async updateApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
-		const result = await APIClient.post<'/apps/:id'>(`/apps/${appId}`, {
+		const result = await sdk.rest.post<'/apps/:id'>(`/apps/${appId}`, {
 			appId,
 			marketplace: true,
 			version,
@@ -183,7 +172,7 @@ class AppClientOrchestrator {
 	}
 
 	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
-		const { status: effectiveStatus } = await APIClient.post(`/apps/${appId}/status`, { status });
+		const { status: effectiveStatus } = await sdk.rest.post(`/apps/${appId}/status`, { status });
 		return effectiveStatus;
 	}
 
@@ -192,7 +181,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps/buildExternalUrl', {
+		const result = await sdk.rest.get('/apps/buildExternalUrl', {
 			appId,
 			purchaseType,
 			details: `${details}`,
@@ -206,7 +195,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildExternalAppRequest(appId: string) {
-		const result = await APIClient.get('/apps/buildExternalAppRequest', {
+		const result = await sdk.rest.get('/apps/buildExternalAppRequest', {
 			appId,
 		});
 
@@ -217,7 +206,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildIncompatibleExternalUrl(appId: string, appVersion: string, action: string): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps/incompatibleModal', {
+		const result = await sdk.rest.get('/apps/incompatibleModal', {
 			appId,
 			appVersion,
 			action,
@@ -238,7 +227,7 @@ class AppClientOrchestrator {
 		offset?: number,
 	): Promise<PaginatedAppRequests> {
 		try {
-			const response = await APIClient.get(`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`);
+			const response = await sdk.rest.get(`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`);
 
 			return response;
 		} catch (e: unknown) {
@@ -248,7 +237,7 @@ class AppClientOrchestrator {
 
 	public async getAppRequestsStats(): Promise<AppRequestsStats> {
 		try {
-			const response = await APIClient.get('/apps/app-request/stats');
+			const response = await sdk.rest.get('/apps/app-request/stats');
 
 			return response;
 		} catch (e: unknown) {
@@ -257,7 +246,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
-		const result = await APIClient.get('/apps/categories');
+		const result = await sdk.rest.get('/apps/categories');
 
 		if (Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -271,11 +260,4 @@ class AppClientOrchestrator {
 	}
 }
 
-export const Apps = new AppClientOrchestrator();
-
-Meteor.startup(() => {
-	CachedCollectionManager.onLogin(() => {
-		Apps.getAppClientManager().initialize();
-		Apps.load();
-	});
-});
+export const AppClientOrchestratorInstance = new AppClientOrchestrator();

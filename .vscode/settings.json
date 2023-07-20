@@ -11,11 +11,16 @@
 		{
 			"pattern": "ee/apps/*",
 			"changeProcessCWD": true
+		},
+		{
+			"pattern": "ee/packages/*",
+			"changeProcessCWD": true
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
+		"Contextualbar",
 		"fname",
 		"Gazzodown",
 		"katex",

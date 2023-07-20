@@ -8,7 +8,7 @@ import { SAMLUtils } from './lib/Utils';
 const logger = new Logger('steffo:meteor-accounts-saml');
 SAMLUtils.setLoggerInstance(logger);
 
-Meteor.startup(() => {
-	addSettings('Default');
+Meteor.startup(async () => {
+	await addSettings('Default');
 	settings.watchByRegex(/^SAML_.+/, loadSamlServiceProviders);
 });

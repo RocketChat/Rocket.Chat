@@ -24,16 +24,23 @@ import {
 	useRole,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
-import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
@@ -128,7 +135,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
 	const saveData = useRef({});
-	const router = useRoute('home');
+	const router = useRouter();
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
@@ -271,7 +278,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
-			router.push({});
+			router.navigate('/home');
 		};
 
 		setModal(
@@ -293,13 +300,12 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{room.teamId ? t('edit-team') : t('edit-room')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
@@ -483,29 +489,23 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Accordion.Item>
 					</Accordion>
 				)}
-				<Field>
-					<Field.Row>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-							<ButtonGroup stretch flexGrow={1}>
-								<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
-									{t('Reset')}
-								</Button>
-								<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
-									{t('Save')}
-								</Button>
-							</ButtonGroup>
-						</Box>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<Button flexGrow={1} danger disabled={!canDelete || isFederated} onClick={handleDelete}>
-							<Icon name='trash' size='x16' />
-							{t('Delete')}
-						</Button>
-					</Field.Row>
-				</Field>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
+					<Button disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch mbs='x8'>
+					<Button danger disabled={!canDelete || isFederated} onClick={handleDelete}>
+						<Icon name='trash' size='x16' />
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</>
 	);
 }

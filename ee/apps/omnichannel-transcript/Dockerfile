@@ -7,6 +7,9 @@ WORKDIR /app
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
+COPY ./packages/agenda/package.json packages/agenda/package.json
+COPY ./packages/agenda/dist packages/agenda/dist
+
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
 COPY ./packages/core-typings/dist packages/core-typings/dist
 

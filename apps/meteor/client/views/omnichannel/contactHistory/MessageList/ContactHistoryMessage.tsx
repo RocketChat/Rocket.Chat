@@ -25,6 +25,7 @@ import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
+import Attachments from '../../../../components/message/content/Attachments';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -50,7 +51,7 @@ const ContactHistoryMessage: FC<{
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
-							size={'x18'}
+							size='x18'
 							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
@@ -78,7 +79,7 @@ const ContactHistoryMessage: FC<{
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
-							size={'x36'}
+							size='x36'
 							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
@@ -105,6 +106,7 @@ const ContactHistoryMessage: FC<{
 						</MessageBody>
 					)}
 					{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+					{message.attachments && <Attachments attachments={message.attachments} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

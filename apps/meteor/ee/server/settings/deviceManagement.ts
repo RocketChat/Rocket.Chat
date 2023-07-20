@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
-export function addSettings(): void {
-	void settingsRegistry.addGroup('Device_Management', async function () {
+export async function addSettings(): Promise<void> {
+	await settingsRegistry.addGroup('Device_Management', async function () {
 		await this.with(
 			{
 				enterprise: true,

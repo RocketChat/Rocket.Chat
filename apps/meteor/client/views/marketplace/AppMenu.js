@@ -3,11 +3,10 @@ import {
 	useSetModal,
 	useEndpoint,
 	useTranslation,
-	useRoute,
 	useRouteParameter,
 	useToastMessageDispatch,
-	useCurrentRoute,
 	usePermission,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
@@ -15,8 +14,10 @@ import semver from 'semver';
 import WarningModal from '../../components/WarningModal';
 import IframeModal from './IframeModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
-import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
+import { appEnabledStatuses, appButtonProps } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { warnEnableDisableApp } from './helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
@@ -26,12 +27,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-
-	const [currentRouteName, currentRouteParams] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 	const currentTab = useRouteParameter('tab');
@@ -128,7 +124,16 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
-		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context,
+				page: 'info',
+				id: app.id,
+				version: app.version,
+				tab: 'logs',
+			},
+		});
 	}, [app.id, app.version, context, router]);
 
 	const handleDisable = useCallback(() => {
@@ -163,7 +168,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				if (success) {
 					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
 					if (context === 'details' && currentTab !== 'details') {
-						router.replace({ ...currentRouteParams, tab: 'details' });
+						router.navigate(
+							{
+								name: 'marketplace',
+								params: { ...router.getRouteParameters(), tab: 'details' },
+							},
+							{ replace: true },
+						);
 					}
 				}
 			} catch (error) {
@@ -209,10 +220,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [
+		isSubscribed,
 		appCountQuery.data,
 		app.migrated,
 		app.name,
-		isSubscribed,
 		setModal,
 		closeModal,
 		t,
@@ -221,7 +232,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		context,
 		currentTab,
 		router,
-		currentRouteParams,
 		handleSubscription,
 	]);
 

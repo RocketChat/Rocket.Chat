@@ -2,10 +2,10 @@ import os from 'os';
 
 import { Settings } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 export const getNewUpdates = async () => {
 	try {
@@ -32,10 +32,10 @@ export const getNewUpdates = async () => {
 		const headers = {
 			...(token && { Authorization: `Bearer ${token}` }),
 		};
-		const url = 'https://releases.rocket.chat/updates/check?';
-		const qs = new URLSearchParams(params);
-		const response = await fetch(url + qs, {
+		const url = 'https://releases.rocket.chat/updates/check';
+		const response = await fetch(url, {
 			headers,
+			params,
 		});
 
 		const data = await response.json();

@@ -247,6 +247,87 @@ describe('Settings', () => {
 		});
 	});
 
+	it('should work with a setting type multiSelect with a default value', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('my_setting_multiselect', ['a'], {
+					type: 'multiSelect',
+					sorter: 0,
+					values: [
+						{ key: 'a', i18nLabel: 'a' },
+						{ key: 'b', i18nLabel: 'b' },
+						{ key: 'c', i18nLabel: 'c' },
+					],
+				});
+			});
+		});
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).value).to.be.deep.equal(['a']);
+	});
+	it('should respect override via environment as multiSelect', async () => {
+		process.env.OVERWRITE_SETTING_my_setting_multiselect = '["a","b"]';
+
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('my_setting_multiselect', ['a'], {
+					type: 'multiSelect',
+					sorter: 0,
+					values: [
+						{ key: 'a', i18nLabel: 'a' },
+						{ key: 'b', i18nLabel: 'b' },
+						{ key: 'c', i18nLabel: 'c' },
+					],
+				});
+			});
+		});
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).value).to.be.deep.equal(['a', 'b']);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).processEnvValue).to.be.deep.equal(['a', 'b']);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).valueSource).to.be.equal('processEnvValue');
+	});
+
+	it('should ignore override via environment as multiSelect if value is invalid', async () => {
+		process.env.OVERWRITE_SETTING_my_setting_multiselect = '[INVALID_ARRAY]';
+
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('my_setting_multiselect', ['a'], {
+					type: 'multiSelect',
+					sorter: 0,
+					values: [
+						{ key: 'a', i18nLabel: 'a' },
+						{ key: 'b', i18nLabel: 'b' },
+						{ key: 'c', i18nLabel: 'c' },
+					],
+				});
+			});
+		});
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).value).to.be.deep.equal(['a']);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).processEnvValue).to.be.equal(undefined);
+		expect(Settings.findOne({ _id: 'my_setting_multiselect' }).valueSource).to.be.equal('packageValue');
+	});
+
 	it('should respect initial value via environment', async () => {
 		process.env.my_setting = '1';
 		const settings = new CachedSettings();
@@ -389,33 +470,35 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should call `settings.watch` callback on setting changed registering before initialized', (done) => {
-		const spiedCallback1 = spy();
-		const spiedCallback2 = spy();
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+	it('should call `settings.watch` callback on setting changed registering before initialized', async () => {
+		return new Promise(async (resolve) => {
+			const spiedCallback1 = spy();
+			const spiedCallback2 = spy();
+			const settings = new CachedSettings();
+			Settings.settings = settings;
+			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
-		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
+			settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
+			settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
-		settings.initialized();
-		void settingsRegistry.addGroup('group', async function () {
-			await this.section('section', async function () {
-				await this.add('setting_callback', 'value2', {
-					type: 'string',
+			settings.initialized();
+			await settingsRegistry.addGroup('group', async function () {
+				await this.section('section', async function () {
+					await this.add('setting_callback', 'value2', {
+						type: 'string',
+					});
 				});
 			});
-		});
-		setTimeout(() => {
-			Settings.updateValueById('setting_callback', 'value3');
 			setTimeout(() => {
-				expect(spiedCallback1).to.have.been.called.exactly(2);
-				expect(spiedCallback2).to.have.been.called.exactly(2);
-				expect(spiedCallback1).to.have.been.called.with('value2');
-				expect(spiedCallback1).to.have.been.called.with('value3');
-				done();
+				Settings.updateValueById('setting_callback', 'value3');
+				setTimeout(() => {
+					expect(spiedCallback1).to.have.been.called.exactly(2);
+					expect(spiedCallback2).to.have.been.called.exactly(2);
+					expect(spiedCallback1).to.have.been.called.with('value2');
+					expect(spiedCallback1).to.have.been.called.with('value3');
+					resolve();
+				}, settings.getConfig({ debounce: 10 }).debounce);
 			}, settings.getConfig({ debounce: 10 }).debounce);
-		}, settings.getConfig({ debounce: 10 }).debounce);
+		});
 	});
 });

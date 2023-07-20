@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer/server/api';
 import { isUserIdFederated } from './isUserIdFederated';
+import { i18n } from './i18n';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById(uid, {});
@@ -18,7 +18,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = (s: string): string => TAPi18n.__(s, { lng: language });
+	const t = (s: string): string => i18n.t(s, { lng: language });
 	const text = `
 	${t('Your_e2e_key_has_been_reset')}
 

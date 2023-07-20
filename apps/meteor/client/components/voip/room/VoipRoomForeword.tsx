@@ -10,7 +10,7 @@ import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOu
 export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement => {
 	const t = useTranslation();
 
-	const avatarUrl = getUserAvatarURL(room.name);
+	const avatarUrl = getUserAvatarURL(room.name) as string;
 
 	const roomName = room.fname;
 

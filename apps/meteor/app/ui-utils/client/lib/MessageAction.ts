@@ -11,12 +11,12 @@ import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-import { APIClient } from '../../../utils/client';
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
-		const { message } = await APIClient.get('/v1/chat.getMessage', { msgId });
+		const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 		return message;
 	} catch {
 		return null;
@@ -54,6 +54,7 @@ export type MessageActionConfig = {
 	order?: number;
 	/* @deprecated */
 	color?: string;
+	role?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (
@@ -65,7 +66,7 @@ export type MessageActionConfig = {
 			chat,
 			autoTranslateOptions,
 		}: {
-			message?: IMessage & Partial<ITranslatedMessage>;
+			message: IMessage & Partial<ITranslatedMessage>;
 			tabbar: ToolboxContextValue;
 			room?: IRoom;
 			chat: ContextType<typeof ChatContext>;
@@ -203,7 +204,7 @@ export const MessageAction = new (class {
 		}
 
 		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomCoordinator.getURL(roomData.t, subData || roomData);
+		const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
 		return `${roomURL}?msg=${msgId}`;
 	}
 })();

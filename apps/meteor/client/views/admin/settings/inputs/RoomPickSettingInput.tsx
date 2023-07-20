@@ -9,7 +9,7 @@ import ResetSettingButton from '../ResetSettingButton';
 type RoomPickSettingInputProps = {
 	_id: string;
 	label: string;
-	value?: SettingValueRoomPick;
+	value?: SettingValueRoomPick | '';
 	placeholder?: string;
 	readonly?: boolean;
 	disabled?: boolean;
@@ -21,7 +21,7 @@ type RoomPickSettingInputProps = {
 function RoomPickSettingInput({
 	_id,
 	label,
-	value = [],
+	value,
 	placeholder,
 	readonly,
 	disabled,
@@ -29,7 +29,7 @@ function RoomPickSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: RoomPickSettingInputProps): ReactElement {
-	const parsedValue = value.map(({ _id }) => _id);
+	const parsedValue = (value || []).map(({ _id }) => _id);
 
 	const handleChange = (value: string | string[]) => {
 		if (typeof value === 'object') {

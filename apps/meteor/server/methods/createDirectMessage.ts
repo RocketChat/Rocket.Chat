@@ -100,11 +100,11 @@ export async function createDirectMessage(
 		options.subscriptionExtra = { open: true };
 	}
 	try {
-		callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
-	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], undefined, {}, options);
+	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

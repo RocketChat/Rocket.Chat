@@ -5,8 +5,10 @@ import type { ComponentProps, ReactNode } from 'react';
 import React, { useRef, Fragment } from 'react';
 
 import { messageBox } from '../../../../../../../../app/ui-utils/client';
+import { useMessageboxAppsActionButtons } from '../../../../../../../hooks/useAppActionButtons';
 import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
 import { useDropdownVisibility } from '../../../../../../../sidebar/header/hooks/useDropdownVisibility';
+import { useChat } from '../../../../../contexts/ChatContext';
 import CreateDiscussionAction from './actions/CreateDiscussionAction';
 import ShareLocationAction from './actions/ShareLocationAction';
 import WebdavAction from './actions/WebdavAction';
@@ -19,7 +21,13 @@ type ActionsToolbarDropdownProps = {
 	actions?: ReactNode[];
 };
 
-const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions, ...props }: ActionsToolbarDropdownProps) => {
+const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: ActionsToolbarDropdownProps) => {
+	const chatContext = useChat();
+
+	if (!chatContext) {
+		throw new Error('useChat must be used within a ChatProvider');
+	}
+
 	const t = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -28,7 +36,16 @@ const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions, 
 
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
-	const groups = messageBox.actions.get();
+	const apps = useMessageboxAppsActionButtons();
+
+	const groups = {
+		...(apps.isSuccess &&
+			apps.data.length > 0 && {
+				Apps: apps.data,
+			}),
+		...messageBox.actions.get(),
+	};
+
 	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
 		const items = group.map((item) => ({
 			icon: item.icon,
@@ -66,7 +83,17 @@ const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions, 
 						<Fragment key={index}>
 							<OptionTitle>{actionGroup.title}</OptionTitle>
 							{actionGroup.items.map((item) => (
-								<Option key={item.id} onClick={item.action as () => void}>
+								<Option
+									key={item.id}
+									onClick={(event) =>
+										item.action({
+											rid,
+											tmid,
+											event: event as unknown as Event,
+											chat: chatContext,
+										})
+									}
+								>
 									{item.icon && <OptionIcon name={item.icon as ComponentProps<typeof OptionIcon>['name']} />}
 									<OptionContent>{item.name}</OptionContent>
 								</Option>

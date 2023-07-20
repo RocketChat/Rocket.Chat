@@ -35,11 +35,15 @@ declare module '@rocket.chat/ui-contexts' {
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
 		'cloud:checkUserLoggedIn': () => boolean;
-		'cloud:logout': () => boolean | '';
+		'cloud:logout': () => Promise<boolean | string>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated this method is deprecated and will be removed soon.
+	 * Prefer using cloud.registrationStatus rest api.
+	 */
 	async 'cloud:checkRegisterStatus'() {
 		const uid = Meteor.userId();
 

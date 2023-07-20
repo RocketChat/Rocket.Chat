@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -9,6 +9,7 @@ import type { FormSectionProps } from './AccountPreferencesPage';
 
 type Values = {
 	unreadAlert: boolean;
+	showThreadsInMainChannel: boolean;
 	alsoSendThreadToChannel: 'default' | 'always' | 'never';
 	useEmojis: boolean;
 	convertAsciiEmoji: boolean;
@@ -30,6 +31,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const settings = {
 		unreadAlert: useUserPreference('unreadAlert'),
+		showThreadsInMainChannel: useUserPreference('showThreadsInMainChannel'),
 		alsoSendThreadToChannel: useUserPreference('alsoSendThreadToChannel'),
 		useEmojis: useUserPreference('useEmojis'),
 		convertAsciiEmoji: useUserPreference('convertAsciiEmoji'),
@@ -48,6 +50,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const {
 		unreadAlert,
+		showThreadsInMainChannel,
 		alsoSendThreadToChannel,
 		useEmojis,
 		convertAsciiEmoji,
@@ -64,6 +67,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const {
 		handleUnreadAlert,
+		handleShowThreadsInMainChannel,
 		handleAlsoSendThreadToChannel,
 		handleUseEmojis,
 		handleConvertAsciiEmoji,
@@ -89,9 +93,9 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
-			[0 as any, t('Default')], // TO DO: update SelectOption type to accept number as first item
-			[1, t('12_Hour')],
-			[2, t('24_Hour')],
+			['0', t('Default')], // TO DO: update SelectOption type to accept number as first item
+			['1', t('12_Hour')],
+			['2', t('24_Hour')],
 		],
 		[t],
 	);
@@ -107,8 +111,6 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	commitRef.current.messages = commit;
 
-	// TODO: Weird behaviour when saving clock mode, and then changing it.
-
 	return (
 		<Accordion.Item title={t('Messages')} {...props}>
 			<FieldGroup>
@@ -122,6 +124,20 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 						</Field>
 					),
 					[handleUnreadAlert, t, unreadAlert],
+				)}
+				{useMemo(
+					() => (
+						<Field>
+							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+								<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
+								</Field.Row>
+							</Box>
+							<Field.Hint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</Field.Hint>
+						</Field>
+					),
+					[handleShowThreadsInMainChannel, showThreadsInMainChannel, t],
 				)}
 				{useMemo(
 					() => (
@@ -144,7 +160,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 						<Field>
 							<Field.Label>{t('Message_TimeFormat')}</Field.Label>
 							<Field.Row>
-								<Select value={clockMode} onChange={handleClockMode} options={timeFormatOptions} />
+								<Select value={clockMode.toString()} onChange={handleClockMode} options={timeFormatOptions} />
 							</Field.Row>
 						</Field>
 					),

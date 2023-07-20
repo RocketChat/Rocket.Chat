@@ -2,21 +2,14 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useTranslation,
-	useCurrentRoute,
-	useRoute,
-	useRouteParameter,
-	useToastMessageDispatch,
-	usePermission,
-} from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
-import { Apps } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import Page from '../../../components/Page';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
@@ -31,6 +24,7 @@ import AppSettings from './tabs/AppSettings';
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const router = useRouter();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -38,29 +32,31 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const isAdminUser = usePermission('manage-apps');
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
-
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
 	const appData = useAppInfo(id, context || '');
 
 	const handleReturn = useMutableCallback((): void => {
-		context && router.push({ context, page: 'list' });
+		if (!context) {
+			return;
+		}
+
+		router.navigate({
+			name: 'marketplace',
+			params: { context, page: 'list' },
+		});
 	});
 
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace, name } = appData || {};
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
+
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
 		setIsSaving(true);
 		try {
-			await Apps.setAppSettings(
+			await AppClientOrchestratorInstance.setAppSettings(
 				id,
 				(Object.values(settings || {}) as ISetting[]).map((value) => ({
 					...value,
@@ -94,12 +90,11 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 						<>
 							<AppDetailsPageHeader app={appData} />
 							<AppDetailsPageTabs
+								context={context || ''}
 								installed={installed}
 								isSecurityVisible={isSecurityVisible}
-								marketplace={marketplace}
 								settings={settings}
 								tab={tab}
-								context={context || ''}
 							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}

@@ -1,2 +1,1 @@
-import '../lib/common';
-import './startup';
+import './lib';

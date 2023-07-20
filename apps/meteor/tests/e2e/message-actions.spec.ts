@@ -34,7 +34,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="reply-in-thread"]').click();
-		await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('this is a reply message');
+		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
@@ -94,6 +94,10 @@ test.describe.serial('message-actions', () => {
 			await adminPage.goto('/account/preferences');
 			await adminPage.locator('role=heading[name="Messages"]').click();
 			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
+		});
+
+		test.afterAll(async () => {
+			await adminPage.close();
 		});
 
 		test.afterAll(async ({ browser }) => {
