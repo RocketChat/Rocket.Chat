@@ -1,4 +1,3 @@
-export { isTheLastMessage } from './isTheLastMessage';
 export { removeUserFromRoom } from './removeUserFromRoom';
 export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
