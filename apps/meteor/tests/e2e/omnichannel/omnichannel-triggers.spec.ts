@@ -23,6 +23,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		const requests = await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
+			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true }),
 		]);
 		requests.every((e) => expect(e.status()).toBe(200));
 
@@ -35,7 +36,11 @@ test.describe.serial('omnichannel-triggers', () => {
 	});
 
 	test.afterAll(async ({ page, api }) => {
-		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1'),
+			api.delete('/livechat/users/manager/user1'),
+			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
+		]);
 		await agent.page.close();
 		await page.close();
 	});
