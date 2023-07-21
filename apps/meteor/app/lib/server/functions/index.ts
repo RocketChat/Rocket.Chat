@@ -1,4 +1,3 @@
-export { createDirectRoom } from './createDirectRoom';
 export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
