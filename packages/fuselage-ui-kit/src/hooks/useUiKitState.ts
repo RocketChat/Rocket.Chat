@@ -20,7 +20,7 @@ const hasInitialValue = <TElement extends UiKit.ActionableElement>(
 
 const hasInitialTime = <TElement extends UiKit.ActionableElement>(
   element: TElement
-): element is TElement & { initialTime: number } => 'initialTime' in element;
+): element is TElement & { initialTime: string } => 'initialTime' in element;
 
 const hasInitialDate = <TElement extends UiKit.ActionableElement>(
   element: TElement
@@ -58,11 +58,7 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
 
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||
-    (hasInitialTime(rest) &&
-      new Date(rest.initialTime).toLocaleTimeString(undefined, {
-        hour: 'numeric',
-        minute: 'numeric',
-      })) ||
+    (hasInitialTime(rest) && rest.initialTime) ||
     (hasInitialDate(rest) && rest.initialDate) ||
     (hasInitialOption(rest) && rest.initialOption.value) ||
     (hasInitialOptions(rest) &&
