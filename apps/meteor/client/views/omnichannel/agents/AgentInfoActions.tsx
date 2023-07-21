@@ -47,8 +47,8 @@ const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 
 	return (
 		<>
-			<AgentInfoAction key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />
-			<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />
+			<AgentInfoAction key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon='edit' />
+			<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
 		</>
 	);
 };
