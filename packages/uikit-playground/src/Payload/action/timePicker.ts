@@ -6,7 +6,7 @@ export const actionWithTimePicker: readonly LayoutBlock[] = [
     elements: [
       {
         type: 'time_picker',
-        initialTime: 1689163200,
+        initialTime: '10:30',
         appId: 'app-id',
         blockId: 'block-id',
         actionId: 'action-id',
