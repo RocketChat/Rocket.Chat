@@ -2,7 +2,8 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IUserService } from '@rocket.chat/core-services';
 
-import { _setRealName, setUserAvatar } from '../../../app/lib/server';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
+import { _setRealName } from '../../../app/lib/server/functions/setRealName';
 
 export class UserService extends ServiceClassInternal implements IUserService {
 	protected name = 'user';
