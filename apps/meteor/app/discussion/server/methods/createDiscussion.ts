@@ -10,7 +10,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { attachMessage } from '../../../lib/server/functions/attachMessage';
-import { createRoom } from '../../../lib/server';
+import { createRoom } from '../../../lib/server/functions/createRoom';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';

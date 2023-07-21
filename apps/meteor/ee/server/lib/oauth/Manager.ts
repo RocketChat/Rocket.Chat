@@ -2,7 +2,7 @@ import { Roles, Rooms } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
-import { createRoom } from '../../../../app/lib/server/functions';
+import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
 import { getValidRoomName } from '../../../../app/utils/server';

@@ -1,7 +1,7 @@
 import { Users, Rooms } from '@rocket.chat/models';
 
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
-import { createRoom } from '../../../../lib/server';
+import { createRoom } from '../../../../lib/server/functions/createRoom';
 
 // TODO doesn't seem to be used anywhere, remove
 export default async function handleJoinedChannel(args) {
