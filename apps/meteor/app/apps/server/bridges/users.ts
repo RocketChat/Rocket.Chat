@@ -6,7 +6,8 @@ import { Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
 
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
-import { setUserAvatar, getUserCreatedByApp } from '../../../lib/server/functions';
+import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
+import { setUserAvatar } from '../../../lib/server/functions';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';

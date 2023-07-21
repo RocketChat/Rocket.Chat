@@ -1,4 +1,3 @@
-export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';
