@@ -1,4 +1,3 @@
-export { isDocker } from './functions/isDocker';
 export { getMongoInfo } from './functions/getMongoInfo';
 export { slashCommands } from './slashCommand';
 export { getUserNotificationPreference } from './getUserNotificationPreference';
