@@ -1,5 +1,17 @@
 # @rocket.chat/models
 
+## 0.0.6-rc.5
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.0.6-rc.5
+
+## 0.0.6-rc.4
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.0.6-rc.4
+
 ## 0.0.6-rc.3
 
 ### Patch Changes
