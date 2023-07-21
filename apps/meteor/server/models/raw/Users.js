@@ -246,10 +246,10 @@ export class UsersRaw extends BaseRaw {
 					active: true,
 					username: {
 						$exists: true,
-						...(exceptions.length > 0 && { $nin: exceptions }),
+						...(exceptions.length && { $nin: exceptions }),
 					},
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+					...(searchTerm && orStmt.length && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
@@ -284,7 +284,7 @@ export class UsersRaw extends BaseRaw {
 					__rooms: rid,
 					username: { $exists: true },
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+					...(searchTerm && orStmt.length && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
