@@ -3,13 +3,14 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"@rocket.chat/eslint-config/original",
+		"@rocket.chat/eslint-config/react",
 		"prettier",
 		"plugin:anti-trojan-source/recommended",
 		"plugin:react/jsx-runtime",
 		"plugin:storybook/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
+	"plugins": ["@typescript-eslint", "prettier"],
 	"rules": {
 		"func-call-spacing": "off",
 		"import/named": "error",
@@ -33,23 +34,13 @@
 		"no-useless-constructor": "off",
 		"no-use-before-define": "off",
 		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
-		"prettier/prettier": 2,
-		"react/display-name": "error",
-		"react/jsx-uses-vars": "error",
-		"react/jsx-no-undef": "error",
-		"react/jsx-fragments": ["error", "syntax"],
-		"react/no-multi-comp": "error",
-		"react-hooks/rules-of-hooks": "error",
-		"react-hooks/exhaustive-deps": "warn"
+		"prettier/prettier": 2
 	},
 	"settings": {
 		"import/resolver": {
 			"node": {
 				"extensions": [".js", ".ts", ".tsx"]
 			}
-		},
-		"react": {
-			"version": "detect"
 		}
 	},
 	"ignorePatterns": ["**/dist"],
@@ -70,12 +61,6 @@
 				],
 				"@typescript-eslint/prefer-optional-chain": "warn"
 			}
-		},
-    {
-      "files": ["*.stories.tsx"],
-      "rules": {
-				"react/no-multi-comp": "off"
-      }
-    }
+		}
   ]
 }

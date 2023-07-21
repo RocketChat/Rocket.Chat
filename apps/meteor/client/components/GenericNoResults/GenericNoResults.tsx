@@ -1,11 +1,10 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import React from 'react';
 
 type GenericNoResultsProps = {
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconName;
 	title?: string;
 	description?: string;
 	buttonTitle?: string;
