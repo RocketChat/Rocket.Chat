@@ -220,8 +220,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
+						<Button icon='back' onClick={handleReturn}>
+							{t('Back')}
 						</Button>
 						<Button type='submit' form={formId} primary disabled={!isFormValid}>
 							{t('Save')}
