@@ -1,4 +1,3 @@
-export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { getUserPreference } from './lib/getUserPreference';
 export { fileUploadIsValidContentType } from './restrictions';
