@@ -15,7 +15,7 @@ import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeU
 import { syncUserRoles } from '../syncUserRoles';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import { getValidRoomName } from '../../../../app/utils/server';
+import { getValidRoomName } from '../../../../app/utils/server/getValidRoomName';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
