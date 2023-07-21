@@ -2,7 +2,7 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, api } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
@@ -66,6 +66,7 @@ export const removeUserFromRoom = async function (
 
 	// TODO: CACHE: maybe a queue?
 	await callbacks.run('afterLeaveRoom', user, room);
+	await api.broadcast('room.afterUserLeft', user, room);
 
 	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };

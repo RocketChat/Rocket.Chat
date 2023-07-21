@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { Document, UpdateResult } from 'mongodb';
 
 import { getValidRoomName } from '../../../utils/server';
@@ -75,5 +75,6 @@ export async function saveRoomName(
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
 	await callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
+	void api.broadcast('room.afterRoomNameChange', { rid, name: displayName, oldName: room.name || '' });
 	return displayName;
 }

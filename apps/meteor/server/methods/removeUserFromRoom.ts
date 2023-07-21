@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 
@@ -79,6 +79,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	setImmediate(function () {
 		void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+		void api.broadcast('room.afterRemoveUserFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 	});
 
 	return true;

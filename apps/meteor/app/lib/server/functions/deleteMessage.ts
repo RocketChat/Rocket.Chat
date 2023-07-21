@@ -86,6 +86,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+	if (deletedMsg && room) {
+		void api.broadcast('room.afterDeleteMessage', deletedMsg, room);
+	}
 
 	// decrease message count
 	await Rooms.decreaseMessageCountById(message.rid, 1);

@@ -83,6 +83,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		}
 		await callbacks.run('unsetReaction', message._id, reaction);
 		await callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
+		void api.broadcast('room.afterUnsetReaction', message, { user, reaction, oldMessage });
 
 		isReacted = false;
 	} else {
@@ -101,6 +102,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		}
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
+		void api.broadcast('room.afterSetReaction', message, { user, reaction });
 
 		isReacted = true;
 	}

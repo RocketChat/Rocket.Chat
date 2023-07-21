@@ -101,6 +101,7 @@ export async function createDirectMessage(
 	}
 	try {
 		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+		// await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

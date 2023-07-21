@@ -1,3 +1,4 @@
+// import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 export interface IFederationService {
@@ -34,4 +35,11 @@ export interface IFederationServiceEE {
 	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string, roomName?: string, pageToken?: string): Promise<void>;
 
 	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
+
+	// runFederationChecksBeforeAddUserToRoom(
+	// 	params: { user: Pick<IUser, '_id' | 'username'> | string; inviter?: Pick<IUser, '_id' | 'username'> },
+	// 	room: IRoom,
+	// ): Promise<void>;
+
+	// runFederationChecksBeforeCreateDirectMessageRoom(members: (string | IUser)[]): Promise<void>;
 }

@@ -30,6 +30,9 @@ import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { UploadsRaw } from '../../../server/models/raw/Uploads';
 import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
+import { MatrixBridgedRoomRaw } from '../../../server/models/raw/MatrixBridgedRoom';
+import { MatrixBridgedUserRaw } from '../../../server/models/raw/MatrixBridgedUser';
+import { AvatarsRaw } from '../../../server/models/raw/Avatars';
 
 // TODO add trash param to appropiate model instances
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
@@ -63,4 +66,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IMatrixBridgedRoomModel', () => new MatrixBridgedRoomRaw(db));
+	registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
+	registerModel('IAvatarsModel', new AvatarsRaw(db));
 }

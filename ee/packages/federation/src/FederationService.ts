@@ -1,5 +1,7 @@
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
@@ -18,6 +20,8 @@ import { FederationFactory } from './infrastructure/Factory';
 import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
 import { FederationSearchPublicRoomsInputDto } from './application/room/input/RoomInputDto';
 import type { FederationUserService } from './application/user/UserService';
+import type { FederationMessageServiceSender } from './application/room/message/sender/MessageServiceSender';
+import type { FederationRoomInternalValidator } from './application/room/sender/RoomInternalValidator';
 
 export class FederationService extends ServiceClassInternal implements IFederationService {
 	protected name = 'federation';
@@ -43,6 +47,10 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	private internalNotificationAdapter: RocketChatNotificationAdapter;
 
 	private directMessageRoomServiceSender: FederationDirectMessageRoomServiceSender;
+
+	private internalMessageServiceSender: FederationMessageServiceSender;
+
+	private internalRoomValidator: FederationRoomInternalValidator;
 
 	private isRunning = false;
 
@@ -94,39 +102,24 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			this.internalFileAdapter,
 			this.bridge,
 		);
-		this.setEventListeners();
+		this.internalMessageServiceSender = FederationFactory.buildMessageServiceSender(
+			this.internalRoomAdapter,
+			this.internalUserAdapter,
+			this.internalSettingsAdapter,
+			this.internalMessageAdapter,
+			this.bridge,
+		);
+		this.internalRoomValidator = FederationFactory.buildRoomInternalValidator(
+			this.internalRoomAdapter,
+			this.internalUserAdapter,
+			this.internalFileAdapter,
+			this.internalSettingsAdapter,
+			this.bridge,
+		);
 	}
 
-	private setEventListeners(): void {
-		this.onEvent('user.avatarUpdate', async ({ username }): Promise<void> => {
-			if (!(await this.isFederationEnabled())) {
-				return;
-			}
-			if (!username) {
-				return;
-			}
-			await this.internalUserServiceSender.afterUserAvatarChanged(username);
-		});
-		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
-			if (!roomId || !username) {
-				return;
-			}
-
-			await this.internalUserServiceSender.onUserTyping(username, roomId, isTyping);
-		});
-		this.onEvent('user.realNameChanged', async ({ _id, name }): Promise<void> => {
-			if (!(await this.isFederationEnabled())) {
-				return;
-			}
-			if (!name || !_id) {
-				return;
-			}
-			await this.internalUserServiceSender.afterUserRealNameChanged(_id, name);
-		});
-		this.onEvent(
-			'federation.userRoleChanged',
-			async (data: Record<string, any>): Promise<void> => FederationHooks.afterRoomRoleChanged(this.internalRoomServiceSender, data),
-		);
+	private async setEventListeners(): Promise<void> {
+		const internalHomeserverDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module !== 'federation') {
@@ -136,7 +129,6 @@ export class FederationService extends ServiceClassInternal implements IFederati
 				await this.onValidEnterpriseLicenseAdded();
 			}
 		});
-
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			const interestedInSettings = [
 				'Federation_Matrix_enabled',
@@ -153,6 +145,215 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			}
 			await this.onFederationEnabledSettingChange(await this.isFederationEnabled());
 			await this.internalSettingsAdapter.updateRegistrationFile();
+		});
+
+		this.onEvent('user.avatarUpdate', async ({ username }): Promise<void> => {
+			if (!(await this.isFederationEnabled())) {
+				return;
+			}
+			if (!username) {
+				return;
+			}
+			await this.internalUserServiceSender.afterUserAvatarChanged(username);
+		});
+		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
+			if (!roomId || !username || !(await this.isFederationEnabled())) {
+				return;
+			}
+
+			await this.internalUserServiceSender.onUserTyping(username, roomId, isTyping);
+		});
+		this.onEvent('user.realNameChanged', async ({ _id, name }): Promise<void> => {
+			if (!(await this.isFederationEnabled())) {
+				return;
+			}
+			if (!name || !_id) {
+				return;
+			}
+			await this.internalUserServiceSender.afterUserRealNameChanged(_id, name);
+		});
+		this.onEvent('federation.userRoleChanged', async (data: Record<string, any>): Promise<void> => {
+			if (!(await this.isFederationEnabled())) {
+				return;
+			}
+			FederationHooks.afterRoomRoleChanged(this.internalRoomServiceSender, data);
+		});
+		this.onEvent('room.afterUserLeft', async (user: IUser, room: IRoom): Promise<void> => {
+			if (!room || !isRoomFederated(room) || !user || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id));
+		});
+		this.onEvent(
+			'room.afterRemoveUserFromRoom',
+			async (params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): Promise<void> => {
+				if (
+					!room ||
+					!isRoomFederated(room) ||
+					!params ||
+					!params.removedUser ||
+					!params.userWhoRemoved ||
+					!(await this.isFederationEnabled())
+				) {
+					return;
+				}
+				await this.internalRoomServiceSender.onUserRemovedFromRoom(
+					FederationRoomSenderConverter.toOnUserRemovedFromRoom(params.removedUser._id, room._id, params.userWhoRemoved._id),
+				);
+			},
+		);
+		this.onEvent(
+			'room.afterSetReaction',
+			async (message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): Promise<void> => {
+				if (
+					!message ||
+					!isMessageFromMatrixFederation(message) ||
+					!params ||
+					!params.user ||
+					!params.reaction ||
+					!(await this.isFederationEnabled())
+				) {
+					return;
+				}
+				await this.internalMessageServiceSender.sendExternalMessageReaction(params.oldMessage, params.user, params.reaction);
+			},
+		);
+		this.onEvent(
+			'room.afterUnsetReaction',
+			async (message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): Promise<void> => {
+				if (
+					!message ||
+					!isMessageFromMatrixFederation(message) ||
+					!params ||
+					!params.user ||
+					!params.reaction ||
+					!params.oldMessage ||
+					!(await this.isFederationEnabled())
+				) {
+					return;
+				}
+				await this.internalMessageServiceSender.sendExternalMessageUnReaction(params.oldMessage, params.user, params.reaction);
+			},
+		);
+		this.onEvent('room.afterDeleteMessage', async (message: IMessage, room: IRoom): Promise<void> => {
+			if (!room || !message || !isRoomFederated(room) || !isMessageFromMatrixFederation(message) || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.afterMessageDeleted(message, room._id);
+		});
+		this.onEvent('room.afterSaveMessage', async (message: IMessage, room: IRoom): Promise<void> => {
+			if (!room || !isRoomFederated(room) || !message || !isMessageFromMatrixFederation(message) || !(await this.isFederationEnabled())) {
+				return;
+			}
+			if (!isEditedMessage(message)) {
+				return;
+			}
+			await this.internalRoomServiceSender.afterMessageUpdated(message, room._id, message.editedBy._id);
+		});
+		this.onEvent('room.afterSaveMessage', async (message: IMessage, room: IRoom): Promise<void> => {
+			if (!room || !isRoomFederated(room) || !message || !(await this.isFederationEnabled())) {
+				return;
+			}
+			if (isEditedMessage(message)) {
+				return;
+			}
+			await this.internalRoomServiceSender.sendExternalMessage(
+				FederationRoomSenderConverter.toSendExternalMessageDto(message.u?._id, room._id, message),
+			);
+		});
+		this.onEvent('room.afterRoomNameChange', async (params: { rid: string; name: string; oldName: string }): Promise<void> => {
+			if (!params?.rid || !params.name || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.afterRoomNameChanged(params.rid, params.name);
+		});
+		this.onEvent('room.afterRoomTopicChange', async (params: { rid: string; topic: string }): Promise<void> => {
+			if (!params?.rid || !params.topic || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.afterRoomTopicChanged(params.rid, params.topic);
+		});
+
+		// Requires a license
+		this.onEvent('room.onAddUsersToAFederatedRoom', async (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => {
+			if (!(await this.hasValidLicense())) {
+				return;
+			}
+			if (!room || !isRoomFederated(room) || !params || !params.invitees || !params.inviter || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.onUsersAddedToARoom(
+				FederationRoomSenderConverter.toOnAddedUsersToARoomDto(
+					params.inviter?._id || '',
+					params.inviter?.username || '',
+					room._id,
+					params.invitees,
+					internalHomeserverDomain,
+				),
+			);
+		});
+		this.onEvent('room.afterCreateFederatedRoom', async (room: IRoom, params: { owner: IUser; originalMemberList: string[] }) => {
+			if (!(await this.hasValidLicense())) {
+				return;
+			}
+			if (
+				!room ||
+				!isRoomFederated(room) ||
+				!params ||
+				!params.owner ||
+				!params.originalMemberList ||
+				!(await this.isFederationEnabled())
+			) {
+				return;
+			}
+			await this.internalRoomServiceSender.onRoomCreated(
+				FederationRoomSenderConverter.toOnRoomCreationDto(
+					params.owner._id,
+					params.owner.username || '',
+					room._id,
+					params.originalMemberList,
+					internalHomeserverDomain,
+				),
+			);
+		});
+		this.onEvent('room.onAddUserToARoom', async (params: { user: IUser; inviter?: IUser }, room: IRoom) => {
+			if (!(await this.hasValidLicense())) {
+				return;
+			}
+			if (!room || !isRoomFederated(room) || !params || !params.user || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.internalRoomServiceSender.onUsersAddedToARoom(
+				FederationRoomSenderConverter.toOnAddedUsersToARoomDto(
+					params.inviter?._id || '',
+					params.inviter?.username || '',
+					room._id,
+					[params.user],
+					internalHomeserverDomain,
+				),
+			);
+		});
+		this.onEvent('room.afterCreateDirectMessageRoom', async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }) => {
+			if (!(await this.hasValidLicense())) {
+				return;
+			}
+			if (!room || !params || !params.creatorId || !params.creatorId || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.directMessageRoomServiceSender.onDirectMessageRoomCreation(
+				FederationRoomSenderConverter.toOnDirectMessageCreatedDto(params.creatorId, room._id, params.members, internalHomeserverDomain),
+			);
+		});
+		this.onEvent('room.beforeCreateDirectMessageRoom', async (members: IUser[]) => {
+			if (!(await this.hasValidLicense())) {
+				return;
+			}
+			if (!members || !(await this.isFederationEnabled())) {
+				return;
+			}
+			await this.directMessageRoomServiceSender.beforeDirectMessageRoomCreation(
+				FederationRoomSenderConverter.toBeforeDirectMessageCreatedDto(members, internalHomeserverDomain),
+			);
 		});
 	}
 
@@ -174,6 +375,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	public async initialize() {
 		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
 		await this.internalSettingsAdapter.initialize();
+		await this.setEventListeners();
 	}
 
 	private async noop(): Promise<void> {
@@ -229,8 +431,6 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	protected async setupFederation(): Promise<void> {
 		if (await this.isFederationEnabled()) {
 			await this.setupEventHandlersForExternalEvents();
-			await this.setupInternalValidators();
-			await this.setupInternalActionListeners();
 			await this.setupInternalEphemeralListeners();
 		}
 		this.isRunning = true;
@@ -246,28 +446,6 @@ export class FederationService extends ServiceClassInternal implements IFederati
 
 	protected async setupInternalEphemeralListeners(): Promise<void> {
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms();
-	}
-
-	protected async setupInternalValidators(): Promise<void> {
-		const federationRoomInternalValidator = FederationFactory.buildRoomInternalValidator(
-			this.internalRoomAdapter,
-			this.internalUserAdapter,
-			this.internalFileAdapter,
-			this.internalSettingsAdapter,
-			this.bridge,
-		);
-		FederationFactory.setupValidators(federationRoomInternalValidator);
-	}
-
-	protected async setupInternalActionListeners(): Promise<void> {
-		const federationMessageServiceSender = FederationFactory.buildMessageServiceSender(
-			this.internalRoomAdapter,
-			this.internalUserAdapter,
-			this.internalSettingsAdapter,
-			this.internalMessageAdapter,
-			this.bridge,
-		);
-		FederationFactory.setupListenersForLocalActions(this.internalRoomServiceSender, federationMessageServiceSender);
 	}
 
 	protected async onEnableFederation(): Promise<void> {
@@ -287,10 +465,12 @@ export class FederationService extends ServiceClassInternal implements IFederati
 		void this.bridge.logFederationStartupInfo('Running Federation V2');
 		const { addDefaultFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
 		addDefaultFederationSlashCommand();
+		if (await this.hasValidLicense()) {
+			await this.onValidEnterpriseLicenseAdded();
+		}
 	}
 
 	private async stopFederation(): Promise<void> {
-		FederationHooks.removeAllListeners();
 		await this.bridge.stop();
 		await this.cleanUpHandlers();
 	}
@@ -322,14 +502,8 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	}
 
 	private async onValidEnterpriseLicenseAdded(): Promise<void> {
-		await FederationFactory.setupListenersForLocalActionsWhenValidLicense(
-			this.internalRoomServiceSender,
-			this.directMessageRoomServiceSender,
-			this.internalSettingsAdapter,
-		);
 		const { addDMMultipleFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
 		addDMMultipleFederationSlashCommand();
-		FederationHooks.removeFreeValidation();
 		// TODO: add also the EE endpoints
 	}
 
@@ -395,5 +569,39 @@ export class FederationService extends ServiceClassInternal implements IFederati
 		await this.internalRoomServiceSender.joinExternalPublicRoom(
 			FederationRoomSenderConverter.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
 		);
+	}
+
+	public async runFederationChecksBeforeAddUserToRoom(
+		params: { user: string | IUser; inviter?: IUser | undefined },
+		room: IRoom,
+	): Promise<void> {
+		if (!params?.user || !room) {
+			return;
+		}
+		await this.internalRoomValidator.canAddFederatedUserToNonFederatedRoom(params.user, room);
+		if (!(await this.isFederationEnabled()) || !params || !params?.user || !room || !isRoomFederated(room)) {
+			return;
+		}
+		if (await this.hasValidLicense()) {
+			await this.internalRoomServiceSender.beforeAddUserToARoom(
+				FederationRoomSenderConverter.toBeforeAddUserToARoomDto(
+					[params.user],
+					room,
+					await this.internalSettingsAdapter.getHomeServerDomain(),
+					params.inviter,
+				),
+			);
+			return;
+		}
+		if (params.inviter) {
+			await this.internalRoomValidator.canAddFederatedUserToFederatedRoom(params.user, params.inviter, room);
+		}
+	}
+
+	public async runFederationChecksBeforeCreateDirectMessageRoom(members: (string | IUser)[]): Promise<void> {
+		if ((await this.hasValidLicense()) || !members || !(await this.isFederationEnabled())) {
+			return;
+		}
+		await this.internalRoomValidator.canCreateDirectMessageFromUI(members);
 	}
 }

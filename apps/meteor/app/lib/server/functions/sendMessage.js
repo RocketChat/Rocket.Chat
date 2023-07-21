@@ -1,5 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -276,6 +277,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
+		await api.broadcast('afterSaveMessage', message, room);
 		return message;
 	}
 };

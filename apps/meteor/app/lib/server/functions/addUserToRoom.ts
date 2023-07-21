@@ -2,7 +2,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, api } from '@rocket.chat/core-services';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
@@ -40,6 +40,7 @@ export const addUserToRoom = async function (
 
 	try {
 		await callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
+		// await Federation.runFederationChecksBeforeAddUserToRoom({ user, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
@@ -110,6 +111,7 @@ export const addUserToRoom = async function (
 		process.nextTick(async function () {
 			// Add a new event, with an optional inviter
 			await callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
+			void api.broadcast('room.onAddUserToARoom', { user: userToBeAdded, inviter }, room);
 
 			// Keep the current event
 			await callbacks.run('afterJoinRoom', userToBeAdded, room);
