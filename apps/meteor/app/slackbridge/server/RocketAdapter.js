@@ -11,7 +11,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { sendMessage } from '../../lib/server/functions/sendMessage';
 import { createRoom } from '../../lib/server/functions/createRoom';
-import { setUserAvatar } from '../../lib/server';
+import { setUserAvatar } from '../../lib/server/functions/setUserAvatar';
 import { sleep } from '../../../lib/utils/sleep';
 
 export default class RocketAdapter {

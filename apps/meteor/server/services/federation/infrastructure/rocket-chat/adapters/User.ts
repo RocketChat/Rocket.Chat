@@ -3,7 +3,7 @@ import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { _setRealName as setRealName } from '../../../../../../app/lib/server/functions/setRealName';
-import { setUserAvatar } from '../../../../../../app/lib/server';
+import { setUserAvatar } from '../../../../../../app/lib/server/functions/setUserAvatar';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {

@@ -15,7 +15,7 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { setEmail } from './setEmail';
-import { setUserAvatar } from '.';
+import { setUserAvatar } from './setUserAvatar';
 import { setStatusText } from './setStatusText';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { callbacks } from '../../../../lib/callbacks';

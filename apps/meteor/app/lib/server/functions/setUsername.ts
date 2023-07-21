@@ -10,7 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { saveUserIdentity } from './saveUserIdentity';
-import { setUserAvatar } from '.';
+import { setUserAvatar } from './setUserAvatar';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
