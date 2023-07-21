@@ -1,20 +1,19 @@
 import {
 	useTranslation,
 	useRoute,
-	useMethod,
 	useSetModal,
 	useRole,
 	useRouter,
 	useAtLeastOnePermission,
 	usePermission,
 } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
 import Emoji from '../../../../components/Emoji';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
+import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
@@ -46,9 +45,15 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to navbar when the feature became part of the core
+ * @memberof navigationBar
+ */
+
 export const useAdministrationItems = (): GenericMenuItemProps[] => {
-	const router = useRouter();
 	const t = useTranslation();
+	const router = useRouter();
 
 	const shouldShowAdminMenu = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
@@ -60,9 +65,8 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
-	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
-	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	const { workspaceRegistered } = result.data || {};
+	const { data: registrationStatusData } = useRegistrationStatus();
+	const workspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -119,8 +123,8 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 
 	return [
 		showUpgradeItem && upgradeItem,
+		shouldShowAdminMenu && workspaceItem,
 		isAdmin && adminItem,
 		omnichannel && omnichannelItem,
-		shouldShowAdminMenu && workspaceItem,
 	].filter(Boolean) as GenericMenuItemProps[];
 };

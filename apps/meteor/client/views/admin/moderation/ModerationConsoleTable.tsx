@@ -74,7 +74,7 @@ const ModerationConsoleTable: FC = () => {
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
-				key={'name'}
+				key='name'
 				direction={sortDirection}
 				active={sortBy === 'reports.message.u.username'}
 				onClick={setSort}
@@ -95,7 +95,7 @@ const ModerationConsoleTable: FC = () => {
 				</GenericTableHeaderCell>
 			),
 			<GenericTableHeaderCell
-				key={'reportedMessage'}
+				key='reportedMessage'
 				direction={sortDirection}
 				active={sortBy === 'reports.description'}
 				onClick={setSort}
@@ -103,22 +103,16 @@ const ModerationConsoleTable: FC = () => {
 			>
 				{t('Moderation_Reported_message')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'room'} direction={sortDirection}>
+			<GenericTableHeaderCell key='room' direction={sortDirection}>
 				{t('Room')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell
-				key={'postdate'}
-				direction={sortDirection}
-				active={sortBy === 'reports.ts'}
-				onClick={setSort}
-				sort='reports.ts'
-			>
+			<GenericTableHeaderCell key='postdate' direction={sortDirection} active={sortBy === 'reports.ts'} onClick={setSort} sort='reports.ts'>
 				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
+			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Report_plural')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
+			<GenericTableHeaderCell key='actions' width='5%' />,
 		],
 		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
 	);

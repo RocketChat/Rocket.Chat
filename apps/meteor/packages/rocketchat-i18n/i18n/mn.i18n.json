@@ -1872,6 +1872,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR нь хоёулаа онлайн байх үед л боломжтой",
   "Outgoing_WebHook": "Гарах WebHook",
   "Outgoing_WebHook_Description": "Рокет.Chat-ээс өгөгдлийг бодит цагт авах.",
+  "Outlook_Calendar_Enabled": "Идэвхжүүлсэн",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Файлуудыг байршуулсан URL-ыг хэтрүүлэх. Энэ url нь CDN өгөгдөөгүй бол татан авахад хэрэглэгддэг",
   "Page_title": "Хуудасны гарчиг",
   "Page_URL": "Хуудасны URL",

@@ -1,5 +1,5 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "plugin:you-dont-need-lodash-underscore/compatible"],
+	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "plugin:you-dont-need-lodash-underscore/compatible"],
 	"globals": {
 		"__meteor_bootstrap__": false,
 		"__meteor_runtime_config__": false,
@@ -7,24 +7,13 @@
 		"chrome": false,
 		"jscolor": false
 	},
-	"plugins": ["react", "react-hooks"],
 	"rules": {
-		"react/jsx-uses-react": "error",
-		"react/jsx-uses-vars": "error",
-		"react/jsx-no-undef": "error",
-		"react/jsx-fragments": ["error", "syntax"],
-		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": [
 			"warn",
 			{
 				"additionalHooks": "(useComponentDidUpdate)"
 			}
 		]
-	},
-	"settings": {
-		"react": {
-			"version": "detect"
-		}
 	},
 	"overrides": [
 		{
@@ -33,12 +22,7 @@
 				"Atomics": "readonly",
 				"SharedArrayBuffer": "readonly"
 			},
-			"plugins": ["react"],
 			"rules": {
-				"react/jsx-uses-react": "error",
-				"react/jsx-uses-vars": "error",
-				"react/jsx-no-undef": "error",
-				"react/jsx-fragments": ["error", "syntax"],
 				"@typescript-eslint/no-misused-promises": [
 					"error",
 					{
@@ -53,12 +37,7 @@
 			"parserOptions": {
 				"project": ["./tsconfig.json"]
 			},
-			"excludedFiles": [".scripts/*.ts"],
-			"settings": {
-				"react": {
-					"version": "detect"
-				}
-			}
+			"excludedFiles": [".scripts/*.ts"]
 		},
 		{
 			"files": ["**/*.tests.js", "**/*.tests.ts", "**/*.spec.ts"],

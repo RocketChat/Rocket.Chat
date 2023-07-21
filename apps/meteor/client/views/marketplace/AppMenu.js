@@ -14,8 +14,10 @@ import semver from 'semver';
 import WarningModal from '../../components/WarningModal';
 import IframeModal from './IframeModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
-import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
+import { appEnabledStatuses, appButtonProps } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { warnEnableDisableApp } from './helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
@@ -278,7 +280,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					subscribe: {
 						label: (
 							<>
-								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie='x4' />
 								{t('Subscription')}
 							</>
 						),
@@ -292,7 +294,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				acquire: {
 					label: (
 						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
+							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie='x4' />}
 							{t(button.label.replace(' ', '_'))}
 						</>
 					),
@@ -309,7 +311,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					viewLogs: {
 						label: (
 							<>
-								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
+								<Icon name='desktop-text' size='x16' mie='x4' />
 								{t('View_Logs')}
 							</>
 						),
@@ -322,7 +324,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					update: {
 						label: (
 							<>
-								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'update')} size='x16' mie='x4' />
 								{t('Update')}
 							</>
 						),
@@ -335,7 +337,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					disable: {
 						label: (
 							<Box color='status-font-on-warning'>
-								<Icon name='ban' size='x16' marginInlineEnd='x4' />
+								<Icon name='ban' size='x16' mie='x4' />
 								{t('Disable')}
 							</Box>
 						),
@@ -348,7 +350,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					enable: {
 						label: (
 							<>
-								<Icon name='check' size='x16' marginInlineEnd='x4' />
+								<Icon name='check' size='x16' mie='x4' />
 								{t('Enable')}
 							</>
 						),
@@ -367,7 +369,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					uninstall: {
 						label: (
 							<Box color='status-font-on-danger'>
-								<Icon name='trash' size='x16' marginInlineEnd='x4' />
+								<Icon name='trash' size='x16' mie='x4' />
 								{t('Uninstall')}
 							</Box>
 						),
