@@ -233,7 +233,8 @@ export class UsersRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
 
 		const orStmt = (searchFields || []).reduce(function (acc, el) {
 			acc.push({ [el.trim()]: termRegex });
@@ -270,7 +271,8 @@ export class UsersRaw extends BaseRaw {
 			options = {};
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
 
 		const orStmt = (searchFields || []).reduce(function (acc, el) {
 			acc.push({ [el.trim()]: termRegex });
