@@ -47,7 +47,7 @@ const AddUsersForFederatedRooms = ({
 				<FieldGroup>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						{<UserAutoCompleteMultipleFederated value={users} onChange={handleUsers} placeholder={t('Choose_users')} />}
+						<UserAutoCompleteMultipleFederated value={users} onChange={handleUsers} placeholder={t('Choose_users')} />
 					</Field>
 				</FieldGroup>
 			</ContextualbarScrollableContent>
