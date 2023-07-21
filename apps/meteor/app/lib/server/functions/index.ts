@@ -1,4 +1,3 @@
-export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
 export { saveUser } from './saveUser';
 export { saveUserIdentity } from './saveUserIdentity';
 export { sendMessage } from './sendMessage';
