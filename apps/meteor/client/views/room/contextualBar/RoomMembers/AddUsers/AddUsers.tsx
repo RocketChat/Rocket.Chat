@@ -1,8 +1,11 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
 	ContextualbarHeader,
@@ -14,21 +17,39 @@ import {
 } from '../../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useRoom } from '../../../contexts/RoomContext';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 
-type AddUsersProps = {
-	onClickClose?: () => void;
-	onClickBack?: () => void;
-	onClickSave: () => Promise<void>;
-	isRoomFederated: boolean;
+type AddUsersWithDataProps = {
+	rid: IRoom['_id'];
+	onClickBack: () => void;
+	reload: () => void;
 };
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, isRoomFederated }: AddUsersProps): ReactElement => {
+const AddUsers = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const room = useRoom();
+
+	const onClickClose = useTabBarClose();
+	const saveAction = useMethod('addUsersToRoom');
 
 	const {
+		handleSubmit,
 		control,
 		formState: { isDirty },
-	} = useFormContext();
+	} = useForm({ defaultValues: { users: [] } });
+
+	const handleSave = useMutableCallback(async ({ users }) => {
+		try {
+			await saveAction({ rid, users });
+			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			onClickBack();
+			reload();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error as Error });
+		}
+	});
 
 	return (
 		<>
@@ -38,10 +59,10 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, isRoomFederated }: A
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				<FieldGroup>
+				<FieldGroup onSubmit={handleSubmit(handleSave)}>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						{isRoomFederated ? (
+						{isRoomFederated(room) ? (
 							<Controller
 								name='users'
 								control={control}
@@ -59,7 +80,7 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, isRoomFederated }: A
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={onClickSave}>
+					<Button primary disabled={!isDirty} type='submit'>
 						{t('Add_users')}
 					</Button>
 				</ButtonGroup>
