@@ -29,7 +29,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
-import { getMongoInfo } from '../../../utils/server';
+import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
