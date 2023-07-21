@@ -1,20 +1,20 @@
-import type { IconProps } from '@rocket.chat/fuselage';
 import { Icon, Button } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const resolveLegacyIcon = (legacyIcon: IconProps['name'] | `icon-${IconProps['name'] | 'videocam'}`): IconProps['name'] => {
+const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}`): IconName => {
 	if (legacyIcon === 'icon-videocam') {
 		return 'video';
 	}
 
-	return legacyIcon?.replace(/^icon-/, '') as IconProps['name'];
+	return legacyIcon?.replace(/^icon-/, '') as IconName;
 };
 
 type MessageActionProps = {
-	icon: IconProps['name'];
+	icon: IconName;
 	i18nLabel?: TranslationKey;
 	label?: string;
 	methodId: string;
