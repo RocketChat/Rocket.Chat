@@ -1,4 +1,3 @@
-export { setEmail } from './setEmail';
 export { getStatusText } from './getStatusText';
 export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername, setUsernameWithValidation } from './setUsername';
