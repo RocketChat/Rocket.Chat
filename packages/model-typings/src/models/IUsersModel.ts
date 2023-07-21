@@ -39,16 +39,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findPaginatedByActiveUsersExcept<T = IUser>(
 		searchTerm: any,
 		exceptions: any,
-		options: any,
 		searchFields: any,
+		options?: any,
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): FindPaginated<FindCursor<T>>;
 	findPaginatedActiveUsersByRoomIdWithHighestRole<T = IUser>(
 		searchTerm: any,
 		rid: any,
-		options: any,
 		searchFields: any,
+		options?: any,
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): Promise<AggregationCursor<{ members: T[]; totalCount: { total: number }[] }>>;

@@ -218,16 +218,13 @@ export class UsersRaw extends BaseRaw {
 	findPaginatedByActiveUsersExcept(
 		searchTerm,
 		exceptions,
-		options,
 		searchFields,
+		options = {},
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
 	) {
 		if (exceptions == null) {
 			exceptions = [];
-		}
-		if (options == null) {
-			options = {};
 		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -262,15 +259,11 @@ export class UsersRaw extends BaseRaw {
 	findPaginatedActiveUsersByRoomIdWithHighestRole(
 		searchTerm,
 		rid,
-		options,
 		searchFields,
+		options = {},
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
 	) {
-		if (options == null) {
-			options = {};
-		}
-
 		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
 		const termRegex = new RegExp(regexString, 'i');
 
@@ -373,7 +366,7 @@ export class UsersRaw extends BaseRaw {
 
 	findPaginatedByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, forcedSearchFields, options, extraQuery);
 	}
 
 	findActive(query, options = {}) {

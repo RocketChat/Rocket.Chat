@@ -47,7 +47,7 @@ export async function findUsersOfRoomByHighestRole({
 
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	return Users.findPaginatedActiveUsersByRoomIdWithHighestRole(filter, rid, options, searchFields, [
+	return Users.findPaginatedActiveUsersByRoomIdWithHighestRole(filter, rid, searchFields, options, [
 		{
 			...(status && { status }),
 		},

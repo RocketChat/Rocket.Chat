@@ -324,7 +324,7 @@ API.v1.addRoute(
 
 			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
+			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], searchFields, options, [extraQuery]);
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
