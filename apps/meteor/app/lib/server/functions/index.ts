@@ -1,4 +1,3 @@
-export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
