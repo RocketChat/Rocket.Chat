@@ -1988,46 +1988,11 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Эта функция зависит от того, включена ли функция «Отправить историю навигации посетителя как сообщения».",
   "Feature_Limiting": "Ограничение функций",
   "Features": "Доступные функции",
-
   "Federation": "Федерация",
-
-
-
-
-
-
-
   "Federation_Description": "Федерация позволяет неограниченному числу рабочих пространств взаимодействовать друг с другом.",
-
-
-
-
-
-
   "Federation_Enable": "Включить федерацию",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Открытый ключ",
-
-
   "Federation_slash_commands": "Команды федерации",
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Метод открытия",
   "FEDERATION_Discovery_Method_Description": "Вы можете использовать хаб или SRV и TXT в записях DNS.",
   "FEDERATION_Domain": "Домен",
@@ -2035,19 +2000,13 @@
   "FEDERATION_Domain_Description": "Добавьте домен, к которому должен быть привязан этот сервер - например: @ rocket.chat.",
   "FEDERATION_Enabled": "Попытка интегрировать поддержку федерации. Изменение этого значения требует перезапуска Rocket.Chat.",
   "FEDERATION_Enabled_Alert": "Поддержка федерации находится в стадии разработки. Использование в производственной системе в настоящее время не рекомендуется.",
-
-
-
   "FEDERATION_Public_Key": "Открытый ключ",
   "FEDERATION_Public_Key_Description": "Это ключ, которым вы должны поделиться со своими пирами.",
-
   "FEDERATION_Status": "Статус",
   "FEDERATION_Test_Setup": "Тестовая установка",
   "FEDERATION_Test_Setup_Error": "Не удалось найти ваш сервер, используя ваши настройки, пожалуйста, проверьте ваши настройки.",
   "FEDERATION_Test_Setup_Success": "Ваша федерация работает, и другие серверы могут найти вас!",
   "Retry_Count": "Число повторных попыток",
-
-
   "Federation_Matrix": "Федерация V2",
   "Field": "Поле",
   "Field_removed": "Поле удалено",

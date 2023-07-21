@@ -1843,44 +1843,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Aquesta funció depèn de \"Enviar l'historial de navegació del visitant com a missatge\" per estar habilitat.",
   "Feature_Limiting": "Limitació de funcions",
   "Features": "Característiques",
-
   "Federation": "Federació",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "Habilitar Federació",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Clau pública",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Mètode de descobriment",
   "FEDERATION_Discovery_Method_Description": "Pot utilitzar el hub o un SRV i una entrada TXT en els seus registres DNS.",
   "FEDERATION_Domain": "Domini",
@@ -1888,19 +1853,13 @@
   "FEDERATION_Domain_Description": "Afegiu el domini al qual ha d'estar vinculat aquest servidor, per exemple: @rocket.chat",
   "FEDERATION_Enabled": "IIntenteu integrar el suport de la federació.",
   "FEDERATION_Enabled_Alert": "La federació de suport està en progrés. El seu ús en un entorn de producció no es recomana de moment.",
-
-
-
   "FEDERATION_Public_Key": "Clau pública",
   "FEDERATION_Public_Key_Description": "Aquesta és la clau que necessita per compartir amb els seus companys.",
-
   "FEDERATION_Status": "Estat",
   "FEDERATION_Test_Setup": "Configuració de prova",
   "FEDERATION_Test_Setup_Error": "No s'ha pogut trobar el vostre servidor usant la vostra configuració, reviseu-ne la configuració.",
   "FEDERATION_Test_Setup_Success": "La configuració de la seva federació està funcionant i altres servidors poden trobar-se!",
   "Retry_Count": "Comptador de reintents",
-
-
   "Field": "Camp",
   "Field_removed": "Camp eliminat",
   "Field_required": "Camp obligatori",

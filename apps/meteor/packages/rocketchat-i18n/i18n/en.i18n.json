@@ -2156,51 +2156,14 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "This feature depends on \"Send Visitor Navigation History as a Message\" to be enabled.",
   "Feature_Limiting": "Feature Limiting",
   "Features": "Features",
-
   "Federation": "Federation",
-
-
-
-
-
-
-
-
-
   "Federation_Description": "Federation allows an unlimited number of workspaces to communicate with each other.",
-
-
-
-
-
-
   "Federation_Enable": "Enable Federation",
   "Federation_Example_matrix_server": "Example: matrix.org",
-
   "Federation_Federated_room_search": "Federated room search",
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Public Key",
-
-
   "Federation_Search_federated_rooms": "Search federated rooms",
   "Federation_slash_commands": "Federation commands",
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Discovery Method",
   "FEDERATION_Discovery_Method_Description": "You can use the hub or a SRV and a TXT entry on your DNS records.",
   "FEDERATION_Domain": "Domain",
@@ -2208,22 +2171,15 @@
   "FEDERATION_Domain_Description": "Add the domain that this server should be linked to - for example: @rocket.chat.",
   "FEDERATION_Enabled": "Attempt to integrate federation support.",
   "FEDERATION_Enabled_Alert": "Federation Support is a work in progress. Use on a production system is not recommended at this time.",
-
-
-
   "FEDERATION_Public_Key": "Public Key",
   "FEDERATION_Public_Key_Description": "This is the key you need to share with your peers.",
-
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Test setup",
   "FEDERATION_Test_Setup_Error": "Could not find your server using your setup, please review your settings.",
   "FEDERATION_Test_Setup_Success": "Your federation setup is working and other servers can find you!",
   "Retry_Count": "Retry Count",
-
-
   "Federation_Matrix": "Federation V2",
   "Federation_Matrix_enabled": "Enabled",
-
   "Federation_Matrix_Enabled_Alert": "<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">More Information about Matrix Federation support can be found here</> (After any configuration, a restart is required to the changes take effect)",
   "Federation_Matrix_Federated": "Federated",
   "Federation_Matrix_Federated_Description": "By creating a federated room you'll not be able to enable encryption nor broadcast",
@@ -2234,13 +2190,11 @@
   "Federation_Matrix_homeserver_url": "Homeserver URL",
   "Federation_Matrix_homeserver_url_alert": "We recommend a new, empty homeserver, to use with our federation",
   "Federation_Matrix_homeserver_domain": "Homeserver Domain",
-
   "Federation_Matrix_homeserver_domain_alert": "No user should connect to the homeserver with third party clients, only Rocket.Chat",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "AppService User Localpart",
   "Federation_Matrix_registration_file": "Registration File",
   "Federation_Matrix_registration_file_Alert": "Important: Enabling ephemeral events will make the server receive all the typing status of all users from all servers you are connected to.</br> To enable it, please update your registration file (.yaml file you are using to registrate Rocket.Chat to your home server), adding the following:</br> de.sorunome.msc2409.push_ephemeral: true",
-
   "Federation_Matrix_error_applying_room_roles": "Something went wrong while applying the room roles over the federated network",
   "Federation_Matrix_giving_same_permission_warning": "You're giving this user the same privileges as yourself, you will not be able to undo this change. Do you want to proceed?",
   "Federation_Matrix_losing_privileges": "Losing privileges",

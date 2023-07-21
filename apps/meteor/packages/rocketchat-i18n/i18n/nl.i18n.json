@@ -1851,44 +1851,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Deze functie is afhankelijk van het feit of 'Navigatiegeschiedenis van bezoeker als bericht verzenden' is ingeschakeld.",
   "Feature_Limiting": "Functiebeperking",
   "Features": "Functies",
-
   "Federation": "Federatie",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "Federatie inschakelen",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Publieke sleutel",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Ontdekkingsmethode",
   "FEDERATION_Discovery_Method_Description": "U kunt de hub of een SRV en een TXT-vermelding op uw DNS-records gebruiken.",
   "FEDERATION_Domain": "Domein",
@@ -1896,19 +1861,13 @@
   "FEDERATION_Domain_Description": "Voeg het domein toe waaraan deze server moet worden gekoppeld, bijvoorbeeld: @rocket.chat.",
   "FEDERATION_Enabled": "Poging om federatieondersteuning te integreren.",
   "FEDERATION_Enabled_Alert": "Federatie-ondersteuning is een werk in uitvoering. Gebruik op een productiesysteem wordt op dit moment niet aanbevolen.",
-
-
-
   "FEDERATION_Public_Key": "Publieke sleutel",
   "FEDERATION_Public_Key_Description": "Dit is de sleutel die je moet delen met je collega's.",
-
   "FEDERATION_Status": "Toestand",
   "FEDERATION_Test_Setup": "Test de opstelling",
   "FEDERATION_Test_Setup_Error": "Kan uw server niet vinden met uw installatie. Controleer uw instellingen.",
   "FEDERATION_Test_Setup_Success": "Uw federatie-installatie werkt en andere servers kunnen u vinden!",
   "Retry_Count": "Aantal pogingen",
-
-
   "Field": "Veld",
   "Field_removed": "Veld verwijderd",
   "Field_required": "Veld vereist",

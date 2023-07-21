@@ -1841,44 +1841,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Esta función depende de que la opción \"Enviar historial de navegación de visitante como mensaje\" esté habilitada.",
   "Feature_Limiting": "Limitación de funciones",
   "Features": "Funciones",
-
   "Federation": "Federación",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "Habilitar federación",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Clave pública",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Método de detección",
   "FEDERATION_Discovery_Method_Description": "Puedes usar el concentrador o un SRV y una entrada TXT en tus registros DNS.",
   "FEDERATION_Domain": "Dominio",
@@ -1886,19 +1851,13 @@
   "FEDERATION_Domain_Description": "Añade el dominio al que debe estar vinculado este servidor; por ejemplo, @rocket.chat.",
   "FEDERATION_Enabled": "Intenta integrar la compatibilidad con la federación.",
   "FEDERATION_Enabled_Alert": "La función Compatibilidad de federación se está desarrollando. De momento, no se recomienda su uso en sistemas de producción.",
-
-
-
   "FEDERATION_Public_Key": "Clave pública",
   "FEDERATION_Public_Key_Description": "Esta es la clave que tienes que compartir con los puntos de conexión.",
-
   "FEDERATION_Status": "Estado",
   "FEDERATION_Test_Setup": "Probar configuración",
   "FEDERATION_Test_Setup_Error": "No se ha podido encontrar tu servidor usando tu configuración, así que debes revisarla.",
   "FEDERATION_Test_Setup_Success": "La configuración de tu federación funciona y otros servidores pueden encontrarte",
   "Retry_Count": "Contador de reintentos",
-
-
   "Field": "Campo",
   "Field_removed": "Campo eliminado",
   "Field_required": "Campo obligatorio",

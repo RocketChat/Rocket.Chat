@@ -2081,46 +2081,11 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Diese Funktion hängt davon ab, ob \"Besucher-Navigationsprotokoll als Nachricht senden\" aktiviert ist.",
   "Feature_Limiting": "Funktionsbegrenzung",
   "Features": "Funktionen",
-
   "Federation": "Verbund",
-
-
-
-
-
-
-
   "Federation_Description": "Verbund ermöglicht es einer begrenzten Anzahl von Arbeitsbereichen, miteinander zu kommunizieren.",
-
-
-
-
-
-
   "Federation_Enable": "Verbund aktivieren",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Öffentlicher Schüssel",
-
-
   "Federation_slash_commands": "Verbund-Anweisungen",
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Erkennungsmethode",
   "FEDERATION_Discovery_Method_Description": "Sie können den Hub oder einen SRV- und einen TXT-Eintrag in Ihren DNS-Einträgen verwenden.",
   "FEDERATION_Domain": "Domain",
@@ -2128,22 +2093,15 @@
   "FEDERATION_Domain_Description": "Fügen Sie die Domäne hinzu, mit der dieser Server verlinkt werden soll - zum Beispiel: @rocket.chat.",
   "FEDERATION_Enabled": "Versuch die Verbund-Unterstützung zu integrieren. ",
   "FEDERATION_Enabled_Alert": "Verbund-Unterstützung ist in Arbeit. Die Verwendung auf einem Produktionssystem wird derzeit nicht empfohlen.",
-
-
-
   "FEDERATION_Public_Key": "Öffentlicher Schüssel",
   "FEDERATION_Public_Key_Description": "Dies ist der Schlüssel, den Sie mit Ihren Kollegen teilen müssen.",
-
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Test setup",
   "FEDERATION_Test_Setup_Error": "Ihr Server konnte mit Ihrem Setup nicht gefunden werden. Bitte überprüfen Sie Ihre Einstellungen.",
   "FEDERATION_Test_Setup_Success": "Ihr Verbund-Setup funktioniert und andere Server können Sie finden!",
   "Retry_Count": "Anzahl der Wiederholungsversuche",
-
-
   "Federation_Matrix": "Verbund V2",
   "Federation_Matrix_enabled": "Aktiviert",
-
   "Federation_Matrix_Enabled_Alert": "<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">Weitere Informationen zur Unterstützung von Matrix Verbund finden Sie hier</> (Nach jeder Konfiguration ist ein Neustart erforderlich, damit die Änderungen wirksam werden)",
   "Federation_Matrix_Federated": "Verbunden",
   "Federation_Matrix_Federated_Description": "Wenn Sie einen Verbundraum erstellen, können Sie weder Verschlüsselung noch Broadcasting aktivieren",
@@ -2154,12 +2112,10 @@
   "Federation_Matrix_homeserver_url": "Homeserver-URL",
   "Federation_Matrix_homeserver_url_alert": "Wir empfehlen einen neuen, leeren Homeserver, für unseren Verbund zu verwenden.",
   "Federation_Matrix_homeserver_domain": "Homeserver-Domain",
-
   "Federation_Matrix_homeserver_domain_alert": "Kein Benutzer sollte sich mit Clients von Drittanbietern mit dem Homeserver verbinden, nur Rocket.Chat",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "AppService User Localpart",
   "Federation_Matrix_registration_file": "Registrierungsdatei",
-
   "Federation_Matrix_not_allowed_to_change_moderator": "Sie dürfen den Moderator nicht wechseln",
   "Federation_Matrix_not_allowed_to_change_owner": "Sie dürfen den Besitzer nicht wechseln",
   "Field": "Feld",

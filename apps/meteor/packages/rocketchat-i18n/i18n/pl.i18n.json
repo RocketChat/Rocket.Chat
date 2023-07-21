@@ -2001,46 +2001,11 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ta funkcja zależy od włączenia \"Wyślij historię nawigacji użytkownika jako wiadomość\".",
   "Feature_Limiting": "Ograniczenie funkcji",
   "Features": "Ficzery",
-
   "Federation": "Federacja",
-
-
-
-
-
-
-
   "Federation_Description": "Federacja umożliwia komunikowanie się ze sobą nieograniczonej liczby obszarów roboczych.",
-
-
-
-
-
-
   "Federation_Enable": "Włącz Federację",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Klucz publiczny",
-
-
   "Federation_slash_commands": "Polecenia Federacji",
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Discovery Method",
   "FEDERATION_Discovery_Method_Description": "Możesz użyć hub lub SRV i TXT dla Twoich rekordów DNS",
   "FEDERATION_Domain": "Domena",
@@ -2048,22 +2013,15 @@
   "FEDERATION_Domain_Description": "Dodaj domenę, z którą ten serwer powinien być połączony - na przykład: @rocket.chat.",
   "FEDERATION_Enabled": "Próba zintegrowania federation support.",
   "FEDERATION_Enabled_Alert": "Federation support jest w trakcie realizacji. Użycie na systemie produkcyjnym nie jest w tym momencie zalecane.",
-
-
-
   "FEDERATION_Public_Key": "Klucz publiczny",
   "FEDERATION_Public_Key_Description": "To jest klucz, który musisz udostępnić swoim użytkownikom.",
-
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Test ustawień",
   "FEDERATION_Test_Setup_Error": "Nie można znaleźć twojego serwera używając twojej konfiguracji, proszę przejrzeć ustawienia.",
   "FEDERATION_Test_Setup_Success": "Twoja konfiguracja Federation działa, a inne serwery mogą cię znaleźć!",
   "Retry_Count": "Spróbuj ponownie",
-
-
   "Federation_Matrix": "Federacja V2",
   "Federation_Matrix_enabled": "Włączone",
-
   "Federation_Matrix_Enabled_Alert": "Wsparcie Federacji Matrix jest w wersji alfa. Stosowanie w systemie produkcyjnym nie jest obecnie zalecane.<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">Więcej informacji na temat obsługi Matrix Federation można znaleźć tutaj</>",
   "Federation_Matrix_Federated": "Sfederowany",
   "Federation_Matrix_Federated_Description": "Tworząc pokój federacyjny nie będziesz mógł włączyć szyfrowania ani rozgłaszania",
@@ -2074,7 +2032,6 @@
   "Federation_Matrix_homeserver_url": "URL serwera domowego",
   "Federation_Matrix_homeserver_url_alert": "Polecamy nowy, pusty serwer domowy do użytku z naszą federacją",
   "Federation_Matrix_homeserver_domain": "Domena serwera domowego",
-
   "Federation_Matrix_homeserver_domain_alert": "Żaden użytkownik nie powinien łączyć się z serwerem domowym z klientami stron trzecich, tylko Rocket.Chat",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "Część lokalna użytkownika AppService",

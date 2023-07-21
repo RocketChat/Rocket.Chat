@@ -1838,44 +1838,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "この機能は、「訪問者のナビゲーション履歴をメッセージとして送信」が有効になっているかどうかによって異なります。",
   "Feature_Limiting": "機能を制限しています",
   "Features": "特徴",
-
   "Federation": "フェデレーション",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "フェデレーションを有効にする",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "パブリックキー",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "発見方法",
   "FEDERATION_Discovery_Method_Description": "DNSレコードではハブまたはSRVやTXTのエントリを使用できます。",
   "FEDERATION_Domain": "ドメイン",
@@ -1883,19 +1848,13 @@
   "FEDERATION_Domain_Description": "このサーバーのリンク先のドメインを追加してください。例：@rocket.chat",
   "FEDERATION_Enabled": "フェデレーションサポートを統合しようとしました。",
   "FEDERATION_Enabled_Alert": "フェデレーションサポートは進行中の作業です。現時点では本番システムでの使用はお勧めできません。",
-
-
-
   "FEDERATION_Public_Key": "パブリックキー",
   "FEDERATION_Public_Key_Description": "これはピアと共有する必要があるキーです。",
-
   "FEDERATION_Status": "ステータス",
   "FEDERATION_Test_Setup": "設定をテスト",
   "FEDERATION_Test_Setup_Error": "設定を使用しているサーバーが見つかりませんでした。設定を確認してください。",
   "FEDERATION_Test_Setup_Success": "フェデレーション設定は正常に機能しており、他のサーバーがあなたを見つけることができます！",
   "Retry_Count": "再試行回数",
-
-
   "Field": "フィールド",
   "Field_removed": "フィールドが削除されました",
   "Field_required": "必要なフィールド",

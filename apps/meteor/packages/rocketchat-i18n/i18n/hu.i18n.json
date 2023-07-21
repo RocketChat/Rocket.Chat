@@ -2031,46 +2031,11 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ez a funkció attól függ, hogy a „Látogató navigációs előzményeinek küldése üzenetként” engedélyezve van-e.",
   "Feature_Limiting": "Funkció korlátozása",
   "Features": "Funkciók",
-
   "Federation": "Föderáció",
-
-
-
-
-
-
-
   "Federation_Description": "A föderáció lehetővé teszi, hogy korlátlan számú munkaterület kommunikáljon egymással.",
-
-
-
-
-
-
   "Federation_Enable": "Föderáció engedélyezése",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Nyilvános kulcs",
-
-
   "Federation_slash_commands": "Föderációs parancsok",
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Felfedezési módszer",
   "FEDERATION_Discovery_Method_Description": "Használhatja az elosztót vagy egy SRV és egy TXT-bejegyzést a DNS-rekordjaiban.",
   "FEDERATION_Domain": "Tartomány",
@@ -2078,22 +2043,15 @@
   "FEDERATION_Domain_Description": "A tartomány hozzáadása, amelyhez ezt a kiszolgálót hozzá kell kapcsolni – például: @rocket.chat.",
   "FEDERATION_Enabled": "Kísérlet a föderációs támogatás integrálására.",
   "FEDERATION_Enabled_Alert": "A föderáció támogatásának munkálatai folyamatban vannak. Egy produktív rendszeren történő használata jelenleg nem ajánlott.",
-
-
-
   "FEDERATION_Public_Key": "Nyilvános kulcs",
   "FEDERATION_Public_Key_Description": "Ez az a kulcs, amelyet meg kell osztania partnereivel.",
-
   "FEDERATION_Status": "Állapot",
   "FEDERATION_Test_Setup": "Beállítás tesztelése",
   "FEDERATION_Test_Setup_Error": "Nem sikerült megtalálni a kiszolgálóját a beállítása használatával, vizsgálja felül a beállításait.",
   "FEDERATION_Test_Setup_Success": "A föderációs beállítás működik, és más kiszolgálók megtalálhatják Önt!",
   "Retry_Count": "Újrapróbálkozások száma",
-
-
   "Federation_Matrix": "Föderáció V2",
   "Federation_Matrix_enabled": "Engedélyezve",
-
   "Federation_Matrix_Enabled_Alert": "<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">Itt találhatók további információk a Matrix föderációs támogatásáról</a> (Bármilyen beállítás után újraindítás szükséges a változtatások hatályba lépéséhez)",
   "Federation_Matrix_Federated": "Föderált",
   "Federation_Matrix_Federated_Description": "Egy föderált szoba létrehozásával nem fogja tudni engedélyezni sem a titkosítást, sem a műsorszórást",
@@ -2104,13 +2062,11 @@
   "Federation_Matrix_homeserver_url": "Otthont adó kiszolgáló URL-je",
   "Federation_Matrix_homeserver_url_alert": "Egy új, üres otthont adó kiszolgálót ajánlunk a föderációnkkal való használathoz",
   "Federation_Matrix_homeserver_domain": "Otthont adó kiszolgáló tartománya",
-
   "Federation_Matrix_homeserver_domain_alert": "Egyetlen felhasználó sem kapcsolódhatna az otthont adó kiszolgálóhoz harmadik fél által biztosított ügyfélprogrammal, csak a Rocket.Chat",
   "Federation_Matrix_bridge_url": "Híd URL",
   "Federation_Matrix_bridge_localpart": "Alkalmazásszolgáltatás felhasználójának helyi része",
   "Federation_Matrix_registration_file": "Regisztrációs fájl",
   "Federation_Matrix_registration_file_Alert": "Fontos: a rövid ideig tartó események engedélyezésével a kiszolgáló megkapja az összes felhasználó összes gépelési állapotát az összes olyan kiszolgálóról, amelyhez csatlakozik.</br>Az engedélyezéséhez frissítse a regisztrációs fájlját (.yaml fájl, amelyet a Rocket.Chatnek az otthoni kiszolgálójához való regisztrálásához használ), és adja hozzá a következőt: </br>de.sorunome.msc2409.push_ephemeral: true",
-
   "Field": "Mező",
   "Field_removed": "Mező eltávolítva",
   "Field_required": "Kötelező mező",

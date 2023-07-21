@@ -1855,44 +1855,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "تعتمد هذه الميزة على \"إرسال محفوظات تنقل الزائر كرسالة\" ليتم تمكينها.",
   "Feature_Limiting": "وضع حد للميزة",
   "Features": "الميزات",
-
   "Federation": "اتحاد",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "تمكين الاتحاد",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "المفتاح العام",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "طريقة الاكتشاف",
   "FEDERATION_Discovery_Method_Description": "يمكنك استخدام المركز أو إدخال SRV وTXT على سجلات DNS لديك.",
   "FEDERATION_Domain": "النطاق",
@@ -1900,19 +1865,13 @@
   "FEDERATION_Domain_Description": "أضف النطاق الذي يجب أن يرتبط به هذا الخادم - مثل: ‎@rocket.chat.",
   "FEDERATION_Enabled": "محاولة دمج دعم الاتحاد.",
   "FEDERATION_Enabled_Alert": "دعم الاتحاد عمل مستمر. لا ينصح باستخدامه في نظام الإنتاج في الوقت الحالي.",
-
-
-
   "FEDERATION_Public_Key": "المفتاح العام",
   "FEDERATION_Public_Key_Description": "هذا هو المفتاح الذي تحتاج إلى مشاركته مع نظرائك.",
-
   "FEDERATION_Status": "الحالة",
   "FEDERATION_Test_Setup": "إعداد الاختبار",
   "FEDERATION_Test_Setup_Error": "تعذر العثور على الخادم الخاص بك باستخدام الإعداد الخاص بك، تُرجى مراجعة الإعدادات الخاصة بك.",
   "FEDERATION_Test_Setup_Success": "إعداد الاتحاد الخاص بك يعمل ويمكن أن تعثر عليك الخوادم الأخرى!",
   "Retry_Count": "عدد مرات إعادة المحاولة",
-
-
   "Federation_Matrix": "اتحاد",
   "Federation_Matrix_enabled": "تم التمكين",
   "Federation_Matrix_Enabled_Alert": "دعم اتحاد المصفوفة بألفا. لا ينصح باستخدامه في نظام الإنتاج في الوقت الحالي. <a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\"> يمكن العثور على مزيد من المعلومات حول دعم اتحاد Matrix هنا </>",

@@ -1856,44 +1856,9 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Cette fonctionnalité dépend de l'activation du paramètre \"Envoyer l'historique de navigation des visiteurs sous forme de message\".",
   "Feature_Limiting": "Limitation des fonctionnalités",
   "Features": "Fonctionnalités",
-
   "Federation": "Fédération",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Enable": "Activer la fédération",
-
-
-
-
-
-
-
-
-
-
-
-
-
   "Federation_Public_key": "Clé publique",
-
-
-
-
-
-
-
-
   "FEDERATION_Discovery_Method": "Méthode de découverte",
   "FEDERATION_Discovery_Method_Description": "Vous pouvez utiliser le hub ou des entrées SRV et TXT dans vos enregistrements DNS.",
   "FEDERATION_Domain": "Domaine",
@@ -1901,19 +1866,13 @@
   "FEDERATION_Domain_Description": "Ajoutez le domaine auquel ce serveur doit être lié, par exemple : @rocket.chat.",
   "FEDERATION_Enabled": "Tentative d'intégration de la prise en charge de la fédération.",
   "FEDERATION_Enabled_Alert": "La prise en charge de la fédération est en cours d'intégration. L'utilisation sur un système de production n'est pas recommandée pour le moment.",
-
-
-
   "FEDERATION_Public_Key": "Clé publique",
   "FEDERATION_Public_Key_Description": "Il s'agit de la clé que vous devez partager avec vos pairs.",
-
   "FEDERATION_Status": "Statut",
   "FEDERATION_Test_Setup": "Tester la configuration",
   "FEDERATION_Test_Setup_Error": "Impossible de trouver votre serveur en utilisant votre configuration, vérifiez vos paramètres.",
   "FEDERATION_Test_Setup_Success": "Votre configuration de fédération fonctionne et d'autres serveurs peuvent vous trouver !",
   "Retry_Count": "Nombre de tentatives",
-
-
   "Field": "Champ",
   "Field_removed": "Champ supprimé",
   "Field_required": "Champ requis",

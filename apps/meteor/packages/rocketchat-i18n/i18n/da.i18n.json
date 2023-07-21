@@ -1571,11 +1571,6 @@
   "Favorite_Rooms": "Aktivér foretrukne rum",
   "Favorites": "Foretrukne",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Denne funktion afhænger af \"Send besøgendes navigationshistorik som en besked\" er aktiveret.",
-
-
-
-
-
   "Federation_Public_key": "Offentlig nøgle",
   "FEDERATION_Discovery_Method": "Opdagelsesmetode",
   "FEDERATION_Discovery_Method_Description": "Du kan bruge hub eller en SRV og en TXT-post på dine DNS-records.",
@@ -1584,19 +1579,13 @@
   "FEDERATION_Domain_Description": "Tilføj det domæne som denne server skal linkes til - for eksempel: @ rocket.chat.",
   "FEDERATION_Enabled": "Forsøg på at integrere support for Federation.",
   "FEDERATION_Enabled_Alert": "Support for Federation er ved at blive implementeret. Anvendelse på et produktionssystem anbefales ikke pt.",
-
-
-
   "FEDERATION_Public_Key": "Offentlig nøgle",
   "FEDERATION_Public_Key_Description": "Dette er den nøgle du skal dele med dine gruppe.",
-
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Testopsætning",
   "FEDERATION_Test_Setup_Error": "Kunne ikke finde din server ved hjælp af din opsætning. Gennemgå venligst dine indstillinger.",
   "FEDERATION_Test_Setup_Success": "Din føderationsopsætning fungerer og andre servere kan finde dig!",
   "Retry_Count": "Prøv igen",
-
-
   "Field": "Felt",
   "Field_removed": "Felt fjernet",
   "Field_required": "Felt påkrævet",
