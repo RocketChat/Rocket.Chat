@@ -14,7 +14,7 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { createAgent, createDepartment } from '../../../data/livechat/rooms';
 import { password } from '../../../data/user';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', function () {
+(IS_EE ? describe.skip : describe.skip)('[EE] LIVECHAT - Canned responses', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
