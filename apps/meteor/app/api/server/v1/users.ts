@@ -24,7 +24,8 @@ import { Team, api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
+import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
+import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar } from '../../../lib/server';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
