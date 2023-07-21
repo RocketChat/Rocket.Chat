@@ -17,6 +17,7 @@ export const passwordPolicy = new PasswordPolicy.PasswordPolicy({
 
 settings.watch('Accounts_Password_Policy_Enabled', (value) => {
 	passwordPolicy.enabled = Boolean(value);
+	// PasswordPolicy.PasswordPolicy.passwordPolicyEnabled = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_MinLength', (value) => {
 	passwordPolicy.minLength = Number(value);

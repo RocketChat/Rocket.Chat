@@ -30,8 +30,6 @@ class PasswordPolicy {
 
 	throwError: boolean;
 
-	private _forbidRepeatingCharactersCount: number | undefined;
-
 	constructor({
 		enabled = false,
 		minLength = -1,
@@ -75,13 +73,85 @@ class PasswordPolicy {
 		this.throwError = throwError;
 	}
 
-	set forbidRepeatingCharactersCount(value) {
-		this._forbidRepeatingCharactersCount = value;
+	get forbidRepeatingCharactersCount() {
+		return this.forbidRepeatingCharactersCount;
+	}
+
+	set forbidRepeatingCharactersCount(value: number) {
+		this.forbidRepeatingCharactersCount = value;
 		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 	}
 
-	get forbidRepeatingCharactersCount() {
-		return this._forbidRepeatingCharactersCount;
+	get passwordPolicyEnabled() {
+		return this.enabled;
+	}
+
+	set passwordPolicyEnabled(value: boolean) {
+		this.enabled = value;
+	}
+
+	get passwordMinLength() {
+		return this.minLength;
+	}
+
+	set passwordMinLength(value) {
+		this.minLength = value;
+	}
+
+	get passwordMaxLength() {
+		return this.maxLength;
+	}
+
+	set passwordMaxLength(value) {
+		this.maxLength = value;
+	}
+
+	get passwordForbidRepeatingCharacters() {
+		return this.forbidRepeatingCharacters;
+	}
+
+	set passwordForbidRepeatingCharacters(value: boolean) {
+		this.forbidRepeatingCharacters = value;
+	}
+
+	get passwordForbidRepeatingCharactersCount() {
+		return this.forbidRepeatingCharactersCount;
+	}
+
+	set passwordForbidRepeatingCharactersCount(value: number) {
+		this.forbidRepeatingCharactersCount = value;
+	}
+
+	get passwordAtLeastOneLowercase() {
+		return this.mustContainAtLeastOneLowercase;
+	}
+
+	set passwordAtLeastOneLowercase(value: boolean) {
+		this.mustContainAtLeastOneLowercase = value;
+	}
+
+	get passwordAtLeastOneUppercase() {
+		return this.mustContainAtLeastOneUppercase;
+	}
+
+	set passwordAtLeastOneUppercase(value: boolean) {
+		this.mustContainAtLeastOneUppercase = value;
+	}
+
+	get passwordAtLeastOneNumber() {
+		return this.mustContainAtLeastOneNumber;
+	}
+
+	set passwordAtLeastOneNumber(value: boolean) {
+		this.mustContainAtLeastOneNumber = value;
+	}
+
+	get passwordAtLeastOneSpecialCharacter() {
+		return this.mustContainAtLeastOneSpecialCharacter;
+	}
+
+	set passwordAtLeastOneSpecialCharacter(value: boolean) {
+		this.mustContainAtLeastOneSpecialCharacter = value;
 	}
 
 	error(
