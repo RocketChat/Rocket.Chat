@@ -5,7 +5,7 @@ import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoo
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
-import { getValidRoomName } from '../../../../app/utils/server/getValidRoomName';
+import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 
 const logger = new Logger('OAuth');
 

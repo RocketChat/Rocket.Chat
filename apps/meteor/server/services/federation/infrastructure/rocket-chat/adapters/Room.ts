@@ -12,7 +12,7 @@ import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/Feder
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
 import { getFederatedUserByInternalUsername } from './User';
-import { getValidRoomName } from '../../../../../../app/utils/server/getValidRoomName';
+import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
