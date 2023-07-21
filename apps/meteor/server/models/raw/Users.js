@@ -330,10 +330,11 @@ export class UsersRaw extends BaseRaw {
 			{
 				$addFields: {
 					highestRole: {
-						$cond: [{ $in: ['owner', '$roles'] }, 'owner', { $cond: [{ $in: ['moderator', '$roles'] }, 'moderator', 'member'] }],
-					},
-					roleLevel: {
-						$cond: [{ $in: ['owner', '$roles'] }, 0, { $cond: [{ $in: ['moderator', '$roles'] }, 1, 2] }],
+						$cond: [
+							{ $in: ['owner', '$roles'] },
+							{ role: 'owner', level: 0 },
+							{ $cond: [{ $in: ['moderator', '$roles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
+						],
 					},
 				},
 			},
@@ -342,7 +343,7 @@ export class UsersRaw extends BaseRaw {
 					members: [
 						{
 							$sort: {
-								roleLevel: 1,
+								'highestRole.level': 1,
 								...options.sort,
 							},
 						},
