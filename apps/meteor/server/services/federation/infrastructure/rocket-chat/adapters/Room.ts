@@ -4,7 +4,8 @@ import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
-import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
+import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
+import { createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
 import { settings } from '../../../../../../app/settings/server';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';

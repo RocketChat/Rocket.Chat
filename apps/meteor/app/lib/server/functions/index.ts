@@ -1,4 +1,3 @@
-export { addUserToRoom } from './addUserToRoom';
 export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
 export { createRoom } from './createRoom';

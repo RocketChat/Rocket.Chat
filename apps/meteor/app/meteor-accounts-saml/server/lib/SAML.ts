@@ -8,7 +8,8 @@ import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { saveUserIdentity, createRoom, generateUsernameSuggestion } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import type { ISAMLAction } from '../definition/ISAMLAction';

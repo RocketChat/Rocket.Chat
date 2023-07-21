@@ -1,7 +1,8 @@
 import { Roles, Rooms } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
+import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
 import { getValidRoomName } from '../../../../app/utils/server';

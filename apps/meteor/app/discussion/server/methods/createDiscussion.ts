@@ -7,7 +7,9 @@ import { Message } from '@rocket.chat/core-services';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { createRoom, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
