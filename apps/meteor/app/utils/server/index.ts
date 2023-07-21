@@ -1,4 +1,3 @@
-export { getUserNotificationPreference } from './getUserNotificationPreference';
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from './getURL';
 export { getValidRoomName } from './lib/getValidRoomName';
