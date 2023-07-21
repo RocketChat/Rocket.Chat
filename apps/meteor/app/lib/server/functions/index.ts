@@ -1,4 +1,3 @@
-export { addUserToDefaultChannels } from './addUserToDefaultChannels';
 export { addUserToRoom } from './addUserToRoom';
 export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
