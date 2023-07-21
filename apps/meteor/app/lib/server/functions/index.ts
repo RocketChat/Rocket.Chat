@@ -4,7 +4,6 @@ export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
 export { createRoom } from './createRoom';
 export { createDirectRoom } from './createDirectRoom';
-export { deleteMessage } from './deleteMessage';
 export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
