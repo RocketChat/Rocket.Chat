@@ -28,7 +28,7 @@ import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
-import { validateCustomFields } from '../../../lib/server';
+import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,

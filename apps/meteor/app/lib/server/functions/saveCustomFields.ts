@@ -1,6 +1,6 @@
 import { settings } from '../../../settings/server';
 import { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
-import { validateCustomFields } from '.';
+import { validateCustomFields } from './validateCustomFields';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 export const saveCustomFields = async function (userId: string, formData: Record<string, any>): Promise<void> {
