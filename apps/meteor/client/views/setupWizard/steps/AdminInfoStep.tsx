@@ -28,7 +28,7 @@ const AdminInfoStep = (): ReactElement => {
 	return (
 		<AdminInfoPage
 			validatePassword={(password): boolean => password.length > 0}
-			passwordRulesHint={''}
+			passwordRulesHint=''
 			validateUsername={validateUsername}
 			validateEmail={validateEmail}
 			currentStep={currentStep}

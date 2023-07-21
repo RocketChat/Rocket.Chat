@@ -17,4 +17,5 @@ export interface IMeteor extends IServiceClass {
 	getLoginServiceConfiguration(): Promise<any[]>;
 	callMethodWithToken(userId: string | undefined, token: string | undefined, method: string, args: any[]): Promise<void | any>;
 	notifyGuestStatusChanged(token: string, status: string): Promise<void>;
+	getURL(path: string, params?: Record<string, any>, cloudDeepLinkUrl?: string): Promise<string>;
 }
