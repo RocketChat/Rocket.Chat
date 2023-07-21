@@ -5,7 +5,6 @@ export { checkEmailAvailability } from './checkEmailAvailability';
 export { createRoom } from './createRoom';
 export { createDirectRoom } from './createDirectRoom';
 export { deleteMessage } from './deleteMessage';
-export { deleteRoom } from './deleteRoom';
 export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
