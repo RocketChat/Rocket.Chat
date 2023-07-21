@@ -1,4 +1,3 @@
-export { slashCommands } from './slashCommand';
 export { getUserNotificationPreference } from './getUserNotificationPreference';
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from './getURL';
