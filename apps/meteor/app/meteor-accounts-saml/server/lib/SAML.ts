@@ -10,7 +10,7 @@ import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../lib/server/functions/createRoom';
-import { generateUsernameSuggestions } from '../../../lib/server/functions/generateUsernameSuggestions';
+import { generateUsernameSuggestions } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
