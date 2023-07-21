@@ -320,11 +320,7 @@ export class UsersRaw extends BaseRaw {
 					as: 'sub',
 					pipeline: [
 						{
-							$match: {
-								$expr: {
-									$eq: ['$rid', rid],
-								},
-							},
+							$match: { $expr: { $eq: ['$rid', rid] } },
 						},
 					],
 				},
