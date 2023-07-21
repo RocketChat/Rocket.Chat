@@ -318,7 +318,6 @@ export class UsersRaw extends BaseRaw {
 					localField: '_id',
 					foreignField: 'u._id',
 					as: 'sub',
-					let: { sub_rid: '$rid' },
 					pipeline: [
 						{
 							$match: {
