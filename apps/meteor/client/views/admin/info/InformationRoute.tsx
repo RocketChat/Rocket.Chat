@@ -83,7 +83,7 @@ const InformationRoute = (): ReactElement => {
 	if (error || !statistics) {
 		return (
 			<Page>
-				<Page.Header title={t('Info')}>
+				<Page.Header title={t('Workspace')}>
 					<ButtonGroup>
 						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton}>
 							{t('Refresh')}

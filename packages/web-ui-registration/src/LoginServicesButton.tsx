@@ -1,9 +1,9 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { Button } from '@rocket.chat/fuselage';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps, SetStateAction, Dispatch } from 'react';
+import type { ReactElement, SetStateAction, Dispatch } from 'react';
 import { useCallback } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
 
 import type { LoginErrors } from './LoginForm';
 
@@ -36,7 +36,7 @@ const LoginServicesButton = <T extends LoginService>({
 
 	return (
 		<Button
-			icon={icon as ComponentProps<typeof Icon>['name']}
+			icon={icon as IconName}
 			className={className}
 			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
