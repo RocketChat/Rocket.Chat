@@ -6,7 +6,7 @@ import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/mod
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
-import { removeUserFromRoom } from '../../../../../../app/lib/server';
+import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../../../../app/settings/server';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';

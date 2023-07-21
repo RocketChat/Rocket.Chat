@@ -1,4 +1,3 @@
-export { removeUserFromRoom } from './removeUserFromRoom';
 export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
 export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
