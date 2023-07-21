@@ -41,7 +41,7 @@ import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
-import { getURL } from '../../../utils/server';
+import { getURL } from '../../../utils/server/getURL';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
