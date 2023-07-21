@@ -1843,15 +1843,15 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Aquesta funció depèn de \"Enviar l'historial de navegació del visitant com a missatge\" per estar habilitat.",
   "Feature_Limiting": "Limitació de funcions",
   "Features": "Característiques",
-  "Features_Enabled": "Funcionalitats habilitades",
+
   "Federation": "Federació",
-  "Federation_Adding_Federated_Users": "Afegir usuaris federats",
 
 
-  "Federation_Changes_needed": "Canvis necessaris en el seu servidor, el nom de domini, la destinació i el port.",
 
 
-  "Federation_Dashboard": "Panell de Federació",
+
+
+
 
 
 
@@ -1859,26 +1859,26 @@
 
 
   "Federation_Enable": "Habilitar Federació",
-  "Federation_Fix_now": "Repara ara!",
-  "Federation_Guide_adding_users": "Li guiem sobre com afegir el seu primer usuari federat.",
-  "Federation_HTTP_instead_HTTPS": "Si fa servir el protocol HTTP en lloc de HTTPS",
-  "Federation_HTTP_instead_HTTPS_details": "Recomanem utilitzar HTTPS per a tot tipus de comunicacions, però de vegades això no és possible. Si ho necessita, a l'entrada SRV DNS reemplaci: el protocol: _http el port: 80",
 
 
 
-  "Federation_Is_working_correctly": "La integració de la federació funciona correctament.",
 
-  "Federation_Must_add_records": "Ha de afegir els següents registres DNS en el seu servidor:",
-  "Federation_Protocol": "Protocol",
-  "Federation_Protocol_details": "Només recomanem utilitzar HTTP en casos interns molt específics.",
-  "Federation_Protocol_TXT_record": "Protocol de registre TXT",
+
+
+
+
+
+
+
+
+
   "Federation_Public_key": "Clau pública",
-  "Federation_Public_key_details": "Aquesta és la clau que necessita compartir amb els seus companys. Per a què serveix?",
 
 
 
-  "Federation_SRV_records_200": "Registre SRV (2.0.0 o més recent)",
-  "Federation_Public_key_TXT_record": "Registre TXT de clau pública",
+
+
+
 
 
   "FEDERATION_Discovery_Method": "Mètode de descobriment",
@@ -1888,19 +1888,19 @@
   "FEDERATION_Domain_Description": "Afegiu el domini al qual ha d'estar vinculat aquest servidor, per exemple: @rocket.chat",
   "FEDERATION_Enabled": "IIntenteu integrar el suport de la federació.",
   "FEDERATION_Enabled_Alert": "La federació de suport està en progrés. El seu ús en un entorn de producció no es recomana de moment.",
-  "FEDERATION_Error_user_is_federated_on_rooms": "No podeu eliminar usuaris federats que pertanyen a sales",
-  "FEDERATION_Hub_URL": "URL del Hub",
-  "FEDERATION_Hub_URL_Description": "Configureu la URL del concentrador, per exemple: https://hub.rocket.chat. També es poden acceptar ports.",
+
+
+
   "FEDERATION_Public_Key": "Clau pública",
   "FEDERATION_Public_Key_Description": "Aquesta és la clau que necessita per compartir amb els seus companys.",
-  "FEDERATION_Room_Status": "Estat de la federació",
+
   "FEDERATION_Status": "Estat",
   "FEDERATION_Test_Setup": "Configuració de prova",
   "FEDERATION_Test_Setup_Error": "No s'ha pogut trobar el vostre servidor usant la vostra configuració, reviseu-ne la configuració.",
   "FEDERATION_Test_Setup_Success": "La configuració de la seva federació està funcionant i altres servidors poden trobar-se!",
   "Retry_Count": "Comptador de reintents",
-  "FEDERATION_Unique_Id": "Identificador únic",
-  "FEDERATION_Unique_Id_Description": "Aquest és l'ID únic de la vostra federació, que s'utilitza per identificar el vostre parell a la xarxa.",
+
+
   "Field": "Camp",
   "Field_removed": "Camp eliminat",
   "Field_required": "Camp obligatori",

@@ -2001,15 +2001,15 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ta funkcja zależy od włączenia \"Wyślij historię nawigacji użytkownika jako wiadomość\".",
   "Feature_Limiting": "Ograniczenie funkcji",
   "Features": "Ficzery",
-  "Features_Enabled": "Opis Włączone",
+
   "Federation": "Federacja",
-  "Federation_Adding_Federated_Users": "Dodawanie użytkowników sfederowanych",
 
 
-  "Federation_Changes_needed": "Zmiany wymagane na serwerze to: nazwa domeny, target i port.",
 
 
-  "Federation_Dashboard": "Federation Dashboard",
+
+
+
   "Federation_Description": "Federacja umożliwia komunikowanie się ze sobą nieograniczonej liczby obszarów roboczych.",
 
 
@@ -2018,27 +2018,27 @@
 
 
   "Federation_Enable": "Włącz Federację",
-  "Federation_Fix_now": "Napraw teraz!",
-  "Federation_Guide_adding_users": "Podpowiadamy, jak dodać pierwszego użytkownika federacyjnego.",
-  "Federation_HTTP_instead_HTTPS": "Jeśli używasz protokołu HTTP zamiast HTTPS",
-  "Federation_HTTP_instead_HTTPS_details": "Zalecamy stosowanie protokołu HTTPS dla wszystkich rodzajów komunikacji, ale czasami nie jest to możliwe. Jeśli jest taka potrzeba, we wpisie SRV DNS zastąp: protokół: _http port: 80",
 
 
 
-  "Federation_Is_working_correctly": "Federacja działa poprawnie",
 
-  "Federation_Must_add_records": "Musisz dodać następujące rekordy DNS na swoim serwerze:",
-  "Federation_Protocol": "Protokół",
-  "Federation_Protocol_details": "Zalecamy stosowanie HTTP tylko w wewnętrznych, bardzo specyficznych przypadkach.",
-  "Federation_Protocol_TXT_record": "Protokół rekordu TXT",
+
+
+
+
+
+
+
+
+
   "Federation_Public_key": "Klucz publiczny",
-  "Federation_Public_key_details": "To jest klucz, którym musisz się podzielić z innymi. Do czego to służy?",
+
 
   "Federation_slash_commands": "Polecenia Federacji",
 
 
-  "Federation_SRV_records_200": "Rekord SRV (2.0.0 lub nowszy)",
-  "Federation_Public_key_TXT_record": "Klucz publiczny rekordu TXT",
+
+
 
 
   "FEDERATION_Discovery_Method": "Discovery Method",
@@ -2048,22 +2048,22 @@
   "FEDERATION_Domain_Description": "Dodaj domenę, z którą ten serwer powinien być połączony - na przykład: @rocket.chat.",
   "FEDERATION_Enabled": "Próba zintegrowania federation support.",
   "FEDERATION_Enabled_Alert": "Federation support jest w trakcie realizacji. Użycie na systemie produkcyjnym nie jest w tym momencie zalecane.",
-  "FEDERATION_Error_user_is_federated_on_rooms": "Nie można usuwać użytkowników federacji, którzy należą do pokoi",
-  "FEDERATION_Hub_URL": "Hub URL",
-  "FEDERATION_Hub_URL_Description": "Ustawić adres URL hub'a, na przykład: https://hub.rocket.chat. Porty są również akceptowane.",
+
+
+
   "FEDERATION_Public_Key": "Klucz publiczny",
   "FEDERATION_Public_Key_Description": "To jest klucz, który musisz udostępnić swoim użytkownikom.",
-  "FEDERATION_Room_Status": "Federation Status",
+
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Test ustawień",
   "FEDERATION_Test_Setup_Error": "Nie można znaleźć twojego serwera używając twojej konfiguracji, proszę przejrzeć ustawienia.",
   "FEDERATION_Test_Setup_Success": "Twoja konfiguracja Federation działa, a inne serwery mogą cię znaleźć!",
   "Retry_Count": "Spróbuj ponownie",
-  "FEDERATION_Unique_Id": "Unikalne ID",
-  "FEDERATION_Unique_Id_Description": "Jest to unikalny identyfikator Federation, używany do identyfikacji twojego peer'a na mesh.",
+
+
   "Federation_Matrix": "Federacja V2",
   "Federation_Matrix_enabled": "Włączone",
-  "FileUpload_Disabled_for_federation": "Przesyłanie plików jest wyłączone dla kanałów sfederowanych.",
+
   "Federation_Matrix_Enabled_Alert": "Wsparcie Federacji Matrix jest w wersji alfa. Stosowanie w systemie produkcyjnym nie jest obecnie zalecane.<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">Więcej informacji na temat obsługi Matrix Federation można znaleźć tutaj</>",
   "Federation_Matrix_Federated": "Sfederowany",
   "Federation_Matrix_Federated_Description": "Tworząc pokój federacyjny nie będziesz mógł włączyć szyfrowania ani rozgłaszania",
@@ -2074,7 +2074,7 @@
   "Federation_Matrix_homeserver_url": "URL serwera domowego",
   "Federation_Matrix_homeserver_url_alert": "Polecamy nowy, pusty serwer domowy do użytku z naszą federacją",
   "Federation_Matrix_homeserver_domain": "Domena serwera domowego",
-  "Federation_Matrix_only_owners_can_invite_users": "Tylko właściciele mogą zapraszać użytkowników",
+
   "Federation_Matrix_homeserver_domain_alert": "Żaden użytkownik nie powinien łączyć się z serwerem domowym z klientami stron trzecich, tylko Rocket.Chat",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "Część lokalna użytkownika AppService",

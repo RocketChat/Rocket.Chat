@@ -1841,15 +1841,15 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Esta función depende de que la opción \"Enviar historial de navegación de visitante como mensaje\" esté habilitada.",
   "Feature_Limiting": "Limitación de funciones",
   "Features": "Funciones",
-  "Features_Enabled": "Funcionalidades habilitadas",
+
   "Federation": "Federación",
-  "Federation_Adding_Federated_Users": "Añadir usuarios federados",
 
 
-  "Federation_Changes_needed": "Es necesario que hagas cambios en tu servidor, nombre de dominio, destino y puerto.",
 
 
-  "Federation_Dashboard": "Panel de federación",
+
+
+
 
 
 
@@ -1857,26 +1857,26 @@
 
 
   "Federation_Enable": "Habilitar federación",
-  "Federation_Fix_now": "Reparar ahora",
-  "Federation_Guide_adding_users": "Te indicamos cómo añadir tu primer usuario federado.",
-  "Federation_HTTP_instead_HTTPS": "Si usas el protocolo HTTP en lugar de HTTPS",
-  "Federation_HTTP_instead_HTTPS_details": "Recomendamos usar HTTPS para todo tipo de comunicaciones, pero sabemos que a veces no es posible. Si lo necesitas, en la entrada DNS de SRV, usa el protocolo _http y el puerto 80.",
 
 
 
-  "Federation_Is_working_correctly": "La integración de la federación funciona correctamente.",
 
-  "Federation_Must_add_records": "Debes añadir los siguientes registros DNS a tu servidor:",
-  "Federation_Protocol": "Protocolo",
-  "Federation_Protocol_details": "Solo recomendamos usar HTTP en casos internos muy específicos.",
-  "Federation_Protocol_TXT_record": "Protocolo de registro TXT",
+
+
+
+
+
+
+
+
+
   "Federation_Public_key": "Clave pública",
-  "Federation_Public_key_details": "Esta es la clave que tienes que compartir con los puntos de conexión. ¿Para qué sirve?",
 
 
 
-  "Federation_SRV_records_200": "Registro SRV (2.0.0 o más reciente)",
-  "Federation_Public_key_TXT_record": "Registro TXT de clave pública",
+
+
+
 
 
   "FEDERATION_Discovery_Method": "Método de detección",
@@ -1886,19 +1886,19 @@
   "FEDERATION_Domain_Description": "Añade el dominio al que debe estar vinculado este servidor; por ejemplo, @rocket.chat.",
   "FEDERATION_Enabled": "Intenta integrar la compatibilidad con la federación.",
   "FEDERATION_Enabled_Alert": "La función Compatibilidad de federación se está desarrollando. De momento, no se recomienda su uso en sistemas de producción.",
-  "FEDERATION_Error_user_is_federated_on_rooms": "No puedes eliminar usuarios federados que pertenezcan a salas",
-  "FEDERATION_Hub_URL": "URL de concentrador",
-  "FEDERATION_Hub_URL_Description": "Establece la URL del concentrador; por ejemplo, https://hub.rocket.chat. También se aceptan puertos.",
+
+
+
   "FEDERATION_Public_Key": "Clave pública",
   "FEDERATION_Public_Key_Description": "Esta es la clave que tienes que compartir con los puntos de conexión.",
-  "FEDERATION_Room_Status": "Estado de la federación",
+
   "FEDERATION_Status": "Estado",
   "FEDERATION_Test_Setup": "Probar configuración",
   "FEDERATION_Test_Setup_Error": "No se ha podido encontrar tu servidor usando tu configuración, así que debes revisarla.",
   "FEDERATION_Test_Setup_Success": "La configuración de tu federación funciona y otros servidores pueden encontrarte",
   "Retry_Count": "Contador de reintentos",
-  "FEDERATION_Unique_Id": "ID único",
-  "FEDERATION_Unique_Id_Description": "Este es el ID único de tu federación, que identifica tu punto de conexión en la red.",
+
+
   "Field": "Campo",
   "Field_removed": "Campo eliminado",
   "Field_required": "Campo obligatorio",

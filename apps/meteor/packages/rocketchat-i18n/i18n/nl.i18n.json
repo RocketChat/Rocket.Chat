@@ -1851,15 +1851,15 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Deze functie is afhankelijk van het feit of 'Navigatiegeschiedenis van bezoeker als bericht verzenden' is ingeschakeld.",
   "Feature_Limiting": "Functiebeperking",
   "Features": "Functies",
-  "Features_Enabled": "Ingeschakelde functies",
+
   "Federation": "Federatie",
-  "Federation_Adding_Federated_Users": "Federatieve gebruikers toevoegen",
 
 
-  "Federation_Changes_needed": "Wijzigingen die nodig zijn op uw server zijn de domeinnaam, target en poort.",
 
 
-  "Federation_Dashboard": "Federatiedashboard",
+
+
+
 
 
 
@@ -1867,26 +1867,26 @@
 
 
   "Federation_Enable": "Federatie inschakelen",
-  "Federation_Fix_now": "Nu repareren!",
-  "Federation_Guide_adding_users": "We begeleiden u bij het toevoegen van jouw eerste federatieve gebruiker.",
-  "Federation_HTTP_instead_HTTPS": "Als je het HTTP-protocol gebruikt in plaats van HTTPS",
-  "Federation_HTTP_instead_HTTPS_details": "We raden aan om HTTPS te gebruiken voor alle soorten communicatie, maar soms is dat niet mogelijk. Vervang indien nodig in het SRV DNS-record: het protocol: _http de poort: 80",
 
 
 
-  "Federation_Is_working_correctly": "Federatie-integratie werkt goed.",
 
-  "Federation_Must_add_records": "Je moet de volgende DNS-records op jouw server toevoegen:",
-  "Federation_Protocol": "Protocol",
-  "Federation_Protocol_details": "We raden het gebruik van HTTP alleen aan voor interne, zeer specifieke gevallen.",
-  "Federation_Protocol_TXT_record": "Protocol TXT-record",
+
+
+
+
+
+
+
+
+
   "Federation_Public_key": "Publieke sleutel",
-  "Federation_Public_key_details": "Dit is de sleutel die je moet delen met jouw collega's. Waar is het voor?",
 
 
 
-  "Federation_SRV_records_200": "SRV-record (2.0.0 of nieuwer)",
-  "Federation_Public_key_TXT_record": "Public Key TXT-record",
+
+
+
 
 
   "FEDERATION_Discovery_Method": "Ontdekkingsmethode",
@@ -1896,19 +1896,19 @@
   "FEDERATION_Domain_Description": "Voeg het domein toe waaraan deze server moet worden gekoppeld, bijvoorbeeld: @rocket.chat.",
   "FEDERATION_Enabled": "Poging om federatieondersteuning te integreren.",
   "FEDERATION_Enabled_Alert": "Federatie-ondersteuning is een werk in uitvoering. Gebruik op een productiesysteem wordt op dit moment niet aanbevolen.",
-  "FEDERATION_Error_user_is_federated_on_rooms": "U kunt geen federatieve gebruikers verwijderen die tot chatruimten behoren",
-  "FEDERATION_Hub_URL": "Hub URL",
-  "FEDERATION_Hub_URL_Description": "Stel de hub-URL in, bijvoorbeeld: https://hub.rocket.chat. Poorten worden ook geaccepteerd.",
+
+
+
   "FEDERATION_Public_Key": "Publieke sleutel",
   "FEDERATION_Public_Key_Description": "Dit is de sleutel die je moet delen met je collega's.",
-  "FEDERATION_Room_Status": "Federatiestatus",
+
   "FEDERATION_Status": "Toestand",
   "FEDERATION_Test_Setup": "Test de opstelling",
   "FEDERATION_Test_Setup_Error": "Kan uw server niet vinden met uw installatie. Controleer uw instellingen.",
   "FEDERATION_Test_Setup_Success": "Uw federatie-installatie werkt en andere servers kunnen u vinden!",
   "Retry_Count": "Aantal pogingen",
-  "FEDERATION_Unique_Id": "Unieke ID",
-  "FEDERATION_Unique_Id_Description": "Dit is de unieke ID van uw federatie, die wordt gebruikt om uw peer op de mesh te identificeren.",
+
+
   "Field": "Veld",
   "Field_removed": "Veld verwijderd",
   "Field_required": "Veld vereist",

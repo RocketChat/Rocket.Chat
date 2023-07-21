@@ -2031,15 +2031,15 @@
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ez a funkció attól függ, hogy a „Látogató navigációs előzményeinek küldése üzenetként” engedélyezve van-e.",
   "Feature_Limiting": "Funkció korlátozása",
   "Features": "Funkciók",
-  "Features_Enabled": "Funkciók engedélyezve",
+
   "Federation": "Föderáció",
-  "Federation_Adding_Federated_Users": "Föderált felhasználók hozzáadása",
 
 
-  "Federation_Changes_needed": "A kiszolgálón szükséges változtatások a tartománynév, a cél és a port.",
 
 
-  "Federation_Dashboard": "Föderációs vezérlőpult",
+
+
+
   "Federation_Description": "A föderáció lehetővé teszi, hogy korlátlan számú munkaterület kommunikáljon egymással.",
 
 
@@ -2048,27 +2048,27 @@
 
 
   "Federation_Enable": "Föderáció engedélyezése",
-  "Federation_Fix_now": "Javítás most!",
-  "Federation_Guide_adding_users": "Útmutatást adunk arról, hogy hogyan kell hozzáadni az első föderált felhasználót.",
-  "Federation_HTTP_instead_HTTPS": "Ha HTTP-protokollt használ a HTTPS helyett",
-  "Federation_HTTP_instead_HTTPS_details": "Azt ajánljuk, hogy HTTPS protokollt használjon mindenfajta kommunikációhoz, de néha ez nem lehetséges. Ha szükséges, az SRV DNS-bejegyzésben cserélje ki a protokollt „_http”, a portot „80” értékre.",
 
 
 
-  "Federation_Is_working_correctly": "A föderációs integráció megfelelően működik.",
 
-  "Federation_Must_add_records": "Hozzá kell adnia a következő DNS-rekordokat a kiszolgálóján:",
-  "Federation_Protocol": "Protokoll",
-  "Federation_Protocol_details": "A HTTP használatát csak belső, nagyon különleges esetekben ajánljuk.",
-  "Federation_Protocol_TXT_record": "Protokoll TXT-rekordja",
+
+
+
+
+
+
+
+
+
   "Federation_Public_key": "Nyilvános kulcs",
-  "Federation_Public_key_details": "Ez az a kulcs, amelyet meg kell osztania partnereivel. Mire való?",
+
 
   "Federation_slash_commands": "Föderációs parancsok",
 
 
-  "Federation_SRV_records_200": "SRV-rekord (2.0.0 vagy újabb)",
-  "Federation_Public_key_TXT_record": "Nyilvános kulcs TXT-rekordja",
+
+
 
 
   "FEDERATION_Discovery_Method": "Felfedezési módszer",
@@ -2078,22 +2078,22 @@
   "FEDERATION_Domain_Description": "A tartomány hozzáadása, amelyhez ezt a kiszolgálót hozzá kell kapcsolni – például: @rocket.chat.",
   "FEDERATION_Enabled": "Kísérlet a föderációs támogatás integrálására.",
   "FEDERATION_Enabled_Alert": "A föderáció támogatásának munkálatai folyamatban vannak. Egy produktív rendszeren történő használata jelenleg nem ajánlott.",
-  "FEDERATION_Error_user_is_federated_on_rooms": "Nem tudja eltávolítani azokat a föderált felhasználókat, akik szobákhoz tartoznak",
-  "FEDERATION_Hub_URL": "Elosztó URL",
-  "FEDERATION_Hub_URL_Description": "Az elosztó URL-jének beállítása, például: https://hub.rocket.chat. A portok is elfogadottak.",
+
+
+
   "FEDERATION_Public_Key": "Nyilvános kulcs",
   "FEDERATION_Public_Key_Description": "Ez az a kulcs, amelyet meg kell osztania partnereivel.",
-  "FEDERATION_Room_Status": "Föderációs állapot",
+
   "FEDERATION_Status": "Állapot",
   "FEDERATION_Test_Setup": "Beállítás tesztelése",
   "FEDERATION_Test_Setup_Error": "Nem sikerült megtalálni a kiszolgálóját a beállítása használatával, vizsgálja felül a beállításait.",
   "FEDERATION_Test_Setup_Success": "A föderációs beállítás működik, és más kiszolgálók megtalálhatják Önt!",
   "Retry_Count": "Újrapróbálkozások száma",
-  "FEDERATION_Unique_Id": "Egyedi azonosító",
-  "FEDERATION_Unique_Id_Description": "Ez a föderációs egyedi azonosítója, amely a hálóban lévő kiszolgálója azonosításhoz van használva.",
+
+
   "Federation_Matrix": "Föderáció V2",
   "Federation_Matrix_enabled": "Engedélyezve",
-  "FileUpload_Disabled_for_federation": "A fájlfeltöltések le vannak tiltva a föderált szobáknál.",
+
   "Federation_Matrix_Enabled_Alert": "<a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">Itt találhatók további információk a Matrix föderációs támogatásáról</a> (Bármilyen beállítás után újraindítás szükséges a változtatások hatályba lépéséhez)",
   "Federation_Matrix_Federated": "Föderált",
   "Federation_Matrix_Federated_Description": "Egy föderált szoba létrehozásával nem fogja tudni engedélyezni sem a titkosítást, sem a műsorszórást",
@@ -2104,13 +2104,13 @@
   "Federation_Matrix_homeserver_url": "Otthont adó kiszolgáló URL-je",
   "Federation_Matrix_homeserver_url_alert": "Egy új, üres otthont adó kiszolgálót ajánlunk a föderációnkkal való használathoz",
   "Federation_Matrix_homeserver_domain": "Otthont adó kiszolgáló tartománya",
-  "Federation_Matrix_only_owners_can_invite_users": "Csak a tulajdonosok hívhatnak meg felhasználókat",
+
   "Federation_Matrix_homeserver_domain_alert": "Egyetlen felhasználó sem kapcsolódhatna az otthont adó kiszolgálóhoz harmadik fél által biztosított ügyfélprogrammal, csak a Rocket.Chat",
   "Federation_Matrix_bridge_url": "Híd URL",
   "Federation_Matrix_bridge_localpart": "Alkalmazásszolgáltatás felhasználójának helyi része",
   "Federation_Matrix_registration_file": "Regisztrációs fájl",
   "Federation_Matrix_registration_file_Alert": "Fontos: a rövid ideig tartó események engedélyezésével a kiszolgáló megkapja az összes felhasználó összes gépelési állapotát az összes olyan kiszolgálóról, amelyhez csatlakozik.</br>Az engedélyezéséhez frissítse a regisztrációs fájlját (.yaml fájl, amelyet a Rocket.Chatnek az otthoni kiszolgálójához való regisztrálásához használ), és adja hozzá a következőt: </br>de.sorunome.msc2409.push_ephemeral: true",
-  "Federation_Matrix_enable_typing_status": "Felhasználó gépelési állapotának engedélyezése",
+
   "Field": "Mező",
   "Field_removed": "Mező eltávolítva",
   "Field_required": "Kötelező mező",
