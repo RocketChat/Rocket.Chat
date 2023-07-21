@@ -25,6 +25,11 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.sidenav.linkDepartments.click();
 	});
 
+	test.afterAll(async ({ api }) => {
+		const { departments: [{ _id: departmentId }] } = await (await api.get('/livechat/department', { text: departmentName })).json();
+		await api.delete(`/livechat/department/${ departmentId }`);
+	});
+
 	test('CE departments', async () => {
 		await test.step('expect create new department', async () => {
 			await poOmnichannelDepartments.btnNew.click();
@@ -37,6 +42,7 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
+
 		await test.step('expect to not be possible adding a second department ', async () => {
 			await poOmnichannelDepartments.btnNew.click();
 
