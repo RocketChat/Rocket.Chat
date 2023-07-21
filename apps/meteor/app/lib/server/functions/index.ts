@@ -1,4 +1,3 @@
-export { checkEmailAvailability } from './checkEmailAvailability';
 export { createDirectRoom } from './createDirectRoom';
 export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { getUserCreatedByApp } from './getUserCreatedByApp';
