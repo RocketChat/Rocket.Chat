@@ -7,7 +7,7 @@ import type { FederatedUser } from '../../../domain/FederatedUser';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 import { deleteMessage } from '../../../../../../app/lib/server/functions/deleteMessage';
-import { updateMessage } from '../../../../../../app/lib/server';
+import { updateMessage } from '../../../../../../app/lib/server/functions/updateMessage';
 import { getURL } from '../../../../../../app/utils/server';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { executeSetReaction } from '../../../../../../app/reactions/server/setReaction';

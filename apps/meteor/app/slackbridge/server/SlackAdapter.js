@@ -16,7 +16,7 @@ import { deleteMessage } from '../../lib/server/functions/deleteMessage';
 import { addUserToRoom } from '../../lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../lib/server/functions/removeUserFromRoom';
 import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
-import { updateMessage } from '../../lib/server';
+import { updateMessage } from '../../lib/server/functions/updateMessage';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
