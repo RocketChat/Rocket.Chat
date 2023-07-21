@@ -68,10 +68,7 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password });
-	console.log('-----------------------------------------------');
 	const agent = body.user;
-	console.log(body);
-	console.log(agent);
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
 	await makeAgentAvailable(createdUserCredentials);

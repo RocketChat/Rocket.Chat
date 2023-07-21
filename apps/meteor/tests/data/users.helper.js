@@ -13,8 +13,6 @@ export const createUser = (userData = {}) =>
 				if (err) {
 					return reject(err);
 				}
-				console.log('_----------------_');
-				console.log(res.body);
 				resolve(res.body.user);
 			});
 	});
