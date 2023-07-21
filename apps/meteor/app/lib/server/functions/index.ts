@@ -1,4 +1,3 @@
-export { _setUsername, setUsername, setUsernameWithValidation } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
 export { updateMessage } from './updateMessage';
 export { validateCustomFields } from './validateCustomFields';
