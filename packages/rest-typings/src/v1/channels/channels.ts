@@ -50,8 +50,7 @@ export type ChannelsEndpoints = {
 	'/v1/channels.membersByHighestRole': {
 		GET: (
 			params: PaginatedRequest<
-				| { roomId: string; role?: string; filter?: string; status?: string[] }
-				| { roomName: string; role?: string; filter?: string; status?: string[] }
+				{ roomId: string; filter?: string; status?: string[] } | { roomName: string; filter?: string; status?: string[] }
 			>,
 		) => PaginatedResult<{
 			members: IUser[];

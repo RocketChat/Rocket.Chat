@@ -1069,11 +1069,10 @@ API.v1.addRoute(
 					filter: Match.Maybe(String),
 				}),
 			);
-			const { status, filter, role } = this.queryParams;
+			const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount } = await findUsersOfRoomByHighestRole({
+			const cursor = await findUsersOfRoomByHighestRole({
 				rid: findResult._id,
-				role,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
@@ -1081,7 +1080,11 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const result = await cursor.toArray();
+			const {
+				members,
+				totalCount: [{ total } = { total: 0 }],
+			} = result[0];
 
 			return API.v1.success({
 				members,

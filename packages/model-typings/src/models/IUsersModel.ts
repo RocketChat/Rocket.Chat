@@ -1,4 +1,4 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, AggregationCursor } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -44,6 +44,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): FindPaginated<FindCursor<T>>;
+	findPaginatedActiveUsersByRoomIdWithHighestRole<T = IUser>(
+		searchTerm: any,
+		rid: any,
+		options: any,
+		searchFields: any,
+		extraQuery?: any,
+		params?: { startsWith?: boolean; endsWith?: boolean },
+	): Promise<AggregationCursor<{ members: T[]; totalCount: { total: number }[] }>>;
 
 	findPaginatedByActiveLocalUsersExcept<T = IUser>(
 		searchTerm: any,

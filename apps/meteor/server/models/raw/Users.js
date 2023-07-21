@@ -258,6 +258,113 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
+	findPaginatedActiveUsersByRoomIdWithHighestRole(
+		searchTerm,
+		rid,
+		options,
+		searchFields,
+		extraQuery = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
+		if (options == null) {
+			options = {};
+		}
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+		const orStmt = (searchFields || []).reduce(function (acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					__rooms: rid,
+					username: { $exists: true },
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+				},
+				...extraQuery,
+			],
+		};
+
+		const skip =
+			options.skip !== 0
+				? [
+						{
+							$skip: options.skip,
+						},
+				  ]
+				: [];
+
+		const limit =
+			options.limit !== 0
+				? [
+						{
+							$limit: options.limit,
+						},
+				  ]
+				: [];
+
+		return this.col.aggregate([
+			{
+				$match: query,
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'sub',
+					let: { sub_rid: '$rid' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$eq: ['$rid', rid],
+								},
+							},
+						},
+					],
+				},
+			},
+			{ $unwind: '$sub' },
+			{
+				$project: {
+					...options.projection,
+					roles: '$sub.roles',
+				},
+			},
+			{
+				$addFields: {
+					highestRole: {
+						$cond: [{ $in: ['owner', '$roles'] }, 'owner', { $cond: [{ $in: ['moderator', '$roles'] }, 'moderator', 'member'] }],
+					},
+					roleLevel: {
+						$cond: [{ $in: ['owner', '$roles'] }, 0, { $cond: [{ $in: ['moderator', '$roles'] }, 1, 2] }],
+					},
+				},
+			},
+			{
+				$facet: {
+					members: [
+						{
+							$sort: {
+								roleLevel: 1,
+								...options.sort,
+							},
+						},
+						...skip,
+						...limit,
+					],
+					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				},
+			},
+		]);
+	}
+
 	findPaginatedByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{
