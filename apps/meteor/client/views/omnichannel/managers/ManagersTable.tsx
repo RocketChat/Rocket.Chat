@@ -42,9 +42,7 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query));
 
 	const headers = (
 		<>
