@@ -7,7 +7,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { removeTag, saveTags } from '../../../data/livechat/tags';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { createUser, login } from '../../../data/users.helper';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 import type { IUserWithCredentials } from '../../../data/user';
 import { password } from '../../../data/user';
@@ -66,6 +66,10 @@ import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/depart
 				caseB: { department: dB, tag: tagB, agent: agentB },
 				casePublic: { tag: publicTag },
 			};
+		});
+
+		after(async () => {
+			await deleteUser(monitor);
 		});
 
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {
