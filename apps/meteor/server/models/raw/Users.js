@@ -192,10 +192,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
 
 		const query = {
 			$and: [
@@ -233,10 +230,7 @@ export class UsersRaw extends BaseRaw {
 		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
 		const termRegex = new RegExp(regexString, 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
 
 		const query = {
 			$and: [
