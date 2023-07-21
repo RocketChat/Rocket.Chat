@@ -3,6 +3,8 @@ import generator from 'generate-password';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { MeteorError } from '@rocket.chat/core-services';
 
+// merge conflict
+
 class PasswordPolicy {
 	regex: {
 		forbiddingRepeatingCharacters: RegExp;
