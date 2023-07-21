@@ -26,7 +26,8 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
-import { validateCustomFields, saveUser, setUserAvatar } from '../../../lib/server';
+import {saveUser} from '../../../lib/server/functions/saveUser';
+import { validateCustomFields setUserAvatar } from '../../../lib/server';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,

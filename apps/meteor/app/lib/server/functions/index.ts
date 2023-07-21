@@ -1,4 +1,3 @@
-export { saveUser } from './saveUser';
 export { saveUserIdentity } from './saveUserIdentity';
 export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
