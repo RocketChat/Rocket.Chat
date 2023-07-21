@@ -3,7 +3,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
-import { Info } from '../../../../app/utils/server';
+import { Info } from '../../../../app/utils/rocket.chat.info';
 
 type installAction = 'install' | 'update' | 'uninstall';
 

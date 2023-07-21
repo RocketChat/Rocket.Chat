@@ -1,4 +1,3 @@
-export { Info } from '../rocketchat.info';
 export { getUserPreference } from './lib/getUserPreference';
 export { fileUploadIsValidContentType } from './restrictions';
 export { isDocker } from './functions/isDocker';

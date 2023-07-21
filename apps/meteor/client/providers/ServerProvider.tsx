@@ -16,7 +16,7 @@ import { compile } from 'path-to-regexp';
 import type { FC } from 'react';
 import React from 'react';
 
-import { Info as info } from '../../app/utils/client';
+import { Info as info } from '../../app/utils/rocketchat.info';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
