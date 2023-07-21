@@ -1,4 +1,3 @@
-export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';
 export { removeUserFromRoom } from './removeUserFromRoom';
