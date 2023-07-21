@@ -4,6 +4,11 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
 
+type UserWithRoleInfo = IUser & {
+	highestRole: string;
+	roleLevel: number;
+};
+
 type FindUsersParam = {
 	rid: string;
 	status?: FilterOperators<string>;
@@ -20,7 +25,7 @@ export async function findUsersOfRoomByHighestRole({
 	limit = 0,
 	filter = '',
 	sort,
-}: FindUsersParam): Promise<AggregationCursor<{ members: IUser[]; totalCount: { total: number }[] }>> {
+}: FindUsersParam): Promise<AggregationCursor<{ members: UserWithRoleInfo[]; totalCount: { total: number }[] }>> {
 	const options = {
 		projection: {
 			name: 1,
