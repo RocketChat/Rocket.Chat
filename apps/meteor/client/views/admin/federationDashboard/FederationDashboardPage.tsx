@@ -12,7 +12,7 @@ function FederationDashboardPage(): ReactElement {
 
 	return (
 		<Page>
-			<Page.Header title={t('Federation_Dashboard')} />
+			<Page.Header title={t('Federation')} />
 			<Page.ScrollableContentWithShadow>
 				<Box margin='x24'>
 					<OverviewSection />

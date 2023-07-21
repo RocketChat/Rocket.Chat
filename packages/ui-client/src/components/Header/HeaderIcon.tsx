@@ -1,8 +1,9 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC, ReactElement } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { FC, ReactElement } from 'react';
 import { isValidElement } from 'react';
 
-type HeaderIconProps = { icon: ReactElement | { name: ComponentProps<typeof Icon>['name']; color?: string } | null };
+type HeaderIconProps = { icon: ReactElement | { name: IconName; color?: string } | null };
 
 const HeaderIcon: FC<HeaderIconProps> = ({ icon }) =>
 	icon && (
