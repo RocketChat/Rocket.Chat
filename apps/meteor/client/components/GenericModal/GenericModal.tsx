@@ -1,5 +1,5 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { Button, Modal } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
@@ -15,14 +15,14 @@ type GenericModalProps = RequiredModalProps & {
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
 	title?: string | ReactElement;
-	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
+	icon?: IconName | ReactElement | null;
 	confirmDisabled?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
 } & Omit<ComponentProps<typeof Modal>, 'title'>;
 
-const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
+const iconMap: Record<string, IconName> = {
 	danger: 'modal-warning',
 	warning: 'modal-warning',
 	info: 'info',

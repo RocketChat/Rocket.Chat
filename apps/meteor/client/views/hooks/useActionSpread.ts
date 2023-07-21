@@ -1,10 +1,10 @@
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 export type Action = {
 	label: ReactNode;
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconName;
 	action: () => void;
 };
 

@@ -45,7 +45,7 @@ const InformationPage = memo(function InformationPage({
 
 	return (
 		<Page data-qa='admin-info' bg='tint'>
-			<Page.Header title={t('Info')}>
+			<Page.Header title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
 						<Button type='button' onClick={onClickDownloadInfo}>
