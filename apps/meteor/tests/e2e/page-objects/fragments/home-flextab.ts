@@ -37,7 +37,7 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('role=button[name="Options"]');
+		return this.page.locator('role=button[title="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
