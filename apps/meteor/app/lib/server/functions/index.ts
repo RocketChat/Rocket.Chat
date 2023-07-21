@@ -1,5 +1,3 @@
-export { saveUserIdentity } from './saveUserIdentity';
-export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
 export { getStatusText } from './getStatusText';
 export { setUserAvatar } from './setUserAvatar';

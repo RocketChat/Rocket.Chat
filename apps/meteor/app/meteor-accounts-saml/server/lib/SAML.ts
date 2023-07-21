@@ -11,7 +11,7 @@ import { settings } from '../../../settings/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../lib/server/functions/createRoom';
 import { generateUsernameSuggestions } from '../../../lib/server/functions/generateUsernameSuggestions';
-import { saveUserIdentity } from '../../../lib/server/functions';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import type { ISAMLAction } from '../definition/ISAMLAction';

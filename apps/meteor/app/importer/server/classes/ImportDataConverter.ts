@@ -20,7 +20,7 @@ import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/generateUsernameSuggestion';
 import { insertMessage } from '../../../lib/server/functions/insertMessage';
-import { saveUserIdentity } from '../../../lib/server';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
