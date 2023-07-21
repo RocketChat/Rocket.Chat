@@ -209,7 +209,7 @@ export class Callbacks<
 
 	static create<F extends (item: any, constant?: any) => any | Promise<any>>(
 		hook: string,
-	): Cb<Parameters<F>[0], Parameters<F>[1], ReturnType<F>>;
+	): Cb<Parameters<F>[0], ReturnType<F>, Parameters<F>[1]>;
 
 	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
 		const callbacks = new Callbacks();

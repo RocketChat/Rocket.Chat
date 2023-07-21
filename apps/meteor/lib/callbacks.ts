@@ -76,7 +76,6 @@ interface EventLikeCallbackSignatures {
 	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
-	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
