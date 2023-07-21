@@ -9,7 +9,8 @@ import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/func
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { createRoom, attachMessage } from '../../../lib/server';
+import { attachMessage } from '../../../lib/server/functions/attachMessage';
+import { createRoom } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
