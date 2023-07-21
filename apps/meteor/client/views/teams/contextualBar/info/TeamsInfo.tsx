@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
 import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import {
@@ -118,7 +117,7 @@ const TeamsInfo = ({
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
-			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon as ComponentProps<typeof Icon>['name']} />
+			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

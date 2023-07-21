@@ -1,5 +1,5 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
-import type { IconProps } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { FC, ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -8,7 +8,7 @@ import SidebarGenericItem from './SidebarGenericItem';
 type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
-	icon?: IconProps['name'];
+	icon?: IconName;
 	label?: string;
 	tag?: string;
 	currentPath?: string;
