@@ -16,7 +16,7 @@ export const saveBusinessHour = async (businessHour: ISaveBhApiWorkHour) => {
     return JSON.parse(body.message);
 };
 
-export const createCustomBusinessHour = async (departments: string[], open=true): Promise<ILivechatBusinessHour> => {
+export const createCustomBusinessHour = async (departments: string[], open = true): Promise<ILivechatBusinessHour> => {
     const name = `business-hour-${Date.now()}`;
     const businessHour: ISaveBhApiWorkHour = {
         name,
