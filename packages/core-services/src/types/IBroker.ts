@@ -1,5 +1,5 @@
-import type { IServiceClass } from './ServiceClass';
 import type { EventSignatures } from '../Events';
+import type { IServiceClass } from './ServiceClass';
 
 export interface IBrokerNode {
 	id: string;

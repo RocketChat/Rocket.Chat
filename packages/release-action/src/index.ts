@@ -3,10 +3,10 @@ import path from 'path';
 
 import * as core from '@actions/core';
 
-import { publishRelease } from './publishRelease';
 import { bumpNextVersion } from './bumpNextVersion';
-import { startPatchRelease } from './startPatchRelease';
 import { setupGitUser } from './gitUtils';
+import { publishRelease } from './publishRelease';
+import { startPatchRelease } from './startPatchRelease';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
