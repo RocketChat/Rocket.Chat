@@ -1,5 +1,5 @@
-import gcm from 'node-gcm';
 import EJSON from 'ejson';
+import gcm from 'node-gcm';
 
 import { logger } from './logger';
 

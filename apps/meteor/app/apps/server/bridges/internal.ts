@@ -1,5 +1,5 @@
-import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 

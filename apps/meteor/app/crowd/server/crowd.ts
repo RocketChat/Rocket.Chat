@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { SHA256 } from '@rocket.chat/sha256';
-import { Accounts } from 'meteor/accounts-base';
-import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Users } from '@rocket.chat/models';
+import { SHA256 } from '@rocket.chat/sha256';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { _setRealName } from '../../lib/server/functions/setRealName';
-import { settings } from '../../settings/server';
-import { deleteUser } from '../../lib/server/functions/deleteUser';
-import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
-import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
+import { deleteUser } from '../../lib/server/functions/deleteUser';
+import { _setRealName } from '../../lib/server/functions/setRealName';
+import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
+import { settings } from '../../settings/server';
+import { logger } from './logger';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
 

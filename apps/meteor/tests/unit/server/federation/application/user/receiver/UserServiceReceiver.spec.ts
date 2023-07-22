@@ -1,8 +1,8 @@
 /* eslint-disable import/first */
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const { FederationUserServiceReceiver } = proxyquire
 	.noCallThru()

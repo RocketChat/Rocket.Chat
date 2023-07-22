@@ -1,12 +1,12 @@
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { InstanceStatus } from '@rocket.chat/instance-status';
 import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('Meteor');
 

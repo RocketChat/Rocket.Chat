@@ -1,8 +1,8 @@
-import { Accounts } from 'meteor/accounts-base';
 import { LDAP } from '@rocket.chat/core-services';
+import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../../lib/callbacks';
 import { settings } from '../../app/settings/server';
+import { callbacks } from '../../lib/callbacks';
 
 // Register ldap login handler
 Accounts.registerLoginHandler('ldap', async function (loginRequest: Record<string, any>) {

@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
-import { ChatSubscription } from './ChatSubscription';
 import { CachedCollection } from '../../../ui-cached-collection/client';
+import { ChatSubscription } from './ChatSubscription';
 
 class CachedChatRoom extends CachedCollection<IRoom> {
 	constructor() {

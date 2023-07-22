@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { callWithErrorHandling } from '../../../client/lib/utils/callWithErrorHandling';
-import { ChatMessage } from '../../models/client';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { ChatMessage } from '../../models/client';
 
 export const findParentMessage = (() => {
 	const waiting: string[] = [];

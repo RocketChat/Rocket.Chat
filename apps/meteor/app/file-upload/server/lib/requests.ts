@@ -1,5 +1,5 @@
-import { WebApp } from 'meteor/webapp';
 import { Uploads } from '@rocket.chat/models';
+import { WebApp } from 'meteor/webapp';
 
 import { FileUpload } from './FileUpload';
 

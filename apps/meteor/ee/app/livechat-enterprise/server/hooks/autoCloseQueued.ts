@@ -1,5 +1,5 @@
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 
 const removeScheduledQueueCloseTime = async (inquiry: any): Promise<void> => {

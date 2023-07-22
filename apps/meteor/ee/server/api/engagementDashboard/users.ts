@@ -1,7 +1,8 @@
-import { check, Match } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
+import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
+import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,
@@ -9,7 +10,6 @@ import {
 	findBusiestsChatsWithinAWeek,
 	findUserSessionsByHourWithinAWeek,
 } from '../../lib/engagementDashboard/users';
-import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

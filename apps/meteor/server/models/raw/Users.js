@@ -1,5 +1,5 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 

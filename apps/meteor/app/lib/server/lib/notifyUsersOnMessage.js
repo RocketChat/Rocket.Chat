@@ -1,9 +1,9 @@
-import moment from 'moment';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 
 /**
  * Chechs if a messages contains a user highlight

@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
+import { expect } from 'chai';
 
+import { getCredentials } from '../../../data/api-data';
 import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
@@ -11,7 +12,6 @@ import {
 	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
-import { getCredentials } from '../../../data/api-data';
 
 describe('LIVECHAT - messages', function () {
 	before((done) => getCredentials(done));

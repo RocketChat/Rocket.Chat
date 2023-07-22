@@ -2,9 +2,9 @@
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
 
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 import { permissions } from '../constant/permissions';
 
 export const upsertPermissions = async (): Promise<void> => {

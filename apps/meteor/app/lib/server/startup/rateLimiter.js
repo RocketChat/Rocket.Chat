@@ -1,12 +1,12 @@
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
+import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
-import { Logger } from '../../../logger/server';
 import { sleep } from '../../../../lib/utils/sleep';
+import { Logger } from '../../../logger/server';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');
 

@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { createUser, login } from '../../data/users.helper';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Calendar Events]', function () {
 	this.retries(0);

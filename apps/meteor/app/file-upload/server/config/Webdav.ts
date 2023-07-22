@@ -1,9 +1,9 @@
 import _ from 'underscore';
 
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings/server';
-import '../../ufs/Webdav/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import '../../ufs/Webdav/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, _req, res) {
 	(await this.store.getReadStream(file._id, file))

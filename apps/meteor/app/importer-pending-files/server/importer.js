@@ -1,11 +1,11 @@
-import https from 'https';
 import http from 'http';
+import https from 'https';
 
-import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { Base, ProgressStep, Selection } from '../../importer/server';
 import { FileUpload } from '../../file-upload/server';
+import { Base, ProgressStep, Selection } from '../../importer/server';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {

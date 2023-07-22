@@ -7,13 +7,13 @@ import {
 	isSendInvitationEmailParams,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
-import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
+import { removeInvite } from '../../../invites/server/functions/removeInvite';
+import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
-import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'listInvites',

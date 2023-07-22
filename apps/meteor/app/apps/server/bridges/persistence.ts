@@ -1,5 +1,5 @@
-import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 

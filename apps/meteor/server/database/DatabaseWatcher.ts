@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
 
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { MongoClient } from 'mongodb';
 
 import type { Logger } from '../lib/logger/Logger';

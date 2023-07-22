@@ -1,8 +1,8 @@
-import { throttle } from 'underscore';
+import { Presence } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from '@rocket.chat/instance-status';
-import { Presence } from '@rocket.chat/core-services';
+import { throttle } from 'underscore';
 
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {

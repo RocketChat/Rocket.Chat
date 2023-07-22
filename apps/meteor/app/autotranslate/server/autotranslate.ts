@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type {
 	IMessage,
 	IRoom,
@@ -11,12 +8,15 @@ import type {
 	ITranslationResult,
 } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger/server';
 import { isTruthy } from '../../../lib/isTruthy';
+import { Logger } from '../../logger/server';
+import { Markdown } from '../../markdown/server';
+import { settings } from '../../settings/server';
 
 const translationLogger = new Logger('AutoTranslate');
 

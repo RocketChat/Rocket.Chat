@@ -1,17 +1,17 @@
 import url from 'url';
 
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { WebApp } from 'meteor/webapp';
-import { RoutePolicy } from 'meteor/routepolicy';
-import _ from 'underscore';
-import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
+import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
 
-import { logger } from './cas_rocketchat';
-import { settings } from '../../settings/server';
-import { _setRealName } from '../../lib/server/functions/setRealName';
 import { createRoom } from '../../lib/server/functions/createRoom';
+import { _setRealName } from '../../lib/server/functions/setRealName';
+import { settings } from '../../settings/server';
+import { logger } from './cas_rocketchat';
 
 RoutePolicy.declare('/_cas/', 'network');
 

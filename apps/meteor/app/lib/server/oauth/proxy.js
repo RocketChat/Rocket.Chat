@@ -1,5 +1,5 @@
-import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
+import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 

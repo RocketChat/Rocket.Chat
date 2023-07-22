@@ -8,6 +8,7 @@
 		"jscolor": false
 	},
 	"rules": {
+		"import/named": "error",
 		"react-hooks/exhaustive-deps": [
 			"warn",
 			{
@@ -18,10 +19,6 @@
 	"overrides": [
 		{
 			"files": ["**/*.ts", "**/*.tsx"],
-			"globals": {
-				"Atomics": "readonly",
-				"SharedArrayBuffer": "readonly"
-			},
 			"rules": {
 				"@typescript-eslint/no-misused-promises": [
 					"error",
@@ -44,6 +41,20 @@
 			"env": {
 				"mocha": true
 			}
-		}
+		},
+		{
+			"files": ["**/*.stories.js", "**/*.stories.jsx", "**/*.stories.ts", "**/*.stories.tsx"],
+			"rules": {
+				"react/display-name": "off",
+				"react/no-multi-comp": "off"
+			}
+		},
+    {
+      "files": ["**/*.stories.ts", "**/*.stories.tsx"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off"
+      }
+    }
 	]
 }

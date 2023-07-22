@@ -1,9 +1,9 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
+import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
 import { openBusinessHourDefault } from './Helper';
-import { businessHourLogger } from '../lib/logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {

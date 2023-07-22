@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
 
 export const RateLimiterClass = new (class {

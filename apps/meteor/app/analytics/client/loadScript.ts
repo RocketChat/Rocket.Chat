@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
-import { settings } from '../../settings/client';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
+import { settings } from '../../settings/client';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

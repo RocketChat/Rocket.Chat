@@ -1,8 +1,8 @@
 import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
-import { settings } from '../../../settings/server';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
+import { settings } from '../../../settings/server';
 import { processDirectEmail } from './processDirectEmail';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {

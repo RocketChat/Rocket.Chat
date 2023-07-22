@@ -1,25 +1,13 @@
 {
   "root": true,
-  "extends": ["@rocket.chat/eslint-config/original", "@rocket.chat/eslint-config/react", "prettier", "plugin:you-dont-need-lodash-underscore/compatible"],
+  "extends": ["../.eslintrc.json"],
   "parser": "@babel/eslint-parser",
   "plugins": ["react", "react-hooks", "prettier", "testing-library", "anti-trojan-source"],
   "rules": {
-    "import/named": "error",
-    "import/order": [
-      "error",
-      {
-        "newlines-between": "always",
-        "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
-        "alphabetize": {
-          "order": "asc"
-        }
-      }
-    ],
-    "jsx-quotes": ["error", "prefer-single"],
     "new-cap": [
       "error",
       {
-        "capIsNewExceptions": ["HTML.Comment", "HTML.Raw", "HTML.DIV", "SHA256"]
+        "capIsNewExceptions": ["SHA256"]
       }
     ],
     "prefer-arrow-callback": [
@@ -28,7 +16,6 @@
         "allowNamedFunctions": true
       }
     ],
-    "prettier/prettier": 2,
     "react-hooks/exhaustive-deps": [
       "warn",
       {
@@ -99,6 +86,8 @@
           }
         ],
         "@typescript-eslint/no-extra-parens": "off",
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off",
         "import/order": [
           "error",
           {
@@ -112,7 +101,7 @@
         "new-cap": [
           "error",
           {
-            "capIsNewExceptions": ["HTML.Comment", "HTML.Raw", "HTML.DIV", "SHA256"]
+            "capIsNewExceptions": ["SHA256"]
           }
         ],
 				"no-empty-function": "off",
@@ -144,13 +133,6 @@
       }
     },
     {
-      "files": ["**/*.stories.js", "**/*.stories.jsx", "**/*.stories.ts", "**/*.stories.tsx"],
-      "rules": {
-        "react/display-name": "off",
-        "react/no-multi-comp": "off"
-      }
-    },
-    {
       "files": ["**/*.tests.js", "**/*.tests.ts", "**/*.spec.ts", "**/*.spec.tsx"],
       "extends": ["plugin:testing-library/react"],
       "rules": {
@@ -161,13 +143,6 @@
       },
       "env": {
         "mocha": true
-      }
-    },
-    {
-      "files": ["**/*.stories.ts", "**/*.stories.tsx"],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/explicit-module-boundary-types": "off"
       }
     }
   ]

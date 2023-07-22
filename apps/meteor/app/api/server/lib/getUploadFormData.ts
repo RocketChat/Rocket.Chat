@@ -1,9 +1,9 @@
 import type { Readable } from 'stream';
 
-import type { Request } from 'express';
-import busboy from 'busboy';
-import type { ValidateFunction } from 'ajv';
 import { MeteorError } from '@rocket.chat/core-services';
+import type { ValidateFunction } from 'ajv';
+import busboy from 'busboy';
+import type { Request } from 'express';
 
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };

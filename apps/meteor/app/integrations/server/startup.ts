@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Integrations } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { triggerHandler } from './lib/triggerHandler';
 

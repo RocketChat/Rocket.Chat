@@ -5,8 +5,8 @@ import URL from 'url';
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import type { S3Options } from '../../ufs/AmazonS3/server';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {

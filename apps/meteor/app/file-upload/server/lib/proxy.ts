@@ -1,11 +1,11 @@
 import http from 'http';
 import URL from 'url';
 
-import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import type createServer from 'connect';
+import { WebApp } from 'meteor/webapp';
 
 import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';

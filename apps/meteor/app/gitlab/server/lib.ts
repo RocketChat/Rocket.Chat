@@ -1,9 +1,9 @@
+import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { OauthConfig } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 const config: OauthConfig = {
 	serverURL: 'https://gitlab.com',

@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
-import * as Mailer from '../../../../mailer/server/api';
-import { settings } from '../../../../settings/server';
-import { metrics } from '../../../../metrics/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getURL } from '../../../../utils/server/getURL';
-import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../../server/lib/i18n';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import * as Mailer from '../../../../mailer/server/api';
+import { metrics } from '../../../../metrics/server';
+import { settings } from '../../../../settings/server';
+import { getURL } from '../../../../utils/server/getURL';
 
 let advice = '';
 let goToMessage = '';

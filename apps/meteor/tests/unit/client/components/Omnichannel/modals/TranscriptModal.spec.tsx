@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import { expect, spy } from 'chai';
+import React from 'react';
 
 import TranscriptModal from '../../../../../../client/components/Omnichannel/modals/TranscriptModal';
 

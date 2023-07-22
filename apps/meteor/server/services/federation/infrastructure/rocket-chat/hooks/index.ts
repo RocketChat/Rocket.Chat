@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from '@rocket.chat/core-typings';
 
-import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { settings } from '../../../../../../app/settings/server';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
+import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {

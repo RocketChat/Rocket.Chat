@@ -2,11 +2,11 @@ import type { IOmnichannelRoom, IOmnichannelSystemMessage, IMessage } from '@roc
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
-import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 type AdditionalFields =
 	| Record<string, unknown>

@@ -1,10 +1,10 @@
 import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
+import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {

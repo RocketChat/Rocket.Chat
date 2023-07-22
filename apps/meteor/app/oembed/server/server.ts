@@ -1,21 +1,21 @@
-import URL from 'url';
 import querystring from 'querystring';
+import URL from 'url';
 
-import { camelCase } from 'change-case';
-import _ from 'underscore';
-import iconv from 'iconv-lite';
-import ipRangeCheck from 'ip-range-check';
-import he from 'he';
-import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
 import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { camelCase } from 'change-case';
+import he from 'he';
+import iconv from 'iconv-lite';
+import ipRangeCheck from 'ip-range-check';
+import jschardet from 'jschardet';
+import _ from 'underscore';
 
-import { Logger } from '../../logger/server';
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
+import { Logger } from '../../logger/server';
+import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
 
 const log = new Logger('OEmbed');

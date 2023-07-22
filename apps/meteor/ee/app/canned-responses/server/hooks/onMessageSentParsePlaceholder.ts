@@ -1,7 +1,7 @@
-import get from 'lodash.get';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Rooms, Users } from '@rocket.chat/models';
+import get from 'lodash.get';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';

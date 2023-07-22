@@ -1,12 +1,12 @@
-import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 
-import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { sendFileLivechatMessage } from '../../../livechat/server/methods/sendFileLivechatMessage';
+import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { sendFileLivechatMessage } from '../../../livechat/server/methods/sendFileLivechatMessage';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {

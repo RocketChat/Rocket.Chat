@@ -1,9 +1,9 @@
+import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import type { OauthConfig } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/client';
 import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
+import { settings } from '../../settings/client';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/

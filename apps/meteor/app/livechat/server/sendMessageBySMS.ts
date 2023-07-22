@@ -1,6 +1,6 @@
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
-import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';

@@ -1,9 +1,9 @@
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
+import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
-import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';

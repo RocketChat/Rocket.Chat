@@ -9,9 +9,9 @@
  * happens in /etc/asterisk/manager.conf file.
  *
  */
-import type { IConnection } from '../IConnection';
 import { Logger } from '../../../../../lib/logger/Logger';
 import type { Command } from '../Command';
+import type { IConnection } from '../IConnection';
 import type { CallbackContext } from './CallbackContext';
 
 /**

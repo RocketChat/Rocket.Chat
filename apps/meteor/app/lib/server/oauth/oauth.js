@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 

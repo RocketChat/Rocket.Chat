@@ -1,17 +1,17 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
-import { ChromeScreenShare } from './screenShare';
-import { Notifications } from '../../notifications/client';
-import { settings } from '../../settings/client';
-import { ChatSubscription } from '../../models/client';
-import { WEB_RTC_EVENTS } from '../lib/constants';
-import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import { ChatSubscription } from '../../models/client';
+import { Notifications } from '../../notifications/client';
+import { settings } from '../../settings/client';
 import { t } from '../../utils/lib/i18n';
+import { WEB_RTC_EVENTS } from '../lib/constants';
+import { ChromeScreenShare } from './screenShare';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {

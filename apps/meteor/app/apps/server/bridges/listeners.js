@@ -1,5 +1,5 @@
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
 	constructor(orch) {

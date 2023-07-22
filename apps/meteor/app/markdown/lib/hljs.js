@@ -1,7 +1,7 @@
 import hljs from 'hljs9/lib/highlight';
 import clean from 'hljs9/lib/languages/clean';
-import markdown from 'hljs9/lib/languages/markdown';
 import javascript from 'hljs9/lib/languages/javascript';
+import markdown from 'hljs9/lib/languages/markdown';
 
 hljs.registerLanguage('markdown', markdown);
 hljs.registerLanguage('clean', clean);

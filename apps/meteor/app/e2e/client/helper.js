@@ -1,7 +1,7 @@
 /* eslint-disable new-cap, no-proto */
 
-import ByteBuffer from 'bytebuffer';
 import { Random } from '@rocket.chat/random';
+import ByteBuffer from 'bytebuffer';
 
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 

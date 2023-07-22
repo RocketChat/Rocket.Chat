@@ -1,13 +1,13 @@
-import url from 'url';
 import type http from 'http';
+import url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../settings/server';
 import { Logger } from '../../logger/server';
+import { settings } from '../../settings/server';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;

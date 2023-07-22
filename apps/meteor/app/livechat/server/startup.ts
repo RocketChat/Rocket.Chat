@@ -1,21 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { callbacks } from '../../../lib/callbacks';
+import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
+import { i18n } from '../../../server/lib/i18n';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings/server';
-import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
+import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
-import { i18n } from '../../../server/lib/i18n';
-import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));

@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
-import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
+import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 
 const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/messages', {
 	'@rocket.chat/random': {

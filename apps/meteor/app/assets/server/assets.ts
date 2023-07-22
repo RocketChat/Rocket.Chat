@@ -1,23 +1,23 @@
 import crypto from 'crypto';
 import type { ServerResponse, IncomingMessage } from 'http';
 
+import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { NextHandleFunction } from 'connect';
+import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import { WebAppHashing } from 'meteor/webapp-hashing';
-import _ from 'underscore';
-import sizeOf from 'image-size';
 import sharp from 'sharp';
-import type { NextHandleFunction } from 'connect';
-import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import _ from 'underscore';
 
-import { settings, settingsRegistry } from '../../settings/server';
-import { getURL } from '../../utils/server/getURL';
-import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { settings, settingsRegistry } from '../../settings/server';
+import { getExtension } from '../../utils/lib/mimeTypes';
+import { getURL } from '../../utils/server/getURL';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',

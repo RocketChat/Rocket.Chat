@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
+import { router } from '../../../../client/providers/RouterProvider';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { router } from '../../../../client/providers/RouterProvider';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {

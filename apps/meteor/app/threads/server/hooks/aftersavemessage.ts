@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
-import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { settings } from '../../../settings/server';
+import { reply } from '../functions';
 
 async function notifyUsersOnReply(message: IMessage, replies: string[], room: IRoom) {
 	// skips this callback if the message was edited

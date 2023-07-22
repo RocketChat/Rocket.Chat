@@ -1,7 +1,7 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { MongoInternals } from 'meteor/mongo';
 import type { ObjectId } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
-import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';

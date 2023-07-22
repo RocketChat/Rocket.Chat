@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
-import { password, adminUsername } from '../../data/user';
-import { deleteRoom } from '../../data/rooms.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { password, adminUsername } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);

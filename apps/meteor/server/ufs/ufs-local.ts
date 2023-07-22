@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { stat, unlink } from 'fs/promises';
 
-import mkdirp from 'mkdirp';
 import type { IUpload } from '@rocket.chat/core-typings';
+import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';

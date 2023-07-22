@@ -4,8 +4,8 @@ import URL from 'url';
 
 import _ from 'underscore';
 
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings/server';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {

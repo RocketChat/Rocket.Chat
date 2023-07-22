@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { t } from '../../../utils/lib/i18n';
 
 Meteor.startup(function () {

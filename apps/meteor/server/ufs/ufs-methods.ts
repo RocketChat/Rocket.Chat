@@ -1,8 +1,8 @@
 import fs from 'fs';
 
+import type { IUpload } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from './ufs';
 

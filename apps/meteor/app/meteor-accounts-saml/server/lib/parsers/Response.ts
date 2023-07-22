@@ -1,12 +1,12 @@
 import xmldom from '@xmldom/xmldom';
-import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
+import xmlenc from 'xml-encryption';
 
-import { SAMLUtils } from '../Utils';
-import { StatusCode } from '../constants';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { IResponseValidateCallback } from '../../definition/callbacks';
-import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import { SAMLUtils } from '../Utils';
+import { StatusCode } from '../constants';
 
 type XmlParent = Element | Document;
 

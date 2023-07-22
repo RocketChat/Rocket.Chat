@@ -1,14 +1,14 @@
-import stream from 'stream';
 import type { ReadStream } from 'fs';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
+import stream from 'stream';
 
+import type { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 import mkdirp from 'mkdirp';
 import type { GridFSBucketReadStream } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
-import type { ObjectId } from 'bson';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 

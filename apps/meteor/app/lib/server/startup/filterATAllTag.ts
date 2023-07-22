@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
+import _ from 'underscore';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 callbacks.add(
 	'beforeSaveMessage',

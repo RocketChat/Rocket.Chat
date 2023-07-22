@@ -1,9 +1,9 @@
-import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;

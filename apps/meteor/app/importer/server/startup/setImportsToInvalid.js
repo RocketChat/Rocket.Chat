@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Imports, RawImports } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ProgressStep } from '../../lib/ImporterProgressStep';

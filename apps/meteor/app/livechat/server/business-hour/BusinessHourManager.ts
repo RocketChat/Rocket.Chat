@@ -1,14 +1,14 @@
-import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatDepartment, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
-import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
+import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();

@@ -1,6 +1,6 @@
-import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
+import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
