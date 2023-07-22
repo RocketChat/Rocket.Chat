@@ -12,7 +12,6 @@ import {
 	Button,
 	ButtonGroup,
 	Box,
-	Icon,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -500,8 +499,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch mbs='x8'>
-					<Button danger disabled={!canDelete || isFederated} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+					<Button icon='trash' danger disabled={!canDelete || isFederated} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

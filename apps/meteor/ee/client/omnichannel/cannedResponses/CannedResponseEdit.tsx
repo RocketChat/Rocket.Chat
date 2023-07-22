@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -133,8 +133,8 @@ const CannedResponseEdit: FC<{
 		<Page>
 			<Page.Header title={isNew ? t('New_CannedResponse') : t('Edit_CannedResponse')}>
 				<ButtonGroup>
-					<Button onClick={handleReturn}>
-						<Icon name='back' /> {t('Back')}
+					<Button icon='back' onClick={handleReturn}>
+						{t('Back')}
 					</Button>
 					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}

@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	Icon,
 	States,
 	StatesAction,
 	StatesActions,
@@ -62,8 +61,8 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb='x8'>
-						<Icon name='send' size='x16' /> {t('Send')}
+					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb='x8'>
+						{t('Send')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
