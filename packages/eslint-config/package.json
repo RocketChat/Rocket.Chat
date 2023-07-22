@@ -5,8 +5,8 @@
 	"devDependencies": {
 		"@babel/eslint-parser": "~7.22.5",
 		"@types/prettier": "^2.6.3",
-		"@typescript-eslint/eslint-plugin": "~5.60.0",
-		"@typescript-eslint/parser": "~5.60.0",
+		"@typescript-eslint/eslint-plugin": "~5.60.1",
+		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
 		"eslint-config-prettier": "~8.8.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
