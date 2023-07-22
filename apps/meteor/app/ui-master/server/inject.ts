@@ -6,7 +6,7 @@ import { WebApp } from 'meteor/webapp';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 
-import { getURL } from '../../utils/server';
+import { getURL } from '../../utils/server/getURL';
 
 type Injection =
 	| string
