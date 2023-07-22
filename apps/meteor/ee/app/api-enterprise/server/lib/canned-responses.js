@@ -129,7 +129,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 		return CannedResponse.findOneById(_id);
 	}
 
-	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 
 	const filter = {
 		_id,
