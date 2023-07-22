@@ -10,7 +10,6 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/eslint": "^8.40.2",
 		"@types/node": "^16.18.36",
 		"typescript": "^5.1.3"
 	},

@@ -44,7 +44,6 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.0",
-		"@types/eslint": "~8.40.2",
 		"@types/meteor": "^2.9.2",
 		"@types/node": "^14.18.51",
 		"@types/polka": "^0.5.4",
