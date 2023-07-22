@@ -378,7 +378,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', async function () {
+	describe('[/channels.files]', async () => {
 		await testFileUploads('channels.files', channel);
 	});
 

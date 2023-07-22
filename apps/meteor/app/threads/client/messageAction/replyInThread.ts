@@ -7,7 +7,7 @@ import { router } from '../../../../client/providers/RouterProvider';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('reply-in-thread');

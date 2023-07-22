@@ -49,14 +49,14 @@ export async function ufsComplete(fileId: string, storeName: string): Promise<IU
 			});
 
 			// Clean upload if error occurs
-			rs.on('error', function (err) {
+			rs.on('error', (err) => {
 				console.error(err);
 				void store.removeById(fileId);
 				reject(err);
 			});
 
 			// Save file in the store
-			await store.write(rs, fileId, function (err, file) {
+			await store.write(rs, fileId, (err, file) => {
 				removeTempFile();
 
 				if (err) {

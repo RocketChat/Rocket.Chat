@@ -117,7 +117,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	const { headers: receivedHeaders } = options;
 
 	if (receivedHeaders) {
-		Object.keys(receivedHeaders).forEach(function (key) {
+		Object.keys(receivedHeaders).forEach((key) => {
 			headers[key] = receivedHeaders[key];
 		});
 	}

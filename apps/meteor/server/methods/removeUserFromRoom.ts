@@ -78,7 +78,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		await Team.removeMember(room.teamId, removedUser._id);
 	}
 
-	setImmediate(function () {
+	setImmediate(() => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 	});
 

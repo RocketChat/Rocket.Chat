@@ -99,7 +99,7 @@ const handleAfterCloseRoom = async (params: LivechatCloseCallbackParams): Promis
 	return params;
 };
 
-settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
+settings.watch('Livechat_auto_transfer_chat_timeout', (value) => {
 	autoTransferTimeout = value as number;
 	if (!autoTransferTimeout || autoTransferTimeout === 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');

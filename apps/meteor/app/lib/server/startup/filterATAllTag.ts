@@ -11,7 +11,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 
 callbacks.add(
 	'beforeSaveMessage',
-	async function (message) {
+	async (message) => {
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
 		if (isEditedMessage(message) || (message.ts && Math.abs(moment(message.ts).diff(moment())) > 60000)) {

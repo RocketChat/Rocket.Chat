@@ -26,8 +26,8 @@ const config: OauthConfig = {
 
 const Drupal = new CustomOAuth('drupal', config);
 
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		if (settings.get('API_Drupal_URL')) {
 			config.serverURL = settings.get('API_Drupal_URL');
 			Drupal.configure(config);

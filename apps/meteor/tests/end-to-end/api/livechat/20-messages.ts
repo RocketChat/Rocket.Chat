@@ -13,7 +13,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - messages', function () {
+describe('LIVECHAT - messages', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

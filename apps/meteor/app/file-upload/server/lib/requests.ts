@@ -3,7 +3,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { FileUpload } from './FileUpload';
 
-WebApp.connectHandlers.use(FileUpload.getPath(), async function (req, res, next) {
+WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url || '');
 
 	if (match?.[1]) {

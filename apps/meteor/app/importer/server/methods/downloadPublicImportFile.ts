@@ -13,7 +13,7 @@ import { RocketChatImportFileInstance } from '../startup/store';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
 	const protocol = fileUrl.startsWith('https') ? https : http;
-	protocol.get(fileUrl, function (response) {
+	protocol.get(fileUrl, (response) => {
 		response.pipe(writeStream);
 	});
 }

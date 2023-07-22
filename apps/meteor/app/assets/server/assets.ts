@@ -234,8 +234,8 @@ class RocketChatAssetsClass {
 		await RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on('end', function () {
-			return setTimeout(async function () {
+		ws.on('end', () => {
+			return setTimeout(async () => {
 				const key = `Assets_${asset}`;
 				const value = {
 					url: `assets/${asset}.${extension}`,

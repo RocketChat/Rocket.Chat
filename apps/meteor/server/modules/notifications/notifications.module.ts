@@ -363,7 +363,7 @@ export class NotificationsModule {
 			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
-		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
+		this.streamLivechatRoom.allowRead(async (roomId, extraData) => {
 			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(roomId, {
 				projection: { _id: 0, t: 1, v: 1 },
 			});

@@ -434,7 +434,7 @@ class WebRTCClass {
 							if (this.navigator === 'chrome') {
 								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
 								try {
-									chrome.webstore.install(url, refresh, function () {
+									chrome.webstore.install(url, refresh, () => {
 										window.open(url);
 										refresh();
 									});
@@ -556,7 +556,7 @@ class WebRTCClass {
 
 	setAudioEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getAudioTracks().forEach(function (audio) {
+			this.localStream.getAudioTracks().forEach((audio) => {
 				audio.enabled = enabled;
 			});
 			this.audioEnabled.set(enabled);
@@ -580,7 +580,7 @@ class WebRTCClass {
 
 	setVideoEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getVideoTracks().forEach(function (video) {
+			this.localStream.getVideoTracks().forEach((video) => {
 				video.enabled = enabled;
 			});
 			this.videoEnabled.set(enabled);
@@ -966,8 +966,8 @@ const WebRTC = new (class {
 	}
 })();
 
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
 				if (data.room == null) {

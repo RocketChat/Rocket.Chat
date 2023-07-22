@@ -44,7 +44,7 @@ export class LocalStore extends Store {
 		const { path } = options;
 		const { writeMode } = options;
 
-		fs.stat(path, function (err) {
+		fs.stat(path, (err) => {
 			if (err) {
 				// Create the directory
 				mkdirp(path, { mode })
@@ -56,7 +56,7 @@ export class LocalStore extends Store {
 					});
 			} else {
 				// Set directory permissions
-				fs.chmod(path, mode, function (err) {
+				fs.chmod(path, mode, (err) => {
 					err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
 				});
 			}

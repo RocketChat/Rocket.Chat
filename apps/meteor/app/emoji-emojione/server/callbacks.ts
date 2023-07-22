@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	callbacks.add(
 		'beforeSendMessageNotifications',
 		(message) => emojione.shortnameToUnicode(message),

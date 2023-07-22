@@ -16,11 +16,11 @@ const businessHours = {
 	Single: new SingleBusinessHourBehavior(),
 };
 
-settings.change('Livechat_max_queue_wait_time', async function () {
+settings.change('Livechat_max_queue_wait_time', async () => {
 	await updateQueueInactivityTimeout();
 });
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	settings.watch('Livechat_abandoned_rooms_action', async (value) => {
 		await updatePredictedVisitorAbandonment();
 		if (!value || value === 'none') {

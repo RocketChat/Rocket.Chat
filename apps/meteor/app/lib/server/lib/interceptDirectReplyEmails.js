@@ -98,16 +98,16 @@ class POP3Intercepter {
 		});
 
 		// invalid server state
-		this.pop3.on('invalid-state', function (cmd) {
+		this.pop3.on('invalid-state', (cmd) => {
 			console.log(`Invalid state. You tried calling ${cmd}`);
 		});
 
-		this.pop3.on('error', function (cmd) {
+		this.pop3.on('error', (cmd) => {
 			console.log(`error state. You tried calling ${cmd}`);
 		});
 
 		// locked => command already running, not finished yet
-		this.pop3.on('locked', function (cmd) {
+		this.pop3.on('locked', (cmd) => {
 			console.log(`Current command has not finished yet. You tried calling ${cmd}`);
 		});
 	}

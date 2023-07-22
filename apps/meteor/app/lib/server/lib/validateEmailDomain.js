@@ -12,7 +12,7 @@ const dnsResolveMx = util.promisify(dns.resolveMx);
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];
 
-settings.watch('Accounts_BlockedDomainsList', function (value) {
+settings.watch('Accounts_BlockedDomainsList', (value) => {
 	if (!value) {
 		emailDomainBlackList = [];
 		return;
@@ -23,7 +23,7 @@ settings.watch('Accounts_BlockedDomainsList', function (value) {
 		.filter(Boolean)
 		.map((domain) => domain.trim());
 });
-settings.watch('Accounts_AllowedDomainsList', function (value) {
+settings.watch('Accounts_AllowedDomainsList', (value) => {
 	if (!value) {
 		emailDomainWhiteList = [];
 		return;

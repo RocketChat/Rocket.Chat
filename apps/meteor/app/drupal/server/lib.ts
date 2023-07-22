@@ -25,8 +25,8 @@ const config: OauthConfig = {
 
 const Drupal = new CustomOAuth('drupal', config);
 
-Meteor.startup(function () {
-	settings.watch<string>('API_Drupal_URL', function (value) {
+Meteor.startup(() => {
+	settings.watch<string>('API_Drupal_URL', (value) => {
 		config.serverURL = value;
 		Drupal.configure(config);
 	});

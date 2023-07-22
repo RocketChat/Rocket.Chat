@@ -20,8 +20,8 @@ const config: OauthConfig = {
 };
 
 const GitHubEnterprise = new CustomOAuth('github_enterprise', config);
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		if (settings.get('API_GitHub_Enterprise_URL')) {
 			config.serverURL = settings.get('API_GitHub_Enterprise_URL');
 			GitHubEnterprise.configure(config);

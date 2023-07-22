@@ -276,7 +276,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (user.type !== 'visitor') {
-			setImmediate(function () {
+			setImmediate(() => {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -368,7 +368,7 @@ const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	setImmediate(function () {
+	setImmediate(() => {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
@@ -389,7 +389,7 @@ Accounts.validateLoginAttempt(function (...args) {
 	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -405,7 +405,7 @@ Accounts.validateNewUser(function (user) {
 	return true;
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}

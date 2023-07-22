@@ -44,7 +44,7 @@ oauth2server.app.disable('x-powered-by');
 
 WebApp.connectHandlers.use(oauth2server.app);
 
-oauth2server.app.get('/oauth/userinfo', async function (req: Request, res: Response) {
+oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	if (req.headers.authorization == null) {
 		return res.status(401).send('No token');
 	}

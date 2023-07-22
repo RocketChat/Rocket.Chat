@@ -157,7 +157,7 @@ export const MessageAction = new (class {
 	}
 
 	getButtonsByGroup = mem(
-		function (group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
+		(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList => {
 			return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 		},
 		{ maxAge: 1000 },

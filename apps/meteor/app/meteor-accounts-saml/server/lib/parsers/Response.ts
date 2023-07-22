@@ -210,7 +210,7 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function (err, result) {
+			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
 					SAMLUtils.error(err);
 				}

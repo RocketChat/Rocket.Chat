@@ -6,7 +6,7 @@ import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (
 			!settings.get('Livechat_abandoned_rooms_action') ||
 			settings.get('Livechat_abandoned_rooms_action') === 'none' ||

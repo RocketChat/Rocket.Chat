@@ -20,7 +20,7 @@ const config = {
 const Dolphin = new CustomOAuth('dolphin', config);
 
 Meteor.startup(() =>
-	Tracker.autorun(function () {
+	Tracker.autorun(() => {
 		if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 			config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 			return Dolphin.configure(config);

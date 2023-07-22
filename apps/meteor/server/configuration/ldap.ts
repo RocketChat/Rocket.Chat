@@ -5,7 +5,7 @@ import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
 // Register ldap login handler
-Accounts.registerLoginHandler('ldap', async function (loginRequest: Record<string, any>) {
+Accounts.registerLoginHandler('ldap', async (loginRequest: Record<string, any>) => {
 	if (!loginRequest.ldap || !loginRequest.ldapOptions) {
 		return undefined;
 	}

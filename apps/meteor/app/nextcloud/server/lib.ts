@@ -32,6 +32,6 @@ const fillServerURL = _.debounce((): void => {
 	return Nextcloud.configure(config);
 }, 1000);
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	settings.watch('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
 });

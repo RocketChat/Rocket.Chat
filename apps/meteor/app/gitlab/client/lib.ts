@@ -19,8 +19,8 @@ const config: OauthConfig = {
 
 const Gitlab = new CustomOAuth('gitlab', config);
 
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		let anyChange = false;
 		if (settings.get('API_Gitlab_URL')) {
 			config.serverURL = settings.get('API_Gitlab_URL').trim().replace(/\/*$/, '');

@@ -33,7 +33,7 @@ if (emoji.packages.emojione) {
 	}
 
 	// Additional settings -- ascii emojis
-	Meteor.startup(async function () {
+	Meteor.startup(async () => {
 		if ((await isSetNotNull(() => emoji.packages.emojione)) && emoji.packages.emojione) {
 			if (await isSetNotNull(() => getUserPreference(Meteor.userId() as string, 'convertAsciiEmoji'))) {
 				emoji.packages.emojione.ascii = await getUserPreference(Meteor.userId() as string, 'convertAsciiEmoji');

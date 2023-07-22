@@ -127,7 +127,7 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
-		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
+		const extensions = _.sortBy(this.result.endpoints, (o: any) => {
 			return o.extension;
 		});
 		this.returnResolve({ result: extensions } as IVoipConnectorResult);

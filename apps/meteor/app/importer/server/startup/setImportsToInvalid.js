@@ -13,7 +13,7 @@ async function runDrop(fn) {
 	}
 }
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	const lastOperation = await Imports.findLastImport();
 	let idToKeep = false;
 

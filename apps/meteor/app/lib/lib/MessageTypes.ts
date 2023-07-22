@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 // import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,

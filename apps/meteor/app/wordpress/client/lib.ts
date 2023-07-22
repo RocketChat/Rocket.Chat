@@ -73,8 +73,8 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 	return result;
 }, 100);
 
-Meteor.startup(function () {
-	return Tracker.autorun(function () {
+Meteor.startup(() => {
+	return Tracker.autorun(() => {
 		return fillSettings();
 	});
 });

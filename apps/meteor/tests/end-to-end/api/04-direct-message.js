@@ -331,7 +331,7 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	describe('[/im.files]', async function () {
+	describe('[/im.files]', async () => {
 		await testFileUploads('im.files', directMessage, 'invalid-channel');
 	});
 

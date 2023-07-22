@@ -41,7 +41,7 @@ async function getScopes(accessToken) {
 	}
 }
 
-registerAccessTokenService('google', async function (options) {
+registerAccessTokenService('google', async (options) => {
 	check(
 		options,
 		Match.ObjectIncluding({

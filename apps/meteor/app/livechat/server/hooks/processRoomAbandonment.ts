@@ -72,7 +72,7 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 
 callbacks.add(
 	'livechat.closeRoom',
-	async function (params) {
+	async (params) => {
 		const { room } = params;
 
 		if (!isOmnichannelRoom(room)) {

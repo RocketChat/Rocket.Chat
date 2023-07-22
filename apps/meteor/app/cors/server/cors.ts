@@ -21,7 +21,7 @@ settings.watch<boolean>(
 	}),
 );
 
-WebApp.rawConnectHandlers.use(function (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -93,7 +93,7 @@ const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
 
-WebApp.httpServer.addListener('request', function (req, res, ...args) {
+WebApp.httpServer.addListener('request', (req, res, ...args) => {
 	const next = () => {
 		for (const oldListener of oldHttpServerListeners) {
 			oldListener.apply(WebApp.httpServer, [req, res, ...args]);

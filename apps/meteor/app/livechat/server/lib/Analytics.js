@@ -477,7 +477,7 @@ export const Analytics = {
 		 * @param  {Boolean} [inv=false] reverse sort
 		 */
 		sortByValue(data, inv = false) {
-			data.sort(function (a, b) {
+			data.sort((a, b) => {
 				// sort array
 				if (parseFloat(a.value) > parseFloat(b.value)) {
 					return inv ? -1 : 1; // if inv, reverse sort

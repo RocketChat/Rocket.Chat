@@ -61,7 +61,7 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function () {
+const configure = _.debounce(() => {
 	const Bucket = settings.get<string>('FileUpload_S3_Bucket');
 	const Acl = settings.get<string>('FileUpload_S3_Acl');
 	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');

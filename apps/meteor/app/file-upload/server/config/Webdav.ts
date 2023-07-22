@@ -43,7 +43,7 @@ const WebdavUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function () {
+const configure = _.debounce(() => {
 	const uploadFolderPath = settings.get('FileUpload_Webdav_Upload_Folder_Path');
 	const server = settings.get('FileUpload_Webdav_Server_URL');
 	const username = settings.get('FileUpload_Webdav_Username');

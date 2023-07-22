@@ -113,7 +113,7 @@ export class PendingFileImporter extends Base {
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);
 
-					requestModule.get(url, function (res) {
+					requestModule.get(url, (res) => {
 						const contentType = res.headers['content-type'];
 						if (!details.type && contentType) {
 							details.type = contentType;

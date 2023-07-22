@@ -40,7 +40,7 @@ const openCenteredPopup = (url: string, width: number, height: number) => {
 
 	const popup = openCenteredPopup(popupUrl, popupWidth, popupHeight);
 
-	const checkPopupOpen = setInterval(function () {
+	const checkPopupOpen = setInterval(() => {
 		let popupClosed;
 		try {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)

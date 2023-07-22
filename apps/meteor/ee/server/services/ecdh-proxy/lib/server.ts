@@ -63,7 +63,7 @@ const proxy = async function (
 		delete options.headers['content-length'];
 	}
 
-	const connector = http.request(options, async function (serverResponse) {
+	const connector = http.request(options, async (serverResponse) => {
 		serverResponse.pause();
 		if (serverResponse.statusCode) {
 			res.writeHead(serverResponse.statusCode, serverResponse.headers);

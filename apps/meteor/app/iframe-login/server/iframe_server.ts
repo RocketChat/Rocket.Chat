@@ -5,7 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-Accounts.registerLoginHandler('iframe', async function (result) {
+Accounts.registerLoginHandler('iframe', async (result) => {
 	if (!result.iframe) {
 		return;
 	}

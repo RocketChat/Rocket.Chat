@@ -38,7 +38,7 @@ import { streamToBuffer } from './streamToBuffer';
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.watch('FileUpload_MaxFileSize', async function (value: string) {
+settings.watch('FileUpload_MaxFileSize', async (value: string) => {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {

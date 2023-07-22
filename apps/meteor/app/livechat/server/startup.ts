@@ -21,7 +21,7 @@ Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	beforeLeaveRoomCallback.add(
-		function (user, room) {
+		(user, room) => {
 			if (!isOmnichannelRoom(room)) {
 				return;
 			}
@@ -37,7 +37,7 @@ Meteor.startup(async () => {
 
 	callbacks.add(
 		'beforeJoinRoom',
-		async function (user, room) {
+		async (user, room) => {
 			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user._id, 'view-l-room'))) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
@@ -72,7 +72,7 @@ Meteor.startup(async () => {
 		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
-	settings.watch<string>('Livechat_Routing_Method', function (value) {
+	settings.watch<string>('Livechat_Routing_Method', (value) => {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 

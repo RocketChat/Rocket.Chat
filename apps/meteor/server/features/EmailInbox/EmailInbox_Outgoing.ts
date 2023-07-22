@@ -187,7 +187,7 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message: IMessage, room: any) {
+	async (message: IMessage, room: any) => {
 		if (!room?.email?.inbox) {
 			return message;
 		}

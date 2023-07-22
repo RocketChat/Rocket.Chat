@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-settings.watch<boolean>('Push_enable', async function (enabled) {
+settings.watch<boolean>('Push_enable', async (enabled) => {
 	if (!enabled) {
 		return;
 	}

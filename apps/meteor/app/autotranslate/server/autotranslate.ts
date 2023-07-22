@@ -158,7 +158,7 @@ export abstract class AutoTranslate {
 
 	tokenizeEmojis(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
-		message.msg = message.msg.replace(/:[+\w\d]+:/g, function (match) {
+		message.msg = message.msg.replace(/:[+\w\d]+:/g, (match) => {
 			const token = `<i class=notranslate>{${count++}}</i>`;
 			message.tokens?.push({
 				token,
@@ -178,7 +178,7 @@ export abstract class AutoTranslate {
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(
 			new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'),
-			function (_match, pre, text, post) {
+			(_match, pre, text, post) => {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
 				message.tokens?.push({
 					token: pretoken,
@@ -198,7 +198,7 @@ export abstract class AutoTranslate {
 		// Support <http://link|Text>
 		message.msg = message.msg.replace(
 			new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'),
-			function (_match, pre, text, post) {
+			(_match, pre, text, post) => {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
 				message.tokens?.push({
 					token: pretoken,

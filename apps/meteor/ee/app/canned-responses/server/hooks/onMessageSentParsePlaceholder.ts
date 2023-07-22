@@ -64,7 +64,7 @@ const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoo
 	return message;
 };
 
-settings.watch('Canned_Responses_Enable', function (value) {
+settings.watch('Canned_Responses_Enable', (value) => {
 	if (!value) {
 		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
 		return;

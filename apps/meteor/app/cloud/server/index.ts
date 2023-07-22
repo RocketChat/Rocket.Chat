@@ -12,7 +12,7 @@ import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync: boolean;
 	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', async (value) => {

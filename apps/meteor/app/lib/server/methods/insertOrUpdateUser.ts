@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	insertOrUpdateUser: twoFactorRequired(async function (userData) {
+	insertOrUpdateUser: twoFactorRequired(async (userData) => {
 		check(userData, Object);
 
 		if (!Meteor.userId()) {

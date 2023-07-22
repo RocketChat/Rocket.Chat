@@ -23,7 +23,7 @@ const getMainMessageText = (message: IMessage): IMessage => {
 	return { ...newMessage };
 };
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',

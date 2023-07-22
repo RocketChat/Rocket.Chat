@@ -863,7 +863,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('[/groups.files]', async function () {
+	describe('[/groups.files]', async () => {
 		await testFileUploads('groups.files', group);
 	});
 

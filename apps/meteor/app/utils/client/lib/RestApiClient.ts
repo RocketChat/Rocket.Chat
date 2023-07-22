@@ -37,7 +37,7 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  * This middleware will throw the error object instead.
  * */
 
-APIClient.use(async function (request, next) {
+APIClient.use(async (request, next) => {
 	try {
 		return await next(...request);
 	} catch (error) {

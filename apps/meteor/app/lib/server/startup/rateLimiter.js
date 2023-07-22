@@ -62,7 +62,7 @@ RateLimiter.prototype.check = function (input) {
 	};
 
 	const matchedRules = self._findAllMatchingRules(input);
-	_.each(matchedRules, function (rule) {
+	_.each(matchedRules, (rule) => {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {
 			allowed: true,

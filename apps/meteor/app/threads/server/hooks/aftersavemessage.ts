@@ -65,15 +65,15 @@ export async function processThreads(message: IMessage, room: IRoom) {
 	return message;
 }
 
-Meteor.startup(function () {
-	settings.watch<boolean>('Threads_enabled', function (value) {
+Meteor.startup(() => {
+	settings.watch<boolean>('Threads_enabled', (value) => {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
 		callbacks.add(
 			'afterSaveMessage',
-			async function (message, room) {
+			async (message, room) => {
 				return processThreads(message, room);
 			},
 			callbacks.priority.LOW,

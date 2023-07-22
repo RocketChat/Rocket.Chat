@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-Tracker.autorun(function () {
+Tracker.autorun(() => {
 	const userId = Meteor.userId();
 
 	if (userId) {

@@ -14,7 +14,13 @@
 			{
 				"additionalHooks": "(useComponentDidUpdate)"
 			}
-		]
+		],
+		"prefer-arrow-callback": [
+      "error",
+      {
+        "allowNamedFunctions": true
+      }
+    ]
 	},
 	"overrides": [
 		{

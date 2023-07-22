@@ -5,7 +5,7 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { MessageAction } from '../../ui-utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',

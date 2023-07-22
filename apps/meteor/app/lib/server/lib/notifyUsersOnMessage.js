@@ -18,7 +18,7 @@ function messageContainsHighlight(message, highlights) {
 		return false;
 	}
 
-	return highlights.some(function (highlight) {
+	return highlights.some((highlight) => {
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});

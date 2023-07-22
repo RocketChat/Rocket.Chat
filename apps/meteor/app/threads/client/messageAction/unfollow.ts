@@ -8,7 +8,7 @@ import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { t } from '../../../utils/lib/i18n';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('unfollow-message');

@@ -11,7 +11,7 @@ export const findParentMessage = (() => {
 		resolve = r;
 	});
 
-	const getMessages = withDebouncing({ wait: 500 })(async function () {
+	const getMessages = withDebouncing({ wait: 500 })(async () => {
 		const _tmp = [...waiting];
 		waiting.length = 0;
 		resolve(callWithErrorHandling('getMessages', _tmp));

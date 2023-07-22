@@ -22,8 +22,8 @@ const config: OauthConfig = {
 
 const Tokenpass = new CustomOAuth('tokenpass', config);
 
-Meteor.startup(function () {
-	settings.watch<string>('API_Tokenpass_URL', function (value) {
+Meteor.startup(() => {
+	settings.watch<string>('API_Tokenpass_URL', (value) => {
 		config.serverURL = value;
 		Tokenpass.configure(config);
 	});

@@ -33,8 +33,8 @@ const fillServerURL = _.debounce((): void => {
 	return Nextcloud.configure(config);
 }, 100);
 
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		return fillServerURL();
 	});
 });

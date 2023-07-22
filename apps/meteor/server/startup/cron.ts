@@ -11,7 +11,7 @@ import { videoConferencesCron } from '../cron/videoConferences';
 
 const logger = new Logger('SyncedCron');
 
-Meteor.defer(async function () {
+Meteor.defer(async () => {
 	await startCron();
 
 	await oembedCron();

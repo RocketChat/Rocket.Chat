@@ -137,7 +137,7 @@ class WebdavStore extends UploadFS.Store {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);
 						writeStream.removeListener('newListener', newListenerCallback);
-						writeStream.on(event, function () {
+						writeStream.on(event, () => {
 							setTimeout(listener, 500);
 						});
 					});

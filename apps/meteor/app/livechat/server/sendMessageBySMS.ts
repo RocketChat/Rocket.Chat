@@ -9,7 +9,7 @@ import { callbackLogger } from './lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		callbackLogger.debug('Attempting to send SMS message');
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {

@@ -8,7 +8,7 @@ import { settings } from '../../../settings/server';
 
 export let RocketChatFileEmojiCustomInstance;
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	let storeType = 'GridFS';
 
 	if (settings.get('EmojiUpload_Storage_Type')) {
@@ -35,7 +35,7 @@ Meteor.startup(function () {
 		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use('/emoji-custom/', async function (req, res /* , next*/) {
+	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.emoji)) {

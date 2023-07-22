@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	saveSetting: twoFactorRequired(async function (_id, value, editor) {
+	saveSetting: twoFactorRequired(async (_id, value, editor) => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {

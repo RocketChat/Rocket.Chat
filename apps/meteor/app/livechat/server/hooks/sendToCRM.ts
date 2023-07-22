@@ -258,7 +258,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		// only call webhook if it is a livechat room
 		if (!isOmnichannelRoom(room) || !room?.v?.token) {
 			return message;

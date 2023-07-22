@@ -25,7 +25,7 @@ const getDefaultAgent = async (username?: string): Promise<SelectedAgent | null>
 	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
 };
 
-settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) {
+settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
@@ -78,7 +78,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 	);
 });
 
-settings.watch<boolean>('Omnichannel_contact_manager_routing', function (value) {
+settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 	contactManagerPreferred = value;
 });
 

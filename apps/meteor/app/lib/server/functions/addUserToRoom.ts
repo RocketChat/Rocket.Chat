@@ -107,7 +107,7 @@ export const addUserToRoom = async function (
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		process.nextTick(async function () {
+		process.nextTick(async () => {
 			// Add a new event, with an optional inviter
 			await callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 

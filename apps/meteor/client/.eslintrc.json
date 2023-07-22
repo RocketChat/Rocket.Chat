@@ -1,40 +1,6 @@
 {
   "root": true,
-  "extends": ["../.eslintrc.json"],
-  "parser": "@babel/eslint-parser",
-  "plugins": ["react", "react-hooks", "prettier", "testing-library", "anti-trojan-source"],
-  "rules": {
-    "new-cap": [
-      "error",
-      {
-        "capIsNewExceptions": ["SHA256"]
-      }
-    ],
-    "prefer-arrow-callback": [
-      "error",
-      {
-        "allowNamedFunctions": true
-      }
-    ],
-    "react-hooks/exhaustive-deps": [
-      "warn",
-      {
-        "additionalHooks": "(useComponentDidUpdate)"
-      }
-    ],
-    "anti-trojan-source/no-bidi": "error"
-  },
-  "settings": {
-    "import/resolver": {
-      "node": {
-        "extensions": [".js", ".ts", ".tsx"]
-      }
-    }
-  },
-  "env": {
-    "browser": true,
-    "es6": true
-  },
+  "extends": "../.eslintrc.json",
   "overrides": [
     {
       "files": ["**/*.ts", "**/*.tsx"],

@@ -12,7 +12,7 @@ import { settings } from '../../app/settings/server';
 import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {

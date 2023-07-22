@@ -75,10 +75,10 @@ export class GridFSStore extends UploadFS.Store {
 				contentType: file.type,
 			});
 			let finished = false;
-			writeStream.on('finish', function () {
+			writeStream.on('finish', () => {
 				finished = true;
 			});
-			writeStream.on('close', function () {
+			writeStream.on('close', () => {
 				if (!finished) {
 					writeStream.emit('finish');
 				}

@@ -89,6 +89,6 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 	return result;
 }, 1000);
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	return settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
 });

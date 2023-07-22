@@ -165,7 +165,7 @@ export async function setUserAvatar(
 
 	const avatarETag = etag || result?.etag || '';
 
-	setTimeout(async function () {
+	setTimeout(async () => {
 		if (service) {
 			await Users.setAvatarData(user._id, service, avatarETag);
 			void api.broadcast('user.avatarUpdate', {
