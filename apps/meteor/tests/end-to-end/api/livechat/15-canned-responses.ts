@@ -136,12 +136,12 @@ import { removeTag, saveTags } from '../../../data/livechat/tags';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);
 
-			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag.name }).expect(200);
 
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(1);
@@ -154,14 +154,14 @@ import { removeTag, saveTags } from '../../../data/livechat/tags';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);
 
 			await removeTag(tag._id);
 
-			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag.name }).expect(200);
 
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(0);
