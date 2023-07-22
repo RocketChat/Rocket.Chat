@@ -22,14 +22,16 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 	const boundingRect = innerContainer.getBoundingClientRect();
 
 	const { style } = usePosition(reference, target, {
-		placement: 'bottom-end',
+		placement: 'top-end',
 		container: innerContainer,
 	});
 
 	const left = `${parseFloat(String(style?.left ?? '0')) - boundingRect.left}px`;
 	const top = `${parseFloat(String(style?.top ?? '0')) - boundingRect.top}px`;
+	const maxHeight = "40vh";
+	const overflow = "scroll";
 
-	return useMemo(() => ({ ...style, left, top }), [style, left, top]);
+	return useMemo(() => ({ ...style, left, top, maxHeight, overflow}), [style, left, top, maxHeight, overflow]);
 };
 
 type DesktopToolboxDropdownProps = {
