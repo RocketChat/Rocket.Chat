@@ -129,7 +129,7 @@ export const LivechatEnterprise = {
 	async removeTag(_id: string) {
 		check(_id, String);
 
-		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
