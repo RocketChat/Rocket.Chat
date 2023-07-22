@@ -13,8 +13,8 @@
 		"test": "jest"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.22.5",
-		"@babel/preset-env": "~7.22.5",
+		"@babel/core": "~7.22.9",
+		"@babel/preset-env": "~7.22.9",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",

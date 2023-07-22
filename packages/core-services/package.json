@@ -3,9 +3,9 @@
 	"version": "0.0.4",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "^7.21.4",
-		"@babel/preset-env": "^7.21.4",
-		"@babel/preset-typescript": "^7.21.4",
+		"@babel/core": "~7.22.9",
+		"@babel/preset-env": "~7.22.9",
+		"@babel/preset-typescript": "~7.22.5",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/babel__core": "^7",
 		"@types/babel__preset-env": "^7",
