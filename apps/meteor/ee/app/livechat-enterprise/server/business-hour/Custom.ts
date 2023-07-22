@@ -5,6 +5,8 @@ import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.cha
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import { bhLogger } from '../lib/logger';
+import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 
 type IBusinessHoursExtraProperties = {
 	timezoneName: string;
@@ -101,18 +103,50 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(departmentsToRemove, businessHourId);
 	}
 
-	private async removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(departments: string[]): Promise<void> {
-		const oldBHIds = await (
-			await LivechatDepartment.findInIds(departments, {
-				projection: {
-					businessHourId: 1,
-				},
-			}).toArray()
-		)
-			.filter((dept) => dept?.businessHourId)
-			.map((dept) => dept.businessHourId);
+	private async removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(departmentIds: string[]): Promise<void> {
+		// we need to do 2 things here.
+		// 1st is to check if any of the departments are associated with any BH. If they are, then we need to remove
+		// that BH from all agents of that department.
+		// 2nd is to check if any of the departments are not associated with BH, meaning default BH
+		// is applied. So if default BH is open, then we need to remove it from all agents of that department.
+		const bhIdsConnectedToDepartment = [];
+		const departmentsWithoutBH = [];
 
-		await Users.closeAgentsBusinessHoursByBusinessHourIds(oldBHIds);
+		const departments = await LivechatDepartment.findInIds(departmentIds, {
+			projection: {
+				businessHourId: 1,
+			},
+		}).toArray();
+
+		for (const dept of departments) {
+			if (dept?.businessHourId) {
+				bhIdsConnectedToDepartment.push(dept.businessHourId);
+			} else {
+				departmentsWithoutBH.push(dept._id);
+			}
+		}
+		await Users.closeAgentsBusinessHoursByBusinessHourIds(bhIdsConnectedToDepartment);
+
+		// start of step 2
+		const defaultBusinessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			bhLogger.error('No default business hour found');
+			return;
+		}
+
+		const isDefaultBHActive = (await filterBusinessHoursThatMustBeOpened([defaultBusinessHour])).length > 0;
+		if (!isDefaultBHActive) {
+			bhLogger.debug('Default business hour is not active. No need to remove it from agents');
+			return;
+		}
+
+		const agentsConnectedToDefaultBH = await (
+			await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
+				projection: { agentId: 1 },
+			}).toArray()
+		).map((dept) => dept.agentId);
+
+		await Users.removeBusinessHourByAgentIds(agentsConnectedToDefaultBH, defaultBusinessHour._id);
 		await Users.updateLivechatStatusBasedOnBusinessHours();
 	}
 
