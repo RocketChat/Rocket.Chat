@@ -107,6 +107,7 @@ export const roomFields = {
 	ts: 1,
 	waitingResponse: 1,
 	queuedAt: 1,
+	verificationStatus: 1,
 
 	// Federation fields
 	federated: 1,

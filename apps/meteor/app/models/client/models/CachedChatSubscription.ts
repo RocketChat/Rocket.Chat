@@ -69,6 +69,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 				source: 1,
 				queuedAt: 1,
 				federated: 1,
+				verificationStatus: 1,
 			},
 		};
 

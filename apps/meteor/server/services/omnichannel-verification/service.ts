@@ -118,6 +118,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 		const visitorEmail = visitor.visitorEmails[0].address;
 		const { random, encryptedRandom, expire } = await this.generateRandomOTP();
+		this.logger.info(random);
 		await LivechatRooms.addEmailCodeByRoomId(room._id, encryptedRandom, expire);
 		await this.send2FAEmail(visitorEmail, random);
 	}

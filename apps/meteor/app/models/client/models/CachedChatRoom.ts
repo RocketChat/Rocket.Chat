@@ -69,6 +69,7 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 					ts: room.ts,
 					source: (room as IOmnichannelRoom | undefined)?.source,
 					queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
+					verificationStatus: (room as IOmnichannelRoom | undefined)?.verificationStatus,
 					federated: room.federated,
 					...(() => {
 						const name = room.name || sub.name;

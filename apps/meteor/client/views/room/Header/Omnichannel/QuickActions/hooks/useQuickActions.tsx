@@ -318,7 +318,7 @@ export const useQuickActions = (
 	const hasManagerRole = useRole('livechat-manager');
 
 	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
-	const visitorVerification = room?.verificationStatus === 'verified';
+	const isVisitorUnVerified = room?.verificationStatus === 'unVerified';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
@@ -346,7 +346,7 @@ export const useQuickActions = (
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			case QuickActionsEnum.VerifyUser:
-				return !!roomOpen && canVerifyUser && !visitorVerification;
+				return !!roomOpen && canVerifyUser && isVisitorUnVerified;
 			default:
 				break;
 		}
