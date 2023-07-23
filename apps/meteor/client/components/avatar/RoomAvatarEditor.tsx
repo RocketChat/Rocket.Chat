@@ -1,7 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -62,20 +62,18 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 				m='x12'
 			>
 				<ButtonGroup>
-					<Button disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
-						<Icon name='upload' size='x16' />
+					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
 						{t('Upload')}
 					</Button>
 
 					<Button
 						small
 						danger
+						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
 						disabled={roomAvatar === null || isRoomFederated(room) || disabled}
 						onClick={clickReset}
-					>
-						<Icon name='trash' size='x16' />
-					</Button>
+					/>
 				</ButtonGroup>
 			</Box>
 		</Box>

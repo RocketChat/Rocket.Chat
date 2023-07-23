@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { FC, HtmlHTMLAttributes } from 'react';
 import React from 'react';
@@ -10,8 +10,7 @@ type AgentInfoActionProps = {
 } & Omit<HtmlHTMLAttributes<HTMLElement>, 'is'>;
 
 const AgentInfoAction: FC<AgentInfoActionProps> = ({ icon, label, ...props }) => (
-	<Button data-qa={`AgentInfoAction-${label}`} title={label} {...props} mi='x4'>
-		<Icon name={icon} size='x20' mie='x4' />
+	<Button icon={icon} data-qa={`AgentInfoAction-${label}`} title={label} {...props} mi='x4'>
 		{label}
 	</Button>
 );

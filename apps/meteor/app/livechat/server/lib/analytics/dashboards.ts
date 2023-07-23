@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../settings/server';
 import { Livechat } from '../Livechat';
-import { secondsToHHMMSS } from '../../../../utils/server';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,

@@ -9,7 +9,7 @@ import type createServer from 'connect';
 
 import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';
-import { isDocker } from '../../../utils/server';
+import { isDocker } from '../../../utils/server/functions/isDocker';
 
 const logger = new Logger('UploadProxy');
 
