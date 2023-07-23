@@ -2,8 +2,8 @@ import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedCollection } from '../../../ui-cached-collection/client';
-import { ChatRoom } from './ChatRoom';
+import { CachedCollection } from '../../../ui-cached-collection/client/models/CachedCollection';
+import { CachedChatRoom } from './CachedChatRoom';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -72,7 +72,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 			},
 		};
 
-		const room = ChatRoom.findOne({ _id: subscription.rid }, options);
+		const room = CachedChatRoom.collection.findOne({ _id: subscription.rid }, options);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
