@@ -10,7 +10,7 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
 const generateSubscription = (
 	fname: string,
