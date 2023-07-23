@@ -73,6 +73,7 @@ export default function useCodeMirror(extensions?: Extension[], doc?: string) {
     });
 
     return () => view.current?.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element]);
 
   return { editor, changes, setValue };

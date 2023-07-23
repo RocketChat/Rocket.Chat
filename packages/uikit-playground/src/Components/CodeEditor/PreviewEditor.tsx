@@ -20,6 +20,7 @@ const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
       JSON.stringify(screens[activeScreen]?.actionPreview, undefined, 4),
       {}
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen]?.actionPreview]);
 
   return (

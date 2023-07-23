@@ -11,7 +11,6 @@ const ConnectionLine = ({
   toY: number;
   toPosition: string;
   connectionLineType: string;
-  connectionLineStyle?: any;
 }) => (
   <g>
     <path

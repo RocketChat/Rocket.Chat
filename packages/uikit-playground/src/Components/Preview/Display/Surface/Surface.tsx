@@ -46,6 +46,7 @@ const Surface: FC = () => {
       })),
       isChangeByDnd: false,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen]?.payload]);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ const Surface: FC = () => {
         })
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniqueBlocks]);
 
   const onDragEnd = ({ destination, source }: DropResult) => {

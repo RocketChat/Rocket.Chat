@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import {
   Avatar,
   Box,
@@ -9,10 +8,9 @@ import {
   ContextualbarFooter,
   ContextualbarHeader,
   ContextualbarTitle,
-  Margins,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
-import { CSSProperties, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
   <Contextualbar>

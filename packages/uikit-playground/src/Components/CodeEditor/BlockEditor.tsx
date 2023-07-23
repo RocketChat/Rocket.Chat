@@ -33,6 +33,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         // do nothing
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changes?.value]);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         // do nothing
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceValue]);
 
   useEffect(() => {
@@ -55,10 +57,12 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         {}
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen]?.payload, activeScreen]);
 
   useEffect(() => {
     setValue(JSON.stringify(screens[activeScreen]?.payload, undefined, 4), {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeScreen]);
 
   return (

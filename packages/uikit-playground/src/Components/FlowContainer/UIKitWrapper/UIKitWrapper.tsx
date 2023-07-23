@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { memo, useContext } from 'react';
+import { useContext } from 'react';
 import { Handle, Position } from 'reactflow';
 import './UIKitWrapper.scss';
 
@@ -49,4 +49,4 @@ const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
   );
 };
 
-export default memo(UIKitWrapper);
+export default UIKitWrapper;

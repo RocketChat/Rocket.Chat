@@ -9,7 +9,7 @@ import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 
 type CodeMirrorProps = {
-  extensions?: Extension[],
+  extensions?: Extension[];
 };
 
 const CodeEditor = ({ extensions }: CodeMirrorProps) => {
@@ -39,6 +39,7 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
         // do nothing
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changes?.value]);
 
   useEffect(() => {
@@ -52,12 +53,14 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
         // do nothing
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceValue]);
 
   useEffect(() => {
     if (!screens[activeScreen].changedByEditor) {
       setValue(JSON.stringify(screens[activeScreen].payload, undefined, 4), {});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen].payload]);
 
   return (

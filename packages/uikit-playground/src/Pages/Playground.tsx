@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Box } from '@rocket.chat/fuselage';
-import { useContext, type Fc } from 'react';
+import { useContext, type FC } from 'react';
 
 import ComponentSideBar from '../Components/ComponentSideBar';
 import CreateNewScreenContainer from '../Components/CreateNewScreen/CreateNewScreenContainer';

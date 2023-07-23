@@ -48,7 +48,6 @@ const SliderBtn: FC = () => {
         transition: var(--animation-default);
       `;
 
-  // eslint-disable-next-line no-nested-ternary
   const toggleStyle = !isMobile
     ? css`
         left: 0px;
@@ -71,8 +70,8 @@ const SliderBtn: FC = () => {
       width={sideBarToggle ? '100%' : '130px'}
       paddingInlineStart={'20px'}
       height={'40px'}
-      display='flex'
-      alignItems='center'
+      display="flex"
+      alignItems="center"
       justifyContent={'space-between'}
       onClick={() =>
         !sideBarToggle && dispatch(sidebarToggleAction(!sideBarToggle))
@@ -81,7 +80,7 @@ const SliderBtn: FC = () => {
       className={toggleStyle}
     >
       <Label
-        width='80px'
+        width="80px"
         className={
           isMobile && !sideBarToggle
             ? css`
@@ -94,11 +93,11 @@ const SliderBtn: FC = () => {
       </Label>
       {isMobile && (
         <Box
-          width='40px'
-          height='40px'
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
+          width="40px"
+          height="40px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           onClick={() =>
             sideBarToggle && dispatch(sidebarToggleAction(!sideBarToggle))
           }
@@ -106,7 +105,7 @@ const SliderBtn: FC = () => {
             cursor: pointer;
           `}
         >
-          <Box size='50%' bg='info' className={slideBtnAnimation} />
+          <Box size="50%" bg="info" className={slideBtnAnimation} />
         </Box>
       )}
     </Box>

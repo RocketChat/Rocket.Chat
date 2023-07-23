@@ -1,4 +1,4 @@
-import { Box, Button, Label } from '@rocket.chat/fuselage';
+import { Box, Label } from '@rocket.chat/fuselage';
 import ProjectsList from './ProjectsList/ProjectsList';
 import { useContext } from 'react';
 import { context, createNewProjectAction } from '../../Context';

@@ -28,6 +28,7 @@ export function useNodesAndEdges() {
       });
     });
     return prevNodes;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const edges = projects[activeProject].flowEdges;

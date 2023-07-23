@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
 import ReactFlow, {
   MiniMap,
   Background,
@@ -52,6 +52,7 @@ const FlowContainer = () => {
       dispatch(updateFlowEdgesAction(newEdge));
       setEdges((eds) => addEdge(newEdge, eds));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setEdges]
   );
 
@@ -62,6 +63,7 @@ const FlowContainer = () => {
   const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
     edgeUpdateSuccessful.current = true;
     setEdges((els) => updateEdge(oldEdge, newConnection, els));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onEdgeUpdateEnd = useCallback((_, edge) => {
@@ -69,6 +71,7 @@ const FlowContainer = () => {
       setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     }
     edgeUpdateSuccessful.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onNodeDragStop = () => {
