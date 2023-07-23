@@ -37,14 +37,14 @@ describe('components/Omnichannel/TranscriptModal', () => {
 	it('should show Request button when roomOpen is true and transcriptRequest not exist', () => {
 		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
-		const requestBtn = screen.getByRole('button', { name: 'request-button' });
+		const requestBtn = screen.findByRole('button', { name: 'request-button' });
 		expect(requestBtn).to.be.visible;
 	});
 
 	it('should show Send button when roomOpen is false', () => {
 		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
-		const sendBtn = screen.getByRole('button', { name: 'send-button' });
+		const sendBtn = screen.findByRole('button', { name: 'send-button' });
 		expect(sendBtn).to.be.visible;
 	});
 });
