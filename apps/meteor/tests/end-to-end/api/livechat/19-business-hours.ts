@@ -384,7 +384,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
