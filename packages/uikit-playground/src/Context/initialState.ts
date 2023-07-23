@@ -3,7 +3,7 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getUniqueId from '../utils/getUniqueId';
 import getDate from '../utils/getDate';
-import { Edge } from 'reactflow';
+import { Edge, Node, Viewport } from 'reactflow';
 
 export type idType = string;
 
@@ -36,7 +36,7 @@ export type actionPreviewType = {
   view?: ILayoutBlock[];
 };
 
-export type ILayoutBlock = {actionId: string} & LayoutBlock;
+export type ILayoutBlock = { actionId: string } & LayoutBlock;
 
 export type ScreenType = {
   payload: ILayoutBlock[];
@@ -52,7 +52,15 @@ export type ScreensType = {
   [key: idType]: ScreenType;
 };
 
-export type ProjectType = { id: idType; name: string; screens: idType[], date: string, flowEdges: Edge[]};
+export type ProjectType = {
+  id: idType;
+  name: string;
+  screens: idType[];
+  date: string;
+  flowEdges: Edge[];
+  flowNodes: Node[];
+  viewport?: Viewport;
+};
 
 export type ProjectsType = {
   [key: idType]: ProjectType;
@@ -95,6 +103,8 @@ export const initialState: initialStateType = {
       screens: [initialScreenId],
       date: getDate(),
       flowEdges: [],
+      flowNodes: [],
+      viewport: undefined,
     },
   },
   screens: {

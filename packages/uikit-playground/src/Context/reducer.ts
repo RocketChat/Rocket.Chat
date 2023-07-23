@@ -26,6 +26,7 @@ import {
   DeleteProjectAction,
   RenameProjectAction,
   UpdateFlowEdgesAction,
+  UpdateNodesAndViewPortAction,
 } from './action';
 import getDate from '../utils/getDate';
 
@@ -52,7 +53,8 @@ type IAction =
   | DuplicateProjectAction
   | DeleteProjectAction
   | RenameProjectAction
-  | UpdateFlowEdgesAction;
+  | UpdateFlowEdgesAction
+  | UpdateNodesAndViewPortAction;
 
 export enum ActionTypes {
   IsMobile,
@@ -78,6 +80,7 @@ export enum ActionTypes {
   DuplicateProject,
   RenameProject,
   UpdateFlowEdges,
+  UpdateNodesAndViewPort,
 }
 
 const reducer = (state: initialStateType, action: IAction) => {
@@ -131,6 +134,7 @@ const reducer = (state: initialStateType, action: IAction) => {
             id,
             name: action?.payload || 'default',
             payload: [],
+            flowParams: {},
           },
         },
         projects: {
@@ -156,6 +160,7 @@ const reducer = (state: initialStateType, action: IAction) => {
             id,
             name: action?.payload.name || 'default',
             payload: state.screens[action.payload.id].payload,
+            flowParams: {},
           },
         },
         projects: {
@@ -254,26 +259,31 @@ const reducer = (state: initialStateType, action: IAction) => {
       };
     }
 
-      case ActionTypes.DeleteProject: {
-        delete state.projects[action.payload];
-        return {
-          ...state,
-          activeProject: '',
-          activeScreen: '',
-        }
-      }
-      case ActionTypes.RenameProject: {
-        state.projects[action.payload.id].name = action.payload.name;
-        return { ...state };
-      }
+    case ActionTypes.DeleteProject: {
+      delete state.projects[action.payload];
+      return {
+        ...state,
+        activeProject: '',
+        activeScreen: '',
+      };
+    }
+    case ActionTypes.RenameProject: {
+      state.projects[action.payload.id].name = action.payload.name;
+      return { ...state };
+    }
 
-      case ActionTypes.UpdateFlowEdges: {
-        let prevEdges = state.projects[activeProject].flowEdges;
-        prevEdges = [...prevEdges, action.payload]
-        window.console.log(prevEdges);
-        state.projects[activeProject].flowEdges = prevEdges;
-        return { ...state };
-      }
+    case ActionTypes.UpdateFlowEdges: {
+      let prevEdges = state.projects[activeProject].flowEdges;
+      prevEdges = [...prevEdges, action.payload];
+      state.projects[activeProject].flowEdges = prevEdges;
+      return { ...state };
+    }
+    case ActionTypes.UpdateNodesAndViewPort: {
+      const { nodes, viewport } = action.payload;
+      state.projects[activeProject].flowNodes = nodes;
+      state.projects[activeProject].viewport = viewport;
+      return { ...state };
+    }
     default:
       return state;
   }

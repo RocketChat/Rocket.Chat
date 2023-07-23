@@ -14,13 +14,14 @@ export { createNewScreenAction } from './createNewScreenAction';
 export { activeScreenAction } from './activeScreenAction';
 export { duplicateScreenAction } from './duplicateScreenAction';
 export { deleteScreenAction } from './deleteScreenAction';
-export {renameScreenAction} from './renameScreenAction';
+export { renameScreenAction } from './renameScreenAction';
 export { createNewProjectAction } from './createNewProjectAction';
 export { activeProjectAction } from './activeProjectAction';
 export { duplicateProjectAction } from './duplicateProjectAction';
 export { deleteProjectAction } from './deleteProjectAction';
 export { renameProjectAction } from './renameProjectAction';
 export { updateFlowEdgesAction } from './updateFlowEdgesAction';
+export { updateNodesAndViewPortAction } from './updateNodesAndViewPortAction';
 
 export type { IsMobileAction } from './isMobileAction';
 export type { IsTabletAction } from './isTabletAction';
@@ -45,4 +46,4 @@ export type { DuplicateProjectAction } from './duplicateProjectAction';
 export type { DeleteProjectAction } from './deleteProjectAction';
 export type { RenameProjectAction } from './renameProjectAction';
 export type { UpdateFlowEdgesAction } from './updateFlowEdgesAction';
-
+export type { UpdateNodesAndViewPortAction } from './updateNodesAndViewPortAction';

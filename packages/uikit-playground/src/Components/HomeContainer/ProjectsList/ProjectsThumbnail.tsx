@@ -49,7 +49,6 @@ const ProjectsThumbnail = ({
   };
 
   const nameSaveHandler = () => {
-    window.console.log('nameSaveHandler');
     if (!name.trim()) {
       setName(_name);
       return toast({

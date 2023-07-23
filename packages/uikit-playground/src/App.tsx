@@ -51,6 +51,7 @@ function App() {
             <Route path={routes.projectId} element={<ProjectSpecificLayout />}>
               <Route path={routes.flow} element={<FlowDiagram />} />
               <Route path={routes.project} element={<Playground />} />
+              {/* <Route path={routes.prototype} element={<Playground />} /> */}
             </Route>
             <Route path={`*`} element={<Home />} />
             {/* </Route> */}
