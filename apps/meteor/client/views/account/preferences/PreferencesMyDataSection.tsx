@@ -1,4 +1,4 @@
-import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -84,12 +84,10 @@ const PreferencesMyDataSection = ({ ...props }): ReactElement => {
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch flexGrow={1}>
-							<Button onClick={handleClickDownload}>
-								<Icon name='download' size={20} />
+							<Button icon='download' onClick={handleClickDownload}>
 								{t('Download_My_Data')}
 							</Button>
-							<Button onClick={handleClickExport}>
-								<Icon name='download' size={20} />
+							<Button icon='download' onClick={handleClickExport}>
 								{t('Export_My_Data')}
 							</Button>
 						</ButtonGroup>

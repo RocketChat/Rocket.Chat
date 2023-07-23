@@ -11,7 +11,7 @@
 		},
 		"testunit": {
 			"dependsOn": ["build"],
-			"outputs": []
+			"outputs": ["coverage/**"]
 		},
 		"lint": {
 			"dependsOn": ["build"],
@@ -36,6 +36,10 @@
 			"dependsOn": ["^build"]
 		},
 		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
+			"cache": false
+		},
+		"@rocket.chat/meteor#build": {
 			"dependsOn": ["^build"],
 			"cache": false
 		},

@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { isTheLastMessage } from '../../lib/server';
+import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 

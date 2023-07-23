@@ -67,7 +67,7 @@ const CannedResponsesTable = () => {
 	);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['canned-responses', debouncedText], () => getCannedResponses(query));
+	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query));
 
 	const getTime = useFormatDateAndTime();
 
@@ -113,7 +113,7 @@ const CannedResponsesTable = () => {
 				{t('Created_by')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key={'createdAt'}
+				key='createdAt'
 				direction={sortDirection}
 				active={sortBy === '_createdAt'}
 				onClick={setSort}

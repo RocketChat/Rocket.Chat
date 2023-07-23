@@ -13,7 +13,9 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { checkEmailAvailability, setUserAvatar, setEmail } from '.';
+import { checkEmailAvailability } from './checkEmailAvailability';
+import { setEmail } from './setEmail';
+import { setUserAvatar } from './setUserAvatar';
 import { setStatusText } from './setStatusText';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { callbacks } from '../../../../lib/callbacks';
@@ -419,10 +421,13 @@ export const saveUser = async function (userId, userData) {
 
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
-	await callbacks.run('afterSaveUser', userData);
-
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userId);
+
+	await callbacks.run('afterSaveUser', {
+		user: userUpdated,
+		oldUser: oldUserData,
+	});
 
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,

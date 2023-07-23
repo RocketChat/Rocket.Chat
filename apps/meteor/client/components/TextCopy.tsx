@@ -1,4 +1,4 @@
-import { Box, Icon, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -14,6 +14,7 @@ type TextCopyProps = {
 	wrapper?: (text: string) => ReactElement;
 } & ComponentProps<typeof Box>;
 
+// TODO: useClipboard instead of navigator API.
 const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopyProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -40,9 +41,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			{...props}
 		>
 			<Scrollable vertical>{wrapper(text)}</Scrollable>
-			<Button secondary square small flexShrink={0} onClick={onClick} title={t('Copy')}>
-				<Icon name='copy' size='x20' />
-			</Button>
+			<Button icon='copy' secondary square small flexShrink={0} onClick={onClick} title={t('Copy')} />
 		</Box>
 	);
 };

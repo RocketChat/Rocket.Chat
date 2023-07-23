@@ -78,12 +78,12 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.btnSave.click();
 			await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
+			await poOmnichannelDepartments.search(departmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
 
 		await test.step('expect update department name', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
+			await poOmnichannelDepartments.search(departmentName);
 
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
@@ -92,14 +92,14 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.btnSave.click();
 			await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.search(`edited-${departmentName}`);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
 
 		await test.step('expect archive department', async () => {
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 
-			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.search(`edited-${departmentName}`);
 
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 
@@ -121,7 +121,7 @@ test.describe.serial('omnichannel-departments', () => {
 		await test.step('expect unarchive department', async () => {
 			await poOmnichannelDepartments.archivedDepartmentsTab.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.search(`edited-${departmentName}`);
 
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 
@@ -133,7 +133,7 @@ test.describe.serial('omnichannel-departments', () => {
 		await test.step('expect delete department', async () => {
 			await poOmnichannelDepartments.allDepartmentsTab.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.search(`edited-${departmentName}`);
 
 			await poOmnichannelDepartments.selectedDepartmentMenu(`edited-${departmentName}`).click();
 
@@ -143,7 +143,7 @@ test.describe.serial('omnichannel-departments', () => {
 
 			await poOmnichannelDepartments.btnModalConfirmDelete.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.search(`edited-${departmentName}`);
 
 			await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
 		});
@@ -160,12 +160,12 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.btnSave.click();
 			await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
-			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
+			await poOmnichannelDepartments.search(tagsDepartmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
 
 		await test.step('expect save form button be disabled', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
+			await poOmnichannelDepartments.search(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 			await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
@@ -173,7 +173,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Disabled tags state', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
+			await poOmnichannelDepartments.search(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
@@ -188,9 +188,9 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Enabled tags state', async () => {
-			const tagName = faker.datatype.string(5);
+			const tagName = faker.string.sample(5);
 
-			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
+			await poOmnichannelDepartments.search(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
@@ -224,7 +224,7 @@ test.describe.serial('omnichannel-departments', () => {
 			});
 
 			await test.step('expect to not be possible adding same tag twice', async () => {
-				const tagName = faker.datatype.string(5);
+				const tagName = faker.string.sample(5);
 				await poOmnichannelDepartments.inputTags.fill(tagName);
 				await poOmnichannelDepartments.btnTagsAdd.click();
 				await poOmnichannelDepartments.inputTags.fill(tagName);

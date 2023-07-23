@@ -42,7 +42,7 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 				<Field.Row>
 					<TextInput placeholder={t('Description')} disabled={isDisabled} {...register('description')} />
 				</Field.Row>
-				<Field.Hint>{'Leave the description field blank if you dont want to show the role'}</Field.Hint>
+				<Field.Hint>Leave the description field blank if you dont want to show the role</Field.Hint>
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Scope')}</Field.Label>

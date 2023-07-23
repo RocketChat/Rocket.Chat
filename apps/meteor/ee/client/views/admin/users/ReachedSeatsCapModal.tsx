@@ -1,4 +1,4 @@
-import { Icon, Modal, Button, Box } from '@rocket.chat/fuselage';
+import { Modal, Button, Box } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -34,8 +34,7 @@ const ReachedSeatsCapModal = ({ members, limit, onClose, requestSeatsLink }: Rea
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<ExternalLink to={requestSeatsLink}>
-						<Button onClick={onClose} primary>
-							<Icon name='new-window' size='x20' mie='x4' />
+						<Button icon='new-window' onClick={onClose} primary>
 							{t('Request')}
 						</Button>
 					</ExternalLink>
