@@ -1,5 +1,5 @@
 import type { IStats, Serialized } from '@rocket.chat/core-typings';
-import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { Callout, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { usePermission, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -85,8 +85,8 @@ const InformationRoute = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Workspace')}>
 					<ButtonGroup>
-						<Button primary type='button' onClick={handleClickRefreshButton}>
-							<Icon name='reload' /> {t('Refresh')}
+						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton}>
+							{t('Refresh')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
