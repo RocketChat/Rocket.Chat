@@ -32,6 +32,7 @@ addAction('e2e', ({ room }) => {
 						title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
 						icon: 'key',
 						order: 13,
+						type: 'organization',
 						action,
 						...(federated && {
 							'data-tooltip': 'E2E_unavailable_for_federation',
