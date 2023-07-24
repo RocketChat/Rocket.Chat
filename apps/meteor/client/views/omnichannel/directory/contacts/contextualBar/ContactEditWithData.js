@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, ContextualbarContent } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -17,9 +17,9 @@ function ContactEditWithData({ id, close }) {
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return (
-			<Box p={'x24'}>
+			<ContextualbarContent p={'x24'}>
 				<FormSkeleton />;
-			</Box>
+			</ContextualbarContent>
 		);
 	}
 
