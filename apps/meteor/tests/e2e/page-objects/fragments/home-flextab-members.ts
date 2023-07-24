@@ -29,7 +29,7 @@ export class HomeFlextabMembers {
 	async setUserAsModerator(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Change Moderator"]').click();
+		await this.page.locator('role=menuitem[name="Set as moderator"]').click();
 	}
 
 	async setUserAsOwner(username: string) {
