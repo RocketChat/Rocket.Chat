@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -88,19 +89,19 @@ const QueueListTable = (): ReactElement => {
 		return query;
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
-	const getUserStatus = (status?: string) => {
+	const getUserStatus = (status?: UserStatus) => {
 		if (!status) {
 			return t('Offline');
 		}
 
 		switch (status) {
-			case 'online':
+			case UserStatus.ONLINE:
 				return t('Online');
-			case 'away':
+			case UserStatus.AWAY:
 				return t('Away');
-			case 'busy':
+			case UserStatus.BUSY:
 				return t('Busy');
-			case 'offline':
+			case UserStatus.OFFLINE:
 				return t('Offline');
 			default:
 				return status;
