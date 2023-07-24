@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -17,6 +17,8 @@ const CustomContentCard = (): ReactElement | null => {
 	const isCustomContentBodyEmpty = customContentBody === '';
 	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
+
+	const settingsRoute = useRoute('admin-settings');
 
 	const setCustomContentVisible = useSettingSetValue('Layout_Home_Custom_Block_Visible');
 	const setCustomContentOnly = useSettingSetValue('Layout_Custom_Body_Only');
@@ -63,25 +65,26 @@ const CustomContentCard = (): ReactElement | null => {
 				</Box>
 				<Card.FooterWrapper>
 					<Card.Footer>
-						<Button role='link' is='a' href='/admin/settings/Layout' title={t('Layout_Home_Page_Content')}>
+						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
 							{t('Customize_Content')}
 						</Button>
 						<Button
+							icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
-							<Icon mie='x4' name={willNotShowCustomContent ? 'eye' : 'eye-off'} size='x16' />
 							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 						</Button>
 						<Button
+							icon='lightning'
 							disabled={willNotShowCustomContent || !isEnterprise}
 							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
-							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>

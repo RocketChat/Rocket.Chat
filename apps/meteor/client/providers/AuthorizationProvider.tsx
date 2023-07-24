@@ -20,7 +20,10 @@ const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) => hasPermission(permission, scope, scopeRoles)),
 	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),
 	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(permissions, scope)),
-	queryRole: createReactiveSubscriptionFactory((role) => !!Meteor.userId() && hasRole(Meteor.userId() as string, role)),
+	queryRole: createReactiveSubscriptionFactory(
+		(role, scope?, ignoreSubscriptions = false) =>
+			!!Meteor.userId() && hasRole(Meteor.userId() as string, role, scope, ignoreSubscriptions),
+	),
 	roleStore: new RoleStore(),
 };
 

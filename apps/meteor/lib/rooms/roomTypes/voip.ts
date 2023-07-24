@@ -1,6 +1,15 @@
 import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
+declare module '@rocket.chat/ui-contexts' {
+	export interface IRouterPaths {
+		voip: {
+			pathname: `/voip/${string}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/voip/:id/:tab?/:context?';
+		};
+	}
+}
+
 export function getVoipRoomType(_coordinator: RoomCoordinator): IRoomTypeConfig {
 	return {
 		identifier: 'v',

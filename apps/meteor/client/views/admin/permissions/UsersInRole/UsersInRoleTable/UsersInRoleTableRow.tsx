@@ -43,6 +43,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{email}</GenericTableCell>
 			<GenericTableCell withTruncatedText>
+				{/* FIXME: Replace to IconButton */}
 				<Button small square secondary danger onClick={handleRemove}>
 					<Icon name='trash' size='x20' />
 				</Button>
