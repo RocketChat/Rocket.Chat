@@ -810,6 +810,8 @@ class LivechatClass {
 			);
 		}
 
+		await Promise.all(promises);
+
 		return true;
 	}
 }
