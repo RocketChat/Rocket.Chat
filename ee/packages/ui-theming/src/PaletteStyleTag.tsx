@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -9,7 +8,7 @@ import { darkPalette } from './paletteDark';
 import { useThemeMode } from './hooks/useThemeMode';
 import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 
-export const PaletteStyleTag = memo((): ReactElement | null => {
+export const PaletteStyleTag = memo(function PaletteStyleTag() {
 	const [, , theme] = useThemeMode();
 
 	const palette =

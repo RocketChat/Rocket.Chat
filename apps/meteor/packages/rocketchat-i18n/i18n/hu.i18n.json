@@ -3616,6 +3616,7 @@
   "Outgoing": "Kimenő",
   "Outgoing_WebHook": "Kimenő webhorog",
   "Outgoing_WebHook_Description": "Adatok lekérése a Rocket.Chatből valós időben.",
+  "Outlook_Calendar_Enabled": "Engedélyezve",
   "Output_format": "Kimeneti formátum",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Az URL felülbírálása, ahová a fájlok feltöltésre kerülnek. Ez az URL letöltésekhez is használva van, kivéve ha tartalomkézbesítési hálózat van megadva.",
   "Owner": "Tulajdonos",

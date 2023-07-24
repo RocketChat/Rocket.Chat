@@ -71,3 +71,36 @@ it('should return 0 unseen features', () => {
 		}),
 	);
 });
+
+it('should ignore removed feature previews', () => {
+	const { result } = renderHook(() => useFeaturePreviewList(), {
+		wrapper: ({ children }) => (
+			<MockedSettingsContext
+				settings={{
+					Accounts_AllowFeaturePreview: true,
+				}}
+			>
+				<MockedUserContext
+					userPreferences={{
+						featuresPreview: [
+							{
+								name: 'oldFeature',
+								value: false,
+							},
+						],
+					}}
+				>
+					{children}
+				</MockedUserContext>
+			</MockedSettingsContext>
+		),
+	});
+
+	expect(result.current).toEqual(
+		expect.objectContaining({
+			featurePreviewEnabled: true,
+			unseenFeatures: defaultFeaturesPreview.length,
+			features: defaultFeaturesPreview,
+		}),
+	);
+});

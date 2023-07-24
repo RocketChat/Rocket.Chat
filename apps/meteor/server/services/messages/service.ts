@@ -1,16 +1,36 @@
-import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
 
 	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
 		return executeSendMessage(fromId, { rid, msg });
+	}
+
+	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
+		return sendMessage(user, message, room, upsert);
+	}
+
+	async deleteMessage(user: IUser, message: IMessage): Promise<void> {
+		return deleteMessage(message, user);
+	}
+
+	async updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+		return updateMessage(message, user, originalMsg);
+	}
+
+	async reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void> {
+		return executeSetReaction(userId, reaction, messageId, shouldReact);
 	}
 
 	async saveSystemMessage<T = IMessage>(

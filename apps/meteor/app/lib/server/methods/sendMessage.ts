@@ -10,7 +10,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../functions';
+import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { i18n } from '../../../../server/lib/i18n';

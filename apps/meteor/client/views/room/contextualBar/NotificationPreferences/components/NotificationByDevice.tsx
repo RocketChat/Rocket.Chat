@@ -1,10 +1,11 @@
 import { Box, Accordion, Icon, FieldGroup } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
 type NotificationByDeviceProps = {
 	device: string;
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconName;
 	children: ReactNode;
 };
 

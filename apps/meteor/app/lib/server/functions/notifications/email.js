@@ -5,7 +5,7 @@ import * as Mailer from '../../../../mailer/server/api';
 import { settings } from '../../../../settings/server';
 import { metrics } from '../../../../metrics/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getURL } from '../../../../utils/server';
+import { getURL } from '../../../../utils/server/getURL';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../../server/lib/i18n';

@@ -5,7 +5,7 @@ import { isRegisterUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { unarchiveRoom } from '../functions';
+import { unarchiveRoom } from '../functions/unarchiveRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

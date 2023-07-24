@@ -9,7 +9,9 @@ import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
-import { createRoom, sendMessage, setUserAvatar } from '../../lib/server';
+import { sendMessage } from '../../lib/server/functions/sendMessage';
+import { createRoom } from '../../lib/server/functions/createRoom';
+import { setUserAvatar } from '../../lib/server/functions/setUserAvatar';
 import { sleep } from '../../../lib/utils/sleep';
 
 export default class RocketAdapter {

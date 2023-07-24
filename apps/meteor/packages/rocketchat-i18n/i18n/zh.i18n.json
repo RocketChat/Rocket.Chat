@@ -2843,6 +2843,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR 只能在双方均在线时使用",
   "Outgoing_WebHook": "出站 WebHook",
   "Outgoing_WebHook_Description": "实时获取Rocket.Chat数据。",
+  "Outlook_Calendar_Enabled": "已启用",
   "Output_format": "输出格式",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "重写 URL 为文件上传地址。如果没有设置 CDN，url 也会被当作下载链接。",
   "Page_title": "页面标题",

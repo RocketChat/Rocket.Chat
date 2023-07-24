@@ -8,7 +8,7 @@ to: packages/<%= name %>/package.json
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "^27.4.1",
-		"eslint": "^8.12.0",
+		"eslint": "~8.45.0",
 		"jest": "~29.5.0",
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.0.2"
