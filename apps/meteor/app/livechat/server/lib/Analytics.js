@@ -1,11 +1,11 @@
 import moment from 'moment-timezone';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger/server';
 import { i18n } from '../../../../server/lib/i18n';
 import { callbacks } from '../../../../lib/callbacks';
+import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
