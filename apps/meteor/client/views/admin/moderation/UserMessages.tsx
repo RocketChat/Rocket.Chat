@@ -50,7 +50,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	const { username, name } = useMemo(() => {
 		return (
 			report?.user ??
-			report?.messages[0].message.u ?? {
+			report?.messages?.[0]?.message?.u ?? {
 				username: t('Deleted_user'),
 				name: t('Deleted_user'),
 			}
@@ -70,20 +70,26 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 				<ContextualbarClose onClick={() => moderationRoute.push({})} />
 			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				{isSuccessUserMessages && report.messages.length > 0 && (
-					<Callout m='x16' title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
-						{t('Moderation_Duplicate_messages_warning')}
-					</Callout>
-				)}
-
-				{isSuccessUserMessages && !report.user && (
-					<Callout m='x16' type='warning' icon='warning'>
-						{t('Moderation_User_deleted_warning')}
-					</Callout>
-				)}
-
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
+
+				{isSuccessUserMessages && (
+					<Box padding='x15'>
+						{report.messages.length > 0 && (
+							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
+								{t('Moderation_Duplicate_messages_warning')}
+							</Callout>
+						)}
+
+						{!report.user && (
+							<Callout mbs='x8' type='warning' icon='warning'>
+								{t('Moderation_User_deleted_warning')}
+							</Callout>
+						)}
+					</Box>
+				)}
+
 				{isSuccessUserMessages &&
+					report.messages.length > 0 &&
 					report.messages.map((message) => (
 						<Box key={message._id}>
 							<ContextMessage

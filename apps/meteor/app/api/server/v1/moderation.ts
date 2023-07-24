@@ -124,11 +124,6 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
-
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', {
 				offset,
 				count,

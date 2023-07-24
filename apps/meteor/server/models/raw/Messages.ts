@@ -1011,6 +1011,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.insertOne({
 			...nRecord,
 			_hidden: true,
+			// @ts-expect-error - mongo allows it, but types don't :(
 			parent: record._id,
 			editedAt: new Date(),
 			editedBy: {
