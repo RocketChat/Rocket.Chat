@@ -6,7 +6,7 @@ import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/mod
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
-import { slashCommands } from '../../../app/utils/server';
+import { slashCommands } from '../../../app/utils/server/slashCommand';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';

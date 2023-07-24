@@ -53,4 +53,3 @@ import './methods/updateMessage';
 import './methods/saveCustomFields';
 
 export * from './lib';
-export * from './functions';
