@@ -16,6 +16,7 @@ import { ListenersModule } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { use } from '../../../app/settings/server/Middleware';
+import { getURL } from '../../../app/utils/server/getURL';
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -276,5 +277,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
 		return Livechat.notifyGuestStatusChanged(token, status);
+	}
+
+	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
+		return getURL(path, params, cloudDeepLinkUrl);
 	}
 }

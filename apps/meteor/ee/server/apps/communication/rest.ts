@@ -19,7 +19,7 @@ import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmin
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import { Info } from '../../../../app/utils/server';
+import { Info } from '../../../../app/utils/rocketchat.info';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { i18n } from '../../../../server/lib/i18n';

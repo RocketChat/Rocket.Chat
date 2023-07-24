@@ -9,7 +9,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { Facts } from 'meteor/facts-base';
 import { Statistics } from '@rocket.chat/models';
 
-import { Info } from '../../../utils/server';
+import { Info } from '../../../utils/rocketchat.info';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';

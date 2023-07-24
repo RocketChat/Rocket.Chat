@@ -7,7 +7,7 @@ import { darkPalette } from './paletteDark';
 import { convertToCss } from './helpers/convertToCss';
 import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 
-export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
+export const SidebarPaletteStyleTag = memo(function SidebarPaletteStyleTag(): ReactElement | null {
 	// Commented code below: sidebar palette currently the same in both themes.
 
 	// const [, , theme] = useThemeMode();
