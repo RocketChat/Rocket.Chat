@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -11,7 +11,6 @@ export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canResetTOTP = usePermission('edit-other-user-totp');
 	const resetTOTPRequest = useEndpoint('POST', '/v1/users.resetTOTP');
-	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 
 	const resetTOTP = useCallback(async () => {
 		try {
@@ -32,7 +31,7 @@ export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => 
 		);
 	}, [resetTOTP, t, setModal]);
 
-	return canResetTOTP && enforcePassword
+	return canResetTOTP
 		? {
 				icon: 'key',
 				label: t('Reset_TOTP'),
