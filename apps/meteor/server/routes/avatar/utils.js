@@ -4,7 +4,7 @@ import { Cookies } from 'meteor/ostrio:cookies';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Users } from '@rocket.chat/models';
 
-import { getAvatarColor } from '../../../app/utils/server';
+import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
 import { settings } from '../../../app/settings/server';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';

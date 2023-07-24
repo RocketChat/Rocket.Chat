@@ -5,7 +5,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
 import type { Document, UpdateResult } from 'mongodb';
 
-import { getValidRoomName } from '../../../utils/server';
+import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
