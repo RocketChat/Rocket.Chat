@@ -84,7 +84,6 @@ interface EventLikeCallbackSignatures {
 	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
-	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
