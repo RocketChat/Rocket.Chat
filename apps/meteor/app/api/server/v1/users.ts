@@ -1000,10 +1000,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
@@ -1029,10 +1025,6 @@ API.v1.addRoute(
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
