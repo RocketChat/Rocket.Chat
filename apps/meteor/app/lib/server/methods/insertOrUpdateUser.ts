@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { saveUser } from '../functions';
+import { saveUser } from '../functions/saveUser';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
 declare module '@rocket.chat/ui-contexts' {

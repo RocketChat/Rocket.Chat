@@ -7,7 +7,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../functions';
+import { addUserToRoom } from '../functions/addUserToRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
 import { i18n } from '../../../../server/lib/i18n';
