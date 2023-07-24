@@ -5,6 +5,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import React, { useRef, Fragment } from 'react';
 
 import { messageBox } from '../../../../../../../../app/ui-utils/client';
+import { useMessageboxAppsActionButtons } from '../../../../../../../hooks/useAppActionButtons';
 import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
 import { useDropdownVisibility } from '../../../../../../../sidebar/header/hooks/useDropdownVisibility';
 import { useChat } from '../../../../../contexts/ChatContext';
@@ -35,7 +36,16 @@ const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: A
 
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
-	const groups = messageBox.actions.get();
+	const apps = useMessageboxAppsActionButtons();
+
+	const groups = {
+		...(apps.isSuccess &&
+			apps.data.length > 0 && {
+				Apps: apps.data,
+			}),
+		...messageBox.actions.get(),
+	};
+
 	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
 		const items = group.map((item) => ({
 			icon: item.icon,

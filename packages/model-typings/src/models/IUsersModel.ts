@@ -17,6 +17,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 	findUsersInRoles<T = IUser>(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<T>;
 	findPaginatedUsersInRoles<T = IUser>(roles: IRole['_id'][], options?: any): FindPaginated<FindCursor<T>>;
+	findOneByIdWithEmailAddress(uid: IUser['_id'], options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByUsername<T = IUser>(username: string, options?: any): Promise<T>;
 	findOneAgentById<T = ILivechatAgent>(_id: string, options: any): Promise<T>;
 	findUsersInRolesWithQuery<T = IUser>(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): FindCursor<T>;
@@ -127,9 +128,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: string[], agentId: string): Promise<UpdateResult | Document>;
 
 	addBusinessHourByAgentIds(agentIds: string[], businessHourId: string): any;
+
+	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 

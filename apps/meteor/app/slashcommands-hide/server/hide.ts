@@ -3,7 +3,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/server';
+import { slashCommands } from '../../utils/server/slashCommand';
 import { i18n } from '../../../server/lib/i18n';
 import { hideRoomMethod } from '../../../server/methods/hideRoom';
 

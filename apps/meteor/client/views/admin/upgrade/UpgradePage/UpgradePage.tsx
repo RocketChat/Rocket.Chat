@@ -1,5 +1,5 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
-import { useLayout, useRouteParameter, useQueryStringParameter, useAbsoluteUrl, useLanguage } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouteParameter, useSearchParameter, useAbsoluteUrl, useLanguage } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -52,7 +52,7 @@ const UpgradePage = (): ReactElement => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	const type = useRouteParameter('type') as UpgradeTabVariant;
-	const trialEndDate = useQueryStringParameter('trialEndDate');
+	const trialEndDate = useSearchParameter('trialEndDate');
 	const language = useLanguage();
 	const pageUrl = getUrl(type, trialEndDate, language);
 

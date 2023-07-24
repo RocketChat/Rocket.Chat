@@ -12,9 +12,8 @@ import {
 	createVisitor,
 	createLivechatRoom,
 	getLivechatRoomInfo,
-	deleteDepartment,
 } from '../../../data/livechat/rooms';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createUser } from '../../../data/users.helper';
 import { createMonitor, createUnit } from '../../../data/livechat/units';

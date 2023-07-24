@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { Box, Option, Icon } from '@rocket.chat/fuselage';
+import type { Box, Option } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
@@ -23,7 +24,7 @@ export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
 export type ToolboxActionConfig = {
 	'id': string;
-	'icon'?: ComponentProps<typeof Icon>['name'];
+	'icon'?: IconName;
 	'title': TranslationKey;
 	'anonymous'?: boolean;
 	'data-tooltip'?: string;

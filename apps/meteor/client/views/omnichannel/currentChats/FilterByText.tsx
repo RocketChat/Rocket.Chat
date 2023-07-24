@@ -150,7 +150,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Tags')}</Label>
-						<EETagsComponent value={tags} handler={handleTags} />
+						<EETagsComponent value={tags} handler={handleTags} viewAll />
 					</Box>
 				</Box>
 			)}

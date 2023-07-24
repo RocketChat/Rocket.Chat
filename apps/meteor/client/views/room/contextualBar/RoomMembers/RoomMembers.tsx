@@ -120,15 +120,11 @@ const RoomMembers = ({
 
 				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members && members.length > 0 && (
+				{!loading && members.length > 0 && (
 					<>
 						<Box pi='x18' pb='x12'>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {members.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' mis='x8'>
-								{t('Total')}: {total}
+								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
 						</Box>
 
@@ -155,14 +151,12 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
-							<Button onClick={onClickInvite} width='50%'>
-								<Icon name='link' size='x20' mie='x4' />
+							<Button icon='link' onClick={onClickInvite} width='50%'>
 								{t('Invite_Link')}
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button onClick={onClickAdd} width='50%' primary>
-								<Icon name='user-plus' size='x20' mie='x4' />
+							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
 								{t('Add')}
 							</Button>
 						)}
