@@ -1,5 +1,23 @@
 # @rocket.chat/rest-typings
 
+## 6.3.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.5
+
+## 6.3.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.4
+
+## 6.3.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.3
+
 ## 6.3.0-rc.2
 
 ### Patch Changes
