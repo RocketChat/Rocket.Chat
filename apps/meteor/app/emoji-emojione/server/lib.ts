@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { emoji } from '../../emoji/server';
 import { getEmojiConfig } from '../lib/getEmojiConfig';
 import { isSetNotNull } from '../lib/isSetNotNull';
-import { getUserPreference } from '../../utils/server';
+import { getUserPreference } from '../../utils/server/lib/getUserPreference';
 
 const config = getEmojiConfig();
 

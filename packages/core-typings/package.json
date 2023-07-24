@@ -3,10 +3,10 @@
 	"version": "6.2.9",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "~8.43.0",
+		"eslint": "~8.45.0",
 		"mongodb": "^4.12.1",
 		"prettier": "~2.8.8",
-		"typescript": "~5.1.3"
+		"typescript": "~5.1.6"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
