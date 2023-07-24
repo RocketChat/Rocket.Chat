@@ -1,6 +1,6 @@
 import { Users, Rooms } from '@rocket.chat/models';
 
-import { sendMessage, createDirectRoom } from '../../../../lib/server';
+import { sendMessage, createDirectRoom } from '../../../../lib/server/functions/sendMessage';
 /*
  *
  * Get direct chat room helper
