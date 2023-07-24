@@ -43,16 +43,18 @@ interface IFederationChangeMembershipInputDto extends IFederationReceiverBaseRoo
 	}[];
 }
 
+interface IFederationThread {
+	rootEventId: string;
+	replyToEventId: string;
+}
+
 interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
 	rawMessage: string;
 	externalFormattedText: string;
 	replyToEventId?: string;
-	thread?: {
-		rootEventId: string;
-		replyToEventId: string;
-	};
+	thread?: IFederationThread;
 }
 
 interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -348,10 +350,7 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 
 	replyToEventId?: string;
 
-	thread?: {
-		rootEventId: string;
-		replyToEventId: string;
-	};
+	thread?: IFederationThread;
 }
 
 export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {
