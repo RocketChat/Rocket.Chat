@@ -60,7 +60,10 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 										id={option.id}
 										icon={option.icon as ComponentProps<typeof Option>['icon']}
 										label={t(option.label)}
-										onClick={option.action}
+										onClick={(e) => {
+											setVisible(!visible);
+											option.action(e);
+										}}
 										data-qa-type='message-action'
 										data-qa-id={option.id}
 										role={option.role ? option.role : 'button'}
