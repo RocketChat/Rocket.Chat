@@ -64,7 +64,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 	}
 
 	private async wrongInput(room: IOmnichannelGenericRoom, _isWrongOTP: boolean): Promise<boolean> {
-		const limitWrongAttempts = settings?.get('Livechat_LimitWrongAttempts') ?? 3;
+		const limitWrongAttempts: number = settings?.get('Livechat_LimitWrongAttempts') ?? 3;
 		if (!room?.wrongMessageCount) {
 			await LivechatRooms.updateWrongMessageCount(room._id, 1);
 		} else if (room.wrongMessageCount + 1 >= limitWrongAttempts) {

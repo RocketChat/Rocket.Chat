@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight, RoomVerificationState } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedCollection } from '../../../ui-cached-collection/client';
@@ -125,6 +125,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
 			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
+			verificationStatus: (room as IOmnichannelRoom | undefined)?.verificationStatus || RoomVerificationState.unVerified,
 		};
 	}
 
