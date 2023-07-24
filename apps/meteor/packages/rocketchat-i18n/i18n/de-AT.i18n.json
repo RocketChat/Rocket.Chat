@@ -1880,6 +1880,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR ist nur möglich, wenn beide Benutzer online sind.",
   "Outgoing_WebHook": "Ausgehender WebHook",
   "Outgoing_WebHook_Description": "Holen Sie Daten in Echtzeit aus Rocket.Chat.",
+  "Outlook_Calendar_Enabled": "aktiviert",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL, wo die Dateien hochgeladen werden. Die URL wird auch für Downloads verwendet, wenn keine CDN angegeben wird.",
   "Page_title": "Seitentitel",
   "Page_URL": "Seiten-URL",

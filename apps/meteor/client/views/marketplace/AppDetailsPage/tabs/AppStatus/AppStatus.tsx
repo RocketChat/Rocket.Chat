@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -128,20 +128,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					invisible={!showStatus && !loading}
 				>
 					<Button
+						icon={!loading && button.icon ? button.icon : undefined}
 						primary
 						small
 						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
 						onClick={handleAcquireApp}
 						mie='x8'
 					>
-						{loading ? (
-							<Throbber inheritColor />
-						) : (
-							<>
-								{button.icon && <Icon name={button.icon} size='x16' mie='x4' />}
-								{t(button.label.replace(' ', '_') as TranslationKey)}
-							</>
-						)}
+						{loading && <Throbber inheritColor />}
+						{!loading && t(button.label.replace(' ', '_') as TranslationKey)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (

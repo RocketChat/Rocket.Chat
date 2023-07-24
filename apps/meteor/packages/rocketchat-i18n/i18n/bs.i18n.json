@@ -1870,6 +1870,7 @@
   "OTR_is_only_available_when_both_users_are_online": "SP je dostupan samo ako su oba korisnika online",
   "Outgoing_WebHook": "Odlazni WebHook",
   "Outgoing_WebHook_Description": "Dobijte podatke iz Rocket.Chat u stvarnom vremenu.",
+  "Outlook_Calendar_Enabled": "Omogućeno",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL mjesta na koji su postavljene datoteke. Ovaj url se također koristi za preuzimanje, osim ako je zadan CDN",
   "Page_title": "Naslov stranice",
   "Page_URL": "URL stranice",
