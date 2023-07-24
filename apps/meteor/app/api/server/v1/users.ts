@@ -24,7 +24,11 @@ import { Team, api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
+import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../../lib/server/functions/saveUser';
+import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
@@ -37,7 +41,7 @@ import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
-import { getURL } from '../../../utils/server';
+import { getURL } from '../../../utils/server/getURL';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -996,10 +1000,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
@@ -1025,10 +1025,6 @@ API.v1.addRoute(
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
