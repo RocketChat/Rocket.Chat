@@ -3254,6 +3254,7 @@
   "Outgoing": "発信中",
   "Outgoing_WebHook": "発信Webhook",
   "Outgoing_WebHook_Description": "Rocket.Chatからリアルタイムでデータを取得します。",
+  "Outlook_Calendar_Enabled": "有効",
   "Output_format": "出力形式",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "アップロードされたファイルのURLを上書きします。このURLは、CDNからURLが提供されない場合にダウンロードでも使用されます",
   "Page_title": "ページタイトル",

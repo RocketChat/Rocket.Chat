@@ -3700,6 +3700,7 @@
   "Outgoing": "Ausgehend",
   "Outgoing_WebHook": "Ausgehender Webhook",
   "Outgoing_WebHook_Description": "Daten aus Rocket.Chat heraus versenden.",
+  "Outlook_Calendar_Enabled": "aktiviert",
   "Output_format": "Ausgabeformat",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL, unter der die Dateien hochgeladen werden. Die URL wird auch für Downloads verwendet, wenn kein CDN angegeben wird",
   "Owner": "Eigentümer",

@@ -2,7 +2,7 @@ import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { sendMessage } from '../../../lib/server';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { i18n } from '../../../../server/lib/i18n';
 import { settings } from '../../../settings/server';
 

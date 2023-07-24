@@ -1,4 +1,4 @@
-import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -155,8 +155,7 @@ function ContactTable(): ReactElement {
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={() => refetch()}>
-								<Icon mie='x4' size='x20' name='reload' />
+							<StatesAction icon='reload' onClick={() => refetch()}>
 								{t('Reload_page')}
 							</StatesAction>
 						</StatesActions>

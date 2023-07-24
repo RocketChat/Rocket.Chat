@@ -5,7 +5,8 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
 import type { UserStatus } from '@rocket.chat/core-typings';
 
-import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
+import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
+import { passwordPolicy } from '../../app/lib/server';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';

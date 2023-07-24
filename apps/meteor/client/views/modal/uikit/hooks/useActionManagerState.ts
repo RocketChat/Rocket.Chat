@@ -1,7 +1,7 @@
 import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { useEffect, useState } from 'react';
 
-import * as ActionManager from '../../../../../app/ui-message/client/ActionManager';
+import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 
 export type ActionManagerState = {
 	viewId: string;
@@ -13,6 +13,7 @@ export type ActionManagerState = {
 };
 
 export const useActionManagerState = (initialState: ActionManagerState) => {
+	const actionManager = useUiKitActionManager();
 	const [state, setState] = useState(initialState);
 
 	const { viewId } = state;
@@ -27,10 +28,10 @@ export const useActionManagerState = (initialState: ActionManagerState) => {
 			setState({ ...data, type, errors });
 		};
 
-		ActionManager.on(viewId, handleUpdate);
+		actionManager.on(viewId, handleUpdate);
 
 		return () => {
-			ActionManager.off(viewId, handleUpdate);
+			actionManager.off(viewId, handleUpdate);
 		};
 	}, [viewId]);
 

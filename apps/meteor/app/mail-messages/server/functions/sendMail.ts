@@ -5,7 +5,7 @@ import type { Filter } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { placeholders } from '../../../utils/server';
+import { placeholders } from '../../../utils/server/placeholders';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer/server/api';
 import { generatePath } from '../../../../lib/utils/generatePath';

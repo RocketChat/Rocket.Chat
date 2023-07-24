@@ -39,7 +39,7 @@ const CannedResponseForm: FC<{
 				<Field.Label>{t('Shortcut')}</Field.Label>
 				<TextInput
 					error={errors.shortcut}
-					name={'shortcut'}
+					name='shortcut'
 					placeholder={`!${t('shortcut_name')}`}
 					onChange={handleShortcut}
 					value={shortcut}
