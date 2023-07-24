@@ -26,7 +26,12 @@ const t = (s: string): string => i18n.t(s, { lng: language });
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
 	logger.debug(`Attempt to register a guest for ${email} on department: ${department}`);
-	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);
+
+	const emailName = `${name} <${email}>`;
+	// Allow multiple "guests" with the same "email" but different name
+	// This should prevent cases where emails sent by programmatic APIs (which can modify the name) are being counted as the same visitor
+	// And thus having the same visible name on the UI (which confuses ppl)
+	const guest = await LivechatVisitors.findOneGuestByEmailAddressAndEmailName(email, emailName);
 
 	if (guest) {
 		logger.debug(`Guest with email ${email} found with id ${guest._id}`);
@@ -54,7 +59,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 	});
 	const userId = await LivechatTyped.registerGuest({
 		token: Random.id(),
-		name: name || email,
+		name: emailName,
 		email,
 		department,
 	});

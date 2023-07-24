@@ -51,6 +51,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
+	findOneGuestByEmailAddressAndEmailName(emailAddress: string, emailName: string): Promise<ILivechatVisitor | null> {
+		const query = {
+			'visitorEmails.address': emailAddress.toLowerCase(),
+			'name': new RegExp(`^${escapeRegExp(emailName)}$`, 'i'),
+		};
+
+		return this.findOne(query);
+	}
+
 	/**
 	 * Find visitors by _id
 	 * @param {string} token - Visitor token
