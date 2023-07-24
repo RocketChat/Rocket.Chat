@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: check when popup is closed to proceed with login
+Fixed CAS login after popup closes
