@@ -430,7 +430,3 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.col.aggregate(aggregation).hasNext();
 	}
 }
-
-const difference = <T>(arr: T[], arr2: T[]): T[] => {
-	return arr.filter((a) => !arr2.includes(a));
-};
