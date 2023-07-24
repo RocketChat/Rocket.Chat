@@ -1,5 +1,5 @@
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import type { IMessage, IUpload, IUser, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
 
 export interface IUploadFileParams {
 	userId: string;
@@ -26,16 +26,5 @@ export interface IUploadService {
 	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<boolean | undefined>;
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
 	extractMetadata(file: IUpload): Promise<{ height?: number; width?: number; format?: string }>;
-	parseFileIntoMessageAttachments(
-		file: Partial<IUpload>,
-		roomId: string,
-		user: IUser,
-	): Promise<{
-		files: {
-			_id: string;
-			name: string | undefined;
-			type: string | undefined;
-		}[];
-		attachments: MessageAttachment[];
-	}>;
+	parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments>;
 }

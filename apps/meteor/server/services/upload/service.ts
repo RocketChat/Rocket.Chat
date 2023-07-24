@@ -1,5 +1,5 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IUpload, IUser, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../app/file-upload/server';
@@ -35,18 +35,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return FileUpload.extractMetadata(file);
 	}
 
-	async parseFileIntoMessageAttachments(
-		file: Partial<IUpload>,
-		roomId: string,
-		user: IUser,
-	): Promise<{
-		files: {
-			_id: string;
-			name: string | undefined;
-			type: string | undefined;
-		}[];
-		attachments: MessageAttachment[];
-	}> {
+	async parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments> {
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 }
