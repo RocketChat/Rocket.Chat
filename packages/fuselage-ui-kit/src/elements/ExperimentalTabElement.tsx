@@ -1,10 +1,10 @@
 import { TabsItem, Throbber } from "@rocket.chat/fuselage";
 import { Dispatch, ReactElement } from "react";
-import { BlockContext, type ExperimentalTabElement } from "@rocket.chat/ui-kit";
+import * as UiKit from "@rocket.chat/ui-kit";
 import { useUiKitState } from "../hooks/useUiKitState";
 import { BlockProps } from "../utils/BlockProps";
 
-export const UnstableTabElement = ({block, context, surfaceRenderer, index, select}: BlockProps<ExperimentalTabElement> & {select: Dispatch<number>}): ReactElement => {
+export const ExperimentalTabElement = ({block, context, surfaceRenderer, index, select}: BlockProps<UiKit.ExperimentalTabElement> & {select: Dispatch<number>}): ReactElement => {
     const [{ loading }, action] = useUiKitState(block, context);
 
     const {title, selected, disabled} = block;
@@ -16,8 +16,8 @@ export const UnstableTabElement = ({block, context, surfaceRenderer, index, sele
     return <TabsItem
         selected={selected}
         disabled={disabled}
-        onClick={() => {!disabled && select(index); action();}}
+        onClick={(e) => {!disabled && select(index); !disabled && action(e);}}
     >
-        {surfaceRenderer.renderTextObject(title, 0, BlockContext.NONE)}
+        {surfaceRenderer.renderTextObject(title, 0, UiKit.BlockContext.NONE)}
     </TabsItem>
 };
