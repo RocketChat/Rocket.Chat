@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import type { Meta, Story } from '@storybook/react';
@@ -75,6 +76,7 @@ const subscriptions: SubscriptionWithRoom[] = [
 		responseBy: undefined,
 		usersCount: 0,
 		waitingResponse: undefined,
+		verificationStatus: RoomVerificationState.unVerified,
 	},
 ];
 
