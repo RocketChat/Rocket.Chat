@@ -61,8 +61,8 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 										icon={option.icon as ComponentProps<typeof Option>['icon']}
 										label={t(option.label)}
 										onClick={(e) => {
-											setVisible(!visible);
 											option.action(e);
+											setVisible(!visible);
 										}}
 										data-qa-type='message-action'
 										data-qa-id={option.id}
