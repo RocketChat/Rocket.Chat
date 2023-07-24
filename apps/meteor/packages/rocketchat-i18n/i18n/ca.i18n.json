@@ -3248,6 +3248,7 @@
   "Out_of_seats": "Sense llocs",
   "Outgoing_WebHook": "WebHook sortint",
   "Outgoing_WebHook_Description": "Extreu dades de Rocket.Chat en temps real.",
+  "Outlook_Calendar_Enabled": "Activat",
   "Output_format": "Format de sortida",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Reemplaça la URL a la qual es carreguen els fitxers. Aquest URL també es fa servir per a baixades a no ser que es proporcioni un CDN",
   "Page_title": "Titol de la pàgina",

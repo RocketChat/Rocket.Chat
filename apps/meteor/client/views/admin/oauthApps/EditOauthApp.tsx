@@ -1,5 +1,5 @@
 import type { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
@@ -152,8 +152,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
-							<Button danger onClick={openConfirmDelete}>
-								<Icon name='trash' mie='x4' />
+							<Button icon='trash' danger onClick={openConfirmDelete}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

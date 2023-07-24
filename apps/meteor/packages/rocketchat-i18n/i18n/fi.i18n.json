@@ -3754,6 +3754,7 @@
   "Outgoing": "Lähtevät",
   "Outgoing_WebHook": "Lähtevä WebHook",
   "Outgoing_WebHook_Description": "Hanki tiedot chatsovelluksesta reaaliaikaisesti.",
+  "Outlook_Calendar_Enabled": "Käytössä",
   "Output_format": "Tulostusmuoto",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Ohitus-URL, johon tiedostot ladataan. Tätä URL-osoitetta käytetään myös vastakkaisen suuntaiseen lataamiseen, ellei CDN:ää ole annettu",
   "Owner": "Omistaja",

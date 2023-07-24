@@ -1885,6 +1885,7 @@
   "OTR_is_only_available_when_both_users_are_online": "OTR hanya tersedia jika kedua pengguna sedang online",
   "Outgoing_WebHook": "WebHook keluar",
   "Outgoing_WebHook_Description": "Dapatkan data dari Rocket.Chat secara real-time.",
+  "Outlook_Calendar_Enabled": "Diaktifkan",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL Override yang file-upload. url ini juga digunakan untuk download kecuali CDN diberikan",
   "Page_title": "Judul halaman",
   "Page_URL": "Halaman URL",

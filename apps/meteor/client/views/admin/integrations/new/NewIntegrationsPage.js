@@ -1,4 +1,4 @@
-import { Tabs, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Tabs, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -28,8 +28,8 @@ export default function NewIntegrationsPage({ ...props }) {
 		<Page flexDirection='column' {...props}>
 			<Page.Header title={t('Integrations')}>
 				<ButtonGroup>
-					<Button onClick={handleClickReturn}>
-						<Icon name='back' size='x16' /> {t('Back')}
+					<Button icon='back' onClick={handleClickReturn}>
+						{t('Back')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

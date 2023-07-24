@@ -8,7 +8,7 @@ import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { settings } from '../../app/settings/server';
-import { addUserToDefaultChannels } from '../../app/lib/server';
+import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { validateEmail } from '../../lib/emailValidator';
 
