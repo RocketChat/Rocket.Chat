@@ -31,7 +31,7 @@ const DefaultHomePage = (): ReactElement => {
 			<HomePageHeader />
 			<PageScrollableContent>
 				<Box is='h2' fontScale='h1' mb='x20' role='heading' data-qa-id='homepage-welcome-text'>
-					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
+					{t('Welcome_to_workspace', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
