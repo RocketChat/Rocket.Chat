@@ -6,7 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { Info, getMongoInfo } from '../../app/utils/server';
+import { Info } from '../../app/utils/rocketchat.info';
+import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
 import { isRunningMs } from '../lib/isRunningMs';

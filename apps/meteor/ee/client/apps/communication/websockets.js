@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
-import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { slashCommands } from '../../../../app/utils/lib/slashCommand';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',

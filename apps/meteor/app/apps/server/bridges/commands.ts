@@ -4,7 +4,7 @@ import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashco
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../../utils/server';
+import { slashCommands } from '../../../utils/server/slashCommand';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';

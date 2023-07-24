@@ -6,7 +6,7 @@ import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { deleteUser } from '../../app/lib/server';
+import { deleteUser } from '../../app/lib/server/functions/deleteUser';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
 declare module '@rocket.chat/ui-contexts' {
