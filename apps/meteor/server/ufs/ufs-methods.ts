@@ -45,7 +45,7 @@ export async function ufsComplete(fileId: string, storeName: string): Promise<IU
 			const rs = fs.createReadStream(tmpFile, {
 				flags: 'r',
 				encoding: undefined,
-				autoClose: true,
+				autoClose: false,
 			});
 
 			// Clean upload if error occurs
@@ -58,6 +58,7 @@ export async function ufsComplete(fileId: string, storeName: string): Promise<IU
 			// Save file in the store
 			await store.write(rs, fileId, function (err, file) {
 				removeTempFile();
+				rs.close();
 
 				if (err) {
 					return reject(err);
