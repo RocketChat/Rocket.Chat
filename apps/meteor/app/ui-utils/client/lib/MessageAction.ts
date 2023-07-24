@@ -1,11 +1,11 @@
-import type { ComponentProps, ContextType } from 'react';
+import type { ContextType } from 'react';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { Icon } from '@rocket.chat/fuselage';
 import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Keys as IconName } from '@rocket.chat/icons';
 
 import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -48,7 +48,7 @@ type MessageActionConditionProps = {
 
 export type MessageActionConfig = {
 	id: string;
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconName;
 	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
 	order?: number;
