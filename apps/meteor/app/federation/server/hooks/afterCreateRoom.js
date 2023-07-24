@@ -2,7 +2,7 @@ import { FederationRoomEvents, Users, Subscriptions } from '@rocket.chat/models'
 
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
-import { deleteRoom } from '../../../lib/server/functions';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvents } from '../handler';
 import { checkRoomType, checkRoomDomainsLength } from '../functions/helpers';

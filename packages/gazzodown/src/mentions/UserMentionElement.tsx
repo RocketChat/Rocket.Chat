@@ -1,5 +1,4 @@
 import { Message } from '@rocket.chat/fuselage';
-import { useLayout, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -9,14 +8,12 @@ type UserMentionElementProps = {
 };
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
-	const { resolveUserMention, onUserMentionClick } = useContext(MarkupInteractionContext);
+	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName } = useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
 
-	const { isMobile } = useLayout();
-	const uid = useUserId();
-	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
+	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
 		return <Message.Highlight variant='relevant'>all</Message.Highlight>;
@@ -32,7 +29,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	return (
 		<Message.Highlight
-			variant={resolved._id === uid ? 'critical' : 'other'}
+			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved.username || resolved.name}
 			clickable
 			onClick={handleClick}

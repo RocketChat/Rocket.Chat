@@ -182,7 +182,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 										<Table>
 											<TableHead>
 												<TableRow>
-													<TableCell>{'#'}</TableCell>
+													<TableCell>#</TableCell>
 													<TableCell>{t('Channel')}</TableCell>
 													<TableCell align='end'>{t('Number_of_messages')}</TableCell>
 												</TableRow>
