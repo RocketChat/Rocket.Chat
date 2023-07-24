@@ -27,7 +27,6 @@ import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
@@ -676,24 +675,6 @@ export const Livechat = {
 		}
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
-	},
-
-	async saveAgentInfo(_id, agentData, agentDepartments) {
-		check(_id, Match.Maybe(String));
-		check(agentData, Object);
-		check(agentDepartments, [String]);
-
-		const user = await Users.findOneById(_id);
-		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {
-				method: 'livechat:saveAgentInfo',
-			});
-		}
-
-		await Users.setLivechatData(_id, agentData);
-		await LivechatDepartmentRaw.saveDepartmentsByAgent(user, agentDepartments);
-
-		return true;
 	},
 
 	/*

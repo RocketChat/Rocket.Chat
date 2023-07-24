@@ -35,10 +35,11 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import { RoutingManager } from './RoutingManager';
 import { QueueManager } from './QueueManager';
-import { validateEmail } from './Helper';
+import { updateDepartmentAgents, validateEmail } from './Helper';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
 import { i18n } from '../../../../server/lib/i18n';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -748,6 +749,68 @@ class LivechatClass {
 				await Livechat.sendRequest(postData, attempts - 1);
 			}, timeout * 4);
 		}
+	}
+
+	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
+		check(_id, String);
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+		const user = await Users.findOneById(_id);
+		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
+		}
+
+		await Users.setLivechatData(_id, agentData);
+
+		const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
+
+		const toRemoveIds = currentDepartmentsForAgent
+			.filter((dept) => !agentDepartments.includes(dept.departmentId))
+			.map((dept) => dept.departmentId);
+		const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
+
+		const toRemove: { departmentId: string; departmentEnabled: boolean }[] = [];
+		const toAdd: { departmentId: string; departmentEnabled: boolean }[] = [];
+		const allDepts = await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
+			projection: {
+				_id: 1,
+				enabled: 1,
+			},
+		}).toArray();
+		for (const dept of allDepts) {
+			if (toRemoveIds.includes(dept._id)) {
+				toRemove.push({ departmentId: dept._id, departmentEnabled: dept.enabled });
+			} else if (toAddIds.includes(dept._id)) {
+				toAdd.push({ departmentId: dept._id, departmentEnabled: dept.enabled });
+			}
+		}
+
+		const promises = [];
+		for (const dept of toRemove) {
+			promises.push(
+				updateDepartmentAgents(
+					dept.departmentId,
+					{
+						remove: [{ agentId: _id }],
+					},
+					dept.departmentEnabled,
+				),
+			);
+		}
+		for (const dept of toAdd) {
+			promises.push(
+				updateDepartmentAgents(
+					dept.departmentId,
+					{
+						upsert: [{ agentId: _id }],
+					},
+					dept.departmentEnabled,
+				),
+			);
+		}
+
+		return true;
 	}
 }
 

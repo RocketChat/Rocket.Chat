@@ -263,47 +263,6 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		throw new Error('Method not implemented in Community Edition.');
 	}
 
-	async saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[] = []): Promise<void> {
-		const { _id: agentId, username } = agent;
-		const savedDepartments = (await LivechatDepartmentAgents.findByAgentId(agentId).toArray()).map((d) => d.departmentId);
-
-		const incNumAgents = (_id: string, numAgents: number) => this.updateOne({ _id }, { $inc: { numAgents } });
-		// remove other departments
-		const deps = difference(savedDepartments, departments).map(async (departmentId) => {
-			// Migrate func
-			await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-			await incNumAgents(departmentId, -1);
-		});
-
-		await Promise.all(deps);
-
-		const promises = departments.map(async (departmentId) => {
-			const dep = await this.findOneById(departmentId, {
-				projection: { enabled: 1 },
-			});
-			if (!dep) {
-				return;
-			}
-
-			const { enabled: departmentEnabled } = dep;
-			// Migrate func
-			const saveResult = await LivechatDepartmentAgents.saveAgent({
-				agentId,
-				departmentId,
-				username,
-				departmentEnabled,
-				count: 0,
-				order: 0,
-			});
-
-			if (saveResult.upsertedId) {
-				await incNumAgents(departmentId, 1);
-			}
-		});
-
-		await Promise.all(promises);
-	}
-
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
 	}
