@@ -26,6 +26,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { queueLogger } from './logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -128,12 +129,13 @@ export const LivechatEnterprise = {
 	async removeTag(_id: string) {
 		check(_id, String);
 
-		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
+		await callbacks.run('livechat.afterTagRemoved', tag);
 		return LivechatTag.removeById(_id);
 	},
 
@@ -152,7 +154,7 @@ export const LivechatEnterprise = {
 
 	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const exists = _id && (await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes));
+		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
 		if (exists) {
 			throw new Error('error-duplicated-sla');
 		}
@@ -201,7 +203,7 @@ export const LivechatEnterprise = {
 	) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }) : null;
+		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -276,6 +278,11 @@ export const LivechatEnterprise = {
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		// Disable event
+		if (department?.enabled && !departmentDB?.enabled) {
+			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;

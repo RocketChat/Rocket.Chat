@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { emoji } from '../../emoji/server';
-import { getEmojiConfig, isSetNotNull } from '../lib/rocketchat';
+import { getEmojiConfig } from '../lib/getEmojiConfig';
+import { isSetNotNull } from '../lib/isSetNotNull';
 import { getUserPreference } from '../../utils/server';
 
 const config = getEmojiConfig();
@@ -20,16 +21,11 @@ if (emoji.packages.emojione) {
 	for (const key in config.emojione.emojioneList) {
 		if (config.emojione.emojioneList.hasOwnProperty(key)) {
 			const currentEmoji = config.emojione.emojioneList[key];
-			// @ts-expect-error - emojione types
 			currentEmoji.emojiPackage = 'emojione';
-			// @ts-expect-error - emojione types
 			emoji.list[key] = currentEmoji;
 
-			// @ts-expect-error - emojione types
 			if (currentEmoji.shortnames) {
-				// @ts-expect-error - emojione types
 				currentEmoji.shortnames.forEach((shortname: string) => {
-					// @ts-expect-error - emojione types
 					emoji.list[shortname] = currentEmoji;
 				});
 			}

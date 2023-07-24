@@ -106,7 +106,7 @@ roomCoordinator.add(
 		},
 
 		extractOpenRoomParams({ name }) {
-			return { type: 'p', ref: name };
+			return { type: 'p', reference: name };
 		},
 
 		findRoom(identifier) {

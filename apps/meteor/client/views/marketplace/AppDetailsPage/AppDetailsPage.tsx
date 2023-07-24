@@ -2,14 +2,7 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useTranslation,
-	useCurrentRoute,
-	useRoute,
-	useRouteParameter,
-	useToastMessageDispatch,
-	usePermission,
-} from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
@@ -31,6 +24,7 @@ import AppSettings from './tabs/AppSettings';
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const router = useRouter();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -38,19 +32,20 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const isAdminUser = usePermission('manage-apps');
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
-
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
 	const appData = useAppInfo(id, context || '');
 
 	const handleReturn = useMutableCallback((): void => {
-		context && router.push({ context, page: 'list' });
+		if (!context) {
+			return;
+		}
+
+		router.navigate({
+			name: 'marketplace',
+			params: { context, page: 'list' },
+		});
 	});
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};

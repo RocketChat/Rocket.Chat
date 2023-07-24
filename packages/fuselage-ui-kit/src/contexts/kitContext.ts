@@ -49,6 +49,6 @@ export const useUiKitStateValue = <T extends string | number | undefined>(
 
   return {
     value: (values && (values[actionId]?.value as T)) ?? initialValue,
-    error: errors && errors[actionId],
+    error: errors?.[actionId],
   };
 };

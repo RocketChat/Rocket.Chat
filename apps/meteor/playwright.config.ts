@@ -22,7 +22,15 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
-		// process.env.CI ? ['github'] : ['list'],
+		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
+			'./reporters/rocketchat.ts',
+			{
+				url: process.env.REPORTER_ROCKETCHAT_URL,
+				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
+				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+			},
+		],
 		[
 			'playwright-qase-reporter',
 			{
@@ -36,7 +44,7 @@ export default {
 				environmentId: '1',
 			},
 		],
-	],
+	].filter(Boolean),
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,

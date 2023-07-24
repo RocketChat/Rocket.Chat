@@ -74,7 +74,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 					</Box>
 				</Box>
 			</Box>
-			<Button is='a' href={chatNowLink}>
+			<Button role='link' is='a' href={chatNowLink}>
 				{t('Chat_Now')}
 			</Button>
 		</Box>

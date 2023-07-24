@@ -2,25 +2,21 @@ import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 import { useLivechatTags } from './hooks/useLivechatTags';
 
-const Tags = ({
-	tags = [],
-	handler,
-	error,
-	tagRequired,
-	department,
-}: {
+type TagsProps = {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
 	department?: string;
-}): ReactElement => {
+};
+
+const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
 
@@ -31,18 +27,23 @@ const Tags = ({
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
 		department,
+		viewAll: !department,
 	});
+
+	const customTags = useMemo(() => {
+		return tags.filter((tag) => !tagsResult?.tags.find((rtag) => rtag.name === tag));
+	}, [tags, tagsResult?.tags]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>();
+
+	const paginatedTagValue = useMemo(() => tags.map((tag) => ({ label: tag, value: tag })), [tags]);
 
 	const removeTag = (tagToRemove: string): void => {
-		if (tags) {
-			const tagsFiltered = tags.filter((tag: string) => tag !== tagToRemove);
-			handler(tagsFiltered);
-		}
+		if (!tags) return;
+
+		handler(tags.filter((tag) => tag !== tagToRemove));
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
@@ -80,9 +81,9 @@ const Tags = ({
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
-							handlePaginatedTagValue(tags);
 						}}
 						department={department}
+						viewAll={!department}
 					/>
 				</Field.Row>
 			) : (
@@ -99,15 +100,17 @@ const Tags = ({
 							{t('Add')}
 						</Button>
 					</Field.Row>
-
-					<Field.Row justifyContent='flex-start'>
-						{tags?.map((tag, i) => (
-							<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>
-								{tag}
-							</Chip>
-						))}
-					</Field.Row>
 				</>
+			)}
+
+			{customTags.length > 0 && (
+				<Field.Row justifyContent='flex-start'>
+					{customTags?.map((tag, i) => (
+						<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>
+							{tag}
+						</Chip>
+					))}
+				</Field.Row>
 			)}
 		</>
 	);

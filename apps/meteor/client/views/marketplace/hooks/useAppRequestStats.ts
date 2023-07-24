@@ -9,7 +9,6 @@ export const useAppRequestStats = () => {
 	return useQuery({
 		queryKey: ['app-requests-stats'],
 		queryFn: async () => fetchRequestStats(),
-		refetchOnWindowFocus: false,
 		retry: false,
 		enabled: canManageApp,
 	});
