@@ -3107,6 +3107,7 @@
   "Wednesday": "Quarta-feira",
   "Welcome": "Bem-vindo <em>%s</em>.",
   "Welcome_to": "Bem-vindo ao [Site_Name]",
+  "Welcome_to_workspace": "Bem-vindo ao {{Site_Name}}",
   "Welcome_to_the": "Bem-vindo ao",
   "Why_do_you_want_to_report_question_mark": "Por que quer denunciar?",
   "will_be_able_to": "poderá",

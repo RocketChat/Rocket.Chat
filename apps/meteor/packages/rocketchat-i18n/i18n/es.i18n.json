@@ -4706,6 +4706,7 @@
   "Weekly_Active_Users": "Usuarios activos semanales",
   "Welcome": "Te damos la bienvenida, <em>%s</em>.",
   "Welcome_to": "Te damos la bienvenida a [Site_Name]",
+  "Welcome_to_workspace": "Te damos la bienvenida a {{Site_Name}}",
   "Welcome_to_the": "Te damos la bienvenida a",
   "When": "Cuando",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "Cuando una línea empiece por una de estas palabras, publicar en las siguientes URL",

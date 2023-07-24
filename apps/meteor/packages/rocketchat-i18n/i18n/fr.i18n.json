@@ -4750,6 +4750,7 @@
   "Weekly_Active_Users": "Utilisateurs actifs chaque semaine",
   "Welcome": "Bienvenue <em>%s</em>.",
   "Welcome_to": "Bienvenue sur [Site_Name]",
+  "Welcome_to_workspace": "Bienvenue sur {{Site_Name}}",
   "Welcome_to_the": "Bienvenue sur",
   "When": "Quand",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "Lorsqu'une ligne commence par l'un de ces mots, publier sur la ou les URL ci-dessous",

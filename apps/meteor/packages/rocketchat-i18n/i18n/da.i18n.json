@@ -3906,6 +3906,7 @@
   "Weekly_Active_Users": "Aktive brugere ugentligt",
   "Welcome": "Velkommen <em>%s</em>.",
   "Welcome_to": "Velkommen til [Site_Name]",
+  "Welcome_to_workspace": "Velkommen til {{Site_Name}}",
   "Welcome_to_the": "Velkommen til",
   "When": "Hvornår",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "Når en linje starter med et af disse ord, skal der skrives til URL(erne) nedenfor",

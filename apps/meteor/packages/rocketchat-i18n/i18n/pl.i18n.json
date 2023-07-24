@@ -5188,6 +5188,7 @@
   "Wednesday": "Środa",
   "Weekly_Active_Users": "Tygodniowo aktywni użytkownicy",
   "Welcome": "Witamy <em>%s</em>.",
+  "Welcome_to_workspace": "Witamy w {{Site_Name}}",
   "Welcome_to": "Witamy w [Site_Name]",
   "Welcome_to_the": "Witamy w",
   "When": "Kiedy",

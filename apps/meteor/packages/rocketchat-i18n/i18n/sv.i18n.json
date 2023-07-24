@@ -5477,6 +5477,7 @@
   "Weekly_Active_Users": "Aktiva användare varje vecka",
   "Welcome": "Välkommen <em>%s</em>.",
   "Welcome_to": "Välkommen till [Site_Name]",
+  "Welcome_to_workspace": "Välkommen till {{Site_Name}}",
   "Welcome_to_the": "Välkommen till",
   "When": "När",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "Publicera till URL:erna nedan när en rad inleds med något av de här orden",

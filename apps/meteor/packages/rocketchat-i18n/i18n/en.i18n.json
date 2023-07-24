@@ -5608,6 +5608,7 @@
   "Weekly_Active_Users": "Weekly Active Users",
   "Welcome": "Welcome <em>%s</em>.",
   "Welcome_to": "Welcome to [Site_Name]",
+  "Welcome_to_workspace": "Welcome to {{Site_Name}}",
   "Welcome_to_the": "Welcome to the",
   "When": "When",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "When a line starts with one of these words, post to the URL(s) below",

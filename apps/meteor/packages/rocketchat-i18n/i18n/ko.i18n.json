@@ -3948,6 +3948,7 @@
   "Weekly_Active_Users": "주간 활성 사용자",
   "Welcome": "<em>%s</em>님 환영합니다!",
   "Welcome_to": "[Site_Name] 방문을 환영합니다!",
+  "Welcome_to_workspace": "{{Site_Name}} 방문을 환영합니다!",
   "Welcome_to_the": "환영합니다",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "다음 단어 중 하나로 행이 시작되면 아래 URL에 게시하십시오.",
   "When_is_the_chat_busier?": "채팅이 바쁜 시간대는 언제입니까?",

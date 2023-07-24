@@ -3194,6 +3194,7 @@
   "Wednesday": "Çarşamba",
   "Welcome": "Hoş geldin <em>%s</em>.",
   "Welcome_to": "[Site_Name]'e hoş geldiniz",
+  "Welcome_to_workspace": "{{Site_Name}}'e hoş geldiniz",
   "Welcome_to_the": "Hoş geldiniz",
   "Why_do_you_want_to_report_question_mark": "Neden bildirmek istiyorsunuz?",
   "will_be_able_to": "edebilecek",
