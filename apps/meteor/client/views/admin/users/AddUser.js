@@ -1,10 +1,11 @@
-import { Field, Box, Button } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import { ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
@@ -119,18 +120,16 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const append = useMemo(
 		() => (
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={reset} mie='x4'>
-							{t('Cancel')}
-						</Button>
-						<Button primary flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
-							{t('Save')}
-						</Button>
-					</Box>
-				</Field.Row>
-			</Field>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Cancel')}
+					</Button>
+					<Button primary disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		),
 		[hasUnsavedChanges, reset, t, handleSave],
 	);

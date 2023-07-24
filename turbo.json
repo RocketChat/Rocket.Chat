@@ -11,7 +11,7 @@
 		},
 		"testunit": {
 			"dependsOn": ["build"],
-			"outputs": []
+			"outputs": ["coverage/**"]
 		},
 		"lint": {
 			"dependsOn": ["build"],

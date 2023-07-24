@@ -14,7 +14,14 @@ const Directory = (props: DirectoryProps) => {
 		router.navigate('/directory');
 	});
 
-	return <Sidebar.TopBar.Action {...props} icon='notebook-hashtag' onClick={handleDirectory} />;
+	return (
+		<Sidebar.TopBar.Action
+			{...props}
+			icon='notebook-hashtag'
+			onClick={handleDirectory}
+			pressed={router.getLocationPathname().includes('/directory')}
+		/>
+	);
 };
 
 export default Directory;

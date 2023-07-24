@@ -60,14 +60,14 @@ const CallTable = () => {
 			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone' w='x200'>
 				{t('Phone')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'queue'} direction={sortDirection} active={sortBy === 'queue'} onClick={setSort} sort='ts' w='x100'>
+			<GenericTableHeaderCell key='queue' direction={sortDirection} active={sortBy === 'queue'} onClick={setSort} sort='ts' w='x100'>
 				{t('Queue')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'ts'} direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x200'>
+			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x200'>
 				{t('Started_At')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key={'callDuration'}
+				key='callDuration'
 				direction={sortDirection}
 				active={sortBy === 'callDuration'}
 				onClick={setSort}

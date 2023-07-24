@@ -1877,6 +1877,7 @@
   "OTR_is_only_available_when_both_users_are_online": "இரண்டு பயனர்கள் ஆன்லைனில் இருக்கும் போது OTR மட்டுமே உள்ளது",
   "Outgoing_WebHook": "வெளிச்செல்லும் WebHook",
   "Outgoing_WebHook_Description": "நிகழ்நேரத்தில் ராக்கெட்.சட்டை வெளியே தரவு கிடைக்கும்.",
+  "Outlook_Calendar_Enabled": "இயக்கப்பட்டது",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "மீறு URL ஐ கோப்புகளை பதிவேற்றப்படும் வேண்டும். ஒரு வலம்புரி வரை இறக்கம் பயன்படுத்தப்படும் இந்த URL வழங்கப்படும்",
   "Page_title": "பக்க தலைப்பு",
   "Page_URL": "பக்க URL",
