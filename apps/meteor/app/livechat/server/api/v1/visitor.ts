@@ -199,6 +199,7 @@ API.v1.addRoute('livechat/visitor.status', {
 		return API.v1.success({ token, status });
 	},
 });
+
 API.v1.addRoute(
 	'livechat/visitor.verify',
 	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
