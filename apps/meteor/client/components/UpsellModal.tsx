@@ -17,6 +17,7 @@ type UpsellModalProps = {
 	onCancel?: () => void;
 	onClose?: () => void;
 	onConfirm: () => void;
+	annotation?: ReactNode;
 };
 
 const UpsellModal = ({
@@ -31,6 +32,7 @@ const UpsellModal = ({
 	onCancel,
 	onConfirm,
 	onClose = onCancel,
+	annotation,
 }: UpsellModalProps) => {
 	const t = useTranslation();
 
@@ -52,9 +54,14 @@ const UpsellModal = ({
 					</Box>
 				)}
 				<br />
-				{description && <Box fontScale='p2'>{description}</Box>}
+				{description && (
+					<Box style={{ whiteSpace: 'break-spaces' }} fontScale='p2'>
+						{description}
+					</Box>
+				)}
 			</Modal.Content>
 			<Modal.Footer>
+				{annotation && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
 						<Button secondary onClick={onCancel}>
