@@ -17,7 +17,10 @@ import type {
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
+import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
+import { insertMessage } from '../../../lib/server/functions/insertMessage';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';

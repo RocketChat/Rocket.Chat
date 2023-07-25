@@ -16,6 +16,10 @@ import {
   actionWithMultiStaticSelect,
   actionWithDatePicker,
   actionWithLinearScale,
+  actionWithToggleSwitch,
+  actionWithRadioButton,
+  actionWithCheckbox,
+  actionWithTimePicker,
 } from './action';
 import {
   contextWithPlainText,
@@ -24,6 +28,7 @@ import {
   contextWithAllElements,
 } from './context';
 import { divider } from './divider';
+import { callout } from './callout';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import {
   inputWithSingleLineInput,
@@ -119,8 +124,24 @@ const BlocksTree: Item = [
         payload: actionWithDatePicker,
       },
       {
+        label: 'time Picker',
+        payload: actionWithTimePicker,
+      },
+      {
         label: 'linear scale',
         payload: actionWithLinearScale,
+      },
+      {
+        label: 'toggle switch',
+        payload: actionWithToggleSwitch,
+      },
+      {
+        label: 'radio buttons',
+        payload: actionWithRadioButton,
+      },
+      {
+        label: 'checkbox',
+        payload: actionWithCheckbox,
       },
     ],
   },
@@ -295,6 +316,15 @@ const BlocksTree: Item = [
       {
         label: 'Plain',
         payload: divider,
+      },
+    ],
+  },
+  {
+    label: 'callout',
+    branches: [
+      {
+        label: 'Plain',
+        payload: callout,
       },
     ],
   },
