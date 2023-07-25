@@ -98,6 +98,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 								handleClick={handleClick}
 								onRedirect={onRedirect}
 								onChange={handleChange}
+								deleted={!report.user}
 							/>
 						</Box>
 					))}
