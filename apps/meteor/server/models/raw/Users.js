@@ -66,7 +66,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
-			// Used for canse insensitive queries
+			// Used for case insensitive queries
 			// @deprecated
 			// Should be converted to unique index later within a migration to prevent errors of duplicated
 			// records. Those errors does not helps to identify the duplicated value so we need to find a
