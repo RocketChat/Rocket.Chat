@@ -51,7 +51,7 @@ const ContactHistoryMessage: FC<{
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
-							size={'x18'}
+							size='x18'
 							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
@@ -79,7 +79,7 @@ const ContactHistoryMessage: FC<{
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
-							size={'x36'}
+							size='x36'
 							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>

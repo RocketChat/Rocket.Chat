@@ -110,7 +110,7 @@ Meteor.startup(async function () {
 
 			return true;
 		},
-		order: -3,
+		order: -2,
 		group: ['message', 'menu'],
 	});
 

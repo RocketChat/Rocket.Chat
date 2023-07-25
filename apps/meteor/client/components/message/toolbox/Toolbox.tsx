@@ -1,15 +1,16 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
-import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
+import { useUser, useSettings, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -46,9 +47,12 @@ type ToolboxProps = {
 
 const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
-
-	const settings = useSettings();
 	const user = useUser();
+	const settings = useSettings();
+
+	const quickReactionsEnabled = useFeaturePreview('quickReactions');
+
+	const setReaction = useMethod('setReaction');
 
 	const context = getMessageContext(message, room, messageContext);
 
@@ -56,6 +60,8 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 
 	const chat = useChat();
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
+
+	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const messageActions = await MessageAction.getButtons(
@@ -82,34 +88,37 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 		return null;
 	}
 
+	const isReactionAllowed = actionsQueryResult.data?.message.find(({ id }) => id === 'reaction-message');
+
 	const handleSetReaction = (emoji: string) => {
-		sdk.call('setReaction', `:${emoji}:`, message._id);
+		setReaction(`:${emoji}:`, message._id);
 		addRecentEmoji(emoji);
 	};
 
 	return (
 		<MessageToolbox>
-			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
-				return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
-			})}
-			{actionsQueryResult.data?.message.map((action) => (
-				<MessageToolboxItem
-					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
-					key={action.id}
-					icon={action.icon}
-					title={t(action.label)}
-					data-qa-id={action.label}
-					data-qa-type='message-action-menu'
-				/>
-			))}
-			{(actionsQueryResult.data?.menu.length ?? 0) > 0 && (
+			{quickReactionsEnabled &&
+				isReactionAllowed &&
+				quickReactions.slice(0, 3).map(({ emoji, image }) => {
+					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
+				})}
+			{actionsQueryResult.isSuccess &&
+				actionsQueryResult.data.message.map((action) => (
+					<MessageToolboxItem
+						onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
+						key={action.id}
+						icon={action.icon}
+						title={t(action.label)}
+						data-qa-id={action.label}
+						data-qa-type='message-action-menu'
+					/>
+				))}
+			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
-					options={
-						actionsQueryResult.data?.menu.map((action) => ({
-							...action,
-							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
-						})) ?? []
-					}
+					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
+						...action,
+						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+					}))}
 					data-qa-type='message-action-menu-options'
 				/>
 			)}

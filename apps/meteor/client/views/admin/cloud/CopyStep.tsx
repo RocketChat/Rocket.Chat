@@ -1,11 +1,11 @@
-import { Box, Button, Icon, Scrollable, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import Clipboard from 'clipboard';
 import type { FC } from 'react';
 import React, { useEffect, useState, useRef } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { cloudConsoleUrl } from './constants';
+import { CLOUD_CONSOLE_URL } from '../../../lib/constants';
 
 type CopyStepProps = {
 	onNextButtonClick: () => void;
@@ -57,11 +57,9 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 							{clientKey}
 						</Box>
 					</Scrollable>
-					<Button ref={copyRef} primary data-clipboard-text={clientKey}>
-						<Icon name='copy' /> {t('Copy')}
-					</Button>
+					<Button icon='copy' ref={copyRef} primary data-clipboard-text={clientKey} />
 				</Box>
-				<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { cloudConsoleUrl })} />
+				<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { CLOUD_CONSOLE_URL })} />
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

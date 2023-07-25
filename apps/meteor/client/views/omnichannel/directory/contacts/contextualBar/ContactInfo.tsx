@@ -1,4 +1,4 @@
-import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup, Button, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
@@ -180,12 +180,12 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 					)}
 
 					{showContactHistory && (
-						<Button onClick={onChatHistory} mis={0} flexBasis='0'>
-							<Icon name='history' size='x20' /> {t('Chat_History')}
+						<Button icon='history' onClick={onChatHistory} mis={0} flexBasis='0'>
+							{t('Chat_History')}
 						</Button>
 					)}
-					<Button onClick={onEditButtonClick} flexBasis='0'>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+					<Button icon='pencil' onClick={onEditButtonClick} flexBasis='0'>
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
