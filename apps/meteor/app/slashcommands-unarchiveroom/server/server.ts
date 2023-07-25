@@ -8,7 +8,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { unarchiveRoom } from '../../lib/server';
+import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
 import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({

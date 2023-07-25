@@ -1,4 +1,4 @@
-import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
+import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FormEvent, ReactElement } from 'react';
@@ -99,8 +99,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 							/>
 						</Scrollable>
 						<ButtonGroup align='start'>
-							<Button primary small disabled={isUpdating} onClick={handlePaste}>
-								<Icon name='clipboard' />
+							<Button icon='clipboard' primary small disabled={isUpdating} onClick={handlePaste}>
 								{t('Paste')}
 							</Button>
 						</ButtonGroup>

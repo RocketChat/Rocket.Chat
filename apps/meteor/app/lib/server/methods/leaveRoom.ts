@@ -5,7 +5,7 @@ import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { removeUserFromRoom } from '../functions';
+import { removeUserFromRoom } from '../functions/removeUserFromRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';

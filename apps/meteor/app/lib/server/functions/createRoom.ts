@@ -5,11 +5,12 @@ import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Apps } from '../../../../ee/server/apps';
+import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { getValidRoomName } from '../../../utils/server';
+import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
+import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
@@ -34,7 +35,16 @@ export const createRoom = async <T extends RoomType>(
 	}
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
-	await callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
+	await beforeCreateRoomCallback.run({
+		type,
+		// name,
+		// owner: ownerUsername,
+		// members,
+		// readOnly,
+		extraData,
+
+		// options,
+	});
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}

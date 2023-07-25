@@ -3,7 +3,7 @@ import { Random } from '@rocket.chat/random';
 import objectPath from 'object-path';
 import { Messages } from '@rocket.chat/models';
 
-import { slashCommands } from '../../../utils/server';
+import { slashCommands } from '../../../utils/server/slashCommand';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';

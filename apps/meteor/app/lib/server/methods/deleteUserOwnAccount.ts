@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { deleteUser } from '../functions';
+import { deleteUser } from '../functions/deleteUser';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { trim } from '../../../../lib/utils/stringUtils';
 
