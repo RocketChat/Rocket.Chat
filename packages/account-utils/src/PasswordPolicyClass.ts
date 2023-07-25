@@ -1,6 +1,5 @@
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { MeteorError } from '@rocket.chat/core-services';
 
 class PasswordPolicy {
@@ -169,7 +168,11 @@ class PasswordPolicy {
 		return false;
 	}
 
-	sendValidationMessage(password: string) {
+	sendValidationMessage(password: string): {
+		policy: string;
+		isValid: boolean;
+		limit?: number;
+	}[] {
 		type validationMessage = {
 			policy: string;
 			isValid: boolean;
@@ -179,7 +182,7 @@ class PasswordPolicy {
 		const validationReturn: validationMessage[] = [];
 
 		if (!this.enabled) {
-			return true;
+			return [];
 		}
 
 		if (this.minLength >= 1) {
@@ -306,7 +309,7 @@ class PasswordPolicy {
 	getPasswordPolicy() {
 		type dataType = {
 			enabled: boolean;
-			policy: [TranslationKey, { [key: string]: number }?][];
+			policy: [string, { [key: string]: number }?][];
 		};
 
 		const data: dataType = {

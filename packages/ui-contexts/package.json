@@ -3,6 +3,7 @@
 	"version": "0.0.4",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/fuselage-hooks": "next",

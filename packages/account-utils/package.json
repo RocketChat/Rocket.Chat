@@ -22,8 +22,9 @@
 		"/dist"
 	],
 	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "6.3.0-rc.0",
-		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/random": "workspace:^",
 		"generate-password": "^1.7.0"
 	}
 }
