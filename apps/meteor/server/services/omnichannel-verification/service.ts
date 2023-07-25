@@ -28,7 +28,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 
 	constructor() {
 		super();
-		this.logger = new Logger('Omni-Verfication');
+		this.logger = new Logger('Omni-Verification');
 	}
 
 	private async send2FAEmail(address: string, random: string): Promise<void> {
@@ -46,9 +46,9 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			headers: undefined,
 			text: `
     ${t('Here_is_your_authentication_code')}
-    
+
     __code__
-    
+
     ${t('Do_not_provide_this_code_to_anyone')}
     ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
     `,

@@ -269,6 +269,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			// so, we don't really care if it is successful or fails
 			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
+
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/

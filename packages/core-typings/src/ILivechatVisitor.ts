@@ -15,6 +15,7 @@ export interface ILivechatVisitorConnectionData {
 	};
 	clientAddress: string;
 }
+
 export interface IVisitorEmail {
 	address: string;
 }
@@ -22,6 +23,7 @@ export interface IVisitorEmail {
 interface ILivechatData {
 	[k: string]: unknown;
 }
+
 export interface ILivechatVisitor extends IRocketChatRecord {
 	username: string;
 	ts: Date;

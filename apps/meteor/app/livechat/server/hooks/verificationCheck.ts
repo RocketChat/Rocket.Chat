@@ -5,7 +5,7 @@ import { OmnichannelVerification } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { sendMessage } from '../functions/sendMessage';
+import { sendMessage } from '../../../lib/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -17,15 +17,24 @@ callbacks.add(
 		if (message.u._id !== room.v._id) {
 			return;
 		}
-		if (room.verificationStatus === RoomVerificationState.isListeningToEmail) {
-			const result = await OmnichannelVerification.setVisitorEmail(room, message.msg);
-			if (result.success) {
+
+		switch (room.v.verificationStatus) {
+			case RoomVerificationState.isListeningToEmail: {
+				const result = await OmnichannelVerification.setVisitorEmail(room, message.msg);
+				if (!result.success) {
+					return;
+				}
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.unVerified);
 				await OmnichannelVerification.initiateVerificationProcess(room._id);
+
+				break;
 			}
-		} else if (room.verificationStatus === RoomVerificationState.isListeningToOTP) {
-			const result = await OmnichannelVerification.verifyVisitorCode(room, message.msg);
-			if (result) {
+			case RoomVerificationState.isListeningToOTP: {
+				const result = await OmnichannelVerification.verifyVisitorCode(room, message.msg);
+				if (!result) {
+					return;
+				}
+
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verified);
 				const bot = await Users.findOneById('rocket.cat');
 				const message = {
@@ -33,6 +42,8 @@ callbacks.add(
 					groupable: false,
 				};
 				await sendMessage(bot, message, room);
+
+				break;
 			}
 		}
 	},
