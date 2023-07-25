@@ -471,6 +471,7 @@ describe('miscellaneous', function () {
 
 		let userCredentials;
 		let testChannel;
+		let testTeam;
 		before((done) => {
 			request
 				.post(api('login'))
@@ -506,6 +507,19 @@ describe('miscellaneous', function () {
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a team', (done) => {
+			request
+				.post(api('teams.create'))
+				.set(userCredentials)
+				.send({
+					name: `team-test-${Date.now()}`,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
 					done();
 				});
 		});
@@ -557,6 +571,26 @@ describe('miscellaneous', function () {
 					expect(res.body.rooms[0]).to.have.property('_id');
 					expect(res.body.rooms[0]).to.have.property('name');
 					expect(res.body.rooms[0]).to.have.property('t');
+				})
+				.end(done);
+		});
+		it('must return the teamMain property when searching for a valid team that user is not a member of', (done) => {
+			request
+				.get(api('spotlight'))
+				.query({
+					query: `${testTeam.name}`,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms[0]).to.have.property('_id');
+					expect(res.body.rooms[0]).to.have.property('name');
+					expect(res.body.rooms[0]).to.have.property('t');
+					expect(res.body.rooms[0]).to.have.property('teamMain');
 				})
 				.end(done);
 		});
