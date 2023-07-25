@@ -29,6 +29,7 @@ export class Spotlight {
 				t: 1,
 				name: 1,
 				fname: 1,
+				teamMain: 1,
 				joinCodeRequired: 1,
 				lastMessage: 1,
 				federated: true,
