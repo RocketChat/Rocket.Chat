@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
@@ -147,8 +147,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup mbs='x8' stretch>
-					<Button danger onClick={handleDeleteButtonClick}>
-						<Icon name='trash' mie='x4' />
+					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

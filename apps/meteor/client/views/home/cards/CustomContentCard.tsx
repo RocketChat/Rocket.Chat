@@ -69,21 +69,22 @@ const CustomContentCard = (): ReactElement | null => {
 							{t('Customize_Content')}
 						</Button>
 						<Button
+							icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
-							<Icon mie='x4' name={willNotShowCustomContent ? 'eye' : 'eye-off'} size='x16' />
 							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 						</Button>
 						<Button
+							icon='lightning'
 							disabled={willNotShowCustomContent || !isEnterprise}
 							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
-							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>

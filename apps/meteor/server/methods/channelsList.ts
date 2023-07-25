@@ -7,7 +7,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { getUserPreference } from '../../app/utils/server';
+import { getUserPreference } from '../../app/utils/server/lib/getUserPreference';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 

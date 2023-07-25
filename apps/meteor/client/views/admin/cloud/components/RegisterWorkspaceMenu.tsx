@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -35,12 +35,10 @@ const RegisterWorkspaceMenu = ({
 		<ButtonGroup>
 			{isWorkspaceRegistered && isConnectedToCloud && (
 				<>
-					<Button role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
-						<Icon name='new-window' size='x20' pie={4} />
+					<Button icon='new-window' role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
 						{t('Cloud')}
 					</Button>
-					<Button onClick={handleManageButton}>
-						<Icon name='customize' size='x20' pie={4} />
+					<Button icon='customize' onClick={handleManageButton}>
 						{t('Manage')}
 					</Button>
 				</>

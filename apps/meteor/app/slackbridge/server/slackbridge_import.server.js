@@ -4,7 +4,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 import { SlackBridge } from './slackbridge';
 import { msgStream } from '../../lib/server';
-import { slashCommands } from '../../utils/server';
+import { slashCommands } from '../../utils/server/slashCommand';
 import { i18n } from '../../../server/lib/i18n';
 
 async function SlackBridgeImport({ command, params, message, userId }) {
