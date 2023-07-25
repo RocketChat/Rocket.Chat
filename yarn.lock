@@ -8855,11 +8855,11 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.330
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.330"
+  version: 0.32.0-dev.333
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.333"
   peerDependencies:
     "@rocket.chat/icons": "*"
-  checksum: f43cadeccf12770e9a8f67976deda4d2ebe5ee7af845ef78fb4c5a4bbf046ba15008e8a73a2de56bb5b16138a4722b6f0d02a003d6c6a0219c561c906b58eeb7
+  checksum: 4693fcd692e9b7ef91f8519fb6320e61d0a65475e9e6789b9715e68f9b332c498658f75430335160142e5dd53c842b25812d263dd71eb4613bceca9be495d5d5
   languageName: node
   linkType: hard
 
