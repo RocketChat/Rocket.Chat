@@ -16,7 +16,7 @@ import { Logger } from '../../logger/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
-import { Info } from '../../utils/server';
+import { Info } from '../../utils/rocketchat.info';
 
 const log = new Logger('OEmbed');
 //  Detect encoding

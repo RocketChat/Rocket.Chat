@@ -1,7 +1,6 @@
 import type { UiKitBannerPayload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
 
 export type LegacyBannerPayload = {
 	id: string;
@@ -9,7 +8,7 @@ export type LegacyBannerPayload = {
 	title?: string | (() => string);
 	text?: string | (() => string);
 	html?: string | (() => string);
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconName;
 	modifiers?: ('large' | 'danger')[];
 	timer?: number;
 	action?: () => Promise<void> | void;

@@ -26,7 +26,7 @@ const ModerationConsolePage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Moderation_Console')} />
+				<Page.Header title={t('Moderation')} />
 				<Page.Content>
 					<ModerationConsoleTable />
 				</Page.Content>
