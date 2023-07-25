@@ -473,10 +473,10 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(credentials)
 				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(400)
+				.expect(200)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status', currentStatus);
 				});
 
 			await disableDefaultBusinessHour();
