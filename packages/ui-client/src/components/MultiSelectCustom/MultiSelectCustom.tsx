@@ -21,19 +21,6 @@ const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
 	e.stopImmediatePropagation();
 };
 
-/**
- * @param dropdownOptions options available for the multiselect dropdown list
- * @param defaultTitle dropdown text before selecting any options (or all of them). For example: 'All rooms'
-	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
- * @param selectedOptions array with clicked options. This is used in the useFilteredRooms hook, to filter the Rooms' table. This array joins all of the individual clicked options from all available MultiSelectCustom components in the page. It helps to create a union filter for all the selections.
- * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
- * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
- * @returns a React Component that should be used with a custom hook for filters, such as useFilteredRooms.tsx.
- * Check out the following files, for examples:
- * 	useFilteredRooms.tsx,
- * 	RoomsTable.tsx
- */
-
 type TitleOptionProp = {
 	id: string;
 	text: string;
@@ -48,15 +35,22 @@ type CheckboxOptionProp = {
 	checked: boolean;
 };
 
-// TODO: perhaps create a method to accept SelectOptions and convert to CheckboxOptionProp?
-// export type SelectOption = readonly [
-//     value: string, -> id
-//     label: string, -> text
-//     selected?: boolean -> checked
-// ];
-
 export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
+/**
+ * @param dropdownOptions options available for the multiselect dropdown list
+ * @param defaultTitle dropdown text before selecting any options (or all of them). For example: 'All rooms'
+	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
+ * @param selectedOptions array with clicked options. This is used in the useFilteredTypeRooms hook, to filter the Rooms' table, for example. This array joins all of the individual clicked options from all available MultiSelectCustom components in the page. It helps to create a union filter for all the selections.
+ * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
+ * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
+ * @param searchBarText optional text prop that creates a search bar inside the dropdown, when added.
+ * @returns a React Component that should be used with a custom hook for filters, such as useFilteredTypeRooms.tsx.
+ * Check out the following files, for examples:
+ * 	useFilteredTypeRooms.tsx,
+ * 	useFilteredVisibility.tsx,
+ * 	RoomsTable.tsx
+ */
 type DropDownProps = {
 	dropdownOptions: OptionProp[];
 	defaultTitle: TranslationKey; // For example: 'All rooms'

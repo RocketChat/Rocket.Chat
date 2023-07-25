@@ -226,16 +226,16 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
-	function intersect(array1: IRoom[], array2: IRoom[]) {
+	function intersectArraysWithoutDuplicates(array1: IRoom[], array2: IRoom[]) {
 		const set2 = new Set(array2);
 
-		return [...new Set(array1)].filter((x) => set2.has(x));
+		return [...new Set(array1)].filter((item) => set2.has(item));
 	}
 
 	const roomsTypeList = useFilteredTypeRooms(roomFilters.types, isLoading, data?.rooms);
 	const roomsVisibilityList = useFilteredVisibilityRooms(roomFilters.visibility, isLoading, data?.rooms);
 
-	const roomsList = intersect(roomsTypeList, roomsVisibilityList);
+	const roomsList = intersectArraysWithoutDuplicates(roomsTypeList, roomsVisibilityList);
 
 	return (
 		<>
