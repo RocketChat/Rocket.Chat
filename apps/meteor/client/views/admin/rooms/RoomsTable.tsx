@@ -33,6 +33,8 @@ type RoomFilters = {
 	visibility: OptionProp[];
 };
 
+const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
+
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
 	c: 'Channel',
@@ -78,6 +80,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
+				types: DEFAULT_TYPES,
 			};
 		}, [searchText, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
 		500,
