@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ModalContext, useSetModal } from '@rocket.chat/ui-contexts';
+import { ModalContext } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
