@@ -1,15 +1,15 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "1.0.0-rc.5",
+	"version": "1.0.0-rc.6",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.5",
-		"@rocket.chat/css-in-js": "next",
+		"@rocket.chat/css-in-js": "0.31.24",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "next",
-		"@rocket.chat/fuselage-hooks": "next",
-		"@rocket.chat/icons": "next",
-		"@rocket.chat/styled": "next",
+		"@rocket.chat/fuselage": "0.31.24",
+		"@rocket.chat/fuselage-hooks": "0.31.24",
+		"@rocket.chat/icons": "0.31.24",
+		"@rocket.chat/styled": "0.31.24",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-actions": "~6.5.16",
 		"@storybook/addon-docs": "~6.5.16",
@@ -35,7 +35,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-contexts": "1.0.0-rc.5",
+		"@rocket.chat/ui-contexts": "1.0.0-rc.6",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},
@@ -53,7 +53,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "next"
+		"@rocket.chat/emitter": "0.31.24"
 	},
 	"volta": {
 		"extends": "../../package.json"
