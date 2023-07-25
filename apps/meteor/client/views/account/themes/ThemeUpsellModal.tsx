@@ -3,7 +3,7 @@ import React from 'react';
 
 import UpsellModal from '../../../components/UpsellModal';
 
-const ThemesUpsellModal = ({ onClose }: { onClose: () => void }) => {
+const ThemeUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 
 	return (
@@ -20,4 +20,4 @@ const ThemesUpsellModal = ({ onClose }: { onClose: () => void }) => {
 		/>
 	);
 };
-export default ThemesUpsellModal;
+export default ThemeUpsellModal;

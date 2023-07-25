@@ -6,10 +6,10 @@ import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import ThemesUpsellModal from './ThemesUpsellModal';
+import ThemeUpsellModal from './ThemeUpsellModal';
 import { themeItems as themes } from './themeItems';
 
-const ThemesPage = () => {
+const ThemePage = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -40,7 +40,7 @@ const ThemesPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Themes')}>
+			<Page.Header title={t('Theme')}>
 				<ButtonGroup>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
@@ -50,11 +50,10 @@ const ThemesPage = () => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center' mb='x40' mi='x36'>
 					<Box fontScale='p1' mbe='x24'>
-						<Box pb='x16'>Choose the theme that best suits your preferences and enjoy a personalized browsing experience.</Box>
-						<Box pb='x16'>Here you have the power to transform the platform's appearance to match your style and needs.</Box>
+						<Box pb='x16'>{t('Choose_theme_description')}</Box>
 					</Box>
 					<Accordion>
-						<Accordion.Item defaultExpanded={true} title={t('Themes')}>
+						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description, ...item }, index) => {
 								const externalLink = 'externalLink' in item && item.externalLink;
 								const communityDisabled = 'isEEOnly' in item && item.isEEOnly && !license?.isEnterprise;
@@ -72,7 +71,7 @@ const ThemesPage = () => {
 											</Field.Label>
 											<Field.Row>
 												{communityDisabled ? (
-													<RadioButton onClick={() => setModal(<ThemesUpsellModal onClose={() => setModal(null)} />)} checked={false} />
+													<RadioButton onClick={() => setModal(<ThemeUpsellModal onClose={() => setModal(null)} />)} checked={false} />
 												) : (
 													<RadioButton id={id} {...register('themeAppearence')} value={id} />
 												)}
@@ -97,4 +96,4 @@ const ThemesPage = () => {
 	);
 };
 
-export default ThemesPage;
+export default ThemePage;

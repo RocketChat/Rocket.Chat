@@ -9,7 +9,7 @@ import type { GenericMenuItemProps } from '../../../components/GenericMenu/Gener
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account-index');
-	const themesRoute = useRoute('themes');
+	const themesRoute = useRoute('theme');
 	const preferencesRoute = useRoute('preferences');
 	const featurePreviewRoute = useRoute('feature-preview');
 	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
@@ -49,9 +49,9 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			onClick: handleMyAccount,
 		},
 		{
-			id: 'themes',
+			id: 'theme',
 			icon: 'palette',
-			content: t('Themes'),
+			content: t('Theme'),
 			onClick: handleThemes,
 		},
 		{
