@@ -261,10 +261,7 @@ export class UsersRaw extends BaseRaw {
 		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
 		const termRegex = new RegExp(regexString, 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
 
 		const query = {
 			$and: [
@@ -356,7 +353,7 @@ export class UsersRaw extends BaseRaw {
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
 			},
 		];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, forcedSearchFields, options, extraQuery);
 	}
 
 	findPaginatedByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
