@@ -7,10 +7,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
-import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
