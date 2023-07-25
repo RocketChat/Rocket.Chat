@@ -52,24 +52,24 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
+			<GenericTableHeaderCell key='client' direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
 				{t('Client')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'rcVersion'}>{t('Version')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
+			<GenericTableHeaderCell key='rcVersion'>{t('Version')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='os' direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'username'} direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 				{t('User')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
-				<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
+				<GenericTableHeaderCell key='loginAt' direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
 					{t('Last_login')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
-			mediaQuery && <GenericTableHeaderCell key={'ip'}>{t('IP_Address')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell width={'5%'} key='menu' />,
+			mediaQuery && <GenericTableHeaderCell key='_id'>{t('Device_ID')}</GenericTableHeaderCell>,
+			mediaQuery && <GenericTableHeaderCell key='ip'>{t('IP_Address')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell width='5%' key='menu' />,
 		],
 		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);

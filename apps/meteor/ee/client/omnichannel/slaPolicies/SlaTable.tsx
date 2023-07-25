@@ -78,7 +78,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Estimated_wait_time')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'remove'} w='x60'>
+			<GenericTableHeaderCell key='remove' w='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

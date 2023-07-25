@@ -101,24 +101,22 @@ const ForwardChatModal = ({
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Field mbe={'x30'}>
+				<Field mbe='x30'>
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
-						{
-							<PaginatedSelectFiltered
-								withTitle
-								filter={departmentsFilter as string}
-								setFilter={setDepartmentsFilter}
-								options={departments}
-								maxWidth='100%'
-								placeholder={t('Select_an_option')}
-								onChange={(value: string): void => {
-									setValue('department', value);
-								}}
-								flexGrow={1}
-								endReached={endReached}
-							/>
-						}
+						<PaginatedSelectFiltered
+							withTitle
+							filter={departmentsFilter as string}
+							setFilter={setDepartmentsFilter}
+							options={departments}
+							maxWidth='100%'
+							placeholder={t('Select_an_option')}
+							onChange={(value: string): void => {
+								setValue('department', value);
+							}}
+							flexGrow={1}
+							endReached={endReached}
+						/>
 					</Field.Row>
 				</Field>
 				<Divider children={t('or')} />
