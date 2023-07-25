@@ -19,8 +19,8 @@ export const {
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
 	},
 	{
-		href: '/account/themes',
-		i18nLabel: 'Themes',
+		href: '/account/theme',
+		i18nLabel: 'Theme',
 		icon: 'palette',
 	},
 	{

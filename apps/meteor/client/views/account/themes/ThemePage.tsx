@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import ThemeUpsellModal from './ThemeUpsellModal';
+import HighContrastUpsellModal from './HighContrastUpsellModal';
 import { themeItems as themes } from './themeItems';
 
 const ThemePage = () => {
@@ -71,7 +71,10 @@ const ThemePage = () => {
 											</Field.Label>
 											<Field.Row>
 												{communityDisabled ? (
-													<RadioButton onClick={() => setModal(<ThemeUpsellModal onClose={() => setModal(null)} />)} checked={false} />
+													<RadioButton
+														onClick={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
+														checked={false}
+													/>
 												) : (
 													<RadioButton id={id} {...register('themeAppearence')} value={id} />
 												)}

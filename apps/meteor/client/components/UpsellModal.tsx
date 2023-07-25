@@ -16,7 +16,7 @@ type UpsellModalProps = {
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
 	onClose?: () => void;
-	onConfirm: () => void;
+	onConfirm?: () => void;
 	annotation?: ReactNode;
 };
 
@@ -60,7 +60,7 @@ const UpsellModal = ({
 					</Box>
 				)}
 			</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent={annotation ? 'space-between' : 'flex-end'}>
 				{annotation && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
