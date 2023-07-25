@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { getNewUpdates } from './getNewUpdates';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { Info } from '../../../utils/rocketchat.info';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { i18n } from '../../../../server/lib/i18n';
