@@ -253,7 +253,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [checks, yarn-build, release-versions]
+    needs: [yarn-build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
