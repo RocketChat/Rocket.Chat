@@ -2,7 +2,7 @@ import type { ExtendedFetchOptions, FetchOptions, OriginalFetchOptions } from '.
 
 function isPostOrPutOrDeleteWithBody(options?: ExtendedFetchOptions): boolean {
 	// No method === 'get'
-	if (!options || !options.method) {
+	if (!options?.method) {
 		return false;
 	}
 	const { method, body } = options;

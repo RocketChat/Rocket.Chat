@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
-import { setEmail } from '../functions';
+import { setEmail } from '../functions/setEmail';
 import { RateLimiter } from '../lib';
 
 declare module '@rocket.chat/ui-contexts' {

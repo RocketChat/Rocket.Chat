@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import Bugsnag from '@bugsnag/js';
 
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { Info } from '../../../utils/rocketchat.info';
 import { Logger } from '../../../logger/server';
 
 const logger = new Logger('bugsnag');
