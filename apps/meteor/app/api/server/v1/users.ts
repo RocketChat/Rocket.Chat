@@ -24,7 +24,11 @@ import { Team, api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
+import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../../lib/server/functions/saveUser';
+import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
@@ -37,7 +41,7 @@ import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
-import { getURL } from '../../../utils/server';
+import { getURL } from '../../../utils/server/getURL';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';

@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import MatrixFederationSearch from '../../MatrixFederationSearch';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
 

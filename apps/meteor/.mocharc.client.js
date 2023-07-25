@@ -32,10 +32,5 @@ module.exports = {
 	timeout: 5000,
 	exit: false,
 	slow: 200,
-	spec: [
-		'client/**/*.spec.{ts,tsx}',
-		'tests/unit/client/**/*.spec.{ts,tsx}',
-		'tests/unit/lib/**/*.tests.ts',
-		'tests/unit/client/**/*.test.ts',
-	],
+	spec: ['tests/unit/client/**/*.spec.{ts,tsx}', 'tests/unit/lib/**/*.tests.ts', 'tests/unit/client/**/*.test.ts'],
 };

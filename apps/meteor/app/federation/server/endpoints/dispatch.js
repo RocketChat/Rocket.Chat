@@ -7,7 +7,7 @@ import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
 import { normalizers } from '../normalizers';
-import { deleteRoom } from '../../../lib/server/functions';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';
