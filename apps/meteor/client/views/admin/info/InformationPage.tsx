@@ -5,10 +5,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
+import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard';
-import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
 
@@ -30,6 +30,9 @@ const InformationPage = memo(function InformationPage({
 	onClickDownloadInfo,
 }: InformationPageProps) {
 	const t = useTranslation();
+
+	const seatsCap = useSeatsCap();
+	const showSeatCap = seatsCap && seatsCap.maxActiveUsers === Infinity;
 
 	const { data } = useIsEnterprise();
 
@@ -85,20 +88,21 @@ const InformationPage = memo(function InformationPage({
 					)}
 
 					<Grid>
-						<Grid.Item xl={3}>
+						<Grid.Item xl={4}>
 							<DeploymentCard info={info} statistics={statistics} instances={instances} />
 						</Grid.Item>
-						<Grid.Item xl={3}>
-							<LicenseCard />
+						<Grid.Item xl={4} p={0}>
+							<Grid.Item xl={12} height={!showSeatCap ? '50%' : 'full'}>
+								<LicenseCard />
+							</Grid.Item>
+							{!showSeatCap && (
+								<Grid.Item xl={12} height='50%'>
+									<SeatsCard seatsCap={seatsCap} />
+								</Grid.Item>
+							)}
 						</Grid.Item>
-						<Grid.Item xl={6} md={8} xs={4} sm={8}>
+						<Grid.Item xl={4} md={8} xs={4} sm={8}>
 							<UsageCard vertical={false} statistics={statistics} />
-						</Grid.Item>
-						<Grid.Item xl={6}>
-							<FederationCard />
-						</Grid.Item>
-						<Grid.Item xl={3}>
-							<SeatsCard />
 						</Grid.Item>
 					</Grid>
 				</Box>
