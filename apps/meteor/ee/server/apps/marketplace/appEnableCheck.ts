@@ -22,13 +22,13 @@ export const appEnableCheck = async ({
 	logger: Logger;
 	status: AppStatus;
 }) => {
-	let isAppEnterpriseOnly = !!(marketplaceInfo as any).isEnterpriseOnly;
+	let isAppEnterpriseOnly = !!marketplaceInfo.isEnterpriseOnly;
 
 	const appInfosURL = new URL(`${baseUrl}/v1/apps/${appId}`);
 	appInfosURL.searchParams.set('appVersion', String(version));
 
 	try {
-		const { isEnterpriseOnly } = (await getMarketplaceAppInfo({ baseUrl, headers, appId, version })) as any;
+		const { isEnterpriseOnly } = await getMarketplaceAppInfo({ baseUrl, headers, appId, version });
 
 		if (isEnterpriseOnly) {
 			isAppEnterpriseOnly = isEnterpriseOnly;

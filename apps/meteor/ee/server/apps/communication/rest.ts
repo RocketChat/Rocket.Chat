@@ -1133,7 +1133,7 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					const storedApp = prl.getStorageItem() as any;
+					const storedApp = prl.getStorageItem();
 					const { marketplaceInfo } = storedApp;
 
 					if (!isEnterprise() && marketplaceInfo) {
