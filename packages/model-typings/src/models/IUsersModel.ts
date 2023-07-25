@@ -300,7 +300,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByIdAndLoginToken(userId: string, loginToken: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByRolesAndType(roles: string[], type: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByRolesAndType(roles: string | string[], type: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;

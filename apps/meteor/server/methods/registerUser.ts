@@ -5,6 +5,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { User } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
 import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/server';
@@ -33,10 +34,11 @@ Meteor.methods<ServerMethods>({
 		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-			const userId = Accounts.insertUserDoc(
-				{},
+			const userId = await User.create(
 				{
 					globalRoles: ['anonymous'],
+				},
+				{
 					active: true,
 				},
 			);
@@ -102,7 +104,7 @@ Meteor.methods<ServerMethods>({
 				await Accounts.setPasswordAsync(importedUser._id, userData.password);
 				userId = importedUser._id;
 			} else {
-				userId = await Accounts.createUserAsync(userData);
+				userId = await User.createWithPassword(userData);
 			}
 		} catch (e) {
 			if (e instanceof Meteor.Error) {

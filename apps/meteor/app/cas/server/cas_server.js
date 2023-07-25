@@ -7,6 +7,7 @@ import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
+import { User } from '@rocket.chat/core-services';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
@@ -209,7 +210,6 @@ Accounts.registerLoginHandler('cas', async function (options) {
 		const newUser = {
 			username: result.username,
 			active: true,
-			globalRoles: ['user'],
 			emails: [],
 			services: {
 				cas: {
@@ -243,7 +243,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 
 		// Create the user
 		logger.debug(`User "${result.username}" does not exist yet, creating it`);
-		const userId = Accounts.insertUserDoc({}, newUser);
+		const userId = await User.create({ globalRoles: ['user'] }, newUser);
 
 		// Fetch and use it
 		user = await Users.findOneById(userId);

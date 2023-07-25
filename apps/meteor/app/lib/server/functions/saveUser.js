@@ -4,6 +4,7 @@ import _ from 'underscore';
 import Gravatar from 'gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { User } from '@rocket.chat/core-services';
 
 import * as Mailer from '../../../mailer/server/api';
 import { getRoles } from '../../../authorization/server';
@@ -284,7 +285,7 @@ const saveNewUser = async function (userData, sendPassword) {
 		createUser.email = userData.email;
 	}
 
-	const _id = await Accounts.createUserAsync(createUser);
+	const _id = await User.createWithPassword(createUser);
 
 	const updateUser = {
 		$set: {

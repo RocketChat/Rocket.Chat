@@ -1,4 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
 import { ObjectId } from 'mongodb';
 import type {
 	IImportUser,
@@ -15,6 +14,7 @@ import type {
 	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { User } from '@rocket.chat/core-services';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';
@@ -290,11 +290,11 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? await Accounts.createUserAsync({
+			? await User.createWithPassword({
 					email: userData.emails[0],
 					password,
 			  })
-			: await Accounts.createUserAsync({
+			: await User.createWithPassword({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,

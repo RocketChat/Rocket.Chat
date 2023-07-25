@@ -6,6 +6,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import type { InsertionModel } from '@rocket.chat/model-typings';
+import { User } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -117,7 +119,7 @@ export class SAML {
 			user = await SAML.findUser(userObject.username, emailRegex);
 		}
 
-		const emails = userObject.emailList.map((email) => ({
+		const emails: IUser['emails'] = userObject.emailList.map((email) => ({
 			address: email,
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
@@ -130,22 +132,20 @@ export class SAML {
 			// If we received any role from the mapping, use them - otherwise use the default role for creation.
 			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
 
-			const newUser: Record<string, any> = {
-				name: userObject.fullName,
+			const newUser: Partial<InsertionModel<IUser>> = {
+				name: userObject.fullName || '',
 				active,
-				globalRoles: roles,
 				emails,
 				services: {
 					saml: {
-						provider: userObject.samlLogin.provider,
+						provider: userObject.samlLogin.provider || undefined,
 						idp: userObject.samlLogin.idp,
+						...(customIdentifierAttributeName && {
+							[customIdentifierAttributeName]: userObject.attributeList.get(customIdentifierAttributeName),
+						}),
 					},
 				},
 			};
-
-			if (customIdentifierAttributeName) {
-				newUser.services.saml[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
-			}
 
 			if (generateUsername === true) {
 				username = await generateUsernameSuggestion(newUser);
@@ -162,7 +162,7 @@ export class SAML {
 				}
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
+			const userId = await User.create({ globalRoles: roles }, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {

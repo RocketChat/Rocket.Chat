@@ -14,6 +14,7 @@ import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
+import { beforeCreateUserCallback } from '../../../lib/callbacks/beforeCreateUserCallback';
 
 const logger = new Logger('CustomOAuth');
 
@@ -377,25 +378,29 @@ export class CustomOAuth {
 			}
 		});
 
-		Accounts.validateNewUser((user) => {
-			if (!user.services || !user.services[this.name] || !user.services[this.name].id) {
-				return true;
-			}
+		beforeCreateUserCallback.add(
+			(options, user) => {
+				if (!user.services || !user.services[this.name] || !user.services[this.name].id) {
+					return options;
+				}
 
-			if (this.usernameField) {
-				user.username = user.services[this.name].username;
-			}
+				if (this.usernameField) {
+					user.username = user.services[this.name].username;
+				}
 
-			if (this.emailField) {
-				user.email = user.services[this.name].email;
-			}
+				if (this.emailField) {
+					user.email = user.services[this.name].email;
+				}
 
-			if (this.nameField) {
-				user.name = user.services[this.name].name;
-			}
+				if (this.nameField) {
+					user.name = user.services[this.name].name;
+				}
 
-			return true;
-		});
+				return options;
+			},
+			callbacks.priority.HIGH,
+			`oauth-${this.name}`,
+		);
 	}
 
 	registerAccessTokenService(name) {

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { UserDocOptions } from '@rocket.chat/core-services';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 
 import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
@@ -22,7 +24,7 @@ const config = {
 
 const Dolphin = new CustomOAuth('dolphin', config);
 
-function DolphinOnCreateUser(options: any, user?: IUser) {
+function DolphinOnCreateUser(options: UserDocOptions, user?: InsertionModel<IUser>) {
 	// TODO: callbacks Fix this
 	if (user?.services?.dolphin?.NickName) {
 		user.username = user.services.dolphin.NickName;

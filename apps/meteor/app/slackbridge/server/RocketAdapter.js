@@ -2,9 +2,9 @@ import util from 'util';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { User } from '@rocket.chat/core-services';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
@@ -384,7 +384,7 @@ export default class RocketAdapter {
 						newUser.joinDefaultChannels = false;
 					}
 
-					rocketUserData.rocketId = await Accounts.createUserAsync(newUser);
+					rocketUserData.rocketId = await User.createWithPassword(newUser);
 					const userUpdate = {
 						utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 						roles: isBot ? ['bot'] : ['user'],

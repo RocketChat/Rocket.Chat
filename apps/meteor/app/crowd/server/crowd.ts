@@ -4,6 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { User } from '@rocket.chat/core-services';
 
 import { _setRealName } from '../../lib/server/functions/setRealName';
 import { settings } from '../../settings/server';
@@ -13,6 +14,17 @@ import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
+type CrowdUserData = {
+	displayname: string;
+	username: string;
+	email: string;
+	active: boolean;
+	crowd_username: string;
+	password?: string;
+	_id?: string;
+
+	crowd?: boolean;
+};
 
 function fallbackDefaultAccountSystem(bind: typeof Accounts, username: string | Record<string, any>, password: string) {
 	if (typeof username === 'string') {
@@ -73,7 +85,7 @@ export class CROWD {
 		await this.crowdClient.ping();
 	}
 
-	async fetchCrowdUser(crowdUsername: string) {
+	async fetchCrowdUser(crowdUsername: string): Promise<CrowdUserData> {
 		const userResponse = await this.crowdClient.user.find(crowdUsername);
 
 		return {
@@ -85,7 +97,7 @@ export class CROWD {
 		};
 	}
 
-	async authenticate(username: string, password: string) {
+	async authenticate(username: string, password: string): Promise<{ crowd: false } | (CrowdUserData & { password: string }) | undefined> {
 		if (!username || !password) {
 			logger.error('No username or password');
 			return;
@@ -141,21 +153,20 @@ export class CROWD {
 			return;
 		}
 
-		const crowdUser: Record<string, any> = await this.fetchCrowdUser(crowdUsername);
+		const crowdUser = await this.fetchCrowdUser(crowdUsername);
 
-		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
+		if (user?.username && settings.get('CROWD_Allow_Custom_Username') === true) {
 			crowdUser.username = user.username;
 		}
 
-		if (user) {
-			crowdUser._id = user._id;
-		}
-		crowdUser.password = password;
-
-		return crowdUser;
+		return {
+			...crowdUser,
+			password,
+			...(user && { _id: user._id }),
+		};
 	}
 
-	async syncDataToUser(crowdUser: Record<string, any>, id: string) {
+	async syncDataToUser(crowdUser: CrowdUserData, id: string) {
 		const user = {
 			username: this.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
@@ -209,7 +220,7 @@ export class CROWD {
 				continue;
 			}
 
-			let crowdUser = null;
+			let crowdUser: CrowdUserData | null = null;
 
 			try {
 				crowdUser = await this.fetchCrowdUser(crowdUsername);
@@ -242,7 +253,7 @@ export class CROWD {
 				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			}
 
-			if (settings.get('CROWD_Allow_Custom_Username') === true) {
+			if (settings.get('CROWD_Allow_Custom_Username') === true && user.username) {
 				crowdUser.username = user.username;
 			}
 
@@ -257,7 +268,7 @@ export class CROWD {
 		return username;
 	}
 
-	async updateUserCollection(crowdUser: Record<string, any>) {
+	async updateUserCollection(crowdUser: CrowdUserData & { password: string }) {
 		const userQuery = {
 			_id: crowdUser._id,
 		};
@@ -287,7 +298,7 @@ export class CROWD {
 
 		// Attempt to create the new user
 		try {
-			crowdUser._id = await Accounts.createUserAsync(crowdUser);
+			crowdUser._id = await User.createWithPassword(crowdUser);
 
 			// sync the user data
 			await this.syncDataToUser(crowdUser, crowdUser._id);
