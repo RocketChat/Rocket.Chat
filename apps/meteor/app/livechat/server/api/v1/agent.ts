@@ -90,6 +90,10 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
+			if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
+				return API.v1.failure('error-business-hours-are-closed');
+			}
+
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.unauthorized();
@@ -97,10 +101,6 @@ API.v1.addRoute(
 				await Livechat.setUserStatusLivechat(agentId, newStatus);
 
 				return API.v1.success({ status: newStatus });
-			}
-
-			if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
-				return API.v1.failure('error-business-hours-are-closed');
 			}
 
 			await Livechat.setUserStatusLivechat(agentId, newStatus);
