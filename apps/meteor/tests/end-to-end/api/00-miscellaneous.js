@@ -574,7 +574,7 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
-		it('must return the teamMain property when searching for a valid team that user is not a member of', (done) => {
+		it('must return the teamMain property when searching for a valid team that the user is not a member of', (done) => {
 			request
 				.get(api('spotlight'))
 				.query({
