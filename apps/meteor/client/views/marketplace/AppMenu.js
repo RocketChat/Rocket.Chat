@@ -144,7 +144,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		const confirm = async () => {
 			closeModal();
 			try {
-				const { status } = await setAppStatus({ status: 'manually_disabled', version: app.version });
+				const { status } = await setAppStatus({ status: 'manually_disabled' });
 				warnEnableDisableApp(app.name, status, 'disable');
 			} catch (error) {
 				handleAPIError(error);
@@ -153,16 +153,16 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		setModal(
 			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [app.name, app.version, closeModal, setAppStatus, setModal, t]);
+	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
 	const handleEnable = useCallback(async () => {
 		try {
-			const { status } = await setAppStatus({ status: 'manually_enabled', version: app.version });
+			const { status } = await setAppStatus({ status: 'manually_enabled' });
 			warnEnableDisableApp(app.name, status, 'enable');
 		} catch (error) {
 			handleAPIError(error);
 		}
-	}, [app.name, app.version, setAppStatus]);
+	}, [app.name, setAppStatus]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {
@@ -310,6 +310,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
 		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
+		const doesItReachedTheLimit =
+			!app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -359,8 +361,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 							{t('Enable')}
 						</>
 					),
-					// disabled: isToDisable,
-					disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
+					disabled: doesItReachedTheLimit,
 					action: handleEnable,
 				},
 			}),

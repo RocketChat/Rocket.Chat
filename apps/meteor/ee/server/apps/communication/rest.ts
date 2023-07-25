@@ -23,6 +23,7 @@ import { Info } from '../../../../app/utils/rocketchat.info';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { i18n } from '../../../../server/lib/i18n';
+import { appEnableCheck } from '../marketplace/appEnableCheck';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -1132,38 +1133,23 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					const storedApp = prl.getStorageItem();
-					const marketplaceInfo = storedApp.marketplaceInfo;
-					let isAppEnterpriseOnly = !!marketplaceInfo?.isEnterpriseOnly;
+					const storedApp = prl.getStorageItem() as any;
+					const { marketplaceInfo } = storedApp;
 
-					if (!isEnterprise()) {
-						const { version } = prl.getInfo();
-						const baseUrl = orchestrator.getMarketplaceUrl();
+					if (!isEnterprise() && marketplaceInfo) {
+						const baseUrl = orchestrator.getMarketplaceUrl() as string;
 						const headers = getDefaultHeaders();
+						const { version } = prl.getInfo();
 
-						const appInfosURL = new URL(`${baseUrl}/v1/apps/${appId}`);
-						appInfosURL.searchParams.set('appVersion', String(version));
-
-						try {
-							const appInfoResponse = await fetch(appInfosURL.toString(), {
-								headers,
-							});
-
-							if (!appInfoResponse.ok) {
-								const result = await appInfoResponse.json();
-								throw new Error(result?.error || 'Error fetching app information from the Marketplace.');
-							}
-
-							const [data] = await appInfoResponse.json();
-							isAppEnterpriseOnly = data?.isEnterpriseOnly;
-						} catch (error: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the app info from the Marketplace:', error.message);
-							return API.v1.failure(error.message);
-						}
-
-						if (![AppStatus.DISABLED, AppStatus.MANUALLY_DISABLED].includes(status) && isAppEnterpriseOnly) {
-							return API.v1.failure('Invalid environment for enabling enterprise app');
-						}
+						await appEnableCheck({
+							baseUrl,
+							headers,
+							appId,
+							version,
+							marketplaceInfo,
+							status,
+							logger: orchestrator.getRocketChatLogger(),
+						});
 					}
 
 					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {
