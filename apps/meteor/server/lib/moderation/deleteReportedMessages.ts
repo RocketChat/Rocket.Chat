@@ -25,7 +25,10 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			const cursor = Messages.find({ _id: { $in: messageIds } });
 
 			for await (const doc of cursor) {
-				await Messages.cloneAndSaveAsHistoryByRecord(doc, user);
+				await Messages.cloneAndSaveAsHistoryByRecord(
+					doc,
+					user as Required<Pick<IUser, '_id' | 'username' | 'name'>> & { username: NonNullable<IUser['username']> },
+				);
 			}
 		} else {
 			await Messages.setHiddenByIds(messageIds, true);
