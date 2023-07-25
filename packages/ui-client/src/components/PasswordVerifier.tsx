@@ -1,5 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useVerifyPassword } from '@rocket.chat/ui-contexts';
+import { Key } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type PasswordVerifierProps = {
@@ -7,9 +8,50 @@ type PasswordVerifierProps = {
 	passwordVerifications: ReturnType<typeof useVerifyPassword>;
 };
 
+type validationMessage = {
+			message: Record<
+				string,
+				{
+					isValid: boolean;
+					limit?: number | undefined;
+				}
+			>;
+		};
+
 export const PasswordVerifier = ({ password, passwordVerifications }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 
+	const handleRenderPasswordVerification = () => {
+		if (!passwordVerifications) return null;
+
+		// TODO: verificar se isValid pode ser verdadeiro. -> PODE
+		// Se o passwordVerifications for true, então está desabilitado ? Ou tudo está certo ????
+
+		const verifications = [];
+
+		passwordVerifications.forEach((element: validationMessage) => {
+			verifications.push(
+					<Box
+						display='flex'
+						flexBasis='50%'
+						alignItems='center'
+						mbe='x8'
+						fontScale='c1'
+						key={element.message}
+						color={isValid && password.length !== 0 ? 'status-font-on-success' : 'status-font-on-danger'}
+					>
+						<Icon
+							name={isValid && password.length !== 0 ? 'success-circle' : 'error-circle'}
+							color={isValid && password.length !== 0 ? 'status-font-on-success' : 'status-font-on-danger'}
+							size='x16'
+							mie='x4'
+						/>
+						{t(`${verification}-label`, { limit })}
+					</Box>,
+		});
+	}
+
+	/*
 	const handleRenderPasswordVerification = (passwordVerifications: ReturnType<typeof useVerifyPassword>) => {
 		const verifications = [];
 
@@ -43,6 +85,7 @@ export const PasswordVerifier = ({ password, passwordVerifications }: PasswordVe
 
 		return verifications;
 	};
+	*/
 
 	return (
 		<Box display='flex' flexDirection='column' mbs='x8'>

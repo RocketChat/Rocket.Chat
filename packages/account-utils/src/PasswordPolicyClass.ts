@@ -169,7 +169,7 @@ class PasswordPolicy {
 		return false;
 	}
 
-	sendErrorMessage(password: string) {
+	sendValidationMessage(password: string) {
 		type validationMessage = {
 			message: Record<
 				string,
@@ -186,83 +186,80 @@ class PasswordPolicy {
 			return true;
 		}
 
-		if (this.minLength >= 1 && (password as string).length < this.minLength) {
+		if (this.minLength >= 1) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-minLength': {
-						isValid: false,
+						isValid: !!((password as string).length < this.minLength),
 						limit: this.minLength,
 					},
 				},
 			});
 		}
 
-		if (this.maxLength >= 1 && (password as string).length > this.maxLength) {
+		if (this.maxLength >= 1) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-maxLength': {
-						isValid: false,
+						isValid: !!((password as string).length > this.maxLength),
 						limit: this.maxLength,
 					},
 				},
 			});
 		}
 
-		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password as string)) {
+		if (this.forbidRepeatingCharacters) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-forbidRepeatingCharactersCount': {
-						isValid: false,
+						isValid: this.regex.forbiddingRepeatingCharacters.test(password as string),
 						limit: this.forbidRepeatingCharactersCount,
 					},
 				},
 			});
 		}
 
-		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password as string)) {
+		if (this.mustContainAtLeastOneLowercase) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-mustContainAtLeastOneLowercase': {
-						isValid: false,
+						isValid: this.regex.mustContainAtLeastOneLowercase.test(password as string),
 					},
 				},
 			});
 		}
 
-		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password as string)) {
+		if (this.mustContainAtLeastOneUppercase) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-mustContainAtLeastOneUppercase': {
-						isValid: false,
+						isValid: this.regex.mustContainAtLeastOneUppercase.test(password as string),
 					},
 				},
 			});
 		}
 
-		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password as string)) {
+		if (this.mustContainAtLeastOneNumber) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-mustContainAtLeastOneNumber': {
-						isValid: false,
+						isValid: this.regex.mustContainAtLeastOneNumber.test(password as string),
 					},
 				},
 			});
 		}
 
-		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string)) {
+		if (this.mustContainAtLeastOneSpecialCharacter) {
 			validationReturn.push({
 				message: {
 					'get-password-policy-mustContainAtLeastOneSpecialCharacter': {
-						isValid: false,
+						isValid: this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string),
 					},
 				},
 			});
 		}
 
-		if (validationReturn.length !== 0) {
-			return validationReturn;
-		}
-		return true;
+		return validationReturn;
 	}
 
 	validate(password: string | unknown) {
