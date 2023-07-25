@@ -102,9 +102,10 @@ API.v1.addRoute(
 				// And update the FE accordingly
 				if (canChangeStatus) {
 					await Livechat.setUserStatusLivechat(agentId, newStatus);
+					return API.v1.success({ status: newStatus });
 				}
 
-				return API.v1.success({ status: newStatus });
+				return API.v1.success({ status: agent.statusLivechat });
 			}
 
 			if (!canChangeStatus) {
