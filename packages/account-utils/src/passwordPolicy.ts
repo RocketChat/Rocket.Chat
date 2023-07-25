@@ -1,6 +1,6 @@
 import PasswordPolicy from './PasswordPolicyClass';
 
-const passwordPolicy = new PasswordPolicy({
+export const passwordPolicy = new PasswordPolicy({
 	enabled: false,
 	minLength: -1,
 	maxLength: -1,
@@ -12,5 +12,3 @@ const passwordPolicy = new PasswordPolicy({
 	mustContainAtLeastOneSpecialCharacter: false,
 	throwError: true,
 });
-
-export default passwordPolicy;
