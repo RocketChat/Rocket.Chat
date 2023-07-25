@@ -7151,9 +7151,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/apps-engine@npm:1.40.0-alpha.280":
-  version: 1.40.0-alpha.280
-  resolution: "@rocket.chat/apps-engine@npm:1.40.0-alpha.280"
+"@rocket.chat/apps-engine@npm:1.41.0-alpha.295":
+  version: 1.41.0-alpha.295
+  resolution: "@rocket.chat/apps-engine@npm:1.41.0-alpha.295"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -7165,7 +7165,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: e52495051a4f245ee04794a88df6f0c771f16367448290a8e83603ddc9341585d62699c84e829515ca43afe3e19135d38b205019a3ad611e7cbcbe45e5de978e
+  checksum: 14a7deb978460c5e615fa0103001ebee04b9db0823b4c8bbe1447ee94195233e8cfbb09ef42405249a978a2418f38ce2f55a546138735a69e2ecafc36a866ea7
   languageName: node
   linkType: hard
 
@@ -7888,7 +7888,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.40.0-alpha.280
+    "@rocket.chat/apps-engine": 1.41.0-alpha.295
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
