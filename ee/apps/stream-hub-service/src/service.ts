@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 3035;
 				await api.nodeList();
 
 				if (watcher.isLastDocDelayed()) {
-					throw new Error('not healthy');
+					throw new Error('No real time data received recently');
 				}
 			} catch (err) {
 				console.error('Service not healthy', err);
