@@ -8,6 +8,10 @@ const run = async (url: string, token: string) => {
 	const sdk = await DDPSDK.createAndConnect(url);
 
 	try {
+		if (!token) {
+			throw new Error('Token is required');
+		}
+
 		await sdk.account.loginWithToken(token);
 
 		await sdk.stream('notify-room', 'GENERAL/user-activity', (args) =>
@@ -31,5 +35,5 @@ const run = async (url: string, token: string) => {
 };
 
 (async () => {
-	await run('wss://unstable.rocket.chat/websocket', process.env.INSTANCE_TOKEN!);
+	await run('wss://unstable.rocket.chat/websocket', process.env.INSTANCE_TOKEN || '');
 })();

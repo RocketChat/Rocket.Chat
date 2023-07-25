@@ -5,9 +5,9 @@ import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 
-import { _setRealName } from '../../lib/server';
+import { _setRealName } from '../../lib/server/functions/setRealName';
 import { settings } from '../../settings/server';
-import { deleteUser } from '../../lib/server/functions';
+import { deleteUser } from '../../lib/server/functions/deleteUser';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';

@@ -2,7 +2,7 @@ import { FederationEE } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { executeSlashCommand } from './action';
-import { slashCommands } from '../../../../../../../app/utils/server';
+import { slashCommands } from '../../../../../../../app/utils/server/slashCommand';
 
 const EE_FEDERATION_COMMANDS = {
 	dm: async (currentUserId: string, _: string, invitees: string[]): Promise<void> =>

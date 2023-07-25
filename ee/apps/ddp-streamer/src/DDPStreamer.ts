@@ -153,7 +153,11 @@ export class DDPStreamer extends ServiceClass {
 			.use(proxy())
 			.get('/health', async (_req, res) => {
 				try {
-					await this.api?.nodeList();
+					if (!this.api) {
+						throw new Error('API not available');
+					}
+
+					await this.api.nodeList();
 					res.end('ok');
 				} catch (err) {
 					console.error('Service not healthy', err);
