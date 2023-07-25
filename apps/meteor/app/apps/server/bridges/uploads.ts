@@ -16,7 +16,6 @@ const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	return details;
 };
 export class AppUploadBridge extends UploadBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

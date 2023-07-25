@@ -21,7 +21,6 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
-// eslint-disable-next-line complexity
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 

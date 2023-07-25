@@ -49,7 +49,7 @@ import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { WebdavEndpoints } from './v1/webdav';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,

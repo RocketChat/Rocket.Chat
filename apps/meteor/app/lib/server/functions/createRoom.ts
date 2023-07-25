@@ -19,7 +19,6 @@ const isValidName = (name: unknown): name is string => {
 const onlyUsernames = (members: unknown): members is string[] =>
 	Array.isArray(members) && members.every((member) => typeof member === 'string');
 
-// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,

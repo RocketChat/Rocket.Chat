@@ -23,7 +23,6 @@ import { Livechat as LivechatTyped } from '../../../livechat/server/lib/Livechat
 import { settings } from '../../../settings/server';
 
 export class AppLivechatBridge extends LivechatBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

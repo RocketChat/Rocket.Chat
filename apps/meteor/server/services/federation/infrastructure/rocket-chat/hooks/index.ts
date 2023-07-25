@@ -225,7 +225,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRoomNameChange',
 			async (params: Record<string, any>): Promise<void> => {
-				if (!params || !params.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				await callback(params.rid, params.name);
@@ -239,7 +239,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRoomTopicChange',
 			async (params: Record<string, any>): Promise<void> => {
-				if (!params || !params.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				await callback(params.rid, params.topic);

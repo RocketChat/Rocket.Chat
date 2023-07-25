@@ -12,7 +12,6 @@ import { slashCommands } from '../../../utils/server/slashCommand';
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.disabledCommands = new Map();

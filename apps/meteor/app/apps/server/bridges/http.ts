@@ -8,7 +8,6 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
 export class AppHttpBridge extends HttpBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

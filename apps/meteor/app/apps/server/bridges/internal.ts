@@ -8,7 +8,6 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppInternalBridge extends InternalBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

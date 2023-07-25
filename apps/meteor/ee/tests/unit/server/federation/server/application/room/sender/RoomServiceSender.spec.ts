@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';

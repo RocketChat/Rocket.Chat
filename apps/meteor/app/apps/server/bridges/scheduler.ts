@@ -36,7 +36,6 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 	private scheduler: Agenda;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({

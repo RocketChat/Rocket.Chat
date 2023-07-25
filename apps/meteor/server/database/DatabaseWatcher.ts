@@ -88,7 +88,7 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
-		if (!isMasterDoc || !isMasterDoc.setName) {
+		if (!isMasterDoc?.setName) {
 			throw Error("$MONGO_URL should be a replica set's URL");
 		}
 

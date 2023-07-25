@@ -6,7 +6,6 @@ import { api } from '@rocket.chat/core-services';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

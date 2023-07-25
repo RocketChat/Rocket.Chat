@@ -1,5 +1,3 @@
-/* eslint-disable complexity */
-
 import fs from 'fs';
 import type * as http from 'http';
 import type stream from 'stream';

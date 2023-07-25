@@ -1,16 +1,15 @@
-/* eslint-disable */
-import proxyquire from 'proxyquire';
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { faker } from '@faker-js/faker';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+
+import { afterLeaveRoomCallback } from '../../../../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
+import type * as hooksModule from '../../../../../../../server/services/federation/infrastructure/rocket-chat/hooks';
 
 const remove = sinon.stub();
 const get = sinon.stub();
 const hooks: Record<string, any> = {};
-
-import type * as hooksModule from '../../../../../../../server/services/federation/infrastructure/rocket-chat/hooks';
-import { afterLeaveRoomCallback } from '../../../../../../../lib/callbacks/afterLeaveRoomCallback';
-import { afterRemoveFromRoomCallback } from '../../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 
 const { FederationHooks } = proxyquire
 	.noCallThru()
@@ -572,51 +571,60 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			handlers.onRoomModeratorRemoved.reset();
 		});
 
-		it('should NOT call the handler if the event is empty', () => {
-			FederationHooks.afterRoomRoleChanged(handlers, undefined);
+		it('should NOT call the handler if the event is empty', async (done) => {
+			await FederationHooks.afterRoomRoleChanged(handlers, undefined);
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
 			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
 			expect(handlers.onRoomModeratorAdded.called).to.be.false;
 			expect(handlers.onRoomModeratorRemoved.called).to.be.false;
+
+			done();
 		});
 
-		it('should NOT call the Federation module is disabled', () => {
+		it('should NOT call the Federation module is disabled', async (done) => {
 			get.returns(false);
-			FederationHooks.afterRoomRoleChanged(handlers, undefined);
+			await FederationHooks.afterRoomRoleChanged(handlers, undefined);
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
 			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
 			expect(handlers.onRoomModeratorAdded.called).to.be.false;
 			expect(handlers.onRoomModeratorRemoved.called).to.be.false;
-		});
-		it('should NOT call the handler if the event is not for roles we are interested in on Federation', () => {
-			get.returns(true);
-			FederationHooks.afterRoomRoleChanged(handlers, { _id: 'not-interested' });
 
-			expect(handlers.onRoomOwnerAdded.called).to.be.false;
-			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
-			expect(handlers.onRoomModeratorAdded.called).to.be.false;
-			expect(handlers.onRoomModeratorRemoved.called).to.be.false;
+			done();
 		});
 
-		it('should NOT call the handler there is no handler for the event', () => {
+		it('should NOT call the handler if the event is not for roles we are interested in on Federation', async (done) => {
 			get.returns(true);
-			FederationHooks.afterRoomRoleChanged(handlers, { _id: 'owner', type: 'not-existing-type' });
+			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'not-interested' });
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
 			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
 			expect(handlers.onRoomModeratorAdded.called).to.be.false;
 			expect(handlers.onRoomModeratorRemoved.called).to.be.false;
+
+			done();
+		});
+
+		it('should NOT call the handler there is no handler for the event', async (done) => {
+			get.returns(true);
+			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'owner', type: 'not-existing-type' });
+
+			expect(handlers.onRoomOwnerAdded.called).to.be.false;
+			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
+			expect(handlers.onRoomModeratorAdded.called).to.be.false;
+			expect(handlers.onRoomModeratorRemoved.called).to.be.false;
+
+			done();
 		});
 
 		['owner-added', 'owner-removed', 'moderator-added', 'moderator-removed'].forEach((type) => {
 			const internalRoomId = 'internalRoomId';
 			const internalTargetUserId = 'internalTargetUserId';
 			const internalUserId = 'internalUserId';
-			it(`should call the handler for the event ${type}`, () => {
+			it(`should call the handler for the event ${type}`, async (done) => {
 				get.returns(true);
-				FederationHooks.afterRoomRoleChanged(handlers, {
+				await FederationHooks.afterRoomRoleChanged(handlers, {
 					_id: type.split('-')[0],
 					type: type.split('-')[1],
 					scope: internalRoomId,
@@ -631,6 +639,8 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 						internalRoomId,
 					),
 				).to.be.true;
+
+				done();
 			});
 		});
 	});

@@ -7,7 +7,6 @@ export class AppListenerBridge {
 	}
 
 	async handleEvent(event, ...payload) {
-		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
 				case AppInterface.IPreMessageSentPrevent:

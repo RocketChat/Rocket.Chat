@@ -476,7 +476,6 @@ export class ImportDataConverter {
 
 		const result: Array<IMentionedUser> = [];
 		for await (const importId of mentions) {
-			// eslint-disable-next-line no-extra-parens
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
 					_id: importId,
@@ -661,7 +660,6 @@ export class ImportDataConverter {
 	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
-		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
 			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}

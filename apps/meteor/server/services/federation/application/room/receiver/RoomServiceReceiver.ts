@@ -1,5 +1,4 @@
 // TODO: Refactor this file splitting it into smaller files + removing the complexity of the most important method (changeMembership)
-/* eslint-disable complexity */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 

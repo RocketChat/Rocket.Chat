@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Users } from '@rocket.chat/models';
 import { SHA256 } from '@rocket.chat/sha256';
+import AtlassianCrowd from 'atlassian-crowd-patched';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -51,8 +52,6 @@ export class CROWD {
 	};
 
 	constructor() {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get<string>('CROWD_URL');
 
 		this.options = {

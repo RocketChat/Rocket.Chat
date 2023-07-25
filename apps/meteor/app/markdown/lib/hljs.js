@@ -6,7 +6,7 @@ import markdown from 'hljs9/lib/languages/markdown';
 hljs.registerLanguage('markdown', markdown);
 hljs.registerLanguage('clean', clean);
 hljs.registerLanguage('javascript', javascript);
-// eslint-disable-next-line complexity
+
 export const register = async (lang) => {
 	switch (lang) {
 		case 'onec':

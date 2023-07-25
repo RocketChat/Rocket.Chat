@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import type { IInvite } from '@rocket.chat/core-typings';
 import {
 	isFindOrCreateInviteParams,
@@ -66,6 +65,7 @@ API.v1.addRoute(
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	},

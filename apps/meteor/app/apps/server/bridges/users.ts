@@ -13,7 +13,6 @@ import { setUserActiveStatus } from '../../../lib/server/functions/setUserActive
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 
 export class AppUserBridge extends UserBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

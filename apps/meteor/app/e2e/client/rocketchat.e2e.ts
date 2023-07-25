@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import QueryString from 'querystring';
 import URL from 'url';
 
@@ -324,12 +323,12 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(private_key: string, password: string): Promise<string | void> {
+	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
-			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(private_key));
+			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
@@ -400,12 +399,12 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decodePrivateKey(private_key: string): Promise<string> {
+	async decodePrivateKey(privateKey: string): Promise<string> {
 		const password = await this.requestPassword();
 
 		const masterKey = await this.getMasterKey(password);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(private_key));
+		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
 
 		try {
 			const privKey = await decryptAES(vector, masterKey, cipherText);

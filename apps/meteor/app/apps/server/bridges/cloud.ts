@@ -5,7 +5,6 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 
 export class AppCloudBridge extends CloudWorkspaceBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

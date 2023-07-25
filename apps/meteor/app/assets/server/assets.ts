@@ -243,7 +243,6 @@ class RocketChatAssetsClass {
 				};
 
 				void Settings.updateValueById(key, value);
-				// eslint-disable-next-line @typescript-eslint/no-use-before-define
 				return RocketChatAssets.processAsset(key, value);
 			}, 200);
 		});
@@ -265,7 +264,6 @@ class RocketChatAssetsClass {
 		};
 
 		void Settings.updateValueById(key, value);
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		await RocketChatAssets.processAsset(key, value);
 	}
 
