@@ -4,6 +4,7 @@ import url from 'url';
 import type { Readable } from 'stream';
 
 import WebSocket from 'ws';
+import csurf from 'csurf';
 import cookie from 'cookie';
 import type { Request, Response } from 'express';
 import express from 'express';
@@ -14,6 +15,8 @@ import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
 
 const app = express();
 app.use(cookieParser());
+
+app.use(csurf({ cookie: true }));
 
 const port = process.env.PORT || 4000;
 
