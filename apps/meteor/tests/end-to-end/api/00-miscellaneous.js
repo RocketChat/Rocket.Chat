@@ -510,18 +510,15 @@ describe('miscellaneous', function () {
 					done();
 				});
 		});
-		it('create a team', (done) => {
-			request
+		before('create a team', async () => {
+			const res = await request
 				.post(api('teams.create'))
 				.set(userCredentials)
 				.send({
 					name: `team-test-${Date.now()}`,
 					type: 0,
-				})
-				.end((err, res) => {
-					testTeam = res.body.team;
-					done();
 				});
+			testTeam = res.body.team;
 		});
 		it('should fail when does not have query param', (done) => {
 			request
