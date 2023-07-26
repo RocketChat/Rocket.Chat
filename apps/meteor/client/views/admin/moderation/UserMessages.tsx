@@ -43,7 +43,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Moderation_Message_context_header')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => moderationRoute.navigate('/admin/moderation-console', { replace: true })} />
+				<ContextualbarClose onClick={() => moderationRoute.navigate('/admin/moderation', { replace: true })} />
 			</ContextualbarHeader>
 			{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 			{isSuccessUserMessages && userMessages.messages.length > 0 && (

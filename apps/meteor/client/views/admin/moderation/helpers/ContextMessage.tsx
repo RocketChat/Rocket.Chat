@@ -83,7 +83,7 @@ const ContextMessage = ({
 				<MessageToolboxWrapper>
 					<Message.Toolbox>
 						<MessageToolboxItem
-							icon={'checkmark-circled'}
+							icon='checkmark-circled'
 							title={t('Moderation_Dismiss_reports')}
 							onClick={() => dismissMsgReport.action()}
 						/>
