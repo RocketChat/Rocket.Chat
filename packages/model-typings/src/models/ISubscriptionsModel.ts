@@ -236,4 +236,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
+	getDraft(rid: string, uid: string, tmid?: string): Promise<string | undefined>;
+	saveDraft(rid: string, uid: string, draft: string, tmid?: string): Promise<void>;
 }

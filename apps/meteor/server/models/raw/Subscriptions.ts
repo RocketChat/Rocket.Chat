@@ -1741,4 +1741,37 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		return this.updateOne(query, update);
 	}
+
+	getDraft(rid: string, uid: string, tmid?: string): Promise<string | undefined> {
+		return this.findOne(
+			{
+				rid,
+				'u._id': uid,
+				...(tmid && { tmid }),
+			},
+			{ projection: { draft: 1 } },
+		).then((s) => s?.draft);
+	}
+
+	async saveDraft(rid: string, uid: string, draft: string | undefined, tmid?: string): Promise<void> {
+		const query = {
+			rid,
+			'u._id': uid,
+			...(tmid && { tmid }),
+		};
+
+		const update: UpdateFilter<ISubscription> = draft
+			? {
+					$set: {
+						draft,
+					},
+			  }
+			: {
+					$unset: {
+						draft: 1,
+					},
+			  };
+
+		await this.updateOne(query, update);
+	}
 }

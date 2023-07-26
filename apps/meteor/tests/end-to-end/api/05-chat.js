@@ -511,6 +511,156 @@ describe('[Chat]', function () {
 		});
 	});
 
+	describe('/chat.draft', () => {
+		let readOnlyChannel;
+		const userCredentials = {};
+		before((done) => {
+			const username = `user.test.readonly.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end(() => {
+					request
+						.post(api('login'))
+						.send({
+							user: username,
+							password,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							userCredentials['X-Auth-Token'] = res.body.data.authToken;
+							userCredentials['X-User-Id'] = res.body.data.userId;
+						})
+						.end(done);
+				});
+		});
+
+		before((done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `readonlychannel${+new Date()}`,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					readOnlyChannel = res.body.channel;
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('channels.delete'))
+				.set(credentials)
+				.send({
+					roomName: readOnlyChannel.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		it('should not create a draft on a room it cant send message', (done) => {
+			request
+				.post(api('chat.draft'))
+				.set(userCredentials)
+				.send({
+					rid: readOnlyChannel._id,
+					draft: 'Sample draft message',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Not allowed [error-not-allowed]');
+				})
+				.end(done);
+		});
+		it('should save the draft successfully', (done) => {
+			request
+				.post(api('chat.draft'))
+				.set(credentials)
+				.send({
+					rid: 'GENERAL',
+					draft: 'Sample draft message',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should retrieve the draft successfully', (done) => {
+			request
+				.get(api('chat.draft'))
+				.set(credentials)
+				.query({
+					rid: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('draft', 'Sample draft message');
+				})
+				.end(done);
+		});
+
+		it('should clear the draft successfully', (done) => {
+			request
+				.post(api('chat.draft'))
+				.set(credentials)
+				.send({
+					rid: 'GENERAL',
+					draft: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should retrieve the draft successfully', (done) => {
+			request
+				.get(api('chat.draft'))
+				.set(credentials)
+				.query({
+					rid: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					console.log(res.body);
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).not.have.property('draft');
+				})
+				.end(done);
+		});
+	});
+
 	describe('/chat.sendMessage', () => {
 		it("should throw an error when the required param 'rid' is not sent", (done) => {
 			request
