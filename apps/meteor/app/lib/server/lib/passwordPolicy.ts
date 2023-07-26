@@ -4,7 +4,6 @@ import { settings } from '../../../settings/server';
 
 settings.watch('Accounts_Password_Policy_Enabled', (value) => {
 	passwordPolicy.passwordPolicyEnabled = Boolean(value);
-	// PasswordPolicy.PasswordPolicy.passwordPolicyEnabled = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_MinLength', (value) => {
 	passwordPolicy.passwordMinLength = Number(value);
