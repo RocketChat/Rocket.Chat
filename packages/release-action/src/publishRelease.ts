@@ -1,27 +1,27 @@
 import fs from 'fs';
 import path from 'path';
 
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
-import * as core from '@actions/core';
 
 import { createNpmFile } from './createNpmFile';
-import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, getChangelogEntry, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
+import { setupOctokit } from './setupOctokit';
+import { bumpFileVersions, getChangelogEntry, readPackageJson } from './utils';
 
 export async function publishRelease({
 	githubToken,
 	mainPackagePath,
-	exitCandidate = false,
+	mergeFinal = false,
 	baseRef,
 	cwd = process.cwd(),
 }: {
 	githubToken: string;
 	mainPackagePath: string;
 	baseRef?: string;
-	exitCandidate?: boolean;
+	mergeFinal?: boolean;
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
@@ -35,7 +35,7 @@ export async function publishRelease({
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
-	if (exitCandidate) {
+	if (mergeFinal) {
 		let preRelease = false;
 		try {
 			fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
@@ -76,12 +76,14 @@ export async function publishRelease({
 
 	await commitChanges(`Release ${newVersion}`);
 
-	// get current branch name
-	const branchName = await getCurrentBranch();
+	if (mergeFinal) {
+		// get current branch name
+		const branchName = await getCurrentBranch();
 
-	// merge release changes to master
-	await checkoutBranch('master');
-	await mergeBranch(branchName);
+		// merge release changes to master
+		await checkoutBranch('master');
+		await mergeBranch(branchName);
+	}
 
 	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();

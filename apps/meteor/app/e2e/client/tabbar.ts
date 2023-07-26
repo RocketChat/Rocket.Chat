@@ -1,10 +1,10 @@
-import { useMemo, useCallback } from 'react';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useMemo, useCallback } from 'react';
 
-import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { e2e } from './rocketchat.e2e';
 
 addAction('e2e', ({ room }) => {

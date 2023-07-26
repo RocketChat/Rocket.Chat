@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
 import type { ILivechatDepartment, ILivechatTag } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createDepartment } from '../../../data/livechat/rooms';
 import { removeTag, saveTags } from '../../../data/livechat/tags';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { createDepartment } from '../../../data/livechat/rooms';
 
 (IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
 	this.retries(0);

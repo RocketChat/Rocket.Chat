@@ -1,10 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import type { IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
-import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { callbacks } from '../../../lib/callbacks';
+import { beforeCreateUserCallback } from '../../../lib/callbacks/beforeCreateUserCallback';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 const config = {
 	serverURL: '',
@@ -22,6 +23,7 @@ const config = {
 const Dolphin = new CustomOAuth('dolphin', config);
 
 function DolphinOnCreateUser(options: any, user?: IUser) {
+	// TODO: callbacks Fix this
 	if (user?.services?.dolphin?.NickName) {
 		user.username = user.services.dolphin.NickName;
 	}
@@ -48,5 +50,5 @@ Meteor.startup(async () => {
 		await ServiceConfiguration.configurations.upsertAsync({ service: 'dolphin' }, { $set: data });
 	}
 
-	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
+	beforeCreateUserCallback.add(DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 });

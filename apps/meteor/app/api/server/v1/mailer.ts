@@ -1,7 +1,7 @@
 import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
 
-import { API } from '../api';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'mailer',

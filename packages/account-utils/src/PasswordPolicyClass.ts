@@ -1,6 +1,6 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
-import { MeteorError } from '@rocket.chat/core-services';
 
 class PasswordPolicy {
 	regex: {
@@ -241,7 +241,11 @@ class PasswordPolicy {
 	}
 
 	validate(password: string | unknown) {
-		const reasons = [];
+		const reasons: {
+			error: string;
+			message: string;
+		}[] = [];
+
 		if (typeof password !== 'string' || !password.trim().length) {
 			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
 		}
