@@ -482,9 +482,9 @@ export class NotificationsModule {
 		this.streamPresence.allowWrite('none');
 	}
 
-	notifyAll<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
-		return this.streamAll.emit(eventName, ...args);
-	}
+	// notifyAll<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
+	// 	return this.streamAll.emit(eventName, ...args);
+	// }
 
 	notifyLogged<E extends StreamKeys<'notify-logged'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-logged', E>): void {
 		return this.streamLogged.emit(eventName, ...args);
