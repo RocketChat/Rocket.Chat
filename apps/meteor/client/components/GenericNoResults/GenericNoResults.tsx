@@ -26,21 +26,23 @@ const GenericNoResults = ({
 	const t = useTranslation();
 
 	return (
-		<States>
-			<StatesIcon name={icon} />
-			<StatesTitle>{title || t('No_results_found')}</StatesTitle>
-			{description && <StatesSubtitle>{description}</StatesSubtitle>}
-			{buttonTitle && buttonAction && (
-				<StatesActions>
-					<StatesAction onClick={buttonAction}>{buttonTitle}</StatesAction>
-				</StatesActions>
-			)}
-			{linkText && linkHref && (
-				<Box is='a' mbs='x16' target='_blank' href={linkHref}>
-					{linkText}
-				</Box>
-			)}
-		</States>
+		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>
+			<States>
+				<StatesIcon name={icon} />
+				<StatesTitle>{title || t('No_results_found')}</StatesTitle>
+				{description && <StatesSubtitle>{description}</StatesSubtitle>}
+				{buttonTitle && buttonAction && (
+					<StatesActions>
+						<StatesAction onClick={buttonAction}>{buttonTitle}</StatesAction>
+					</StatesActions>
+				)}
+				{linkText && linkHref && (
+					<Box is='a' mbs='x16' target='_blank' href={linkHref}>
+						{linkText}
+					</Box>
+				)}
+			</States>
+		</Box>
 	);
 };
 
