@@ -4,6 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@faker-js/faker": "^8.0.2",
+		"@playwright/test": "^1.36.2",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/chai": "^4.3.5",
 		"@types/chai-as-promised": "^7.1.5",
@@ -55,7 +56,8 @@
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"testunit": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts"
 	},
 	"main": "./dist/ee/packages/federation/src/index.js",
 	"typings": "./dist/ee/packages/federation/src/index.d.ts",
