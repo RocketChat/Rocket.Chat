@@ -1,27 +1,25 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
 // used to open the menu option by keyboard
 import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
-const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
+const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any) => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
 );
 
-type ToolBoxProps = {
+type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
-	room?: IRoom;
 };
 
-const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
+const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
@@ -59,23 +57,6 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const actionDefault = useMutableCallback((actionId) => {
 		openTabBar(actionId);
 	});
-
-	// const open = useMutableCallback((index) => {
-	// 	openTabBar(actions[index].id);
-	// });
-
-	// useEffect(() => {
-	// 	if (!visibleActions.length) {
-	// 		return;
-	// 	}
-	// 	const unsubscribe = tinykeys(window, Object.fromEntries(new Array(visibleActions.length).fill(true).map((_, index) => [`$mod+${ index + 1 }`, (): void => { open(index); }])));
-
-	// 	return (): void => {
-	// 		unsubscribe();
-	// 	};
-	// }, [visibleActions.length, open]);
-
-	// TODO: Create helper for render Actions
 
 	return (
 		<>
@@ -131,4 +112,4 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	);
 };
 
-export default memo(ToolBox);
+export default memo(RoomToolbox);

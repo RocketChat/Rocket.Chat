@@ -16,8 +16,6 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	title: string;
 };
 
-type ActionRenderer = (props: ActionRendererProps) => ReactNode;
-
 type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
@@ -29,7 +27,7 @@ export type ToolboxActionConfig = {
 	'anonymous'?: boolean;
 	'data-tooltip'?: string;
 	'disabled'?: boolean;
-	'renderAction'?: ActionRenderer;
+	'renderAction'?: (props: ActionRendererProps) => ReactNode;
 	'full'?: true;
 	'renderOption'?: OptionRenderer;
 	'order'?: number;
