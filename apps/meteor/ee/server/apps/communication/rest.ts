@@ -5,6 +5,7 @@ import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/A
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
@@ -1134,22 +1135,26 @@ export class AppsRestApi {
 					}
 
 					const storedApp = prl.getStorageItem();
-					const { marketplaceInfo } = storedApp;
+					const { installationSource, marketplaceInfo } = storedApp;
 
-					if (!isEnterprise() && marketplaceInfo) {
-						const baseUrl = orchestrator.getMarketplaceUrl() as string;
-						const headers = getDefaultHeaders();
-						const { version } = prl.getInfo();
+					if (!isEnterprise() && installationSource === AppInstallationSource.MARKETPLACE) {
+						try {
+							const baseUrl = orchestrator.getMarketplaceUrl() as string;
+							const headers = getDefaultHeaders();
+							const { version } = prl.getInfo();
 
-						await appEnableCheck({
-							baseUrl,
-							headers,
-							appId,
-							version,
-							marketplaceInfo,
-							status,
-							logger: orchestrator.getRocketChatLogger(),
-						});
+							await appEnableCheck({
+								baseUrl,
+								headers,
+								appId,
+								version,
+								marketplaceInfo,
+								status,
+								logger: orchestrator.getRocketChatLogger(),
+							});
+						} catch (error: any) {
+							return API.v1.failure(error.message);
+						}
 					}
 
 					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {

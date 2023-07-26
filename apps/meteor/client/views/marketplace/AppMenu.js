@@ -294,18 +294,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		const nonInstalledAppOptions = {
-			...(!app.installed && {
-				acquire: {
-					label: (
-						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie='x4' />}
-							{t(button.label.replace(' ', '_'))}
-						</>
-					),
-					action: handleAcquireApp,
-					disabled: requestedEndUser,
-				},
-			}),
+			...(!app.installed &&
+				button && {
+					acquire: {
+						label: (
+							<>
+								{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie='x4' />}
+								{t(button.label.replace(' ', '_'))}
+							</>
+						),
+						action: handleAcquireApp,
+						disabled: requestedEndUser,
+					},
+				}),
 		};
 
 		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
@@ -398,19 +399,20 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		t,
 		handleSubscription,
+		button,
 		handleAcquireApp,
 		requestedEndUser,
 		isEnterpriseLicense,
 		isAppEnabled,
+		appCountQuery?.data?.hasUnlimitedApps,
+		appCountQuery?.data?.enabled,
+		appCountQuery?.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
 		handleDisable,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
