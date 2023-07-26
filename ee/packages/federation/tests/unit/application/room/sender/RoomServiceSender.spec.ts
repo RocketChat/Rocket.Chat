@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
@@ -181,12 +181,20 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.getInternalRoomRolesByUserId.reset();
 		roomAdapter.applyRoomRolesToUser.reset();
+		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
+		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.getFederatedRoomByExternalId.reset();
+		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.getInternalUserByUsername.reset();
+		userAdapter.createLocalUser.reset();
+		userAdapter.updateFederationAvatar.reset();
+		userAdapter.setAvatar.reset();
+		userAdapter.updateRealName.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.sendMessage.reset();
 		bridge.createUser.reset();
@@ -202,6 +210,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.setRoomName.reset();
 		bridge.getRoomName.reset();
 		bridge.getRoomTopic.reset();
+		bridge.createRoom.reset();
+		bridge.getUserProfileInformation.reset();
+		bridge.searchPublicRooms.reset();
+		bridge.getRoomData.reset();
 		messageAdapter.getMessageById.reset();
 		messageAdapter.setExternalFederationEventOnMessage.reset();
 		notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.reset();
@@ -209,6 +221,9 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		notificationsAdapter.broadcastUserTypingOnRoom.reset();
 		sendMessageStub.reset();
 		sendQuoteMessageStub.reset();
+		queueAdapter.enqueueJob.reset();
+		settingsAdapter.isFederationEnabled.reset();
+		settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.reset();
 	});
 
 	describe('#createDirectMessageRoomAndInviteUser()', () => {
