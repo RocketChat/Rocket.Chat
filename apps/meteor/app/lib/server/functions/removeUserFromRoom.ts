@@ -6,7 +6,8 @@ import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
-import { callbacks } from '../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -29,7 +30,7 @@ export const removeUserFromRoom = async function (
 		throw error;
 	}
 
-	await callbacks.run('beforeLeaveRoom', user, room);
+	await beforeLeaveRoomCallback.run(user, room);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
 		projection: { _id: 1 },
@@ -65,7 +66,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	// TODO: CACHE: maybe a queue?
-	await callbacks.run('afterLeaveRoom', user, room);
+	await afterLeaveRoomCallback.run(user, room);
 
 	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };
