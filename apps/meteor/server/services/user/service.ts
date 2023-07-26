@@ -326,6 +326,6 @@ export class UserService extends ServiceClassInternal implements IUserService {
 			...(password ? { services: { password: { bcrypt: await this.hashPassword(password) } } } : {}),
 		};
 
-		return this.create(options, user);
+		return this.insertUserDoc(options, user);
 	}
 }
