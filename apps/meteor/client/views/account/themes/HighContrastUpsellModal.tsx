@@ -1,5 +1,5 @@
-import { useRole, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useRole, useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
 
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
 
@@ -8,19 +8,6 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 
 	const isAdmin = useRole('admin');
 
-	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
-	const upgradeRoute = useRoute('upgrade');
-
-	const goFullyFeaturedRegistered = useCallback(() => {
-		upgradeRoute.push({ type: 'go-fully-featured-registered' });
-		onClose();
-	}, [upgradeRoute, onClose]);
-
-	const goToTalkSales = useCallback(() => {
-		window.open(talkToSales, '_blank');
-		onClose();
-	}, [onClose, talkToSales]);
-
 	if (!isAdmin) {
 		return (
 			<GenericUpsellModal
@@ -28,7 +15,6 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 				img='images/high-contrast-upsell-modal.svg'
 				subtitle={t('High_contrast_upsell_subtitle')}
 				description={t('High_contrast_upsell_description')}
-				onClose={onClose}
 				cancelText={t('Close')}
 				onCancel={onClose}
 				annotation={t('High_contrast_upsell_annotation')}
@@ -41,11 +27,8 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			img='images/high-contrast-upsell-modal.svg'
 			subtitle={t('High_contrast_upsell_subtitle')}
 			description={t('High_contrast_upsell_description')}
-			onClose={onClose}
 			cancelText={t('Talk_to_sales')}
-			onCancel={goToTalkSales}
 			confirmText={t('Start_free_trial')}
-			onConfirm={goFullyFeaturedRegistered}
 		/>
 	);
 };

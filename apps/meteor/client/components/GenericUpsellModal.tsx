@@ -1,6 +1,6 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import React, { useCallback, useEffect, useRef } from 'react';
 
@@ -38,6 +38,7 @@ const GenericUpsellModal = ({
 }: UpsellModalProps) => {
 	const t = useTranslation();
 	const cloudWorkspaceHadTrial = Boolean(useSetting('Cloud_Workspace_Had_Trial'));
+	const isAdmin = useRole('admin');
 
 	const router = useRouter();
 	const setModal = useSetModal();
@@ -99,10 +100,11 @@ const GenericUpsellModal = ({
 					<Button secondary onClick={onCancel ?? handleCancelModal}>
 						{cancelText ?? t('Talk_to_an_expert')}
 					</Button>
-
-					<Button primary onClick={onConfirm ?? handleConfirmModal}>
-						{confirmText ?? cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-					</Button>
+					{isAdmin && (
+						<Button primary onClick={onConfirm ?? handleConfirmModal}>
+							{confirmText || (cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_free_trial'))}
+						</Button>
+					)}
 				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
