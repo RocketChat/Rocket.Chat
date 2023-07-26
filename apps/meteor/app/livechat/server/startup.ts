@@ -15,15 +15,15 @@ import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 import { i18n } from '../../../server/lib/i18n';
+import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
-	callbacks.add(
-		'beforeLeaveRoom',
+	beforeLeaveRoomCallback.add(
 		function (user, room) {
 			if (!isOmnichannelRoom(room)) {
-				return user;
+				return;
 			}
 			throw new Meteor.Error(
 				i18n.t('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
@@ -62,10 +62,14 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
+		Livechat.logger.debug(`Changing business hour type to ${value}`);
 		if (value) {
-			return businessHourManager.startManager();
+			await businessHourManager.startManager();
+			Livechat.logger.debug(`Business hour manager started`);
+			return;
 		}
-		return businessHourManager.stopManager();
+		await businessHourManager.stopManager();
+		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', function (value) {
