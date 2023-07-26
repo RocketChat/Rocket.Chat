@@ -59,7 +59,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactEle
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				<FieldGroup onSubmit={handleSubmit(handleSave)}>
+				<FieldGroup>
 					<Field>
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
 						{isRoomFederated(room) ? (
@@ -80,7 +80,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactEle
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} type='submit'>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Add_users')}
 					</Button>
 				</ButtonGroup>
